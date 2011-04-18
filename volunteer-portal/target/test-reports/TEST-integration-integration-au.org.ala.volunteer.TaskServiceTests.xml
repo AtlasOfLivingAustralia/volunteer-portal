@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="1" failures="0" hostname="146081-beentocsiroau.local" name="au.org.ala.volunteer.TaskServiceTests" tests="1" time="0.295" timestamp="2011-04-15T00:38:38">
+  <properties />
+  <testcase classname="au.org.ala.volunteer.TaskServiceTests" name="testProjectCounts" time="0.276">
+    <error message="Error creating bean with name &apos;taskService&apos;: Cannot create inner bean &apos;(inner bean)&apos; while setting bean property &apos;target&apos;; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name &apos;(inner bean)#2&apos;: Instantiation of bean failed; nested exception is org.springframework.beans.factory.BeanDefinitionStoreException: Factory method [public java.lang.Object org.codehaus.groovy.grails.commons.AbstractGrailsClass.newInstance()] threw exception; nested exception is org.codehaus.groovy.grails.exceptions.NewInstanceCreationException: Could not create a new instance of class [au.org.ala.volunteer.TaskService]!" type="org.springframework.beans.factory.BeanCreationException">org.springframework.beans.factory.BeanCreationException: Error creating bean with name &apos;taskService&apos;: Cannot create inner bean &apos;(inner bean)&apos; while setting bean property &apos;target&apos;; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name &apos;(inner bean)#2&apos;: Instantiation of bean failed; nested exception is org.springframework.beans.factory.BeanDefinitionStoreException: Factory method [public java.lang.Object org.codehaus.groovy.grails.commons.AbstractGrailsClass.newInstance()] threw exception; nested exception is org.codehaus.groovy.grails.exceptions.NewInstanceCreationException: Could not create a new instance of class [au.org.ala.volunteer.TaskService]!
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name &apos;(inner bean)#2&apos;: Instantiation of bean failed; nested exception is org.springframework.beans.factory.BeanDefinitionStoreException: Factory method [public java.lang.Object org.codehaus.groovy.grails.commons.AbstractGrailsClass.newInstance()] threw exception; nested exception is org.codehaus.groovy.grails.exceptions.NewInstanceCreationException: Could not create a new instance of class [au.org.ala.volunteer.TaskService]!
+	at _GrailsTest_groovy$_run_closure4.doCall(_GrailsTest_groovy:271)
+	at _GrailsTest_groovy$_run_closure4.call(_GrailsTest_groovy)
+	at _GrailsTest_groovy$_run_closure2.doCall(_GrailsTest_groovy:228)
+	at _GrailsTest_groovy$_run_closure1_closure21.doCall(_GrailsTest_groovy:187)
+	at _GrailsTest_groovy$_run_closure1.doCall(_GrailsTest_groovy:174)
+	at TestApp$_run_closure1.doCall(TestApp.groovy:82)
+	at gant.Gant$_dispatch_closure5.doCall(Gant.groovy:381)
+	at gant.Gant$_dispatch_closure7.doCall(Gant.groovy:415)
+	at gant.Gant$_dispatch_closure7.doCall(Gant.groovy)
+	at gant.Gant.withBuildListeners(Gant.groovy:427)
+	at gant.Gant.this$2$withBuildListeners(Gant.groovy)
+	at gant.Gant$this$2$withBuildListeners.callCurrent(Unknown Source)
+	at gant.Gant.dispatch(Gant.groovy:415)
+	at gant.Gant.this$2$dispatch(Gant.groovy)
+	at gant.Gant.invokeMethod(Gant.groovy)
+	at gant.Gant.executeTargets(Gant.groovy:590)
+	at gant.Gant.executeTargets(Gant.groovy:589)
+Caused by: org.springframework.beans.factory.BeanDefinitionStoreException: Factory method [public java.lang.Object org.codehaus.groovy.grails.commons.AbstractGrailsClass.newInstance()] threw exception; nested exception is org.codehaus.groovy.grails.exceptions.NewInstanceCreationException: Could not create a new instance of class [au.org.ala.volunteer.TaskService]!
+Caused by: org.codehaus.groovy.grails.exceptions.NewInstanceCreationException: Could not create a new instance of class [au.org.ala.volunteer.TaskService]!
+Caused by: org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object &apos;au.org.ala.volunteer.TaskService$_closure1@4d89136d&apos; with class &apos;au.org.ala.volunteer.TaskService$_closure1&apos; to class &apos;java.util.Map&apos;
+	at au.org.ala.volunteer.TaskService.&lt;init&gt;(TaskService.groovy)
+</error>
+  </testcase>
+  <system-out><![CDATA[--Output from testProjectCounts--
+]]></system-out>
+  <system-err><![CDATA[--Output from testProjectCounts--
+]]></system-err>
+</testsuite>
