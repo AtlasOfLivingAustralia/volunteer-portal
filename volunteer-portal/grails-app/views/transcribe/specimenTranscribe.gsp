@@ -1,4 +1,3 @@
-<%@ page import="au.org.ala.volunteer.Record" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <html>
 <head>
