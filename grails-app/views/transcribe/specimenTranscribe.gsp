@@ -2,8 +2,31 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="layout" content="mainOld"/>
+  <meta name="layout" content="main"/>
   <title>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
+  <script language="JavaScript" type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
+  <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
+  <script language="JavaScript" type="text/javascript">
+    $(document).ready(function(){
+        var options = {
+            zoomType: 'innerzoom',
+            lens: true,
+            preloadImages: true,
+            alwaysOn:false,
+            zoomWidth: 300,
+            zoomHeight: 300,
+            imageOpacity: 0.7,
+            title: false
+            //xOffset:90,
+            //yOffset:30,
+            //position:'right'
+        };  
+        $('.taskImage').jqzoom(options);
+    });
+  </script>
+
+
+});
 </head>
 <body class="two-column-right">
 <div id="content">
@@ -22,15 +45,23 @@
 
       <div class="dialog">
         <g:each in="${taskInstance.multimedia}" var="m">
-           <img src="${m.filePath}" alt=""/>
+          %{--<img src="${m.filePath}" alt=""/>--}%
+          <div style="min-height: 300px;">
+            <a href="${m.filePath}" class="taskImage" title="${taskInstance?.project?.name}">
+              <img src="${m.filePath.replaceFirst(/(?i)(\.jp)/,'_small$1')}" style="" title="image: ${taskInstance?.project?.name}">
+            </a>
+          </div>
+
         </g:each>
+        <div style="clear:both;">&nbsp;</div>
+        <div>View count: ${taskInstance.viewed}</div>
         <table>
           <tbody>
 
           <tr class="prop">
             <td valign="top" class="name"><g:message code="record.scientificName.label" default="Scientific name"/></td>
             <td valign="top" class="value">
-              <g:textField name="recordValues.0.scientificName" maxlength="200" value="${recordValues?.get(0)?.scientificName}"/>
+              <g:textField name="recordValues.0.scientificName" maxlength="200" value="${recordValues?.get(0)?.scientificName}" class="scientificName"/>
             </td>
           </tr>
 
@@ -45,7 +76,7 @@
           </tr>
 
           <tr>
-            <td valign="top" class="value"><g:message code="record.locality.label" default="Locality"/></td>
+            <td valign="top" class="value"><g:message code="record.locality.label" default="Locality" class="locality"/></td>
             <td valign="top" class="value"><g:textField name="recordValues.0.locality" maxlength="200" value="${recordValues?.get(0)?.locality}"/></td>
           </tr>
 
