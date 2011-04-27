@@ -24,9 +24,6 @@
         $('.taskImage').jqzoom(options);
     });
   </script>
-
-
-});
 </head>
 <body class="two-column-right">
 <div id="content">
