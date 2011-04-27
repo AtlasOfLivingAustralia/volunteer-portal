@@ -9,7 +9,7 @@
   <script language="JavaScript" type="text/javascript">
     $(document).ready(function(){
         var options = {
-            zoomType: 'innerzoom',
+            zoomType: 'drag',
             lens: true,
             preloadImages: true,
             alwaysOn:false,
