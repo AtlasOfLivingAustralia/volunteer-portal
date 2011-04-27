@@ -17,7 +17,7 @@ environments {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
             //url = "jdbc:mysql://localhost/volunteers"
-            url = "jdbc:postgresql:volunteers"
+            url = "jdbc:postgresql://localhost:5433/volunteers"
         }
     }
     test {
@@ -35,7 +35,7 @@ environments {
         dataSource {
             dbCreate = "update"
             //url = "jdbc:postgresql:volunteers"
-            url = "jdbc:postgresql:volunteers"
+            url = "jdbc:postgresql://localhost:5433/volunteers"
         }
     }
 }
