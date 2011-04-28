@@ -42,12 +42,12 @@
 
       <div class="dialog">
         <g:each in="${taskInstance.multimedia}" var="m">
-          %{--<img src="${m.filePath}" alt=""/>--}%
-          <div style="min-height: 300px;">
+          <img src="${m.filePath}" alt=""/>
+          %{--<div style="min-height: 300px;">
             <a href="${m.filePath}" class="taskImage" title="${taskInstance?.project?.name}">
-              <img src="${m.filePath.replaceFirst(/(?i)(\.jp)/,'_small$1')}" style="" title="image: ${taskInstance?.project?.name}">
+              <img src="${m.filePath}" style="width: 350px;" title="image: ${taskInstance?.project?.name}">
             </a>
-          </div>
+          </div>--}%
 
         </g:each>
         <div style="clear:both;">&nbsp;</div>
