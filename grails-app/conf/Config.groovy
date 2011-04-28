@@ -26,6 +26,8 @@ if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
 }
 
+server.url = "http://localhost/"
+images.urlPrefix = "/data/volunteer/"
 
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 

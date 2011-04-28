@@ -1,4 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Task" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -39,10 +40,9 @@
       <g:if test="${taskInstance}">
       <g:form controller="transcribe" action="saveTranscription">
         <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
-
       <div class="dialog">
         <g:each in="${taskInstance.multimedia}" var="m">
-          <img src="${m.filePath}" alt=""/>
+          <img src="${ConfigurationHolder.config.server.url}${m.filePath}" alt="specimen image"/>
           %{--<div style="min-height: 300px;">
             <a href="${m.filePath}" class="taskImage" title="${taskInstance?.project?.name}">
               <img src="${m.filePath}" style="width: 350px;" title="image: ${taskInstance?.project?.name}">
@@ -51,7 +51,6 @@
 
         </g:each>
         <div style="clear:both;">&nbsp;</div>
-        <div>View count: ${taskInstance.viewed}</div>
         <table>
           <tbody>
 
