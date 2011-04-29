@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.*
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class TaskService {
 
@@ -164,19 +164,19 @@ class TaskService {
      * @return fileMap
      */
     def copyImageToStore = { String imageUrl, taskId, multimediaId ->
-        //def imageTool //= new ImageTool()
-        def conn = new URL(imageUrl).openConnection()
+        def url = new URL(imageUrl)
+        def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
+        def conn = url.openConnection()
         def fileMap = [:]
         try {
-            println("content type = " + conn.contentType + " | " + conn.content)
+            println("content type = " + conn.contentType + " | " + filename)
             def dir = new File(config.images.urlPrefix + taskId + "/" + multimediaId)
             if (!dir.exists()) {
                 println("Creating dir " + dir.absolutePath)
                 dir.mkdirs()
             }
             fileMap.dir = dir.absolutePath
-            def ext = conn.contentType.replace('image/', '')
-            def file = new File(dir, "raw." + ext)
+            def file = new File(dir, filename)
             file << conn.inputStream
             fileMap.raw = file.absolutePath
             return fileMap
