@@ -1,6 +1,9 @@
 package au.org.ala.volunteer
 
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+import com.thebuzzmedia.imgscalr.Scalr
 
 class TaskService {
 
@@ -145,9 +148,9 @@ class TaskService {
                 // GET the image via its URL and save various forms to local disk
                 def filePath = copyImageToStore(tokens[1], task.id, multimedia.id)
                 println("Saved..." + tokens + " -> " + filePath['raw'])
-                //filePath = createImageThumbs(filePath)
+                filePath = createImageThumbs(filePath)
                 multimedia.filePath = filePath['raw']
-                //multimedia.filePathToThumbnail = filePath['thumb']
+                multimedia.filePathToThumbnail = filePath['thumb']
                 multimedia.save(flush: true)
                 println("Saved..." + tokens)
             } else {
@@ -155,8 +158,7 @@ class TaskService {
             }
         }
     }
-    
-    
+
     /**
      * GET the image via its URL and save various forms to local disk
      *
@@ -184,7 +186,6 @@ class TaskService {
         } catch (Exception e) {
             println("Failed to load URL: " + imageUrl + ". " + e)
         }
-
     }
 
     /**
@@ -197,13 +198,44 @@ class TaskService {
         def thumb = 'thumbnail'
         println("dir = " + fileMap.dir)
         println("raw = " + fileMap.raw)
-        burningImageService.doWith(fileMap.raw, fileMap.dir)
-                   .execute (thumb, {
-                       //it.scaleAccurate(100, 100)
-                       it.scaleApproximate(600, 600)
-                   })
-        fileMap.thumb = fileMap.dir + "/" + thumb
+        BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.raw))
+        // Scale the image using the imgscalr library
+        BufferedImage scaledImage = Scalr.resize(srcImage, 600);
+        ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/raw_small.jpg"))
         return fileMap
-
     }
+
+//        ConvertCmd cmd = new ConvertCmd();
+//
+//        // create the operation, add images and operators/options
+//        IMOperation op = new IMOperation();
+//        println(fileMap.raw)
+//
+//        op.addImage();
+//        op.resize(800,600);
+////        File f = new File("//tmp//myimage_small.jpg");
+////        f.createNewFile();
+//
+//        op.addImage();
+//
+//        // execute the operation
+//        cmd.run(op, fileMap.raw, "/tmp/myimage_small.jpg");
+
+
+
+//        ImageUtils iu = new ImageUtils();
+//        iu.load(fileMap.raw);
+//        //iu.square();
+//        iu.smoothThumbnail(600)
+//        FileOutputStream fOut = new FileOutputStream(fileMap.dir +"-"+thumb+".jpg");
+//        ImageIO.write(iu.getModifiedImage(), "jpg", fOut);
+
+
+//        burningImageService.doWith(fileMap.raw, fileMap.dir)
+//                   .execute (thumb, {
+//                       //it.scaleAccurate(100, 100)
+//                       it.scaleApproximate(600, 600)
+//                   })
+//        fileMap.thumb = fileMap.dir + "/" + thumb
+
 }
