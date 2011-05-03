@@ -122,8 +122,8 @@
       }
 
       function updateMarkerStatus(str) {
-          //document.getElementById('markerStatus').innerHTML = str;
-          }
+          $(".locality").val(str);
+      }
 
       function updateMarkerPosition(latLng) {
           var rnd = 100000000;
@@ -161,6 +161,7 @@
 
 
       $(document).ready(function() {
+          // Google maps API code
           initialize();
 
           // trigger Google geolocation search on search button
@@ -206,7 +207,8 @@
               // user has selected an autocomplete item
               $('input.taxonConceptID').val(item.guid);
           });
-
+          
+          // JQZoom tool for image zooming
           var options = {
               zoomType: 'drag',
               lens: true,
@@ -215,13 +217,37 @@
               zoomWidth: 300,
               zoomHeight: 300,
               imageOpacity: 0.7,
-              title: false
+              title: true
               //xOffset:90,
               //yOffset:30,
               //position:'right'
           };
           $('.taskImage').jqzoom(options);
+          
+          // prevent enter key submitting form (for geocode search mainly)
+          $(".transcribeForm").keypress(function(e) {
+              //alert('form key event = ' + e.which);
+              if (e.which == 13) {
+                  var $targ = $(e.target);
+
+                  if (!$targ.is("textarea") && !$targ.is(":button,:submit")) {
+                      var focusNext = false;
+                      $(this).find(":input:visible:not([disabled],[readonly]), a").each(function(){
+                          if (this === e.target) {
+                              focusNext = true;
+                          }
+                          else if (focusNext){
+                              $(this).focus();
+                              return false;
+                          }
+                      });
+
+                      return false;
+                  }
+              }
+          });
       });
+      
   </script>
 </head>
 <body class="two-column-right">
@@ -236,7 +262,7 @@
       </g:else>
 
       <g:if test="${taskInstance}">
-      <g:form controller="transcribe" action="saveTranscription">
+      <g:form controller="transcribe" action="saveTranscription" class="transcribeForm">
         <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
       <div class="dialog">
         <g:each in="${taskInstance.multimedia}" var="m">
