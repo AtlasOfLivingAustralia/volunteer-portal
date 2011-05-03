@@ -39,32 +39,7 @@
         autoArrows:false,
         dropShadows:false
       });
-
-      jQuery("input.scientificName").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-        extraParams: {limit: 100},
-        dataType: 'jsonp',
-        parse: function(data) {
-          var rows = new Array();
-          data = data.autoCompleteList;
-          for (var i = 0; i < data.length; i++) {
-            rows[i] = {
-              data:data[i],
-              value: data[i].matchedNames[0],
-              result: data[i].matchedNames[0]
-            };
-          }
-          return rows;
-        },
-        matchSubset: true,
-        formatItem: function(row, i, n) {
-          return row.matchedNames[0];
-        },
-        cacheLength: 10,
-        minChars: 3,
-        scroll: false,
-        max: 10,
-        selectFirst: false
-      });
+      
       _loadUserVoice();
 
     });

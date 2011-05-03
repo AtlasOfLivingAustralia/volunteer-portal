@@ -1,58 +1,227 @@
-<%@ page import="au.org.ala.volunteer.Task" %>
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <html>
+<%@ page import="au.org.ala.volunteer.Task" %>
+<%@ page import="au.org.ala.volunteer.field.*" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="layout" content="main"/>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   <title>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
-  <script language="JavaScript" type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
+  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
-  <script language="JavaScript" type="text/javascript">
-    $(document).ready(function(){
-        jQuery("input.scientificName").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-          extraParams: {limit: 100},
-          dataType: 'jsonp',
-          parse: function(data) {
-            var rows = new Array();
-            data = data.autoCompleteList;
-            for (var i = 0; i < data.length; i++) {
-              rows[i] = {
-                data:data[i],
-                value: data[i].matchedNames[0],
-                result: data[i].matchedNames[0]
-              };
-            }
-            return rows;
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <script type="text/javascript">
+      var map, marker, circle;
+
+      function initialize() {
+          var lat = $('.decimalLatitude').val();
+          var lng = $('.decimalLongitude').val();
+          var latLng;
+          if (lat && lng) {
+              latLng = new google.maps.LatLng(lat, lng);
+          } else {
+              latLng = new google.maps.LatLng( - 34.397, 150.644);
+          }
+          var myOptions = {
+              zoom: 10,
+              center: latLng,
+              scrollwheel: false,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+
+          map = new google.maps.Map(document.getElementById("mapCanvas"), myOptions);
+
+          marker = new google.maps.Marker({
+              position: latLng,
+              //map.getCenter(),
+              title: 'Specimen Location',
+              map: map,
+              draggable: true
+          });
+
+          // Add a Circle overlay to the map.
+          var radius = parseInt($('.coordinatePrecision').val());
+          circle = new google.maps.Circle({
+              map: map,
+              radius: radius,
+              // 3000 km
+              strokeWeight: 1,
+              strokeColor: 'white',
+              strokeOpacity: 0.5,
+              fillColor: '#2C48A6',
+              fillOpacity: 0.2
+          });
+          // bind circle to marker
+          circle.bindTo('center', marker, 'position');
+
+          // Add dragging event listeners.
+          google.maps.event.addListener(marker, 'dragstart',
+          function() {
+              updateMarkerAddress('Dragging...');
+          });
+
+          google.maps.event.addListener(marker, 'drag',
+          function() {
+              updateMarkerStatus('Dragging...');
+              updateMarkerPosition(marker.getPosition());
+          });
+
+          google.maps.event.addListener(marker, 'dragend',
+          function() {
+              updateMarkerStatus('Drag ended');
+              geocodePosition(marker.getPosition());
+              map.panTo(marker.getPosition());
+          });
+
+          geocoder = new google.maps.Geocoder();
+      }
+
+      /**
+       * Google geocode function
+       */
+      function geocodePosition(pos) {
+          geocoder.geocode({
+              latLng: pos
           },
-          matchSubset: true,
-          formatItem: function(row, i, n) {
-            return row.matchedNames[0];
-          },
-          cacheLength: 10,
-          minChars: 3,
-          scroll: false,
-          max: 10,
-          selectFirst: false
-        }).result(function(event, item) {
-          // user has selected an autocomplete item
-          $('input.taxonConceptID').val(item.guid);
-        });
-        
-        var options = {
-            zoomType: 'drag',
-            lens: true,
-            preloadImages: true,
-            alwaysOn:false,
-            zoomWidth: 300,
-            zoomHeight: 300,
-            imageOpacity: 0.7,
-            title: false
-            //xOffset:90,
-            //yOffset:30,
-            //position:'right'
-        };  
-        $('.taskImage').jqzoom(options);
-    });
+          function(responses) {
+              if (responses && responses.length > 0) {
+                  //console.log("geocoded position", responses[0]);
+                  updateMarkerAddress(responses[0].formatted_address, responses[0]);
+              } else {
+                  updateMarkerAddress('Cannot determine address at this location.');
+              }
+          });
+      }
+
+      /**
+       * Reverse geocode coordinates via Google Maps API
+       */
+      function codeAddress() {
+          var address = $('input#address').val();
+
+          if (geocoder && address) {
+              //geocoder.getLocations(address, addAddressToPage);
+              geocoder.geocode({
+                  'address': address,
+                  region: 'AU'
+              },
+              function(results, status) {
+                  if (status == google.maps.GeocoderStatus.OK) {
+                      // geocode was successful
+                      var lat = results[0].geometry.location.lat();
+                      var lon = results[0].geometry.location.lng();
+                      var locationStr = results[0].formatted_address;
+                      updateMarkerAddress(locationStr, results[0]);
+                      updateMarkerPosition(results[0].geometry.location);
+                      initialize();
+                  } else {
+                      alert("Geocode was not successful for the following reason: " + status);
+                  }
+              });
+          }
+      }
+
+      function updateMarkerStatus(str) {
+          //document.getElementById('markerStatus').innerHTML = str;
+          }
+
+      function updateMarkerPosition(latLng) {
+          var rnd = 100000000;
+          var lat = Math.round(latLng.lat() * rnd) / rnd;
+          // round to 8 decimal places
+          var lng = Math.round(latLng.lng() * rnd) / rnd;
+          // round to 8 decimal places
+          $('.decimalLatitude').val(lat);
+          $('.decimalLongitude').val(lng);
+      }
+
+      function updateMarkerAddress(str, addressObj) {
+          //$('#markerAddress').html(str);
+          $('#sightingLocation').val(str);
+          // update form fields with location parts
+          if (addressObj && addressObj.address_components) {
+              var addressComps = addressObj.address_components;
+              // array
+              for (var i = 0; i < addressComps.length; i++) {
+                  var name1 = addressComps[i].short_name;
+                  var name2 = addressComps[i].long_name;
+                  var type = addressComps[i].types[0];
+                  // go through each avail option
+                  if (type == 'country') {
+                      $('input.countryCode').val(name1);
+                      $('input.country').val(name2);
+                  } else if (type == 'locality') {
+                      $('input.locality').val(name2);
+                  } else if (type == 'administrative_area_level_1') {
+                      $('input.stateProvince').val(name2);
+                  }
+              }
+          }
+      }
+
+
+      $(document).ready(function() {
+          initialize();
+
+          // trigger Google geolocation search on search button
+          $('#locationSearch').click(function(e) {
+              e.preventDefault();
+              // ignore the href text - used for data
+              codeAddress();
+          });
+
+          $('.coordinatePrecision').change(function(e) {
+              var rad = parseInt($(this).val());
+              circle.setRadius(rad);
+              //updateTitleAttr(rad);
+          })
+
+          jQuery("input.scientificName").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
+              extraParams: {
+                  limit: 100
+              },
+              dataType: 'jsonp',
+              parse: function(data) {
+                  var rows = new Array();
+                  data = data.autoCompleteList;
+                  for (var i = 0; i < data.length; i++) {
+                      rows[i] = {
+                          data: data[i],
+                          value: data[i].matchedNames[0],
+                          result: data[i].matchedNames[0]
+                      };
+                  }
+                  return rows;
+              },
+              matchSubset: true,
+              formatItem: function(row, i, n) {
+                  return row.matchedNames[0];
+              },
+              cacheLength: 10,
+              minChars: 3,
+              scroll: false,
+              max: 10,
+              selectFirst: false
+          }).result(function(event, item) {
+              // user has selected an autocomplete item
+              $('input.taxonConceptID').val(item.guid);
+          });
+
+          var options = {
+              zoomType: 'drag',
+              lens: true,
+              preloadImages: true,
+              alwaysOn: false,
+              zoomWidth: 300,
+              zoomHeight: 300,
+              imageOpacity: 0.7,
+              title: false
+              //xOffset:90,
+              //yOffset:30,
+              //position:'right'
+          };
+          $('.taskImage').jqzoom(options);
+      });
   </script>
 </head>
 <body class="two-column-right">
@@ -71,149 +240,80 @@
         <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
       <div class="dialog">
         <g:each in="${taskInstance.multimedia}" var="m">
-          <img src="${ConfigurationHolder.config.server.url}${m.filePath}" alt="specimen image"/>
-          %{--<div style="min-height: 300px;">
-            <a href="${m.filePath}" class="taskImage" title="${taskInstance?.project?.name}">
-              <img src="${m.filePath}" style="width: 350px;" title="image: ${taskInstance?.project?.name}">
+          %{--<img src="${ConfigurationHolder.config.server.url}${m.filePath}" alt="specimen image"/>--}%
+          <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+          <div>
+            <a href="${imageUrl}" class="taskImage" title="${taskInstance?.project?.name}">
+              <img src="${imageUrl.replaceAll(/\./,'_small.')}" title="image: ${taskInstance?.project?.name}">
             </a>
-          </div>--}%
+          </div>
 
         </g:each>
         <div style="clear:both;">&nbsp;</div>
-        <h3>Identification</h3>
-        <table>
-          <thead/>
-          <tbody>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.scientificName.label" default="Scientific name"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.scientificName" maxlength="200" value="${recordValues?.get(0)?.scientificName}" class="scientificName"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.taxonConceptID.label" default="Taxon Concept ID"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.taxonConceptID" maxlength="200" value="${recordValues?.get(0)?.taxonConceptID}" class="taxonConceptID"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.scientificNameAuthorship.label" default="Authorship"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.scientificNameAuthorship" maxlength="200" value="${recordValues?.get(0)?.scientificNameAuthorship}" class="scientificNameAuthorship"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.identifiedBy.label" default="Identified By"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.identifiedBy" maxlength="200" value="${recordValues?.get(0)?.identifiedBy}" class="identifiedBy"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.dateIdentified.label" default="Date Identified"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.dateIdentified" maxlength="200" value="${recordValues?.get(0)?.dateIdentified}" class="dateIdentified"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.identificationRemarks.label" default="Identification Remarks"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.identificationRemarks" maxlength="200" value="${recordValues?.get(0)?.identificationRemarks}" class="identificationRemarks"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.typeStatus.label" default="Type Status"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.typeStatus" maxlength="200" value="${recordValues?.get(0)?.typeStatus}" class="typeStatus"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <h3>Dataset</h3>
-        <table>
-          <thead/>
-          <tbody>
-            <tr class="prop">
-              <td valign="top" class="name">
-                <g:message code="record.catalogNumber.label" default="Catalog Number"/>
-              </td>
-              <td valign="top" class="value">
-                <g:textField name="recordValues.0.catalogNumber" maxlength="200" value="${recordValues?.get(0)?.catalogNumber}" class="catalogNumber"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name">
-                <g:message code="record.institution.label" default="Institution"/>
-              </td>
-              <td valign="top" class="value">
-                <g:textField name="recordValues.0.institution" maxlength="200" value="${recordValues?.get(0)?.institution}" class="institution"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name">
-                <g:message code="record.eventDate.label" default="Date"/>
-              </td>
-              <td valign="top" class="value">
-                <g:textField name="recordValues.0.eventDate" maxlength="200" value="${recordValues?.get(0)?.eventDate}" class="eventDate"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name">
-                <g:message code="record.recordedBy.label" default="Collector"/>
-              </td>
-              <td valign="top" class="value">
-                <g:textField name="recordValues.0.recordedBy" maxlength="200" value="${recordValues?.get(0)?.recordedBy}" class="recordedBy"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <h3>Location</h3>
-        <table>
-          <thead/>
-          <tbody>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.country.label" default="Country"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.country" maxlength="200" value="${recordValues?.get(0)?.country}" class="country"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.stateProvince.label" default="State"/></td>
-              <td valign="top" class="value">
-              <g:textField name="recordValues.0.stateProvince" maxlength="200" value="${recordValues?.get(0)?.stateProvince}" class="stateProvince"/>
-              </td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="value"><g:message code="record.locality.label" default="Locality" class="locality"/></td>
-              <td valign="top" class="value"><g:textField name="recordValues.0.locality" maxlength="200" value="${recordValues?.get(0)?.locality}"/></td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="value"><g:message code="record.locationRemarks.label" default="Location Remarks" class="locationRemarks"/></td>
-              <td valign="top" class="value"><g:textField name="recordValues.0.locationRemarks" maxlength="200" value="${recordValues?.get(0)?.locationRemarks}"/></td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.latitude.label" default="Latitude"/></td>
-              <td valign="top" class="value"><g:textField name="recordValues.0.latitude" maxlength="200" value="${recordValues?.get(0)?.latitude}"/></td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="value"><g:message code="record.longitude.label" default="Longitude"/></td>
-              <td valign="top" class="value"><g:textField name="recordValues.0.longitude" maxlength="200" value="${recordValues?.get(0)?.longitude}"/></td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="name"><g:message code="record.verbatimLatitude.label" default="Verbatim Latitude"/></td>
-              <td valign="top" class="value"><g:textField name="recordValues.0.verbatimLatitude" maxlength="200" value="${recordValues?.get(0)?.verbatimLatitude}"/></td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="value"><g:message code="record.verbatimLongitude.label" default="verbatimLongitude"/></td>
-              <td valign="top" class="value"><g:textField name="recordValues.0.verbatimLongitude" maxlength="200" value="${recordValues?.get(0)?.verbatimLongitude}"/></td>
-            </tr>
-            <tr class="prop">
-              <td valign="top" class="value"><g:message code="record.coordinatePrecision.label" default="Coordinate Precision"/></td>
-              <td valign="top" class="value"><g:textField name="recordValues.0.coordinatePrecision" maxlength="200" value="${recordValues?.get(0)?.coordinatePrecision}"/></td>
-            </tr>
-          </tbody>
-        </table>
+        <div id="transcribeFields">
+          <table style="float:left;">
+            <thead>
+              <tr><th><h3>Identification</h3></th></tr>
+            </thead>
+            <tbody>
+              <g:each in="${Identification}" var="field">
+                <tr class="prop">
+                  <td valign="top" class="name">
+                  <g:message code="record.${field}.label" default="${field.label}"/>
+                 </td>
+                 <td valign="top" class="value">
+                   <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
+                 </td>
+                </tr>
+              </g:each>
+            </tbody>
+          </table>
+          <table style="float:left;">
+            <thead>
+              <tr><th><h3>Dataset</h3></th></tr>
+            </thead>
+            <tbody>
+              <g:each in="${Dataset}" var="field">
+                <tr class="prop">
+                  <td valign="top" class="name">
+                    <g:message code="record.${field}.label" default="${field.label}"/>
+                  </td>
+                  <td valign="top" class="value">
+                    <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
+                  </td>
+                </tr>
+              </g:each>
+            </tbody>
+          </table>
+          <div style="clear:both;">&nbsp;</div>
+          <table style="float:left;">
+            <thead>
+              <tr><th><h3>Location</h3></th></tr>
+            </thead>
+              <tbody>
+                <g:each in="${Location}" var="field">
+                  <tr class="prop">
+                    <td valign="top" class="name">
+                      <g:message code="record.${field}.label" default="${field.label}"/>
+                    </td>
+                    <td valign="top" class="value">
+                      <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
+                    </td>
+                  </tr>
+                </g:each>
+              </tbody>
+            </table>
+            <div id="mapWidgets">
+              <div id="sightingAddress">
+                  <label for="address">Geocode a location: </label>
+                  <input name="address" id="address" size="36" value=""/>
+                  <input id="locationSearch" type="button" value="Search"/>
+              </div>
+              <div id="mapCanvas"></div>
+            </div>
+        </div>
       </div>
-      <div class="buttons">
+      <div class="buttons" style="clear: both">
           <g:hiddenField name="id" value="${taskInstance?.id}"/>
           <g:if test="${validator}">
             <span class="button"><g:actionSubmit class="validate" action="validate" value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
