@@ -47,3 +47,7 @@ div#mapCanvas {
 #transcribeFields td.value {
     width: 67%;
 }
+
+.zoomPad .zoomWindow {
+    position: fixed;
+}

@@ -12,17 +12,18 @@ enum Dataset {
 }
 
 enum Location {
+    verbatimLocality("Verbatim Locality"),
+    locationRemarks("Location Remarks"),
+    verbatimLatitude("Verbatim Latitude"),
+    verbatimLongitude("Verbatim Longitude"),
     country("Country"),
     countryCode("Country Code"),
     stateProvince("State"),
     locality("Locality"),
-    verbatimLocality("Verbatim Locality"),
-    locationRemarks("Location Remarks"),
     decimalLatitude("Decimal Latitude"),
     decimalLongitude("Decimal Longitude"),
-    verbatimLatitude("Verbatim Latitude"),
-    verbatimLongitude("Verbatim Longitude"),
     coordinatePrecision("Coordinate Precision")
+    
 
     def label
     Location(label) { this.label = label }
