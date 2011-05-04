@@ -71,12 +71,22 @@ class TaskService {
             """select t from Task t
                left outer join t.viewedTasks viewedTasks
                where t.fullyTranscribed is false
-               and (viewedTasks.userId = :userId or viewedTasks.userId is null)
+               and (viewedTasks.userId != :userId or viewedTasks.userId is null)
                order by viewedTasks.lastView""", [userId: userId, max: 1])
         if (tasks) {
             tasks.get(0)
         } else {
-            null
+            //show
+            tasks = Task.executeQuery(
+            """select t from Task t
+               left outer join t.viewedTasks viewedTasks
+               where t.fullyTranscribed is false
+               order by viewedTasks.lastView""", [max: 1])
+            if(!tasks.isEmpty()){
+              tasks.get(0)
+            } else {
+              null
+            }
         }
     }
 

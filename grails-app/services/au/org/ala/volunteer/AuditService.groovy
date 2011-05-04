@@ -33,20 +33,20 @@ class AuditService {
       projectTaskCounts.toMap()
     }
 
-    def auditTaskViewing(Task taskInstance){
+    def auditTaskViewing(Task taskInstance, String userId){
       if(taskInstance.viewedTasks){
-         //update the viewed record
+         //update the viewed task
          taskInstance.viewedTasks.each { viewedTask ->
            viewedTask.numberOfViews =  viewedTask.numberOfViews + 1
            viewedTask.lastUpdated = new Date()
-           viewedTask.userId = 'dave'
+           viewedTask.userId = userId
            viewedTask.lastView = System.currentTimeMillis()
            viewedTask.save(flush:true)
          }
        } else {
          //store the viewed record event
          def viewedTask = new ViewedTask()
-         viewedTask.userId = 'dave'
+         viewedTask.userId = userId
          viewedTask.task = taskInstance
          viewedTask.lastUpdated = new Date()
          viewedTask.lastView = System.currentTimeMillis()

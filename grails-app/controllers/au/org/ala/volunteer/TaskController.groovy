@@ -15,7 +15,7 @@ class TaskController {
       params.max = Math.min(params.max ? params.int('max') : 10, 100)
       def taskInstanceList = Task.findAllByProject(projectInstance,params)
       def taskInstanceTotal = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId:projectInstance.id])
-      render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal])
+      render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
     }
 
     def loadCSV = {
@@ -27,8 +27,9 @@ class TaskController {
         redirect(action: "list", params: params)
     }
 
+    /** list all tasks */
     def list = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.max = Math.min(params.max ? params.int('max') : 50, 100)
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
