@@ -14,6 +14,9 @@ class Task {
 
   static mapping = {
     version false
+    multimedia cascade:'all'
+    viewedTasks cascade: 'all'
+    fields cascade: 'all'
   }
 
   static constraints = {
