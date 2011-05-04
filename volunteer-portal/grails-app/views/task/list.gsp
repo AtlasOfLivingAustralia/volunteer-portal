@@ -41,7 +41,7 @@
           <g:each in="${taskInstanceList}" status="i" var="taskInstance">
             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
-              <td><g:link action="show" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
+              <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
 
               <td><g:formatDate date="${taskInstance.created}"/></td>
 

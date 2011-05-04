@@ -135,18 +135,27 @@ class TaskService {
             //only one line in this case
             def task = new Task()
             task.project = project
-            task.externalIdentifier = tokens[0]
-            task.externalUrl = tokens[1]
+
+            String imageUrl = ""
+
+            if(tokens.length == 1){
+              task.externalIdentifier = tokens[0]
+              imageUrl = tokens[0]
+            } else if(tokens.length == 2) {
+              task.externalIdentifier = tokens[0]
+              imageUrl = tokens[1]
+            }
+
             if (!task.hasErrors()) {
 
                 task.save(flush: true)
 
                 def multimedia = new Multimedia()
                 multimedia.task = task
-                multimedia.filePath = tokens[1]
+                multimedia.filePath = imageUrl
                 multimedia.save(flush: true)
                 // GET the image via its URL and save various forms to local disk
-                def filePath = copyImageToStore(tokens[1], task.id, multimedia.id)
+                def filePath = copyImageToStore(imageUrl, task.id, multimedia.id)
                 println("Saved..." + tokens + " -> " + filePath['raw'])
                 filePath = createImageThumbs(filePath)
                 multimedia.filePath = filePath.dir + "/" +filePath.raw
