@@ -5,6 +5,8 @@ class TranscribeController {
   def fieldSyncService
   def auditService
   def taskService
+  def authService
+  def userService
 
   static allowedMethods = [saveTranscription: "POST"]
 
@@ -26,14 +28,21 @@ class TranscribeController {
   def task = {
 
     def taskInstance = Task.get(params.id)
+    def currentUser = authService.username()
+    userService.registerCurrentUser()
 
-    //record the viewing of the task
-    auditService.auditTaskViewing(taskInstance)
+    if(taskInstance){
+      //record the viewing of the task
+      auditService.auditTaskViewing(taskInstance, currentUser)
 
-    //retrieve the existing values
-    Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+      println(authService.username())
 
-    render(view:'specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues])
+      //retrieve the existing values
+      Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+      render(view:'specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues])
+    } else {
+      redirect(view:'list', controller: "task")
+    }
   }
 
   /**
@@ -42,7 +51,8 @@ class TranscribeController {
    */
   def showNextFromAny = {
 
-    def taskInstance = taskService.getNextTask('dave')
+    def currentUser = authService.username()
+    def taskInstance = taskService.getNextTask(currentUser)
 
     //retrieve the details of the template
     if(taskInstance){
@@ -61,8 +71,9 @@ class TranscribeController {
    * done in the form.
    */
   def save = {
+    def currentUser = authService.username()
     def taskInstance = Task.get(params.id)
-    fieldSyncService.syncFields(taskInstance, params.recordValues, "dave")
+    fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
     taskInstance.fullyTranscribed = true
     taskInstance.save(flush:true)
     redirect(view:'showNextFromAny')
@@ -74,12 +85,13 @@ class TranscribeController {
    * TODO handle multiple records per submit.
    */
   def savePartial = {
-    def taskInstance = Task.get(params.id)
-    fieldSyncService.syncFields(taskInstance, params.recordValues, "dave")
-    redirect(view:'showNextFromAny')
+    def currentUser = authService.username()
+    if(currentUser){
+      def taskInstance = Task.get(params.id)
+      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
+      redirect(view:'showNextFromAny')
+    }
   }
-
-
 
   def showNextFromProject = {
     //retrieve the next un-transcribed record from the project with the supplied ID
