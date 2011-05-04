@@ -300,14 +300,28 @@
             </thead>
             <tbody>
               <g:each in="${Identification}" var="field">
-                <tr class="prop">
-                  <td valign="top" class="name">
-                  <g:message code="record.${field}.label" default="${field.label}"/>
-                 </td>
-                 <td valign="top" class="value">
-                   <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
-                 </td>
-                </tr>
+                <g:if test="${field.name() == 'foo'}">
+                  <tr class="prop">
+                    <td valign="top" class="name">
+                      <g:message code="record.${field}.label" default="${field.label}"/>
+                    </td>
+                    <td valign="top" class="value">
+                      <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
+                        value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
+                        noSelection="${['':'Select an option...']}" class="${field}" />
+                    </td>
+                  </tr>
+                </g:if>
+                <g:else>
+                  <tr class="prop">
+                    <td valign="top" class="name">
+                    <g:message code="record.${field}.label" default="${field.label}"/>
+                   </td>
+                   <td valign="top" class="value">
+                     <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
+                   </td>
+                  </tr>
+                </g:else>
               </g:each>
             </tbody>
           </table>
@@ -317,14 +331,28 @@
             </thead>
             <tbody>
               <g:each in="${Dataset}" var="field">
-                <tr class="prop">
-                  <td valign="top" class="name">
+                <g:if test="${field.name() == 'typeStatus'}">
+                  <tr class="prop">
+                    <td valign="top" class="name">
+                      <g:message code="record.${field}.label" default="${field.label}"/>
+                    </td>
+                    <td valign="top" class="value">
+                      <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
+                        value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
+                        noSelection="${['':'Select an option...']}" class="${field}" />
+                    </td>
+                  </tr>
+                </g:if>
+                <g:else>
+                  <tr class="prop">
+                    <td valign="top" class="name">
                     <g:message code="record.${field}.label" default="${field.label}"/>
-                  </td>
-                  <td valign="top" class="value">
-                    <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
-                  </td>
-                </tr>
+                   </td>
+                   <td valign="top" class="value">
+                     <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
+                   </td>
+                  </tr>
+                </g:else>
               </g:each>
             </tbody>
           </table>
@@ -335,30 +363,18 @@
             </thead>
               <tbody>
                 <g:each in="${Location}" var="field">
-                  <g:if test="${field.name() == 'country'}">
+                  <g:if test="${field.name() == 'country' || field.name() == 'stateProvince'}">
                     <tr class="prop">
                       <td valign="top" class="name">
                         <g:message code="record.${field}.label" default="${field.label}"/>
                       </td>
                       <td valign="top" class="value">
-                        <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName('country'))}"
+                        <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
                           value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
-                          noSelection="${['':'Select a country...']}" class="${field}" />
+                          noSelection="${['':'Select an option...']}" class="${field}" />
                       </td>
                     </tr>
                   </g:if>
-                  <g:elseif test="${field.name() == 'stateProvince'}">
-                    <tr class="prop">
-                      <td valign="top" class="name">
-                        <g:message code="record.${field}.label" default="${field.label}"/>
-                      </td>
-                      <td valign="top" class="value">
-                        <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName('state'))}"
-                          value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
-                          noSelection="${['':'Select a state/territory...']}" class="${field}" />
-                      </td>
-                    </tr>
-                  </g:elseif>
                   <g:elseif test="${field.name() == 'coordinatePrecision'}">
                     <tr class="prop">
                       <td valign="top" class="name">
