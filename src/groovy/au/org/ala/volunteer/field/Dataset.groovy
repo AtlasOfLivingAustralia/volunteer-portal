@@ -4,7 +4,7 @@ enum Dataset {
     catalogNumber("Catalog Number"), 
     institution("Institution"), 
     eventDate("Event Date"), 
-    recordedBy("Recorded By"),
+    recordedBy("Collector"),
     typeStatus("Type Status")
 
     def label
@@ -17,7 +17,7 @@ enum Location {
     verbatimLatitude("Verbatim Latitude"),
     verbatimLongitude("Verbatim Longitude"),
     country("Country"),
-    countryCode("Country Code"),
+    //countryCode("Country Code"),
     stateProvince("State"),
     locality("Locality"),
     decimalLatitude("Decimal Latitude"),
