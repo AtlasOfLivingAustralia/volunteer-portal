@@ -1,5 +1,7 @@
 <html>
 <%@ page import="au.org.ala.volunteer.Task" %>
+<%@ page import="au.org.ala.volunteer.Picklist" %>
+<%@ page import="au.org.ala.volunteer.PicklistItem" %>
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <head>
@@ -148,12 +150,12 @@
                   var type = addressComps[i].types[0];
                   // go through each avail option
                   if (type == 'country') {
-                      $('input.countryCode').val(name1);
-                      $('input.country').val(name2);
+                      $(':input.countryCode').val(name1);
+                      $(':input.country').val(name2);
                   } else if (type == 'locality') {
-                      $('input.locality').val(name2);
+                      $(':input.locality').val(name2);
                   } else if (type == 'administrative_area_level_1') {
-                      $('input.stateProvince').val(name2);
+                      $(':input.stateProvince').val(name2);
                   }
               }
           }
@@ -217,7 +219,7 @@
               zoomWidth: 300,
               zoomHeight: 300,
               imageOpacity: 0.7,
-              title: true
+              title: false
               //xOffset:90,
               //yOffset:30,
               //position:'right'
@@ -246,6 +248,21 @@
                   }
               }
           });
+          
+          // set a few default values if blank
+          var fieldMap = {
+              country: "Australia",
+              coordinatePrecision: 1000
+          }
+          
+          for (key in fieldMap) {
+              console.log("key = " + key)
+              $(":input." + key).each(function() {
+                  console.log("val() = " + $(this).val())
+                  if (!$(this).val()) $(this).val(fieldMap[key]);
+                  if (!$(this).val()) $(this).val(fieldMap[key]);
+              });
+          }
       });
       
   </script>
@@ -270,7 +287,7 @@
           <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/><!-- imageUrl = ${imageUrl} -->
           <div class="multimedia">
             <a href="${imageUrl}" class="taskImage" title="${taskInstance?.project?.name}">
-              <img src="${imageUrl.replaceAll(/\./,'_small.')}" title="image: ${taskInstance?.project?.name}">
+              <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/,'_small.$1')}" title="image: ${taskInstance?.project?.name}">
             </a>
           </div>
 
@@ -318,14 +335,51 @@
             </thead>
               <tbody>
                 <g:each in="${Location}" var="field">
-                  <tr class="prop">
-                    <td valign="top" class="name">
-                      <g:message code="record.${field}.label" default="${field.label}"/>
-                    </td>
-                    <td valign="top" class="value">
-                      <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
-                    </td>
-                  </tr>
+                  <g:if test="${field.name() == 'country'}">
+                    <tr class="prop">
+                      <td valign="top" class="name">
+                        <g:message code="record.${field}.label" default="${field.label}"/>
+                      </td>
+                      <td valign="top" class="value">
+                        <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName('country'))}"
+                          value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
+                          noSelection="${['':'Select a country...']}" class="${field}" />
+                      </td>
+                    </tr>
+                  </g:if>
+                  <g:elseif test="${field.name() == 'stateProvince'}">
+                    <tr class="prop">
+                      <td valign="top" class="name">
+                        <g:message code="record.${field}.label" default="${field.label}"/>
+                      </td>
+                      <td valign="top" class="value">
+                        <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName('state'))}"
+                          value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
+                          noSelection="${['':'Select a state/territory...']}" class="${field}" />
+                      </td>
+                    </tr>
+                  </g:elseif>
+                  <g:elseif test="${field.name() == 'coordinatePrecision'}">
+                    <tr class="prop">
+                      <td valign="top" class="name">
+                        <g:message code="record.${field}.label" default="${field.label}"/>
+                      </td>
+                      <td valign="top" class="value">
+                        <g:select name="recordValues.0.${field}" from="${[10, 50, 100, 500, 1000, 10000]}"
+                          value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" class="${field}" />
+                      </td>
+                    </tr>
+                  </g:elseif>
+                  <g:else>
+                    <tr class="prop">
+                      <td valign="top" class="name">
+                        <g:message code="record.${field}.label" default="${field.label}"/>
+                      </td>
+                      <td valign="top" class="value">
+                        <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
+                      </td>
+                    </tr>
+                  </g:else>
                 </g:each>
               </tbody>
             </table>
