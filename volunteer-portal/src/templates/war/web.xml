@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <display-name>/@grails.project.key@</display-name>
+
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/applicationContext.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>@grails.project.key@</param-value>
+    </context-param>
+
+    <!-- ***** CAS security ***** -->
+     <!-- CAS Authentication related properties -->
+    <context-param>
+        <!-- Parameter used by CAS filters -->
+        <param-name>serverName</param-name>
+        <param-value>http://localhost:8080</param-value>
+        <!--<param-value>@security.cas.serverName@</param-value>-->
+    </context-param>
+
+    <context-param>
+        <param-name>casServerName</param-name>
+        <param-value>https://auth.ala.org.au</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>contextPath</param-name>
+        <param-value>/volunteer-portal</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>uriFilterPattern</param-name>
+        <param-value>/transcribe/task/.*,/transcribe/.*, /validate/task/.*</param-value>
+    </context-param>
+
+    <!-- CAS Authentication Service filters -->
+    <filter>
+        <filter-name>CAS Single Sign Out Filter</filter-name>
+        <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <filter-class>au.org.ala.cas.client.UriFilter</filter-class>
+        <init-param>
+            <param-name>filterClass</param-name>
+            <param-value>org.jasig.cas.client.authentication.AuthenticationFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>casServerLoginUrl</param-name>
+            <param-value>https://auth.ala.org.au/cas/login</param-value>
+        </init-param>
+        <init-param>
+            <param-name>gateway</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>CAS Validation Filter</filter-name>
+        <filter-class>au.org.ala.cas.client.UriFilter</filter-class>
+        <init-param>
+            <param-name>filterClass</param-name>
+            <param-value>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>casServerUrlPrefix</param-name>
+            <param-value>https://auth.ala.org.au/cas</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <filter-class>au.org.ala.cas.client.UriFilter</filter-class>
+        <init-param>
+            <param-name>filterClass</param-name>
+            <param-value>au.org.ala.cas.client.AlaHttpServletRequestWrapperFilter</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+       <filter-name>CAS Single Sign Out Filter</filter-name>
+       <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CAS Validation Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- end CAS security -->
+
+    <filter>
+        <filter-name>sitemesh</filter-name>
+        <filter-class>org.codehaus.groovy.grails.web.sitemesh.GrailsPageFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>charEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>characterEncodingFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>charEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>sitemesh</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>org.codehaus.groovy.grails.web.util.Log4jConfigListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.codehaus.groovy.grails.web.context.GrailsContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- Grails dispatcher servlet -->
+    <servlet>
+        <servlet-name>grails</servlet-name>
+        <servlet-class>org.codehaus.groovy.grails.web.servlet.GrailsDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- The Groovy Server Pages servlet -->
+    <servlet>
+        <servlet-name>gsp</servlet-name>
+        <servlet-class>org.codehaus.groovy.grails.web.pages.GroovyPagesServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>gsp</servlet-name>
+        <url-pattern>*.gsp</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <!--
+        The order of the welcome pages is important.  JBoss deployment will
+        break if index.gsp is first in the list.
+        -->
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.gsp</welcome-file>
+    </welcome-file-list>
+
+    <jsp-config>
+        <taglib>
+            <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+            <taglib-location>/WEB-INF/tld/c.tld</taglib-location>
+        </taglib>
+        <taglib>
+            <taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
+            <taglib-location>/WEB-INF/tld/fmt.tld</taglib-location>
+        </taglib>
+        <taglib>
+            <taglib-uri>http://www.springframework.org/tags</taglib-uri>
+            <taglib-location>/WEB-INF/tld/spring.tld</taglib-location>
+        </taglib>
+        <taglib>
+            <taglib-uri>http://grails.codehaus.org/tags</taglib-uri>
+            <taglib-location>/WEB-INF/tld/grails.tld</taglib-location>
+        </taglib>
+    </jsp-config>
+
+</web-app>
