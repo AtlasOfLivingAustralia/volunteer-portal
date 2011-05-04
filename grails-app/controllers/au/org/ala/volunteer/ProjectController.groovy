@@ -1,19 +1,29 @@
 package au.org.ala.volunteer
 
+import groovy.sql.Sql
+
 class ProjectController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def taskService
     def auditService
+    javax.sql.DataSource dataSource
+
 
     def index = {
         redirect(action: "list", params: params)
     }
 
     def deleteTasks = {
+
+      def sql = new Sql(dataSource)
       def projectInstance = Project.get(params.id)
-      Task.executeUpdate("delete Task t where t.project.id = :projectId", [projectId:params.long('id')])
+      sql.call("delete from task where project_id="+params.id)
+
+
+//      Multimedia.executeUpdate("delete Multimedia m inner join m.task where m.task.project.id = :projectId", [projectId:params.long('id')])
+//      Task.executeUpdate("delete Task t where t.project.id = :projectId", [projectId:params.long('id')])
       redirect(action: "show", id: projectInstance.id)
     }
 
