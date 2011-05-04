@@ -267,8 +267,8 @@
       <div class="dialog">
         <g:each in="${taskInstance.multimedia}" var="m">
           %{--<img src="${ConfigurationHolder.config.server.url}${m.filePath}" alt="specimen image"/>--}%
-          <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-          <div>
+          <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/><!-- imageUrl = ${imageUrl} -->
+          <div class="multimedia">
             <a href="${imageUrl}" class="taskImage" title="${taskInstance?.project?.name}">
               <img src="${imageUrl.replaceAll(/\./,'_small.')}" title="image: ${taskInstance?.project?.name}">
             </a>

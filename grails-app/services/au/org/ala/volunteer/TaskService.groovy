@@ -149,8 +149,8 @@ class TaskService {
                 def filePath = copyImageToStore(tokens[1], task.id, multimedia.id)
                 println("Saved..." + tokens + " -> " + filePath['raw'])
                 filePath = createImageThumbs(filePath)
-                multimedia.filePath = filePath['raw']
-                multimedia.filePathToThumbnail = filePath['thumb']
+                multimedia.filePath = filePath.dir + "/" +filePath.raw
+                multimedia.filePathToThumbnail = filePath.dir + "/" +filePath.thumb
                 multimedia.save(flush: true)
                 println("Saved..." + tokens)
             } else {
@@ -180,7 +180,7 @@ class TaskService {
             fileMap.dir = dir.absolutePath
             def file = new File(dir, filename)
             file << conn.inputStream
-            fileMap.raw = file.absolutePath
+            fileMap.raw = file.name
             return fileMap
             //file.close()
         } catch (Exception e) {
@@ -198,10 +198,12 @@ class TaskService {
         def thumb = 'thumbnail'
         println("dir = " + fileMap.dir)
         println("raw = " + fileMap.raw)
-        BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.raw))
+        def thumbName = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_small.$1') // add _small to filename 
+        println("thumbName = " + thumbName)
+        BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
-        BufferedImage scaledImage = Scalr.resize(srcImage, 600);
-        ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/raw_small.jpg"))
+        BufferedImage scaledImage = Scalr.resize(srcImage, 450);
+        ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + thumbName))
         return fileMap
     }
 

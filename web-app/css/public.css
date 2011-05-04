@@ -20,6 +20,10 @@ div#mapCanvas {
     width: 100%;
 }
 
+.multimedia {
+    min-height: 300px;
+}
+
 #transcribeFields {
     width: 100%
 }
