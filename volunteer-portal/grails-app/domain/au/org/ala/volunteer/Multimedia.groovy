@@ -1,8 +1,8 @@
 package au.org.ala.volunteer
 
 class Multimedia {
-
-  Task task
+  static belongsTo = [task:Task]
+  //Task task
   String filePath
   String filePathToThumbnail
   String licence

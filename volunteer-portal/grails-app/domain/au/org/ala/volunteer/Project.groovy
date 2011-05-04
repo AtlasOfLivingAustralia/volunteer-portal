@@ -11,6 +11,8 @@ class Project {
 
   static mapping = {
     version false
+    tasks cascade:'all-delete-orphan'
+    projectAssociations cascade:'all-delete-orphan'
   }
 
   static constraints = {
