@@ -179,7 +179,7 @@
               //updateTitleAttr(rad);
           })
 
-          jQuery("input.scientificName").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
+          $("input.scientificName").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
               extraParams: {
                   limit: 100
               },
@@ -300,15 +300,13 @@
             </thead>
             <tbody>
               <g:each in="${Identification}" var="field">
-                <g:if test="${field.name() == 'foo'}">
+                <g:if test="${field.name() == 'taxonConceptID'}">
                   <tr class="prop">
                     <td valign="top" class="name">
                       <g:message code="record.${field}.label" default="${field.label}"/>
                     </td>
                     <td valign="top" class="value">
-                      <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
-                        value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
-                        noSelection="${['':'Select an option...']}" class="${field}" />
+                      <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}" readonly="readonly"/>
                     </td>
                   </tr>
                 </g:if>
@@ -339,7 +337,7 @@
                     <td valign="top" class="value">
                       <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
                         value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
-                        noSelection="${['':'Select an option...']}" class="${field}" />
+                        noSelection="${['':'-- Select an option --']}" class="${field}" />
                     </td>
                   </tr>
                 </g:if>
@@ -371,7 +369,7 @@
                       <td valign="top" class="value">
                         <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
                           value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
-                          noSelection="${['':'Select an option...']}" class="${field}" />
+                          noSelection="${['':'-- Select an option --']}" class="${field}" />
                       </td>
                     </tr>
                   </g:if>
