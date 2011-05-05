@@ -1,3 +1,7 @@
+import au.org.ala.volunteer.Picklist
+import au.org.ala.volunteer.PicklistItem
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+
 class BootStrap {
 
     javax.sql.DataSource dataSource
@@ -30,6 +34,23 @@ class BootStrap {
           alter table viewed_task add constraint FK2B205EE0CBAB13A
               foreign key (task_id) references task ON DELETE CASCADE;
         """)
+        
+        // add some picklist values if not already loaded
+        if (!Picklist.count()) {
+            println("creating picklists...")
+            def items = ["country", "stateProvince", "typeStatus"]
+            items.each {
+                println("creating picklist: " + it)
+                Picklist picklist = new Picklist(name:it).save(flush:true, failOnError: true)
+                def text = ApplicationHolder.application.parentContext.getResource("classpath:resources/"+it+".csv").inputStream.text
+                text.eachLine {
+                    def picklistItem = new PicklistItem()
+                    picklistItem.picklist = picklist
+                    picklistItem.value = it
+                    picklistItem.save(flush:true, failOnError: true)
+                }
+            }
+        }
     }
     def destroy = {
     }
