@@ -210,6 +210,34 @@
               $('input.taxonConceptID').val(item.guid);
           });
           
+          $("input.recordedBy").autocomplete("${createLink(action:'autocomplete', controller:'picklistItem')}", {
+              extraParams: {
+                  picklist: "recordedBy"
+              },
+              dataType: 'json',
+              parse: function(data) {
+                  var rows = new Array();
+                  data = data.autoCompleteList;
+                  for (var i = 0; i < data.length; i++) {
+                      rows[i] = {
+                          data: data[i],
+                          value: data[i].name,
+                          result: data[i].name
+                      };
+                  }
+                  return rows;
+              },
+              matchSubset: true,
+              formatItem: function(row, i, n) {
+                  return row.name;
+              },
+              cacheLength: 10,
+              minChars: 1,
+              scroll: false,
+              max: 10,
+              selectFirst: false
+          })
+          
           // JQZoom tool for image zooming
           var options = {
               zoomType: 'drag',
@@ -258,8 +286,6 @@
           for (key in fieldMap) {
               console.log("key = " + key)
               $(":input." + key).each(function() {
-                  console.log("val() = " + $(this).val())
-                  if (!$(this).val()) $(this).val(fieldMap[key]);
                   if (!$(this).val()) $(this).val(fieldMap[key]);
               });
           }

@@ -3,6 +3,21 @@ package au.org.ala.volunteer
 class PicklistItemController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    
+    def autocomplete = {
+        def picklistName = params.picklist
+        def query = params.q
+        // PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))
+        def picklist = Picklist.findByName(picklistName)
+        def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklist("%"+query+"%", picklist)
+        render(contentType:"application/json") {
+            autoCompleteList = array {
+                for (pli in picklistItemInstance) {
+                    picklistItem name:pli.value
+                }
+            }	
+	}
+    }
 
     def index = {
         redirect(action: "list", params: params)
