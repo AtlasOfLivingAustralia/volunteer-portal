@@ -71,7 +71,7 @@ class BootStrap {
         fields.eachLine { line ->
             String[] fs = line.split(',')
             DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0])
-            if (!TemplateField.findByDataType(dwcf)) {
+            if (!TemplateField.findByFieldType(dwcf)) {
                 println "creating new FieldType: " + fs + " size="+fs.size()
                 TemplateField tf = new TemplateField(
                         fieldType: dwcf,
