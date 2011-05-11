@@ -7,11 +7,14 @@
   <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>
 <body>
+
+<body class="two-column-right">
+<div id="content">
+  <div class="section">
 <div class="nav">
   <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-  <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link></span>
 </div>
-<div class="body">
+
   <h1><g:message code="default.list.label" args="[entityName]"/></h1>
   <g:if test="${flash.message}">
     <div class="message">${flash.message}</div>
@@ -21,15 +24,16 @@
       <thead>
       <tr>
 
-        <g:sortableColumn property="id" title="${message(code: 'user.id.label', default: 'Id')}"/>
+        <th></th>
 
-        <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'Created')}"/>
+        <g:sortableColumn property="displayName" title="${message(code: 'user.user.label', default: 'User')}"/>
 
         <g:sortableColumn property="recordsTranscribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Records Transcribed Count')}"/>
 
         <g:sortableColumn property="transcribedValidatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Transcribed Validated Count')}"/>
 
-        <g:sortableColumn property="userId" title="${message(code: 'user.userId.label', default: 'User Id')}"/>
+        <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'Date started transcribing')}"/>
+
 
       </tr>
       </thead>
@@ -37,15 +41,15 @@
       <g:each in="${userInstanceList}" status="i" var="userInstance">
         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
-          <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "id")}</g:link></td>
+          <td><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80"/> </td>
 
-          <td><g:formatDate date="${userInstance.created}"/></td>
+          <td>${fieldValue(bean: userInstance, field: "displayName")}</td>
 
           <td>${fieldValue(bean: userInstance, field: "recordsTranscribedCount")}</td>
 
           <td>${fieldValue(bean: userInstance, field: "transcribedValidatedCount")}</td>
 
-          <td>${fieldValue(bean: userInstance, field: "userId")}</td>
+          <td><g:formatDate date="${userInstance.created}"/></td>
 
         </tr>
       </g:each>
@@ -55,6 +59,9 @@
   <div class="paginateButtons">
     <g:paginate total="${userInstanceTotal}"/>
   </div>
+  </div>
+  </div>
+
 </div>
 </body>
 </html>
