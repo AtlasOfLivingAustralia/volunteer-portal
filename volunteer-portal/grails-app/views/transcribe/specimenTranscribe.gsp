@@ -2,7 +2,9 @@
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
+<%@ page import="au.org.ala.volunteer.TemplateField" %>
 <%@ page import="au.org.ala.volunteer.field.*" %>
+<%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -124,7 +126,7 @@
       }
 
       function updateMarkerStatus(str) {
-          $(".locality").val(str);
+          $('.locality').val(str);
       }
 
       function updateMarkerPosition(latLng) {
@@ -325,27 +327,8 @@
               <tr><th><h3>Identification</h3></th></tr>
             </thead>
             <tbody>
-              <g:each in="${Identification}" var="field">
-                <g:if test="${field.name() == 'taxonConceptID'}">
-                  <tr class="prop">
-                    <td valign="top" class="name">
-                      <g:message code="record.${field}.label" default="${field.label}"/>
-                    </td>
-                    <td valign="top" class="value">
-                      <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}" readonly="readonly"/>
-                    </td>
-                  </tr>
-                </g:if>
-                <g:else>
-                  <tr class="prop">
-                    <td valign="top" class="name">
-                    <g:message code="record.${field}.label" default="${field.label}"/>
-                   </td>
-                   <td valign="top" class="value">
-                     <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
-                   </td>
-                  </tr>
-                </g:else>
+              <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}" var="field">
+                <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
               </g:each>
             </tbody>
           </table>
@@ -354,29 +337,8 @@
               <tr><th><h3>Dataset</h3></th></tr>
             </thead>
             <tbody>
-              <g:each in="${Dataset}" var="field">
-                <g:if test="${field.name() == 'typeStatus'}">
-                  <tr class="prop">
-                    <td valign="top" class="name">
-                      <g:message code="record.${field}.label" default="${field.label}"/>
-                    </td>
-                    <td valign="top" class="value">
-                      <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
-                        value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
-                        noSelection="${['':'-- Select an option --']}" class="${field}" />
-                    </td>
-                  </tr>
-                </g:if>
-                <g:else>
-                  <tr class="prop">
-                    <td valign="top" class="name">
-                    <g:message code="record.${field}.label" default="${field.label}"/>
-                   </td>
-                   <td valign="top" class="value">
-                     <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
-                   </td>
-                  </tr>
-                </g:else>
+              <g:each in="${TemplateField.findAllByCategory(FieldCategory.dataset, [sort:'id'])}" var="field">
+                <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
               </g:each>
             </tbody>
           </table>
@@ -386,40 +348,8 @@
               <tr><th><h3>Location</h3></th></tr>
             </thead>
               <tbody>
-                <g:each in="${Location}" var="field">
-                  <g:if test="${field.name() == 'country' || field.name() == 'stateProvince'}">
-                    <tr class="prop">
-                      <td valign="top" class="name">
-                        <g:message code="record.${field}.label" default="${field.label}"/>
-                      </td>
-                      <td valign="top" class="value">
-                        <g:select name="recordValues.0.${field}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))}"
-                          value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" 
-                          noSelection="${['':'-- Select an option --']}" class="${field}" />
-                      </td>
-                    </tr>
-                  </g:if>
-                  <g:elseif test="${field.name() == 'coordinatePrecision'}">
-                    <tr class="prop">
-                      <td valign="top" class="name">
-                        <g:message code="record.${field}.label" default="${field.label}"/>
-                      </td>
-                      <td valign="top" class="value">
-                        <g:select name="recordValues.0.${field}" from="${[10, 50, 100, 500, 1000, 10000]}"
-                          value="${recordValues?.get(0)?.(field.name())}" optionValue="value" optionKey="value" class="${field}" />
-                      </td>
-                    </tr>
-                  </g:elseif>
-                  <g:else>
-                    <tr class="prop">
-                      <td valign="top" class="name">
-                        <g:message code="record.${field}.label" default="${field.label}"/>
-                      </td>
-                      <td valign="top" class="value">
-                        <g:textField name="recordValues.0.${field}" maxlength="200" value="${recordValues?.get(0)?.(field.name())}" class="${field}"/>
-                      </td>
-                    </tr>
-                  </g:else>
+                <g:each in="${TemplateField.findAllByCategory(FieldCategory.location, [sort:'id'])}" var="field">
+                  <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                 </g:each>
               </tbody>
             </table>
