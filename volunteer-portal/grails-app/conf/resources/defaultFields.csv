@@ -4,7 +4,7 @@ scientificNameAuthorship,Authorship,,identification,text,0,0,,default
 identifiedBy,identifier,,identification,text,0,0,,default
 dateIdentified,Date Identified,,identification,text,0,0,,default
 catalogNumber,,,dataset,text,1,0,,default
-institutionCode,,AM,dataset,text,1,0,,default
+institutionCode,,AM,dataset,select,1,0,,default
 recordedBy,Collector,,dataset,text,0,0,,default
 typeStatus,,,dataset,select,0,0,,default
 eventDate,,,dataset,text,0,0,,default
