@@ -7,15 +7,13 @@ class Template {
   String fieldOrder // JSON encoded list
 
   String author
-  Date created
 
   static mapping = {
     version false
   }
 
   static constraints = {
-    author maxSize: 200, email:true
-    created maxSize: 19
+    author maxSize: 200, email:true, nullable: true
     name maxSize: 200
     viewName nullable: true
   }

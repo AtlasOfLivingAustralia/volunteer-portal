@@ -6,6 +6,7 @@ class User {
   Integer recordsTranscribedCount
   Integer transcribedValidatedCount
   String userId
+  String displayName
 
   static hasMany = [roles:Role]
 
