@@ -87,8 +87,13 @@ class BootStrap {
             } else {
                 println "Field already exists: " + fs[0]
             }
-            
         }
+
+        //add templates
+//      sql.execute("""
+//          TRUNCATE TEMPLATE CASCADE;
+//          INSERT INTO template (id, name, view_name) VALUES (1, 'Specimen Transcription', 'specimenTranscribe');
+//        """)
     }
     def destroy = {
     }
