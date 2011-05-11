@@ -22,29 +22,31 @@
         <table>
           <thead>
           <tr>
-            <g:sortableColumn property="id" title="${message(code: 'project.id.label', default: 'Id')}"/>
             <g:sortableColumn property="name" title="${message(code: 'project.name.label', default: 'Name')}"/>
             <g:sortableColumn property="description" title="${message(code: 'project.description.label', default: 'Description')}"/>
             <td>Number of Tasks</td>
-            <td>Partially transcribed</td>
             <td>Fully transcribed</td>
+            <td>Partially transcribed</td>
             <td>Validated</td>
             <td>Tasks viewed</td>
             <td>Total task views</td>
+            <td></td>
+            <td></td>
           </tr>
           </thead>
           <tbody>
           <g:each in="${projectInstanceList}" status="i" var="projectInstance">
             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-              <td><g:link action="show" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "id")}</g:link></td>
-              <td>${fieldValue(bean: projectInstance, field: "name")}</td>
+              <td><g:link action="project" controller="task" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "name")}</g:link></td>
               <td>${fieldValue(bean: projectInstance, field: "description")}</td>
               <td>${projectTaskCounts.get(projectInstance.id) ? projectTaskCounts.get(projectInstance.id) : 0 }</td>
               <td>${projectFullyTranscribedCounts.get(projectInstance.id) ? projectFullyTranscribedCounts.get(projectInstance.id) : 0}</td>
-              <td>${projectTaskTranscribedCounts.get(projectInstance.id) ? projectTaskTranscribedCounts.get(projectInstance.id) : 0}</td>
+              <td>${projectTaskTranscribedCounts.get(projectInstance.id) ? projectFullyTranscribedCounts.get(projectInstance.id) - projectTaskTranscribedCounts.get(projectInstance.id) : 0}</td>
               <td>${projectTaskValidatedCounts.get(projectInstance.id) ? projectTaskValidatedCounts.get(projectInstance.id) : 0}</td>
               <td>${projectTaskViewedCounts.get(projectInstance.id) ? projectTaskViewedCounts.get(projectInstance.id) : 0}</td>
               <td>${viewCountPerProject.get(projectInstance.id) ? viewCountPerProject.get(projectInstance.id) : 0}</td>
+              <td><g:link action="showNextFromProject" controller="transcribe" id="${projectInstance.id}">Transcribe</g:link></td>
+              <td><g:link action="showNextFromProject" controller="validate" id="${projectInstance.id}">Validate</g:link></td>
             </tr>
           </g:each>
           </tbody>
