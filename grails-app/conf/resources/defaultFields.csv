@@ -1,0 +1,20 @@
+scientificName,Scientific Name,,identification,text,1,0,,default
+taxonConceptID,LSID,,identification,text,0,0,,default
+scientificNameAuthorship,Authorship,,identification,text,0,0,,default
+identifiedBy,identifier,,identification,text,0,0,,default
+dateIdentified,Date Identified,,identification,text,0,0,,default
+catalogNumber,,,dataset,text,1,0,,default
+institutionCode,,AM,dataset,text,1,0,,default
+recordedBy,Collector,,dataset,text,0,0,,default
+typeStatus,,,dataset,select,0,0,,default
+eventDate,,,dataset,text,0,0,,default
+verbatimLocality,,,location,text,0,0,,default
+locationRemarks,,,location,text,0,0,,default
+verbatimLatitude,,,location,text,0,0,,default
+verbatimLongitude,,,location,text,0,0,,default
+country,,,location,select,0,0,,default
+stateProvince,,,location,select,0,0,,default
+locality,,,location,text,0,0,,default
+decimalLatitude,,,location,text,0,0,,default
+decimalLongitude,,,location,text,0,0,,default
+coordinatePrecision,,,location,select,0,0,,default

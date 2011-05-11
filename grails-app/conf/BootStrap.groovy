@@ -1,5 +1,10 @@
+import au.org.ala.volunteer.FieldType
+import au.org.ala.volunteer.FieldCategory
 import au.org.ala.volunteer.Picklist
 import au.org.ala.volunteer.PicklistItem
+import au.org.ala.volunteer.Template
+import au.org.ala.volunteer.TemplateField
+import au.org.ala.volunteer.DarwinCoreField
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class BootStrap {
@@ -36,11 +41,12 @@ class BootStrap {
         """)
         
         // add some picklist values if not already loaded
-        if (!Picklist.count()) {
-            println("creating picklists...")
-            def items = ["country", "stateProvince", "typeStatus"]
-            items.each {
-                println("creating picklist: " + it)
+        println("creating picklists...")
+        def items = ["country", "stateProvince", "typeStatus", "institutionCode", "recordedBy", "coordinatePrecision"]
+        items.each {
+            println("checking picklist: " + it)
+            if (!Picklist.findByName(it)) {
+                println("creating new picklist " + it)
                 Picklist picklist = new Picklist(name:it).save(flush:true, failOnError: true)
                 def text = ApplicationHolder.application.parentContext.getResource("classpath:resources/"+it+".csv").inputStream.text
                 text.eachLine {
@@ -50,6 +56,40 @@ class BootStrap {
                     picklistItem.save(flush:true, failOnError: true)
                 }
             }
+        }
+        // Create default template if not in DB
+        Template template = Template.findByName('default')
+        if (!template) {
+            println "creating new Template: default"
+            template = new Template(name:'default', viewName:'Default', author:'webmaster@ala.org.au', 
+                created:new Date(), fieldOrder:'').save(flush:true, failOnError: true)
+        }
+        
+        // populate default set of TemplateFields
+        def fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/defaultFields.csv").inputStream.text
+        
+        fields.eachLine { line ->
+            String[] fs = line.split(',')
+            DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0])
+            if (!TemplateField.findByDataType(dwcf)) {
+                println "creating new FieldType: " + fs + " size="+fs.size()
+                println "mandatory boolean value = " + ((fs[5] == '1') ? true : false)
+                TemplateField tf = new TemplateField(
+                        dataType: dwcf,
+                        name: fs[1]?:' ',
+                        defaultValue: fs[2]?:' ',
+                        category: FieldCategory.valueOf(fs[3]),
+                        type: FieldType.valueOf(fs[4]),
+                        mandatory: ((fs[5] == '1') ? true : false),
+                        multiValue: ((fs[6] == '1') ? true : false),
+                        validationRule: fs[7]?:' ',
+                        template: template
+                ).save(flush:true, failOnError: true)
+                println "TemplateField = " + tf
+            } else {
+                println "Field already exists: " + fs[0]
+            }
+            
         }
     }
     def destroy = {

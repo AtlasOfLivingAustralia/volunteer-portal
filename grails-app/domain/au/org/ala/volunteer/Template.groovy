@@ -4,6 +4,7 @@ class Template {
 
   String name
   String viewName
+  String fieldOrder // JSON encoded list
 
   String author
   Date created
@@ -13,7 +14,7 @@ class Template {
   }
 
   static constraints = {
-    author maxSize: 200
+    author maxSize: 200, email:true
     created maxSize: 19
     name maxSize: 200
     viewName nullable: true
