@@ -11,6 +11,15 @@ class AuthService {
         return (RequestContextHolder.currentRequestAttributes()?.getUserPrincipal()?.attributes?.email)?:null
     }
 
+    def displayName() {
+        if(RequestContextHolder.currentRequestAttributes()?.getUserPrincipal()?.attributes?.firstname){
+          ((RequestContextHolder.currentRequestAttributes()?.getUserPrincipal()?.attributes?.firstname) +
+                 " " + (RequestContextHolder.currentRequestAttributes()?.getUserPrincipal()?.attributes?.lastname))
+        } else {
+          null
+        }
+    }
+
     protected boolean userInRole(role) {
         return ConfigurationHolder.config.security.cas.bypass ||
                 RequestContextHolder.currentRequestAttributes()?.isUserInRole(role) ||

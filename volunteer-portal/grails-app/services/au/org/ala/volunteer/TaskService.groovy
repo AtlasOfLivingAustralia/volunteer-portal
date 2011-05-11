@@ -32,7 +32,7 @@ class TaskService {
      */
     Map getProjectTaskTranscribedCounts() {
         def projectTaskCounts = Task.executeQuery(
-            """select t.project.id as projectId, count(t) as taskCount
+            """select t.project.id as projectId, count(distinct t.id) as taskCount
                from Task t inner join t.fields as fields group by t.project.id""")
         projectTaskCounts.toMap()
     }
@@ -89,6 +89,42 @@ class TaskService {
             }
         }
     }
+
+    /**
+     * Get the next task for this user
+     *
+     * @param userId
+     * @return
+     */
+    Task getNextTask(String userId, Project project) {
+
+        def tasks = Task.executeQuery(
+            """select t from Task t
+               left outer join t.viewedTasks viewedTasks
+               where
+               t.project.id = :projectId
+               and t.fullyTranscribed is false
+               and (viewedTasks.userId != :userId or viewedTasks.userId is null)
+               order by viewedTasks.lastView""", [projectId: project.id, userId: userId, max: 1])
+        if (tasks) {
+            tasks.get(0)
+        } else {
+            //show
+            tasks = Task.executeQuery(
+            """select t from Task t
+               left outer join t.viewedTasks viewedTasks
+               where
+               t.project.id = :projectId
+               and t.fullyTranscribed is false
+               order by viewedTasks.lastView""", [projectId: project.id, max: 1])
+            if(!tasks.isEmpty()){
+              tasks.get(0)
+            } else {
+              null
+            }
+        }
+    }
+
 
     /**
      * Get the next task for this user
@@ -167,7 +203,9 @@ class TaskService {
                 // GET the image via its URL and save various forms to local disk
                 def filePath = copyImageToStore(imageUrl, task.id, multimedia.id)
                 println("Saved..." + tokens + " -> " + filePath['raw'])
+
                 filePath = createImageThumbs(filePath)
+
                 multimedia.filePath = filePath.dir + "/" +filePath.raw
                 multimedia.filePathToThumbnail = filePath.dir + "/" +filePath.thumb
                 multimedia.save(flush: true)
@@ -214,15 +252,15 @@ class TaskService {
      * @return fileMap
      */
     def createImageThumbs = { Map fileMap ->
-        def thumb = 'thumbnail'
         println("dir = " + fileMap.dir)
         println("raw = " + fileMap.raw)
-        def thumbName = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_small.$1') // add _small to filename 
-        println("thumbName = " + thumbName)
+        fileMap.thumb = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_small.$1') // add _small to filename
+        println("thumbName = " + fileMap.thumb )
         BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
         BufferedImage scaledImage = Scalr.resize(srcImage, 450);
-        ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + thumbName))
+        ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb))
+
         return fileMap
     }
 
