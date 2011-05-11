@@ -1,3 +1,4 @@
+
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
@@ -26,7 +27,8 @@ if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
 }
 
-server.url = "http://localhost/"
+
+server.url = "http://localhost"
 images.urlPrefix = "/data/volunteer/"
 
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
@@ -84,7 +86,6 @@ environments {
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
     }
-
 }
 
 // log4j configuration
