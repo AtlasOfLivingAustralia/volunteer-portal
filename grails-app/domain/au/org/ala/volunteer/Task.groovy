@@ -14,9 +14,9 @@ class Task {
 
   static mapping = {
     version false
-    multimedia cascade:'all'
-    viewedTasks cascade: 'all'
-    fields cascade: 'all'
+    multimedia cascade:'all,delete-orphan'
+    viewedTasks cascade: 'all,delete-orphan'
+    fields cascade: 'all,delete-orphan'
   }
 
   static constraints = {
