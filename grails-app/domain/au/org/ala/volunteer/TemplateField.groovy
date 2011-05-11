@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 class TemplateField {
 
     DarwinCoreField dataType
-    String name
+    String label
     String defaultValue
     FieldCategory category
     FieldType type
@@ -18,7 +18,7 @@ class TemplateField {
 
     static constraints = {
         dataType maxSize: 200
-        name nullable: true
+        label nullable: true
         defaultValue maxSize: 200
         mandatory nullable: true
         multiValue nullable: true

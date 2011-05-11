@@ -12,8 +12,8 @@ verbatimLocality,,,location,text,0,0,,default
 locationRemarks,,,location,text,0,0,,default
 verbatimLatitude,,,location,text,0,0,,default
 verbatimLongitude,,,location,text,0,0,,default
-country,,,location,select,0,0,,default
-stateProvince,,,location,select,0,0,,default
+country,,Australia,location,select,0,0,,default
+stateProvince,State/Territory,,location,select,0,0,,default
 locality,,,location,text,0,0,,default
 decimalLatitude,,,location,text,0,0,,default
 decimalLongitude,,,location,text,0,0,,default

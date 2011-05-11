@@ -20,6 +20,6 @@ package au.org.ala.volunteer
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 enum FieldType {
-    text, textarea, select, radio, checkbox
+    text, textarea, select, radio, checkbox, hidden
 }
 

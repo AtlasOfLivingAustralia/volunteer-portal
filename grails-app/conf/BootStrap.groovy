@@ -73,10 +73,9 @@ class BootStrap {
             DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0])
             if (!TemplateField.findByDataType(dwcf)) {
                 println "creating new FieldType: " + fs + " size="+fs.size()
-                println "mandatory boolean value = " + ((fs[5] == '1') ? true : false)
                 TemplateField tf = new TemplateField(
                         dataType: dwcf,
-                        name: fs[1]?:' ',
+                        label: fs[1]?:' ',
                         defaultValue: fs[2]?:' ',
                         category: FieldCategory.valueOf(fs[3]),
                         type: FieldType.valueOf(fs[4]),
@@ -85,7 +84,6 @@ class BootStrap {
                         validationRule: fs[7]?:' ',
                         template: template
                 ).save(flush:true, failOnError: true)
-                println "TemplateField = " + tf
             } else {
                 println "Field already exists: " + fs[0]
             }
