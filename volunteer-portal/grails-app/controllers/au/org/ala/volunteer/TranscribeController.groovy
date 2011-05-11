@@ -14,17 +14,6 @@ class TranscribeController {
     redirect(action: "showNextFromAny", params: params)
   }
 
-  def showBreakdown = {
-
-    //retrieve counts of transcribed records by project
-
-    //retrieve counts of transcribed records by user
-
-    //retrieve counts of transcribed & validated records by project
-
-    //retrieve counts of transcribed & validated records by user
-  }
-
   def task = {
 
     def taskInstance = Task.get(params.id)
@@ -65,9 +54,8 @@ class TranscribeController {
 
   /**
    * Sync fields.
-   *
-   * TODO handle multiple records per submit.
    * TODO record validation using the template information. Hoping some data validation
+   *
    * done in the form.
    */
   def save = {
@@ -90,12 +78,26 @@ class TranscribeController {
       def taskInstance = Task.get(params.id)
       fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
       redirect(view:'showNextFromAny')
+    } else {
+      redirect(view:'/index')
     }
   }
 
+  /**
+   * Show the next task for the supplied project.
+   */
   def showNextFromProject = {
-    //retrieve the next un-transcribed record from the project with the supplied ID
+    def currentUser = authService.username()
+    def project = Project.get(params.id)
 
+    def taskInstance = taskService.getNextTask(currentUser, project)
 
+    //retrieve the details of the template
+    if(taskInstance){
+      redirect(action: 'task', id:taskInstance.id)
+    } else {
+      //TODO retrieve this information from the template
+      render(view:'specimenTranscribe')
+    }
   }
 }
