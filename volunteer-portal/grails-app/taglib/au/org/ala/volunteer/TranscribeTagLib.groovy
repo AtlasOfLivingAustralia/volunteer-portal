@@ -33,11 +33,18 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         def name = field.dataType.name()
         println "TranscribeTagLib: recordValues = " + recordValues 
+        def label
+        if (field.label && field.label != ' ') {
+            label = field.label
+        } else {
+            label = field.dataType.label
+        }
+        println "label = " + label + "| field.label = " + field.label
         // Uses MarkupBuilder to create HTML
         def mb = new groovy.xml.MarkupBuilder(out)
         mb.tr(class:'prop') {
             td(class:'name') {
-                mb.yield(g.message(code:'record.' + name +'.label', default:field.dataType.label))
+                mb.yield(g.message(code:'record.' + name +'.label', default:label))
             }
             td(class:"value") {
                 // Special case fields are caught first
@@ -49,7 +56,7 @@ class TranscribeTagLib {
                         value:recordValues?.get(0)?.get(name),
                         optionValue:'value',
                         optionKey:'value',
-                        noSelection:['':'-- Select an option --'],
+                        noSelection:['':''],
                         'class':name
                     )
                 } else {
