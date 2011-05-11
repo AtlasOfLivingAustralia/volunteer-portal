@@ -31,13 +31,13 @@ class TranscribeTagLib {
     def fieldFromTemplateField = { attrs, body ->
         def field = attrs.templateField
         def recordValues = attrs.recordValues
-        def name = field.dataType.name()
+        def name = field.fieldType.name()
         println "TranscribeTagLib: recordValues = " + recordValues 
         def label
         if (field.label && field.label != ' ') {
             label = field.label
         } else {
-            label = field.dataType.label
+            label = field.fieldType.label
         }
         println "label = " + label + "| field.label = " + field.label
         // Uses MarkupBuilder to create HTML

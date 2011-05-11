@@ -74,7 +74,7 @@ class BootStrap {
             if (!TemplateField.findByDataType(dwcf)) {
                 println "creating new FieldType: " + fs + " size="+fs.size()
                 TemplateField tf = new TemplateField(
-                        dataType: dwcf,
+                        fieldType: dwcf,
                         label: fs[1]?:' ',
                         defaultValue: fs[2]?:' ',
                         category: FieldCategory.valueOf(fs[3]),
