@@ -246,7 +246,7 @@
               lens: true,
               preloadImages: true,
               alwaysOn: false,
-              zoomWidth: 300,
+              zoomWidth: 450,
               zoomHeight: 300,
               imageOpacity: 0.7,
               title: false
@@ -296,9 +296,7 @@
   </script>
 </head>
 <body class="two-column-right">
-<div id="content">
-  <div class="section">
-    <div class="body">
+  <div class="body">
       <g:if test="${validator}">
         <h1>Validate Task ${taskInstance?.id} : ${taskInstance?.project?.name}</h1>
       </g:if>
@@ -380,8 +378,6 @@
       <g:else>
         No tasks loaded for this project !
       </g:else>
-    </div>
   </div>
-</div>
 </body>
 </html>

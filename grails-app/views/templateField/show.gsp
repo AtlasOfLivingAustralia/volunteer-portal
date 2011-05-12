@@ -30,9 +30,16 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="templateField.dataType.label" default="Data Type" /></td>
+                            <td valign="top" class="name"><g:message code="templateField.fieldType.label" default="Field Type" /></td>
                             
-                            <td valign="top" class="value">${templateFieldInstance?.dataType?.encodeAsHTML()}</td>
+                            <td valign="top" class="value">${templateFieldInstance?.fieldType?.encodeAsHTML()}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="templateField.label.label" default="Label" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: templateFieldInstance, field: "label")}</td>
                             
                         </tr>
                     
@@ -58,6 +65,13 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="templateField.validationRule.label" default="Validation Rule" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: templateFieldInstance, field: "validationRule")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="templateField.template.label" default="Template" /></td>
                             
                             <td valign="top" class="value"><g:link controller="template" action="show" id="${templateFieldInstance?.template?.id}">${templateFieldInstance?.template?.encodeAsHTML()}</g:link></td>
@@ -75,13 +89,6 @@
                             <td valign="top" class="name"><g:message code="templateField.type.label" default="Type" /></td>
                             
                             <td valign="top" class="value">${templateFieldInstance?.type?.encodeAsHTML()}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="templateField.validationRule.label" default="Validation Rule" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: templateFieldInstance, field: "validationRule")}</td>
                             
                         </tr>
                     

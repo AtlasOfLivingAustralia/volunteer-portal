@@ -74,8 +74,10 @@
       </form>
     </div><!--close wrapper_search-->
   </div><!--close banner-->
-
-<g:layoutBody/>
+  <div id="content">
+    <div class="section">
+        <g:layoutBody/>
+    </div>
 
   <div id="footer">
     <div id="footer-nav">

@@ -33,10 +33,19 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="dataType"><g:message code="templateField.dataType.label" default="Data Type" /></label>
+                                  <label for="fieldType"><g:message code="templateField.fieldType.label" default="Field Type" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'dataType', 'errors')}">
-                                    <g:select name="dataType" from="${au.org.ala.volunteer.DarwinCoreField?.values()}" keys="${au.org.ala.volunteer.DarwinCoreField?.values()*.name()}" value="${templateFieldInstance?.dataType?.name()}" noSelection="['': '']" />
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'fieldType', 'errors')}">
+                                    <g:select name="fieldType" from="${au.org.ala.volunteer.DarwinCoreField?.values()}" keys="${au.org.ala.volunteer.DarwinCoreField?.values()*.name()}" value="${templateFieldInstance?.fieldType?.name()}"  />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="label"><g:message code="templateField.label.label" default="Label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'label', 'errors')}">
+                                    <g:textField name="label" value="${templateFieldInstance?.label}" />
                                 </td>
                             </tr>
                         
@@ -69,6 +78,15 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="validationRule"><g:message code="templateField.validationRule.label" default="Validation Rule" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'errors')}">
+                                    <g:textField name="validationRule" value="${templateFieldInstance?.validationRule}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="template"><g:message code="templateField.template.label" default="Template" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'template', 'errors')}">
@@ -91,15 +109,6 @@
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'type', 'errors')}">
                                     <g:select name="type" from="${au.org.ala.volunteer.FieldType?.values()}" keys="${au.org.ala.volunteer.FieldType?.values()*.name()}" value="${templateFieldInstance?.type?.name()}"  />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                  <label for="validationRule"><g:message code="templateField.validationRule.label" default="Validation Rule" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'errors')}">
-                                    <g:textField name="validationRule" value="${templateFieldInstance?.validationRule}" />
                                 </td>
                             </tr>
                         
