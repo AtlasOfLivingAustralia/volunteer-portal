@@ -24,15 +24,15 @@
                         
                             <g:sortableColumn property="id" title="${message(code: 'templateField.id.label', default: 'Id')}" />
                         
-                            <g:sortableColumn property="dataType" title="${message(code: 'templateField.dataType.label', default: 'Data Type')}" />
+                            <g:sortableColumn property="fieldType" title="${message(code: 'templateField.fieldType.label', default: 'Field Type')}" />
+                        
+                            <g:sortableColumn property="label" title="${message(code: 'templateField.label.label', default: 'Label')}" />
                         
                             <g:sortableColumn property="defaultValue" title="${message(code: 'templateField.defaultValue.label', default: 'Default Value')}" />
                         
                             <g:sortableColumn property="mandatory" title="${message(code: 'templateField.mandatory.label', default: 'Mandatory')}" />
                         
                             <g:sortableColumn property="multiValue" title="${message(code: 'templateField.multiValue.label', default: 'Multi Value')}" />
-                        
-                            <th><g:message code="templateField.template.label" default="Template" /></th>
                         
                         </tr>
                     </thead>
@@ -42,15 +42,15 @@
                         
                             <td><g:link action="show" id="${templateFieldInstance.id}">${fieldValue(bean: templateFieldInstance, field: "id")}</g:link></td>
                         
-                            <td>${fieldValue(bean: templateFieldInstance, field: "dataType")}</td>
+                            <td>${fieldValue(bean: templateFieldInstance, field: "fieldType")}</td>
+                        
+                            <td>${fieldValue(bean: templateFieldInstance, field: "label")}</td>
                         
                             <td>${fieldValue(bean: templateFieldInstance, field: "defaultValue")}</td>
                         
                             <td><g:formatBoolean boolean="${templateFieldInstance.mandatory}" /></td>
                         
                             <td><g:formatBoolean boolean="${templateFieldInstance.multiValue}" /></td>
-                        
-                            <td>${fieldValue(bean: templateFieldInstance, field: "template")}</td>
                         
                         </tr>
                     </g:each>

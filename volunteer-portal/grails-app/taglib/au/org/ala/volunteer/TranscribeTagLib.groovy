@@ -34,7 +34,7 @@ class TranscribeTagLib {
         def name = field.fieldType.name()
         println "TranscribeTagLib: recordValues = " + recordValues 
         def label
-        if (field.label && field.label != ' ') {
+        if (field.label) {
             label = field.label
         } else {
             label = field.fieldType.label
@@ -83,7 +83,8 @@ class TranscribeTagLib {
                                     from: options,
                                     optionValue:'value',
                                     optionKey:'value',
-                                    value:recordValues?.get(0)?.get(name),
+                                    value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                                    noSelection:['':''],
                                     style: 'max-width: 295px;',
                                     'class':name
                                 )
