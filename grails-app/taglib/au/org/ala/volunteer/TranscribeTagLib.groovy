@@ -39,7 +39,7 @@ class TranscribeTagLib {
         } else {
             label = field.fieldType.label
         }
-        println "label = " + label + "| field.label = " + field.label
+        def cssClass = name + ((name =~ /[Dd]ate/) ? ' dateWidget' : '') // so we can add a date widget with JQuery
         // Uses MarkupBuilder to create HTML
         def mb = new groovy.xml.MarkupBuilder(out)
         mb.tr(class:'prop') {
@@ -57,7 +57,7 @@ class TranscribeTagLib {
                         optionValue:'value',
                         optionKey:'value',
                         noSelection:['':''],
-                        'class':name
+                        'class':cssClass
                     )
                 } else {
                     // regular fields
@@ -67,10 +67,18 @@ class TranscribeTagLib {
                             w = g.textArea(
                                 name:'recordValues.0.' + name,
                                 rows: 4,
+                                style: 'width: 295px',
                                 value:recordValues?.get(0)?.get(name),
-                                'class':name
+                                'class':cssClass
                             )
                             break
+                        case FieldType.hidden:
+                            w = g.hiddenField(
+                                name:'recordValues.0.' + name,
+                                value:recordValues?.get(0)?.get(name),
+                                'class':cssClass
+                            )
+                            break;
                         case FieldType.select:
                             // <g:select name="recordValues.0.${fieldName}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(fieldName))}"
                             // value="${recordValues?.get(0)?.(fieldName)}" optionValue="value" optionKey="value" 
@@ -86,7 +94,7 @@ class TranscribeTagLib {
                                     value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
                                     noSelection:['':''],
                                     style: 'max-width: 295px;',
-                                    'class':name
+                                    'class':cssClass
                                 )
                                 break
                             } else {
@@ -100,7 +108,7 @@ class TranscribeTagLib {
                                 name:'recordValues.0.' + name,
                                 maxLength:200,
                                 value:recordValues?.get(0)?.get(name),
-                                'class':name
+                                'class':cssClass
                             )
                     }
                     mkp.yieldUnescaped(w)

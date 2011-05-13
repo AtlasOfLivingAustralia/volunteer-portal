@@ -37,13 +37,6 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.created.label" default="Created" /></td>
-                            
-                            <td valign="top" class="value"><g:formatDate date="${templateInstance?.created}" /></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="template.name.label" default="Name" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: templateInstance, field: "name")}</td>

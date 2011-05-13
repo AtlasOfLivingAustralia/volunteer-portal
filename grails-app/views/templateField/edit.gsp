@@ -78,6 +78,15 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="helpText"><g:message code="templateField.helpText.label" default="Help Text" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'helpText', 'errors')}">
+                                    <g:textArea name="helpText" cols="40" rows="5" value="${templateFieldInstance?.helpText}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="validationRule"><g:message code="templateField.validationRule.label" default="Validation Rule" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'errors')}">

@@ -39,15 +39,6 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="created"><g:message code="template.created.label" default="Created" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'created', 'errors')}">
-                                    <g:datePicker name="created" precision="day" value="${templateInstance?.created}"  />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
                                     <label for="name"><g:message code="template.name.label" default="Name" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'name', 'errors')}">

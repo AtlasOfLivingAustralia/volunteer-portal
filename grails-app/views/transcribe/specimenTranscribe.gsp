@@ -243,16 +243,13 @@
           // JQZoom tool for image zooming
           var options = {
               zoomType: 'drag',
-              lens: true,
+              //lens: true,
               preloadImages: true,
               alwaysOn: false,
               zoomWidth: 450,
               zoomHeight: 300,
               imageOpacity: 0.7,
               title: false
-              //xOffset:90,
-              //yOffset:30,
-              //position:'right'
           };
           $('.taskImage').jqzoom(options);
           
@@ -281,8 +278,8 @@
           
           // set a few default values if blank
           var fieldMap = {
-              country: "Australia",
-              coordinatePrecision: 1000
+              //country: "Australia",
+              //coordinatePrecision: 1000
           }
           
           for (key in fieldMap) {
@@ -291,6 +288,12 @@
                   if (!$(this).val()) $(this).val(fieldMap[key]);
               });
           }
+          
+          // catch the clear button
+          $('button#clearLocation').click(function() {
+              $('form.transcribeForm').validate();
+              $('form.transcribeForm').submit();
+          })
       });
       
   </script>
@@ -319,9 +322,47 @@
           </div>
 
         </g:each>
-        <div style="clear:both;">&nbsp;</div>
+        <div style="clear:both;"></div>
+        
         <div id="transcribeFields">
-          <table style="float:left;">
+          <table style="width: 100%">
+            <thead/>
+            <tbody>
+              <g:each in="${TemplateField.findAllByFieldType('occurrenceRemarks')}" var="field">
+                <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
+              </g:each>
+            </tbody>
+          </table>
+          <table style="width: 100%">
+            <thead>
+              <tr><th><h3>Collection Event</h3></th></tr>
+            </thead>
+            <tbody>
+              <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}" var="field">
+                <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
+              </g:each>
+            </tbody>
+          </table>
+          <div style="clear:both;">&nbsp;</div>
+          <table style="width: 100%">
+            <thead>
+              <tr><th><h3>Location</h3></th></tr>
+            </thead>
+            <tbody>
+              <g:each in="${TemplateField.findAllByCategory(FieldCategory.location, [sort:'id'])}" var="field">
+                <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
+              </g:each>
+            </tbody>
+          </table>
+          <div id="mapWidgets" style="display: none">
+            <div id="sightingAddress">
+                <label for="address">Geocode a location: </label>
+                <input name="address" id="address" size="36" value=""/>
+                <input id="locationSearch" type="button" value="Search"/>
+            </div>
+            <div id="mapCanvas"></div>
+          </div>
+          <table style="width: 100%">
             <thead>
               <tr><th><h3>Identification</h3></th></tr>
             </thead>
@@ -331,35 +372,6 @@
               </g:each>
             </tbody>
           </table>
-          <table style="float:left;">
-            <thead>
-              <tr><th><h3>Dataset</h3></th></tr>
-            </thead>
-            <tbody>
-              <g:each in="${TemplateField.findAllByCategory(FieldCategory.dataset, [sort:'id'])}" var="field">
-                <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
-              </g:each>
-            </tbody>
-          </table>
-          <div style="clear:both;">&nbsp;</div>
-          <table style="float:left;">
-            <thead>
-              <tr><th><h3>Location</h3></th></tr>
-            </thead>
-              <tbody>
-                <g:each in="${TemplateField.findAllByCategory(FieldCategory.location, [sort:'id'])}" var="field">
-                  <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
-                </g:each>
-              </tbody>
-            </table>
-            <div id="mapWidgets">
-              <div id="sightingAddress">
-                  <label for="address">Geocode a location: </label>
-                  <input name="address" id="address" size="36" value=""/>
-                  <input id="locationSearch" type="button" value="Search"/>
-              </div>
-              <div id="mapCanvas"></div>
-            </div>
         </div>
       </div>
       <div class="buttons" style="clear: both">

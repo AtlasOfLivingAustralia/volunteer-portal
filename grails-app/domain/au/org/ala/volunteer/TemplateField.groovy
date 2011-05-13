@@ -9,6 +9,7 @@ class TemplateField {
     FieldType type
     Boolean mandatory
     Boolean multiValue
+    String helpText
     String validationRule
     Template template
 
@@ -22,10 +23,10 @@ class TemplateField {
         defaultValue maxSize: 200
         mandatory nullable: true
         multiValue nullable: true
-        validationRule nullable: true
+        helpText nullable:true, widget:'textarea'
+        validationRule nullable:true
         template nullable: true
     }
-
 }
 
   
