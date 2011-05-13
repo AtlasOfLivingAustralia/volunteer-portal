@@ -26,8 +26,6 @@
                         
                             <g:sortableColumn property="author" title="${message(code: 'template.author.label', default: 'Author')}" />
                         
-                            <g:sortableColumn property="created" title="${message(code: 'template.created.label', default: 'Created')}" />
-                        
                             <g:sortableColumn property="name" title="${message(code: 'template.name.label', default: 'Name')}" />
                         
                             <g:sortableColumn property="viewName" title="${message(code: 'template.viewName.label', default: 'View Name')}" />
@@ -43,8 +41,6 @@
                             <td><g:link action="show" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "id")}</g:link></td>
                         
                             <td>${fieldValue(bean: templateInstance, field: "author")}</td>
-                        
-                            <td><g:formatDate date="${templateInstance.created}" /></td>
                         
                             <td>${fieldValue(bean: templateInstance, field: "name")}</td>
                         

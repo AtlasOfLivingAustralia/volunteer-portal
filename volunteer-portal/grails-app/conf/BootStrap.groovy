@@ -80,7 +80,8 @@ class BootStrap {
                         type: FieldType.valueOf(fs[4]),
                         mandatory: ((fs[5] == '1') ? true : false),
                         multiValue: ((fs[6] == '1') ? true : false),
-                        validationRule: fs[7],
+                        helpText: fs[7],
+                        validationRule: fs[8],
                         template: template
                 ).save(flush:true, failOnError: true)
             } else {

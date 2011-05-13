@@ -20,9 +20,16 @@ package au.org.ala.volunteer
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 enum FieldCategory {
-    dataset, location, identification
+    dataset("Dataset"), 
+    location("Location"), 
+    identification("Identification"), 
+    collectionEvent("Collection Event"),
+    none("")
+    
+    def label
+    FieldCategory(label) { this.label = label }
     
     def displayName() {
-        this.name().capitalize()
+        return this.label
     }
 }

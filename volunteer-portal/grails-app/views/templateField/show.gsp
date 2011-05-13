@@ -65,6 +65,13 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="templateField.helpText.label" default="Help Text" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: templateFieldInstance, field: "helpText")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="templateField.validationRule.label" default="Validation Rule" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: templateFieldInstance, field: "validationRule")}</td>

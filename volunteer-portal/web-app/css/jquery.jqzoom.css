@@ -35,12 +35,12 @@
 .zoomPup{
 	overflow:hidden;
 	background-color: #FFF;
-	-moz-opacity:0.4;
-	opacity: 0.4;
-	filter: alpha(opacity = 40);
+	-moz-opacity:0.6;
+	opacity: 0.6;
+	filter: alpha(opacity = 60);
 	z-index:120;
 	position:absolute;
-	border:1px solid #999;
+	border:1px solid #CCC;
   z-index:101;
   cursor:crosshair;
 }
