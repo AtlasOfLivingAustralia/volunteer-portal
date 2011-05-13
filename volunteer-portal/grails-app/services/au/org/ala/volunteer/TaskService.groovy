@@ -8,12 +8,22 @@ import com.thebuzzmedia.imgscalr.Scalr
 class TaskService {
 
     javax.sql.DataSource dataSource
+    def config = ConfigurationHolder.config
 
     static transactional = true
 
     def serviceMethod() {}
-    def burningImageService
-    def config = ConfigurationHolder.config
+
+  /**
+   * This could be a large result set for a system with many registered users.
+   */
+    Map getTasksTranscribedByCounts(){
+        def userTaskCounts = Task.executeQuery(
+            """select t.fullyTranscribedBy as userId, count(t.id) as taskCount from Task t
+               where t.fullyTranscribedBy is not null
+               group by t.fullyTranscribedBy""")
+        userTaskCounts.toMap()
+    }
 
     /**
      *
@@ -44,7 +54,7 @@ class TaskService {
     Map getProjectTaskFullyTranscribedCounts() {
         def projectTaskCounts = Task.executeQuery(
             """select t.project.id as projectId, count(t) as taskCount
-               from Task t where t.fullyTranscribed = true group by t.project.id""")
+               from Task t where t.fullyTranscribedBy is not null group by t.project.id""")
         projectTaskCounts.toMap()
     }
 
@@ -55,7 +65,7 @@ class TaskService {
     Map getProjectTaskValidatedCounts() {
         def projectTaskCounts = Task.executeQuery(
             """select t.project.id as projectId, count(t) as taskCount
-               from Task t where t.fullyValidated = true group by t.project.id""")
+               from Task t where t.fullyValidatedBy is not null group by t.project.id""")
         projectTaskCounts.toMap()
     }
 
@@ -70,7 +80,7 @@ class TaskService {
         def tasks = Task.executeQuery(
             """select t from Task t
                left outer join t.viewedTasks viewedTasks
-               where t.fullyTranscribed is false
+               where t.fullyTranscribedBy is null
                and (viewedTasks.userId != :userId or viewedTasks.userId is null)
                order by viewedTasks.lastView""", [userId: userId, max: 1])
         if (tasks) {
@@ -80,7 +90,7 @@ class TaskService {
             tasks = Task.executeQuery(
             """select t from Task t
                left outer join t.viewedTasks viewedTasks
-               where t.fullyTranscribed is false
+               where t.fullyTranscribedBy is null
                order by viewedTasks.lastView""", [max: 1])
             if(!tasks.isEmpty()){
               tasks.get(0)
@@ -103,7 +113,7 @@ class TaskService {
                left outer join t.viewedTasks viewedTasks
                where
                t.project.id = :projectId
-               and t.fullyTranscribed is false
+               and t.fullyTranscribedBy is null
                and (viewedTasks.userId != :userId or viewedTasks.userId is null)
                order by viewedTasks.lastView""", [projectId: project.id, userId: userId, max: 1])
         if (tasks) {
@@ -115,7 +125,7 @@ class TaskService {
                left outer join t.viewedTasks viewedTasks
                where
                t.project.id = :projectId
-               and t.fullyTranscribed is false
+               and t.fullyTranscribedBy is null
                order by viewedTasks.lastView""", [projectId: project.id, max: 1])
             if(!tasks.isEmpty()){
               tasks.get(0)
@@ -136,8 +146,8 @@ class TaskService {
 
         def tasks = Task.executeQuery(
             """select t from Task t
-               where t.fullyTranscribed is true
-               and t.fullyValidated is false""", [max: 1])
+               where t.fullyTranscribedBy is not null
+               and t.fullyValidatedBy is null""", [max: 1])
         if (tasks) {
             tasks.get(0)
         } else {

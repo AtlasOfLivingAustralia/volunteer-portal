@@ -9,8 +9,6 @@
 <body>
 
 <body class="two-column-right">
-<div id="content">
-  <div class="section">
 <div class="nav">
   <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
 </div>
@@ -23,34 +21,21 @@
     <table>
       <thead>
       <tr>
-
         <th></th>
-
         <g:sortableColumn property="displayName" title="${message(code: 'user.user.label', default: 'User')}"/>
-
-        <g:sortableColumn property="recordsTranscribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Records Transcribed Count')}"/>
-
-        <g:sortableColumn property="transcribedValidatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Transcribed Validated Count')}"/>
-
+        <g:sortableColumn property="recordsTranscribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}"/>
+        <g:sortableColumn property="transcribedValidatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}"/>
         <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'Date started transcribing')}"/>
-
-
       </tr>
       </thead>
       <tbody>
       <g:each in="${userInstanceList}" status="i" var="userInstance">
         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-
           <td><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80"/> </td>
-
-          <td>${fieldValue(bean: userInstance, field: "displayName")}</td>
-
-          <td>${fieldValue(bean: userInstance, field: "recordsTranscribedCount")}</td>
-
-          <td>${fieldValue(bean: userInstance, field: "transcribedValidatedCount")}</td>
-
+          <td><g:link controller="user" action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "displayName")}</g:link> </td>
+          <td>${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
+          <td>${fieldValue(bean: userInstance, field: "validatedCount")}</td>
           <td><g:formatDate date="${userInstance.created}"/></td>
-
         </tr>
       </g:each>
       </tbody>
@@ -59,9 +44,6 @@
   <div class="paginateButtons">
     <g:paginate total="${userInstanceTotal}"/>
   </div>
-  </div>
-  </div>
-
 </div>
 </body>
 </html>

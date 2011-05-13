@@ -7,8 +7,6 @@
   <title><g:message code="default.create.label" args="[entityName]"/></title>
 </head>
 <body class="two-column-right">
-<div id="content">
-  <div class="section">
 
 <div class="nav">
   <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
@@ -73,7 +71,5 @@
     </div>
   </g:form>
   </div>
-  </div>
-</div>
 </body>
 </html>
