@@ -23,10 +23,12 @@
     <div id="adminActionList" class="dialog">
       <h2>Admin actions:</h2>
       <ul>
+        <li class="controller"><g:link controller="project" action="create">Create a Project</g:link></li>
         <li class="controller"><g:link controller="project">List Projects</g:link></li>
         <li class="controller"><g:link controller="task">List Tasks</g:link></li>
         <li class="controller"><g:link controller="task" action="load">Upload tasks for transcribing</g:link></li>
-        <li class="controller"><g:link controller="picklist" action="load">Upload picklist</g:link></li>
+        <li class="controller"><g:link controller="picklist" action="load">Create a picklist</g:link></li>
+        <li class="controller"><g:link controller="picklist" action="list">List picklists</g:link></li>
       </ul>
     </div>
   </div>
