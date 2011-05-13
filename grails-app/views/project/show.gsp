@@ -7,7 +7,6 @@
   <title><g:message code="default.show.label" args="[entityName]"/></title>
 </head>
 <body class="two-column-right">
-<div id="content">
   <div id="wrapper">
     <div id="column-one">
       <div class="section">

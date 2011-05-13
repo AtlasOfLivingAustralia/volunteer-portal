@@ -48,7 +48,7 @@ class TranscribeController {
       redirect(action: 'task', id:taskInstance.id)
     } else {
       //TODO retrieve this information from the template
-      render(view:'specimenTranscribe')
+      render(view:'noTasks')
     }
   }
 
@@ -60,11 +60,18 @@ class TranscribeController {
    */
   def save = {
     def currentUser = authService.username()
-    def taskInstance = Task.get(params.id)
-    fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
-    taskInstance.fullyTranscribed = true
-    taskInstance.save(flush:true)
-    redirect(view:'showNextFromAny')
+    if(currentUser!=null){
+      def taskInstance = Task.get(params.id)
+      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
+      taskInstance.fullyTranscribedBy = currentUser
+      taskInstance.save(flush:true)
+
+      //update the users stats
+      userService.updateUserTranscribedCount(currentUser)
+      redirect(view:'showNextFromAny')
+    } else {
+      redirect(view:'../index')
+    }
   }
 
   /**
@@ -96,8 +103,7 @@ class TranscribeController {
     if(taskInstance){
       redirect(action: 'task', id:taskInstance.id)
     } else {
-      //TODO retrieve this information from the template
-      render(view:'specimenTranscribe')
+      render(view:'noTasks')
     }
   }
 }

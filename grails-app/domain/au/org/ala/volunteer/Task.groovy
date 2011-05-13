@@ -5,8 +5,8 @@ class Task {
   Project project
   String externalIdentifier
   String externalUrl
-  Boolean fullyTranscribed = false
-  Boolean fullyValidated = false
+  String fullyTranscribedBy
+  String fullyValidatedBy
   Integer viewed = -1
   Date created
 
@@ -22,8 +22,8 @@ class Task {
   static constraints = {
     externalIdentifier nullable: true
     externalUrl nullable: true
-    fullyTranscribed nullable: true
-    fullyValidated nullable: true
+    fullyTranscribedBy nullable: true
+    fullyValidatedBy nullable: true
     viewed nullable: true
     created nullable: true
   }

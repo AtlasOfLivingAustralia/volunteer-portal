@@ -305,8 +305,9 @@
       </g:else>
 
       <g:if test="${taskInstance}">
-      <g:form controller="transcribe" action="saveTranscription" class="transcribeForm">
-        <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
+
+      <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
+      <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
       <div class="dialog">
         <g:each in="${taskInstance.multimedia}" var="m">
           %{--<img src="${ConfigurationHolder.config.server.url}${m.filePath}" alt="specimen image"/>--}%

@@ -53,6 +53,5 @@
         <g:paginate total="${projectInstanceTotal}"/>
       </div>
 </div>
-
 </body>
 </html>

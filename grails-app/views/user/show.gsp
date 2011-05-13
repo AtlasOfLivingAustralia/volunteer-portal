@@ -10,10 +10,9 @@
 <div class="nav">
   <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
   <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]"/></g:link></span>
-  <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link></span>
 </div>
 <div class="body">
-  <h1><g:message code="default.show.label" args="[entityName]"/></h1>
+  <h1>User: ${fieldValue(bean: userInstance, field: "displayName")}</h1>
   <g:if test="${flash.message}">
     <div class="message">${flash.message}</div>
   </g:if>
@@ -22,30 +21,21 @@
       <tbody>
 
       <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.id.label" default="Id"/></td>
-
-        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "id")}</td>
-
-      </tr>
-
-      <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.created.label" default="Created"/></td>
-
+        <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
         <td valign="top" class="value"><g:formatDate date="${userInstance?.created}"/></td>
+      </tr>
+
+      <tr class="prop">
+        <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
+
+        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
 
       </tr>
 
       <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Records Transcribed Count"/></td>
+        <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks Validated"/></td>
 
-        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "recordsTranscribedCount")}</td>
-
-      </tr>
-
-      <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Transcribed Validated Count"/></td>
-
-        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "transcribedValidatedCount")}</td>
+        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
 
       </tr>
 
