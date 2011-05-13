@@ -5,9 +5,18 @@ class UserController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def taskService
+    def authService
+    def userService
 
     def index = {
         redirect(action: "list", params: params)
+    }
+
+    def myStats = {
+      userService.registerCurrentUser()
+      def currentUser = authService.username()
+      def userInstance = User.findByUserId(currentUser)
+      redirect(action: "show", id: userInstance.id)
     }
 
     def list = {

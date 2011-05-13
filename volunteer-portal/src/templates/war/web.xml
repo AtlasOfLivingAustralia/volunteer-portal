@@ -37,7 +37,7 @@
 
     <context-param>
         <param-name>uriFilterPattern</param-name>
-        <param-value>/transcribe/task/.*,/transcribe/save.*,/transcribe/.*, /validate/save.*, /validate/task/.*,/validate/.*</param-value>
+        <param-value>/transcribe/task/.*,/transcribe/save.*,/transcribe/.*, /validate/save.*, /validate/task/.*,/validate/.*,/user/myStats</param-value>
     </context-param>
 
     <!-- CAS Authentication Service filters -->

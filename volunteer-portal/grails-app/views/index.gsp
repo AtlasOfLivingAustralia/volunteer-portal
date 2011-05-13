@@ -18,6 +18,7 @@
         <li class="controller"><g:link controller="transcribe">Transcribe</g:link></li>
         <li class="controller"><g:link controller="validate">Validate</g:link></li>
         <li class="controller"><g:link controller="user">User scoreboard</g:link></li>
+        <li class="controller"><g:link controller="user" action="myStats">My stats</g:link></li>
       </ul>
     </div>
     <div id="adminActionList" class="dialog">
