@@ -3,9 +3,8 @@ package au.org.ala.volunteer
 class Template {
 
   String name
-  String viewName
+  String viewName  //this should be the GSP in use for this template
   String fieldOrder // JSON encoded list
-
   String author
 
   static mapping = {
