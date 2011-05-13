@@ -55,3 +55,7 @@ div#mapCanvas {
 .zoomPad .zoomWindow {
     position: fixed;
 }
+
+
+.nav { margin-bottom: 20px; }
+
