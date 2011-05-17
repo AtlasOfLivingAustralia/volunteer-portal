@@ -1,3 +1,5 @@
+
+
 <%@ page import="au.org.ala.volunteer.Task" %>
 <html>
     <head>
@@ -28,15 +30,6 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="created"><g:message code="task.created.label" default="Created" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'created', 'errors')}">
-                                    <g:datePicker name="created" precision="day" value="${taskInstance?.created}"  />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
                                     <label for="externalIdentifier"><g:message code="task.externalIdentifier.label" default="External Identifier" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'externalIdentifier', 'errors')}">
@@ -55,28 +48,19 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="fullyTranscribed"><g:message code="task.fullyTranscribed.label" default="Fully Transcribed" /></label>
+                                    <label for="fullyTranscribedBy"><g:message code="task.fullyTranscribedBy.label" default="Fully Transcribed By" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyTranscribed', 'errors')}">
-                                    <g:checkBox name="fullyTranscribed" value="${taskInstance?.fullyTranscribed}" />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                    <label for="fullyValidated"><g:message code="task.fullyValidated.label" default="Fully Validated" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyValidated', 'errors')}">
-                                    <g:checkBox name="fullyValidated" value="${taskInstance?.fullyValidated}" />
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyTranscribedBy', 'errors')}">
+                                    <g:textField name="fullyTranscribedBy" value="${taskInstance?.fullyTranscribedBy}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="project"><g:message code="task.project.label" default="Project" /></label>
+                                    <label for="fullyValidatedBy"><g:message code="task.fullyValidatedBy.label" default="Fully Validated By" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'project', 'errors')}">
-                                    <g:select name="project.id" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" value="${taskInstance?.project?.id}"  />
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyValidatedBy', 'errors')}">
+                                    <g:textField name="fullyValidatedBy" value="${taskInstance?.fullyValidatedBy}" />
                                 </td>
                             </tr>
                         
@@ -86,6 +70,24 @@
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'viewed', 'errors')}">
                                     <g:textField name="viewed" value="${fieldValue(bean: taskInstance, field: 'viewed')}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="created"><g:message code="task.created.label" default="Created" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'created', 'errors')}">
+                                    <g:datePicker name="created" precision="day" value="${taskInstance?.created}" default="none" noSelection="['': '']" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="project"><g:message code="task.project.label" default="Project" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'project', 'errors')}">
+                                    <g:select name="project.id" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" value="${taskInstance?.project?.id}"  />
                                 </td>
                             </tr>
                         

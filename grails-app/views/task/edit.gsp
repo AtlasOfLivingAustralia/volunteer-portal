@@ -33,15 +33,6 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="created"><g:message code="task.created.label" default="Created" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'created', 'errors')}">
-                                    <g:datePicker name="created" precision="day" value="${taskInstance?.created}"  />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
                                   <label for="externalIdentifier"><g:message code="task.externalIdentifier.label" default="External Identifier" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'externalIdentifier', 'errors')}">
@@ -60,19 +51,53 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="fullyTranscribed"><g:message code="task.fullyTranscribed.label" default="Fully Transcribed" /></label>
+                                  <label for="fullyTranscribedBy"><g:message code="task.fullyTranscribedBy.label" default="Fully Transcribed By" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyTranscribed', 'errors')}">
-                                    <g:checkBox name="fullyTranscribed" value="${taskInstance?.fullyTranscribed}" />
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyTranscribedBy', 'errors')}">
+                                    <g:textField name="fullyTranscribedBy" value="${taskInstance?.fullyTranscribedBy}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="fullyValidated"><g:message code="task.fullyValidated.label" default="Fully Validated" /></label>
+                                  <label for="fullyValidatedBy"><g:message code="task.fullyValidatedBy.label" default="Fully Validated By" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyValidated', 'errors')}">
-                                    <g:checkBox name="fullyValidated" value="${taskInstance?.fullyValidated}" />
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fullyValidatedBy', 'errors')}">
+                                    <g:textField name="fullyValidatedBy" value="${taskInstance?.fullyValidatedBy}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="viewed"><g:message code="task.viewed.label" default="Viewed" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'viewed', 'errors')}">
+                                    <g:textField name="viewed" value="${fieldValue(bean: taskInstance, field: 'viewed')}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="created"><g:message code="task.created.label" default="Created" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'created', 'errors')}">
+                                    <g:datePicker name="created" precision="day" value="${taskInstance?.created}" default="none" noSelection="['': '']" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="fields"><g:message code="task.fields.label" default="Fields" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'fields', 'errors')}">
+                                    
+<ul>
+<g:each in="${taskInstance?.fields?}" var="f">
+    <li><g:link controller="field" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link></li>
+</g:each>
+</ul>
+<g:link controller="field" action="create" params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'field.label', default: 'Field')])}</g:link>
+
                                 </td>
                             </tr>
                         
@@ -103,10 +128,28 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="viewed"><g:message code="task.viewed.label" default="Viewed" /></label>
+                                  <label for="viewedTasks"><g:message code="task.viewedTasks.label" default="Viewed Tasks" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'viewed', 'errors')}">
-                                    <g:textField name="viewed" value="${fieldValue(bean: taskInstance, field: 'viewed')}" />
+                                <td valign="top" class="value ${hasErrors(bean: taskInstance, field: 'viewedTasks', 'errors')}">
+                                    
+<ul>
+<g:each in="${taskInstance?.viewedTasks?}" var="v">
+    <li><g:link controller="viewedTask" action="show" id="${v.id}">${v?.encodeAsHTML()}</g:link></li>
+</g:each>
+</ul>
+<g:link controller="viewedTask" action="create" params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'viewedTask.label', default: 'ViewedTask')])}</g:link>
+
                                 </td>
                             </tr>
                         
+                        </tbody>
+                    </table>
+                </div>
+                <div class="buttons">
+                    <span class="button"><g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" /></span>
+                    <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
+                </div>
+            </g:form>
+        </div>
+    </body>
+</html>
