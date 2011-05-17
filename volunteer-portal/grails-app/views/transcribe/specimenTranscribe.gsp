@@ -13,19 +13,25 @@
   <title>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
   <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
+  <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
+  <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
   <script type="text/javascript">
-      var map, marker, circle;
-
+      var map, marker, circle, locationObj;
+      var quotaCount = 0;
+      
       function initialize() {
+          geocoder = new google.maps.Geocoder();
           var lat = $('.decimalLatitude').val();
           var lng = $('.decimalLongitude').val();
           var latLng;
+          
           if (lat && lng) {
               latLng = new google.maps.LatLng(lat, lng);
           } else {
-              latLng = new google.maps.LatLng( - 34.397, 150.644);
+              latLng = new google.maps.LatLng(-34.397, 150.644);
           }
+          
           var myOptions = {
               zoom: 10,
               center: latLng,
@@ -42,7 +48,7 @@
               map: map,
               draggable: true
           });
-
+          //console.log("adding marker: " + latLng + " (count: " + quotaCount +")");
           // Add a Circle overlay to the map.
           var radius = parseInt($('.coordinatePrecision').val());
           circle = new google.maps.Circle({
@@ -76,8 +82,17 @@
               geocodePosition(marker.getPosition());
               map.panTo(marker.getPosition());
           });
-
-          geocoder = new google.maps.Geocoder();
+          
+          var localityStr = $(':input.verbatimLocality').val();
+          if (!$('input#address').val()) {
+              $('input#address').val($(':input.verbatimLocality').val());
+          }
+          if ($('.verbatimLatitude').val() && $('.verbatimLongitude').val()) {
+              $('input#address').val($('.verbatimLatitude').val() +","+$('.verbatimLongitude').val())
+              codeAddress();
+          } else if (localityStr) {
+              codeAddress();
+          } 
       }
 
       /**
@@ -105,6 +120,7 @@
 
           if (geocoder && address) {
               //geocoder.getLocations(address, addAddressToPage);
+              quotaCount++
               geocoder.geocode({
                   'address': address,
                   region: 'AU'
@@ -112,21 +128,26 @@
               function(results, status) {
                   if (status == google.maps.GeocoderStatus.OK) {
                       // geocode was successful
-                      var lat = results[0].geometry.location.lat();
-                      var lon = results[0].geometry.location.lng();
+                      var latLng = results[0].geometry.location;
+                      var lat = latLng.lat();
+                      var lon = latLng.lng();
                       var locationStr = results[0].formatted_address;
                       updateMarkerAddress(locationStr, results[0]);
-                      updateMarkerPosition(results[0].geometry.location);
-                      initialize();
+                      updateMarkerPosition(latLng);
+                      //initialize();
+                      //console.log("moving marker: " + latLng + " (count: " + quotaCount +")");
+                      marker.setPosition(latLng);
+                      map.panTo(latLng);
+                      return true;
                   } else {
-                      alert("Geocode was not successful for the following reason: " + status);
+                      alert("Geocode was not successful for the following reason: " + status + " (count: " + quotaCount +")");
                   }
               });
           }
       }
 
       function updateMarkerStatus(str) {
-          $('.locality').val(str);
+          //$(':input.locality').val(str);
       }
 
       function updateMarkerPosition(latLng) {
@@ -135,16 +156,21 @@
           // round to 8 decimal places
           var lng = Math.round(latLng.lng() * rnd) / rnd;
           // round to 8 decimal places
-          $('.decimalLatitude').val(lat);
-          $('.decimalLongitude').val(lng);
+          //$('.decimalLatitude').val(lat);
+          //$('.decimalLongitude').val(lng);
+          //$(':input.coordinatePrecision').val(1000);
+          $('#infoLat').html(lat);
+          $('#infoLng').html(lng);
       }
 
       function updateMarkerAddress(str, addressObj) {
           //$('#markerAddress').html(str);
-          $('#sightingLocation').val(str);
+          $('#infoLoc').html(str);
+          //$('#mapFlashMsg').fadeIn('fast').fadeOut('slow');
           // update form fields with location parts
           if (addressObj && addressObj.address_components) {
               var addressComps = addressObj.address_components;
+              locationObj = addressComps; // save to global var
               // array
               for (var i = 0; i < addressComps.length; i++) {
                   var name1 = addressComps[i].short_name;
@@ -152,21 +178,20 @@
                   var type = addressComps[i].types[0];
                   // go through each avail option
                   if (type == 'country') {
-                      $(':input.countryCode').val(name1);
-                      $(':input.country').val(name2);
+                      //$(':input.countryCode').val(name1);
+                      //$(':input.country').val(name2);
                   } else if (type == 'locality') {
-                      $(':input.locality').val(name2);
+                      //$(':input.locality').val(name2);
                   } else if (type == 'administrative_area_level_1') {
-                      $(':input.stateProvince').val(name2);
+                      //$(':input.stateProvince').val(name2);
                   }
               }
           }
       }
-
-
+      
       $(document).ready(function() {
           // Google maps API code
-          initialize();
+          //initialize();
 
           // trigger Google geolocation search on search button
           $('#locationSearch').click(function(e) {
@@ -175,7 +200,7 @@
               codeAddress();
           });
 
-          $('.coordinatePrecision').change(function(e) {
+          $('.coordinatePrecision, #infoUncert').change(function(e) {
               var rad = parseInt($(this).val());
               circle.setRadius(rad);
               //updateTitleAttr(rad);
@@ -289,11 +314,27 @@
               });
           }
           
+          // show map popup
+          var opts = {
+            titleShow: false,
+            onComplete: initialize,
+            autoDimensions: false,
+            width: 630,
+            height: 430
+          }
+          $('button#geolocate').fancybox(opts);
+          
           // catch the clear button
           $('button#clearLocation').click(function() {
               $('form.transcribeForm').validate();
               $('form.transcribeForm').submit();
-          })
+          });
+          
+          // catch button on map 
+          $('#setLocationFields').click(function(e) {
+              e.preventDefault();
+              
+          });
       });
       
   </script>
@@ -306,12 +347,17 @@
       <g:else>
         <h1>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</h1>
       </g:else>
-
+      
       <g:if test="${taskInstance}">
 
       <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
       <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
-      <div class="dialog">
+      <ul id="taskMetadata">
+        <li>Institution: ${recordValues?.get(0)?.institutionCode}</li>
+        <li>Catalogue No.: ${recordValues?.get(0)?.catalogNumber}</li>
+        <li>Taxa: ${recordValues?.get(0)?.scientificName}</li>
+      </ul>
+      <div class="dialog" style="clear: both">
         <g:each in="${taskInstance.multimedia}" var="m">
           %{--<img src="${ConfigurationHolder.config.server.url}${m.filePath}" alt="specimen image"/>--}%
           <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/><!-- imageUrl = ${imageUrl} -->
@@ -346,7 +392,10 @@
           <div style="clear:both;">&nbsp;</div>
           <table style="width: 100%">
             <thead>
-              <tr><th><h3>Location</h3></th></tr>
+              <tr>
+                <th><h3>Location</h3></th>
+                <th><button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Show mapping tool</button></th>
+              </tr>
             </thead>
             <tbody>
               <g:each in="${TemplateField.findAllByCategory(FieldCategory.location, [sort:'id'])}" var="field">
@@ -354,13 +403,35 @@
               </g:each>
             </tbody>
           </table>
-          <div id="mapWidgets" style="display: none">
-            <div id="sightingAddress">
-                <label for="address">Geocode a location: </label>
-                <input name="address" id="address" size="36" value=""/>
-                <input id="locationSearch" type="button" value="Search"/>
+          <div style="display:none">
+            <div id="mapWidgets">
+              <div id="mapWrapper">
+                <div id="sightingAddress">
+                  <label for="address">Locality/Coodinates: </label>
+                  <input name="address" id="address" size="30" value=""/>
+                  <input id="locationSearch" type="button" value="Search"/>
+                </div>
+                <div id="mapCanvas"></div>
+                <div id="mapHelp">Search for a locality/place/coordinates and/or drag the marker to set the location data</div>
+              </div>
+              <div id="mapInfo">
+                <h4>Location Data</h4>
+                <div>Latitude: <span id="infoLat"></span></div>
+                <div>Longitude: <span id="infoLng"></span></div>
+                <div>Location: <span id="infoLoc"></span></div>
+                <div>Coordinate Uncertainty: <select id="infoUncert">
+                    <option>10</option>
+                    <option>50</option>
+                    <option>100</option>
+                    <option>500</option>
+                    <option selected="selected">1000</option>
+                    <option>10000</option>
+                  </select></div>
+                <div style="text-align: center; padding: 10px;">
+                  <input id="setLocationFields" type="button" value="Use these Location Data"/>
+                </div>
+              </div>
             </div>
-            <div id="mapCanvas"></div>
           </div>
           <table style="width: 100%">
             <thead>
