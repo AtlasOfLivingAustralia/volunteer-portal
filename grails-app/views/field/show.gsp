@@ -30,6 +30,13 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="field.task.label" default="Task" /></td>
+                            
+                            <td valign="top" class="value"><g:link controller="task" action="show" id="${fieldInstance?.task?.id}">${fieldInstance?.task?.encodeAsHTML()}</g:link></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="field.name.label" default="Name" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: fieldInstance, field: "name")}</td>
@@ -37,9 +44,9 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="field.record.label" default="Record" /></td>
+                            <td valign="top" class="name"><g:message code="field.recordIdx.label" default="Record Idx" /></td>
                             
-                            <td valign="top" class="value"><g:link controller="record" action="show" id="${fieldInstance?.record?.id}">${fieldInstance?.record?.encodeAsHTML()}</g:link></td>
+                            <td valign="top" class="value">${fieldValue(bean: fieldInstance, field: "recordIdx")}</td>
                             
                         </tr>
                     
@@ -61,6 +68,13 @@
                             <td valign="top" class="name"><g:message code="field.value.label" default="Value" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: fieldInstance, field: "value")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="field.superceded.label" default="Superceded" /></td>
+                            
+                            <td valign="top" class="value"><g:formatBoolean boolean="${fieldInstance?.superceded}" /></td>
                             
                         </tr>
                     

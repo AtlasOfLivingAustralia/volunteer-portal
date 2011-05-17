@@ -33,6 +33,15 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="task"><g:message code="field.task.label" default="Task" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: fieldInstance, field: 'task', 'errors')}">
+                                    <g:select name="task.id" from="${au.org.ala.volunteer.Task.list()}" optionKey="id" value="${fieldInstance?.task?.id}" noSelection="['null': '']" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="name"><g:message code="field.name.label" default="Name" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: fieldInstance, field: 'name', 'errors')}">
@@ -42,10 +51,10 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="record"><g:message code="field.record.label" default="Record" /></label>
+                                  <label for="recordIdx"><g:message code="field.recordIdx.label" default="Record Idx" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: fieldInstance, field: 'record', 'errors')}">
-                                    <g:select name="record.id" from="${au.org.ala.volunteer.Record.list()}" optionKey="id" value="${fieldInstance?.record?.id}" noSelection="['null': '']" />
+                                <td valign="top" class="value ${hasErrors(bean: fieldInstance, field: 'recordIdx', 'errors')}">
+                                    <g:textField name="recordIdx" value="${fieldValue(bean: fieldInstance, field: 'recordIdx')}" />
                                 </td>
                             </tr>
                         
@@ -73,6 +82,15 @@
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: fieldInstance, field: 'value', 'errors')}">
                                     <g:textField name="value" value="${fieldInstance?.value}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="superceded"><g:message code="field.superceded.label" default="Superceded" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: fieldInstance, field: 'superceded', 'errors')}">
+                                    <g:checkBox name="superceded" value="${fieldInstance?.superceded}" />
                                 </td>
                             </tr>
                         
