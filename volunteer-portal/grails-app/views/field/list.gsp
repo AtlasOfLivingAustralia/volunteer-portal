@@ -24,15 +24,15 @@
                         
                             <g:sortableColumn property="id" title="${message(code: 'field.id.label', default: 'Id')}" />
                         
+                            <th><g:message code="field.task.label" default="Task" /></th>
+                        
                             <g:sortableColumn property="name" title="${message(code: 'field.name.label', default: 'Name')}" />
                         
-                            <th><g:message code="field.record.label" default="Record" /></th>
+                            <g:sortableColumn property="recordIdx" title="${message(code: 'field.recordIdx.label', default: 'Record Idx')}" />
                         
                             <g:sortableColumn property="transcribedByUserId" title="${message(code: 'field.transcribedByUserId.label', default: 'Transcribed By User Id')}" />
                         
                             <g:sortableColumn property="validatedByUserId" title="${message(code: 'field.validatedByUserId.label', default: 'Validated By User Id')}" />
-                        
-                            <g:sortableColumn property="value" title="${message(code: 'field.value.label', default: 'Value')}" />
                         
                         </tr>
                     </thead>
@@ -42,15 +42,15 @@
                         
                             <td><g:link action="show" id="${fieldInstance.id}">${fieldValue(bean: fieldInstance, field: "id")}</g:link></td>
                         
+                            <td>${fieldValue(bean: fieldInstance, field: "task")}</td>
+                        
                             <td>${fieldValue(bean: fieldInstance, field: "name")}</td>
                         
-                            <td>${fieldValue(bean: fieldInstance, field: "record")}</td>
+                            <td>${fieldValue(bean: fieldInstance, field: "recordIdx")}</td>
                         
                             <td>${fieldValue(bean: fieldInstance, field: "transcribedByUserId")}</td>
                         
                             <td>${fieldValue(bean: fieldInstance, field: "validatedByUserId")}</td>
-                        
-                            <td>${fieldValue(bean: fieldInstance, field: "value")}</td>
                         
                         </tr>
                     </g:each>
