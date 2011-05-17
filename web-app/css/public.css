@@ -3,17 +3,66 @@ body .ac_results li {
     font-size: 12px;
 }
 
-div#mapWidgets {
-    width: 420px;
-    height: 350px;
-    float: left;
-    margin-left: 20px;
+#content .body img {
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -o-border-radius: 0px;
+    -icab-border-radius: 0px;
+    -khtml-border-radius: 0px;
+    border-radius: 0px;
 }
 
-div#mapCanvas {
-    border: 0px solid red;
+ul#taskMetadata {
+    margin:0px;
+    padding:0px;
     width: 100%;
+}
+
+ul#taskMetadata li {
+    margin:0px;
+    padding:0px;
+    float:left;
+    list-style:none;
+/*    height:10px;*/
+    width: 33%;
+}
+
+/* Mapping tool (popup) */
+
+div#mapWidgets {
+    width: 620px;
+    height: 420px;
+}
+
+#mapWidgets #mapWrapper {
+    width: 370px;
+    height: 420px;
+    float: left;
+/*    padding-right: 10px;*/
+}
+
+#mapWidgets #mapCanvas {
+    width: 360px;
+    height: 360px;
+}
+
+#mapWidgets #mapInfo {
+    float: left;
     height: 100%;
+    width: 220px;
+    padding: 0 0 10px 10px;
+    text-align: left;
+    border-left: 2px solid #cccccc;
+}
+
+#mapWidgets #sightingAddress {
+    margin-bottom: 4px;
+}
+
+#mapWidgets #mapHelp {
+    font-size: 12px;
+    padding: 5px;
+    line-height: 1.2em;
 }
 
 .value input {
