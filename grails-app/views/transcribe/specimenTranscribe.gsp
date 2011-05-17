@@ -171,21 +171,6 @@
           if (addressObj && addressObj.address_components) {
               var addressComps = addressObj.address_components;
               locationObj = addressComps; // save to global var
-              // array
-              for (var i = 0; i < addressComps.length; i++) {
-                  var name1 = addressComps[i].short_name;
-                  var name2 = addressComps[i].long_name;
-                  var type = addressComps[i].types[0];
-                  // go through each avail option
-                  if (type == 'country') {
-                      //$(':input.countryCode').val(name1);
-                      //$(':input.country').val(name2);
-                  } else if (type == 'locality') {
-                      //$(':input.locality').val(name2);
-                  } else if (type == 'administrative_area_level_1') {
-                      //$(':input.stateProvince').val(name2);
-                  }
-              }
           }
       }
       
@@ -199,7 +184,14 @@
               // ignore the href text - used for data
               codeAddress();
           });
-
+          
+          $('input#address').keypress(function(e) {
+              //alert('form key event = ' + e.which);
+              if (e.which == 13) {
+                  codeAddress();
+              }
+          });
+          
           $('.coordinatePrecision, #infoUncert').change(function(e) {
               var rad = parseInt($(this).val());
               circle.setRadius(rad);
@@ -263,7 +255,7 @@
               scroll: false,
               max: 10,
               selectFirst: false
-          })
+          });
           
           // JQZoom tool for image zooming
           var options = {
@@ -301,19 +293,6 @@
               }
           });
           
-          // set a few default values if blank
-          var fieldMap = {
-              //country: "Australia",
-              //coordinatePrecision: 1000
-          }
-          
-          for (key in fieldMap) {
-              console.log("key = " + key)
-              $(":input." + key).each(function() {
-                  if (!$(this).val()) $(this).val(fieldMap[key]);
-              });
-          }
-          
           // show map popup
           var opts = {
             titleShow: false,
@@ -333,9 +312,32 @@
           // catch button on map 
           $('#setLocationFields').click(function(e) {
               e.preventDefault();
+              // copy map fields into main form
+              $('.decimalLatitude').val($('#infoLat').html());
+              $('.decimalLongitude').val($('#infoLat').html());
+              $(':input.coordinatePrecision').val($('#infoUncert').val());
+              // global var set from geocoding lookup
+              for (var i = 0; i < locationObj.length; i++) {
+                  var name1 = locationObj[i].short_name;
+                  var name2 = locationObj[i].long_name;
+                  var type = locationObj[i].types[0];
+                  //console.log(i+". type: "+type+" = "+name2);
+                  // go through each avail option
+                  if (type == 'country') {
+                      //$(':input.countryCode').val(name1);
+                      $(':input.country').val(name2);
+                  } else if (type == 'locality') {
+                      $(':input.locality').val(name2);
+                  } else if (type == 'administrative_area_level_1') {
+                      $(':input.stateProvince').val(name2);
+                  } else {
+                      $(':input.locality').val(name2);
+                  }
+              }
               
+              $.fancybox.close();
           });
-      });
+      }); // end document ready
       
   </script>
 </head>
@@ -428,7 +430,7 @@
                     <option>10000</option>
                   </select></div>
                 <div style="text-align: center; padding: 10px;">
-                  <input id="setLocationFields" type="button" value="Use these Location Data"/>
+                  <input id="setLocationFields" type="button" value="Copy values to main form"/>
                 </div>
               </div>
             </div>
