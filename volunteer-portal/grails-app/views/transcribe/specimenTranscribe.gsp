@@ -87,7 +87,9 @@
           if (!$('input#address').val()) {
               $('input#address').val($(':input.verbatimLocality').val());
           }
-          if ($('.verbatimLatitude').val() && $('.verbatimLongitude').val()) {
+          if (lat && lng) {
+              //latLng = new google.maps.LatLng(lat, lng);
+          } else if ($('.verbatimLatitude').val() && $('.verbatimLongitude').val()) {
               $('input#address').val($('.verbatimLatitude').val() +","+$('.verbatimLongitude').val())
               codeAddress();
           } else if (localityStr) {
@@ -314,28 +316,29 @@
               e.preventDefault();
               // copy map fields into main form
               $('.decimalLatitude').val($('#infoLat').html());
-              $('.decimalLongitude').val($('#infoLat').html());
+              $('.decimalLongitude').val($('#infoLng').html());
               $(':input.coordinatePrecision').val($('#infoUncert').val());
-              // global var set from geocoding lookup
+              // locationObj is a global var set from geocoding lookup
               for (var i = 0; i < locationObj.length; i++) {
-                  var name1 = locationObj[i].short_name;
-                  var name2 = locationObj[i].long_name;
+                  var name = locationObj[i].long_name;
                   var type = locationObj[i].types[0];
-                  //console.log(i+". type: "+type+" = "+name2);
+                  var hasLocality = false;
+                  console.log(i+". type: "+type+" = "+name);
                   // go through each avail option
                   if (type == 'country') {
                       //$(':input.countryCode').val(name1);
-                      $(':input.country').val(name2);
+                      $(':input.country').val(name);
                   } else if (type == 'locality') {
-                      $(':input.locality').val(name2);
+                      $(':input.locality').val(name);
+                      hasLocality = true;
                   } else if (type == 'administrative_area_level_1') {
-                      $(':input.stateProvince').val(name2);
+                      $(':input.stateProvince').val(name);
                   } else {
-                      $(':input.locality').val(name2);
+                      //$(':input.locality').val(name);
                   }
               }
               
-              $.fancybox.close();
+              $.fancybox.close(); // close the popup
           });
       }); // end document ready
       
