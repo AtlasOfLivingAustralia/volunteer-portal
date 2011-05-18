@@ -13,9 +13,27 @@ body .ac_results li {
 }
 
 ul#taskMetadata {
-    margin:0px;
-    padding:0px;
-    width: 100%;
+    margin:4px;
+    padding:4px;
+    width: 955px;
+    height: 1.4em;
+    border: 2px solid #D9D9D9;
+/*    background-color: #2796AA;*/
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -o-border-radius: 8px;
+    -icab-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    border-radius: 8px;
+}
+
+ul#taskMetadata > li > div{
+/*    background-color: #2796AA;*/
+    display: inline-block;
+}
+
+ul#taskMetadata > li {
+    background-color: white;
 }
 
 ul#taskMetadata li {
