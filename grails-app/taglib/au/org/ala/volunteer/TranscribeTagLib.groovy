@@ -40,6 +40,10 @@ class TranscribeTagLib {
             label = field.fieldType.label
         }
         def cssClass = name + ((name =~ /[Dd]ate/) ? ' dateWidget' : '') // so we can add a date widget with JQuery
+        
+        if (field.mandatory) {
+            cssClass = cssClass + " validate[required]"
+        }
         // Uses MarkupBuilder to create HTML
         def mb = new groovy.xml.MarkupBuilder(out)
         mb.tr(class:'prop') {

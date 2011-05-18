@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
   <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
+  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
+  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
+  <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
   <script type="text/javascript">
       var map, marker, circle, locationObj;
@@ -88,7 +91,8 @@
               $('input#address').val($(':input.verbatimLocality').val());
           }
           if (lat && lng) {
-              //latLng = new google.maps.LatLng(lat, lng);
+              geocodePosition(latLng);
+              updateMarkerPosition(latLng);
           } else if ($('.verbatimLatitude').val() && $('.verbatimLongitude').val()) {
               $('input#address').val($('.verbatimLatitude').val() +","+$('.verbatimLongitude').val())
               codeAddress();
@@ -323,7 +327,7 @@
                   var name = locationObj[i].long_name;
                   var type = locationObj[i].types[0];
                   var hasLocality = false;
-                  console.log(i+". type: "+type+" = "+name);
+                  //console.log(i+". type: "+type+" = "+name);
                   // go through each avail option
                   if (type == 'country') {
                       //$(':input.countryCode').val(name1);
@@ -340,12 +344,36 @@
               
               $.fancybox.close(); // close the popup
           });
+          
+          // form validation
+          //$("form.transcribeForm").validationEngine();
+          
+          $(":input.savePartial").click(function(e) {
+              e.preventDefault();
+              //alert("Submit with no validation");
+              //$("form.transcribeForm").validationEngine('hideAll'); // closes any prompts from previous submit attempts
+              //$("form.transcribeForm").validationEngine('detach'); // don't validate on 'save partial'
+              $("form.transcribeForm").submit();
+          });
+          
+          $(":input.save").click(function(e) {
+              e.preventDefault();
+              //alert("Attempting validation");
+              if ($("form.transcribeForm").validationEngine({returnIsValid:true})) {
+                  $("form.transcribeForm").submit();
+              } else {
+                  alert("Validation failed.");
+              }
+          });
       }); // end document ready
       
   </script>
 </head>
 <body class="two-column-right">
-  <div class="body">
+    <div class="nav">
+      <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+    </div>
+    <div class="body">
       <g:if test="${validator}">
         <h1>Validate Task ${taskInstance?.id} : ${taskInstance?.project?.name}</h1>
       </g:if>
@@ -358,9 +386,9 @@
       <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
       <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
       <ul id="taskMetadata">
-        <li>Institution: ${recordValues?.get(0)?.institutionCode}</li>
-        <li>Catalogue No.: ${recordValues?.get(0)?.catalogNumber}</li>
-        <li>Taxa: ${recordValues?.get(0)?.scientificName}</li>
+        <li><div>Institution</div> ${recordValues?.get(0)?.institutionCode}</li>
+        <li><div>Catalogue No.</div> ${recordValues?.get(0)?.catalogNumber}</li>
+        <li><div>Taxa</div> ${recordValues?.get(0)?.scientificName}</li>
       </ul>
       <div class="dialog" style="clear: both">
         <g:each in="${taskInstance.multimedia}" var="m">
