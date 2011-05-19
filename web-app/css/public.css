@@ -17,8 +17,8 @@ ul#taskMetadata {
     padding:4px;
     width: 955px;
     height: 1.4em;
-    border: 2px solid #D9D9D9;
-/*    background-color: #2796AA;*/
+/*     border: 2px solid #D9D9D9;
+   background-color: #2796AA;*/
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     -o-border-radius: 8px;
@@ -98,6 +98,7 @@ div#mapWidgets {
 #transcribeFields h3 {
    font-size: 1.2em;
    font-weight: bold;
+   color: #718804;
 }
 
 #transcribeFields > table {
@@ -134,3 +135,10 @@ div.buttons {
 
 .nav { margin-bottom: 20px; }
 
+table.ui-datepicker td {
+    padding: 0;
+}
+
+div#ui-datepicker-div {
+    font-size: 11px;
+}
