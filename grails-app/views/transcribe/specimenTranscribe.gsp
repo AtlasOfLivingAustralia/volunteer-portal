@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
   <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
+  <script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>
+  <link rel="stylesheet" href="${resource(dir: 'css/smoothness', file: 'ui.all.css')}"/>
   <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
   <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
@@ -362,9 +364,17 @@
               if ($("form.transcribeForm").validationEngine({returnIsValid:true})) {
                   $("form.transcribeForm").submit();
               } else {
-                  alert("Validation failed.");
+                  //alert("Validation failed.");
               }
           });
+          
+          // Date Picker 
+          $(":input.datePicker").datepicker({
+              buttonImage: "${resource(dir: 'images', file: 'calendar.png')}", 
+              yearRange: '-200:+00',
+              dateFormat: 'yy-mm-dd'}
+          ).css('width','185px').after(' (YYYY-MM-DD)');
+
       }); // end document ready
       
   </script>
@@ -372,6 +382,8 @@
 <body class="two-column-right">
     <div class="nav">
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+      &gt;
+      <span class="menuButton">Transcribe Task</span>
     </div>
     <div class="body">
       <g:if test="${validator}">
