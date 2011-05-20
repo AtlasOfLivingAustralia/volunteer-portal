@@ -33,6 +33,15 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="key"><g:message code="picklistItem.key.label" default="Key" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: picklistItemInstance, field: 'key', 'errors')}">
+                                    <g:textField name="key" value="${picklistItemInstance?.key}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="picklist"><g:message code="picklistItem.picklist.label" default="Picklist" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: picklistItemInstance, field: 'picklist', 'errors')}">

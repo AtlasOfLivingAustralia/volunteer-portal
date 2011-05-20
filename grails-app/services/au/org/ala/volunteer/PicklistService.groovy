@@ -24,6 +24,9 @@ class PicklistService {
       def picklistItem = new PicklistItem()
       picklistItem.picklist = picklist
       picklistItem.value = tokens[0]
+      if (tokens.size() > 1) {
+          picklistItem.key = tokens[1] // optional second value as "key"
+      }
       picklistItem.save(flush:true)
     }
   }

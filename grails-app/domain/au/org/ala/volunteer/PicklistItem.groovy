@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 class PicklistItem {
 
     Picklist picklist
+    String key
     String value
 
     static mapping = {
@@ -10,5 +11,6 @@ class PicklistItem {
     }
 
     static constraints = {
+        key nullable: true
     }
 }
