@@ -24,6 +24,8 @@
                         
                             <g:sortableColumn property="id" title="${message(code: 'picklistItem.id.label', default: 'Id')}" />
                         
+                            <g:sortableColumn property="key" title="${message(code: 'picklistItem.key.label', default: 'Key')}" />
+                        
                             <th><g:message code="picklistItem.picklist.label" default="Picklist" /></th>
                         
                             <g:sortableColumn property="value" title="${message(code: 'picklistItem.value.label', default: 'Value')}" />
@@ -35,6 +37,8 @@
                         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                         
                             <td><g:link action="show" id="${picklistItemInstance.id}">${fieldValue(bean: picklistItemInstance, field: "id")}</g:link></td>
+                        
+                            <td>${fieldValue(bean: picklistItemInstance, field: "key")}</td>
                         
                             <td>${fieldValue(bean: picklistItemInstance, field: "picklist")}</td>
                         

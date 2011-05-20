@@ -30,6 +30,13 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="picklistItem.key.label" default="Key" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: picklistItemInstance, field: "key")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="picklistItem.picklist.label" default="Picklist" /></td>
                             
                             <td valign="top" class="value"><g:link controller="picklist" action="show" id="${picklistItemInstance?.picklist?.id}">${picklistItemInstance?.picklist?.encodeAsHTML()}</g:link></td>

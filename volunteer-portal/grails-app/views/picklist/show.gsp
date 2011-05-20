@@ -47,13 +47,15 @@
                     <thead>
                         <tr>
                             <g:sortableColumn property="id" title="${message(code: 'picklistItem.id.label', default: 'Id')}" />
+                            <g:sortableColumn property="key" title="${message(code: 'picklistItem.key.label', default: 'Key')}" />
                             <g:sortableColumn property="value" title="${message(code: 'picklistItem.value.label', default: 'Value')}" />
                         </tr>
                     </thead>
                     <tbody>
                     <g:each in="${picklistItemInstanceList}" status="i" var="picklistItemInstance">
                         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                            <td><g:link action="show" id="${picklistItemInstance.id}">${fieldValue(bean: picklistItemInstance, field: "id")}</g:link></td>
+                            <td><g:link controller="picklistItem" action="show" id="${picklistItemInstance.id}">${fieldValue(bean: picklistItemInstance, field: "id")}</g:link></td>
+                            <td>${fieldValue(bean: picklistItemInstance, field: "key")}</td>
                             <td>${fieldValue(bean: picklistItemInstance, field: "value")}</td>
                         </tr>
                     </g:each>

@@ -48,11 +48,16 @@ class BootStrap {
             if (!Picklist.findByName(it)) {
                 println("creating new picklist " + it)
                 Picklist picklist = new Picklist(name:it).save(flush:true, failOnError: true)
-                def text = ApplicationHolder.application.parentContext.getResource("classpath:resources/"+it+".csv").inputStream.text
-                text.eachLine {
+                def csvText = ApplicationHolder.application.parentContext.getResource("classpath:resources/"+it+".csv").inputStream.text
+                csvText.eachCsvLine { tokens ->
                     def picklistItem = new PicklistItem()
                     picklistItem.picklist = picklist
-                    picklistItem.value = it
+                    picklistItem.value = tokens[0].trim()
+                    // handle "value, key" CSV file format
+                    if (tokens.size() > 1) {
+                        picklistItem.key = tokens[1].trim()
+                    }
+                    
                     picklistItem.save(flush:true, failOnError: true)
                 }
             }
