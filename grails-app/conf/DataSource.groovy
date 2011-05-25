@@ -17,14 +17,14 @@ environments {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
             //url = "jdbc:mysql://localhost/volunteers"
-            url = "jdbc:postgresql://localhost:5433/volunteers"
+            url = "jdbc:postgresql://localhost/volunteers"
         }
     }
     test {
         dataSource {
             dbCreate = "create"
             //url = "jdbc:mysql://localhost/volunteerstest"
-            url = "jdbc:postgresql://localhost:5433/volunteerstest"
+            url = "jdbc:postgresql://localhost/volunteerstest"
             driverClassName = "org.postgresql.Driver"
             //driverClassName = "com.mysql.jdbc.Driver"
             username = "root"

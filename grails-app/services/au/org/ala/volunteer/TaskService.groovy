@@ -193,17 +193,34 @@ class TaskService {
             task.project = project
 
             String imageUrl = ""
+            List<Field> fields = new ArrayList<Field>()
 
             if(tokens.length == 1){
               task.externalIdentifier = tokens[0]
-              imageUrl = tokens[0]
+              imageUrl = tokens[0].trim()
             } else if(tokens.length == 2) {
               task.externalIdentifier = tokens[0]
-              imageUrl = tokens[1]
+              imageUrl = tokens[1].trim()
+            } else if (tokens.length == 5) {
+                println("CSV has 5 token: " + tokens.join('|'))
+                task.externalIdentifier = tokens[0].trim()
+                imageUrl = tokens[1].trim()
+                fields.add(new Field(name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()).save(flush: true))
+                fields.add(new Field(name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()).save(flush: true))
+                fields.add(new Field(name: 'scientificName', recordIdx: 0, transcribedByUserId: 'system', value: tokens[4].trim()).save(flush: true))
+                //task.fields = fields
             }
 
             if (!task.hasErrors()) {
 
+                task.save(flush: true)
+
+                // add the fields now that task has an ID
+                fields.each { field ->
+                    field.task = task
+                    field.save(flush: true)
+                }
+                task.fields = fields
                 task.save(flush: true)
 
                 def multimedia = new Multimedia()
@@ -262,49 +279,22 @@ class TaskService {
      * @return fileMap
      */
     def createImageThumbs = { Map fileMap ->
-        println("dir = " + fileMap.dir)
-        println("raw = " + fileMap.raw)
-        fileMap.thumb = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_small.$1') // add _small to filename
-        println("thumbName = " + fileMap.thumb )
         BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
-        BufferedImage scaledImage = Scalr.resize(srcImage, 450);
-        ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb))
+        def smallImg = 450
+        if (srcImage.width > smallImg || srcImage.height > smallImg) {
+            fileMap.thumb = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_small.$1') // add _small to filename
+            BufferedImage scaledImage = Scalr.resize(srcImage, smallImg);
+            ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb))
+        }
+
+        def mediumImg = 900
+        if (srcImage.width > mediumImg || srcImage.height > mediumImg) {
+            fileMap.thumb2 = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_medium.$1') // add _small to filename
+            BufferedImage scaledImage = Scalr.resize(srcImage, mediumImg);
+            ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb2))
+        }
 
         return fileMap
     }
-
-//        ConvertCmd cmd = new ConvertCmd();
-//
-//        // create the operation, add images and operators/options
-//        IMOperation op = new IMOperation();
-//        println(fileMap.raw)
-//
-//        op.addImage();
-//        op.resize(800,600);
-////        File f = new File("//tmp//myimage_small.jpg");
-////        f.createNewFile();
-//
-//        op.addImage();
-//
-//        // execute the operation
-//        cmd.run(op, fileMap.raw, "/tmp/myimage_small.jpg");
-
-
-
-//        ImageUtils iu = new ImageUtils();
-//        iu.load(fileMap.raw);
-//        //iu.square();
-//        iu.smoothThumbnail(600)
-//        FileOutputStream fOut = new FileOutputStream(fileMap.dir +"-"+thumb+".jpg");
-//        ImageIO.write(iu.getModifiedImage(), "jpg", fOut);
-
-
-//        burningImageService.doWith(fileMap.raw, fileMap.dir)
-//                   .execute (thumb, {
-//                       //it.scaleAccurate(100, 100)
-//                       it.scaleApproximate(600, 600)
-//                   })
-//        fileMap.thumb = fileMap.dir + "/" + thumb
-
 }

@@ -13,7 +13,7 @@ class PicklistItemController {
         render(contentType:"application/json") {
             autoCompleteList = array {
                 for (pli in picklistItemInstance) {
-                    picklistItem name:pli.value
+                    picklistItem(name:pli.value, key:pli.key)
                 }
             }	
 	}
