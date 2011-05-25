@@ -2,6 +2,7 @@ catalogNumber,,,none,hidden,1,0,,,default
 institutionCode,,AM,none,hidden,1,0,,,default
 occurrenceRemarks,Verbatim Text,,none,textarea,1,0,Enter all label text here,,default
 recordedBy,Collector,,collectionEvent,text,0,0,,,default
+recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
 eventDate,,,collectionEvent,text,0,0,,,default
 verbatimLocality,,,collectionEvent,textarea,0,0,,,default
 verbatimLatitude,,,collectionEvent,text,0,0,,,default

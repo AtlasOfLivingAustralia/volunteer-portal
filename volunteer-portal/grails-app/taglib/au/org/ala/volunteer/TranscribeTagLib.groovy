@@ -46,77 +46,62 @@ class TranscribeTagLib {
         }
         // Uses MarkupBuilder to create HTML
         def mb = new groovy.xml.MarkupBuilder(out)
-        mb.tr(class:'prop') {
+        def trClass = (field.type == FieldType.hidden) ? 'hidden' : 'prop'
+        mb.tr(class:trClass) {
             td(class:'name') {
-                mb.yield(g.message(code:'record.' + name +'.label', default:label))
+                if (field.type != FieldType.hidden) {
+                    mb.yield(g.message(code:'record.' + name +'.label', default:label))
+                }
             }
             td(class:"value") {
-                // Special case fields are caught first
-                if (name == 'typeStatus') {
-                    // Collector (recordedBy) field has autocomplete via picklist
-                    mkp.yieldUnescaped g.select(
-                        name:'recordValues.0.' + name,
-                        from:PicklistItem.findAllByPicklist(Picklist.findByName(name)),
-                        value:recordValues?.get(0)?.get(name),
-                        optionValue:'value',
-                        optionKey:'value',
-                        noSelection:['':''],
-                        'class':cssClass
-                    )
-                } else {
-                    // regular fields
-                    def w // widget
-                    switch (field.type) {
-                        case FieldType.textarea:
-                            w = g.textArea(
+                def w // widget
+                switch (field.type) {
+                    case FieldType.textarea:
+                        w = g.textArea(
+                            name:'recordValues.0.' + name,
+                            rows: 4,
+                            style: 'width: 295px',
+                            value:recordValues?.get(0)?.get(name),
+                            'class':cssClass
+                        )
+                        break
+                    case FieldType.hidden:
+                        w = g.hiddenField(
+                            name:'recordValues.0.' + name,
+                            value:recordValues?.get(0)?.get(name),
+                            'class':cssClass
+                        )
+                        break;
+                    case FieldType.select:
+                        def pl = Picklist.findByName(name)
+                        if (pl) {
+                            def options = PicklistItem.findAllByPicklist(pl)
+                            w = g.select(
                                 name:'recordValues.0.' + name,
-                                rows: 4,
-                                style: 'width: 295px',
-                                value:recordValues?.get(0)?.get(name),
+                                from: options,
+                                optionValue:'value',
+                                optionKey:'value',
+                                value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                                noSelection:['':''],
+                                style: 'max-width: 295px;',
                                 'class':cssClass
                             )
                             break
-                        case FieldType.hidden:
-                            w = g.hiddenField(
-                                name:'recordValues.0.' + name,
-                                value:recordValues?.get(0)?.get(name),
-                                'class':cssClass
-                            )
-                            break;
-                        case FieldType.select:
-                            // <g:select name="recordValues.0.${fieldName}" from="${PicklistItem.findAllByPicklist(Picklist.findByName(fieldName))}"
-                            // value="${recordValues?.get(0)?.(fieldName)}" optionValue="value" optionKey="value" 
-                            // noSelection="${['':'-- Select an option --']}" class="${fieldName}" />    
-                            def pl = Picklist.findByName(name)
-                            if (pl) {
-                                def options = PicklistItem.findAllByPicklist(pl)
-                                w = g.select(
-                                    name:'recordValues.0.' + name,
-                                    from: options,
-                                    optionValue:'value',
-                                    optionKey:'value',
-                                    value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
-                                    noSelection:['':''],
-                                    style: 'max-width: 295px;',
-                                    'class':cssClass
-                                )
-                                break
-                            } else {
-                                // no picklist so render as a textbox - fall through
-                            }
-                        case FieldType.radio: // fall through TODO
-                        case FieldType.checkbox: // fall through TODO
-                        case FieldType.text: // fall through
-                        default:
-                            w = g.textField(
-                                name:'recordValues.0.' + name,
-                                maxLength:200,
-                                value:recordValues?.get(0)?.get(name),
-                                'class':cssClass
-                            )
-                    }
-                    mkp.yieldUnescaped(w)
+                        } 
+                    case FieldType.radio: // fall through TODO
+                    case FieldType.checkbox: // fall through TODO
+                    case FieldType.text: // fall through
+                    case FieldType.autocomplete:
+                        cssClass = cssClass + " autocomplete"
+                    default:
+                        w = g.textField(
+                            name:'recordValues.0.' + name,
+                            maxLength:200,
+                            value:recordValues?.get(0)?.get(name),
+                            'class':cssClass
+                        )
                 }
+                mkp.yieldUnescaped(w)
             }
         }
     }

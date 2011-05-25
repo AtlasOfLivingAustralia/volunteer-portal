@@ -38,6 +38,7 @@ enum DarwinCoreField {
     occurrenceRemarks("Occurrence Remarks"),
     recordNumber("Record Number"),
     recordedBy("Recorded By"),
+    recordedByID("Recorded By ID"),
     individualID("Individual ID"),
     individualCount("Individual Count"),
     sex("Sex"),

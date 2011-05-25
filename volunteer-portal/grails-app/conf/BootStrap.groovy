@@ -5,6 +5,7 @@ import au.org.ala.volunteer.PicklistItem
 import au.org.ala.volunteer.Template
 import au.org.ala.volunteer.TemplateField
 import au.org.ala.volunteer.DarwinCoreField
+import au.org.ala.volunteer.User
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class BootStrap {
@@ -92,6 +93,11 @@ class BootStrap {
             } else {
                 println "Field already exists: " + fs[0]
             }
+        }
+
+        // add system user
+        if (!User.findByUserId('system')) {
+            User u = new User(userId: 'system', displayName: 'System User')
         }
 
         //add templates

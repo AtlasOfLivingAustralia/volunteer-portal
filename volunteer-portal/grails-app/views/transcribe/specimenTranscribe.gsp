@@ -11,8 +11,10 @@
   <meta name="layout" content="main"/>
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   <title>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
-  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
-  <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
+<!--  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
+  <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>-->
+  <script type="text/javascript" src="${resource(dir: 'js', file: 'mapbox.min.js')}"></script>
+  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
   <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
   <script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>
@@ -234,7 +236,7 @@
               selectFirst: false
           }).result(function(event, item) {
               // user has selected an autocomplete item
-              $('input.taxonConceptID').val(item.guid);
+              $(':input.taxonConceptID').val(item.guid);
           });
           
           $("input.recordedBy").autocomplete("${createLink(action:'autocomplete', controller:'picklistItem')}", {
@@ -263,20 +265,32 @@
               scroll: false,
               max: 10,
               selectFirst: false
+          }).result(function(event, item) {
+              // user has selected an autocomplete item
+              $(':input.recordedByID').val(item.key);
           });
           
-          // JQZoom tool for image zooming
-          var options = {
-              zoomType: 'drag',
-              //lens: true,
-              preloadImages: true,
-              alwaysOn: false,
-              zoomWidth: 450,
-              zoomHeight: 300,
-              imageOpacity: 0.7,
-              title: false
-          };
-          $('.taskImage').jqzoom(options);
+          // MapBox for image zooming & panning
+          $('#viewport').mapbox({ 
+              zoom: true, // does map zoom? 
+              pan: true,
+              zoomToCursor: true, 
+              doubleClickZoom: true,
+              doubleClickDistance: 2,
+              layerSplit: 4,
+              mousewheel: false
+          });
+          $(".map-control a").click(function() {//control panel 
+              var viewport = $("#viewport"); 
+              //this.className is same as method to be called 
+              if(this.className == "zoom" || this.className == "back") { 
+                  viewport.mapbox(this.className, 2);//step twice 
+              } 
+              else { 
+                  viewport.mapbox(this.className); 
+              } 
+              return false; 
+          }); 
           
           // prevent enter key submitting form (for geocode search mainly)
           $(".transcribeForm").keypress(function(e) {
@@ -398,18 +412,41 @@
       <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
       <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
       <ul id="taskMetadata">
-        <li><div>Institution</div> ${recordValues?.get(0)?.institutionCode}</li>
-        <li><div>Catalogue No.</div> ${recordValues?.get(0)?.catalogNumber}</li>
-        <li><div>Taxa</div> ${recordValues?.get(0)?.scientificName}</li>
+        <li><div>Institution:</div> ${recordValues?.get(0)?.institutionCode}</li>
+        <li><div>Catalogue No.:</div> ${recordValues?.get(0)?.catalogNumber}</li>
+        <li><div>Taxa:</div> ${recordValues?.get(0)?.scientificName}</li>
       </ul>
       <div class="dialog" style="clear: both">
         <g:each in="${taskInstance.multimedia}" var="m">
           %{--<img src="${ConfigurationHolder.config.server.url}${m.filePath}" alt="specimen image"/>--}%
           <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/><!-- imageUrl = ${imageUrl} -->
-          <div class="multimedia">
+<!--          <div class="multimedia">
             <a href="${imageUrl}" class="taskImage" title="${taskInstance?.project?.name}">
               <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/,'_small.$1')}" title="image: ${taskInstance?.project?.name}">
             </a>
+          </div>-->
+          <div class="mapwrapper">         
+            <div id="viewport"> 
+              <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/,'_small.$1')}) no-repeat; width: 450px; height: 300px;"> 
+                <!--top level map content goes here--> 
+              </div>
+              <div style="height: 600px; width: 900px;">
+                <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/,'_medium.$1')}" alt="" />
+                <div class="mapcontent"><!--map content goes here--></div>
+              </div>
+              <div style="height: 3168px; width: 4752px;"> 
+                <img src="${imageUrl}" alt="" /> 
+                <div class="mapcontent"><!--map content goes here--></div> 
+              </div> 
+            </div>
+            <div class="map-control"> 
+                <a href="#left" class="left">Left</a> 
+                <a href="#right" class="right">Right</a> 
+                <a href="#up" class="up">Up</a> 
+                <a href="#down" class="down">Down</a> 
+                <a href="#zoom" class="zoom">Zoom</a> 
+                <a href="#zoom_out" class="back">Back</a> 
+            </div>
           </div>
 
         </g:each>
