@@ -34,6 +34,11 @@ class TranscribeController {
     }
   }
 
+  def showNextAction = {
+      println("rendering view: nextAction")
+      render(view:'nextAction')
+  }
+
   /**
    * Retrieve the next un-transcribed record from any project, but supply one I havent seen,
    * or the least recently seen record.
@@ -68,9 +73,11 @@ class TranscribeController {
 
       //update the users stats
       userService.updateUserTranscribedCount(currentUser)
-      redirect(view:'showNextFromAny')
+      println("save finished...")
+      redirect(action:'showNextAction') // showNextFromAny
     } else {
-      redirect(view:'../index')
+        println("no currentUser")
+        redirect(view:'../index')
     }
   }
 
@@ -84,9 +91,11 @@ class TranscribeController {
     if(currentUser){
       def taskInstance = Task.get(params.id)
       fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
-      redirect(view:'showNextFromAny')
+        println("savePartial finished")
+        redirect(action:'showNextAction') // showNextFromAny
     } else {
-      redirect(view:'/index')
+        println("no currentUser")
+        redirect(view:'/index')
     }
   }
 

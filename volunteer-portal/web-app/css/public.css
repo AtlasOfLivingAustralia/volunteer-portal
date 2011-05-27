@@ -3,6 +3,16 @@ body .ac_results li {
     font-size: 12px;
 }
 
+.body > h1 {
+    font-size: 1.8em;
+    border-bottom: 4px solid #D9D9D9;
+    margin-left: -16px;
+    padding:  5px 5px 14px 16px;
+}
+
+div.nav { margin-bottom: 10px; }
+
+
 #content .body img {
     -moz-border-radius: 0px;
     -webkit-border-radius: 0px;
@@ -12,10 +22,17 @@ body .ac_results li {
     border-radius: 0px;
 }
 
-ul#taskMetadata {
+
+#taskMetadata {
+    width: 250px;
+    float: left;
+    margin: 20px;
+}
+
+#taskMetadata ul {
     margin:4px;
     padding:4px;
-    width: 955px;
+    /*width: 955px;*/
     height: 1.4em;
 /*     border: 2px solid #D9D9D9;
    background-color: #2796AA;*/
@@ -27,29 +44,34 @@ ul#taskMetadata {
     border-radius: 8px;
 }
 
-ul#taskMetadata > li > div{
+#taskMetadata ul > li > div{
 /*    background-color: #2796AA;*/
     display: inline-block;
 }
 
-ul#taskMetadata > li {
+#taskMetadata ul > li {
     background-color: white;
 }
 
-ul#taskMetadata li {
+#taskMetadata ul li {
     margin:0px;
     padding:0px;
-    float:left;
     list-style:none;
-/*    height:10px;*/
-    width: 33%;
+ /*    float:left;
+    list-style:none;
+   height:10px;
+    width: 33%;*/
+}
+
+#taskMetadata ul li > div {
+    font-weight: bold;
 }
 
 /* Mapping tool (popup) */
 
 div#mapWidgets {
-    width: 620px;
-    height: 420px;
+    width: 640px;
+    height: 410px;
 }
 
 #mapWidgets #mapWrapper {
@@ -67,7 +89,7 @@ div#mapWidgets {
 #mapWidgets #mapInfo {
     float: left;
     height: 100%;
-    width: 220px;
+    width: 250px;
     padding: 0 0 10px 10px;
     text-align: left;
     border-left: 2px solid #cccccc;
@@ -77,10 +99,14 @@ div#mapWidgets {
     margin-bottom: 4px;
 }
 
-#mapWidgets #mapHelp {
-    font-size: 12px;
-    padding: 5px;
+#mapWidgets #mapHelp, #mapWidgets #searchHint {
+    font-size: 11px;
+    padding: 10px 0;
     line-height: 1.2em;
+}
+
+#mapWidgets #address {
+    width: 180px;
 }
 
 .value input {
@@ -92,19 +118,26 @@ div#mapWidgets {
 }
 
 #transcribeFields {
-    width: 100%
+    width: 950px;
 }
 
-#transcribeFields h3 {
+.transcribeForm h3 {
    font-size: 1.2em;
    font-weight: bold;
    color: #718804;
 }
 
 #transcribeFields > table {
-    margin: 0;
+    margin: 10px 0;
     border-top: 0px solid #ddd;
     border-bottom: 0px solid #ddd;
+    background-color: #f0f0f0;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -o-border-radius: 8px;
+    -icab-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    border-radius: 8px;
 }
 
 #transcribeFields > table tr {
@@ -137,7 +170,11 @@ div.buttons {
     margin-top: 20px;
 }
 
-.nav { margin-bottom: 20px; }
+button#geolocate, input#setLocationFields {
+    color: #DD3122;
+    font-size: 12px;
+    /*font-weight: bold;*/
+}
 
 table.ui-datepicker td {
     padding: 0;
@@ -147,16 +184,18 @@ div#ui-datepicker-div {
     font-size: 11px;
 }
 
+
 /* MapBox CSS */
-#viewport, .mapwrapper {
-    width: 450px;
-    height: 300px;
+#viewport, .imageWrapper {
+    width: 600px;
+    height: 400px;
+    float: left;
     cursor: move;
-    margin: 20px auto;
+    margin: 10px auto;
     overflow: hidden;
 }
 
-.mapwrapper {
+.imageWrapper {
     position: relative;
 }
 
@@ -164,7 +203,7 @@ div#ui-datepicker-div {
     position: absolute;
     top: 30px;
     right: 10px;
-    background: url(../images//map-control.png) no-repeat;
+    background: url(../images/map-control.png) no-repeat;
     height: 63px;
     width: 100px;
     opacity: 0.7;

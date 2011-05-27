@@ -281,18 +281,13 @@ class TaskService {
     def createImageThumbs = { Map fileMap ->
         BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
-        def smallImg = 450
-        if (srcImage.width > smallImg || srcImage.height > smallImg) {
-            fileMap.thumb = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_small.$1') // add _small to filename
-            BufferedImage scaledImage = Scalr.resize(srcImage, smallImg);
-            ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb))
-        }
-
-        def mediumImg = 900
-        if (srcImage.width > mediumImg || srcImage.height > mediumImg) {
-            fileMap.thumb2 = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_medium.$1') // add _small to filename
-            BufferedImage scaledImage = Scalr.resize(srcImage, mediumImg);
-            ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb2))
+        def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
+        sizes.each{
+            if (srcImage.width > it.value || srcImage.height > it.value) {
+                fileMap.thumb = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
+                BufferedImage scaledImage = Scalr.resize(srcImage, it.value)
+                ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb))
+            }
         }
 
         return fileMap
