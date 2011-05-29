@@ -57,7 +57,7 @@
                 });
         //console.log("adding marker: " + latLng + " (count: " + quotaCount +")");
         // Add a Circle overlay to the map.
-        var radius = parseInt($('.coordinatePrecision').val());
+        var radius = parseInt($(':input#infoUncert').val());
         circle = new google.maps.Circle({
                     map: map,
                     radius: radius,
@@ -393,7 +393,7 @@
     <span class="menuButton"><a class="crumb" href="${createLink(action: 'list', controller: 'task')}"><g:message
             code="default.task.label" default="Tasks"/></a></span>
     &gt;
-    <span class="menuButton">${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id}</span>
+    <span class="menuButton">${(validator) ? 'Validate' : 'Transcribe'} Task </span>
 </div>
 
 <div class="body">
@@ -455,7 +455,9 @@
 
                 <div id="transcribeFields">
                     <table style="width: 100%">
-                        <thead/>
+                        <thead>
+                        <tr><th><h3>1. Transcribe All Text</h3></th></tr>
+                        </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByFieldType('occurrenceRemarks')}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
@@ -464,7 +466,7 @@
                     </table>
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>Collection Event</h3></th></tr>
+                        <tr><th><h3>2. Collection Event</h3></th></tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}"
@@ -477,7 +479,7 @@
                     <table style="width: 100%">
                         <thead>
                         <tr>
-                            <th><h3>Location</h3></th>
+                            <th><h3>4. Location</h3></th>
                             <th><button id="geolocate" href="#mapWidgets"
                                         title="Show geolocate tools popup">Show mapping tool</button></th>
                         </tr>
@@ -532,7 +534,7 @@
                     </div>
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>Identification</h3></th></tr>
+                        <tr><th><h3>5. Identification</h3></th></tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}"

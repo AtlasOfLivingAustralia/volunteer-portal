@@ -59,8 +59,8 @@ class TranscribeTagLib {
                     case FieldType.textarea:
                         w = g.textArea(
                             name:'recordValues.0.' + name,
-                            rows: 4,
-                            style: 'width: 295px',
+                            rows: ((name == 'occurrenceRemarks') ? 6 : 4),
+                            style: 'width: 100%',
                             value:recordValues?.get(0)?.get(name),
                             'class':cssClass
                         )
