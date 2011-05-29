@@ -171,9 +171,9 @@ div.buttons {
 }
 
 button#geolocate, input#setLocationFields {
-    color: #DD3122;
+    /*color: #DD3122;=
     font-size: 12px;
-    /*font-weight: bold;*/
+    font-weight: bold;*/
 }
 
 table.ui-datepicker td {
