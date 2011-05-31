@@ -492,7 +492,7 @@
                     <table style="width: 100%">
                         <thead>
                         <tr>
-                            <th><h3>4. Location</h3></th>
+                            <th><h3>3. Location</h3></th>
                             <th><button id="geolocate" href="#mapWidgets"
                                         title="Show geolocate tools popup">Show mapping tool</button></th>
                         </tr>
@@ -547,7 +547,7 @@
                     </div>
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>5. Identification</h3></th></tr>
+                        <tr><th><h3>4. Identification</h3></th></tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}"
