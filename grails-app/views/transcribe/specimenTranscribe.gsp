@@ -209,75 +209,76 @@
         })
 
         $("input.scientificName").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-                    extraParams: {
-                        limit: 100
-                    },
-                    dataType: 'jsonp',
-                    parse: function(data) {
-                        var rows = new Array();
-                        data = data.autoCompleteList;
-                        for (var i = 0; i < data.length; i++) {
-                            rows[i] = {
-                                data: data[i],
-                                value: data[i].matchedNames[0],
-                                result: data[i].matchedNames[0]
-                            };
-                        }
-                        return rows;
-                    },
-                    matchSubset: true,
-                    formatItem: function(row, i, n) {
-                        return row.matchedNames[0];
-                    },
-                    cacheLength: 10,
-                    minChars: 3,
-                    scroll: false,
-                    max: 10,
-                    selectFirst: false
-                }).result(function(event, item) {
-                    // user has selected an autocomplete item
-                    $(':input.taxonConceptID').val(item.guid);
-                });
+                extraParams: {
+                    limit: 100
+                },
+                dataType: 'jsonp',
+                parse: function(data) {
+                    var rows = new Array();
+                    data = data.autoCompleteList;
+                    for (var i = 0; i < data.length; i++) {
+                        rows[i] = {
+                            data: data[i],
+                            value: data[i].matchedNames[0],
+                            result: data[i].matchedNames[0]
+                        };
+                    }
+                    return rows;
+                },
+                matchSubset: true,
+                formatItem: function(row, i, n) {
+                    return row.matchedNames[0];
+                },
+                cacheLength: 10,
+                minChars: 3,
+                scroll: false,
+                max: 10,
+                selectFirst: false
+            }).result(function(event, item) {
+                // user has selected an autocomplete item
+                $(':input.taxonConceptID').val(item.guid);
+            });
 
         $("input.recordedBy").autocomplete("${createLink(action:'autocomplete', controller:'picklistItem')}", {
-                    extraParams: {
-                        picklist: "recordedBy"
-                    },
-                    dataType: 'json',
-                    parse: function(data) {
-                        var rows = new Array();
-                        data = data.autoCompleteList;
-                        for (var i = 0; i < data.length; i++) {
-                            rows[i] = {
-                                data: data[i],
-                                value: data[i].name,
-                                result: data[i].name
-                            };
-                        }
-                        return rows;
-                    },
-                    matchSubset: true,
-                    formatItem: function(row, i, n) {
-                        return row.name;
-                    },
-                    cacheLength: 10,
-                    minChars: 1,
-                    scroll: false,
-                    max: 10,
-                    selectFirst: false
-                }).result(function(event, item) {
-                    // user has selected an autocomplete item
-                    $(':input.recordedByID').val(item.key);
-                });
+            extraParams: {
+                picklist: "recordedBy"
+            },
+            dataType: 'json',
+            parse: function(data) {
+                var rows = new Array();
+                data = data.autoCompleteList;
+                for (var i = 0; i < data.length; i++) {
+                    rows[i] = {
+                        data: data[i],
+                        value: data[i].name,
+                        result: data[i].name
+                    };
+                }
+                return rows;
+            },
+            matchSubset: true,
+            formatItem: function(row, i, n) {
+                return row.name;
+            },
+            cacheLength: 10,
+            minChars: 1,
+            scroll: false,
+            max: 10,
+            selectFirst: false
+        }).result(function(event, item) {
+            // user has selected an autocomplete item
+            $(':input.recordedByID').val(item.key);
+        });
 
         // MapBox for image zooming & panning
         $('#viewport').mapbox({
-                    'zoom': true, // does map zoom?
-                    'pan': true,
-                    'doubleClickZoom': true,
-                    'layerSplit': 2,
-                    'mousewheel': true
-                });
+            'zoom': true, // does map zoom?
+            'pan': true,
+            'doubleClickZoom': true,
+            'layerSplit': 2,
+            'mousewheel': true
+        });
+        
         $(".map-control a").click(function() {//control panel
             var viewport = $("#viewport");
             //this.className is same as method to be called
@@ -380,6 +381,18 @@
                     dateFormat: 'yy-mm-dd'}
         ).css('width', '185px').after(' (YYYY-MM-DD)');
 
+        // Add institution logo to page
+        var institutionCode = $("span#institutionCode").html();
+        if (institutionCode) {
+            var url =  "http://collections.ala.org.au/ws/institution/summary.json?acronym="+institutionCode;
+            $.getJSON(url + "&callback=?", null, function(data) {
+                if (data.length > 0) {
+                    var institutionLogoHtml = '<img src="' + data[0].logo + '" alt="institution logo"/>';
+                    $("#institutionLogo").html(institutionLogoHtml);
+                }
+            });
+        }
+
     }); // end document ready
 
 </script>
@@ -444,7 +457,7 @@
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
                     <h3>Specimen Metadata</h3>
-                    <ul id="taskMetadata">
+                    <ul>
                         <li><div>Institution:</div> <span id="institutionCode">${recordValues?.get(0)?.institutionCode}</span></li>
                         <li><div>Project:</div> ${taskInstance?.project?.name}</li>
                         <li><div>Catalogue No.:</div> ${recordValues?.get(0)?.catalogNumber}</li>
