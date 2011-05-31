@@ -142,6 +142,7 @@ div#mapWidgets {
 
 #transcribeFields > table tr {
     width: 450px;
+    min-height: 34px;
     float: left;
 }
 
