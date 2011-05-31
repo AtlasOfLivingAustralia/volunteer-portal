@@ -24,7 +24,7 @@ div.nav { margin-bottom: 10px; }
 
 
 #taskMetadata {
-    width: 250px;
+    width: 300px;
     float: left;
     margin: 20px;
 }
@@ -65,6 +65,9 @@ div.nav { margin-bottom: 10px; }
 
 #taskMetadata ul li > div {
     font-weight: bold;
+}
+
+#institutionLogo {
 }
 
 /* Mapping tool (popup) */
