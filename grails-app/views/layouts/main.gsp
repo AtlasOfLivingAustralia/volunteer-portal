@@ -79,7 +79,7 @@
     <div class="section">
         <g:layoutBody/>
     </div>
-
+  </div>
   <div id="footer">
     <div id="footer-nav">
       <ul id="menu-footer-site"><li id="menu-item-1046" class="menu-item menu-item-type-post_type menu-item-1046"><a href="http://www.ala.org.au/">Home</a></li>
