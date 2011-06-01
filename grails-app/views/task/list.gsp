@@ -16,7 +16,6 @@
         <span class="menuButton">${projectInstance.name}</span>
       </g:if>
       <g:else>
-        &gt;
         <span class="menuButton">Tasks</span>
       </g:else>
     </div>
