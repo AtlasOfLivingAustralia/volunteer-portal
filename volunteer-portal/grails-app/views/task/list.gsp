@@ -12,11 +12,9 @@
     <div class="nav">
       <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
       <g:if test="${projectInstance}">
-        &gt;
         <span class="menuButton">${projectInstance.name}</span>
       </g:if>
       <g:else>
-        &gt;
         <span class="menuButton">Tasks</span>
       </g:else>
     </div>
