@@ -411,7 +411,6 @@
 
 <div class="body">
     <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.id})</h1>
-
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
@@ -423,26 +422,19 @@
                             <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: 400px;">
                                 <!--top level map content goes here-->
                             </div>
-
                             <div style="height: 1280px; width: 1920px;">
                                 <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" alt=""/>
-
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-
                             <div style="height: 2000px; width: 3000px;">
                                 <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_large.$1')}" alt=""/>
-
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-
                             <div style="height: 3168px; width: 4752px;">
                                 <img src="${imageUrl}" alt=""/>
-
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
                         </div>
-
                         <div class="map-control">
                             <a href="#left" class="left">Left</a>
                             <a href="#right" class="right">Right</a>
@@ -482,8 +474,7 @@
                         <tr><th><h3>2. Collection Event</h3></th></tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}"
-                                var="field">
+                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                         </tbody>
@@ -493,13 +484,12 @@
                         <thead>
                         <tr>
                             <th><h3>3. Location</h3></th>
-                            <th><button id="geolocate" href="#mapWidgets"
-                                        title="Show geolocate tools popup">Show mapping tool</button></th>
+                            <th><button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Show
+                                    mapping tool</button></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.location, [sort:'id'])}"
-                                var="field">
+                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.location, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                         </tbody>
@@ -511,7 +501,6 @@
                                 <div id="mapCanvas"></div>
                                 <div id="mapHelp">Hint: you can drag & drop the marker icon to set the location data</div>
                             </div>
-
                             <div id="mapInfo">
                                 <div id="sightingAddress">
                                     <h4>Locality Search</h4>
@@ -521,15 +510,10 @@
 
                                     <div id="searchHint">Search for a locality, place of interest, address, postcode or GPS coordinates (as lat, long)</div>
                                 </div>
-
                                 <h4>Location Data</h4>
-
                                 <div>Latitude: <span id="infoLat"></span></div>
-
                                 <div>Longitude: <span id="infoLng"></span></div>
-
                                 <div>Location: <span id="infoLoc"></span></div>
-
                                 <div>Coordinate Uncertainty: <select id="infoUncert">
                                     <option>10</option>
                                     <option>50</option>
@@ -538,7 +522,6 @@
                                     <option selected="selected">1000</option>
                                     <option>10000</option>
                                 </select></div>
-
                                 <div style="text-align: center; padding: 10px;">
                                     <input id="setLocationFields" type="button" value="Copy values to main form"/>
                                 </div>
@@ -550,8 +533,7 @@
                         <tr><th><h3>4. Identification</h3></th></tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}"
-                                var="field">
+                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                         </tbody>
@@ -563,17 +545,17 @@
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                 <g:if test="${validator}">
                     <span class="button"><g:actionSubmit class="validate" action="validate"
-                                                         value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
+                             value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
                     <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
-                                                         value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
+                             value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
                 </g:if>
                 <g:else>
                     <span class="button"><g:actionSubmit class="save" action="save"
-                                                         value="${message(code: 'default.button.save.label', default: 'Save')}"/></span>
+                             value="${message(code: 'default.button.save.label', default: 'Save')}"/></span>
                     <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                                                         value="${message(code: 'default.button.save.partial.label', default: 'Save partially complete')}"/></span>
+                             value="${message(code: 'default.button.save.partial.label', default: 'Save partially complete')}"/></span>
                     <span class="button"><g:actionSubmit class="skip" action="showNextFromAny"
-                                                         value="${message(code: 'default.button.skip.label', default: 'Skip')}"/></span>
+                             value="${message(code: 'default.button.skip.label', default: 'Skip')}"/></span>
                 </g:else>
             </div>
         </g:form>
