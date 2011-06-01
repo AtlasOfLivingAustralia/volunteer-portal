@@ -31,9 +31,11 @@
 
             <g:sortableColumn property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'External Identifier')}"/>
 
-            <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribed.label', default: 'Fully Transcribed')}"/>
+            <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribed.label', default: 'Transcribed by')}"/>
 
-            <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidated.label', default: 'Fully Validated')}"/>
+            <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidated.label', default: 'Validated by')}"/>
+
+            <th>Actions</th>
 
           </tr>
           </thead>
@@ -54,6 +56,13 @@
               <td>${fieldValue(bean: taskInstance, field: "fullyTranscribedBy")}</td>
 
               <td>${fieldValue(bean: taskInstance, field: "fullyValidatedBy")}</td>
+
+              <td>
+                  <ul>
+                    <li><g:link controller="transcribe" action="task" id="${taskInstance.id}"> Transcribe</g:link></li>
+                    <g:if test="${taskInstance.fullyTranscribedBy != null && taskInstance.fullyValidatedBy == null }"><li>Validate</li></g:if>
+                  </ul>
+              </td>
 
             </tr>
           </g:each>
