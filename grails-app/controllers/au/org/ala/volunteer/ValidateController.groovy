@@ -36,9 +36,26 @@ class ValidateController {
     }
   }
 
+  /**
+   * To do determin actions if the validator chooses not to validate
+   */
+  def dontValidate = {
+    redirect(view:'showNextFromAny')
+  }
+
   def showNextTaskForValidation = {
     //need to check the user has sufficient privileges at a project level
     def taskInstance = taskService.getNextTaskForValidation()
+    if(taskInstance!=null){
+       redirect(action: 'task', id:taskInstance.id)
+    } else {
+        render(view:'noTasks')
+    }
+  }
+
+  def showNextFromProject = {
+    def project = Project.get(params.id)
+    def taskInstance = taskService.getNextTaskForValidationForProject(project)
     if(taskInstance!=null){
        redirect(action: 'task', id:taskInstance.id)
     } else {

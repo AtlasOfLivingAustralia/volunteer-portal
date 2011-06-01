@@ -156,6 +156,25 @@ class TaskService {
     }
 
     /**
+     * Get the next task for this user
+     *
+     * @param userId
+     * @return
+     */
+    Task getNextTaskForValidationForProject(Project project) {
+
+        def tasks = Task.executeQuery(
+            """select t from Task t
+               where t.fullyTranscribedBy is not null
+               and t.fullyValidatedBy is null and t.project = :project""", [project:project, max: 1])
+        if (tasks) {
+            tasks.get(0)
+        } else {
+            null
+        }
+    }
+
+    /**
      * Get the next task for this user for this project.
      *
      * @param userId
@@ -241,6 +260,16 @@ class TaskService {
                 println("Has errors..." + task.errors)
             }
         }
+    }
+
+  /**
+   * Get tasks transcribed by this user. Includes partial edits and complete edits.
+   *
+   * @param userId
+   * @return list of tasks
+   */
+    List<Task> getRecentlyTranscribedTasks(String userId) {
+      Task.executeQuery("from Task t where t.fields.transcribedByUserId = :userId", [userId: userId])
     }
 
     /**
