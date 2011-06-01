@@ -90,7 +90,7 @@ class TranscribeController {
     if(currentUser){
       def taskInstance = Task.get(params.id)
       fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
-      redirect(view:'showNextFromAny')
+      redirect(action:'showNextAction')
     } else {
       redirect(view:'/index')
     }
