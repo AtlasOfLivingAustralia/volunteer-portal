@@ -8,8 +8,11 @@
 </head>
 <body>
 <div class="nav">
-  <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-  <span class="menuButton"><g:link class="list" action="list"><g:message code="default.userlist.label" default="User scores"/></g:link></span>
+  <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+  &gt;
+  <span class="menuButton"><g:link class="crumb" action="list"><g:message code="default.userlist.label" default="Users"/></g:link></span>
+  &gt;
+  <span class="menuButton">${fieldValue(bean: userInstance, field: "displayName")}</span>
 </div>
 <div class="body">
   <h1>User: ${fieldValue(bean: userInstance, field: "displayName")}</h1>
@@ -17,36 +20,32 @@
     <div class="message">${flash.message}</div>
   </g:if>
   <div class="dialog">
-    <table>
-      <tbody>
-
-      <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
-        <td valign="top" class="value"><g:formatDate date="${userInstance?.created}"/></td>
-      </tr>
-
-      <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
-
-        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
-
-      </tr>
-
-      <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks Validated"/></td>
-
-        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
-
-      </tr>
-
-      <tr class="prop">
-        <td valign="top" class="name"><g:message code="user.userId.label" default="User Id"/></td>
-
-        <td valign="top" class="value">${fieldValue(bean: userInstance, field: "userId")}</td>
-
-      </tr>
-
-      </tbody>
+    <table style="border:  none;">
+       <tr>
+        <td style="padding-top:18px;"><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80"/></td>
+        <td>
+        <table style="border:  none;">
+          <tbody>
+          <tr class="prop">
+            <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
+            <td valign="top" class="value"><g:formatDate date="${userInstance?.created}"/></td>
+          </tr>
+          <tr class="prop">
+            <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
+            <td valign="top" class="value">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
+          </tr>
+          <tr class="prop">
+            <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks Validated"/></td>
+            <td valign="top" class="value">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
+          </tr>
+          <tr class="prop">
+            <td valign="top" class="name"><g:message code="user.userId.label" default="User Id"/></td>
+            <td valign="top" class="value">${fieldValue(bean: userInstance, field: "userId")}</td>
+          </tr>
+          </tbody>
+        </table>
+        </td>
+       </tr>
     </table>
   </div>
 </div>
