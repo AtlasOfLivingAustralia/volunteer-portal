@@ -9,9 +9,7 @@
 <body>
 <div class="nav">
   <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-  &gt;
   <span class="menuButton"><g:link class="crumb" action="list"><g:message code="default.userlist.label" default="Users"/></g:link></span>
-  &gt;
   <span class="menuButton">${fieldValue(bean: userInstance, field: "displayName")}</span>
 </div>
 <div class="body">

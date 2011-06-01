@@ -400,13 +400,10 @@
 
 <body class="two-column-right">
 <div class="nav">
-    <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-    </span>
-    &gt;
-    <span class="menuButton"><a class="crumb" href="${createLink(action: 'list', controller: 'task')}"><g:message
-            code="default.task.label" default="Tasks"/></a></span>
-    &gt;
-    <span class="menuButton">${(validator) ? 'Validate' : 'Transcribe'} Task </span>
+    <a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+    <a class="crumb" href="${createLink(action: 'list', controller: 'task')}"><g:message
+            code="default.task.label" default="Tasks"/></a>
+    ${(validator) ? 'Validate' : 'Transcribe'} Task 
 </div>
 
 <div class="body">
