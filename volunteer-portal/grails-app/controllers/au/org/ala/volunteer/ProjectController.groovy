@@ -42,7 +42,7 @@ class ProjectController {
     def create = {
         def projectInstance = new Project()
         projectInstance.properties = params
-        return [projectInstance: projectInstance]
+        return [projectInstance: projectInstance, templateList:Template.list()]
     }
 
     def save = {
