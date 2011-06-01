@@ -59,7 +59,7 @@
             <label for="templateId"><g:message code="project.templateId.label" default="Template Id"/></label>
           </td>
           <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'templateId', 'errors')}">
-            <g:textField name="templateId" value="${fieldValue(bean: projectInstance, field: 'templateId')}"/>
+            <g:select name="templateId" id="templateId" from="${templateList}" optionKey="id" optionValue="name"/>
           </td>
         </tr>
 
