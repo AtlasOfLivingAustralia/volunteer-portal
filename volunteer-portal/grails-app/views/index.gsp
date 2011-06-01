@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="layout" content="ala"/>
   <title>Volunteer Portal - Atlas of Living Australia</title>
-</head>
+</head>                               y
 <body class="two-column-right">
 <div id="content">
   <div class="section">
@@ -14,7 +14,7 @@
     <div id="actionList" class="dialog">
       <h2>User actions:</h2>
       <ul>
-        <li class="controller"><a href="https://auth.ala.org.au/cas/login?service=http://www.ala.org.au/wp-login.php?redirect_to=http://localhost:8080/volunteer-portal/">Register/Login</a></li>
+        <li class="controller"><a href="https://auth.ala.org.au/cas/login?service=http://localhost:8080/volunteer-portal/">Register/Login</a></li>
         <li class="controller"><g:link controller="transcribe">Transcribe</g:link></li>
         <li class="controller"><g:link controller="validate">Validate</g:link></li>
         <li class="controller"><g:link controller="user">User scoreboard</g:link></li>

@@ -25,7 +25,6 @@ class TranscribeController {
       auditService.auditTaskViewing(taskInstance, currentUser)
 
       println(authService.username())
-
       //retrieve the existing values
       Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
       render(view:'specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues])
@@ -33,7 +32,7 @@ class TranscribeController {
       redirect(view:'list', controller: "task")
     }
   }
-
+  
   def showNextAction = {
       println("rendering view: nextAction")
       render(view:'nextAction')
@@ -69,15 +68,15 @@ class TranscribeController {
       def taskInstance = Task.get(params.id)
       fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
       taskInstance.fullyTranscribedBy = currentUser
+      //reset the fully validated flag
+      taskInstance.fullyValidatedBy = null
       taskInstance.save(flush:true)
-
       //update the users stats
       userService.updateUserTranscribedCount(currentUser)
-      println("save finished...")
+      userService.updateUserValidatedCount(currentUser)
       redirect(action:'showNextAction') // showNextFromAny
     } else {
-        println("no currentUser")
-        redirect(view:'../index')
+      redirect(view:'../index')
     }
   }
 
@@ -91,11 +90,9 @@ class TranscribeController {
     if(currentUser){
       def taskInstance = Task.get(params.id)
       fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
-        println("savePartial finished")
-        redirect(action:'showNextAction') // showNextFromAny
+      redirect(view:'showNextFromAny')
     } else {
-        println("no currentUser")
-        redirect(view:'/index')
+      redirect(view:'/index')
     }
   }
 
