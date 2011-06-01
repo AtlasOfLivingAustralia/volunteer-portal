@@ -16,6 +16,7 @@
         <span class="menuButton">${projectInstance.name}</span>
       </g:if>
       <g:else>
+        &gt;
         <span class="menuButton">Tasks</span>
       </g:else>
     </div>
@@ -27,6 +28,7 @@
         <div class="message">${flash.message}</div>
       </g:if>
       <div class="list">
+        <g:if test="${taskInstanceList}">
         <table style="border:  none;">
           <thead>
           <tr>
@@ -62,6 +64,12 @@
       <div class="paginateButtons">
         <g:paginate total="${taskInstanceTotal}"/>
       </div>
+      </g:if>
+      <g:else>
+        <div>
+          <p>No tasks currently loaded for this project.</p>
+        </div>
+      </g:else>
     </div>
 </body>
 </html>

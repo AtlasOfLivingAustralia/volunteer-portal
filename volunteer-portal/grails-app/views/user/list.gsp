@@ -11,6 +11,7 @@
 <body class="two-column-right">
 <div class="nav">
   <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+  &gt;
   <span class="menuButton">Users</span>
 </div>
   <h1><g:message code="default.list.label" args="[entityName]"/></h1>
@@ -32,7 +33,7 @@
       <g:each in="${userInstanceList}" status="i" var="userInstance">
         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
           <td><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80"/> </td>
-          <td>${fieldValue(bean: userInstance, field: "displayName")} </td>
+          <td><g:link controller="user" action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "displayName")}</g:link> </td>
           <td>${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
           <td>${fieldValue(bean: userInstance, field: "validatedCount")}</td>
           <td><g:formatDate date="${userInstance.created}"/></td>
