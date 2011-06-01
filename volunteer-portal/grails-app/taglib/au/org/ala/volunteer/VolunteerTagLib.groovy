@@ -14,6 +14,8 @@ class VolunteerTagLib {
 
     static namespace = 'cl'
 
+    def authService
+
     def loggedInName = {
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << "logged in as ${AuthenticationCookieUtils.getUserName(request)}"
@@ -29,9 +31,10 @@ class VolunteerTagLib {
      */
     def loginoutLink = {
         def requestUri = request.forwardURI
-        if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+        def userName = authService.username()
+        if (userName) {
             // currently logged in
-            out << "<li class='nav-logout nav-right'><a id='${AuthenticationCookieUtils.getUserName(request)}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a></li>"
+            out << "<li class='nav-logout nav-right'><a id='${userName}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a></li>"
         } else {
             // currently logged out
             out << "<li class='nav-login nav-right'><a href='https://auth.ala.org.au/cas/login?service=${requestUri}'><span>Log in</span></a></li>"
