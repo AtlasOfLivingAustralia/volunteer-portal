@@ -28,7 +28,7 @@ if (!ala.baseURL) {
 }
 
 
-server.url = "http://localhost"
+// server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
 
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
@@ -79,12 +79,15 @@ grails.exceptionresolver.params.exclude = ['password']
 environments {
     production {
         grails.serverURL = "http://volunteer.ala.org.au"
+        server.url = "http://volunteer.ala.org.au"
     }
     development {
         grails.serverURL = "http://localhost:8080/${appName}"
+        server.url = "http://localhost"
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
+        server.url = "http://localhost"
     }
 }
 
