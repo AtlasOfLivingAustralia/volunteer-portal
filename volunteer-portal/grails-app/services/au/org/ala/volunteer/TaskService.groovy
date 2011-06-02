@@ -317,7 +317,7 @@ class TaskService {
             if (srcImage.width > it.value || srcImage.height > it.value) {
                 fileMap[it.key] = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
                 BufferedImage scaledImage = Scalr.resize(srcImage, it.value)
-                ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb))
+                ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap[it.key]))
             }
         }
 
