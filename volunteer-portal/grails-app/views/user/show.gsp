@@ -27,8 +27,8 @@
           <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;"/>
           <g:if test="${userInstance.userId == currentUser}">
           <p>
-            To update your avatar, you can register your email and picture with
-            <a href="http://en.gravatar.com/">Gravatar</a>
+            To update your avatar, you can register your email and picture with <br/>
+            <img src="http://www.gravatar.com/favicon.ico"/>&nbsp;<a href="http://en.gravatar.com/" class="external">Gravatar</a>
           </p>
           </g:if>
         </td>
@@ -68,19 +68,26 @@
     </g:else>
   </h2>
   <div class="list">
-    <table style="border:  none;">
+    <table style="border:  none; width: 100%">
       <tbody>
+      <tr>
       <g:each in="${taskInstanceList}" status="i" var="taskInstance">
-        <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-          <td>
+        <g:if test="${(i % 4) == 0 && i != 0}">
+          </tr>
+          <tr>
+        </g:if>
+          <td style="width:220px">
             <g:link controller="transcribe" action="task" id="${taskInstance.id}">
             <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}" width="150px"/>
             </g:link>
+            <p><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></p>
           </td>
-          <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
-          <td><g:if test="${taskInstance.fullyValidatedBy}">Validated by: ${fieldValue(bean: taskInstance, field: "fullyValidatedBy")}</g:if></td>
-        </tr>
       </g:each>
+      <!-- pad it out -->
+      <g:each in="${1.. taskInstanceList.size() % 4 }" var="test">
+          <td style="width:220px">&nbsp;</td>
+      </g:each>
+      </tr>
       </tbody>
     </table>
   </div>

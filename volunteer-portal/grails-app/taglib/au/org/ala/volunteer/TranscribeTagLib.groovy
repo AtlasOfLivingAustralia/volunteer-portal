@@ -32,7 +32,7 @@ class TranscribeTagLib {
         def field = attrs.templateField
         def recordValues = attrs.recordValues
         def name = field.fieldType.name()
-        println "TranscribeTagLib: recordValues = " + recordValues 
+        //println "TranscribeTagLib: recordValues = " + recordValues
         def label
         if (field.label) {
             label = field.label

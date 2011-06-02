@@ -21,7 +21,7 @@
         <g:sortableColumn property="displayName" title="${message(code: 'user.user.label', default: 'Name')}"/>
         <g:sortableColumn property="transcribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}"/>
         <g:sortableColumn property="validatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}"/>
-        <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'A transcriber since')}"/>
+        <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'A volunteer since')}"/>
       </tr>
       </thead>
       <tbody>
