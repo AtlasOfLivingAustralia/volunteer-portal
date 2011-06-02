@@ -27,6 +27,33 @@ if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
 }
 
+/******************************************************************************\
+ *  SECURITY
+\******************************************************************************/
+if (!security.cas.urlPattern) {
+    security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*, /validate/save.*, /validate/task/.*,/validate/.*,/user/myStats"
+}
+if (!security.cas.urlExclusionPattern) {
+    security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
+}
+if (!security.cas.authenticateOnlyIfLoggedInPattern) {
+    security.cas.authenticateOnlyIfLoggedInPattern = "/"
+}
+if (!security.cas.casServerName) {
+    security.cas.casServerName = "https://auth.ala.org.au"
+}
+if (!security.cas.loginUrl) {
+    security.cas.loginUrl = "${security.cas.casServerName}/cas/login"
+}
+if (!security.cas.logoutUrl) {
+    security.cas.logoutUrl = "${security.cas.casServerName}/cas/logout"
+}
+if (!security.cas.contextPath) {
+    //security.cas.contextPath = "/workforce" //"""${appName}"
+}
+if (!security.cas.bypass) {
+    security.cas.bypass = false
+}
 
 // server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
@@ -80,14 +107,20 @@ environments {
     production {
         grails.serverURL = "http://volunteer.ala.org.au"
         server.url = "http://volunteer.ala.org.au"
+        security.cas.appServerName = server.url
+        security.cas.contextPath = ""
     }
     development {
         grails.serverURL = "http://localhost:8080/${appName}"
         server.url = "http://localhost"
+        security.cas.appServerName = "http://localhost:8080"
+        security.cas.contextPath = "/${appName}"
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
         server.url = "http://localhost"
+        security.cas.appServerName = "http://localhost:8080"
+        security.cas.contextPath = "/${appName}"
     }
 }
 
