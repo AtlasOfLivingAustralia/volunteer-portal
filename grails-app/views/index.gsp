@@ -17,8 +17,8 @@
         <li class="controller"><a href="https://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.grails.serverURL}">Register/Login</a></li>
         <li class="controller"><g:link controller="transcribe">Transcribe</g:link></li>
         <li class="controller"><g:link controller="validate">Validate</g:link></li>
-        <li class="controller"><g:link controller="user">User scoreboard</g:link></li>
-        <li class="controller"><g:link controller="user" action="myStats">My stats</g:link></li>
+        <li class="controller"><g:link controller="user">Volunteer scoreboard</g:link></li>
+        <li class="controller"><g:link controller="user" action="myStats">My stats and recent activity</g:link></li>
       </ul>
     </div>
     <div id="adminActionList" class="dialog">

@@ -6,17 +6,17 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="layout" content="main"/>
-  <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
+  <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
   <title><g:message code="default.show.label" args="[entityName]"/></title>
 </head>
 <body>
 <div class="nav">
   <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-  <span class="menuButton"><g:link class="crumb" action="list"><g:message code="default.userlist.label" default="Users"/></g:link></span>
+  <span class="menuButton"><g:link class="crumb" action="list"><g:message code="default.userlist.label" default="Volunteers"/></g:link></span>
   <span class="menuButton">${fieldValue(bean: userInstance, field: "displayName")}</span>
 </div>
 <div class="body">
-  <h1>User: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(thats you!)</g:if></h1>
+  <h1>Volunteer: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(thats you!)</g:if></h1>
   <g:if test="${flash.message}">
     <div class="message">${flash.message}</div>
   </g:if>
@@ -25,8 +25,7 @@
        <tr>
         <td style="padding-top:18px; width:150px;">
           <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;"/>
-
-          <g:if test="">
+          <g:if test="${userInstance.userId == currentUser}">
           <p>
             To update your avatar, you can register your email and picture with
             <a href="http://en.gravatar.com/">Gravatar</a>

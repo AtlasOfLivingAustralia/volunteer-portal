@@ -273,7 +273,57 @@ div#ui-datepicker-div {
 }
 
 /* temporary pagination buttons */
-.currentStep { padding: 5px; }
-.previousLink { padding: 5px;}
-.step { padding: 5px;}
-.nextLink { padding: 5px;}
+
+.searchNavBar {
+    text-align:center;
+    padding-bottom: 20px;
+}
+
+.searchNavBar span {
+    display:inline;
+    list-style:none;
+}
+.searchNavBar span {
+    float:right;
+    margin:0 auto;
+}
+.searchNavBar  a, .currentStep{
+    display:inline-block;
+    padding:0 5px;
+    border:1px solid #01716e;
+    text-decoration:none;
+    float:left;
+    margin:0 5px 0 0;
+}
+
+span.currentStep{
+    display:inline-block;
+    padding:0 5px;
+    border:1px solid #01716e;
+    text-decoration:none;
+    float:left;
+    margin:0 5px 0 0;
+}
+
+
+span.currentStep { border-color:#ccc; color:#dd3102; }
+
+.searchNavBar a:hover {
+    border-color:#dd3102;
+}
+.previousLink a, .nextLink a{
+    display:inline-block;
+    border:none!important;
+    margin:0!important;
+    padding:0 0 0 10px;
+    float:left;
+}
+.previousLink, .nextLink {color:#666;display:inline-block;float:left;padding:0 5px 0 0!important;}
+.previousLink {text-align:right;}
+.nextLink {text-align:center;}
+
+.previousLink {text-decoration: none; }
+.nextLink {text-decoration: none;}
+
+#paginationButtons { margin-bottom:30px;}
+#paginationButtons a { text-decoration: none; }
