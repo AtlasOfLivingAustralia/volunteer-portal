@@ -21,24 +21,27 @@
     <context-param>
         <!-- Parameter used by CAS filters -->
         <param-name>serverName</param-name>
-        <param-value>http://localhost:8080</param-value>
-        <!-- <param-value>http://volunteer.ala.org.au</param-value> -->
-        <!--<param-value>@security.cas.serverName@</param-value>-->
+        <param-value>@security.cas.appServerName@</param-value>
     </context-param>
 
     <context-param>
         <param-name>casServerName</param-name>
-        <param-value>https://auth.ala.org.au</param-value>
+        <param-value>@security.cas.casServerName@</param-value>
     </context-param>
 
     <context-param>
         <param-name>contextPath</param-name>
-        <param-value>/volunteer-portal</param-value>
+        <param-value>@security.cas.contextPath@</param-value>
     </context-param>
 
     <context-param>
         <param-name>uriFilterPattern</param-name>
-        <param-value>/transcribe/task/.*,/transcribe/save.*,/transcribe/.*, /validate/save.*, /validate/task/.*,/validate/.*,/user/myStats</param-value>
+        <param-value>@security.cas.urlPattern@</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>uriExclusionFilterPattern</param-name>
+        <param-value>@security.cas.urlExclusionPattern@</param-value>
     </context-param>
 
     <!-- CAS Authentication Service filters -->
@@ -56,7 +59,7 @@
         </init-param>
         <init-param>
             <param-name>casServerLoginUrl</param-name>
-            <param-value>https://auth.ala.org.au/cas/login</param-value>
+            <param-value>@security.cas.loginUrl@</param-value>
         </init-param>
         <init-param>
             <param-name>gateway</param-name>
@@ -73,7 +76,7 @@
         </init-param>
         <init-param>
             <param-name>casServerUrlPrefix</param-name>
-            <param-value>https://auth.ala.org.au/cas</param-value>
+            <param-value>@security.cas.casServerName@/cas</param-value>
         </init-param>
     </filter>
 

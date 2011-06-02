@@ -45,6 +45,7 @@ class TranscribeController {
   def showNextFromAny = {
 
     def currentUser = authService.username()
+    println "current user = "+currentUser
     def taskInstance = taskService.getNextTask(currentUser)
 
     //retrieve the details of the template
