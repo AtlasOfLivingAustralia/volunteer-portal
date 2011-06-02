@@ -12,9 +12,9 @@ class TaskController {
 
     def project = {
       def projectInstance = Project.get(params.id)
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
+      params.max = Math.min(params.max ? params.int('max') : 12, 24)
       def taskInstanceList = Task.findAllByProject(projectInstance,params)
-      def taskInstanceTotal = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId:projectInstance.id])
+      def taskInstanceTotal = Task.countByProject(projectInstance)
       render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
     }
 
