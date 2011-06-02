@@ -21,6 +21,7 @@ class UserController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.sort = params.sort ? params.sort : "transcribedCount"
         def currentUser = authService.username()
         [userInstanceList: User.list(params), userInstanceTotal: User.count(),currentUser: currentUser]
     }
