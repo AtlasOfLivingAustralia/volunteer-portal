@@ -16,14 +16,23 @@
   <span class="menuButton">${fieldValue(bean: userInstance, field: "displayName")}</span>
 </div>
 <div class="body">
-  <h1>User: ${fieldValue(bean: userInstance, field: "displayName")}</h1>
+  <h1>User: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(thats you!)</g:if></h1>
   <g:if test="${flash.message}">
     <div class="message">${flash.message}</div>
   </g:if>
   <div class="dialog">
     <table style="border:  none;">
        <tr>
-        <td style="padding-top:18px;"><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80"/></td>
+        <td style="padding-top:18px; width:150px;">
+          <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;"/>
+
+          <g:if test="">
+          <p>
+            To update your avatar, you can register your email and picture with
+            <a href="http://en.gravatar.com/">Gravatar</a>
+          </p>
+          </g:if>
+        </td>
         <td>
         <table style="border:  none;">
           <tbody>
@@ -50,8 +59,15 @@
     </table>
   </div>
 
-  <h2>Recently Transcribed Tasks by ${fieldValue(bean: userInstance, field: "displayName")}</h2>
   <g:if test="${taskInstanceList}">
+  <h2>Recently Transcribed Tasks by
+    <g:if test="${userInstance.userId == currentUser}">
+      you
+    </g:if>
+    <g:else>
+      ${fieldValue(bean: userInstance, field: "displayName")}
+    </g:else>
+  </h2>
   <div class="list">
     <table style="border:  none;">
       <tbody>
@@ -70,7 +86,6 @@
     </table>
   </div>
   </g:if>
-
 </div>
 </body>
 </html>
