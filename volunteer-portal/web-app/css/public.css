@@ -271,3 +271,9 @@ div#ui-datepicker-div {
     height: 21px;
     width: 21px;
 }
+
+/* temporary pagination buttons */
+.currentStep { padding: 5px; }
+.previousLink { padding: 5px;}
+.step { padding: 5px;}
+.nextLink { padding: 5px;}

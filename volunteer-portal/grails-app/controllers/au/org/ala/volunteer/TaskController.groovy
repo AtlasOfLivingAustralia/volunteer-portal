@@ -29,7 +29,7 @@ class TaskController {
 
     /** list all tasks */
     def list = {
-        params.max = Math.min(params.max ? params.int('max') : 50, 100)
+        params.max = Math.min(params.max ? params.int('max') : 10, 20)
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
