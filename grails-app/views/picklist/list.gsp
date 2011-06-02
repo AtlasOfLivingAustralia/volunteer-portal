@@ -9,6 +9,7 @@
 <body class="two-column-right">
     <div class="nav">
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+      <span class="menuButton">Picklists</span>
     </div>
     <div class="body">
       <h1><g:message code="default.list.label" args="[entityName]"/></h1>
@@ -37,7 +38,7 @@
           </tbody>
         </table>
       </div>
-      <div class="paginateButtons">
+      <div class="searchNavBar">
         <g:paginate total="${picklistInstanceTotal}"/>
       </div>
 </div>

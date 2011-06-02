@@ -8,12 +8,10 @@
         <title><g:message code="default.show.label" args="[entityName]" /></title>
     </head>
 <body class="two-column-right">
-<div id="content">
-  <div class="section">
         <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+            <span class="menuButton"><g:link class="crumb" action="list" controller="picklist">Picklists</g:link></span>
+            <span>${fieldValue(bean: picklistInstance, field: "name")}</span>
         </div>
         <div class="body">
             <h1><g:message code="default.show.label" args="[entityName]" /></h1>
@@ -65,8 +63,6 @@
             <div class="paginateButtons">
                 <g:paginate total="${picklistItemInstanceTotal}" id="${picklistInstance.id}"/>
             </div>
-
-
             <div class="buttons">
                 <g:form>
                     <g:hiddenField name="id" value="${picklistInstance?.id}" />
@@ -75,7 +71,5 @@
                 </g:form>
             </div>
         </div>
-    </div>
-  </div>
     </body>
 </html>

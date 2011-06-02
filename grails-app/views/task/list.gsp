@@ -59,7 +59,7 @@
           </tbody>
         </table>
       </div>
-      <div class="paginateButtons">
+      <div class="searchNavBar">
         <g:paginate total="${taskInstanceTotal}"/>
       </div>
       </g:if>
