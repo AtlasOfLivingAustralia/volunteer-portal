@@ -43,13 +43,14 @@ class UserController {
 
     def show = {
         def userInstance = User.get(params.id)
-
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         }
         else {
-            [userInstance: userInstance]
+            [userInstance: userInstance, taskInstanceList: recentTasks]
         }
     }
 

@@ -60,7 +60,7 @@
         </table>
       </div>
       <div class="searchNavBar">
-        <g:paginate total="${taskInstanceTotal}"/>
+        <g:paginate total="${taskInstanceTotal}" />
       </div>
       </g:if>
       <g:else>
