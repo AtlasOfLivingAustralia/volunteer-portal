@@ -44,7 +44,7 @@ class UserController {
 
     def show = {
         def userInstance = User.get(params.id)
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.max = Math.min(params.max ? params.int('max') : 12, 100)
         def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
         def currentUser = authService.username()
         if (!userInstance) {
