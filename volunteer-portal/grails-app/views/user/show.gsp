@@ -54,14 +54,6 @@
   <g:if test="${taskInstanceList}">
   <div class="list">
     <table style="border:  none;">
-      <thead>
-      <tr>
-        <td>&nbsp;</td>
-        <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Task id')}"/>
-        <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribed.label', default: 'Transcribed by')}"/>
-        <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidated.label', default: 'Validated by')}"/>
-      </tr>
-      </thead>
       <tbody>
       <g:each in="${taskInstanceList}" status="i" var="taskInstance">
         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
@@ -71,8 +63,7 @@
             </g:link>
           </td>
           <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
-          <td>${fieldValue(bean: taskInstance, field: "fullyTranscribedBy")}</td>
-          <td>${fieldValue(bean: taskInstance, field: "fullyValidatedBy")}</td>
+          <td><g:if test="${taskInstance.fullyValidatedBy}">Validated by: ${fieldValue(bean: taskInstance, field: "fullyValidatedBy")}</g:if></td>
         </tr>
       </g:each>
       </tbody>
