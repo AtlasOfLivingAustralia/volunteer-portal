@@ -313,7 +313,7 @@ class TaskService {
         def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
         sizes.each{
             if (srcImage.width > it.value || srcImage.height > it.value) {
-                fileMap.thumb = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
+                fileMap[it.key] = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
                 BufferedImage scaledImage = Scalr.resize(srcImage, it.value)
                 ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap.thumb))
             }
