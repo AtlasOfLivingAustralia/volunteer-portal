@@ -23,7 +23,7 @@
       <h1>Task list <g:if test="${projectInstance}"> for ${projectInstance.name} </g:if></h1>
       <div class="CCCClist">
         <g:if test="${taskInstanceList}">
-        <table style="width:100%;">
+        <table style="width:100%; border: none;">
           <thead>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
@@ -40,7 +40,11 @@
                   <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}" width="150px"/>
                   </g:link>
                   <p>ID: ${fieldValue(bean: taskInstance, field: "id")}
-                  <g:if test="${taskInstance.fullyTranscribedBy}"><span style="padding: 0; margin: 0;">Transcribed By: ${fieldValue(bean: taskInstance, field: "fullyTranscribedBy")}</span></g:if>
+                  <g:if test="${taskInstance.fullyTranscribedBy}">
+                    <br/><span>
+                      Transcriber: ${fieldValue(bean: taskInstance, field: "fullyTranscribedBy")}
+                    </span>
+                  </g:if>
                   <g:else>
                     <span style="padding: 0; margin: 0;"><g:link controller="transcribe" action="task" id="${taskInstance.id}"> Transcribe</g:link></span>
                   </g:else>
