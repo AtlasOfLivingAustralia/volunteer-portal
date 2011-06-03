@@ -43,7 +43,7 @@ class BootStrap {
         
         // add some picklist values if not already loaded
         println("creating picklists...")
-        def items = ["country", "stateProvince", "typeStatus", "institutionCode", "recordedBy", "coordinatePrecision"]
+        def items = ["country", "stateProvince", "typeStatus", "institutionCode", "recordedBy", "coordinateUncertaintyInMeters"]
         items.each {
             println("checking picklist: " + it)
             if (!Picklist.findByName(it)) {

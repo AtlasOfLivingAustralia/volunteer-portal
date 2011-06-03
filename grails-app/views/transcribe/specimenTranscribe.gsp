@@ -377,10 +377,13 @@
 
         // Date Picker
         $(":input.datePicker").datepicker({
+                    showOn: "button",
                     buttonImage: "${resource(dir: 'images', file: 'calendar.png')}",
                     yearRange: '-200:+00',
-                    dateFormat: 'yy-mm-dd'}
-        ).css('width', '155px').after(' (YYYY-MM-DD)');
+                    dateFormat: 'yy-mm-dd',
+                    appendText: '(YYYY-MM-DD)'
+                }
+        ).css('width', '140px'); //
 
         // Add institution logo to page
         var institutionCode = $("span#institutionCode").html();
@@ -396,28 +399,28 @@
 
         // Context sensitive help popups
         $("a#addressHelp").qtip({
-                    tip: true,
-                    position: {
-                        corner: {
-                            target: 'bottomRight',
-                            tooltip: 'topLeft'
-                        }
-                    },
-                    style: {
-                        //width: 450,
-                        padding: 8,
-                        background: 'white', //'#f0f0f0',
-                        color: 'black',
-                        textAlign: 'left',
-                        border: {
-                            width: 4,
-                            radius: 5,
-                            color: '#E66542'// '#E66542' '#DD3102'
-                        },
-                        tip: 'topLeft',
-                        name: 'light' // Inherit the rest of the attributes from the preset light style
-                    }
-                });
+            tip: true,
+            position: {
+                corner: {
+                    target: 'topMiddle',
+                    tooltip: 'bottomMiddle'
+                }
+            },
+            style: {
+                //width: 450,
+                padding: 8,
+                background: 'white', //'#f0f0f0',
+                color: 'black',
+                textAlign: 'left',
+                border: {
+                    width: 4,
+                    radius: 5,
+                    color: '#E66542'// '#E66542' '#DD3102'
+                },
+                tip: 'bottomMiddle',
+                name: 'light' // Inherit the rest of the attributes from the preset light style
+            }
+        }).bind('click', function(e){ e.preventDefault(); return false; });
 
     }); // end document ready
 

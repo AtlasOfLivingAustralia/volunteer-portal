@@ -188,6 +188,20 @@ div.buttons {
     margin-top: 20px;
 }
 
+button.ui-datepicker-trigger {
+    border: none;
+    background: none;
+    width: 16px;
+    height: 16px;
+    margin: 0 2px;
+    margin-top: -2px;
+    padding: 0;
+}
+
+button.ui-datepicker-trigger img {
+   
+}
+
 button#geolocate, input#setLocationFields {
     /*color: #DD3122;=
     font-size: 12px;
