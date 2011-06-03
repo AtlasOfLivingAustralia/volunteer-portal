@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import groovy.sql.Sql
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class ProjectController {
 
@@ -53,6 +54,21 @@ class ProjectController {
         }
         else {
             render(view: "create", model: [projectInstance: projectInstance])
+        }
+    }
+
+   /**
+    * Redirects a image for the supplied project
+    */
+    def showImage = {
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+           params.max = 1
+           def task = Task.findByProject(projectInstance, params)
+           if(task?.multimedia?.filePathToThumbnail){
+             def url =  ConfigurationHolder.config.server.url + task?.multimedia?.filePathToThumbnail.get(0)
+             redirect(url: url)
+           }
         }
     }
 

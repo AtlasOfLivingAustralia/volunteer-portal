@@ -401,6 +401,7 @@
 <body class="two-column-right">
 <div class="nav">
     <a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+    <g:link controller="project" action="list" class="crumb">Projects</g:link>
     <a class="crumb" href="${createLink(action: 'project', controller: 'task', id: taskInstance?.project?.id)}"><g:message
             code="default.task.label" default="${taskInstance?.project?.name}"/></a>
     ${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}
