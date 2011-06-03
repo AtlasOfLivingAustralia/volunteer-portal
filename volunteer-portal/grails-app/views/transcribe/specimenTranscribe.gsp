@@ -22,6 +22,7 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
     var map, marker, circle, locationObj;
@@ -379,7 +380,7 @@
                     buttonImage: "${resource(dir: 'images', file: 'calendar.png')}",
                     yearRange: '-200:+00',
                     dateFormat: 'yy-mm-dd'}
-        ).css('width', '185px').after(' (YYYY-MM-DD)');
+        ).css('width', '155px').after(' (YYYY-MM-DD)');
 
         // Add institution logo to page
         var institutionCode = $("span#institutionCode").html();
@@ -392,6 +393,31 @@
                 }
             });
         }
+
+        // Context sensitive help popups
+        $("a#addressHelp").qtip({
+                    tip: true,
+                    position: {
+                        corner: {
+                            target: 'bottomRight',
+                            tooltip: 'topLeft'
+                        }
+                    },
+                    style: {
+                        //width: 450,
+                        padding: 8,
+                        background: 'white', //'#f0f0f0',
+                        color: 'black',
+                        textAlign: 'left',
+                        border: {
+                            width: 4,
+                            radius: 5,
+                            color: '#E66542'// '#E66542' '#DD3102'
+                        },
+                        tip: 'topLeft',
+                        name: 'light' // Inherit the rest of the attributes from the preset light style
+                    }
+                });
 
     }); // end document ready
 

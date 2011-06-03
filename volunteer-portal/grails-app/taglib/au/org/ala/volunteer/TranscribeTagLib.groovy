@@ -60,7 +60,7 @@ class TranscribeTagLib {
                         w = g.textArea(
                             name:'recordValues.0.' + name,
                             rows: ((name == 'occurrenceRemarks') ? 6 : 4),
-                            style: 'width: 100%',
+                            //style: 'width: 100%',
                             value:recordValues?.get(0)?.get(name),
                             'class':cssClass
                         )
@@ -102,6 +102,11 @@ class TranscribeTagLib {
                         )
                 }
                 mkp.yieldUnescaped(w)
+
+                if (field.helpText) {
+                    def help = "<a href='#' id='addressHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
+                    mkp.yieldUnescaped(help)
+                }
             }
         }
     }

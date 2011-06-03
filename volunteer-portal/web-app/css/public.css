@@ -77,7 +77,10 @@ div.nav a, #breadcrumb a {
     font-weight: bold;
 }
 
-#institutionLogo {
+a#addressHelp {
+    text-decoration: none;
+    display: inline-block;
+    vertical-align: top;
 }
 
 /* Mapping tool (popup) */
@@ -120,10 +123,6 @@ div#mapWidgets {
 
 #mapWidgets #address {
     width: 180px;
-}
-
-.value input {
-    width: 100%;
 }
 
 .multimedia {
@@ -178,6 +177,11 @@ div#mapWidgets {
 
 #transcribeFields td.value {
     width: 295px;
+    color: #666;
+}
+
+.value input, .value textarea {
+    width: 260px;
 }
 
 div.buttons {

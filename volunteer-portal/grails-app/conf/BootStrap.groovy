@@ -72,26 +72,25 @@ class BootStrap {
         }
         
         // populate default set of TemplateFields
-        def fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/defaultFields.csv").inputStream.text
-        fields.eachLine { line ->
-            String[] fs = line.split(',')
-            DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0])
+        def defaultFields = ApplicationHolder.application.parentContext.getResource("classpath:resources/defaultFields.csv").inputStream.text
+        defaultFields.eachCsvLine { fs ->
+            DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
             if (!TemplateField.findByFieldType(dwcf)) {
                 println "creating new FieldType: " + fs + " size="+fs.size()
                 TemplateField tf = new TemplateField(
                         fieldType: dwcf,
-                        label: fs[1],
-                        defaultValue: fs[2],
-                        category: FieldCategory.valueOf(fs[3]),
-                        type: FieldType.valueOf(fs[4]),
-                        mandatory: ((fs[5] == '1') ? true : false),
-                        multiValue: ((fs[6] == '1') ? true : false),
-                        helpText: fs[7],
-                        validationRule: fs[8],
+                        label: fs[1].trim(),
+                        defaultValue: fs[2].trim(),
+                        category: FieldCategory.valueOf(fs[3].trim()),
+                        type: FieldType.valueOf(fs[4].trim()),
+                        mandatory: ((fs[5].trim() == '1') ? true : false),
+                        multiValue: ((fs[6].trim() == '1') ? true : false),
+                        helpText: fs[7].trim(),
+                        validationRule: fs[8].trim(),
                         template: template
                 ).save(flush:true, failOnError: true)
             } else {
-                println "Field already exists: " + fs[0]
+                println "Field already exists: " + dwcf
             }
         }
 
