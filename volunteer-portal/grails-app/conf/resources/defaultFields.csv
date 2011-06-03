@@ -1,6 +1,6 @@
 catalogNumber,,,none,hidden,1,0,,,default
 institutionCode,,AM,none,hidden,1,0,,,default
-occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"Transcribe the text from every label, exactly as it appears in the image above. Enter the labels in the order of: top left to bottom right",,default
+occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"Transcribe the text from every label, exactly as it appears in the image above. Transcribe the labels in the order of: top left to bottom right",,default
 recordedBy,Collector,,collectionEvent,text,0,0,"Person or persons responsible for collecting the specimen",,default
 recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
 eventDate,,,collectionEvent,text,0,0,"Date of the collection event (YYYY-MM-DD or YYYY-MM)",,default
@@ -13,7 +13,7 @@ stateProvince,State/Territory,,location,select,0,0,,,default
 decimalLatitude,,,location,text,0,0,,,default
 country,,,location,select,0,0,,,default
 decimalLongitude,,,location,text,0,0,,,default
-coordinatePrecision,,,location,select,0,0,,,default
+coordinateUncertaintyInMeters,,,location,select,0,0,"The horizontal distance (in meters) from the given decimalLatitude and decimalLongitude describing the smallest circle containing the whole of the Location",,default
 scientificName,Scientific Name,,identification,text,0,0,"Use the autocomplete drop-down where possible",,default
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
 taxonRank,'',,none,hidden,0,0,,,default
