@@ -57,6 +57,7 @@ class FieldSyncService {
                 field.value = keyValue.value
                 field.transcribedByUserId = userId
                 field.task = task
+                field.updated = new Date()
                 field.save(flush: true)
 
                 //keep the original, but mark as superceded
@@ -66,6 +67,7 @@ class FieldSyncService {
               } else {
                 //just replace the value
                 oldFieldValue.value = keyValue.value
+                oldFieldValue.updated = new Date()
                 oldFieldValue.save(flush: true)
               }
             }

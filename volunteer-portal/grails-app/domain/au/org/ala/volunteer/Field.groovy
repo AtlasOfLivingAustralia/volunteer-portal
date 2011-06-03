@@ -9,6 +9,8 @@ class Field {
   String transcribedByUserId
   String validatedByUserId
   boolean superceded = false
+  Date created = new Date()
+  Date updated = new Date()
 
   static mapping = {
     version false

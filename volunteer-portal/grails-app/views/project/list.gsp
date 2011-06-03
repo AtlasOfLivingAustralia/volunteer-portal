@@ -12,10 +12,7 @@
       <span class="menuButton">Projects</span>
     </div>
     <div class="body">
-      <h1><g:message code="default.list.label" args="[entityName]"/></h1>
-      <g:if test="${flash.message}">
-        <div class="message">${flash.message}</div>
-      </g:if>
+      <h1>Projects</h1>
       <div class="list">
         <table>
           <thead>
@@ -30,7 +27,7 @@
             <td>Tasks viewed</td>
             <!--<td>Total task views</td>-->
             <td></td>
-            <td></td>
+            <!--<td></td>-->
           </tr>
           </thead>
           <tbody>
@@ -48,7 +45,7 @@
               <td>${projectTaskViewedCounts.get(projectInstance.id) ? projectTaskViewedCounts.get(projectInstance.id) : 0}</td>
               <!--<td>${viewCountPerProject.get(projectInstance.id) ? viewCountPerProject.get(projectInstance.id) : 0}</td>-->
               <td><g:link action="showNextFromProject" controller="transcribe" id="${projectInstance.id}">Transcribe</g:link></td>
-              <td><g:link action="showNextFromProject" controller="validate" id="${projectInstance.id}">Validate</g:link></td>
+              <!--<td><g:link action="showNextFromProject" controller="validate" id="${projectInstance.id}">Validate</g:link></td>-->
             </tr>
           </g:each>
           </tbody>
