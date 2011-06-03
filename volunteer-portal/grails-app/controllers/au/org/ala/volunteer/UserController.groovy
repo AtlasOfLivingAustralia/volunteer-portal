@@ -21,7 +21,10 @@ class UserController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        params.sort = params.sort ? params.sort : "transcribedCount"
+        if(!params.sort){
+          params.sort = params.sort ? params.sort : "transcribedCount"
+          params.order = "desc"
+        }
         def currentUser = authService.username()
         [userInstanceList: User.list(params), userInstanceTotal: User.count(),currentUser: currentUser]
     }
@@ -47,13 +50,17 @@ class UserController {
         def userInstance = User.get(params.id)
         params.max = Math.min(params.max ? params.int('max') : 12, 100)
         def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
+        def numberOfTasksEdited = taskService.getPartiallyTranscribedByCountsForUser(userInstance.userId)
+
+        def pointsTotal =  (userInstance.transcribedCount * 100) + ((numberOfTasksEdited - userInstance.transcribedCount ) * 10)
+
         def currentUser = authService.username()
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         }
         else {
-            [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser]
+            [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser, numberOfTasksEdited: numberOfTasksEdited, pointsTotal: pointsTotal]
         }
     }
 

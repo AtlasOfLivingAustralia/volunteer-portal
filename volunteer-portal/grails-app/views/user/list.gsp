@@ -34,7 +34,7 @@
           </td>
           <td>${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
           <td>${fieldValue(bean: userInstance, field: "validatedCount")}</td>
-          <td><g:formatDate date="${userInstance.created}"/></td>
+          <td><prettytime:display date="${userInstance?.created}"/></td>
         </tr>
       </g:each>
       </tbody>

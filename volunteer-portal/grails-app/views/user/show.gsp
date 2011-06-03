@@ -36,8 +36,8 @@
         <table style="border:  none;">
           <tbody>
           <tr class="prop">
-            <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
-            <td valign="top" class="value"><g:formatDate date="${userInstance?.created}"/></td>
+            <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks edited"/></td>
+            <td valign="top" class="value">${numberOfTasksEdited}</td>
           </tr>
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
@@ -48,8 +48,14 @@
             <td valign="top" class="value">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
           </tr>
           <tr class="prop">
-            <td valign="top" class="name"><g:message code="user.userId.label" default="User Id"/></td>
-            <td valign="top" class="value">${fieldValue(bean: userInstance, field: "userId")}</td>
+            <td valign="top" class="name"><g:message code="user.userId.points.tally.label" default="Points"/></td>
+            <td valign="top" class="value">${pointsTotal}</td>
+          </tr>
+          <tr class="prop">
+            <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
+            <td valign="top" class="value">
+              <prettytime:display date="${userInstance?.created}"/>
+            </td>
           </tr>
           </tbody>
         </table>

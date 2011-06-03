@@ -25,6 +25,20 @@ class TaskService {
         userTaskCounts.toMap()
     }
 
+  /**
+   * Retrieve a count of tasks partially transcribed by a user.
+   *
+   * @param user
+   * @return
+   */
+    Integer getPartiallyTranscribedByCountsForUser(String userId){
+      def userTaskCounts = Task.executeQuery(
+          """select count(distinct t.id) from Task t
+             inner join t.fields fields
+             where fields.transcribedByUserId = :userId""", [userId: userId])
+      userTaskCounts.get(0)
+    }
+
     /**
      *
      * @return Map of project id -> count
