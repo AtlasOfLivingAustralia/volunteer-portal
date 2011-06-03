@@ -4,8 +4,8 @@ class User {
 
   String userId
   String displayName
-  Integer transcribedCount   //the number of tasks completed by the user
-  Integer validatedCount     // the number of task completed by this user and then validated by a validator
+  Integer transcribedCount = 0   //the number of tasks completed by the user
+  Integer validatedCount = 0     // the number of task completed by this user and then validated by a validator
   Date created               //set to the date when the user first contributed
 
   static hasMany = [roles:Role]
