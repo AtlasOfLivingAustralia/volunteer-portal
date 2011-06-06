@@ -44,7 +44,14 @@
               <td>${projectTaskValidatedCounts.get(projectInstance.id) ? projectTaskValidatedCounts.get(projectInstance.id) : 0}</td>
               <td>${projectTaskViewedCounts.get(projectInstance.id) ? projectTaskViewedCounts.get(projectInstance.id) : 0}</td>
               <!--<td>${viewCountPerProject.get(projectInstance.id) ? viewCountPerProject.get(projectInstance.id) : 0}</td>-->
-              <td><g:link action="showNextFromProject" controller="transcribe" id="${projectInstance.id}">Transcribe</g:link></td>
+              <td>
+                <g:if test="${projectFullyTranscribedCounts.get(projectInstance.id) < projectTaskCounts.get(projectInstance.id)}">
+                  <g:link action="showNextFromProject" controller="transcribe" id="${projectInstance.id}">Transcribe</g:link>
+                </g:if>
+                <g:else>
+                  Transcription complete
+                </g:else>
+              </td>
               <!--<td><g:link action="showNextFromProject" controller="validate" id="${projectInstance.id}">Validate</g:link></td>-->
             </tr>
           </g:each>
