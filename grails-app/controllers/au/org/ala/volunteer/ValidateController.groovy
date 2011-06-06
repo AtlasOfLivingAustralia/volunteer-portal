@@ -25,9 +25,7 @@ class ValidateController {
     def currentUser = authService.username()
     if(currentUser!=null){
       def taskInstance = Task.get(params.id)
-      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
-      taskInstance.fullyValidatedBy = currentUser
-      taskInstance.save(flush:true)
+      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, true)
       //update the count for validated tasks for the user who transcribed
       userService.updateUserValidatedCount(taskInstance.fullyTranscribedBy)
       redirect(view:'showNextFromAny')

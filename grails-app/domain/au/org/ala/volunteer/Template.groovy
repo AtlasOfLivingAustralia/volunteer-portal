@@ -7,6 +7,8 @@ class Template {
   String fieldOrder // JSON encoded list
   String author
 
+  static hasMany = [project: Project]
+
   static mapping = {
     version false
   }

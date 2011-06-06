@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import org.springframework.validation.Errors
+
 class FieldSyncService {
 
   static transactional = true
@@ -28,7 +30,7 @@ class FieldSyncService {
    * @param fieldValues
    * @return
    */
-  void syncFields(Task task, Map fieldValues, String userId) {
+  void syncFields(Task task, Map fieldValues, String transcriberUserId, boolean markAsFullyTranscribed, boolean markAsFullyValidated) {
 
     //sync
     def idx = 0
@@ -50,33 +52,51 @@ class FieldSyncService {
 
             if (oldFieldValue.value != keyValue.value) {
               //if different users
-              if (oldFieldValue.transcribedByUserId != userId) {
+              if (oldFieldValue.transcribedByUserId != transcriberUserId) {
                 //just save it
                 Field field = new Field()
                 field.name = keyValue.key
                 field.value = keyValue.value
-                field.transcribedByUserId = userId
+                field.transcribedByUserId = transcriberUserId
                 field.task = task
                 field.updated = new Date()
                 field.save(flush: true)
+                if(field.hasErrors()) {
+                  task.errors.addAllErrors(field.errors)
+                  return;
+                }
 
                 //keep the original, but mark as superceded
                 oldFieldValue.superceded = true
+                oldFieldValue.updated = new Date()
                 oldFieldValue.save(flush: true)
+                if(oldFieldValue.hasErrors()) {
+                  task.errors.addAllErrors(oldFieldValue.errors)
+                  return ;
+                }
 
               } else {
                 //just replace the value
                 oldFieldValue.value = keyValue.value
                 oldFieldValue.updated = new Date()
                 oldFieldValue.save(flush: true)
+
+                if(oldFieldValue.hasErrors()) {
+                  task.errors.addAllErrors(oldFieldValue.errors)
+                  return;
+                }
               }
             }
 
           } else {
             //persist these values
             Field field = new Field(recordIdx: idx, name: keyValue.key, value: keyValue.value,
-                    task: task, transcribedByUserId: userId, superceded: false)
+                    task: task, transcribedByUserId: transcriberUserId, superceded: false)
             field.save(flush: true)
+            if(field.hasErrors()) {
+               task.errors.addAllErrors(field.errors)
+               return;
+            }
           }
         }
         idx = idx + 1
@@ -84,5 +104,19 @@ class FieldSyncService {
         hasMore = false
       }
     }
+
+    //set the transcribed by
+    if(markAsFullyTranscribed){
+      task.fullyTranscribedBy = transcriberUserId
+    }
+
+    if(markAsFullyValidated){
+      task.fullyValidatedBy = transcriberUserId
+    } else {
+      //reset the fully validated flag
+      task.fullyValidatedBy = null
+    }
+
+    task.save(flush:true)
   }
 }

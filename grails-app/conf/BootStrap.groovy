@@ -67,7 +67,7 @@ class BootStrap {
         Template template = Template.findByName('default')
         if (!template) {
             println "creating new Template: default"
-            template = new Template(name:'default', viewName:'Default', author:'webmaster@ala.org.au', 
+            template = new Template(name:'default', viewName:'specimenTranscribe', author:'webmaster@ala.org.au',
                 created:new Date(), fieldOrder:'').save(flush:true, failOnError: true)
         }
         
