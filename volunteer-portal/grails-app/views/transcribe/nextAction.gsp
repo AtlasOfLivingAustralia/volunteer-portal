@@ -27,8 +27,8 @@
 
 <body class="two-column-right">
 <div class="nav">
-    <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-    </span>
+    <a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+    <span>What next?</span>
 </div>
 
 <div class="body">

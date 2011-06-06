@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import org.springframework.validation.Errors
+
 class TranscribeController {
 
   def fieldSyncService
@@ -25,9 +27,13 @@ class TranscribeController {
       auditService.auditTaskViewing(taskInstance, currentUser)
 
       println(authService.username())
+
+      def project = Project.findById(taskInstance.project.id)
+      def template = Template.findById(project.template.id)
+
       //retrieve the existing values
       Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-      render(view:'specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues])
+      render(view:template.viewName,  model:[taskInstance:taskInstance, recordValues: recordValues])
     } else {
       redirect(view:'list', controller: "task")
     }
@@ -67,15 +73,16 @@ class TranscribeController {
     def currentUser = authService.username()
     if(currentUser!=null){
       def taskInstance = Task.get(params.id)
-      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
-      taskInstance.fullyTranscribedBy = currentUser
-      //reset the fully validated flag
-      taskInstance.fullyValidatedBy = null
-      taskInstance.save(flush:true)
-      //update the users stats
-      userService.updateUserTranscribedCount(currentUser)
-      userService.updateUserValidatedCount(currentUser)
-      redirect(action:'showNextAction') // showNextFromAny
+      def project = Project.findById(taskInstance.project.id)
+      def template = Template.findById(project.template.id)
+
+      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false)
+      if (!taskInstance.hasErrors()) {
+          redirect(action:'showNextAction')
+      }
+      else {
+          render(view:template.viewName,  model:[taskInstance:taskInstance, recordValues: params.recordValues])
+      }
     } else {
       redirect(view:'../index')
     }
@@ -90,7 +97,7 @@ class TranscribeController {
     def currentUser = authService.username()
     if(currentUser){
       def taskInstance = Task.get(params.id)
-      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser)
+      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false)
       redirect(action:'showNextAction')
     } else {
       redirect(view:'/index')

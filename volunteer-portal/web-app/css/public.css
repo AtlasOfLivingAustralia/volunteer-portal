@@ -385,3 +385,11 @@ span.currentStep { border-color:#ccc; color:#dd3102; }
 
 #paginationButtons { margin-bottom:30px;}
 #paginationButtons a { text-decoration: none; }
+
+.taskTable {width: 968px; margin:20px 10px 30px 0; border: none;}
+.taskTable td  { width: 200px; padding: 10px;}
+.taskListImg { width:180px; padding: 0 30px 0 0; margin: 0;}
+
+.taskTable td.editable { }
+
+div.errors { border:1px solid red; padding: 10px; margin-bottom: 10px; }

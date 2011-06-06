@@ -447,6 +447,11 @@
 </div>
 
 <div class="body">
+    <g:hasErrors bean="${taskInstance}">
+    <div class="errors">
+        There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
+    </div>
+    </g:hasErrors>
     <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.id})</h1>
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">

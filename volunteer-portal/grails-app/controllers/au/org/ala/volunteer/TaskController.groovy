@@ -12,7 +12,9 @@ class TaskController {
 
     def project = {
       def projectInstance = Project.get(params.id)
-      params.max = Math.min(params.max ? params.int('max') : 12, 24)
+      params.max = Math.min(params.max ? params.int('max') : 8 , 16)
+      params.order = params.order? params.order : "asc"
+      params.sort = params.sort ? params.sort : "id"
       def taskInstanceList = Task.findAllByProject(projectInstance,params)
       def taskInstanceTotal = Task.countByProject(projectInstance)
       render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
@@ -29,7 +31,9 @@ class TaskController {
 
     /** list all tasks */
     def list = {
-        params.max = Math.min(params.max ? params.int('max') : 12, 24)
+        params.max = Math.min(params.max ? params.int('max') : 8, 16)
+        params.order = params.order? params.order : "asc"
+        params.sort = params.sort ? params.sort : "id"
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
