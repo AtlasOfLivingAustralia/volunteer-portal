@@ -8,7 +8,6 @@ verbatimLocality,,,collectionEvent,textarea,0,0,,,default
 verbatimLatitude,,,collectionEvent,text,0,0,,,default
 verbatimLongitude,,,collectionEvent,text,0,0,,,default
 locality,,,location,text,0,0,,,default
-locationRemarks,Distance & Heading,,location,text,0,0,,,default
 stateProvince,State/Territory,,location,select,0,0,,,default
 decimalLatitude,,,location,text,0,0,,,default
 country,,,location,select,0,0,,,default
