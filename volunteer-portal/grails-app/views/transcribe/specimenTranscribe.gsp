@@ -32,10 +32,12 @@
         geocoder = new google.maps.Geocoder();
         var lat = $('.decimalLatitude').val();
         var lng = $('.decimalLongitude').val();
+        var coordUncer = $('.coordinateUncertaintyInMeters').val();
         var latLng;
 
-        if (lat && lng) {
+        if (lat && lng && coordUncer) {
             latLng = new google.maps.LatLng(lat, lng);
+            $('#infoUncert').val(coordUncer);
         } else {
             latLng = new google.maps.LatLng(-34.397, 150.644);
         }
@@ -44,6 +46,7 @@
             zoom: 10,
             center: latLng,
             scrollwheel: false,
+            scaleControl: true,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
@@ -162,14 +165,19 @@
     }
 
     function updateMarkerPosition(latLng) {
-        var rnd = 100000000;
+        //var rnd = 1000000;
+        var precisionMap = {
+            100: 1000000,
+            1000: 10000,
+            10000: 100,
+            100000: 1
+        }
+        var coordUncertainty = $("#infoUncert").val();
+        var key = (coordUncertainty) ? coordUncertainty : 1000;
+        var rnd = precisionMap[key];
+        // round to N decimal places
         var lat = Math.round(latLng.lat() * rnd) / rnd;
-        // round to 8 decimal places
         var lng = Math.round(latLng.lng() * rnd) / rnd;
-        // round to 8 decimal places
-        //$('.decimalLatitude').val(lat);
-        //$('.decimalLongitude').val(lng);
-        //$(':input.coordinatePrecision').val(1000);
         $('#infoLat').html(lat);
         $('#infoLng').html(lng);
     }
@@ -203,9 +211,11 @@
             }
         });
 
+        // Catch Coordinate Uncertainty select (mapping tool) change
         $('.coordinatePrecision, #infoUncert').change(function(e) {
             var rad = parseInt($(this).val());
             circle.setRadius(rad);
+            updateMarkerPosition(marker.getPosition());
             //updateTitleAttr(rad);
         })
 
@@ -320,8 +330,8 @@
             titleShow: false,
             onComplete: initialize,
             autoDimensions: false,
-            width: 650,
-            height: 420
+            width: 880,
+            height: 510
         }
         $('button#geolocate').fancybox(opts);
 
@@ -337,7 +347,7 @@
             // copy map fields into main form
             $('.decimalLatitude').val($('#infoLat').html());
             $('.decimalLongitude').val($('#infoLng').html());
-            $(':input.coordinatePrecision').val($('#infoUncert').val());
+            $(':input.coordinateUncertaintyInMeters').val($('#infoUncert').val());
             // locationObj is a global var set from geocoding lookup
             for (var i = 0; i < locationObj.length; i++) {
                 var name = locationObj[i].long_name;
@@ -482,23 +492,26 @@
                         <li><div>Catalogue No.:</div> ${recordValues?.get(0)?.catalogNumber}</li>
                         <li><div>Taxa:</div> ${recordValues?.get(0)?.scientificName}</li>
                     </ul>
+                    <table style="width: 100%">
+                        <thead>
+                        <tr><th><h3>1. Enter all label text into the box below</h3></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" rows="10" cols="40" style="width: 100%"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div style="clear:both;"></div>
 
                 <div id="transcribeFields">
+
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>1. Transcribe All Text</h3></th></tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${TemplateField.findAllByFieldType('occurrenceRemarks')}" var="field">
-                            <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
-                        </g:each>
-                        </tbody>
-                    </table>
-                    <table style="width: 100%">
-                        <thead>
-                        <tr><th><h3>2. Collection Event</h3></th></tr>
+                        <tr><th><h3>2. Collection Event</h3>&nbsp;&nbsp;(Complete fields below using text from the labels as entered in step 1.)</th></tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}" var="field">
@@ -510,9 +523,9 @@
                     <table style="width: 100%">
                         <thead>
                         <tr>
-                            <th><h3>3. Location</h3></th>
+                            <th><h3>3. Interpreted Location</h3></th>
                             <th><button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Show
-                                    mapping tool</button></th>
+                                    mapping tool</button> (Use the mapping tool before attempting to enters values manually)</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -542,14 +555,12 @@
                                 <div>Longitude: <span id="infoLng"></span></div>
                                 <div>Location: <span id="infoLoc"></span></div>
                                 <div>Coordinate Uncertainty: <select id="infoUncert">
-                                    <option>10</option>
-                                    <option>50</option>
                                     <option>100</option>
-                                    <option>500</option>
                                     <option selected="selected">1000</option>
                                     <option>10000</option>
+                                    <option>100000</option>
                                 </select></div>
-                                <div style="text-align: center; padding: 10px;">
+                                <div style="text-align: center; padding: 10px; font-size: 12px;">
                                     <input id="setLocationFields" type="button" value="Copy values to main form"/>
                                 </div>
                             </div>
