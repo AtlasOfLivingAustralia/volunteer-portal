@@ -9,6 +9,7 @@
 <body class="two-column-right">
 <div class="nav">
   <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+  <span class="menuButton">Thanks - we're done!</span>
 </div>
 <div class="body">
   <h1>Thank you - we are done for now !</h1>
