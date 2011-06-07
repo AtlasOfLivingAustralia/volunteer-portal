@@ -78,7 +78,7 @@ class TranscribeController {
 
       fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false)
       if (!taskInstance.hasErrors()) {
-          redirect(action:'showNextAction')
+          redirect(action:'showNextAction', id:params.id)
       }
       else {
           render(view:template.viewName,  model:[taskInstance:taskInstance, recordValues: params.recordValues])
@@ -98,7 +98,7 @@ class TranscribeController {
     if(currentUser){
       def taskInstance = Task.get(params.id)
       fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false)
-      redirect(action:'showNextAction')
+      redirect(action:'showNextAction', id:params.id)
     } else {
       redirect(view:'/index')
     }

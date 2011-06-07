@@ -7,6 +7,11 @@
     <title>Thank you - we are done for now!</title>
     <script type="text/javascript">
         $(document).ready(function() {
+            $("button#goBack").click(function(e) {
+                e.preventDefault();
+                window.location.href = "${createLink(action:'task', id: id, controller:'transcribe')}";
+            });
+
             $("button#viewList").click(function(e) {
                 e.preventDefault();
                 window.location.href = "${createLink(action:'list', controller:'task')}";
@@ -39,7 +44,7 @@
         <h3>What do you want to do next?</h3>
         <p></p>
         <p>
-
+            <button id="goBack">Return to the task</button>
             <button id="viewTask">Transcribe another task</button>
             <button id="viewList">View list of Tasks</button>
             <button id="viewStats">View My Stats</button>
