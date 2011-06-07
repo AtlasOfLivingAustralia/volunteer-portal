@@ -17,6 +17,6 @@ scientificName,Scientific Name,,identification,text,0,0,"Use the autocomplete dr
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
 taxonRank,'',,none,hidden,0,0,,,default
 scientificNameAuthorship,Authorship,,identification,text,0,0,,,default
-identifiedBy,Identifier,,identification,text,0,0,,,default
+identifiedBy,Identifier,,identification,text,0,0,"Person or persons who performed the identification",,default
 dateIdentified,Date Identified,,identification,text,0,0,,,default
 typeStatus,,,identification,select,0,0,,,default
