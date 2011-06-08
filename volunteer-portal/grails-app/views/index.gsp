@@ -12,7 +12,7 @@
     <p>This is a prototype web application for providing users with the ability to transcribe specimen records.
     <br/>For more information contact <strong>Paul Flemons</strong>.</p>
       <div class='front-image'>
-           <img src="${resource(dir:'images', file:'map.png')}"/>
+           <img src="${resource(dir:'images', file:'map.jpg')}"/>
       </div>
       <div class='front-buttons'>
           <g:link controller="transcribe">
