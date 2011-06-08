@@ -46,6 +46,8 @@ class TaskListTagLib {
         }
         if(addLink){
           out << """<a href="${createLink(uri: '/transcribe/task/'+taskInstance.id)}">Transcribe</a>"""
+        } else {
+          out << """<span>Status: complete</span>"""
         }
 
 
