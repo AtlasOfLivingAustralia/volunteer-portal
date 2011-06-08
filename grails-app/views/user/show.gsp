@@ -24,7 +24,7 @@
     <table style="border:  none;">
        <tr>
         <td style="padding-top:18px; width:150px;">
-          <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;"/>
+          <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;" class="avatar"/>
           <g:if test="${userInstance.userId == currentUser}">
           <p>
             To update your avatar, you can register your email and picture with <br/>

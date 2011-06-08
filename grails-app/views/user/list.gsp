@@ -27,7 +27,7 @@
       <tbody>
       <g:each in="${userInstanceList}" status="i" var="userInstance">
         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-          <td><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80"/> </td>
+          <td><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80" class="avatar"/> </td>
           <td style="width:300px;">
               <g:link controller="user" action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "displayName")}</g:link>
               <g:if test="${userInstance.userId == currentUser}">(thats you!)</g:if>
