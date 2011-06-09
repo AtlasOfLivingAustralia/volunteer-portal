@@ -40,7 +40,7 @@
               <td>${fieldValue(bean: projectInstance, field: "description")}</td>
               <td>${projectTaskCounts.get(projectInstance.id) ? projectTaskCounts.get(projectInstance.id) : 0 }</td>
               <td>${projectFullyTranscribedCounts.get(projectInstance.id) ? projectFullyTranscribedCounts.get(projectInstance.id) : 0}</td>
-              <td>${projectTaskTranscribedCounts.get(projectInstance.id) ? projectTaskTranscribedCounts.get(projectInstance.id) - projectFullyTranscribedCounts.get(projectInstance.id) : 0}</td>
+              <td>${projectTaskTranscribedCounts.get(projectInstance.id) ? projectTaskTranscribedCounts.get(projectInstance.id) - (projectFullyTranscribedCounts.get(projectInstance.id) ? projectFullyTranscribedCounts.get(projectInstance.id) : 0) : 0}</td>
               <td>${projectTaskValidatedCounts.get(projectInstance.id) ? projectTaskValidatedCounts.get(projectInstance.id) : 0}</td>
               <td>${projectTaskViewedCounts.get(projectInstance.id) ? projectTaskViewedCounts.get(projectInstance.id) : 0}</td>
               <!--<td>${viewCountPerProject.get(projectInstance.id) ? viewCountPerProject.get(projectInstance.id) : 0}</td>-->

@@ -59,7 +59,7 @@
             <label for="templateId"><g:message code="project.templateId.label" default="Template Id"/></label>
           </td>
           <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'templateId', 'errors')}">
-            <g:select name="templateId" id="templateId" from="${templateList}" optionKey="id" optionValue="name"/>
+            <g:select name="template.id" id="templateId" from="${au.org.ala.volunteer.Template.list()}" optionKey="id" value="${projectInstance?.template?.id}" optionValue="name"/>
           </td>
         </tr>
 
