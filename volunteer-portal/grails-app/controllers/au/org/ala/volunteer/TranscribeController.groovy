@@ -41,7 +41,7 @@ class TranscribeController {
   
   def showNextAction = {
       println("rendering view: nextAction")
-      render(view:'nextAction')
+      render(view:'nextAction', model:[id:params.id])
   }
 
   /**

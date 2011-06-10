@@ -120,21 +120,22 @@ div#mapWidgets {
 }
 
 #mapWidgets #mapWrapper {
-    width: 450px;
+    width: 52%;
     height: 100%;
     float: left;
     padding-right: 10px;
 }
 
 #mapWidgets #mapCanvas {
-    width: 450px;
-    height: 450px;
+    width: 100%;
+    height: 94%;
+    margin-bottom: 6px;
 }
 
 #mapWidgets #mapInfo {
     float: left;
     height: 100%;
-    width: 400px;
+    width: 44%;
     padding: 0 0 0 10px;
     text-align: left;
     border-left: 2px solid #cccccc;
@@ -142,16 +143,18 @@ div#mapWidgets {
 
 #mapWidgets #sightingAddress {
     margin-bottom: 4px;
+    line-height: 22px;
 }
 
-#mapWidgets #mapHelp, #mapWidgets #searchHint {
+#mapWidgets .searchHint {
     font-size: 11px;
-    padding: 10px 0;
+    padding: 4px 0;
     line-height: 1.2em;
+    color: #666;
 }
 
 #mapWidgets #address {
-    width: 300px;
+    width: 360px;
 }
 
 .multimedia {
@@ -162,7 +165,7 @@ div#mapWidgets {
     width: 950px;
 }
 
-.transcribeForm h3 {
+.transcribeForm h3, #mapInfo h3 {
    font-size: 1.1em;
    font-weight: bold;
    color: #718804;
@@ -244,10 +247,18 @@ button.ui-datepicker-trigger img {
    
 }
 
-button#geolocate, input#setLocationFields {
-    /*color: #DD3122;=
-    font-size: 12px;
+button#geolocate {
+    /*color: #DD3122;
+    font-size: 14px;
     font-weight: bold;*/
+}
+
+input#setLocationFields {
+    font-size: 16px;
+    font-weight: bold;
+    color:white;
+    background-color: #DD3102;
+    padding: 4px;
 }
 
 table.ui-datepicker td {
