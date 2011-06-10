@@ -7,22 +7,22 @@
     <title>Thank you - we are done for now!</title>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("button#goBack").click(function(e) {
+            $("li#goBack a").click(function(e) {
                 e.preventDefault();
                 window.location.href = "${createLink(action:'task', id: id, controller:'transcribe')}";
             });
 
-            $("button#viewList").click(function(e) {
+            $("li#viewList a").click(function(e) {
                 e.preventDefault();
                 window.location.href = "${createLink(action:'list', controller:'task')}";
             });
 
-            $("button#viewTask").click(function(e) {
+            $("li#viewTask a").click(function(e) {
                 e.preventDefault();
                 window.location.href = "${createLink(action:'index', controller:'transcribe')}";
             });
 
-            $("button#viewStats").click(function(e) {
+            $("li#viewStats a").click(function(e) {
                 e.preventDefault();
                 window.location.href = "${createLink(action:'myStats', controller:'user')}";
             });
@@ -42,13 +42,12 @@
     <div class="dialog">
         <p></p>
         <h3>What do you want to do next?</h3>
-        <p></p>
-        <p>
-            <button id="goBack">Return to the task</button>
-            <button id="viewTask">Transcribe another task</button>
-            <button id="viewList">View list of Tasks</button>
-            <button id="viewStats">View My Stats</button>
-        </p>
+        <ul>
+            <li id="goBack"><a href="#">Return to the saved task</a></li>
+            <li id="viewTask"><a href="#">Transcribe another task</a></li>
+            <li id="viewList"><a href="#">View list of Tasks</a></li>
+            <li id="viewStats"><a href="#">View My Stats</a></li>
+        </ul>
     </div>
 </div>
 </body>

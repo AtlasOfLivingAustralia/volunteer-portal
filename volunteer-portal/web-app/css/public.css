@@ -425,3 +425,7 @@ div.errors { border:1px solid red; padding: 10px; margin-bottom: 10px; }
     padding-top: 10px;
     padding-bottom: 12px;
 }
+
+div.dialog ul {
+    margin-top: 10px;
+}
