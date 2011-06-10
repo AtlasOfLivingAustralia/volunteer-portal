@@ -408,7 +408,7 @@
         }
 
         // Context sensitive help popups
-        $("a#addressHelp").qtip({
+        $("a.fieldHelp").qtip({
             tip: true,
             position: {
                 corner: {

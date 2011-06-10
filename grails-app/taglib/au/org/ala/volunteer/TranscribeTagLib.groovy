@@ -104,7 +104,7 @@ class TranscribeTagLib {
                 mkp.yieldUnescaped(w)
 
                 if (field.helpText) {
-                    def help = "<a href='#' id='addressHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
+                    def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
                     mkp.yieldUnescaped(help)
                 }
             }
