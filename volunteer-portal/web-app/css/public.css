@@ -106,7 +106,7 @@ div.nav a, #breadcrumb a {
     font-weight: bold;
 }
 
-a#addressHelp {
+div.body a.fieldHelp {
     text-decoration: none;
     display: inline-block;
     vertical-align: top;
