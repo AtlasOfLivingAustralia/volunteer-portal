@@ -95,14 +95,14 @@
                 });
 
         var localityStr = $(':input.verbatimLocality').val();
-        if (!$('input#address').val()) {
-            $('input#address').val($(':input.verbatimLocality').val());
+        if (!$(':input#address').val()) {
+            $(':input#address').val($(':input.verbatimLocality').val());
         }
         if (lat && lng) {
             geocodePosition(latLng);
             updateMarkerPosition(latLng);
         } else if ($('.verbatimLatitude').val() && $('.verbatimLongitude').val()) {
-            $('input#address').val($('.verbatimLatitude').val() + "," + $('.verbatimLongitude').val())
+            $(':input#address').val($('.verbatimLatitude').val() + "," + $('.verbatimLongitude').val())
             codeAddress();
         } else if (localityStr) {
             codeAddress();
@@ -130,7 +130,7 @@
      * Reverse geocode coordinates via Google Maps API
      */
     function codeAddress() {
-        var address = $('input#address').val();
+        var address = $(':input#address').val();
 
         if (geocoder && address) {
             //geocoder.getLocations(address, addAddressToPage);
@@ -330,8 +330,8 @@
             titleShow: false,
             onComplete: initialize,
             autoDimensions: false,
-            width: 880,
-            height: 510
+            width: 978,
+            height: 520
         }
         $('button#geolocate').fancybox(opts);
 
@@ -344,31 +344,37 @@
         // catch button on map
         $('#setLocationFields').click(function(e) {
             e.preventDefault();
-            // copy map fields into main form
-            $('.decimalLatitude').val($('#infoLat').html());
-            $('.decimalLongitude').val($('#infoLng').html());
-            $(':input.coordinateUncertaintyInMeters').val($('#infoUncert').val());
-            // locationObj is a global var set from geocoding lookup
-            for (var i = 0; i < locationObj.length; i++) {
-                var name = locationObj[i].long_name;
-                var type = locationObj[i].types[0];
-                var hasLocality = false;
-                //console.log(i+". type: "+type+" = "+name);
-                // go through each avail option
-                if (type == 'country') {
-                    //$(':input.countryCode').val(name1);
-                    $(':input.country').val(name);
-                } else if (type == 'locality') {
-                    $(':input.locality').val(name);
-                    hasLocality = true;
-                } else if (type == 'administrative_area_level_1') {
-                    $(':input.stateProvince').val(name);
-                } else {
-                    //$(':input.locality').val(name);
+
+            if ($('#infoLat').html() && $('#infoLng').html()) {
+                // copy map fields into main form
+                $('.decimalLatitude').val($('#infoLat').html());
+                $('.decimalLongitude').val($('#infoLng').html());
+                $(':input.coordinateUncertaintyInMeters').val($('#infoUncert').val());
+                // locationObj is a global var set from geocoding lookup
+                for (var i = 0; i < locationObj.length; i++) {
+                    var name = locationObj[i].long_name;
+                    var type = locationObj[i].types[0];
+                    var hasLocality = false;
+                    //console.log(i+". type: "+type+" = "+name);
+                    // go through each avail option
+                    if (type == 'country') {
+                        //$(':input.countryCode').val(name1);
+                        $(':input.country').val(name);
+                    } else if (type == 'locality') {
+                        $(':input.locality').val(name);
+                        hasLocality = true;
+                    } else if (type == 'administrative_area_level_1') {
+                        $(':input.stateProvince').val(name);
+                    } else {
+                        //$(':input.locality').val(name);
+                    }
                 }
+
+                $.fancybox.close(); // close the popup
+            } else {
+                alert('Location data is empty. Use the search and/or drag the map icon to set the location first.');
             }
 
-            $.fancybox.close(); // close the popup
         });
 
         // form validation
@@ -544,27 +550,33 @@
                         <div id="mapWidgets">
                             <div id="mapWrapper">
                                 <div id="mapCanvas"></div>
-                                <div id="mapHelp">Hint: you can drag & drop the marker icon to set the location data</div>
+                                <div class="searchHint">Hint: you can also drag & drop the marker icon to set the location data</div>
                             </div>
                             <div id="mapInfo">
                                 <div id="sightingAddress">
-                                    <h4>Locality Search</h4>
-                                    %{--<label for="address">Locality/Coodinates: </label>--}%
-                                    <input name="address" id="address" size="32" value=""/>
-                                    <input id="locationSearch" type="button" value="Search"/>
-
-                                    <div id="searchHint">Search for a locality, place of interest, address, postcode or GPS coordinates (as lat, long)</div>
+                                    <h3>Locality Search</h3>
+                                    %{--<label for="address">Locality/Coodinates: </label>
+                                    <input type="button" value="Copy verbatim locality into search box" onclick="$(':input#address').val($(':input.verbatimLocality').val())"/>
+                                    <br/>--}%
+                                    <textarea name="address" id="address" size="32" rows="2" value=""></textarea>
+                                    <input id="locationSearch" type="button" value="Search" style="display:table-cell;vertical-align: top;"/>
+                                    <div class="searchHint">Search for a locality, place of interest, address, postcode or GPS coordinates
+                                    (as lat, long). You may need to edit the verbatim locality to get a match from the Google location search.</div>
                                 </div>
-                                <h4>Location Data</h4>
+                                <h3>Coordinate Uncertainty</h3>
+                                <div>Adjust Uncertainty (in metres):
+                                    <select id="infoUncert">
+                                        <option>100</option>
+                                        <option selected="selected">1000</option>
+                                        <option>10000</option>
+                                        <option>100000</option>
+                                    </select>
+                                    <div class="searchHint">Changing this value will increase or decrease the grey "uncertainty" circle on the map</div>
+                                </div>
+                                <h3>Location Data</h3>
                                 <div>Latitude: <span id="infoLat"></span></div>
                                 <div>Longitude: <span id="infoLng"></span></div>
                                 <div>Location: <span id="infoLoc"></span></div>
-                                <div>Coordinate Uncertainty: <select id="infoUncert">
-                                    <option>100</option>
-                                    <option selected="selected">1000</option>
-                                    <option>10000</option>
-                                    <option>100000</option>
-                                </select></div>
                                 <div style="text-align: center; padding: 10px; font-size: 12px;">
                                     <input id="setLocationFields" type="button" value="Copy values to main form"/>
                                 </div>
