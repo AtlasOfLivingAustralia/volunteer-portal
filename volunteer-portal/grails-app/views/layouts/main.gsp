@@ -89,7 +89,7 @@
         <li id="menu-item-1050" class="menu-item menu-item-type-post_type menu-item-1050"><a href="http://www.ala.org.au/support/">Support</a></li>
         <li id="menu-item-1048" class="menu-item menu-item-type-post_type menu-item-1048"><a href="http://www.ala.org.au/support/contact-us/">Contact Us</a></li>
         <li id="menu-item-1047" class="menu-item menu-item-type-post_type menu-item-1047"><a href="http://www.ala.org.au/about/">About the Atlas</a></li>
-        <li id="menu-item-1052" class="last menu-item menu-item-type-custom menu-item-1052"><a href="https://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.grails.serverURL}">Log in</a></li>
+        <li id="menu-item-1052" class="last menu-item menu-item-type-custom menu-item-1052"><cl:loginoutLink /></li>
       </ul>        <ul id="menu-footer-legal"><li id="menu-item-1045" class="menu-item menu-item-type-post_type menu-item-1045"><a href="http://www.ala.org.au/about/terms-of-use/">Terms of Use</a></li>
       <li id="menu-item-1042" class="menu-item menu-item-type-post_type menu-item-1042"><a href="http://www.ala.org.au/about/terms-of-use/citing-the-atlas/">Citing the Atlas</a></li>
       <li id="menu-item-12256" class="menu-item menu-item-type-custom menu-item-12256"><a href="http://www.ala.org.au/about/privacy-policy">Privacy Policy</a></li>

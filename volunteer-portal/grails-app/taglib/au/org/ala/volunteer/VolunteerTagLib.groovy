@@ -30,14 +30,16 @@ class VolunteerTagLib {
      * Will be to log in or out based on current auth status.
      */
     def loginoutLink = {
-        def requestUri = request.forwardURI
+
         def userName = authService.username()
+        def serverName = ConfigurationHolder.config.server.url
+        def requestUri = serverName + request.forwardURI
         if (userName) {
             // currently logged in
-            out << "<li class='nav-logout nav-right'><a id='${userName}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a></li>"
+            out << "<a id='${userName}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a>"
         } else {
             // currently logged out
-            out << "<li class='nav-login nav-right'><a href='https://auth.ala.org.au/cas/login?service=${requestUri}'><span>Log in</span></a></li>"
+            out << "<a href='https://auth.ala.org.au/cas/login?service=${requestUri}'><span>Log in</span></a>"
         }
     }
 
