@@ -8,6 +8,36 @@
   <meta name="layout" content="main"/>
   <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
   <title><g:message code="default.show.label" args="[entityName]"/></title>
+  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+        // Context sensitive help popups
+        $("a#gravitarLink").qtip({
+            tip: true,
+            position: {
+                corner: {
+                    target: 'topMiddle',
+                    tooltip: 'bottomMiddle'
+                }
+            },
+            style: {
+                //width: 450,
+                padding: 8,
+                background: 'white', //'#f0f0f0',
+                color: 'black',
+                textAlign: 'left',
+                border: {
+                    width: 4,
+                    radius: 5,
+                    color: '#E66542'// '#E66542' '#DD3102'
+                },
+                tip: 'bottomMiddle',
+                name: 'light' // Inherit the rest of the attributes from the preset light style
+            }
+        });
+
+    });
+  </script>
 </head>
 <body>
 <div class="nav">
@@ -27,13 +57,13 @@
           <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;" class="avatar"/>
           <g:if test="${userInstance.userId == currentUser}">
           <p>
-            To update your avatar, you can register your email and picture with <br/>
-            <img src="http://www.gravatar.com/favicon.ico"/>&nbsp;<a href="http://en.gravatar.com/" class="external">Gravatar</a>
+            <img src="http://www.gravatar.com/favicon.ico"/>&nbsp;<a href="http://en.gravatar.com/" class="external"
+                id="gravitarLink" title="To customise this avatar, you can register your email and upload a picture here...">Change avatar</a>
           </p>
           </g:if>
         </td>
         <td>
-        <table style="border:  none;">
+        <table style="border: none; margin-top: 8px;">
           <tbody>
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks edited"/></td>
@@ -65,38 +95,41 @@
   </div>
 
   <g:if test="${taskInstanceList}">
-  <h2>Recently Transcribed Tasks by
+    <h2>Recently Transcribed Tasks by
     <g:if test="${userInstance.userId == currentUser}">
       you
     </g:if>
     <g:else>
       ${fieldValue(bean: userInstance, field: "displayName")}
     </g:else>
-  </h2>
-  <div class="list">
-    <table style="border:  none; width: 100%">
-      <tbody>
-      <tr>
-      <g:each in="${taskInstanceList}" status="i" var="taskInstance">
-        <g:if test="${(i % 4) == 0 && i != 0}">
-          </tr>
+    </h2>
+    <div class="list">
+        <table style="border: none; width: 100%">
+          <tbody>
           <tr>
-        </g:if>
-          <td style="width:220px">
-            <g:link controller="transcribe" action="task" id="${taskInstance.id}">
-            <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}" width="150px"/>
-            </g:link>
-            <p><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></p>
-          </td>
-      </g:each>
-      <!-- pad it out -->
-      <g:each in="${1.. taskInstanceList.size() % 4 }" var="test">
-          <td style="width:220px">&nbsp;</td>
-      </g:each>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+          <g:each in="${taskInstanceList}" status="i" var="taskInstance">
+            <g:if test="${(i % 4) == 0 && i != 0}">
+              </tr>
+              <tr>
+            </g:if>
+              <td style="width:220px">
+                <g:link controller="transcribe" action="task" id="${taskInstance.id}">
+                <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}" width="150px"/>
+                </g:link>
+                <p><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></p>
+              </td>
+          </g:each>
+          <!-- pad it out -->
+          <g:each in="${1.. taskInstanceList.size() % 4 }" var="test">
+              <td style="width:220px">&nbsp;</td>
+          </g:each>
+          </tr>
+          </tbody>
+        </table>
+    </div>
+    <div class="paginateButtons">
+      <g:paginate total="${numberOfTasksEdited}"/>
+    </div>
   </g:if>
 </div>
 </body>
