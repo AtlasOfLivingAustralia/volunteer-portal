@@ -345,22 +345,18 @@ div#ui-datepicker-div {
 
 /* temporary pagination buttons */
 
-.searchNavBar {
+.paginateButtons {
     float: right;
     margin-right: 60px;
     text-align:center;
     padding-bottom: 20px;
 }
 
-.searchNavBar span {
-    display:inline;
-    list-style:none;
-}
-.searchNavBar span {
+.paginateButtons span {
     float:right;
     margin:0 auto;
 }
-.searchNavBar  a, .currentStep{
+.section .paginateButtons a, .currentStep{
     display:inline-block;
     padding:0 5px;
     border:1px solid #01716e;
@@ -380,19 +376,10 @@ span.currentStep{
 
 span.currentStep { border-color:#ccc; color:#dd3102; }
 
-.searchNavBar a:hover {
-    border-color:#dd3102;
-}
-
-.previousLink, .nextLink {color:#666;display:inline-block;float:left;padding:0 5px 0 5px!important;}
-.previousLink {text-align:right;}
+.paginateButtons a:hover {border-color:#dd3102;text-decoration:underline;}
+.section .paginateButtons .prevLink, .section .paginateButtons .nextLink {border:none;}
+.prevLink {text-align:right;}
 .nextLink {text-align:center;}
-
-.previousLink {text-decoration: none; }
-.nextLink {text-decoration: none;}
-
-#paginationButtons { margin-bottom:30px;}
-#paginationButtons a { text-decoration: none; }
 
 .taskTable {width: 968px; margin:20px 10px 30px 0; border: none;}
 .taskTable td  { width: 200px; padding: 10px;}
@@ -428,4 +415,8 @@ div.errors { border:1px solid red; padding: 10px; margin-bottom: 10px; }
 
 div.dialog ul {
     margin-top: 10px;
+}
+
+div.list table tr.odd {
+    background-color: #F0F0F0;
 }
