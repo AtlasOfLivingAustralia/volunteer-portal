@@ -28,7 +28,7 @@
     <div class="list">
       <g:renderTaskList taskInstanceList="${taskInstanceList}" noOfColumns="4"/>
     </div>
-    <div id="paginationButtons" class="searchNavBar">
+    <div class="paginateButtons">
       <g:paginate total="${taskInstanceTotal}" id="${projectInstance?.id}"/>
     </div>
   </g:if>
