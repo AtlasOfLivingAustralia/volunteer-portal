@@ -31,6 +31,35 @@ html {
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#f5f2e3', EndColorStr='#f7f4e9')" ! important; /* IE8 */
 }
 
+#wrapper > #footer {
+    /*background: #F9E9B0;*/
+    background: #FAECBB;
+    width: 968px;
+    border-bottom:  1px solid #C4C4C4;
+    border-left:  1px solid #C4C4C4;
+    border-right:  1px solid #C4C4C4;
+}
+
+#wrapper > #footer, #wrapper > #footer a, #wrapper > #footer a:hover, #wrapper > #footer a:active {
+    color: #444;
+}
+
+#wrapper > #footer a, #wrapper > #footer a:hover, #wrapper > #footer a:active {
+    text-decoration: underline;
+}
+
+#wrapper > #footer li {
+    background:none;
+    list-style: disc;
+}
+
+#wrapper > #footer .copyright img {
+    opacity: 0.6;
+}
+
+#wrapper > #footer span.asterisk-container {
+    background: none;
+}
 /* end */
 
 div.nav { margin-bottom: 10px; }
