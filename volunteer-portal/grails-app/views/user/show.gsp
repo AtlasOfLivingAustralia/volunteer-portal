@@ -16,8 +16,8 @@
             tip: true,
             position: {
                 corner: {
-                    target: 'topMiddle',
-                    tooltip: 'bottomMiddle'
+                    target: 'bottomRight',
+                    tooltip: 'topLeft'
                 }
             },
             style: {
@@ -31,7 +31,7 @@
                     radius: 5,
                     color: '#E66542'// '#E66542' '#DD3102'
                 },
-                tip: 'bottomMiddle',
+                tip: 'topLeft',
                 name: 'light' // Inherit the rest of the attributes from the preset light style
             }
         });
@@ -57,8 +57,8 @@
           <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;" class="avatar"/>
           <g:if test="${userInstance.userId == currentUser}">
           <p>
-            <img src="http://www.gravatar.com/favicon.ico"/>&nbsp;<a href="http://en.gravatar.com/" class="external"
-                id="gravitarLink" title="To customise this avatar, you can register your email and upload a picture here...">Change avatar</a>
+            %{--<img src="http://www.gravatar.com/favicon.ico"/>&nbsp;--}%<a href="http://en.gravatar.com/" class="external" target="_blank"
+                id="gravitarLink" title="To customise this avatar, register your email address at gravatar.com...">Change avatar</a>
           </p>
           </g:if>
         </td>
