@@ -12,6 +12,11 @@ class UserController {
         redirect(action: "list", params: params)
     }
 
+    def logout = {
+        session.invalidate()
+        redirect(url:"${params.casUrl}?url=${params.appUrl}")
+    }
+
     def myStats = {
       userService.registerCurrentUser()
       def currentUser = authService.username()
