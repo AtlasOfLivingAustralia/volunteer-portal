@@ -32,11 +32,11 @@ class VolunteerTagLib {
     def loginoutLink = {
 
         def userName = authService.username()
-        def serverName = ConfigurationHolder.config.server.url
+        def serverName = ConfigurationHolder.config.security.cas.appServerName
         def requestUri = serverName + request.forwardURI
         if (userName) {
             // currently logged in
-            out << "<a id='${userName}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a>"
+            out << "<a id='${userName}' href='${resource(file:'logout', dir:'user')}?casUrl=${ConfigurationHolder.config.security.cas.logoutUrl}&appUrl=${requestUri}'><span>Log out</span></a>"
         } else {
             // currently logged out
             out << "<a href='https://auth.ala.org.au/cas/login?service=${requestUri}'><span>Log in</span></a>"
@@ -1385,6 +1385,10 @@ class VolunteerTagLib {
 
     def editLink = {attrs, body ->
         out << link(class:"preview", controller:ProviderGroup.urlFormFromUid(attrs.uid), action:'show', id:attrs.uid) { body() }
+    }
+
+    def redirectMainPage = { attrs, body ->
+        response.sendRedirect("${request.contextPath}${attrs.path}")
     }
 
 }
