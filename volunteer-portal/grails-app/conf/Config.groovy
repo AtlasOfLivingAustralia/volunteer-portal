@@ -60,6 +60,13 @@ images.urlPrefix = "/data/volunteer/"
 
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 
+// Mappings for expedition labels, icons, etc
+expedition = [
+        [name: "Expedition Leader",   icon: "images/explorers/krefft.png", max: 1,    threshold: 10],
+        [name: "Scientists",          icon: "images/explorers/blank.png",  max: 999,  threshold: 20],
+        [name: "Collection Managers", icon: "images/explorers/v9415.png",  max: 999,  threshold: 10],
+        [name: "Technical Officers",  icon: "images/explorers/blank.png",  max: 999,  threshold: 1 ]
+]
 
 grails.project.groupId = "au.org.ala.volunteer" // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
