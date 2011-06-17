@@ -496,3 +496,13 @@ div.list table tr.odd {
     float: left;
     padding:  10px;
 }
+
+.shadow {
+	-moz-box-shadow: 6px 6px 10px #CCC;
+	-webkit-box-shadow: 6px 6px 10px #CCC;
+	box-shadow: 6px 6px 10px #CCC;
+	/* For IE 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#CCCCCC')";
+	/* For IE 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#CCCCCC');
+}

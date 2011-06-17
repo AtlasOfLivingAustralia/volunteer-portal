@@ -1391,12 +1391,13 @@ class VolunteerTagLib {
         response.sendRedirect("${request.contextPath}${attrs.path}")
     }
 
-    def listUsersInRole = { attrs, body ->
+    def listUsersInRole = { attrs ->
         def users = attrs.users
         def formattedUsers = []
         users.each { user ->
-            formattedUsers.add(link(controller:"user", action:"show", id:user.id) { user.name + " (" + user.count + ")" })
+            def link = link(controller:"user", action:"show", id:user.id, title:"with " + user.count + " transcriptions") { user.name + " (" + user.count + ")" }
+            formattedUsers.add(link)
         }
-        out << formattedUsers.join(", ")
+        out << (formattedUsers.join(", "))
     }
 }
