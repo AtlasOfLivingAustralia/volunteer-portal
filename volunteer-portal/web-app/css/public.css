@@ -62,6 +62,10 @@ html {
 }
 /* end */
 
+#content input[type="submit"], #fancybox-wrap input[type="submit"] {
+    color: black;
+}
+
 div.nav { margin-bottom: 10px; }
 
 div.nav a, #breadcrumb a {
@@ -505,4 +509,8 @@ div.list table tr.odd {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#CCCCCC')";
 	/* For IE 5.5 - 7 */
 	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#CCCCCC');
+}
+
+#promptUser {
+    line-height: 1.8em;
 }
