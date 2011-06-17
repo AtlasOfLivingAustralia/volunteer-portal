@@ -121,7 +121,7 @@
                 </tbody>
             </table>
         </div>
-        <div id="progress">
+        <div id="progress" class="shadow">
             <h2>Expedition Progress</h2>
             <div id="recordsChart">
                 Records captured: ${tasksDone} of ${tasksTotal}
