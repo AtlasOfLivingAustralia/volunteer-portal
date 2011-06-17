@@ -438,6 +438,31 @@
             }
         }).bind('click', function(e){ e.preventDefault(); return false; });
 
+        // timeout on page to prompt user to save or reload
+        $("#promptUserLink").fancybox({
+            modal: true,
+            centerOnScroll: true,
+            hideOnOverlayClick: false,
+            //title: "Alert - lock has expired",
+            //titlePosition: "over",
+            padding: 20,
+            onComplete: function() {
+                var i = 5; // minutes to countdown before reloading page
+                var countdownInterval = 1 * 60 * 1000;
+                function countDownByOne() {
+                    i--;
+                    $("#reloadCounter").html(i);
+                    if (i > 0) {
+                        window.setTimeout(countDownByOne, countdownInterval);
+                    } else {
+                        window.location.reload();
+                    }
+                }
+                window.setTimeout(countDownByOne, countdownInterval);
+            }
+        });
+        window.setTimeout(function() { $("#promptUserLink").click(); }, 30 * 60 * 1000);
+
     }); // end document ready
 
 </script>
@@ -612,6 +637,22 @@
                     <span class="button"><g:actionSubmit class="skip" action="showNextFromAny"
                              value="${message(code: 'default.button.skip.label', default: 'Skip')}"/></span>
                 </g:else>
+            </div>
+            <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>
+            <div style="display: none">
+                <div id="promptUser">
+                    <h2>Lock has Expired</h2>
+                    The lock on this record is about to expire.<br/>
+                    Please either save your changes:<br/>
+                    <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
+                             value="${message(code: 'default.button.save.partial.label', default: 'Save partially complete')}"/></span>
+                    <br>
+                    Or reload the page and loose any changes you may have made
+                    <br/>
+                    <input type="button" value="Reload Page" onclick="window.location.reload()"/>
+                    <br/>
+                    NOTE: page will automatically reload in <span id="reloadCounter">5</span> minutes if no action if taken (and changes will be lost)
+                </div>
             </div>
         </g:form>
     </g:if>
