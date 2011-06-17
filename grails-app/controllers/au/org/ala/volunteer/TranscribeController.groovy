@@ -26,7 +26,7 @@ class TranscribeController {
       //record the viewing of the task
       auditService.auditTaskViewing(taskInstance, currentUser)
 
-      println(authService.username())
+      //println(authService.username())
 
       def project = Project.findById(taskInstance.project.id)
       def template = Template.findById(project.template.id)
@@ -51,7 +51,7 @@ class TranscribeController {
   def showNextFromAny = {
 
     def currentUser = authService.username()
-    println "current user = "+currentUser
+    //println "current user = "+currentUser
     def taskInstance = taskService.getNextTask(currentUser)
 
     //retrieve the details of the template

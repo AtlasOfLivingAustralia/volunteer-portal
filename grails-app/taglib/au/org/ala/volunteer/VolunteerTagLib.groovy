@@ -1395,7 +1395,6 @@ class VolunteerTagLib {
         def users = attrs.users
         def formattedUsers = []
         users.each { user ->
-            println "userMap = ${user}"
             formattedUsers.add(link(controller:"user", action:"show", id:user.id) { user.name + " (" + user.count + ")" })
         }
         out << formattedUsers.join(", ")

@@ -12,9 +12,10 @@ class ProjectController {
     def fieldSyncService
     javax.sql.DataSource dataSource
 
-
+    /**
+     * Project home page - shows stats, etc.
+     */
     def index = {
-        //redirect(action: "list", params: params)
         def projectInstance = Project.get(params.id)
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -26,13 +27,10 @@ class ProjectController {
             def taskListFields = []
             def allUsersMap = [:]
             taskList.each {
-                //println("task id: " + it.externalIdentifier + ", transcribed by: " + it.fullyTranscribedBy)
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
                 taskListFields.add(recordValues)
                 def userId = it.fullyTranscribedBy
                 if (userId) {
-                    //def user = User.findByUserId(userId)
-                    //def username = user.displayName
                     def count = (allUsersMap.containsKey(userId)) ? (allUsersMap.get(userId) + 1) : 1
                     allUsersMap.put(userId , count)
                 }
@@ -44,15 +42,13 @@ class ProjectController {
 
             def expedition = ConfigurationHolder.config.expedition
             def roles = [] //  List of Map
-            // copy expedition datastructure to roles & add "members"
+            // copy expedition data structure to "roles" & add "members"
             expedition.each {
                 def row = it.clone()
                 row.put("members", [])
                 roles.addAll(row)
             }
 
-            println "expedition check: ${expedition.get(3).members}"
-            // assign users to the expedition roles
             allUsersMap.each { userId ->
                 // iterate over each user and assign to a role.
                 def assigned = false
@@ -66,7 +62,6 @@ class ProjectController {
                     }
                 }
             }
-            println "2. roles = " + roles
 
             render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount.get(0), taskList: taskList,
                     taskListFields: taskListFields, usersMap: allUsersMap, roles:roles])
