@@ -12,7 +12,7 @@ stateProvince,State/Territory,,location,select,0,0,,,default
 decimalLatitude,,,location,text,0,0,,,default
 country,,,location,select,0,0,,,default
 decimalLongitude,,,location,text,0,0,,,default
-coordinateUncertaintyInMeters,,,location,select,0,0,"The horizontal distance (in meters) from the given decimalLatitude and decimalLongitude describing the smallest circle containing the whole of the Location",,default
+coordinateUncertaintyInMeters,,,location,select,0,0,"The horizontal distance (in metres) from the given decimalLatitude and decimalLongitude describing the smallest circle containing the whole of the Location",,default
 scientificName,Scientific Name,,identification,text,0,0,"Use the autocomplete drop-down where possible",,default
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
 taxonRank,'',,none,hidden,0,0,,,default

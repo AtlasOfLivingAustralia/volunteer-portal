@@ -449,3 +449,50 @@ div.dialog ul {
 div.list table tr.odd {
     background-color: #F0F0F0;
 }
+
+#expedition {
+    clear: both;
+    padding: 0;
+    margin: 0;
+}
+
+#expedition #personnel {
+    float: left;
+    width: 512px;
+    padding:  10px;
+}
+
+#personnel td {
+    padding: 3px 5px;
+}
+
+#expedition #progress {
+    float: left;
+    width: 416px;
+    padding:  10px;
+    border: 1px solid #000;
+    /*-moz-border-radius: 8px;*/
+    /*-webkit-border-radius: 8px;*/
+    /*-o-border-radius: 8px;*/
+    /*-icab-border-radius: 8px;*/
+    /*-khtml-border-radius: 8px;*/
+    /*border-radius: 8px;*/
+}
+
+#recordsChartWidget {
+    display: inline-block;
+    width: 152px;
+    vertical-align: middle;
+}
+
+#recordsMap {
+    width: 250px;
+    height: 250px;
+    float: left;
+}
+
+#recordMapLabel {
+    width: 140px;
+    float: left;
+    padding:  10px;
+}

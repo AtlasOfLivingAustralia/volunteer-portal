@@ -9,23 +9,79 @@ class ProjectController {
 
     def taskService
     def auditService
+    def fieldSyncService
     javax.sql.DataSource dataSource
 
 
     def index = {
-        redirect(action: "list", params: params)
+        //redirect(action: "list", params: params)
+        def projectInstance = Project.get(params.id)
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        }
+        else {
+            def taskCount = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId: projectInstance.id])
+            def taskList = Task.findAllByProject(projectInstance)
+            def taskListFields = []
+            def allUsersMap = [:]
+            taskList.each {
+                //println("task id: " + it.externalIdentifier + ", transcribed by: " + it.fullyTranscribedBy)
+                Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
+                taskListFields.add(recordValues)
+                def userId = it.fullyTranscribedBy
+                if (userId) {
+                    //def user = User.findByUserId(userId)
+                    //def username = user.displayName
+                    def count = (allUsersMap.containsKey(userId)) ? (allUsersMap.get(userId) + 1) : 1
+                    allUsersMap.put(userId , count)
+                }
+            }
+            // reverse sort on user counts
+            allUsersMap = allUsersMap.sort {a, b ->
+                b.value <=> a.value
+            }
+
+            def expedition = ConfigurationHolder.config.expedition
+            def roles = [] //  List of Map
+            // copy expedition datastructure to roles & add "members"
+            expedition.each {
+                def row = it.clone()
+                row.put("members", [])
+                roles.addAll(row)
+            }
+
+            println "expedition check: ${expedition.get(3).members}"
+            // assign users to the expedition roles
+            allUsersMap.each { userId ->
+                // iterate over each user and assign to a role.
+                def assigned = false
+                roles.eachWithIndex { role, i ->
+                    if (userId.value >= role.threshold && role.members.size() < role.max && !assigned) {
+                        // assign role
+                        def user = User.findByUserId(userId.key)
+                        def userMap = [name: user.displayName, id: user.id, count: userId.value]
+                        role.get("members").add(userMap)
+                        assigned = true
+                    }
+                }
+            }
+            println "2. roles = " + roles
+
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount.get(0), taskList: taskList,
+                    taskListFields: taskListFields, usersMap: allUsersMap, roles:roles])
+        }
     }
 
     def deleteTasks = {
 
-      def sql = new Sql(dataSource)
-      def projectInstance = Project.get(params.id)
-      sql.call("delete from task where project_id="+params.id)
-
+        def sql = new Sql(dataSource)
+        def projectInstance = Project.get(params.id)
+        sql.call("delete from task where project_id=" + params.id)
 
 //      Multimedia.executeUpdate("delete Multimedia m inner join m.task where m.task.project.id = :projectId", [projectId:params.long('id')])
-//      Task.executeUpdate("delete Task t where t.project.id = :projectId", [projectId:params.long('id')])
-      redirect(action: "show", id: projectInstance.id)
+        //      Task.executeUpdate("delete Task t where t.project.id = :projectId", [projectId:params.long('id')])
+        redirect(action: "show", id: projectInstance.id)
     }
 
     def list = {
@@ -43,7 +99,7 @@ class ProjectController {
     def create = {
         def projectInstance = new Project()
         projectInstance.properties = params
-        return [projectInstance: projectInstance, templateList:Template.list()]
+        return [projectInstance: projectInstance, templateList: Template.list()]
     }
 
     def save = {
@@ -57,17 +113,17 @@ class ProjectController {
         }
     }
 
-   /**
-    * Redirects a image for the supplied project
-    */
+    /**
+     * Redirects a image for the supplied project
+     */
     def showImage = {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
-           params.max = 1
-           def task = Task.findByProject(projectInstance, params)
-           if(task?.multimedia?.filePathToThumbnail){
-             redirect(url: ConfigurationHolder.config.server.url + task?.multimedia?.filePathToThumbnail.get(0))
-           }
+            params.max = 1
+            def task = Task.findByProject(projectInstance, params)
+            if (task?.multimedia?.filePathToThumbnail) {
+                redirect(url: ConfigurationHolder.config.server.url + task?.multimedia?.filePathToThumbnail.get(0))
+            }
         }
     }
 
@@ -78,8 +134,8 @@ class ProjectController {
             redirect(action: "list")
         }
         else {
-          def taskCount = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId:projectInstance.id])
-          [projectInstance: projectInstance, taskCount: taskCount]
+            def taskCount = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId: projectInstance.id])
+            [projectInstance: projectInstance, taskCount: taskCount]
         }
     }
 
@@ -100,7 +156,7 @@ class ProjectController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (projectInstance.version > version) {
-                    
+
                     projectInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'project.label', default: 'Project')] as Object[], "Another user has updated this Project while you were editing")
                     render(view: "edit", model: [projectInstance: projectInstance])
                     return
