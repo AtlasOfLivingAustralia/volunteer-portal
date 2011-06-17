@@ -10,7 +10,7 @@
   <meta name="app.build" content="${g.meta(name: 'app.build')}"/>
 
   <title><g:layoutTitle/></title>
-  <link rel="stylesheet" href="${resource(dir: 'css', file: 'temp-style.css')}"/>
+  %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'temp-style.css')}"/>--}%
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'public.css')}"/>
 
   <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/style.css" type="text/css" media="screen"/>
