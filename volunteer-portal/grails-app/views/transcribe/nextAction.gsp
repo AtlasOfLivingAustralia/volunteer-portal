@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.Task" %>
+<%@ page import="au.org.ala.volunteer.ViewedTask; au.org.ala.volunteer.Task" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -26,6 +26,8 @@
                 e.preventDefault();
                 window.location.href = "${createLink(action:'myStats', controller:'user')}";
             });
+
+            //$("#dateSaved").html(" at " + new Date());
         });
     </script>
 </head>
@@ -37,11 +39,12 @@
 </div>
 
 <div class="body">
-    <h1>Thank you - your transcription has been saved</h1>
-
+    <h1>Transcription Saved</h1>
     <div class="dialog">
         <p></p>
-        <h3>What do you want to do next?</h3>
+        <h2>Thank you - your transcription was saved <span id="dateSaved">at
+        <g:formatDate date="${ViewedTask.findByTaskAndUserId(taskInstance, userId).lastUpdated}" format="h:mm:ss a z 'on' d MMMM yyyy"/></span></h2>
+        %{--<h3>What do you want to do next?</h3>--}%
         <ul>
             <li id="goBack"><a href="#">Return to the saved task</a></li>
             <li id="viewTask"><a href="#">Transcribe another task</a></li>
