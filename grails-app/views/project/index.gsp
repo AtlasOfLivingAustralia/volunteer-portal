@@ -11,6 +11,8 @@
     <meta name="layout" content="main"/>
     <title>Volunteer Portal - Atlas of Living Australia</title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <script type='text/javascript'>
         google.load('visualization', '1', {packages:['gauge']});
 
@@ -73,7 +75,8 @@
 
         $(document).ready(function() {
             // load chart
-            loadChart();
+            //loadChart();
+            $("#recordsChartWidget").progressbar({ value: <g:formatNumber number="${tasksDonePercent}" format="#"/> });
             //load map
             loadMap();
         });
@@ -124,9 +127,10 @@
         <div id="progress" class="shadow">
             <h2>Expedition Progress</h2>
             <div id="recordsChart">
-                Records captured: ${tasksDone} of ${tasksTotal}
-                <div id="recordsChartWidget"></div>
+                Records captured: ${tasksDone} of ${tasksTotal} (<g:formatNumber number="${tasksDonePercent}" format="#"/>% complete)
             </div>
+            <div id="recordsChartWidget"></div>
+            <div style="clear: both"></div>
             <div id="recordMapLabel">Showing location of records transcribed to date</div>
             <div id="recordsMap"></div>
         </div>
