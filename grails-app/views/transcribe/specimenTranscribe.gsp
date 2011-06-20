@@ -455,13 +455,14 @@
                     if (i > 0) {
                         window.setTimeout(countDownByOne, countdownInterval);
                     } else {
-                        window.location.reload();
+                        //window.location.reload();
+                        $(":input[name='_action_save']").click();
                     }
                 }
                 window.setTimeout(countDownByOne, countdownInterval);
             }
         });
-        window.setTimeout(function() { $("#promptUserLink").click(); }, 30 * 60 * 1000);
+        window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
 
     }); // end document ready
 

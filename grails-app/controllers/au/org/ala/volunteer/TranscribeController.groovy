@@ -41,7 +41,8 @@ class TranscribeController {
   
   def showNextAction = {
       println("rendering view: nextAction")
-      render(view:'nextAction', model:[id:params.id])
+      def taskInstance = Task.get(params.id)
+      render(view:'nextAction', model:[id:params.id, taskInstance: taskInstance, userId: authService.username()])
   }
 
   /**
