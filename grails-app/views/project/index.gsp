@@ -2,7 +2,7 @@
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
-<g:set var="tasksDone" value="${Task.countByProjectAndFullyTranscribedByIsNotNull(Project.get(6301))}"/>
+<g:set var="tasksDone" value="${Task.countByProjectAndFullyTranscribedByIsNotNull(Project.get(params.id))}"/>
 <g:set var="tasksTotal" value="${taskCount}"/>
 <g:set var="tasksDonePercent" value="${(tasksDone / tasksTotal) * 100}"/>
 <html>
