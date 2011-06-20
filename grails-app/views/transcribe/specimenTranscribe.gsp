@@ -632,9 +632,9 @@
                 </g:if>
                 <g:else>
                     <span class="button"><g:actionSubmit class="save" action="save"
-                             value="${message(code: 'default.button.save.label', default: 'Save')}"/></span>
+                             value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
                     <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save partially complete')}"/></span>
+                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
                     <span class="button"><g:actionSubmit class="skip" action="showNextFromAny"
                              value="${message(code: 'default.button.skip.label', default: 'Skip')}"/></span>
                 </g:else>
