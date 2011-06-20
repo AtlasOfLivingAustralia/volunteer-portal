@@ -77,10 +77,10 @@
             <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks Validated"/></td>
             <td valign="top" class="value">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
           </tr>
-          <tr class="prop">
+          <!--<tr class="prop">
             <td valign="top" class="name"><g:message code="user.userId.points.tally.label" default="Points"/></td>
             <td valign="top" class="value">${pointsTotal}</td>
-          </tr>
+          </tr>-->
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
             <td valign="top" class="value">
@@ -116,7 +116,8 @@
                 <g:link controller="transcribe" action="task" id="${taskInstance.id}">
                 <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}" width="150px"/>
                 </g:link>
-                <p><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></p>
+                <p><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link><br/>
+                    Status: ${(taskInstance.fullyTranscribedBy) ? 'submitted' : 'saved'}</p>
               </td>
           </g:each>
           <!-- pad it out -->
@@ -130,6 +131,13 @@
     <div class="paginateButtons">
       <g:paginate total="${numberOfTasksEdited}"/>
     </div>
+%{--
+    <div class="list">
+      <g:renderTaskList taskInstanceList="${allTasks}" noOfColumns="4"/>
+    </div>
+    <div class="paginateButtons">
+      <g:paginate total="${allTasksTotal}"/>
+    </div>--}%
   </g:if>
 </div>
 </body>
