@@ -27,7 +27,7 @@
             chart.draw(data, options);
         }
 
-        google.load("maps", "3.2", {other_params:"sensor=false"});
+        google.load("maps", "3.5", {other_params:"sensor=false"});
 
         function loadMap() {
             var myOptions = {
@@ -58,8 +58,8 @@
                         map: map,
                         title:"record: ${recordValues?.get(0)?.catalogNumber}"
                     });
-                    var content = "<div style='width:100%'>Catalogue No.: ${recordValues?.get(0)?.catalogNumber}<br/>Taxa: ${recordValues?.get(0)?.scientificName}</div>";
-                    var infowindow_${i} = new google.maps.InfoWindow({content: content, maxWidth:140});
+                    var content = "<div style='font-size:11px;line-height:1.3em;'>Catalogue No.: ${recordValues?.get(0)?.catalogNumber}<br/>Taxa: ${recordValues?.get(0)?.scientificName}<br/>Transcribed by: ${recordValues?.get(0)?.transcribedBy}</div>";
+                    var infowindow_${i} = new google.maps.InfoWindow({content: content, noCloseOnClick: false});
                     google.maps.event.addListener(marker_${i}, 'click', function() {
                         infowindow_${i}.open(map, marker_${i});
                     });
