@@ -28,8 +28,9 @@ class ProjectController {
             def allUsersMap = [:]
             taskList.each {
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
-                taskListFields.add(recordValues)
                 def userId = it.fullyTranscribedBy
+                recordValues.get(0).transcribedBy = User.findByUserId(userId?:"")?.displayName
+                taskListFields.add(recordValues)
                 if (userId) {
                     def count = (allUsersMap.containsKey(userId)) ? (allUsersMap.get(userId) + 1) : 1
                     allUsersMap.put(userId , count)
