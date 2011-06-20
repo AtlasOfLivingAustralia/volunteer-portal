@@ -483,16 +483,26 @@ div.list table tr.odd {
     /*border-radius: 8px;*/
 }
 
+#recordsChart {
+    width: 140px;
+    float: left;
+    padding:  10px;
+}
+
 #recordsChartWidget {
     display: inline-block;
-    width: 152px;
+    float: right;
+    width: 250px;
+    margin: 10px 0;
+    height: 1.2em;
     vertical-align: middle;
 }
 
 #recordsMap {
     width: 250px;
     height: 250px;
-    float: left;
+    margin: 10px 0;
+    float: right;
 }
 
 #recordMapLabel {

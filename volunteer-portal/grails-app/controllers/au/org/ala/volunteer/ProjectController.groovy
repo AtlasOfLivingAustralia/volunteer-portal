@@ -23,7 +23,7 @@ class ProjectController {
         }
         else {
             def taskCount = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId: projectInstance.id])
-            def taskList = Task.findAllByProject(projectInstance)
+            def taskList = Task.findAllByProject(projectInstance, [max:999])
             def taskListFields = []
             def allUsersMap = [:]
             taskList.each {
