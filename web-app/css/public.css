@@ -507,10 +507,19 @@ div.list table tr.odd {
 #recordsChartWidget {
     /*display: inline-block;*/
     /*float: right;*/
-    width: 400px;
+    width: 395px;
     margin: 10px 0;
     height: 1.5em;
     vertical-align: middle;
+}
+
+#recordsChartWidget .ui-widget-header {
+    border: 1px solid #C9AB67;
+    background: #CEC193 url(../images/progress_1x100b.png) 50% 50% repeat-x;
+}
+
+#progress .ui-widget-content {
+    border: 1px solid #C9AB67;
 }
 
 #recordsMap {
