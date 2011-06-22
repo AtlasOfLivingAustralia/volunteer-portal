@@ -62,10 +62,10 @@ grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 
 // Mappings for expedition labels, icons, etc
 expedition = [
-        [name: "Expedition Leader",   icon: "images/explorers/krefft.png", max: 1,    threshold: 10],
-        [name: "Scientists",          icon: "images/explorers/blank.png",  max: 999,  threshold: 20],
-        [name: "Collection Managers", icon: "images/explorers/v9415.png",  max: 999,  threshold: 10],
-        [name: "Technical Officers",  icon: "images/explorers/blank.png",  max: 999,  threshold: 1 ]
+        [name: "Expedition Leader",   icon: "images/explorers/expedition-leader.png", max: 1,    threshold: 10],
+        [name: "Scientists",          icon: "images/explorers/scientist.png",  max: 999,  threshold: 20],
+        [name: "Collection Managers", icon: "images/explorers/collection-manager.png",  max: 999,  threshold: 10],
+        [name: "Technical Officers",  icon: "images/explorers/technical-officer.png",  max: 999,  threshold: 1 ]
 ]
 
 volunteer.defaultProjectId = 6306

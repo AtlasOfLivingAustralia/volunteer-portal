@@ -85,23 +85,24 @@
 
 <body class="two-column-right">
 <div class="body">
-    <h1>Welcome to the Volunteer Portal</h1>
+    <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
     <br/>
 
-    <p>This is a prototype web application for providing users with the ability to transcribe specimen records.
-        <br/>For more information contact <strong>Paul Flemons</strong>.</p>
+    <p>${projectInstance.description}</p>
 
     <div class='front-image'>
-        <img src="${resource(dir: 'images', file: 'map.jpg')}"/>
+        <img src="${resource(dir: 'images', file: 'short-map.jpg')}"/>
     </div>
 
-    <div class='front-buttons'>
+    <div class='front-buttons buttons-big'>
         <g:link controller="transcribe">
             <img src="${resource(dir: 'images', file: 'start-button.png')}"/>
-        </g:link><br/>
+        </g:link>
+    </div>
+    <div class='front-buttons buttons-small'>
         <g:link controller="user">
             <img src="${resource(dir: 'images', file: 'score.png')}"/>
-        </g:link>
+        </g:link><br/>
         <g:link controller="user" action="myStats">
             <img src="${resource(dir: 'images', file: 'stats.png')}"/>
         </g:link>
@@ -124,10 +125,10 @@
                 </tbody>
             </table>
         </div>
-        <div id="progress" class="shadow">
+        <div id="progress" class="">
             <h2>Expedition Progress</h2>
             <div id="recordsChart">
-                Records captured: ${tasksDone} of ${tasksTotal} (<g:formatNumber number="${tasksDonePercent}" format="#"/>% complete)
+                Records captured: <span style="white-space: nowrap;">${tasksDone} of ${tasksTotal}</span> (<g:formatNumber number="${tasksDonePercent}" format="#"/>%)
             </div>
             <div id="recordsChartWidget"></div>
             <div style="clear: both"></div>
