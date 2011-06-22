@@ -95,7 +95,7 @@
     </div>
 
     <div class='front-buttons buttons-big'>
-        <g:link controller="transcribe">
+        <g:link controller="transcribe" id="${projectInstance.id}">
             <img src="${resource(dir: 'images', file: 'start-button.png')}"/>
         </g:link>
     </div>
