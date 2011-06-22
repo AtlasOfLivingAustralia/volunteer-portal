@@ -56,13 +56,13 @@ class UserController {
         def currentUser = authService.username()
         params.max = Math.min(params.max ? params.int('max') : 12, 100)
         //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
-        def recentViewedTasks = ViewedTask.findAllByUserIdAndLastUpdatedIsNotNull(currentUser, params)
+        def recentViewedTasks = ViewedTask.findAllByUserIdAndLastUpdatedIsNotNull(userInstance.userId, params)
         def recentTasks = []
         recentViewedTasks.each {
             recentTasks.add(it.task)
         }
         //def numberOfTasksEdited = taskService.getPartiallyTranscribedByCountsForUser(userInstance.userId)
-        def numberOfTasksEdited = ViewedTask.countByUserIdAndLastUpdatedIsNotNull(currentUser)
+        def numberOfTasksEdited = ViewedTask.countByUserIdAndLastUpdatedIsNotNull(userInstance.userId)
 
         def pointsTotal =  (userInstance.transcribedCount * 100) + ((numberOfTasksEdited - userInstance.transcribedCount ) * 10)
 
