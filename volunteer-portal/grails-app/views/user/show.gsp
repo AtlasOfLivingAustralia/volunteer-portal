@@ -101,7 +101,7 @@
     </g:if>
     <g:else>
       ${fieldValue(bean: userInstance, field: "displayName")}
-    </g:else>
+    </g:else> (${numberOfTasksEdited} tasks found)
     </h2>
     <div class="list">
         <table style="border: none; width: 100%">
@@ -129,7 +129,7 @@
         </table>
     </div>
     <div class="paginateButtons">
-      <g:paginate total="${numberOfTasksEdited}"/>
+      <g:paginate total="${numberOfTasksEdited}" id="${userInstance?.id}" />
     </div>
 %{--
     <div class="list">
