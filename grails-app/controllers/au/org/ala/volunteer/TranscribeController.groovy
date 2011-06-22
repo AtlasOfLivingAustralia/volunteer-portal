@@ -13,7 +13,12 @@ class TranscribeController {
   static allowedMethods = [saveTranscription: "POST"]
 
   def index = {
-    redirect(action: "showNextFromAny", params: params)
+      if (params.id) {
+          redirect(action: "showNextFromProject", params: params)
+      } else {
+          redirect(action: "showNextFromAny", params: params)
+      }
+
   }
 
   def task = {
