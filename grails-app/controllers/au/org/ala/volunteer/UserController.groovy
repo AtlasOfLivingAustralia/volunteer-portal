@@ -53,13 +53,19 @@ class UserController {
 
     def show = {
         def userInstance = User.get(params.id)
+        def currentUser = authService.username()
         params.max = Math.min(params.max ? params.int('max') : 12, 100)
-        def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
-        def numberOfTasksEdited = taskService.getPartiallyTranscribedByCountsForUser(userInstance.userId)
+        //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
+        def recentViewedTasks = ViewedTask.findAllByUserIdAndLastUpdatedIsNotNull(currentUser, params)
+        def recentTasks = []
+        recentViewedTasks.each {
+            recentTasks.add(it.task)
+        }
+        //def numberOfTasksEdited = taskService.getPartiallyTranscribedByCountsForUser(userInstance.userId)
+        def numberOfTasksEdited = ViewedTask.countByUserIdAndLastUpdatedIsNotNull(currentUser)
 
         def pointsTotal =  (userInstance.transcribedCount * 100) + ((numberOfTasksEdited - userInstance.transcribedCount ) * 10)
 
-        def currentUser = authService.username()
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
