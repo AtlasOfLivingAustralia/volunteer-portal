@@ -19,7 +19,7 @@ class Project {
 
   static constraints = {
     name maxSize: 200
-    description nullable: true
+    description nullable: true, maxSize: 2000, widget:'textarea'
     template nullable: true
     created nullable: true
   }
