@@ -464,6 +464,11 @@
         });
         window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
 
+        var isReadonly = "${isReadonly}";
+        if (isReadonly) {
+            $(":input").not('.skip').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+        }
+
     }); // end document ready
 
 </script>
@@ -648,11 +653,11 @@
                     <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
                              value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
                     <br>
-                    Or reload the page and loose any changes you may have made
+                    Or reload the page (Note: any changes you may have made will be lost)
                     <br/>
                     <input type="button" value="Reload Page" onclick="window.location.reload()"/>
                     <br/>
-                    NOTE: the page will automatically saved in <span id="reloadCounter">5</span> minutes if no action if taken
+                    NOTE: the page will be automatically saved in <span id="reloadCounter">5</span> minutes if no action if taken
                 </div>
             </div>
         </g:form>
