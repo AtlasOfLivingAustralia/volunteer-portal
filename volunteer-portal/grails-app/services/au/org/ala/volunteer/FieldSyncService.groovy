@@ -5,7 +5,6 @@ import org.springframework.validation.Errors
 class FieldSyncService {
 
   static transactional = true
-
   def serviceMethod() {}
 
   Map retrieveFieldsForTask(Task taskInstance){
@@ -18,7 +17,7 @@ class FieldSyncService {
       }
       recordMap.put field.name,field.value
     }
-    println("record values: " + recordValues )
+    log.debug("record values: " + recordValues )
     recordValues
   }
 
@@ -40,7 +39,8 @@ class FieldSyncService {
       if (fieldValuesForRecord) {
 
         //get existing fields, and add to a map
-        def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false", [task: task, recordIdx: idx])
+        def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false",
+                [task: task, recordIdx: idx])
 
         Map oldFieldValues = new LinkedHashMap()
         oldFields.each { field -> oldFieldValues.put(field.name, field) }
@@ -62,7 +62,8 @@ class FieldSyncService {
                 field.updated = new Date()
                 field.save(flush: true)
                 if(field.hasErrors()) {
-                  task.errors.addAllErrors(field.errors)
+                  field.errors.allErrors.each { log.error(it) }
+                  task.errors.reject(field.errors.toString())
                   return;
                 }
 
@@ -71,8 +72,10 @@ class FieldSyncService {
                 oldFieldValue.updated = new Date()
                 oldFieldValue.save(flush: true)
                 if(oldFieldValue.hasErrors()) {
-                  task.errors.addAllErrors(oldFieldValue.errors)
-                  return ;
+                  oldFieldValue.errors.allErrors.each { log.error(it) }
+                  task.errors.reject(oldFieldValue.errors.toString())
+                  //task.errors.addAllErrors(oldFieldValue.errors)
+                  return;
                 }
 
               } else {
@@ -82,7 +85,9 @@ class FieldSyncService {
                 oldFieldValue.save(flush: true)
 
                 if(oldFieldValue.hasErrors()) {
-                  task.errors.addAllErrors(oldFieldValue.errors)
+                  oldFieldValue.errors.allErrors.each { log.error(it) }
+                  task.errors.reject(oldFieldValue.errors.toString())
+                  //task.errors.addAllErrors(oldFieldValue.errors)
                   return;
                 }
               }
@@ -94,7 +99,8 @@ class FieldSyncService {
                     task: task, transcribedByUserId: transcriberUserId, superceded: false)
             field.save(flush: true)
             if(field.hasErrors()) {
-               task.errors.addAllErrors(field.errors)
+               field.errors.allErrors.each { log.error(it) }
+               task.errors.reject(field.errors.toString())
                return;
             }
           }
