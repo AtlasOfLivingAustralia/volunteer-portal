@@ -116,8 +116,11 @@
                 <g:link controller="transcribe" action="task" id="${taskInstance.id}">
                 <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}" width="150px"/>
                 </g:link>
-                <p><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link><br/>
-                    Status: ${(taskInstance.fullyTranscribedBy) ? 'submitted' : 'saved'}</p>
+                <p>Task ID: <g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link><br/>
+                    Project: ${taskInstance.project?.name}<br/>
+                    Catalogue No.: ${fieldsInTask?.get(taskInstance.id)?.get(0)?.catalogNumber}<br/>
+                    Status: ${(taskInstance.fullyTranscribedBy) ? 'submitted' : 'saved incomplete'}
+                </p>
               </td>
           </g:each>
           <!-- pad it out -->
