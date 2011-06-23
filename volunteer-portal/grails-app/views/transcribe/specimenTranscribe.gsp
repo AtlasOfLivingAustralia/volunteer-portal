@@ -646,13 +646,13 @@
                     The lock on this record is about to expire.<br/>
                     Please either save your changes:<br/>
                     <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save partially complete')}"/></span>
+                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
                     <br>
                     Or reload the page and loose any changes you may have made
                     <br/>
                     <input type="button" value="Reload Page" onclick="window.location.reload()"/>
                     <br/>
-                    NOTE: page will automatically reload in <span id="reloadCounter">5</span> minutes if no action if taken (and changes will be lost)
+                    NOTE: the page will automatically saved in <span id="reloadCounter">5</span> minutes if no action if taken
                 </div>
             </div>
         </g:form>
