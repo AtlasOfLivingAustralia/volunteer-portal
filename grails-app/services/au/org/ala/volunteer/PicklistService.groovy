@@ -5,7 +5,6 @@ class PicklistService {
     static transactional = true
 
     def serviceMethod() {
-
     }
 
     /**
