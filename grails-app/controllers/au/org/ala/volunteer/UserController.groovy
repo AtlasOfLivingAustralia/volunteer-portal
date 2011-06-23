@@ -7,6 +7,7 @@ class UserController {
     def taskService
     def authService
     def userService
+    def fieldSyncService
 
     def index = {
         redirect(action: "list", params: params)
@@ -57,10 +58,13 @@ class UserController {
         params.max = Math.min(params.max ? params.int('max') : 12, 100)
         //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
         def recentViewedTasks = ViewedTask.findAllByUserIdAndLastUpdatedIsNotNull(userInstance.userId, params)
-        def recentTasks = []
+        def recentTasks = [] // list of tasks editted by user
+        def fieldsInTask = [:] // map of task id to saved fields for that task
         recentViewedTasks.each {
             recentTasks.add(it.task)
+            fieldsInTask.put(it.task.id, fieldSyncService.retrieveFieldsForTask(it.task))
         }
+        println "fieldsInTask = " + fieldsInTask
         //def numberOfTasksEdited = taskService.getPartiallyTranscribedByCountsForUser(userInstance.userId)
         def numberOfTasksEdited = ViewedTask.countByUserIdAndLastUpdatedIsNotNull(userInstance.userId)
 
@@ -71,7 +75,8 @@ class UserController {
             redirect(action: "list")
         }
         else {
-            [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser, numberOfTasksEdited: numberOfTasksEdited, pointsTotal: pointsTotal]
+            [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser, numberOfTasksEdited: numberOfTasksEdited,
+                    pointsTotal: pointsTotal, fieldsInTask: fieldsInTask]
         }
     }
 
