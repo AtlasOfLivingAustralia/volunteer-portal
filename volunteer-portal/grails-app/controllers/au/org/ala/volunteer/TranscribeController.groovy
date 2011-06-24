@@ -30,15 +30,17 @@ class TranscribeController {
     if(taskInstance){
       //record the viewing of the task
       auditService.auditTaskViewing(taskInstance, currentUser)
-
-      //println(authService.username())
-
       def project = Project.findById(taskInstance.project.id)
       def template = Template.findById(project.template.id)
+      def isReadonly
+
+      if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser) {
+        isReadonly = "readonly"
+      }
 
       //retrieve the existing values
       Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-      render(view:template.viewName,  model:[taskInstance:taskInstance, recordValues: recordValues])
+      render(view:template.viewName,  model:[taskInstance:taskInstance, recordValues: recordValues, isReadonly: isReadonly])
     } else {
       redirect(view:'list', controller: "task")
     }
