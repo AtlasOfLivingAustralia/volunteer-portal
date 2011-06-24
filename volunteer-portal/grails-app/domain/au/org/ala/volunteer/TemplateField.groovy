@@ -23,7 +23,7 @@ class TemplateField {
         defaultValue maxSize: 200
         mandatory nullable: true
         multiValue nullable: true
-        helpText nullable:true, widget:'textarea'
+        helpText nullable:true, widget:'textarea', maxSize: 2000
         validationRule nullable:true
         template nullable: true
     }

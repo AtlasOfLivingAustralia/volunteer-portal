@@ -198,6 +198,11 @@ div#mapWidgets {
     min-height: 300px;
 }
 
+#institutionLogo {
+    display: inline-block;
+    float: right;
+}
+
 #transcribeFields {
     width: 950px;
 }
@@ -231,12 +236,12 @@ div#mapWidgets {
 
 }
 
-#transcribeFields > table thead th {
+#transcribeFields > table thead th, #taskMetadata > table thead th {
     vertical-align: middle;
     color: #666;
 }
 
-#transcribeFields > table thead tr h3 {
+#transcribeFields > table thead tr h3, #taskMetadata > table thead tr h3 {
     display: inline-block;
 }
 
@@ -547,4 +552,5 @@ div.list table tr.odd {
 
 #promptUser {
     line-height: 1.8em;
+    position: static;
 }
