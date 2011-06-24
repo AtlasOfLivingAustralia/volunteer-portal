@@ -1,22 +1,22 @@
-catalogNumber,,,none,hidden,1,0,,,default
+catalogNumber,,,none,hidden,1,0,"Please check this number against the typed number on the specimen label in the image to see that it matches. If it does not match then click the &quot;Report an issue&quot; link near the top of the page",,default
 institutionCode,,AM,none,hidden,1,0,,,default
-occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"Transcribe the text from every label, exactly as it appears in the image above. Transcribe the labels in the order of: top left to bottom right",,default
-recordedBy,Collector,,collectionEvent,text,0,0,"Person or persons responsible for collecting the specimen",,default
+occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",,default
+recordedBy,Collector,,collectionEvent,text,0,0,"Enter the text here exactly as it appears in the label. A drop down list will provide you with matches to known collectors – where possible choose from the list. In some cases there may be multiple very similar options. Choose the one that most accurately matches the name on the label. If there is no exact match then please enter the name as a new name",,default
 recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
-eventDate,,,collectionEvent,text,0,0,"Date of the collection event (YYYY-MM-DD or YYYY-MM)",,default
-verbatimLocality,,,collectionEvent,textarea,0,0,,,default
-verbatimLatitude,,,collectionEvent,text,0,0,,,default
-verbatimLongitude,,,collectionEvent,text,0,0,,,default
+eventDate,,,collectionEvent,text,0,0,"Enter the date from the label using the format YYYY-MM-DD or use the calendar tool (click on calendar icon to activate) to select the date. If only a year and month appears enter YYYY-MM, if only a year then YYYY",,default
+verbatimLocality,,,collectionEvent,textarea,0,0,"Please copy and paste the locality text from the &quot;enter all label text&quot; box from step 1.",,default
+verbatimLatitude,,,collectionEvent,text,0,0,"If the label/s have a latitude, record it here as it appears",,default
+verbatimLongitude,,,collectionEvent,text,0,0,"If the label/s have a longitude, record it here as it appears",,default
 locality,,,location,text,0,0,,,default
 stateProvince,State/Territory,,location,select,0,0,,,default
 decimalLatitude,,,location,text,0,0,,,default
 country,,,location,select,0,0,,,default
 decimalLongitude,,,location,text,0,0,,,default
-coordinateUncertaintyInMeters,,,location,select,0,0,"The horizontal distance (in metres) from the given decimalLatitude and decimalLongitude describing the smallest circle containing the whole of the Location",,default
-scientificName,Scientific Name,,identification,text,0,0,"Use the autocomplete drop-down where possible",,default
+coordinateUncertaintyInMeters,,,location,select,0,0,"Choose the value you think most effectively describes the uncertainty in the location you have identified on the map. The circle associated with the location on the map will give you a good means of interpreting the size of the area in which the real location might lie",,default
+scientificName,Scientific Name,,identification,text,0,0,"This will consist of two words, the first being the Genus and the second the species. Begin entering the Genus name first and an autocomplete list will offer you options as to what the name might be. Choose the one that matches exactly the text on the label (or which you think is the same name). If there is no match then enter the full text yourself",,default
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
 taxonRank,'',,none,hidden,0,0,,,default
-scientificNameAuthorship,Authorship,,identification,text,0,0,,,default
-identifiedBy,Identifier,,identification,text,0,0,"Person or persons who performed the identification",,default
-dateIdentified,Date Identified,,identification,text,0,0,,,default
+scientificNameAuthorship,Authorship,,identification,text,0,0,"This may be recorded, along with a date, with the Scientific Name – in which case enter both the Author and the date in this field",,default
+identifiedBy,Identifier,,identification,text,0,0,"This is the identifier of the specimen. You may need to use a process of elimination to decide if a name is that of an identifier. If the name doesn’t appear to be a collector or a scientific name author then it may be the specimen identifier &ndash; in which case enter it here",,default
+dateIdentified,Date Identified,,identification,text,0,0,"May appear with the Identifier. Enter the date from the label using the format YYYY-MM-DD or use the calendar tool (click on calendar icon to activate) to select the date. If only a year and month appears enter YYYY-MM, if only a year then YYYY",,default
 typeStatus,,,identification,select,0,0,,,default

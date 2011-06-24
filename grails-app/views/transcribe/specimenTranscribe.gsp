@@ -423,7 +423,7 @@
                 }
             },
             style: {
-                //width: 450,
+                width: 400,
                 padding: 8,
                 background: 'white', //'#f0f0f0',
                 color: 'black',
@@ -462,11 +462,14 @@
                 window.setTimeout(countDownByOne, countdownInterval);
             }
         });
-        window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
 
         var isReadonly = "${isReadonly}";
         if (isReadonly) {
+            // readonly more
             $(":input").not('.skip').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+        } else {
+            // editting mode
+            window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
         }
 
     }); // end document ready
@@ -534,14 +537,16 @@
                         <li><div>Catalogue No.:</div> ${recordValues?.get(0)?.catalogNumber}</li>
                         <li><div>Taxa:</div> ${recordValues?.get(0)?.scientificName}</li>
                     </ul>
-                    <table style="width: 100%">
+                    <table>
                         <thead>
-                        <tr><th><h3>1. Enter all label text into the box below</h3></th></tr>
+                        <tr><th><h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears
+                            in the label so that we have a searchable reference for the complete label set</th></tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
-                                    <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" rows="10" cols="40" style="width: 100%"/>
+                                    <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}"
+                                                rows="12" cols="40" style="width: 100%"/>
                                 </td>
                             </tr>
                         </tbody>
@@ -553,7 +558,9 @@
 
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>2. Collection Event</h3>&nbsp;&nbsp;(Complete fields below using text from the labels as entered in step 1.)</th></tr>
+                        <tr><th><h3>2. Collection Event</h3> &ndash; This records information directly from the label
+                            about when, where and by whom the specimen was collected. Only fill in fields for which
+                            information appears in the labels</th></tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}" var="field">
@@ -565,9 +572,18 @@
                     <table style="width: 100%">
                         <thead>
                         <tr>
-                            <th><h3>3. Interpreted Location</h3></th>
-                            <th><button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Show
-                                    mapping tool</button> (Use the mapping tool before attempting to enters values manually)</th>
+                            <th><h3>3. Interpreted Location</h3>
+                                &ndash; Interpret the
+                                locality information in the labels into a form that is most likely to result in as accurate
+                                geographic coordinates as possible. <a href="#" class="fieldHelp" title="Expand abbreviations, and remove unnecessary words and
+                                punctuation. Eg. &quot;Stott&apos;s Is. Tweed R. near Tumbulgum NSW&quot; would become
+                                &quot;Stott&apos;s Island, Tweed River, Tumbulgum, NSW&quot;. If that doesn&apos;t map
+                                correctly then try breaking the description up into single words to see if the map tool
+                                can find a location. Where the map tool cant find a location simply fill in the State/territory
+                                and Country fields"><span class="help-container">&nbsp;</span></a>
+                                <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Show
+                                mapping tool</button> 
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -602,7 +618,14 @@
                                         <option>10000</option>
                                         <option>100000</option>
                                     </select>
-                                    <div class="searchHint">Changing this value will increase or decrease the grey "uncertainty" circle on the map</div>
+                                    <div class="searchHint">Please choose an uncertainty value from the list that best
+                                        represents the area in which you are confident the location is in <a href="#" class="fieldHelp" title="If in doubt
+                                        choose a larger area. For example if the location is simply a small town then
+                                        choose an uncertainty value that encompasses the town and some surrounding area.
+                                        The larger the town the larger the uncertainty would need to be. If the locality
+                                        description (verbatim locality) is quite detailed and you can find that location
+                                        accurately then the uncertainty value can be smaller"><span class="help-container">&nbsp;</span></a>
+                                    </div>
                                 </div>
                                 <h3>Location Data</h3>
                                 <div>Latitude: <span id="infoLat"></span></div>
@@ -616,7 +639,7 @@
                     </div>
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>4. Identification</h3></th></tr>
+                        <tr><th><h3>4. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section </th></tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}" var="field">
