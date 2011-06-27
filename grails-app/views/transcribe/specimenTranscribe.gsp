@@ -495,8 +495,8 @@
     <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.id})</h1>
     <div id="videoLinks" style="padding-top: 8px; float: right;">
         Video tutorials:
-        <a href="http://df.arcs.org.au/quickshare/8cd61a298f6ed92d/Introduction.swf" target="video">Introduction</a> | 
-        <a href="http://df.arcs.org.au/quickshare/8cd61a298f6ed92d/Introduction.swf" target="video">Using the Mapping Tool</a>
+        <a href="http://volunteer.ala.org.au/video/Introduction.swf" target="video">Introduction</a> |
+        <a href="http://volunteer.ala.org.au/video/Georeferencing2.swf" target="video">Using the Mapping Tool</a>
     </div>
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
