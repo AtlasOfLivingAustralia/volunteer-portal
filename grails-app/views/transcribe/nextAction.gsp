@@ -43,7 +43,7 @@
     <div class="dialog">
         <p></p>
         <h2>Thank you - your transcription was saved <span id="dateSaved">at
-        <g:formatDate date="${ViewedTask.findByTaskAndUserId(taskInstance, userId).lastUpdated}" format="h:mm:ss a z 'on' d MMMM yyyy"/></span></h2>
+        <g:formatDate date="${ViewedTask.findByTaskAndUserId(taskInstance, userId)?.lastUpdated}" format="h:mm:ss a z 'on' d MMMM yyyy"/></span></h2>
         %{--<h3>What do you want to do next?</h3>--}%
         <ul>
             <li id="goBack"><a href="#">Return to the saved task</a></li>
