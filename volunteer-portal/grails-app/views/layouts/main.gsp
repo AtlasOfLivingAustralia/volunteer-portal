@@ -32,7 +32,14 @@
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/hoverintent-min.js"></script>
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/superfish/superfish.js"></script>
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery.autocomplete.js"></script>
-  <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/uservoice.js"></script>
+  <script type="text/javascript">
+     var uvOptions = {};
+     (function() {
+       var uv = document.createElement('script'); uv.type = 'text/javascript'; uv.async = true;
+       uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/CrRjXClK7ghEdGZYiEaTg.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(uv, s);
+     })();
+  </script>
   <script type="text/javascript">
 
     // initialise plugins
