@@ -112,6 +112,10 @@ class TranscribeController {
     }
   }
 
+    def savePartial2 = {
+        redirect(action:'savePartial', id:params.id)
+    }
+
   /**
    * Show the next task for the supplied project.
    */
