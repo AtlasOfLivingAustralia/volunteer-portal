@@ -539,8 +539,8 @@
                     </ul>
                     <table>
                         <thead>
-                        <tr><th><h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears
-                            in the label so that we have a searchable reference for the complete label set</th></tr>
+                        <tr><th><h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears in the
+                            labels so we have a searchable reference for them</th></tr>
                         </thead>
                         <tbody>
                             <tr>
@@ -573,16 +573,9 @@
                         <thead>
                         <tr>
                             <th><h3>3. Interpreted Location</h3>
-                                &ndash; Interpret the
-                                locality information in the labels into a form that is most likely to result in as accurate
-                                geographic coordinates as possible. <a href="#" class="fieldHelp" title="Expand abbreviations, and remove unnecessary words and
-                                punctuation. Eg. &quot;Stott&apos;s Is. Tweed R. near Tumbulgum NSW&quot; would become
-                                &quot;Stott&apos;s Island, Tweed River, Tumbulgum, NSW&quot;. If that doesn&apos;t map
-                                correctly then try breaking the description up into single words to see if the map tool
-                                can find a location. Where the map tool cant find a location simply fill in the State/territory
-                                and Country fields"><span class="help-container">&nbsp;</span></a>
-                                <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Show
-                                mapping tool</button> 
+                                <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use
+                                mapping tool</button>
+                                &ndash; Use the mapping tool before attempting to enters values manually
                             </th>
                         </tr>
                         </thead>
@@ -607,8 +600,14 @@
                                     <br/>--}%
                                     <textarea name="address" id="address" size="32" rows="2" value=""></textarea>
                                     <input id="locationSearch" type="button" value="Search" style="display:table-cell;vertical-align: top;"/>
-                                    <div class="searchHint">Search for a locality, place of interest, address, postcode or GPS coordinates
-                                    (as lat, long). You may need to edit the verbatim locality to get a match from the Google location search.</div>
+                                    <div class="searchHint">Interpret the
+                                        locality information in the labels into a form that is most likely to result in as accurate
+                                        geographic coordinates as possible. Expand abbreviations, and remove unnecessary words and
+                                        punctuation. Eg. &quot;Stott&apos;s Is. Tweed R. near Tumbulgum NSW&quot; would become
+                                        &quot;Stott&apos;s Island, Tweed River, Tumbulgum, NSW&quot;. If that doesn&apos;t map
+                                        correctly then try breaking the description up into single words to see if the map tool
+                                        can find a location. Where the map tool cant find a location simply fill in the State/territory
+                                        and Country fields</div>
                                 </div>
                                 <h3>Coordinate Uncertainty</h3>
                                 <div>Adjust Uncertainty (in metres):
