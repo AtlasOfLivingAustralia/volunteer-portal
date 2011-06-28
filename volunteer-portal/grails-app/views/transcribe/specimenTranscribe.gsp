@@ -493,7 +493,7 @@
     </div>
     </g:hasErrors>
     <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.id})</h1>
-    <div id="videoLinks" style="padding-top: 8px; float: right;">
+    <div id="videoLinks" style="padding-top: 6px; float: right;">
         Video tutorials:
         <a href="http://volunteer.ala.org.au/video/Introduction.swf" target="video">Introduction</a> |
         <a href="http://volunteer.ala.org.au/video/Georeferencing2.swf" target="video">Using the Mapping Tool</a>

@@ -62,10 +62,14 @@ grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 
 // Mappings for expedition labels, icons, etc
 expedition = [
-        [name: "Expedition Leader",   icon: "images/explorers/expedition-leader.png", max: 1,    threshold: 100],
-        [name: "Scientists",          icon: "images/explorers/scientist.png",  max: 999,  threshold: 50],
-        [name: "Collection Managers", icon: "images/explorers/collection-manager.png",  max: 999,  threshold: 10],
-        [name: "Technical Officers",  icon: "images/explorers/technical-officer.png",  max: 999,  threshold: 1 ]
+        [name: "Expedition Leader", bio: "Gerard Krefft", link: "http://www.australianmuseum.net.au/image/Gerard-Krefft/",
+                icon: "images/explorers/expedition-leader.png",  max: 1,     threshold: 100],
+        [name: "Scientists", bio: "Edward Pierson Ramsay", link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
+                icon: "images/explorers/scientist.png",          max: 9999,  threshold: 50],
+        [name: "Collection Managers", bio: "George Bennett", link: "http://www.australianmuseum.net.au/image/George-Bennett/",
+                icon: "images/explorers/collection-manager.png", max: 9999,  threshold: 10],
+        [name: "Technical Officers", bio: "William Sheridan Wall", link: "http://www.australianmuseum.net.au/image/William-Sheridan-Wall/",
+                icon: "images/explorers/technical-officer.png",  max: 9999,  threshold: 1 ]
 ]
 
 volunteer.defaultProjectId = 6306
