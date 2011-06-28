@@ -114,10 +114,16 @@ class FieldSyncService {
     //set the transcribed by
     if(markAsFullyTranscribed){
       task.fullyTranscribedBy = transcriberUserId
+      def user = User.findByUserId(transcriberUserId)
+      user.transcribedCount++
+      user.save(flush:true)
     }
 
     if(markAsFullyValidated){
       task.fullyValidatedBy = transcriberUserId
+      def user = User.findByUserId(transcriberUserId)
+      user.validatedCount++
+      user.save(flush:true)
     } else {
       //reset the fully validated flag
       task.fullyValidatedBy = null
