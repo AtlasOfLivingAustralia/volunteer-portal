@@ -56,18 +56,14 @@ class UserController {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
         params.max = Math.min(params.max ? params.int('max') : 12, 100)
-        //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId())
-        def recentViewedTasks = ViewedTask.findAllByUserIdAndLastUpdatedIsNotNull(userInstance.userId, params)
-        def recentTasks = [] // list of tasks editted by user
+        def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), params)
         def fieldsInTask = [:] // map of task id to saved fields for that task
-        recentViewedTasks.each {
-            recentTasks.add(it.task)
-            fieldsInTask.put(it.task.id, fieldSyncService.retrieveFieldsForTask(it.task))
+        recentTasks.each {
+            // get the fields as a Map (to be able to display catalogNumber
+            fieldsInTask.put(it.id, fieldSyncService.retrieveFieldsForTask(it))
         }
-        println "fieldsInTask = " + fieldsInTask
-        //def numberOfTasksEdited = taskService.getPartiallyTranscribedByCountsForUser(userInstance.userId)
-        def numberOfTasksEdited = ViewedTask.countByUserIdAndLastUpdatedIsNotNull(userInstance.userId)
 
+        def numberOfTasksEdited = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), [:]).size()
         def pointsTotal =  (userInstance.transcribedCount * 100) + ((numberOfTasksEdited - userInstance.transcribedCount ) * 10)
 
         if (!userInstance) {
