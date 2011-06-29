@@ -66,7 +66,10 @@ class ProjectController {
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
                 def userId = it.fullyTranscribedBy
                 recordValues?.get(0)?.transcribedBy = User.findByUserId(userId?:"")?.displayName
-                taskListFields.add(recordValues.get(0))
+                if (recordValues?.get(0)?.decimalLatitude && recordValues?.get(0)?.decimalLongitude) {
+                    // only add records if the have a lat & lng
+                    taskListFields.add(recordValues.get(0))
+                }
             }
 
             render taskListFields as JSON
