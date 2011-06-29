@@ -469,7 +469,7 @@
             $(":input").not('.skip').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
         } else {
             // editting mode
-            window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
+            //window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
         }
 
     }); // end document ready
