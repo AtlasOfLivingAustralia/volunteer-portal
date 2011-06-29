@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import org.springframework.validation.Errors
+import org.springframework.web.context.request.RequestContextHolder
 
 class TranscribeController {
 
@@ -33,8 +34,9 @@ class TranscribeController {
       def project = Project.findById(taskInstance.project.id)
       def template = Template.findById(project.template.id)
       def isReadonly
+      println(currentUser + " has role: " + authService.userInRole("ROLE_ADMIN"))
 
-      if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser) {
+      if (taskInstance.fullyTranscribedBy && (taskInstance.fullyTranscribedBy != currentUser && !authService.userInRole("ROLE_ADMIN"))) {
         isReadonly = "readonly"
       }
 
