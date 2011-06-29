@@ -30,10 +30,13 @@
         }
 
         google.load("maps", "3.5", {other_params:"sensor=false"});
+        var map;
 
         function loadMap() {
             var myOptions = {
                 scaleControl: true,
+                center: new google.maps.LatLng(-24.766785, 134.824219), // centre of Australia
+                zoom: 3,
                 streetViewControl: false,
                 scrollwheel: false,
                 mapTypeControl: true,
@@ -47,35 +50,38 @@
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
 
-            var map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
-            var latlngbounds = new google.maps.LatLngBounds();
+            map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
+            // load markers via JSON web service
+            var tasksJsonUrl = "${resource(dir: "project/tasksToMap", file: params.id)}";
+            $.get(tasksJsonUrl, {}, drawMarkers);
+        }
 
-            <g:each in="${taskListFields}" status="i" var="recordValues">
-                <g:set var="lat" value="${recordValues?.get(0)?.decimalLatitude}"/>
-                <g:set var="lng" value="${recordValues?.get(0)?.decimalLongitude}"/>
-                <g:if test="${lat && lng}">
-                    var latlng_${i} = new google.maps.LatLng(${lat}, ${lng});
-                    var marker_${i} = new google.maps.Marker({
-                        position: latlng_${i},
+        function drawMarkers(data) {
+            if (data) {
+                var bounds = new google.maps.LatLngBounds();
+                $.each(data, function (i, task) {
+                    var latlng = new google.maps.LatLng(task.decimalLatitude, task.decimalLongitude);
+                    var marker = new google.maps.Marker({
+                        position: latlng,
                         map: map,
-                        title:"record: ${recordValues?.get(0)?.catalogNumber}"
+                        title:"record: " + task.catalogNumber
                     });
-                    var content = "<div style='font-size:11px;line-height:1.3em;'>Catalogue No.: ${recordValues?.get(0)?.catalogNumber}<br/>Taxa: ${recordValues?.get(0)?.scientificName}<br/>Transcribed by: ${recordValues?.get(0)?.transcribedBy}</div>";
-                    var infowindow_${i} = new google.maps.InfoWindow({content: content, noCloseOnClick: false});
-                    google.maps.event.addListener(marker_${i}, 'click', function() {
-                        infowindow_${i}.open(map, marker_${i});
+                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+task.catalogNumber
+                            +"<br/>Taxa: "+task.scientificName+"<br/>Transcribed by: "+task.transcribedBy+"</div>";
+                    var infowindow = new google.maps.InfoWindow({content: content, noCloseOnClick: false});
+                    google.maps.event.addListener(marker, 'click', function() {
+                        infowindow.open(map, marker);
                     });
-                    latlngbounds.extend(latlng_${i});
-                </g:if>
+                    bounds.extend(latlng);
+                }); // end each
 
-            </g:each>
-            //map.setCenter(latlngbounds.getCenter(), map.getBoundsZoomLevel(latlngbounds));
-            map.fitBounds(latlngbounds);
+                map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds));
+                map.fitBounds(bounds);
+            }
         }
 
         $(document).ready(function() {
             // load chart
-            //loadChart();
             $("#recordsChartWidget").progressbar({ value: <g:formatNumber number="${tasksDonePercent}" format="#"/> });
             //load map
             loadMap();
@@ -88,8 +94,11 @@
     <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
     <br/>
 
-    <p>${projectInstance.description}</p>
-
+    <p>${projectInstance.description}<br/>
+        Watch the video tutorials:
+        <a href="http://volunteer.ala.org.au/video/Introduction.swf" target="video">Introduction</a> &
+        <a href="http://volunteer.ala.org.au/video/Georeferencing2.swf" target="video">Using the Mapping Tool</a>.
+    </p>
     <div class='front-image'>
         <img src="${resource(dir: 'images', file: 'short-map.jpg')}"/>
     </div>
