@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import groovy.sql.Sql
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import grails.converters.*
 
 class ProjectController {
 
@@ -22,25 +23,9 @@ class ProjectController {
             redirect(action: "list")
         }
         else {
-            def taskCount = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId: projectInstance.id])
-            def taskList = Task.findAllByProject(projectInstance, [max:999])
-            def taskListFields = []
-            def allUsersMap = [:]
-            taskList.each {
-                Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
-                def userId = it.fullyTranscribedBy
-                recordValues?.get(0)?.transcribedBy = User.findByUserId(userId?:"")?.displayName
-                taskListFields.add(recordValues)
-                if (userId) {
-                    def count = (allUsersMap.containsKey(userId)) ? (allUsersMap.get(userId) + 1) : 1
-                    allUsersMap.put(userId , count)
-                }
-            }
-            // reverse sort on user counts
-            allUsersMap = allUsersMap.sort {a, b ->
-                b.value <=> a.value
-            }
-
+            // project info
+            def taskCount = Task.countByProject(projectInstance)
+            def userList = User.listOrderByTranscribedCount(order:"desc", max:9999)
             def expedition = ConfigurationHolder.config.expedition
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"
@@ -50,22 +35,43 @@ class ProjectController {
                 roles.addAll(row)
             }
 
-            allUsersMap.each { userId ->
+            //allUsersMap.each { userId ->
+            userList.each { user ->
                 // iterate over each user and assign to a role.
                 def assigned = false
                 roles.eachWithIndex { role, i ->
-                    if (userId.value >= role.threshold && role.members.size() < role.max && !assigned) {
+                    if (user.transcribedCount >= role.threshold && role.members.size() < role.max && !assigned) {
                         // assign role
-                        def user = User.findByUserId(userId.key)
-                        def userMap = [name: user.displayName, id: user.id, count: userId.value]
+                        def userMap = [name: user.displayName, id: user.id, count: user.transcribedCount]
                         role.get("members").add(userMap)
                         assigned = true
                     }
                 }
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount.get(0), taskList: taskList,
-                    taskListFields: taskListFields, usersMap: allUsersMap, roles:roles])
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, roles:roles])
+        }
+    }
+
+    /**
+     * REST web service to return a list of tasks with coordinates to show on Google Map
+     */
+    def tasksToMap = {
+        def projectInstance = Project.get(params.id)
+        def taskListFields = []
+
+        if (projectInstance) {
+            def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [max:999])
+            taskList.each {
+                Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
+                def userId = it.fullyTranscribedBy
+                recordValues?.get(0)?.transcribedBy = User.findByUserId(userId?:"")?.displayName
+                taskListFields.add(recordValues.get(0))
+            }
+
+            render taskListFields as JSON
+        } else {
+            // no project found
         }
     }
 
