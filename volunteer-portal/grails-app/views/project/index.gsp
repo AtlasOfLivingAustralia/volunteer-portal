@@ -75,7 +75,6 @@
                     bounds.extend(latlng);
                 }); // end each
 
-                map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds));
                 map.fitBounds(bounds);
             }
         }
