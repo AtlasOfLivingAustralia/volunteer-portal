@@ -22,7 +22,6 @@ class AuthService {
 
     protected boolean userInRole(role) {
         return ConfigurationHolder.config.security.cas.bypass ||
-                RequestContextHolder.currentRequestAttributes()?.isUserInRole(role) ||
-                isAdmin()
+                RequestContextHolder.currentRequestAttributes()?.isUserInRole(role) // || isAdmin()
     }
 }
