@@ -37,6 +37,7 @@
                 scaleControl: true,
                 center: new google.maps.LatLng(-24.766785, 134.824219), // centre of Australia
                 zoom: 3,
+                minZoom: 1,
                 streetViewControl: false,
                 scrollwheel: false,
                 mapTypeControl: true,
