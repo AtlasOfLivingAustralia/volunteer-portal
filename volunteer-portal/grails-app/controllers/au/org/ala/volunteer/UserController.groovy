@@ -29,7 +29,7 @@ class UserController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if(!params.sort){
           params.sort = params.sort ? params.sort : "displayName"
-          params.order = "desc"
+          params.order = "asc"
         }
         def currentUser = authService.username()
         [userInstanceList: User.list(params), userInstanceTotal: User.count(),currentUser: currentUser]
