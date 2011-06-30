@@ -109,10 +109,10 @@
         </g:link>
     </div>
     <div class='front-buttons buttons-small'>
-        <g:link controller="user">
+        <g:link controller="user" params="[sort:'transcribedCount',order:'desc']">
             <img src="${resource(dir: 'images', file: 'score.png')}"/>
         </g:link><br/>
-        <g:link controller="user" action="myStats">
+        <g:link controller="user" action="myStats" >
             <img src="${resource(dir: 'images', file: 'stats.png')}"/>
         </g:link>
     </div>
