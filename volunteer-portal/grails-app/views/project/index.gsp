@@ -29,7 +29,7 @@
             chart.draw(data, options);
         }
 
-        google.load("maps", "3.5", {other_params:"sensor=false"});
+        google.load("maps", "3.3", {other_params:"sensor=false"});
         var map;
 
         function loadMap() {
@@ -76,7 +76,7 @@
                     bounds.extend(latlng);
                 }); // end each
 
-                map.fitBounds(bounds);
+                //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO fix properly
             }
         }
 
