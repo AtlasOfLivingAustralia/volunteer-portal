@@ -11,6 +11,7 @@
     <meta name="layout" content="main"/>
     <title>Volunteer Portal - Atlas of Living Australia</title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script src="${resource(dir:'js', file:'markerclusterer.js')}" type="text/javascript"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <script type='text/javascript'>
@@ -30,7 +31,7 @@
         }
 
         google.load("maps", "3.3", {other_params:"sensor=false"});
-        var map;
+        var map, infowindow;
 
         function loadMap() {
             var myOptions = {
@@ -52,6 +53,7 @@
             };
 
             map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
+            infowindow = new google.maps.InfoWindow();
             // load markers via JSON web service
             var tasksJsonUrl = "${resource(dir: "project/tasksToMap", file: params.id)}";
             $.get(tasksJsonUrl, {}, drawMarkers);
@@ -59,22 +61,26 @@
 
         function drawMarkers(data) {
             if (data) {
-                var bounds = new google.maps.LatLngBounds();
+                //var bounds = new google.maps.LatLngBounds();
+                var markers = [];
                 $.each(data, function (i, task) {
-                    var latlng = new google.maps.LatLng(task.decimalLatitude, task.decimalLongitude);
+                    var latlng = new google.maps.LatLng(task.lat, task.lng);
                     var marker = new google.maps.Marker({
                         position: latlng,
-                        map: map,
-                        title:"record: " + task.catalogNumber
+                        //map: map,
+                        title:"record: " + task.cat
                     });
-                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+task.catalogNumber
-                            +"<br/>Taxa: "+task.scientificName+"<br/>Transcribed by: "+task.transcribedBy+"</div>";
-                    var infowindow = new google.maps.InfoWindow({content: content, noCloseOnClick: false});
+                    markers.push(marker);
+                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+task.cat
+                            +"<br/>Taxa: "+task.name+"<br/>Transcribed by: "+task.tsBy+"</div>";
+                    //var infowindow = new google.maps.InfoWindow({content: content, noCloseOnClick: false});
                     google.maps.event.addListener(marker, 'click', function() {
+                        infowindow.setContent(content);
                         infowindow.open(map, marker);
                     });
-                    bounds.extend(latlng);
+                    //bounds.extend(latlng);
                 }); // end each
+                var markerCluster = new MarkerClusterer(map, markers, { maxZoom: 18 });
 
                 //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO fix properly
             }
@@ -141,7 +147,18 @@
             </div>
             <div id="recordsChartWidget"></div>
             <div style="clear: both"></div>
-            <div id="recordMapLabel">Showing location of records transcribed to date</div>
+            <h2>Expedition News</h2>
+            <div id="news">
+                <p><b>Trial period over – all tasks completed 22/07/2011</b></p>
+                <p>Congratulations and thanks to all those who contributed to completing all of the tasks for the trial period. Particular thanks to those who also provided feedback through the sites feedback pages.You have all helped us identify things that can be improved in the transcription site and process.
+                Over the next few weeks we will be planning and implementing these changes and hope to go live with the improved site within 3 weeks.
+                In the meantime we will upload some more images for you to transcribe with the existing site if you desire.</p>
+                <p>Once the new site is ready to be launched we will inform you through this news feed – so stay tuned.  
+                <p><b>New projects on the way 22/07/2011</b></p>
+                <p>In addition to improving the site we are also working on new projects for you to work on – in the coming
+                months there will be new insect groups, herbaria pages, and some field notes to transcribe.</p>
+            </div>
+            <div id="recordMapLabel"><h4>Showing location of records transcribed to date</h4></div>
             <div id="recordsMap"></div>
         </div>
     </div>

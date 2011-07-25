@@ -62,13 +62,21 @@ class ProjectController {
 
         if (projectInstance) {
             def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [max:999])
+
             taskList.each {
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
                 def userId = it.fullyTranscribedBy
                 recordValues?.get(0)?.transcribedBy = User.findByUserId(userId?:"")?.displayName
                 if (recordValues?.get(0)?.decimalLatitude && recordValues?.get(0)?.decimalLongitude) {
                     // only add records if the have a lat & lng
-                    taskListFields.add(recordValues.get(0))
+                    //taskListFields.add(recordValues.get(0))
+                    def jsonObj = [:]
+                    jsonObj.put("lat",recordValues?.get(0).decimalLatitude)
+                    jsonObj.put("lng",recordValues?.get(0).decimalLongitude)
+                    jsonObj.put("cat",recordValues?.get(0).catalogNumber)
+                    jsonObj.put("name",recordValues?.get(0).scientificName)
+                    jsonObj.put("tsBy",recordValues?.get(0).transcribedBy)
+                    taskListFields.add(jsonObj)
                 }
             }
 

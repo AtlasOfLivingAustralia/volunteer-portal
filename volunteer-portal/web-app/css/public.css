@@ -502,6 +502,21 @@ div.list table tr.odd {
     /*border-radius: 8px;*/
 }
 
+#expedition #news {
+    height: 175px;
+    overflow-y: scroll;
+    /*border-bottom: 1px solid #535353;*/
+    margin-bottom: 5px;
+}
+
+#expedition #news h3 {
+    font-weight: bold;
+}
+
+#expedition #news p {
+    padding-bottom: 5px;
+}
+
 #recordsChart {
     /*width: 140px;*/
     float: left;
