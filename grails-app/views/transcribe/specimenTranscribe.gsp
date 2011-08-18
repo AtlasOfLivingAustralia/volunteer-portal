@@ -130,8 +130,8 @@
      * Reverse geocode coordinates via Google Maps API
      */
     function codeAddress() {
-        var address = $(':input#address').val();
-
+        var address = $(':input#address').val().replace(/\n/g, " ");
+        console.log("address", address);
         if (geocoder && address) {
             //geocoder.getLocations(address, addAddressToPage);
             quotaCount++
