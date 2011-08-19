@@ -23,6 +23,7 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
     var map, marker, circle, locationObj;
@@ -472,6 +473,41 @@
             //window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
         }
 
+        // save "all text" to cookie so we can load into next task
+        $("#transcribeAllText").blur(function(e) {
+            //console.log("#transcribeAllText blur", $(this).val());
+            if ($(this).val()) {
+                $.cookie('transcribeAllText', $(this).val());
+            }
+        });
+        // load it from cookie after asking user
+        if (!$("#transcribeAllText").val()) {
+            //$("#transcribeAllText").val($.cookie('transcribeAllText'))
+            if (confirm("Carry over the \"1. Transcribe All Text\" content from from previous task?")) {
+                $("#transcribeAllText").val($.cookie('transcribeAllText'));
+                $("#transcribeAllText").focus();
+            }
+        }
+
+        // Add clickable icons for deg, min sec in lat/lng inputs
+        $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
+            $(this).css('width', '144px');
+            var title = "Click to insert this symbol";
+            var icons = " symbols: <span class='coordsIcons'>" +
+                    "<a href='#' title='"+title+"' class='&deg;'>&deg;</a>&nbsp;" +
+                    "<a href='#' title='"+title+"' class='&apos;'>&apos;</a>&nbsp;" +
+                    "<a href='#' title='"+title+"' class='&quot;'>&quot;</a></span>";
+            $(this).after(icons);
+        });
+
+        $(".coordsIcons a").click(function(e) {
+            e.preventDefault();
+            var input = $(this).parent().prev(':input');
+            var text = $(input).val();
+            var char = $(this).attr('class');
+            $(input).val(text + char);
+        });
+
     }); // end document ready
 
 </script>
@@ -551,7 +587,7 @@
                             <tr>
                                 <td>
                                     <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}"
-                                                rows="12" cols="40" style="width: 100%"/>
+                                              id="transcribeAllText" rows="12" cols="40" style="width: 100%"/>
                                 </td>
                             </tr>
                         </tbody>

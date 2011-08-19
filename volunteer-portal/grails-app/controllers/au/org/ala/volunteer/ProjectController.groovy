@@ -61,8 +61,10 @@ class ProjectController {
         def taskListFields = []
 
         if (projectInstance) {
+            private long startQ  = System.currentTimeMillis();
             def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [max:999])
-
+            private long endQ  = System.currentTimeMillis();
+            //println("DB query took " + (endQ - startQ) + " ms")
             taskList.each {
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
                 def userId = it.fullyTranscribedBy
@@ -79,10 +81,13 @@ class ProjectController {
                     taskListFields.add(jsonObj)
                 }
             }
-
+            private long endJ  = System.currentTimeMillis();
+            //println("JSON loop took " + (endJ - endQ) + " ms")
+            //println("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
             render taskListFields as JSON
         } else {
             // no project found
+            render("No project found for id: " + params.id) as JSON
         }
     }
 
