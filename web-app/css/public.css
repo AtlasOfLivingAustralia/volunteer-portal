@@ -569,3 +569,27 @@ div.list table tr.odd {
     line-height: 1.8em;
     position: static;
 }
+
+span.coordsIcons {
+
+}
+ span.coordsIcons a {
+     display: inline-block;
+     width: 10px;
+     text-align: center;
+     font-size: 20px;
+     line-height: 15px;
+     text-decoration: none;
+     background-color: #C4C4C4;
+     padding: 4px 4px 0 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    -icab-border-radius: 4px;
+    -khtml-border-radius: 4px;
+    border-radius: 4px;
+ }
+
+span.coordsIcons a:hover {
+    background-color: #AAAAAA;
+}
