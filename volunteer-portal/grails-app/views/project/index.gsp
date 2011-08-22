@@ -71,12 +71,14 @@
                         title:"record: " + task.cat
                     });
                     markers.push(marker);
-                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+task.cat
-                            +"<br/>Taxa: "+task.name+"<br/>Transcribed by: "+task.tsBy+"</div>";
+                    var content = "";
+                            //+ "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+task.cat
+                            //+"<br/>Taxa: "+task.name+"<br/>Transcribed by: "+task.tsBy+"</div>";
                     //var infowindow = new google.maps.InfoWindow({content: content, noCloseOnClick: false});
                     google.maps.event.addListener(marker, 'click', function() {
                         infowindow.setContent(content);
-                        infowindow.open(map, marker);
+                        //infowindow.open(map, marker);
+                        load_content(marker, task.id);
                     });
                     //bounds.extend(latlng);
                 }); // end each
@@ -84,6 +86,19 @@
 
                 //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO fix properly
             }
+        }
+
+        function load_content(marker, id){
+            $.ajax({
+                url: "${resource(dir: "task/details", file: '/')}" + id + ".json",
+                success: function(data){
+                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+data.cat
+                            +"<br/>Taxa: "+data.name+"<br/>Transcribed by: "+data.transcriber+"</div>";
+                    infowindow.close();
+                    infowindow.setContent(content);
+                    infowindow.open(map, marker);
+                }
+            });
         }
 
         $(document).ready(function() {

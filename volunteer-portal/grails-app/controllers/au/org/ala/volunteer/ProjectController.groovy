@@ -9,6 +9,7 @@ class ProjectController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def taskService
+    def fieldService
     def auditService
     def fieldSyncService
     javax.sql.DataSource dataSource
@@ -62,9 +63,32 @@ class ProjectController {
 
         if (projectInstance) {
             private long startQ  = System.currentTimeMillis();
-            def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [max:999])
+            def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:999])
+            def lats = fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList)
+            def lngs = fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList)
             private long endQ  = System.currentTimeMillis();
-            //println("DB query took " + (endQ - startQ) + " ms")
+            log.debug("DB query took " + (endQ - startQ) + " ms")
+            log.info("List sizes: task = " + taskList.size() + "; lat = " + lats.size() + "; lngs = " + lngs.size())
+            taskList.eachWithIndex{ tsk, i ->
+                def jsonObj = [:]
+                jsonObj.put("id",tsk.id)
+
+                if (lats.get(i) && lats.get(i).task.id == tsk.id) {
+                    jsonObj.put("lat",lats.get(i).value)
+
+                    if (lngs.get(i) && lngs.get(i).task.id == tsk.id) {
+                        jsonObj.put("lng",lngs.get(i).value)
+                        taskListFields.add(jsonObj)
+                    }
+                    else {
+                        log.warn("No corresponding longitude for task " + tsk.id)
+                    }
+                }
+                else {
+                    log.warn("No corresponding latitude for task " + tsk.id)
+                }
+            }
+            /*
             taskList.each {
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
                 def userId = it.fullyTranscribedBy
@@ -81,9 +105,10 @@ class ProjectController {
                     taskListFields.add(jsonObj)
                 }
             }
+            */
             private long endJ  = System.currentTimeMillis();
-            //println("JSON loop took " + (endJ - endQ) + " ms")
-            //println("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
+            log.debug("JSON loop took " + (endJ - endQ) + " ms")
+            log.debug("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
             render taskListFields as JSON
         } else {
             // no project found
