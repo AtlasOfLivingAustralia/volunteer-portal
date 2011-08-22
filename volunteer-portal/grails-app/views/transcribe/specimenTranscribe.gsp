@@ -17,6 +17,7 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css/smoothness', file: 'ui.all.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
@@ -282,6 +283,44 @@
             $(':input.recordedByID').val(item.key);
         });
 
+        $(":input.verbatimLocality").autocomplete("${createLink(action:'autocomplete', controller:'picklistItem')}", {
+            extraParams: {
+                picklist: "verbatimLocality"
+            },
+            dataType: 'json',
+            parse: function(data) {
+                var rows = new Array();
+                data = data.autoCompleteList;
+                for (var i = 0; i < data.length; i++) {
+                    rows[i] = {
+                        data: data[i],
+                        value: data[i].name,
+                        result: data[i].name.split("|")[0]
+                    };
+                }
+                return rows;
+            },
+            matchSubset: true,
+            formatItem: function(row, i, n) {
+                var nameBits = row.name.split("|");
+                return nameBits[0];
+            },
+            cacheLength: 10,
+            minChars: 1,
+            scroll: false,
+            max: 10,
+            selectFirst: false
+        }).result(function(event, item) {
+            // user has selected an autocomplete item
+            // populate verbatim lat, lng & coord uncert
+            var nameBits = item.name.split("|");
+            if (nameBits[1]) $(':input.decimalLatitude').val(nameBits[1]);
+            if (nameBits[2]) $(':input.decimalLongitude').val(nameBits[2]);
+            if (nameBits[3]) $(':input.coordinateUncertaintyInMeters').val(nameBits[3]);
+            // populate verbatimLocalityID
+            $(':input.verbatimLocalityID').val(item.key);
+        });
+
         // MapBox for image zooming & panning
         $('#viewport').mapbox({
             'zoom': true, // does map zoom?
@@ -392,15 +431,8 @@
             }
         });
 
-        // Date Picker
-        $(":input.datePicker").datepicker({
-                    showOn: "button",
-                    buttonImage: "${resource(dir: 'images', file: 'calendar.png')}",
-                    yearRange: '-200:+00',
-                    dateFormat: 'yy-mm-dd',
-                    appendText: '(YYYY-MM-DD)'
-                }
-        ).css('width', '140px'); //
+        // Date fields
+        $(":input.datePicker").css('width', '150px').after("&nbsp;[YYYY-MM-DD]"); //
 
         // Add institution logo to page
         var institutionCode = $("span#institutionCode").html();
@@ -475,7 +507,6 @@
 
         // save "all text" to cookie so we can load into next task
         $("#transcribeAllText").blur(function(e) {
-            //console.log("#transcribeAllText blur", $(this).val());
             if ($(this).val()) {
                 $.cookie('transcribeAllText', $(this).val());
             }
@@ -491,7 +522,7 @@
 
         // Add clickable icons for deg, min sec in lat/lng inputs
         $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
-            $(this).css('width', '144px');
+            $(this).css('width', '150px');
             var title = "Click to insert this symbol";
             var icons = " symbols: <span class='coordsIcons'>" +
                     "<a href='#' title='"+title+"' class='&deg;'>&deg;</a>&nbsp;" +

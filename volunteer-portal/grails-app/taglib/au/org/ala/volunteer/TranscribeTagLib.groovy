@@ -39,8 +39,12 @@ class TranscribeTagLib {
         } else {
             label = field.fieldType.label
         }
-        def cssClass = name + ((name =~ /[Dd]ate/) ? ' datePicker' : '') // so we can add a date widget with JQuery
-        
+        def cssClass = name
+
+        if (name =~ /[Dd]ate/) {
+            // so we can add a date widget with JQuery
+            cssClass = cssClass + ' datePicker';
+        }
         if (field.mandatory) {
             cssClass = cssClass + " validate[required]"
         }

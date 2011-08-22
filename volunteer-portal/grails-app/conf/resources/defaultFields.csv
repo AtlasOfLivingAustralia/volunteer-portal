@@ -5,6 +5,7 @@ recordedBy,Collector,,collectionEvent,text,0,0,"Enter the text here exactly as i
 recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
 eventDate,,,collectionEvent,text,0,0,"Enter the date from the label using the format YYYY-MM-DD or use the calendar tool (click on calendar icon to activate) to select the date. If only a year and month appears enter YYYY-MM, if only a year then YYYY",,default
 verbatimLocality,,,collectionEvent,textarea,0,0,"Please copy and paste the locality text from the &quot;enter all label text&quot; box from step 1.",,default
+verbatimLocalityID,verbatim locality ID,,collectionEvent,hidden,0,0,,,default
 verbatimLatitude,,,collectionEvent,text,0,0,"If the label/s have a latitude, record it here as it appears",,default
 verbatimLongitude,,,collectionEvent,text,0,0,"If the label/s have a longitude, record it here as it appears",,default
 locality,,,location,text,0,0,,,default
