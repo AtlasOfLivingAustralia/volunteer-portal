@@ -85,6 +85,7 @@ enum DarwinCoreField {
     municipality("Municipality"),
     locality("Locality"),
     verbatimLocality("Verbatim Locality"),
+    verbatimLocalityID("Verbatim Locality ID"),
     verbatimElevation("Verbatim Elevation"),
     minimumElevationInMeters("Minimum Elevation In Meters"),
     maximumElevationInMeters("Maximum Elevation In Meters"),
