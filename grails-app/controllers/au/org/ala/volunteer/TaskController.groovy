@@ -1,10 +1,13 @@
 package au.org.ala.volunteer
 
+import grails.converters.*
+
 class TaskController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def taskService
+    def fieldSyncService
 
     def load = {
       [projectList: Project.list()]
@@ -18,6 +21,16 @@ class TaskController {
       def taskInstanceList = Task.findAllByProject(projectInstance,params)
       def taskInstanceTotal = Task.countByProject(projectInstance)
       render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
+    }
+
+    def details = {
+        def taskInstance = Task.get(params.id)
+        Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+        def jsonObj = [:]
+        jsonObj.put("cat",recordValues?.get(0).catalogNumber)
+        jsonObj.put("name",recordValues?.get(0).scientificName)
+        jsonObj.put("transcriber",User.findByUserId(taskInstance.fullyTranscribedBy).displayName)
+        render jsonObj  as JSON
     }
 
     def loadCSV = {
