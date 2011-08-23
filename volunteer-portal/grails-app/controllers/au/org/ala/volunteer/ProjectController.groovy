@@ -64,48 +64,22 @@ class ProjectController {
         if (projectInstance) {
             private long startQ  = System.currentTimeMillis();
             def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:999])
-            def lats = fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList)
-            def lngs = fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList)
+            def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList))
+            def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList))
             private long endQ  = System.currentTimeMillis();
             log.debug("DB query took " + (endQ - startQ) + " ms")
-            log.info("List sizes: task = " + taskList.size() + "; lat = " + lats.size() + "; lngs = " + lngs.size())
-            taskList.eachWithIndex{ tsk, i ->
+            log.info("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
+            taskList.eachWithIndex { tsk, i ->
                 def jsonObj = [:]
                 jsonObj.put("id",tsk.id)
 
-                if (lats.get(i) && lats.get(i).task.id == tsk.id) {
-                    jsonObj.put("lat",lats.get(i).value)
-
-                    if (lngs.get(i) && lngs.get(i).task.id == tsk.id) {
-                        jsonObj.put("lng",lngs.get(i).value)
-                        taskListFields.add(jsonObj)
-                    }
-                    else {
-                        log.warn("No corresponding longitude for task " + tsk.id)
-                    }
-                }
-                else {
-                    log.warn("No corresponding latitude for task " + tsk.id)
-                }
-            }
-            /*
-            taskList.each {
-                Map recordValues = fieldSyncService.retrieveFieldsForTask(it)
-                def userId = it.fullyTranscribedBy
-                recordValues?.get(0)?.transcribedBy = User.findByUserId(userId?:"")?.displayName
-                if (recordValues?.get(0)?.decimalLatitude && recordValues?.get(0)?.decimalLongitude) {
-                    // only add records if the have a lat & lng
-                    //taskListFields.add(recordValues.get(0))
-                    def jsonObj = [:]
-                    jsonObj.put("lat",recordValues?.get(0).decimalLatitude)
-                    jsonObj.put("lng",recordValues?.get(0).decimalLongitude)
-                    jsonObj.put("cat",recordValues?.get(0).catalogNumber)
-                    jsonObj.put("name",recordValues?.get(0).scientificName)
-                    jsonObj.put("tsBy",recordValues?.get(0).transcribedBy)
+                if (lats.containsKey(tsk.id) && lngs.containsKey(tsk.id)) {
+                    jsonObj.put("lat",lats.get(tsk.id))
+                    jsonObj.put("lng",lngs.get(tsk.id))
                     taskListFields.add(jsonObj)
                 }
             }
-            */
+
             private long endJ  = System.currentTimeMillis();
             log.debug("JSON loop took " + (endJ - endQ) + " ms")
             log.debug("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
@@ -114,6 +88,23 @@ class ProjectController {
             // no project found
             render("No project found for id: " + params.id) as JSON
         }
+    }
+
+    /**
+     * Utility to convert list of Fields to a Map with task.id as key
+     *
+     * @param fieldList
+     * @return
+     */
+    Map fieldListToMap(List fieldList) {
+        Map fieldMap = [:]
+        fieldList.each {
+            if (it.value) {
+                fieldMap.put(it.task.id, it.value)
+            }
+        }
+
+        return fieldMap
     }
 
     def deleteTasks = {

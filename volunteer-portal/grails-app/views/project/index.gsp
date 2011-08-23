@@ -93,7 +93,7 @@
                 url: "${resource(dir: "task/details", file: '/')}" + id + ".json",
                 success: function(data){
                     var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+data.cat
-                            +"<br/>Taxa: "+data.name+"<br/>Transcribed by: "+data.transcriber+"</div>";
+                            +"<br/>Taxon: "+data.name+"<br/>Transcribed by: "+data.transcriber+"</div>";
                     infowindow.close();
                     infowindow.setContent(content);
                     infowindow.open(map, marker);
