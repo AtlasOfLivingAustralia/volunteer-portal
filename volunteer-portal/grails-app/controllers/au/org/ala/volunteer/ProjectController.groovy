@@ -68,7 +68,7 @@ class ProjectController {
             def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList))
             private long endQ  = System.currentTimeMillis();
             log.debug("DB query took " + (endQ - startQ) + " ms")
-            log.info("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
+            log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
             taskList.eachWithIndex { tsk, i ->
                 def jsonObj = [:]
                 jsonObj.put("id",tsk.id)
