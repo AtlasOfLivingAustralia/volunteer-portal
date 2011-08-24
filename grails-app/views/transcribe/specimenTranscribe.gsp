@@ -512,12 +512,22 @@
             }
         });
         // load it from cookie after asking user
-        if (!$("#transcribeAllText").val()) {
+        if (false && !$("#transcribeAllText").val()) {
             //$("#transcribeAllText").val($.cookie('transcribeAllText'))
             if (confirm("Carry over the \"1. Transcribe All Text\" content from from previous task?")) {
                 $("#transcribeAllText").val($.cookie('transcribeAllText'));
                 $("#transcribeAllText").focus();
             }
+        }
+
+        if ($.cookie('transcribeAllText')) {
+            $("#copyAllTextButton").click(function(e) {
+                e.preventDefault();
+                $("#transcribeAllText").val($.cookie('transcribeAllText'));
+                $("#transcribeAllText").focus();
+            });
+        } else {
+            $("#copyAllTextButton").attr('disabled','disabled');
         }
 
         // Add clickable icons for deg, min sec in lat/lng inputs
@@ -612,7 +622,8 @@
                     <table>
                         <thead>
                         <tr><th><h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears in the
-                            labels so we have a searchable reference for them</th></tr>
+                            labels so we have a searchable reference for them
+                            <input type="button" id="copyAllTextButton" value="Copy over from previous task?"/></th></tr>
                         </thead>
                         <tbody>
                             <tr>

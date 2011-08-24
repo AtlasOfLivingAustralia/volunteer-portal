@@ -71,20 +71,16 @@
                         title:"record: " + task.cat
                     });
                     markers.push(marker);
-                    var content = "";
-                            //+ "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+task.cat
-                            //+"<br/>Taxa: "+task.name+"<br/>Transcribed by: "+task.tsBy+"</div>";
-                    //var infowindow = new google.maps.InfoWindow({content: content, noCloseOnClick: false});
                     google.maps.event.addListener(marker, 'click', function() {
-                        infowindow.setContent(content);
-                        //infowindow.open(map, marker);
+                        infowindow.setContent("[loading...]");
+                        // load info via AJAX call
                         load_content(marker, task.id);
                     });
                     //bounds.extend(latlng);
                 }); // end each
                 var markerCluster = new MarkerClusterer(map, markers, { maxZoom: 18 });
 
-                //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO fix properly
+                //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO: fix properly
             }
         }
 
