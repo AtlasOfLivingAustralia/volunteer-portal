@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import groovy.sql.Sql
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.*
+import au.com.bytecode.opencsv.CSVWriter
 
 class ProjectController {
 
@@ -105,6 +106,86 @@ class ProjectController {
         }
 
         return fieldMap
+    }
+
+    /**
+     * Utility to convert list of Fields to a Map of Maps with task.id as key
+     *
+     * @param fieldList
+     * @return
+     */
+    Map fieldListToMultiMap(List fieldList) {
+        Map taskMap = [:]
+
+        fieldList.each {
+            if (it.value) {
+                def fm = [:]
+
+                if (taskMap.containsKey(it.task.id)) {
+                    fm = taskMap.get(it.task.id)
+                }
+
+                fm[it.name] = it.value
+                taskMap.put(it.task.id, fm)
+            }
+        }
+
+        return taskMap
+    }
+
+    /**
+     * Produce a DwC CSV file download for a project
+     */
+    def exportCSV = {
+        def projectInstance = Project.get(params.id)
+
+        if (projectInstance) {
+            def taskList = Task.findAllByProjectAndFullyValidatedByIsNotNull(projectInstance, [sort:"id", max:9999])
+            def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+            def fieldNames = fieldService.getAllFieldNames(taskList)
+            log.debug("Fields: "+ fieldNames);
+            //render("tasks: " + taskList.size()) as JSON
+            def filename = "Project-" + projectInstance.id + "-DwC"
+            response.setHeader("Cache-Control", "must-revalidate");
+            response.setHeader("Pragma", "must-revalidate");
+            response.setHeader("Content-Disposition", "attachment;filename=" + filename +".txt");
+            response.setContentType("text/plain");
+            OutputStream fout= response.getOutputStream();
+            OutputStream bos = new BufferedOutputStream(fout);
+            OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+
+            CSVWriter writer = new CSVWriter(outputwriter);
+            // write header line (field names)
+            writer.writeNext(fieldNames.toArray(new String[0]))
+
+            taskList.each { task ->
+                String[] values = getFieldsforTask(task.id, fieldNames, taskMap)
+                 writer.writeNext(values)
+            }
+
+            writer.close()
+        }
+        else {
+            throw new Exception("No project found for id: " + params.id)
+        }
+    }
+
+    String[] getFieldsforTask(Long taskId, List fields, Map taskMap) {
+        List fieldValues = []
+
+        if (taskMap.containsKey(taskId)) {
+            def fieldMap = taskMap.get(taskId)
+            fields.each {
+                if (fieldMap.containsKey(it)) {
+                    fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", "<br>"))
+                }
+                else {
+                    fieldValues.add("") // need to leave blank
+                }
+            }
+        }
+
+        return fieldValues.toArray(new String[0]) // String array
     }
 
     def deleteTasks = {

@@ -10,42 +10,67 @@ class TaskController {
     def fieldSyncService
 
     def load = {
-      [projectList: Project.list()]
+        [projectList: Project.list()]
     }
 
     def project = {
-      def projectInstance = Project.get(params.id)
-      params.max = Math.min(params.max ? params.int('max') : 8 , 16)
-      params.order = params.order? params.order : "asc"
-      params.sort = params.sort ? params.sort : "id"
-      def taskInstanceList = Task.findAllByProject(projectInstance,params)
-      def taskInstanceTotal = Task.countByProject(projectInstance)
-      render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
+        def projectInstance = Project.get(params.id)
+        params.max = Math.min(params.max ? params.int('max') : 8, 16)
+        params.order = params.order ? params.order : "asc"
+        params.sort = params.sort ? params.sort : "id"
+        def taskInstanceList = Task.findAllByProject(projectInstance, params)
+        def taskInstanceTotal = Task.countByProject(projectInstance)
+        render(view: "thumbs", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
     }
 
+    def projectAdmin = {
+        def projectInstance = Project.get(params.id)
+        params.max = Math.min(params.max ? params.int('max') : 20, 50)
+        params.order = params.order ? params.order : "asc"
+        params.sort = params.sort ? params.sort : "id"
+        def taskInstanceList = Task.findAllByProject(projectInstance,params)
+        def taskInstanceTotal = Task.countByProject(projectInstance)
+        //def taskInstanceList = Task.createCriteria().list([max: 10, offset: params.offset]) {
+        //    order(params.sort)
+        //    order('fullyValidatedBy')
+        //}
+        //def taskInstanceTotal = taskInstanceList.totalCount
+        render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
+    }
+
+    /**
+     * Webservice for Google Maps to display task details in infowindow
+     */
     def details = {
         def taskInstance = Task.get(params.id)
         Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
         def jsonObj = [:]
-        jsonObj.put("cat",recordValues?.get(0).catalogNumber)
-        jsonObj.put("name",recordValues?.get(0).scientificName)
-        jsonObj.put("transcriber",User.findByUserId(taskInstance.fullyTranscribedBy).displayName)
-        render jsonObj  as JSON
+        jsonObj.put("cat", recordValues?.get(0).catalogNumber)
+        jsonObj.put("name", recordValues?.get(0).scientificName)
+        jsonObj.put("transcriber", User.findByUserId(taskInstance.fullyTranscribedBy).displayName)
+        render jsonObj as JSON
     }
 
     def loadCSV = {
-      taskService.loadCSV(params.int('projectId'), params.csv)
-      redirect(action: "list")
+        taskService.loadCSV(params.int('projectId'), params.csv)
+        redirect(action: "list")
     }
 
     def index = {
         redirect(action: "list", params: params)
     }
 
-    /** list all tasks */
+    /** list all tasks  */
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 8, 16)
-        params.order = params.order? params.order : "asc"
+        params.order = params.order ? params.order : "asc"
+        params.sort = params.sort ? params.sort : "id"
+        render(view: "thumbs", [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
+    }
+
+    def thumbs = {
+        params.max = Math.min(params.max ? params.int('max') : 8, 16)
+        params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
@@ -95,7 +120,7 @@ class TaskController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (taskInstance.version > version) {
-                    
+
                     taskInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'task.label', default: 'Task')] as Object[], "Another user has updated this Task while you were editing")
                     render(view: "edit", model: [taskInstance: taskInstance])
                     return

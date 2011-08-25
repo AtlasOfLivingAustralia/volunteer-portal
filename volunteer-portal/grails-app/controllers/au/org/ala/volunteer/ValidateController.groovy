@@ -13,9 +13,12 @@ class ValidateController {
 
   def task = {
     def taskInstance = Task.get(params.id)
+    def redirect = params.redirect
+    params.remove("redirect")
+    
     //retrieve the existing values
     Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-    render(view:'../transcribe/specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues, validator: true])
+    render(view:'../transcribe/specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues, validator: true, redirect: redirect])
   }
 
   /**
@@ -25,7 +28,7 @@ class ValidateController {
     def currentUser = authService.username()
     if(currentUser!=null){
       def taskInstance = Task.get(params.id)
-      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, true)
+      fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true)
       //update the count for validated tasks for the user who transcribed
       userService.updateUserValidatedCount(taskInstance.fullyTranscribedBy)
       redirect(view:'showNextFromAny')
