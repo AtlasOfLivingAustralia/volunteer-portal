@@ -17,10 +17,11 @@ class VolunteerTagLib {
     def authService
 
     def loggedInName = {
+        def userName = authService.username()
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << "logged in as ${AuthenticationCookieUtils.getUserName(request)}"
         } else {
-            out << "no cookie found"
+            out << "no cookie found " + userName
         }
     }
 

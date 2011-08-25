@@ -505,6 +505,11 @@
             //window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
         }
 
+        // disable submit if validated
+        var validated = ${(taskInstance?.fullyValidatedBy) ? "true" : "false"};
+        if (validated) {
+            $(":input.save, :input.savePartial, :input.validate, :input.dontValidate").attr("disabled","disabled").attr("title","Task readonly - already validated");
+        }
         // save "all text" to cookie so we can load into next task
         $("#transcribeAllText").blur(function(e) {
             if ($(this).val()) {
@@ -558,7 +563,8 @@
 <div class="nav">
     <a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
     <g:link controller="project" action="list" class="crumb">Projects</g:link>
-    <a class="crumb" href="${createLink(action: 'project', controller: 'task', id: taskInstance?.project?.id)}"><g:message
+    <g:set var="action" value="${(validator) ? 'projectAdmin' : 'project'}"/>
+    <a class="crumb" href="${createLink(action: action, controller: 'task', id: taskInstance?.project?.id)}"><g:message
             code="default.task.label" default="${taskInstance?.project?.name}"/></a>
     ${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}
 </div>
@@ -578,6 +584,7 @@
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
+            <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
@@ -623,7 +630,7 @@
                         <thead>
                         <tr><th><h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears in the
                             labels so we have a searchable reference for them
-                            <input type="button" id="copyAllTextButton" value="Copy over from previous task?"/></th></tr>
+                            <input type="button" id="copyAllTextButton" value="Copy text from previous task"/></th></tr>
                         </thead>
                         <tbody>
                             <tr>
