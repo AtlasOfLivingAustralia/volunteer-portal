@@ -24,7 +24,7 @@
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                 Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
-                &nbsp;&nbsp;[<g:link controller="project" action="exportCSV" id="${projectInstance.id}">Export CSV file</g:link>]
+                &nbsp;&nbsp;<button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id)}'">Export validated tasks as CSV</button>
             </div>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -46,7 +46,7 @@
                         
                             %{--<g:sortableColumn property="viewed" title="${message(code: 'task.viewed.label', default: 'Viewed')}" />--}%
 
-                            <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
+                            <cl:ifGranted role="ROLE_ADMIN">
                                 <th>Validate</th>
                             </cl:ifGranted>
 
@@ -70,7 +70,7 @@
                         
                             %{--<td>${fieldValue(bean: taskInstance, field: "viewed")}</td>--}%
 
-                            <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
+                            <cl:ifGranted role="ROLE_ADMIN">
                                 <td>
                                     <g:if test="${!taskInstance.fullyValidatedBy}">
                                         <g:link controller="validate" action="task" id="${taskInstance.id}">Validate</g:link>

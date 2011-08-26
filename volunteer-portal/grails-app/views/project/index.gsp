@@ -108,9 +108,17 @@
 
 <body class="two-column-right">
 <div class="body">
+    <cl:isLoggedIn>
+        <g:set var="adminUrl">${createLink(controller:'task', action:'projectAdmin', id:projectInstance.id)}</g:set>
+        <button style="float:right;margin-top:5px;" onclick="location.href='${adminUrl}'">Admin Tasks List</button>
+    </cl:isLoggedIn>
     <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
     <br/>
-
+    <g:if test="${flash.message}">
+        <script type="text/javascript">
+            alert("${flash.message}");
+        </script>
+    </g:if>
     <p>${projectInstance.description}<br/>
         Watch the video tutorials:
         <a href="http://volunteer.ala.org.au/video/Introduction.swf" target="video">Introduction</a> &

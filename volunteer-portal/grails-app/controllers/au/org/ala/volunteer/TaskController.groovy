@@ -24,6 +24,14 @@ class TaskController {
     }
 
     def projectAdmin = {
+        if (false) {
+
+        }
+        else {
+            flash.message = "You do not have permission to view the Admin Task List page (ROLE_ADMIN required)"
+            redirect(controller: "project", action: "index", id: params.id)
+        }
+
         def projectInstance = Project.get(params.id)
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
         params.order = params.order ? params.order : "asc"

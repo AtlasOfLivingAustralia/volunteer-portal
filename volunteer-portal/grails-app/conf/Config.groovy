@@ -31,7 +31,8 @@ if (!ala.baseURL) {
  *  SECURITY
 \******************************************************************************/
 if (!security.cas.urlPattern) {
-    security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*, /validate/save.*, /validate/task/.*,/validate/.*,/user/myStats,/user/show/.*,/user/.*"
+    security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*,/validate/save.*," +
+            " /validate/task/.*,/validate/.*,/user/myStats,/user/show/.*,/user/.*,/task/projectAdmin.*"
 }
 if (!security.cas.urlExclusionPattern) {
     security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
