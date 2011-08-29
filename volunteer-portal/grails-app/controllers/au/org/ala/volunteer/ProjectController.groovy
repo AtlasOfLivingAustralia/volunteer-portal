@@ -37,7 +37,6 @@ class ProjectController {
                 roles.addAll(row)
             }
 
-            //allUsersMap.each { userId ->
             userList.each { user ->
                 // iterate over each user and assign to a role.
                 def assigned = false
@@ -51,7 +50,13 @@ class ProjectController {
                 }
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, roles:roles])
+            // get the 5 most recent news items
+            def recentNewsItems = projectInstance.newsItems.toArray()
+            if (recentNewsItems.size() > 5) {
+                recentNewsItems = recentNewsItems.getAt( [0..4] )
+            }
+
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, roles:roles, recentNewsItems: recentNewsItems])
         }
     }
 
