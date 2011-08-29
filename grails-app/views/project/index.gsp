@@ -165,9 +165,9 @@
             <div style="clear: both"></div>
             <h2>Expedition News</h2>
             <div id="news">
-                <g:each in="${projectInstance.newsItems}" var="ni">
-                    <p><b>${ni.title} <g:formatDate format="dd-MM-yyyy" date="${ni.created}"/></b></p>
-                    ${ni.body}
+                <g:each in="${recentNewsItems}" var="news" status="i">
+                    <p><b>${news.title} (<g:formatDate format="dd-MM-yyyy" date="${news.created}"/>)</b></p>
+                    ${news.body}
                 </g:each>
             </div>
             <div id="recordMapLabel"><h4>Showing location of records transcribed to date</h4></div>

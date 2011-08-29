@@ -15,6 +15,7 @@ class Project {
     tasks cascade:'all-delete-orphan'
     projectAssociations cascade:'all-delete-orphan'
     template lazy:false
+    newsItems sort: 'created', order: 'desc'
   }
 
   static constraints = {
