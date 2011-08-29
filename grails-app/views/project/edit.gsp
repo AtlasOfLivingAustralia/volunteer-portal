@@ -45,7 +45,10 @@
                                   <label for="description"><g:message code="project.description.label" default="Description" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'description', 'errors')}">
-                                    <g:textArea name="description" cols="40" rows="5" value="${projectInstance?.description}" />
+                                    %{--<g:textArea name="description" cols="40" rows="5" value="${projectInstance?.description}" />--}%
+                                    <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" style="width:500px;">
+                                        ${projectInstance?.description}
+                                    </tinyMce:renderEditor>
                                 </td>
                             </tr>
                         
@@ -54,7 +57,7 @@
                                   <label for="template"><g:message code="project.template.label" default="Template" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'template', 'errors')}">
-                                    <g:select name="template.id" from="${au.org.ala.volunteer.Template.list()}" optionValue="name" optionKey="id" value="${projectInstance?.template?.id}" noSelection="['null': '']" />
+                                    <g:select name="template.id" from="${au.org.ala.volunteer.Template.list()}" optionKey="id" value="${projectInstance?.template?.id}" noSelection="['null': '']" />
                                 </td>
                             </tr>
                         
@@ -66,39 +69,39 @@
                                     <g:datePicker name="created" precision="day" value="${projectInstance?.created}" default="none" noSelection="['': '']" />
                                 </td>
                             </tr>
-                        <!--
+                        
                             <tr class="prop">
                                 <td valign="top" class="name">
                                   <label for="projectAssociations"><g:message code="project.projectAssociations.label" default="Project Associations" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'projectAssociations', 'errors')}">
                                     
-<ul>
-<g:each in="${projectInstance?.projectAssociations?}" var="p">
-    <li><g:link controller="projectAssociation" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
-</g:each>
-</ul>
-<g:link controller="projectAssociation" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation')])}</g:link>
+                                    <ul>
+                                    <g:each in="${projectInstance?.projectAssociations?}" var="p">
+                                        <li><g:link controller="projectAssociation" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+                                    </g:each>
+                                    </ul>
+                                    <g:link controller="projectAssociation" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation')])}</g:link>
 
                                 </td>
                             </tr>
                         
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                  <label for="tasks"><g:message code="project.tasks.label" default="Tasks" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tasks', 'errors')}">
-                                    
-<ul>
-<g:each in="${projectInstance?.tasks?}" var="t">
-    <li><g:link controller="task" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></li>
-</g:each>
-</ul>
-<g:link controller="task" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'task.label', default: 'Task')])}</g:link>
+                            %{--<tr class="prop">--}%
+                                %{--<td valign="top" class="name">--}%
+                                  %{--<label for="tasks"><g:message code="project.tasks.label" default="Tasks" /></label>--}%
+                                %{--</td>--}%
+                                %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tasks', 'errors')}">--}%
+                                    %{----}%
+                                    %{--<ul>--}%
+                                    %{--<g:each in="${projectInstance?.tasks?}" var="t">--}%
+                                        %{--<li><g:link controller="task" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></li>--}%
+                                    %{--</g:each>--}%
+                                    %{--</ul>--}%
+                                    %{--<g:link controller="task" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'task.label', default: 'Task')])}</g:link>--}%
 
-                                </td>
-                            </tr>
-                        -->
+                                %{--</td>--}%
+                            %{--</tr>--}%
+                        
                         </tbody>
                     </table>
                 </div>

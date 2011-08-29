@@ -113,17 +113,14 @@
         <button style="float:right;margin-top:5px;" onclick="location.href='${adminUrl}'">Admin Tasks List</button>
     </cl:isLoggedIn>
     <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
-    <br/>
     <g:if test="${flash.message}">
         <script type="text/javascript">
             alert("${flash.message}");
         </script>
     </g:if>
-    <p>${projectInstance.description}<br/>
-        Watch the video tutorials:
-        <a href="http://volunteer.ala.org.au/video/Introduction.swf" target="video">Introduction</a> &
-        <a href="http://volunteer.ala.org.au/video/Georeferencing2.swf" target="video">Using the Mapping Tool</a>.
-    </p>
+    <div id="projectInfo">
+        ${projectInstance.description}
+    </div>
     <div class='front-image'>
         <img src="${resource(dir: 'images', file: 'short-map.jpg')}"/>
     </div>
@@ -168,14 +165,10 @@
             <div style="clear: both"></div>
             <h2>Expedition News</h2>
             <div id="news">
-                <p><b>Trial period over – all tasks completed 22/07/2011</b></p>
-                <p>Congratulations and thanks to all those who contributed to completing all of the tasks for the trial period. Particular thanks to those who also provided feedback through the sites feedback pages.You have all helped us identify things that can be improved in the transcription site and process.
-                Over the next few weeks we will be planning and implementing these changes and hope to go live with the improved site within 3 weeks.
-                In the meantime we will upload some more images for you to transcribe with the existing site if you desire.</p>
-                <p>Once the new site is ready to be launched we will inform you through this news feed – so stay tuned.  
-                <p><b>New projects on the way 22/07/2011</b></p>
-                <p>In addition to improving the site we are also working on new projects for you to work on – in the coming
-                months there will be new insect groups, herbaria pages, and some field notes to transcribe.</p>
+                <g:each in="${projectInstance.newsItems}" var="ni">
+                    <p><b>${ni.title} <g:formatDate format="dd-MM-yyyy" date="${ni.created}"/></b></p>
+                    ${ni.body}
+                </g:each>
             </div>
             <div id="recordMapLabel"><h4>Showing location of records transcribed to date</h4></div>
             <div id="recordsMap"></div>

@@ -8,7 +8,7 @@ class Project {
   Date created
 
   static belongsTo = [template: Template]
-  static hasMany = [tasks:Task, projectAssociations:ProjectAssociation]
+  static hasMany = [tasks:Task, projectAssociations:ProjectAssociation, newsItems: NewsItem]
 
   static mapping = {
     version false

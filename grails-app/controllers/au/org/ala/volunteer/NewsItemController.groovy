@@ -1,0 +1,104 @@
+package au.org.ala.volunteer
+
+class NewsItemController {
+
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+
+    def authService
+
+    def index = {
+        redirect(action: "list", params: params)
+    }
+
+    def list = {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        [newsItemInstanceList: NewsItem.list(params), newsItemInstanceTotal: NewsItem.count()]
+    }
+
+    def create = {
+        def newsItemInstance = new NewsItem()
+        def currentUser = authService.username()
+        newsItemInstance.properties = params
+        return [newsItemInstance: newsItemInstance, currentUser: currentUser]
+    }
+
+    def save = {
+        def newsItemInstance = new NewsItem(params)
+        if (newsItemInstance.save(flush: true)) {
+            flash.message = "${message(code: 'default.created.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"
+            redirect(action: "show", id: newsItemInstance.id)
+        }
+        else {
+            render(view: "create", model: [newsItemInstance: newsItemInstance])
+        }
+    }
+
+    def show = {
+        def newsItemInstance = NewsItem.get(params.id)
+        if (!newsItemInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+            redirect(action: "list")
+        }
+        else {
+            [newsItemInstance: newsItemInstance]
+        }
+    }
+
+    def edit = {
+        def newsItemInstance = NewsItem.get(params.id)
+        def currentUser = authService.username()
+        if (!newsItemInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+            redirect(action: "list")
+        }
+        else {
+            return [newsItemInstance: newsItemInstance, currentUser: currentUser]
+        }
+    }
+
+    def update = {
+        def newsItemInstance = NewsItem.get(params.id)
+        if (newsItemInstance) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (newsItemInstance.version > version) {
+                    
+                    newsItemInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'newsItem.label', default: 'NewsItem')] as Object[], "Another user has updated this NewsItem while you were editing")
+                    render(view: "edit", model: [newsItemInstance: newsItemInstance])
+                    return
+                }
+            }
+            newsItemInstance.properties = params
+            if (!newsItemInstance.hasErrors() && newsItemInstance.save(flush: true)) {
+                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"
+                redirect(action: "show", id: newsItemInstance.id)
+            }
+            else {
+                render(view: "edit", model: [newsItemInstance: newsItemInstance])
+            }
+        }
+        else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
+    def delete = {
+        def newsItemInstance = NewsItem.get(params.id)
+        if (newsItemInstance) {
+            try {
+                newsItemInstance.delete(flush: true)
+                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+                redirect(action: "list")
+            }
+            catch (org.springframework.dao.DataIntegrityViolationException e) {
+                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+                redirect(action: "show", id: params.id)
+            }
+        }
+        else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+            redirect(action: "list")
+        }
+    }
+}

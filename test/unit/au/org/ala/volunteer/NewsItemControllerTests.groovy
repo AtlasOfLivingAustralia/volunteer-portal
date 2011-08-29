@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import grails.test.*
 
-class ProjectControllerTests extends ControllerUnitTestCase {
+class NewsItemControllerTests extends ControllerUnitTestCase {
     protected void setUp() {
         super.setUp()
     }
