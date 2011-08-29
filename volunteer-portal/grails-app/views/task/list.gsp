@@ -19,8 +19,9 @@
             </g:else>
         </div>
         <div class="body">
+            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
             <h1>Admin <g:message code="default.list.label" args="[entityName]" /></h1>
-            <div style="margin: 8px 0 4px 0;">
+            <div style="margin: 8px 0 4px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                 Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}

@@ -8,6 +8,7 @@ class TaskController {
 
     def taskService
     def fieldSyncService
+    def authService
 
     def load = {
         [projectList: Project.list()]
@@ -24,26 +25,26 @@ class TaskController {
     }
 
     def projectAdmin = {
-        if (false) {
 
-        }
-        else {
+        def currentUser = authService.username()
+        if (currentUser != null && authService.userInRole("ROLE_ADMIN")) {
+            def projectInstance = Project.get(params.id)
+            params.max = Math.min(params.max ? params.int('max') : 20, 50)
+            params.order = params.order ? params.order : "asc"
+            params.sort = params.sort ? params.sort : "id"
+            def taskInstanceList = Task.findAllByProject(projectInstance,params)
+            def taskInstanceTotal = Task.countByProject(projectInstance)
+            //def taskInstanceList = Task.createCriteria().list([max: 10, offset: params.offset]) {
+            //    order(params.sort)
+            //    order('fullyValidatedBy')
+            //}
+            //def taskInstanceTotal = taskInstanceList.totalCount
+            render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
+
+        } else {
             flash.message = "You do not have permission to view the Admin Task List page (ROLE_ADMIN required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
-
-        def projectInstance = Project.get(params.id)
-        params.max = Math.min(params.max ? params.int('max') : 20, 50)
-        params.order = params.order ? params.order : "asc"
-        params.sort = params.sort ? params.sort : "id"
-        def taskInstanceList = Task.findAllByProject(projectInstance,params)
-        def taskInstanceTotal = Task.countByProject(projectInstance)
-        //def taskInstanceList = Task.createCriteria().list([max: 10, offset: params.offset]) {
-        //    order(params.sort)
-        //    order('fullyValidatedBy')
-        //}
-        //def taskInstanceTotal = taskInstanceList.totalCount
-        render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
     }
 
     /**

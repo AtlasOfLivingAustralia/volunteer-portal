@@ -14,6 +14,10 @@ body .ac_results li {
     padding:  5px 5px 14px 16px;
 }
 
+.body > p {
+    margin:  0;
+}
+
 /* these styles override the site style.css to use the explorer-themed banner */
 body {
     background:transparent url(../images/explorer-banner.jpg) center 0 repeat-x ! important;
@@ -86,6 +90,14 @@ div.nav a, #breadcrumb a {
 
 .section table, .section table thead, .section table th {
     border: none;
+}
+
+#projectInfo {
+    margin: 10px 10px 10px 16px;
+}
+
+.body #projectInfo p {
+    padding: 0;
 }
 
 

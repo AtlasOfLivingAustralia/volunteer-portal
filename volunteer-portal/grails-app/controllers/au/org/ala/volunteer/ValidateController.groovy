@@ -13,8 +13,6 @@ class ValidateController {
 
   def task = {
     def taskInstance = Task.get(params.id)
-    def redirect = params.redirect
-    params.remove("redirect")
     
     //retrieve the existing values
     Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
