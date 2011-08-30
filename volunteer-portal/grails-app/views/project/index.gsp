@@ -108,10 +108,6 @@
 
 <body class="two-column-right">
 <div class="body">
-    <cl:isLoggedIn>
-        <g:set var="adminUrl">${createLink(controller:'task', action:'projectAdmin', id:projectInstance.id)}</g:set>
-        <button style="float:right;margin-top:5px;" onclick="location.href='${adminUrl}'">Admin Tasks List</button>
-    </cl:isLoggedIn>
     <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
     <g:if test="${flash.message}">
         <script type="text/javascript">
@@ -175,6 +171,9 @@
         </div>
     </div>
     <div style="clear: both">&nbsp;</div>
+    <cl:isLoggedIn>
+        <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" style="color:#DDDDDD;">Admin</g:link>
+    </cl:isLoggedIn>
 </div>
 </body>
 </html>

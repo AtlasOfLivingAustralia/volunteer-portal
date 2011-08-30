@@ -16,7 +16,7 @@ class ValidateController {
     
     //retrieve the existing values
     Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-    render(view:'../transcribe/specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues, validator: true, redirect: redirect])
+    render(view:'../transcribe/specimenTranscribe',  model:[taskInstance:taskInstance, recordValues: recordValues, validator: true])
   }
 
   /**

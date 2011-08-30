@@ -188,8 +188,10 @@ enum DarwinCoreField {
     measurementDeterminedBy("Measurement Determined By"),
     measurementMethod("Measurement Method"),
     measurementRemarks("Measurement Remarks"),
-    
-    miscellaneous("")
+    // non DwC
+    miscellaneous(""),
+    transcriberNotes("Transcriber Notes"),
+    validatorNotes("Validator Notes")
     
     def label
     DarwinCoreField(label) { this.label = label }
