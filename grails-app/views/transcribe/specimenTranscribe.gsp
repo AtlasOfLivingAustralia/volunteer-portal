@@ -6,6 +6,7 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<%@ page contentType="text/html; UTF-8" %>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="layout" content="main"/>
@@ -337,7 +338,7 @@
                 viewport.mapbox(this.className, 2);//step twice
             }
             else {
-                viewport.mapbox(this.className);
+                viewport.mapbox(this.className, 100);
             }
             return false;
         });
@@ -734,6 +735,25 @@
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
+                        </tbody>
+                    </table>
+                    <table style="width: 100%">
+                        <thead>
+                        <tr><th><h3>Notes</h3> &ndash; Record any comments here that may assist in validating this specimen </th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="prop">
+                                <td class="name">${(validator) ? 'Transcriber' : 'Your'} Notes</td>
+                                <td class="value"><g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}"
+                                    id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                            </tr>
+                            <g:if test="${validator}">
+                                <tr class="prop">
+                                <td class="name">Validator Notes</td>
+                                <td class="value"><g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}"
+                                    id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                            </tr>
+                            </g:if>
                         </tbody>
                     </table>
                 </div>

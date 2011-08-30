@@ -20,8 +20,9 @@
         </div>
         <div class="body">
             <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
+            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
             <h1>Admin <g:message code="default.list.label" args="[entityName]" /></h1>
-            <div style="margin: 8px 0 4px 0; clear: both;">
+            <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                 Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
@@ -31,7 +32,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="list">
-                <table>
+                <table style="border-top: 2px solid #D9D9D9;">
                     <thead>
                         <tr>
                         

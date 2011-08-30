@@ -77,19 +77,26 @@ class UserController {
     }
 
     def edit = {
+        def currentUser = authService.username()
         def userInstance = User.get(params.id)
-        if (!userInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
+        if (currentUser != null && (authService.userInRole("ROLE_ADMIN") || currentUser == userInstance.userId)) {
+            if (!userInstance) {
+                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
+                redirect(action: "list")
+            }
+            else {
+                return [userInstance: userInstance]
+            }
+        } else {
+            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
             redirect(action: "list")
-        }
-        else {
-            return [userInstance: userInstance]
         }
     }
 
     def update = {
         def userInstance = User.get(params.id)
-        if (userInstance) {
+        def currentUser = authService.username()
+        if (userInstance && currentUser && (authService.userInRole("ROLE_ADMIN") || currentUser == userInstance.userId)) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (userInstance.version > version) {
@@ -116,7 +123,8 @@ class UserController {
 
     def delete = {
         def userInstance = User.get(params.id)
-        if (userInstance) {
+        def currentUser = authService.username()
+        if (userInstance && currentUser && authService.userInRole("ROLE_ADMIN")) {
             try {
                 userInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
