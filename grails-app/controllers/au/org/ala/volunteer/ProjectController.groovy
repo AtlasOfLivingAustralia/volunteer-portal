@@ -13,6 +13,7 @@ class ProjectController {
     def fieldService
     def auditService
     def fieldSyncService
+    def authService
     javax.sql.DataSource dataSource
 
     /**
@@ -93,6 +94,25 @@ class ProjectController {
         } else {
             // no project found
             render("No project found for id: " + params.id) as JSON
+        }
+    }
+
+    /**
+     * Output list of emails address for given project
+     */
+    def mailingList = {
+        def projectInstance = Project.get(params.id)
+
+        if (projectInstance && authService.userInRole("ROLE_ADMIN")) {
+            def userIds = taskService.getUserIdsForProject(projectInstance)
+            log.info("userIds = " + userIds)
+            render(userIds)
+        }
+        else if (projectInstance) {
+            render("You do not have permission to access this page.")
+        }
+        else {
+            render("No project found for id: " + params.id)
         }
     }
 
