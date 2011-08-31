@@ -17,6 +17,7 @@ package au.org.ala.volunteer
 
 /**
  * Enum class for Darwin Core Field names
+ * DwC fields taken from http://rs.tdwg.org/dwc/terms/index.htm
  * 
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
