@@ -750,7 +750,7 @@
                             <g:if test="${validator}">
                                 <tr class="prop">
                                 <td class="name">Validator Notes</td>
-                                <td class="value"><g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}"
+                                <td class="value"><g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}"
                                     id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
                             </tr>
                             </g:if>
