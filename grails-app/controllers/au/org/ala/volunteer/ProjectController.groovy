@@ -15,7 +15,7 @@ class ProjectController {
     def fieldSyncService
     def authService
     javax.sql.DataSource dataSource
-
+    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     /**
      * Project home page - shows stats, etc.
      */
@@ -98,14 +98,14 @@ class ProjectController {
     }
 
     /**
-     * Output list of emails address for given project
+     * Output list of email addresses for a given project
      */
     def mailingList = {
         def projectInstance = Project.get(params.id)
 
-        if (projectInstance && authService.userInRole("ROLE_ADMIN")) {
+        if (projectInstance && authService.userInRole(ROLE_ADMIN)) {
             def userIds = taskService.getUserIdsForProject(projectInstance)
-            log.info("userIds = " + userIds)
+            log.debug("userIds = " + userIds)
             render(userIds)
         }
         else if (projectInstance) {
@@ -165,7 +165,7 @@ class ProjectController {
         def projectInstance = Project.get(params.id)
 
         if (projectInstance) {
-            def taskList = Task.findAllByProjectAndFullyValidatedByIsNotNull(projectInstance, [sort:"id", max:9999])
+            def taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
             def fieldNames = fieldService.getAllFieldNames(taskList)
             log.debug("Fields: "+ fieldNames);
@@ -202,7 +202,7 @@ class ProjectController {
             def fieldMap = taskMap.get(taskId)
             fields.each {
                 if (fieldMap.containsKey(it)) {
-                    fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", "<br>"))
+                    fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", '\\\\n'))
                 }
                 else {
                     fieldValues.add("") // need to leave blank

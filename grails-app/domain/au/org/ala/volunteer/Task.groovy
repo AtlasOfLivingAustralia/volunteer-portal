@@ -7,6 +7,7 @@ class Task {
   String externalUrl
   String fullyTranscribedBy
   String fullyValidatedBy
+  Boolean isValid
   Integer viewed = -1
   Date created
 
@@ -24,6 +25,7 @@ class Task {
     externalUrl nullable: true
     fullyTranscribedBy nullable: true
     fullyValidatedBy nullable: true
+    isValid nullable: true
     viewed nullable: true
     created nullable: true
   }

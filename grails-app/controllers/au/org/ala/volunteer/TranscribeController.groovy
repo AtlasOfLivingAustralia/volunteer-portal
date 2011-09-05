@@ -10,6 +10,7 @@ class TranscribeController {
     def taskService
     def authService
     def userService
+    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
 
     static allowedMethods = [saveTranscription: "POST"]
 
@@ -34,9 +35,9 @@ class TranscribeController {
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
             def isReadonly
-            println(currentUser + " has role: " + authService.userInRole("ROLE_ADMIN"))
+            println(currentUser + " has role: " + authService.userInRole(ROLE_ADMIN))
 
-            if (taskInstance.fullyTranscribedBy && (taskInstance.fullyTranscribedBy != currentUser && !authService.userInRole("ROLE_ADMIN"))) {
+            if (taskInstance.fullyTranscribedBy && (taskInstance.fullyTranscribedBy != currentUser && !authService.userInRole(ROLE_ADMIN))) {
                 isReadonly = "readonly"
             }
 
@@ -85,8 +86,8 @@ class TranscribeController {
             def taskInstance = Task.get(params.id)
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
-            cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false)
+            WebUtils.cleanRecordValues(params.recordValues)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false, false)
             if (!taskInstance.hasErrors()) {
                 redirect(action: 'showNextAction', id: params.id)
             }
@@ -107,32 +108,11 @@ class TranscribeController {
         def currentUser = authService.username()
         if (currentUser) {
             def taskInstance = Task.get(params.id)
-            cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false)
+            WebUtils.cleanRecordValues(params.recordValues)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, false)
             redirect(action: 'showNextAction', id: params.id)
         } else {
             redirect(view: '/index')
-        }
-    }
-
-    /**
-     * Remove strange chars from form fields (appear with ° symbols, etc)
-     */
-    def cleanRecordValues = { recordValues ->
-        def idx = 0
-        def hasMore = true
-        while (hasMore) {
-            def fieldValuesForRecord = recordValues.get(idx.toString())
-            if (fieldValuesForRecord) {
-                fieldValuesForRecord.each { keyValue ->
-                    // remove strange chars from form fields TODO: find out why they are appearing 
-                    keyValue.value = keyValue.value.replace("Â","").replace("Ã","")
-                }
-
-                idx = idx + 1
-            } else {
-                hasMore = false
-            }
         }
     }
 

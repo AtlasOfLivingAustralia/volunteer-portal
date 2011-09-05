@@ -32,7 +32,7 @@ class FieldSyncService {
      * @param fieldValues
      * @return
      */
-    void syncFields(Task task, Map fieldValues, String transcriberUserId, boolean markAsFullyTranscribed, boolean markAsFullyValidated) {
+    void syncFields(Task task, Map fieldValues, String transcriberUserId, boolean markAsFullyTranscribed, boolean markAsFullyValidated, boolean isValid) {
 
         //sync
         def idx = 0
@@ -132,6 +132,10 @@ class FieldSyncService {
             //reset the fully validated flag
             task.fullyValidatedBy = null
         }
+
+        if (isValid != null) {
+            task.isValid = isValid
+        } 
 
         task.save(flush: true)
     }

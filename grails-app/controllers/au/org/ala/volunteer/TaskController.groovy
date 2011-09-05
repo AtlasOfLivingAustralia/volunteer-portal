@@ -9,7 +9,7 @@ class TaskController {
     def taskService
     def fieldSyncService
     def authService
-
+    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def load = {
         [projectList: Project.list()]
     }
@@ -27,7 +27,7 @@ class TaskController {
     def projectAdmin = {
 
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole("ROLE_ADMIN")) {
+        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
             def projectInstance = Project.get(params.id)
             params.max = Math.min(params.max ? params.int('max') : 20, 50)
             params.order = params.order ? params.order : "asc"
@@ -42,7 +42,7 @@ class TaskController {
             render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
 
         } else {
-            flash.message = "You do not have permission to view the Admin Task List page (ROLE_ADMIN required)"
+            flash.message = "You do not have permission to view the Admin Task List page (${grailsApplication.config.auth.role_admin} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }

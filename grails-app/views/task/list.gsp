@@ -46,11 +46,9 @@
                         
                             <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}" />
                         
-                            %{--<g:sortableColumn property="viewed" title="${message(code: 'task.viewed.label', default: 'Viewed')}" />--}%
+                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Is Valid')}" />
 
-                            <cl:ifGranted role="ROLE_ADMIN">
-                                <th>Validate</th>
-                            </cl:ifGranted>
+                            <th>Validate</th>
 
                             %{--<th>debug</th>--}%
                             
@@ -70,18 +68,16 @@
                         
                             <td>${fieldValue(bean: taskInstance, field: "fullyValidatedBy")}</td>
                         
-                            %{--<td>${fieldValue(bean: taskInstance, field: "viewed")}</td>--}%
+                            <td>${fieldValue(bean: taskInstance, field: "isValid")}</td>
 
-                            <cl:ifGranted role="ROLE_ADMIN">
-                                <td>
-                                    <g:if test="${!taskInstance.fullyValidatedBy}">
-                                        <g:link controller="validate" action="task" id="${taskInstance.id}">Validate</g:link>
-                                    </g:if>
-                                    <g:else>
-                                        Validated
-                                    </g:else>
-                                </td>
-                            </cl:ifGranted>
+                            <td>
+                                <g:if test="${!taskInstance.fullyValidatedBy}">
+                                    <g:link controller="validate" action="task" id="${taskInstance.id}">Validate</g:link>
+                                </g:if>
+                                <g:else>
+                                    Validated (<g:link controller="validate" action="task" id="${taskInstance.id}">view</g:link>)
+                                </g:else>
+                            </td>
 
                             %{--<td><cl:loggedInName /></td>--}%
 

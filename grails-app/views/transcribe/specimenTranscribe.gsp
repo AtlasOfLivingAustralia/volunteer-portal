@@ -507,9 +507,9 @@
         }
 
         // disable submit if validated
-        var validated = ${(taskInstance?.fullyValidatedBy) ? "true" : "false"};
+        var validated = ${(taskInstance?.isValid) ? "true" : "false"};
         if (validated) {
-            $(":input.save, :input.savePartial, :input.validate, :input.dontValidate").attr("disabled","disabled").attr("title","Task readonly - already validated");
+            //$(":input.save, :input.savePartial, :input.validate, :input.dontValidate").attr("disabled","disabled").attr("title","Task readonly - already validated");
         }
         // save "all text" to cookie so we can load into next task
         $("#transcribeAllText").blur(function(e) {
@@ -766,6 +766,9 @@
                              value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
                     <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
                              value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
+                    <span class="button"><g:actionSubmit class="skip" action="showNextFromAny"
+                             value="${message(code: 'default.button.skip.label', default: 'Skip')}"/></span>
+                    <span style="color:gray;">&nbsp;&nbsp;[is valid: ${taskInstance?.isValid} | validatedBy:  ${taskInstance?.fullyValidatedBy}]</span>
                 </g:if>
                 <g:else>
                     <span class="button"><g:actionSubmit class="save" action="save"
