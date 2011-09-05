@@ -8,6 +8,7 @@ class UserController {
     def authService
     def userService
     def fieldSyncService
+    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
 
     def index = {
         redirect(action: "list", params: params)
@@ -79,7 +80,7 @@ class UserController {
     def edit = {
         def currentUser = authService.username()
         def userInstance = User.get(params.id)
-        if (currentUser != null && (authService.userInRole("ROLE_ADMIN") || currentUser == userInstance.userId)) {
+        if (currentUser != null && (authService.userInRole(ROLE_ADMIN) || currentUser == userInstance.userId)) {
             if (!userInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
                 redirect(action: "list")
@@ -96,7 +97,7 @@ class UserController {
     def update = {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
-        if (userInstance && currentUser && (authService.userInRole("ROLE_ADMIN") || currentUser == userInstance.userId)) {
+        if (userInstance && currentUser && (authService.userInRole(ROLE_ADMIN) || currentUser == userInstance.userId)) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (userInstance.version > version) {
@@ -124,7 +125,7 @@ class UserController {
     def delete = {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
-        if (userInstance && currentUser && authService.userInRole("ROLE_ADMIN")) {
+        if (userInstance && currentUser && authService.userInRole(ROLE_ADMIN)) {
             try {
                 userInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"

@@ -59,6 +59,8 @@ if (!security.cas.bypass) {
 // server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
 
+auth.admin_role = "ROLE_ADMIN"
+
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 
 // Mappings for expedition labels, icons, etc
