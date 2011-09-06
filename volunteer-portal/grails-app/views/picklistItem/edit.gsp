@@ -54,7 +54,7 @@
                                   <label for="value"><g:message code="picklistItem.value.label" default="Value" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: picklistItemInstance, field: 'value', 'errors')}">
-                                    <g:textField name="value" value="${picklistItemInstance?.value}" />
+                                    <g:textArea name="value" value="${picklistItemInstance?.value}" rows="5"/>
                                 </td>
                             </tr>
                         
