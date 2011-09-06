@@ -16,7 +16,28 @@ class PicklistItemController {
                     picklistItem(name:pli.value, key:pli.key)
                 }
             }	
-	}
+	    }
+    }
+
+    def updateLocality = {
+        def picklist = Picklist.findByName("verbatimLocality")
+        def name = params.name
+        def picklistItems = PicklistItem.findAllByValueIlikeAndPicklist("%"+name+"%", picklist)
+
+        if (!picklistItems) {
+            def picklistItemInstance = new PicklistItem()
+            picklistItemInstance.picklist = picklist
+            picklistItemInstance.value = name + "|" + params.lat + "|" + params.lng + "|" + params.cuim
+            if (picklistItemInstance.save(flush: true)) {
+                render (status: 201, text: "locality added as new picklistItem")
+            }
+            else {
+                render (status: 500, text: "Failed to save new picklistItem: " + picklistItemInstance.errors)
+            }
+        } else {
+            // picklistitem with same locality exists
+            render (status: 200, text: "Item already present in picklist: " + name)
+        }
     }
 
     def index = {

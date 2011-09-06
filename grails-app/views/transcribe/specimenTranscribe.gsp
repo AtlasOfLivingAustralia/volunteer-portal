@@ -318,6 +318,10 @@
             if (nameBits[1]) $(':input.decimalLatitude').val(nameBits[1]);
             if (nameBits[2]) $(':input.decimalLongitude').val(nameBits[2]);
             if (nameBits[3]) $(':input.coordinateUncertaintyInMeters').val(nameBits[3]);
+            $("#geolocate").click(); // does geolocation lookup for other fields
+            var msg = "Please confirm this location by clicking the button labelled 'Copy values to main form'";
+            setTimeout(function() {alert(msg);} , 1000);
+
             // populate verbatimLocalityID
             $(':input.verbatimLocalityID').val(item.key);
         });
@@ -382,7 +386,7 @@
             $('form.transcribeForm').submit();
         });
 
-        // catch button on map
+        // catch "copy values..." button on map
         $('#setLocationFields').click(function(e) {
             e.preventDefault();
 
@@ -410,6 +414,19 @@
                         //$(':input.locality').val(name);
                     }
                 }
+
+                // update the verbatimLocality picklist on the server
+                var url = "${createLink(controller:'picklistItem', action:'updateLocality')}";
+                var params = {
+                    name: $(":input.verbatimLocality").val(),
+                    lat: $(":input.decimalLatitude").val(),
+                    lng: $(":input.decimalLongitude").val(),
+                    cuim: $(':input.coordinateUncertaintyInMeters').val()
+                };
+                $.getJSON(url, params, function(data) {
+                    // only interested in return text for debugging problems
+                    //alert(url + " returned: " + data);
+                });
 
                 $.fancybox.close(); // close the popup
             } else {
