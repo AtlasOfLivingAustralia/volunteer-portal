@@ -106,7 +106,9 @@ class ProjectController {
         if (projectInstance && authService.userInRole(ROLE_ADMIN)) {
             def userIds = taskService.getUserIdsForProject(projectInstance)
             log.debug("userIds = " + userIds)
-            render(userIds)
+            //render(userIds)
+            def list = userIds.join(",\n")
+            render(text:list, contentType: "text/plain")
         }
         else if (projectInstance) {
             render("You do not have permission to access this page.")
