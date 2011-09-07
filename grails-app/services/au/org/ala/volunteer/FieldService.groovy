@@ -6,11 +6,14 @@ class FieldService {
 
     def serviceMethod() {}
 
-    List getLatestFieldsWithTasks(String fieldName, List<Task> taskList) {
+    List getLatestFieldsWithTasks(String fieldName, List<Task> taskList, Map params) {
+        def sort = "f.task." + (params.sort?:"id")
+        def order = params.order?:"asc"
         def fieldValues = Field.executeQuery(
             """select f from Field f
                where f.name = :name and f.superceded = false and
-               f.task in (:list) order by f.task.id""", [name: fieldName,list: taskList])
+               f.task in (:list) order by ${sort} ${order}""",
+            [name: fieldName, list: taskList])
         fieldValues.toList()
     }
 

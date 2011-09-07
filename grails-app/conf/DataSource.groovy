@@ -18,6 +18,7 @@ environments {
             dbCreate = "update" // one of 'create', 'create-drop','update'
             //url = "jdbc:mysql://localhost/volunteers"
             url = "jdbc:postgresql://localhost/volunteers"
+            loggingSql = false
         }
     }
     test {

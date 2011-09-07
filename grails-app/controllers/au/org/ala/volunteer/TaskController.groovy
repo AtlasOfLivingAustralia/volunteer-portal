@@ -41,12 +41,12 @@ class TaskController {
                 taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)
                 taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
                 if (taskInstanceTotal) {
-                    catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList)
+                    catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList, params)
                 }
             } else {
                 taskInstanceList = Task.findAllByProject(projectInstance,params)
                 taskInstanceTotal = Task.countByProject(projectInstance)
-                catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList)
+                catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList, params)
             }
             // add some associated "field" values
             render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
@@ -84,7 +84,7 @@ class TaskController {
         params.max = Math.min(params.max ? params.int('max') : 8, 16)
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
-        render(view: "thumbs", [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
+        render(view: "thumbs", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
     }
 
     def thumbs = {
