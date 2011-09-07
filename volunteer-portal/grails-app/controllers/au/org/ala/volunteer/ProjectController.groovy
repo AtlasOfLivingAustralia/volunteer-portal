@@ -107,7 +107,7 @@ class ProjectController {
             def userIds = taskService.getUserIdsForProject(projectInstance)
             log.debug("userIds = " + userIds)
             //render(userIds)
-            def list = userIds.join(",\n")
+            def list = userIds.join(";\n")
             render(text:list, contentType: "text/plain")
         }
         else if (projectInstance) {
@@ -175,7 +175,8 @@ class ProjectController {
                 taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
             }
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
-            def fieldNames = fieldService.getAllFieldNames(taskList)
+            def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier"]
+            fieldNames.addAll(fieldService.getAllFieldNames(taskList))
             log.debug("Fields: "+ fieldNames);
             //render("tasks: " + taskList.size()) as JSON
             def filename = "Project-" + projectInstance.id + "-DwC"
@@ -192,8 +193,8 @@ class ProjectController {
             writer.writeNext(fieldNames.toArray(new String[0]))
 
             taskList.each { task ->
-                String[] values = getFieldsforTask(task.id, fieldNames, taskMap)
-                 writer.writeNext(values)
+                String[] values = getFieldsforTask(task, fieldNames, taskMap)
+                writer.writeNext(values)
             }
 
             writer.close()
@@ -203,13 +204,27 @@ class ProjectController {
         }
     }
 
-    String[] getFieldsforTask(Long taskId, List fields, Map taskMap) {
+    String[] getFieldsforTask(Task task, List fields, Map taskMap) {
         List fieldValues = []
+        def taskId = task.id
 
         if (taskMap.containsKey(taskId)) {
             def fieldMap = taskMap.get(taskId)
-            fields.each {
-                if (fieldMap.containsKey(it)) {
+            fields.eachWithIndex { it, i ->
+
+                if (i == 0) {
+                    fieldValues.add(taskId.toString())
+                }
+                else if (i == 1) {
+                    fieldValues.add(task.fullyTranscribedBy)
+                }
+                else if (i == 2) {
+                    fieldValues.add(task.fullyValidatedBy)
+                }
+                else if (i == 3) {
+                    fieldValues.add(task.externalIdentifier)
+                }
+                else if (fieldMap.containsKey(it)) {
                     fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", '\\\\n'))
                 }
                 else {
