@@ -46,7 +46,7 @@ class PicklistController {
             redirect(action: "list")
         }
         else {
-          params.max = Math.min(params.max ? params.int('max') : 10, 100)
+          params.max = Math.min(params.max ? params.int('max') : 100, 100)
 
 
           def picklistItemInstanceList = PicklistItem.findAllByPicklist(picklistInstance, params)
