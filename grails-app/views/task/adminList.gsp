@@ -1,4 +1,3 @@
-
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <html>
     <head>
@@ -29,13 +28,18 @@
             </g:else>
         </div>
         <div class="body">
-            <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
+            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
+            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
+            <h1>Admin <g:message code="default.list.label" args="[entityName]" /></h1>
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                 Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
                 &nbsp;&nbsp;
-                <input type="text" name="q" id="q" value="${params.q}" size="40" />
+                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated tasks</button>
+                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:false])}'">Export transcribed tasks</button>
+                <input type="text" name="q" id="q" value="${params.q}" size="30"/>
                 <button id="searchButton">search</button>
             </div>
             <g:if test="${flash.message}">
@@ -47,17 +51,16 @@
                         <tr>
                         
                             <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
-
-                            <g:sortableColumn property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
                         
-                            <th>Scientific Name</th>
+                            <th>catalogNumber</th>
                         
                             <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q:params.q]}"/>
                         
-                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
+                            <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}" params="${[q:params.q]}"/>
+                        
+                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Validation Status')}" params="${[q:params.q]}" style="text-align: center;"/>
 
                             <th style="text-align: center;">Action</th>
-                            %{--<th>debug</th>--}%
                             
                         </tr>
                     </thead>
@@ -67,12 +70,8 @@
                         
                             <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
                         
-                            <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
-
-                            <td><i>${extraField[i]?.value}</i></td>
+                            <td>${extraField[i]?.value}</td>
                         
-                            %{--<td>${taskInstance.fullyTranscribedBy?.replaceAll(/@.*/, "...")}</td>--}%
-
                             <td>
                                 <g:if test="${taskInstance.fullyTranscribedBy}">
                                     <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
@@ -80,22 +79,27 @@
                                 </g:if>
                             </td>
                         
+                            <td>
+                                <g:if test="${taskInstance.fullyValidatedBy}">
+                                    <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyValidatedBy)}"/>
+                                    <g:link controller="user" action="show" id="${thisUser.id}">${thisUser.displayName}</g:link>
+                                </g:if>
+                            </td>
+                        
                             <td style="text-align: center;">
-                                <g:if test="${taskInstance.isValid == true}">validated</g:if>
-                                <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
-                                <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
+                                <g:if test="${taskInstance.isValid == true}">&#10003;</g:if>
+                                <g:elseif test="${taskInstance.isValid == false}">&#10005;</g:elseif>
+                                <g:else>&#8211;</g:else>
                             </td>
 
                             <td style="text-align: center;">
-                                <g:if test="${taskInstance.fullyTranscribedBy}">
-                                    <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
+                                <g:if test="${taskInstance.fullyValidatedBy}">
+                                    <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
                                 </g:if>
                                 <g:else>
-                                    <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                                    <button onclick="location.href='${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">validate</button>
                                 </g:else>
                             </td>
-
-                            %{--<td><cl:loggedInName /></td>--}%
 
                         </tr>
                     </g:each>
