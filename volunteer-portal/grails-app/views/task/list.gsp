@@ -31,6 +31,7 @@
         <div class="body">
             <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
             <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
+            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
             <h1>Admin <g:message code="default.list.label" args="[entityName]" /></h1>
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
