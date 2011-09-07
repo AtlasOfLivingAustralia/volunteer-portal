@@ -50,15 +50,15 @@
                     <thead>
                         <tr>
                         
-                            <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" />
+                            <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
                         
                             <th>catalogNumber</th>
                         
-                            <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" />
+                            <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q:params.q]}"/>
                         
-                            <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}" />
+                            <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}" params="${[q:params.q]}"/>
                         
-                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Is Valid')}" style="text-align: center;"/>
+                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Is Valid')}" params="${[q:params.q]}" style="text-align: center;"/>
 
                             <th style="text-align: center;">Action</th>
 
