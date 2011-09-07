@@ -163,9 +163,15 @@ class ProjectController {
      */
     def exportCSV = {
         def projectInstance = Project.get(params.id)
-
+        boolean validatedOnly = params.validated.toBoolean()
+        
         if (projectInstance) {
-            def taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
+            def taskList
+            if (validatedOnly) {
+                taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
+            } else {
+                taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
+            }
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
             def fieldNames = fieldService.getAllFieldNames(taskList)
             log.debug("Fields: "+ fieldNames);

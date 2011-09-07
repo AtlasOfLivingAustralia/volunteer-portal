@@ -6,6 +6,16 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#searchButton").click(function(e) {
+                    e.preventDefault();
+                    var query = $("#q").val()
+                    location.href="?q=" + query;
+                });
+
+            }); // end .ready()
+        </script>
     </head>
     <body>
         <div class="nav">
@@ -26,7 +36,11 @@
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                 Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
-                &nbsp;&nbsp;<button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id)}'">Export validated tasks as CSV</button>
+                &nbsp;&nbsp;
+                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated tasks</button>
+                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:false])}'">Export all tasks</button>
+                <input type="text" name="q" id="q" value="${params.q}"/>
+                <button id="searchButton">search</button>
             </div>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -38,17 +52,15 @@
                         
                             <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" />
                         
-                            <g:sortableColumn property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'External Identifier')}" />
-                        
-                            %{--<g:sortableColumn property="project" title="${message(code: 'task.project.label', default: 'Project')}" />--}%
+                            <th>catalogNumber</th>
                         
                             <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" />
                         
                             <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}" />
                         
-                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Is Valid')}" />
+                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Is Valid')}" style="text-align: center;"/>
 
-                            <th>Validate</th>
+                            <th style="text-align: center;">Action</th>
 
                             %{--<th>debug</th>--}%
                             
@@ -60,22 +72,20 @@
                         
                             <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
                         
-                            <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
-                        
-                            %{--<td>${fieldValue(bean: taskInstance, field: "project")}</td>--}%
+                            <td>${catalogNums[i]?.value}</td>
                         
                             <td>${fieldValue(bean: taskInstance, field: "fullyTranscribedBy")}</td>
                         
                             <td>${fieldValue(bean: taskInstance, field: "fullyValidatedBy")}</td>
                         
-                            <td>${fieldValue(bean: taskInstance, field: "isValid")}</td>
+                            <td style="text-align: center;">${fieldValue(bean: taskInstance, field: "isValid")}</td>
 
-                            <td>
-                                <g:if test="${!taskInstance.fullyValidatedBy}">
-                                    <g:link controller="validate" action="task" id="${taskInstance.id}">Validate</g:link>
+                            <td style="text-align: center;">
+                                <g:if test="${taskInstance.fullyValidatedBy}">
+                                    <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
                                 </g:if>
                                 <g:else>
-                                    Validated (<g:link controller="validate" action="task" id="${taskInstance.id}">view</g:link>)
+                                    <button onclick="location.href='${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">validate</button>
                                 </g:else>
                             </td>
 
@@ -87,7 +97,7 @@
                 </table>
             </div>
             <div class="paginateButtons">
-                <g:paginate total="${taskInstanceTotal}" id="${params?.id}"/>
+                <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q:params.q]}"/>
             </div>
         </div>
     </body>
