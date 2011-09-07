@@ -140,6 +140,9 @@ environments {
     }
 }
 
+//hibernate.SQL="trace,stdout"
+//hibernate.type="trace,stdout"
+
 // log4j configuration
 log4j = {
     // Example of changing the log pattern for the default console
