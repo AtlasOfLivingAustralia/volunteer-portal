@@ -8,6 +8,7 @@ class TaskController {
 
     def taskService
     def fieldSyncService
+    def fieldService
     def authService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def load = {
@@ -33,7 +34,20 @@ class TaskController {
             params.sort = params.sort ? params.sort : "id"
             def taskInstanceList = Task.findAllByProject(projectInstance,params)
             def taskInstanceTotal = Task.countByProject(projectInstance)
-            render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
+            // add some associated "field" values
+            def catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList)
+            def query = params.q
+            if (query) {
+                taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(taskInstanceList, query)
+                def fullList = Task.findAllByProject(projectInstance,[max:999])
+                taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
+                if (taskInstanceTotal) {
+                    catalogNums = []
+                }
+            }
+            // add some associated "field" values
+            render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
+                    projectInstance: projectInstance, catalogNums: catalogNums])
         } else {
             flash.message = "You do not have permission to view the Admin Task List page (${ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
