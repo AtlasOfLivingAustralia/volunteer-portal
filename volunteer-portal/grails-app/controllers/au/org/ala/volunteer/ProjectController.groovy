@@ -170,7 +170,7 @@ class ProjectController {
             if (validatedOnly) {
                 taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
             } else {
-                taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
+                taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
             }
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
             def fieldNames = fieldService.getAllFieldNames(taskList)

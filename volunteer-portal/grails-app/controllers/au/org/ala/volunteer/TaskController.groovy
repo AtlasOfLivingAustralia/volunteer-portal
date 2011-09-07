@@ -32,18 +32,21 @@ class TaskController {
             params.max = Math.min(params.max ? params.int('max') : 20, 50)
             params.order = params.order ? params.order : "asc"
             params.sort = params.sort ? params.sort : "id"
-            def taskInstanceList = Task.findAllByProject(projectInstance,params)
-            def taskInstanceTotal = Task.countByProject(projectInstance)
-            // add some associated "field" values
-            def catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList)
+            def taskInstanceList
+            def taskInstanceTotal
+            def catalogNums
             def query = params.q
             if (query) {
-                taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(taskInstanceList, query)
                 def fullList = Task.findAllByProject(projectInstance,[max:999])
+                taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)
                 taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
                 if (taskInstanceTotal) {
-                    catalogNums = []
+                    catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList)
                 }
+            } else {
+                taskInstanceList = Task.findAllByProject(projectInstance,params)
+                taskInstanceTotal = Task.countByProject(projectInstance)
+                catalogNums = fieldService.getLatestFieldsWithTasks("catalogNumber", taskInstanceList)
             }
             // add some associated "field" values
             render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,

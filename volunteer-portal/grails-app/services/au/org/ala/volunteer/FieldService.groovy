@@ -14,12 +14,12 @@ class FieldService {
         fieldValues.toList()
     }
 
-    List findAllFieldsWithTasksAndQuery(List<Task> taskList, String query) {
+    List findAllFieldsWithTasksAndQuery(List<Task> taskList, String query, Map params) {
         def fieldValues = Field.executeQuery(
             """select distinct f.task from Field f
                where f.superceded = false and
                f.task in (:list) and lower(f.value) like lower(:query)
-               order by 1""", [list: taskList, query: '%'+query+'%'])
+               order by 1""", [list: taskList, query: '%'+query+'%'], params)
         fieldValues.toList()
     }
 
