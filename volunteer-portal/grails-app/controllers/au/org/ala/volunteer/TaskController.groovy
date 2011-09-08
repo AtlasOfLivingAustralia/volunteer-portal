@@ -17,13 +17,15 @@ class TaskController {
     }
 
     def project = {
-        def projectInstance = Project.get(params.id)
-        params.max = Math.min(params.max ? params.int('max') : 8, 16)
+        params.max = Math.min(params.max ? params.int('max') : 20, 50)
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
-        def taskInstanceList = Task.findAllByProject(projectInstance, params)
-        def taskInstanceTotal = Task.countByProject(projectInstance)
-        render(view: "list", model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, projectInstance: projectInstance])
+        //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
+        if (params.id) {
+            renderListWithSearch(params, "scientificName", "list")
+        } else {
+            render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
+        }
     }
 
     def projectAdmin = {
@@ -38,28 +40,34 @@ class TaskController {
 
     def renderListWithSearch(GrailsParameterMap params, String fieldName, String view) {
         def projectInstance = Project.get(params.id)
-        params.max = Math.min(params.max ? params.int('max') : 20, 50)
-        params.order = params.order ? params.order : "asc"
-        params.sort = params.sort ? params.sort : "id"
-        def taskInstanceList
-        def taskInstanceTotal
-        def extraField
-        def query = params.q
-        if (query) {
-            def fullList = Task.findAllByProject(projectInstance, [max: 999])
-            taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)
-            taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
-            if (taskInstanceTotal) {
+
+        if (projectInstance) {
+            params.max = Math.min(params.max ? params.int('max') : 20, 50)
+            params.order = params.order ? params.order : "asc"
+            params.sort = params.sort ? params.sort : "id"
+            def taskInstanceList
+            def taskInstanceTotal
+            def extraField
+            def query = params.q
+            if (query) {
+                def fullList = Task.findAllByProject(projectInstance, [max: 999])
+                taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)
+                taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
+                if (taskInstanceTotal) {
+                    extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
+                }
+            } else {
+                taskInstanceList = Task.findAllByProject(projectInstance, params)
+                taskInstanceTotal = Task.countByProject(projectInstance)
                 extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
             }
-        } else {
-            taskInstanceList = Task.findAllByProject(projectInstance, params)
-            taskInstanceTotal = Task.countByProject(projectInstance)
-            extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
+            // add some associated "field" values
+            render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
+                    projectInstance: projectInstance, extraField: extraField])
         }
-        // add some associated "field" values
-        render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
-                projectInstance: projectInstance, extraField: extraField])
+        else {
+            flash.message = "No project found for ID " + params.id
+        }
     }
 
     /**
@@ -90,7 +98,11 @@ class TaskController {
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
         //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
-        renderListWithSearch(params, "scientificName", "list")
+        if (params.id) {
+            redirect(action: "project", params: params)
+        } else {
+            render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
+        }
     }
 
     def thumbs = {

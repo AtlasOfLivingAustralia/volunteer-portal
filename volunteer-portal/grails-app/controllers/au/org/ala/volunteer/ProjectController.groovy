@@ -71,8 +71,8 @@ class ProjectController {
         if (projectInstance) {
             private long startQ  = System.currentTimeMillis();
             def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:999])
-            def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList))
-            def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList))
+            def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
+            def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList, params))
             private long endQ  = System.currentTimeMillis();
             log.debug("DB query took " + (endQ - startQ) + " ms")
             log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())

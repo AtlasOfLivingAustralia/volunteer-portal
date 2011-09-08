@@ -32,8 +32,10 @@
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
-                Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                <g:if test="${projectInstance}">
+                    Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
+                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                </g:if>
                 &nbsp;&nbsp;
                 <input type="text" name="q" id="q" value="${params.q}" size="40" />
                 <button id="searchButton">search</button>
@@ -50,7 +52,7 @@
 
                             <g:sortableColumn property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
                         
-                            <th>Scientific Name</th>
+                            <g:if test="${extraField}"><th>Scientific Name</th></g:if>
                         
                             <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q:params.q]}"/>
                         
@@ -69,7 +71,7 @@
                         
                             <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
 
-                            <td><i>${extraField[i]?.value}</i></td>
+                            <g:if test="${extraField}"><td><i>${extraField.get(i)?.value}</i></td></g:if>
                         
                             %{--<td>${taskInstance.fullyTranscribedBy?.replaceAll(/@.*/, "...")}</td>--}%
 
@@ -103,7 +105,7 @@
                 </table>
             </div>
             <div class="paginateButtons">
-                <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q:params.q]}"/>
+                <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q:params?.q]}"/>
             </div>
         </div>
     </body>
