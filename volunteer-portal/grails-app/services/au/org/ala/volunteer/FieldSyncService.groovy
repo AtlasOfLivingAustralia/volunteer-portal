@@ -32,7 +32,7 @@ class FieldSyncService {
      * @param fieldValues
      * @return
      */
-    void syncFields(Task task, Map fieldValues, String transcriberUserId, boolean markAsFullyTranscribed, boolean markAsFullyValidated, boolean isValid) {
+    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid) {
 
         //sync
         def idx = 0

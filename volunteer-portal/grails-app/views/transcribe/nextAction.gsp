@@ -14,7 +14,7 @@
 
             $("li#viewList a").click(function(e) {
                 e.preventDefault();
-                window.location.href = "${createLink(action:'list', controller:'task')}";
+                window.location.href = "${createLink(action:'project', controller:'task', id: taskInstance?.project?.id)}";
             });
 
             $("li#viewTask a").click(function(e) {

@@ -50,7 +50,7 @@ class TranscribeController {
     }
 
     def showNextAction = {
-        println("rendering view: nextAction")
+        log.debug("rendering view: nextAction")
         def taskInstance = Task.get(params.id)
         render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: authService.username()])
     }
@@ -87,7 +87,7 @@ class TranscribeController {
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false, false)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false, null)
             if (!taskInstance.hasErrors()) {
                 redirect(action: 'showNextAction', id: params.id)
             }
@@ -109,7 +109,7 @@ class TranscribeController {
         if (currentUser) {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, false)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, null)
             redirect(action: 'showNextAction', id: params.id)
         } else {
             redirect(view: '/index')
