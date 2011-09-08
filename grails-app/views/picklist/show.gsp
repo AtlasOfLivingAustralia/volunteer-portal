@@ -6,6 +6,16 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#searchButton").click(function(e) {
+                    e.preventDefault();
+                    var query = $("#q").val()
+                    location.href="?q=" + query;
+                });
+
+            }); // end .ready()
+        </script>
     </head>
 <body class="two-column-right">
         <div class="nav">
@@ -41,6 +51,8 @@
             </div>
             <!-- show the picklist -->
             <div class="list">
+                <input type="text" name="q" id="q" value="${params.q}" size="40" />
+                <button id="searchButton">search</button>
                 <table>
                     <thead>
                         <tr>
