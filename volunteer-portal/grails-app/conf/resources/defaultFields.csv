@@ -1,5 +1,6 @@
 catalogNumber,,,none,hidden,1,0,"Please check this number against the typed number on the specimen label in the image to see that it matches. If it does not match then click the &quot;Report an issue&quot; link near the top of the page",,default
 institutionCode,,AM,none,hidden,1,0,,,default
+basisOfRecord,,PreservedSpecimen,none,hidden,1,0,,,default
 occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",,default
 recordedBy,Collector,,collectionEvent,text,0,0,"Enter the text here exactly as it appears in the label. A drop down list will provide you with matches to known collectors – where possible choose from the list. In some cases there may be multiple very similar options. Choose the one that most accurately matches the name on the label. If there is no exact match then please enter the name as a new name",,default
 recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
