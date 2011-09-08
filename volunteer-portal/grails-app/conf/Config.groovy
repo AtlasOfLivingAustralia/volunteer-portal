@@ -69,7 +69,7 @@ expedition = [
                 icon: "images/explorers/expedition-leader.png",  max: 1,     threshold: 100],
         [name: "Scientists", bio: "Edward Pierson Ramsay", link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
                 icon: "images/explorers/scientist.png",          max: 9999,  threshold: 50],
-        [name: "Collection Managers", bio: "George Bennett", link: "http://www.australianmuseum.net.au/image/George-Bennett/",
+        [name: "Collection Managers", bio: "Nelena Scott", link: "http://www.australianmuseum.net.au/A-biography-of-the-Scott-sisters/",
                 icon: "images/explorers/collection-manager.png", max: 9999,  threshold: 10],
         [name: "Technical Officers", bio: "William Sheridan Wall", link: "http://www.australianmuseum.net.au/image/William-Sheridan-Wall/",
                 icon: "images/explorers/technical-officer.png",  max: 9999,  threshold: 1 ]
