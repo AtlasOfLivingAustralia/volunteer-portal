@@ -13,8 +13,8 @@ class PicklistController {
     def load = {}
 
     def upload = {
-      picklistService.load(params.name, params.picklist)
-      redirect(action: "list")
+        picklistService.load(params.name, params.picklist)
+        redirect(action: "list")
     }
 
     def list = {
@@ -46,14 +46,18 @@ class PicklistController {
             redirect(action: "list")
         }
         else {
-          params.max = Math.min(params.max ? params.int('max') : 100, 100)
+            params.max = Math.min(params.max ? params.int('max') : 100, 100)
+            def picklistItemInstanceList
+            def picklistItemInstanceTotal
 
-
-          def picklistItemInstanceList = PicklistItem.findAllByPicklist(picklistInstance, params)
-          def picklistItemInstanceTotal = PicklistItem.countByPicklist(picklistInstance)
-
-
-          [picklistInstance: picklistInstance, picklistItemInstanceList: picklistItemInstanceList, picklistItemInstanceTotal: picklistItemInstanceTotal]
+            if (params.q) {
+                picklistItemInstanceList = PicklistItem.findAllByPicklistAndValueIlike(picklistInstance, "%" + params.q + "%", params)
+                picklistItemInstanceTotal = PicklistItem.countByPicklistAndValueIlike(picklistInstance, "%" + params.q + "%")
+            } else {
+                picklistItemInstanceList = PicklistItem.findAllByPicklist(picklistInstance, params)
+                picklistItemInstanceTotal = PicklistItem.countByPicklist(picklistInstance)
+            }
+            [picklistInstance: picklistInstance, picklistItemInstanceList: picklistItemInstanceList, picklistItemInstanceTotal: picklistItemInstanceTotal]
         }
     }
 
@@ -74,7 +78,7 @@ class PicklistController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (picklistInstance.version > version) {
-                    
+
                     picklistInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'picklist.label', default: 'Picklist')] as Object[], "Another user has updated this Picklist while you were editing")
                     render(view: "edit", model: [picklistInstance: picklistInstance])
                     return

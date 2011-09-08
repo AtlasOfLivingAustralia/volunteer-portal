@@ -5,6 +5,7 @@
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
+<%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <%@ page contentType="text/html; UTF-8" %>
 <head>
@@ -643,6 +644,8 @@
                         <li><div>Project:</div> ${taskInstance?.project?.name}</li>
                         <li><div>Catalogue No.:</div> ${recordValues?.get(0)?.catalogNumber}</li>
                         <li><div>Taxa:</div> ${recordValues?.get(0)?.scientificName}</li>
+                        <g:hiddenField name="recordValues.0.basisOfRecord" class="basisOfRecord" id="recordValues.0.basisOfRecord"
+                                       value="${recordValues?.get(0)?.basisOfRecord?:TemplateField.findByFieldType(DarwinCoreField.basisOfRecord)?.defaultValue}"/>
                     </ul>
                     <table>
                         <thead>
