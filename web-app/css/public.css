@@ -592,7 +592,8 @@ span.coordsIcons {
      font-size: 20px;
      line-height: 15px;
      text-decoration: none;
-     background-color: #C4C4C4;
+     color: #DDDDDD;
+     background-color: #4075C2;
      padding: 4px 4px 0 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
@@ -603,5 +604,5 @@ span.coordsIcons {
  }
 
 span.coordsIcons a:hover {
-    background-color: #AAAAAA;
+    background-color: #0046AD;
 }
