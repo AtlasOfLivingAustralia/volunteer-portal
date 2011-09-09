@@ -555,15 +555,17 @@
         }
 
         // Add clickable icons for deg, min sec in lat/lng inputs
+        var title = "Click to insert this symbol";
+        var icons = " symbols: <span class='coordsIcons'>" +
+                "<a href='#' title='"+title+"' class='&deg;'>&deg;</a>&nbsp;" +
+                "<a href='#' title='"+title+"' class='&apos;'>&apos;</a>&nbsp;" +
+                "<a href='#' title='"+title+"' class='&quot;'>&quot;</a></span>";
         $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
             $(this).css('width', '150px');
-            var title = "Click to insert this symbol";
-            var icons = " symbols: <span class='coordsIcons'>" +
-                    "<a href='#' title='"+title+"' class='&deg;'>&deg;</a>&nbsp;" +
-                    "<a href='#' title='"+title+"' class='&apos;'>&apos;</a>&nbsp;" +
-                    "<a href='#' title='"+title+"' class='&quot;'>&quot;</a></span>";
             $(this).after(icons);
         });
+        $(":input.#transcribeAllText").after(icons);
+
 
         $(".coordsIcons a").click(function(e) {
             e.preventDefault();
@@ -571,6 +573,7 @@
             var text = $(input).val();
             var char = $(this).attr('class');
             $(input).val(text + char);
+            $(input).focus();
         });
 
     }); // end document ready
