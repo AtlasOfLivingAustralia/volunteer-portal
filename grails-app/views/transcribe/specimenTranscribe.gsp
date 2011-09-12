@@ -471,7 +471,7 @@
             position: {
                 corner: {
                     target: 'topMiddle',
-                    tooltip: 'bottomMiddle'
+                    tooltip: 'bottomRight'
                 }
             },
             style: {
@@ -485,7 +485,7 @@
                     radius: 5,
                     color: '#E66542'// '#E66542' '#DD3102'
                 },
-                tip: 'bottomMiddle',
+                tip: 'bottomRight',
                 name: 'light' // Inherit the rest of the attributes from the preset light style
             }
         }).bind('click', function(e){ e.preventDefault(); return false; });
@@ -641,7 +641,7 @@
                 </g:each>
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
-                    <h3>Specimen Metadata</h3>
+                    <h3>Specimen Information</h3>
                     <ul>
                         <li><div>Institution:</div> <span id="institutionCode">${recordValues?.get(0)?.institutionCode}</span></li>
                         <li><div>Project:</div> ${taskInstance?.project?.name}</li>
@@ -654,7 +654,8 @@
                         <thead>
                         <tr><th><h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears in the
                             labels so we have a searchable reference for them
-                            <input type="button" id="copyAllTextButton" value="Copy text from previous task"/></th></tr>
+                            <input type="button" id="copyAllTextButton" value="Copy text from previous task"/>
+                            <a href="#" class="fieldHelp" title="Click on the 'Copy text from previous task' button to populate the box with the text from the previous task"><span class="help-container">&nbsp;</span></a></th></tr>
                         </thead>
                         <tbody>
                             <tr>
@@ -689,7 +690,7 @@
                             <th><h3>3. Interpreted Location</h3>
                                 <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use
                                 mapping tool</button>
-                                &ndash; Use the mapping tool before attempting to enters values manually
+                                &ndash; Use the mapping tool before attempting to enter values manually
                             </th>
                         </tr>
                         </thead>
@@ -731,8 +732,9 @@
                                         <option>10000</option>
                                         <option>100000</option>
                                     </select>
-                                    <div class="searchHint">Please choose an uncertainty value from the list that best
-                                        represents the area in which you are confident the location is in <a href="#" class="fieldHelp" title="If in doubt
+                                    <div class="searchHint">Please choose an uncertainty value from the list that best represents the area
+                                        described by a circle with radius of that value from the given location. This can be seen as the
+                                        circle around the point on the map <a href="#" class="fieldHelp" title="If in doubt
                                         choose a larger area. For example if the location is simply a small town then
                                         choose an uncertainty value that encompasses the town and some surrounding area.
                                         The larger the town the larger the uncertainty would need to be. If the locality

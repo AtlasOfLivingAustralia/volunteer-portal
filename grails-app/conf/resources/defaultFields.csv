@@ -5,8 +5,8 @@ occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record ex
 recordedBy,Collector,,collectionEvent,text,0,0,"Enter the text here exactly as it appears in the label. A drop down list will provide you with matches to known collectors – where possible choose from the list. In some cases there may be multiple very similar options. Choose the one that most accurately matches the name on the label. If there is no exact match then please enter the name as a new name",,default
 recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
 samplingProtocol,Collection Method,,collectionEvent,text,0,0,"If the label contains information on the method of collection please enter it as it appears on the label. Examples include pitfall trap, UV Lamp, Malaise Trap",,default
-eventDate,,,collectionEvent,text,0,0,"Enter the date from the label using the format YYYY-MM-DD or use the calendar tool (click on calendar icon to activate) to select the date. If only a year and month appears enter YYYY-MM, if only a year then YYYY",,default
-verbatimLocality,,,collectionEvent,textarea,0,0,"Please copy and paste the locality text from the &quot;enter all label text&quot; box from step 1.",,default
+eventDate,,,collectionEvent,text,0,0,"Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD",,default
+verbatimLocality,,,collectionEvent,textarea,0,0,"Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label",,default
 verbatimLocalityID,verbatim locality ID,,collectionEvent,hidden,0,0,,,default
 verbatimLatitude,,,collectionEvent,text,0,0,"If the label/s have a latitude, record it here as it appears",,default
 verbatimLongitude,,,collectionEvent,text,0,0,"If the label/s have a longitude, record it here as it appears",,default
@@ -16,7 +16,7 @@ stateProvince,State/Territory,,location,select,0,0,,,default
 decimalLatitude,,,location,text,0,0,,,default
 country,,,location,select,0,0,,,default
 decimalLongitude,,,location,text,0,0,,,default
-coordinateUncertaintyInMeters,,,location,select,0,0,"Choose the value you think most effectively describes the uncertainty in the location you have identified on the map. The circle associated with the location on the map will give you a good means of interpreting the size of the area in which the real location might lie",,default
+coordinateUncertaintyInMeters,,,location,select,0,0,"Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map",,default
 scientificName,Scientific Name,,identification,text,0,0,"This will consist of two words, the first being the Genus and the second the species. Begin entering the Genus name first and an autocomplete list will offer you options as to what the name might be. Choose the one that matches exactly the text on the label (or which you think is the same name). If there is no match then enter the full text yourself",,default
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
 taxonRank,'',,none,hidden,0,0,,,default
