@@ -52,7 +52,7 @@
                         
                             <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
                         
-                            <th>catalogNumber</th>
+                            <g:each in="${extraFields}" var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
                         
                             <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q:params.q]}"/>
                         
@@ -70,7 +70,7 @@
                         
                             <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
                         
-                            <td>${extraField[i]?.value}</td>
+                            <g:each in="${extraFields}" var="field"><td>${field.value[i]?.value}</td></g:each>
                         
                             <td>
                                 <g:if test="${taskInstance.fullyTranscribedBy}">

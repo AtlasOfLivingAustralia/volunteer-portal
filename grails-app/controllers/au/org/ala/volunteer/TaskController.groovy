@@ -22,7 +22,7 @@ class TaskController {
         params.sort = params.sort ? params.sort : "id"
         //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
         if (params.id) {
-            renderListWithSearch(params, "scientificName", "list")
+            renderListWithSearch(params, ["catalogNumber","scientificName"], "list")
         } else {
             render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
         }
@@ -31,14 +31,14 @@ class TaskController {
     def projectAdmin = {
         def currentUser = authService.username()
         if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
-            renderListWithSearch(params, "catalogNumber", "adminList")
+            renderListWithSearch(params, ["catalogNumber","scientificName"], "adminList")
         } else {
             flash.message = "You do not have permission to view the Admin Task List page (${ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
-    def renderListWithSearch(GrailsParameterMap params, String fieldName, String view) {
+    def renderListWithSearch(GrailsParameterMap params, List fieldNames, String view) {
         def projectInstance = Project.get(params.id)
 
         if (projectInstance) {
@@ -47,23 +47,28 @@ class TaskController {
             params.sort = params.sort ? params.sort : "id"
             def taskInstanceList
             def taskInstanceTotal
-            def extraField
+            def extraFields = [:] // Map
             def query = params.q
             if (query) {
                 def fullList = Task.findAllByProject(projectInstance, [max: 999])
                 taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)
                 taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
                 if (taskInstanceTotal) {
-                    extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
+                    fieldNames.each {
+                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
+                    }
+                    //extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
                 }
             } else {
                 taskInstanceList = Task.findAllByProject(projectInstance, params)
                 taskInstanceTotal = Task.countByProject(projectInstance)
-                extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
+                fieldNames.each {
+                    extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
+                }
             }
             // add some associated "field" values
             render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
-                    projectInstance: projectInstance, extraField: extraField])
+                    projectInstance: projectInstance, extraFields: extraFields])
         }
         else {
             flash.message = "No project found for ID " + params.id
