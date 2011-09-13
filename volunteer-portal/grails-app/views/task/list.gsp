@@ -52,7 +52,7 @@
 
                             <g:sortableColumn property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
                         
-                            <g:if test="${extraField}"><th>Scientific Name</th></g:if>
+                            <g:each in="${extraFields}" var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
                         
                             <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q:params.q]}"/>
                         
@@ -71,7 +71,7 @@
                         
                             <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
 
-                            <g:if test="${extraField}"><td><i>${extraField.get(i)?.value}</i></td></g:if>
+                            <g:each in="${extraFields}" var="field"><td>${field.value[i]?.value}</td></g:each>
                         
                             %{--<td>${taskInstance.fullyTranscribedBy?.replaceAll(/@.*/, "...")}</td>--}%
 
