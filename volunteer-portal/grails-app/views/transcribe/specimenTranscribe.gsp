@@ -601,7 +601,8 @@
     <div id="videoLinks" style="padding-top: 6px; float: right;">
         Video tutorials:
         <a href="http://volunteer.ala.org.au/video/Introduction.swf" target="video">Introduction</a> |
-        <a href="http://volunteer.ala.org.au/video/Georeferencing2.swf" target="video">Using the Mapping Tool</a>
+        <a href="http://volunteer.ala.org.au/video/Georeferencing2.swf" target="video">Using the Mapping Tool</a> |
+        <a href="http://volunteer.ala.org.au/video/Transcribing.swf" target="video">Transcribing</a>
     </div>
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
