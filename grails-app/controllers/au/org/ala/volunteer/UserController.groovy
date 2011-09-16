@@ -8,6 +8,7 @@ class UserController {
     def authService
     def userService
     def fieldSyncService
+    def fieldService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
 
     def index = {
@@ -56,12 +57,19 @@ class UserController {
     def show = {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
-        params.max = Math.min(params.max ? params.int('max') : 12, 100)
-        def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), params)
+        params.max = Math.min(params.max ? params.int('max') : 20, 50)
+        //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), params)
+        def recentTasks = Task.findAllByFullyTranscribedBy(userInstance.getUserId(), params);
+        def totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
         def fieldsInTask = [:] // map of task id to saved fields for that task
         recentTasks.each {
             // get the fields as a Map (to be able to display catalogNumber
             fieldsInTask.put(it.id, fieldSyncService.retrieveFieldsForTask(it))
+        }
+        def extraFields = [:]
+        def fieldNames = ["catalogNumber"];
+        fieldNames.each {
+            if (recentTasks) extraFields[it] = fieldService.getLatestFieldsWithTasks(it, recentTasks, params)
         }
 
         def numberOfTasksEdited = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), [:]).size()
@@ -73,7 +81,7 @@ class UserController {
         }
         else {
             [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser, numberOfTasksEdited: numberOfTasksEdited,
-                    pointsTotal: pointsTotal, fieldsInTask: fieldsInTask]
+                    pointsTotal: pointsTotal, totalTranscribedTasks: totalTranscribedTasks, fieldsInTask: fieldsInTask, extraFields: extraFields]
         }
     }
 

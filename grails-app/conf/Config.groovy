@@ -32,7 +32,7 @@ if (!ala.baseURL) {
 \******************************************************************************/
 if (!security.cas.urlPattern) {
     security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*,/validate/save.*," +
-            "/validate/task/.*,/validate/.*,/user/.*,/project/mailingList/.*,/task/projectAdmin.*,/newsItem/.*"
+            "/validate/.*,/user/.*,/project/mailingList/.*,/task/projectAdmin.*,/newsItem/.*, /picklist/.*"
 }
 if (!security.cas.urlExclusionPattern) {
     security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
@@ -125,18 +125,21 @@ environments {
         server.url = "http://volunteer.ala.org.au"
         security.cas.appServerName = server.url
         security.cas.contextPath = ""
+        log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
     }
     development {
         grails.serverURL = "http://localhost:8080/${appName}"
         server.url = "http://localhost"
         security.cas.appServerName = "http://localhost:8080"
         security.cas.contextPath = "/${appName}"
+        log4j.appender.'errors.File'="stacktrace.log"
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
         server.url = "http://localhost"
         security.cas.appServerName = "http://localhost:8080"
         security.cas.contextPath = "/${appName}"
+        log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
     }
 }
 

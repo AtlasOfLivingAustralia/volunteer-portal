@@ -27,6 +27,8 @@
                             <g:sortableColumn property="fieldType" title="${message(code: 'templateField.fieldType.label', default: 'Field Type')}" />
                         
                             <g:sortableColumn property="label" title="${message(code: 'templateField.label.label', default: 'Label')}" />
+
+                            <g:sortableColumn property="category" title="${message(code: 'templateField.category.label', default: 'Category')}" />
                         
                             <g:sortableColumn property="defaultValue" title="${message(code: 'templateField.defaultValue.label', default: 'Default Value')}" />
                         
@@ -45,6 +47,8 @@
                             <td>${fieldValue(bean: templateFieldInstance, field: "fieldType")}</td>
                         
                             <td>${fieldValue(bean: templateFieldInstance, field: "label")}</td>
+
+                            <td>${fieldValue(bean: templateFieldInstance, field: "category")}</td>
                         
                             <td>${fieldValue(bean: templateFieldInstance, field: "defaultValue")}</td>
                         
