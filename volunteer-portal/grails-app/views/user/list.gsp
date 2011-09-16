@@ -44,7 +44,7 @@
     </table>
   </div>
   <div class="paginateButtons">
-    <g:paginate total="${userInstanceTotal}"/>
+    <g:paginate total="${userInstanceTotal}" id="${params.id}"/>
   </div>
   </div>
 </body>
