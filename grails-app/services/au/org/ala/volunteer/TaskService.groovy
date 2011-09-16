@@ -110,6 +110,19 @@ class TaskService {
     }
 
     /**
+     *
+     * @param project
+     * @return List of user id
+     */
+    def getCountsForProjectAndUserId(Project project, String userId) {
+        def userIds = Task.executeQuery(
+            """select count(t)
+               from Task t where t.fullyTranscribedBy = :userId and
+               t.project = :project""", [userId: userId, project: project])
+        userIds
+    }
+
+    /**
      * Get the next task for this user
      *
      * @param userId

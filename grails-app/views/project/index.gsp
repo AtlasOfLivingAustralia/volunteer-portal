@@ -127,7 +127,7 @@
         </g:link>
     </div>
     <div class='front-buttons buttons-small'>
-        <g:link controller="user" params="[sort:'transcribedCount',order:'desc']">
+        <g:link controller="user" action="project" id="${projectInstance.id}" params="[sort:'transcribedCount',order:'desc']">
             <img src="${resource(dir: 'images', file: 'score.png')}"/>
         </g:link><br/>
         <g:link controller="user" action="myStats" >

@@ -37,6 +37,37 @@ class UserController {
         [userInstanceList: User.list(params), userInstanceTotal: User.count(),currentUser: currentUser]
     }
 
+    def project = {
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            params.max = Math.min(params.max ? params.int('max') : 10, 100)
+            if(!params.sort){
+              params.sort = params.sort ? params.sort : "displayName"
+              params.order = "asc"
+            }
+            def userList = User.list(params)
+            userList.each { user ->
+                def count = taskService.getCountsForProjectAndUserId(projectInstance, user.userId)?.get(0)
+                log.debug(user.userId + " count: " + count)
+                if (user.transcribedCount != count) {
+                    // Update incorrect transcribed count
+                    user.transcribedCount = count.toInteger()
+                    if (!user.hasErrors() && user.save(flush:true)) {
+                        log.info("Updating counts for " + user.displayName)
+                    } else {
+                        log.error("Failed to update user: " + user.userId + " - " + user.hasErrors())
+                    }
+                }
+            }
+
+            def currentUser = authService.username()
+            render(view: "list", model:[userInstanceList: userList, userInstanceTotal: User.count(),currentUser: currentUser])
+        } else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
     def create = {
         def userInstance = new User()
         userInstance.properties = params
