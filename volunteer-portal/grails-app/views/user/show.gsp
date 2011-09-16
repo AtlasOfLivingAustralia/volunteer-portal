@@ -71,7 +71,7 @@
           </tr>
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
-            <td valign="top" class="value">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
+            <td valign="top" class="value">${totalTranscribedTasks}</td>
           </tr>
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks Validated"/></td>
@@ -101,38 +101,70 @@
     </g:if>
     <g:else>
       ${fieldValue(bean: userInstance, field: "displayName")}
-    </g:else> (${numberOfTasksEdited} tasks found)
+    </g:else> (${totalTranscribedTasks} tasks found)
     </h2>
     <div class="list">
-        <table style="border: none; width: 100%">
-          <tbody>
-          <tr>
-          <g:each in="${taskInstanceList}" status="i" var="taskInstance">
-            <g:if test="${(i % 4) == 0 && i != 0}">
-              </tr>
-              <tr>
-            </g:if>
-              <td style="width:220px">
-                <g:link controller="transcribe" action="task" id="${taskInstance.id}">
-                <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}" width="150px"/>
-                </g:link>
-                <p>Task ID: <g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link><br/>
-                    Project: ${taskInstance.project?.name}<br/>
-                    Catalogue No.: ${fieldsInTask?.get(taskInstance.id)?.get(0)?.catalogNumber}<br/>
-                    Status: ${(taskInstance.fullyTranscribedBy) ? 'submitted' : 'saved incomplete'}
-                </p>
-              </td>
-          </g:each>
-          <!-- pad it out -->
-          <g:each in="${1.. taskInstanceList.size() % 4 }" var="test">
-              <td style="width:220px">&nbsp;</td>
-          </g:each>
-          </tr>
-          </tbody>
-        </table>
+        <div class="list">
+            <table style="border-top: 2px solid #D9D9D9; width: 100%;">
+                <thead>
+                    <tr>
+
+                        <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
+
+                        <g:sortableColumn property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
+
+                        <th>Catalog Number</th>
+
+                        %{--<g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q:params.q]}"/>--}%
+
+                        <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
+
+                        <th style="text-align: center;">Action</th>
+                        %{--<th>debug</th>--}%
+
+                    </tr>
+                </thead>
+                <tbody>
+                <g:each in="${taskInstanceList}" status="i" var="taskInstance">
+                    <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+
+                        <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
+
+                        <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
+
+                        <td>${fieldsInTask?.get(taskInstance.id)?.get(0)?.catalogNumber}</td>
+
+                        %{--<td>--}%
+                            %{--<g:if test="${taskInstance.fullyTranscribedBy}">--}%
+                                %{--<g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>--}%
+                                %{--<g:link controller="user" action="show" id="${thisUser.id}">${thisUser.displayName}</g:link>--}%
+                            %{--</g:if>--}%
+                        %{--</td>--}%
+
+                        <td style="text-align: center;">
+                            <g:if test="${taskInstance.isValid == true}">validated</g:if>
+                            <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
+                            <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
+                        </td>
+
+                        <td style="text-align: center;">
+                            <g:if test="${taskInstance.fullyTranscribedBy}">
+                                <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
+                            </g:if>
+                            <g:else>
+                                <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                            </g:else>
+                        </td>
+
+                        %{--<td><cl:loggedInName /></td>--}%
+
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
     </div>
     <div class="paginateButtons">
-      <g:paginate total="${numberOfTasksEdited}" id="${userInstance?.id}" />
+      <g:paginate total="${totalTranscribedTasks}" id="${userInstance?.id}" />
     </div>
 %{--
     <div class="list">

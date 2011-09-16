@@ -225,6 +225,7 @@ th.desc a {
 
 .prop {
     padding: 5px;
+    vertical-align: top;
 }
 .prop .name {
     text-align: left;

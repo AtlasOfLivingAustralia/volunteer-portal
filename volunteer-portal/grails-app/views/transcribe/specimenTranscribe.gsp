@@ -561,7 +561,7 @@
                 "<a href='#' title='"+title+"' class='&apos;'>&apos;</a>&nbsp;" +
                 "<a href='#' title='"+title+"' class='&quot;'>&quot;</a></span>";
         $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
-            $(this).css('width', '150px');
+            $(this).css('width', '140px');
             $(this).after(icons);
         });
         $(":input.#transcribeAllText").after(icons);
@@ -681,6 +681,12 @@
                         <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
+                            <tr class='prop' style="width:950px;border-top:2px solid white;padding-top:5px;">
+                                <td class='name'>
+                                    <yield>Verbatim Locality</yield>
+                                    </td>
+                                <td class='value'><textarea name="recordValues.0.verbatimLocality" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality" ></textarea><a href='#' class='fieldHelp' title='Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label'><span class='help-container'>&nbsp;</span></a></td>
+                            </tr> 
                         </tbody>
                     </table>
 
