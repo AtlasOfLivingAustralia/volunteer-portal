@@ -28,7 +28,8 @@ class ProjectController {
         else {
             // project info
             def taskCount = Task.countByProject(projectInstance)
-            def userList = User.listOrderByTranscribedCount(order:"desc", max:9999)
+            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
+            def userIds = taskService.getUserIdsAndCountsForProject(projectInstance)
             def expedition = ConfigurationHolder.config.expedition
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"
@@ -37,16 +38,24 @@ class ProjectController {
                 row.put("members", [])
                 roles.addAll(row)
             }
-
-            userList.each { user ->
+            
+            userIds.each {
                 // iterate over each user and assign to a role.
+                def userId = it[0]
+                def count = it[1]
                 def assigned = false
-                roles.eachWithIndex { role, i ->
-                    if (user.transcribedCount >= role.threshold && role.members.size() < role.max && !assigned) {
-                        // assign role
-                        def userMap = [name: user.displayName, id: user.id, count: user.transcribedCount]
-                        role.get("members").add(userMap)
-                        assigned = true
+                def user = User.findByUserId(userId)
+                if (user) {
+                    roles.eachWithIndex { role, i ->
+                        if (count >= role.threshold && role.members.size() < role.max && !assigned) {
+                            // assign role
+                            def userMap = [name: user.displayName, id: user.id, count: count]
+                            role.get("members").add(userMap)
+                            assigned = true
+                            log.debug("assigned: " + userId)
+                        } else {
+                            log.debug("not assigned: " + userId)
+                        }
                     }
                 }
             }
@@ -57,7 +66,7 @@ class ProjectController {
                 recentNewsItems = recentNewsItems.getAt( [0..4] )
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, roles:roles, recentNewsItems: recentNewsItems])
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, recentNewsItems: recentNewsItems])
         }
     }
 

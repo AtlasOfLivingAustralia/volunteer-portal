@@ -132,7 +132,7 @@ environments {
         server.url = "http://localhost"
         security.cas.appServerName = "http://localhost:8080"
         security.cas.contextPath = "/${appName}"
-        log4j.appender.'errors.File'="stacktrace.log"
+        //log4j.appender.'errors.File'="stacktrace.log"
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
