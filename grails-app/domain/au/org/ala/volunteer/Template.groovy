@@ -18,4 +18,8 @@ class Template {
     name maxSize: 200
     viewName nullable: true
   }
+
+    public String toString() {
+        return name
+    }
 }

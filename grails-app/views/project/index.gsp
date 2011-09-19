@@ -118,7 +118,7 @@
         ${projectInstance.description}
     </div>
     <div class='front-image'>
-        <img src="${resource(dir: 'images', file: 'short-map.jpg')}"/>
+        <img src="${resource(file: projectInstance.bannerImage)}"/>
     </div>
 
     <div class='front-buttons buttons-big'>

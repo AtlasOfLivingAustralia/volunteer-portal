@@ -72,16 +72,41 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="bannerImage"><g:message code="project.bannerImage.label" default="Banner Image" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'bannerImage', 'errors')}">
+                                    <g:textField name="bannerImage" value="${projectInstance?.bannerImage}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="newsItems"><g:message code="project.newsItems.label" default="News Items" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'newsItems', 'errors')}">
+                                    
+<ul>
+<g:each in="${projectInstance?.newsItems?}" var="n">
+    <li><g:link controller="newsItem" action="show" id="${n.id}">${n?.encodeAsHTML()}</g:link></li>
+</g:each>
+</ul>
+<g:link controller="newsItem" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'newsItem.label', default: 'NewsItem')])}</g:link>
+
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="projectAssociations"><g:message code="project.projectAssociations.label" default="Project Associations" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'projectAssociations', 'errors')}">
                                     
-                                    <ul>
-                                    <g:each in="${projectInstance?.projectAssociations?}" var="p">
-                                        <li><g:link controller="projectAssociation" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
-                                    </g:each>
-                                    </ul>
-                                    <g:link controller="projectAssociation" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation')])}</g:link>
+<ul>
+<g:each in="${projectInstance?.projectAssociations?}" var="p">
+    <li><g:link controller="projectAssociation" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+</g:each>
+</ul>
+<g:link controller="projectAssociation" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation')])}</g:link>
 
                                 </td>
                             </tr>
@@ -92,12 +117,12 @@
                                 %{--</td>--}%
                                 %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tasks', 'errors')}">--}%
                                     %{----}%
-                                    %{--<ul>--}%
-                                    %{--<g:each in="${projectInstance?.tasks?}" var="t">--}%
-                                        %{--<li><g:link controller="task" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></li>--}%
-                                    %{--</g:each>--}%
-                                    %{--</ul>--}%
-                                    %{--<g:link controller="task" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'task.label', default: 'Task')])}</g:link>--}%
+%{--<ul>--}%
+%{--<g:each in="${projectInstance?.tasks?}" var="t">--}%
+    %{--<li><g:link controller="task" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></li>--}%
+%{--</g:each>--}%
+%{--</ul>--}%
+%{--<g:link controller="task" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'task.label', default: 'Task')])}</g:link>--}%
 
                                 %{--</td>--}%
                             %{--</tr>--}%

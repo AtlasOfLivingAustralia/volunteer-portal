@@ -64,6 +64,15 @@
                                 </td>
                             </tr>
                         
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="bannerImage"><g:message code="project.bannerImage.label" default="Banner Image" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'bannerImage', 'errors')}">
+                                    <g:textField name="bannerImage" value="${projectInstance?.bannerImage}" />
+                                </td>
+                            </tr>
+                        
                         </tbody>
                     </table>
                 </div>
