@@ -10,4 +10,8 @@ class NewsItem {
     static constraints = {
         body nullable: true, maxSize: 4000, widget:'textarea'
     }
+
+    public String toString() {
+        return title
+    }
 }
