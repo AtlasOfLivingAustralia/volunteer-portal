@@ -34,7 +34,7 @@
           <g:each in="${projectInstanceList}" status="i" var="projectInstance">
             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
               <td>
-                <img src="${createLink(uri: '/project/showImage/' + projectInstance.id)}" style="width:150px;"/>
+                <img src="${resource(file: projectInstance.bannerImage)}" style="width:200px;"/>
               </td>
               <td><g:link action="project" controller="task" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "name")}</g:link></td>
               <td>${projectInstance?.description}</td>

@@ -558,7 +558,7 @@
         var title = "Click to insert this symbol";
         var icons = " symbols: <span class='coordsIcons'>" +
                 "<a href='#' title='"+title+"' class='&deg;'>&deg;</a>&nbsp;" +
-                "<a href='#' title='"+title+"' class='&apos;'>&apos;</a>&nbsp;" +
+                "<a href='#' title='"+title+"' class='&#39;'>&#39;</a>&nbsp;" +
                 "<a href='#' title='"+title+"' class='&quot;'>&quot;</a></span>";
         $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
             $(this).css('width', '140px');

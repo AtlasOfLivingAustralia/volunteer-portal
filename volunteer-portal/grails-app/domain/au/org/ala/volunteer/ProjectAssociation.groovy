@@ -15,4 +15,8 @@ class ProjectAssociation implements Serializable {
   static constraints = {
     entityUid maxSize: 200
   }
+
+    public String toString() {
+        return entityUid
+    }
 }

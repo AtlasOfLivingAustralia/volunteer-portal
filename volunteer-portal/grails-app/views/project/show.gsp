@@ -58,6 +58,26 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="project.bannerImage.label" default="Banner Image" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: projectInstance, field: "bannerImage")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="project.newsItems.label" default="News Items" /></td>
+                            
+                            <td valign="top" style="text-align: left;" class="value">
+                                <ul>
+                                <g:each in="${projectInstance.newsItems}" var="n">
+                                    <li><g:link controller="newsItem" action="show" id="${n.id}">${n?.encodeAsHTML()}</g:link></li>
+                                </g:each>
+                                </ul>
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="project.projectAssociations.label" default="Project Associations" /></td>
                             
                             <td valign="top" style="text-align: left;" class="value">

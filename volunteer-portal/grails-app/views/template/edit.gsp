@@ -67,6 +67,22 @@
                                 </td>
                             </tr>
                         
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="project"><g:message code="template.project.label" default="Project" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'project', 'errors')}">
+                                    
+                                    <ul>
+                                    <g:each in="${templateInstance?.project?}" var="p">
+                                        <li><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+                                    </g:each>
+                                    </ul>
+                                    <g:link controller="project" action="create" params="['template.id': templateInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'project.label', default: 'Project')])}</g:link>
+
+                                </td>
+                            </tr>
+                        
                         </tbody>
                     </table>
                 </div>
