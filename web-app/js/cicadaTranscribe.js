@@ -1,4 +1,6 @@
-var map, marker, circle, locationObj;
+// NOTE global var VP_CONF is set by calling page
+
+var map, marker, circle, locationObj, geocoder;
 var quotaCount = 0;
 
 function initialize() {

@@ -1,5 +1,5 @@
 <html>
-<%@ page import="au.org.ala.volunteer.Task" %>
+<%@ page import="au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
@@ -58,10 +58,7 @@
     </g:hasErrors>
     <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.id})</h1>
     <div id="videoLinks" style="padding-top: 6px; float: right;">
-        Video tutorials:
-        <a href="http://volunteer.ala.org.au/video/Introduction.swf" target="video">Introduction</a> |
-        <a href="http://volunteer.ala.org.au/video/Georeferencing2.swf" target="video">Using the Mapping Tool</a> |
-        <a href="http://volunteer.ala.org.au/video/Transcribing.swf" target="video">Transcribing</a>
+        ${taskInstance?.project?.tutorialLinks}
     </div>
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
@@ -138,7 +135,7 @@
                             information appears in the labels</th></tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.collectionEvent, [sort:'id'])}" var="field">
+                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.collectionEvent, template, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                             <tr class='prop' style="width:950px;border-top:2px solid white;padding-top:5px;">
@@ -162,7 +159,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.location, [sort:'id'])}" var="field">
+                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.location, template, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                         </tbody>
@@ -224,7 +221,7 @@
                         <tr><th><h3>4. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section </th></tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategory(FieldCategory.identification, [sort:'id'])}" var="field">
+                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.identification, template, [sort:'id'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                         </tbody>

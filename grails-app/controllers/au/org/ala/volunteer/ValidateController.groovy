@@ -6,6 +6,7 @@ class ValidateController {
     def taskService
     def authService
     def userService
+    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
 
     def index = {
         redirect(action: "showNextTaskForValidation")
@@ -13,10 +14,29 @@ class ValidateController {
 
     def task = {
         def taskInstance = Task.get(params.id)
+        def currentUser = authService.username()
+        userService.registerCurrentUser()
 
-        //retrieve the existing values
-        Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-        render(view: '../transcribe/specimenTranscribe', model: [taskInstance: taskInstance, recordValues: recordValues, validator: true])
+        if (taskInstance) {
+            //record the viewing of the task
+            //auditService.auditTaskViewing(taskInstance, currentUser)
+            def project = Project.findById(taskInstance.project.id)
+            def template = Template.findById(project.template.id)
+            def isReadonly
+            log.debug(currentUser + " has role: " + authService.userInRole(ROLE_ADMIN))
+
+            if (taskInstance.fullyTranscribedBy && (taskInstance.fullyTranscribedBy != currentUser && !authService.userInRole(ROLE_ADMIN))) {
+                isReadonly = "readonly"
+            }
+
+            //retrieve the existing values
+            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+            //log.info("recordValues = " + recordValues)
+            render(view: '../transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues,
+                    isReadonly: isReadonly, template: template, validator: true])
+        } else {
+            redirect(view: 'list', controller: "task")
+        }
     }
 
     /**

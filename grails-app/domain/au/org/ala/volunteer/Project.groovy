@@ -5,6 +5,7 @@ class Project {
   String name
   String description
   String bannerImage
+  String tutorialLinks
   Date created
 
   static belongsTo = [template: Template]
@@ -24,6 +25,7 @@ class Project {
     template nullable: true
     created nullable: true
     bannerImage nullable: true
+    tutorialLinks nullable: true, maxSize: 2000, widget:'textarea'
   }
 
     public String toString() {

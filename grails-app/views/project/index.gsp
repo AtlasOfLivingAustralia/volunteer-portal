@@ -2,9 +2,9 @@
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
-<g:set var="tasksDone" value="${tasksTranscribed}"/>
-<g:set var="tasksTotal" value="${taskCount}"/>
-<g:set var="tasksDonePercent" value="${(tasksDone / tasksTotal) * 100}"/>
+<g:set var="tasksDone" value="${tasksTranscribed?:0}"/>
+<g:set var="tasksTotal" value="${taskCount?:0}"/>
+<g:set var="tasksDonePercent" value="${(taskCount > 0) ? ((tasksDone / tasksTotal) * 100) : 0}"/>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>

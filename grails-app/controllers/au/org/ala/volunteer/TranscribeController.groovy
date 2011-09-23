@@ -43,7 +43,8 @@ class TranscribeController {
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-            render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly])
+            log.info("recordValues = " + recordValues)
+            render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template])
         } else {
             redirect(view: 'list', controller: "task")
         }

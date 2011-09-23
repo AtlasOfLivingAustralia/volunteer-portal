@@ -10,7 +10,19 @@ class TemplateFieldController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [templateFieldInstanceList: TemplateField.list(params), templateFieldInstanceTotal: TemplateField.count()]
+        def templateFieldInstanceList
+        def templateFieldInstanceTotal
+        def templateInstance = Template.get(params.id)
+
+        if (templateInstance) {
+            templateFieldInstanceList = TemplateField.findAllByTemplate(templateInstance, params)
+            templateFieldInstanceTotal = TemplateField.countByTemplate(templateInstance)
+        } else {
+            templateFieldInstanceList = TemplateField.list(params)
+            templateFieldInstanceTotal = TemplateField.count()
+        }
+
+        [templateFieldInstanceList: templateFieldInstanceList, templateFieldInstanceTotal: templateFieldInstanceTotal]
     }
 
     def create = {

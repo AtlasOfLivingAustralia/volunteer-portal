@@ -39,8 +39,15 @@
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="project.description.label" default="Description" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: projectInstance, field: "description")}</td>
+                            <td valign="top" class="value">${projectInstance.description}</td>
                             
+                        </tr>
+
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="project.tutorialLinks.label" default="Tutorial Links" /></td>
+
+                            <td valign="top" class="value">${projectInstance.tutorialLinks}</td>
+
                         </tr>
                     
                         <tr class="prop">
