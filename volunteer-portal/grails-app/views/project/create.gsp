@@ -42,7 +42,22 @@
                                     <label for="description"><g:message code="project.description.label" default="Description" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'description', 'errors')}">
-                                    <g:textArea name="description" cols="40" rows="5" value="${projectInstance?.description}" />
+                                    %{--<g:textArea name="description" cols="40" rows="5" value="${projectInstance?.description}" />--}%
+                                    <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" style="width:500px;">
+                                        ${projectInstance?.description}
+                                    </tinyMce:renderEditor>
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="description"><g:message code="project.tutorialLinks.label" default="Tutorial Links" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tutorialLinks', 'errors')}">
+                                    %{--<g:textArea name="tutorialLinks" cols="40" rows="5" value="${projectInstance?.tutorialLinks}" />--}%
+                                    <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" style="width:500px;">
+                                        ${projectInstance?.tutorialLinks}
+                                    </tinyMce:renderEditor>
                                 </td>
                             </tr>
                         
@@ -60,7 +75,7 @@
                                     <label for="created"><g:message code="project.created.label" default="Created" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'created', 'errors')}">
-                                    <g:datePicker name="created" precision="day" value="${projectInstance?.created}" default="none" noSelection="['': '']" />
+                                    <g:datePicker name="created" precision="day" value="${projectInstance?.created}" noSelection="['': '']" />
                                 </td>
                             </tr>
                         

@@ -36,7 +36,7 @@
               <td>
                 <img src="${resource(file: projectInstance.bannerImage)}" style="width:200px;"/>
               </td>
-              <td><g:link action="project" controller="task" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "name")}</g:link></td>
+              <td><g:link action="index" controller="project" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "name")}</g:link></td>
               <td>${projectInstance?.description}</td>
               <td>${projectTaskCounts.get(projectInstance.id) ? projectTaskCounts.get(projectInstance.id) : 0 }</td>
               <td>${projectFullyTranscribedCounts.get(projectInstance.id) ? projectFullyTranscribedCounts.get(projectInstance.id) : 0}</td>
