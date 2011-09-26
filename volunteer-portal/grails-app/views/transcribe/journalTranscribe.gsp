@@ -108,6 +108,11 @@
                 name: 'light' // Inherit the rest of the attributes from the preset light style
             }
         }).bind('click', function(e){ e.preventDefault(); return false; });
+
+        $("#showNextFromProject").click(function(e) {
+            e.preventDefault();
+            location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id)}";
+        });
     });
 </script>
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'journalTranscribe.js')}"></script>--}%
@@ -225,8 +230,7 @@
                              value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
                     <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
                              value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
-                    <span class="button"><g:actionSubmit class="skip" action="showNextFromAny"
-                             value="${message(code: 'default.button.skip.label', default: 'Skip')}"/></span>
+                    <span class="button"><button id="showNextFromProject">Skip</button></span>
                     <span style="color:gray;">&nbsp;&nbsp;[is valid: ${taskInstance?.isValid} | validatedBy:  ${taskInstance?.fullyValidatedBy}]</span>
                 </g:if>
                 <g:else>
@@ -234,8 +238,11 @@
                              value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
                     <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
                              value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                    <span class="button"><g:actionSubmit class="skip" action="showNextFromAny"
-                             value="${message(code: 'default.button.skip.label', default: 'Skip')}"/></span>
+                    <span class="button">
+                        %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
+                             %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
+                        <button id="showNextFromProject">Skip</button>
+                    </span>
                 </g:else>
             </div>
             <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>
