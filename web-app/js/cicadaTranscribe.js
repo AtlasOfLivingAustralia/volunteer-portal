@@ -546,4 +546,10 @@ $(document).ready(function() {
         $(input).focus();
     });
 
+    // skip/next task button
+    $("#showNextFromProject").click(function(e) {
+        e.preventDefault();
+        location.href = nextTaskUrl;
+    });
+
 }); // end document ready

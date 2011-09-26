@@ -19,7 +19,7 @@
 
             $("li#viewTask a").click(function(e) {
                 e.preventDefault();
-                window.location.href = "${createLink(action:'index', controller:'transcribe')}";
+                window.location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id)}";
             });
 
             $("li#viewStats a").click(function(e) {

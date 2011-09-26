@@ -16,7 +16,8 @@ class TranscribeController {
 
     def index = {
         if (params.id) {
-            redirect(action: "showNextFromProject", params: params)
+            log.debug("index redirect to showNextFromProject: " + params.id)
+            redirect(action: "showNextFromProject", id: params.id)
         } else {
             redirect(action: "showNextFromAny", params: params)
         }
@@ -43,7 +44,7 @@ class TranscribeController {
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-            log.info("recordValues = " + recordValues)
+            log.debug("recordValues = " + recordValues)
             render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template])
         } else {
             redirect(view: 'list', controller: "task")
@@ -61,10 +62,17 @@ class TranscribeController {
      * or the least recently seen record.
      */
     def showNextFromAny = {
-
+        def projectInstance = Project.get(params.id)
         def currentUser = authService.username()
         //println "current user = "+currentUser
-        def taskInstance = taskService.getNextTask(currentUser)
+        def taskInstance
+        
+        if (projectInstance) {
+            taskInstance = taskService.getNextTask(currentUser, projectInstance)
+            log.info("skip with project id "+ projectInstance.id)
+        } else {
+            taskInstance = taskService.getNextTask(currentUser)
+        }
 
         //retrieve the details of the template
         if (taskInstance) {
@@ -127,12 +135,15 @@ class TranscribeController {
     def showNextFromProject = {
         def currentUser = authService.username()
         def project = Project.get(params.id)
-
+        log.debug("params.id =" + params.id);
         def taskInstance = taskService.getNextTask(currentUser, project)
 
         //retrieve the details of the template
-        if (taskInstance) {
+        if (taskInstance && project) {
             redirect(action: 'task', id: taskInstance.id)
+        } else if (!project) {
+            log.error("Project not found for id: " + params.id)
+            redirect(view: '/index')
         } else {
             render(view: 'noTasks')
         }

@@ -10,7 +10,7 @@ class FieldSyncService {
 
     Map retrieveFieldsForTask(Task taskInstance) {
         Map recordValues = new LinkedHashMap()
-        taskInstance.fields.each { field ->
+        taskInstance?.fields?.each { field ->
             def recordMap = recordValues.get(field.recordIdx)
             if (recordMap == null) {
                 recordMap = new LinkedHashMap()
