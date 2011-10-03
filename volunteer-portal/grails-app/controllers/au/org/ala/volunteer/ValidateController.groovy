@@ -50,7 +50,7 @@ class ValidateController {
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true)
             //update the count for validated tasks for the user who transcribed
             userService.updateUserValidatedCount(taskInstance.fullyTranscribedBy)
-            redirect(view: 'showNextFromAny')
+            redirect(view: 'showNextFromProject')
         } else {
             redirect(view: '../index')
         }
@@ -67,7 +67,7 @@ class ValidateController {
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false)
             //update the count for validated tasks for the user who transcribed
             userService.updateUserValidatedCount(taskInstance.fullyTranscribedBy)
-            redirect(view: 'showNextFromAny')
+            redirect(view: 'showNextFromProject')
         } else {
             redirect(view: '../index')
         }

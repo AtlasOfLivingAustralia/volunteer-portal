@@ -549,7 +549,7 @@ $(document).ready(function() {
     // skip/next task button
     $("#showNextFromProject").click(function(e) {
         e.preventDefault();
-        location.href = nextTaskUrl;
+        location.href = VP_CONF.nextTaskUrl;
     });
 
 }); // end document ready

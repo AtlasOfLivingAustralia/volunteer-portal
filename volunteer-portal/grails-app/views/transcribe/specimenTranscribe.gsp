@@ -33,7 +33,7 @@
     var VP_CONF = {
         picklistAutocompleteUrl: "${createLink(action:'autocomplete', controller:'picklistItem')}",
         updatePicklistUrl: "${createLink(controller:'picklistItem', action:'updateLocality')}",
-        nextTaskUrl:  "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id)}";
+        nextTaskUrl:  "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id)}",
         isReadonly: "${isReadonly}",
         isValid: ${(taskInstance?.isValid) ? "true" : "false"}
     };
