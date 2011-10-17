@@ -101,7 +101,7 @@ h3 {
     height: 203px;
 }
 
-#description-panes a {
+#description-panes a.projectLink {
     color: #993300;
     font-size: 20px;
     font-weight: bold;
