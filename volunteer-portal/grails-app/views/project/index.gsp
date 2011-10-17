@@ -123,7 +123,7 @@
 
     <div class='front-buttons buttons-big'>
         <g:link controller="transcribe" id="${projectInstance.id}">
-            <img src="${resource(dir: 'images', file: 'start-button.png')}"/>
+            <img src="${resource(dir: 'images', file: 'start-generic.png')}"/>
         </g:link>
     </div>
     <div class='front-buttons buttons-small'>
