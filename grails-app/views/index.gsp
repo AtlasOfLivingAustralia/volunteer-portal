@@ -80,8 +80,8 @@
                 <img src="${resource(dir:'images/vp',file:'anic-cicada-coming-soon.jpg')}"/>
                 <h2>Cicada Expedition</h2>
                 <h3>Australian National Insect Collection</h3>
-                <p>Sick of doing all the drudge work the for AM? How about refreshing yourself with some
-                drudge work for ANIC instead. If you do well we might let you have a go at the butterflies!</p>
+                <p>For those of you who can't get enough of transcribing cicada labels, here are more, with the extra
+                enticement of new species from Australia and around the world</p>
             </div>
         </div>
     </div>
