@@ -52,11 +52,12 @@ h1 {
 
 h2 {
     color: #993300;
-    margin-bottom: 10px;
+    margin-bottom: 1px;
+    margin-top: 8px;
 }
 
 h3 {
-    margin: 10px 0;
+    margin: 0 0 5px 0;
 }
 
 #vp-header p {
@@ -106,7 +107,7 @@ h3 {
     font-size: 20px;
     font-weight: bold;
     display: block;
-    margin-top: 16px;
+    margin-top: 8px;
 }
 
 #description-panes > div {
@@ -129,7 +130,8 @@ h3 {
 }
 
 #description-panes > div p {
-    padding: 10px;
+    padding: 5px;
+    margin: 0;
 }
 
 #vp-footer {
