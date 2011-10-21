@@ -192,10 +192,11 @@
                                 <h3>Coordinate Uncertainty</h3>
                                 <div>Adjust Uncertainty (in metres):
                                     <select id="infoUncert">
-                                        <option>100</option>
-                                        <option selected="selected">1000</option>
-                                        <option>10000</option>
-                                        <option>100000</option>
+                                        <g:set var="coordinateUncertaintyPL" value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
+                                        <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">
+                                            <g:set var="isSelected"><g:if test="${(item.value == '1000')}">selected='selected'</g:if></g:set>
+                                            <option ${isSelected}>${item.value}</option>
+                                        </g:each>
                                     </select>
                                     <div class="searchHint">Please choose an uncertainty value from the list that best represents the area
                                         described by a circle with radius of that value from the given location. This can be seen as the
