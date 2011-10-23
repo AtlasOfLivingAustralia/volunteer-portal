@@ -1394,9 +1394,16 @@ class VolunteerTagLib {
 
     def listUsersInRole = { attrs ->
         def users = attrs.users
+        def projectId = attrs.projectId
         def formattedUsers = []
         users.each { user ->
-            def link = link(controller:"user", action:"show", id:user.id, title:"with " + user.count + " transcriptions") { user.name + " (" + user.count + ")" }
+            def link = link(
+                    controller:"user",
+                    action:"show",
+                    id:user.id,
+                    params: ["projectId":projectId],
+                    title:"with " + user.count + " transcriptions"
+            ) { user.name + " (" + user.count + ")" }
             formattedUsers.add(link)
         }
         out << (formattedUsers.join(", "))
