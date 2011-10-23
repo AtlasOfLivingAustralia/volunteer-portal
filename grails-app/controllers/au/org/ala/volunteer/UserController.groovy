@@ -89,9 +89,19 @@ class UserController {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
-        //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), params)
-        def recentTasks = Task.findAllByFullyTranscribedBy(userInstance.getUserId(), params);
-        def totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
+        def recentTasks
+        def totalTranscribedTasks
+        def project = Project.get(params.projectId)
+
+        if (project) {
+            recentTasks = Task.findAllByFullyTranscribedByAndProject(userInstance.getUserId(), project, params)
+            totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), project)
+        } else {
+            //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), params)
+            recentTasks = Task.findAllByFullyTranscribedBy(userInstance.getUserId(), params)
+            totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
+        }
+
         def fieldsInTask = [:] // map of task id to saved fields for that task
         recentTasks.each {
             // get the fields as a Map (to be able to display catalogNumber
@@ -112,7 +122,7 @@ class UserController {
         }
         else {
             [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser, numberOfTasksEdited: numberOfTasksEdited,
-                    pointsTotal: pointsTotal, totalTranscribedTasks: totalTranscribedTasks, fieldsInTask: fieldsInTask, extraFields: extraFields]
+                    pointsTotal: pointsTotal, totalTranscribedTasks: totalTranscribedTasks, fieldsInTask: fieldsInTask, extraFields: extraFields, project: project]
         }
     }
 

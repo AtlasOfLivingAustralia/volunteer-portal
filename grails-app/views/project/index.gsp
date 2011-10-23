@@ -150,7 +150,7 @@
                     <g:each in="${roles}" status="i" var="role">
                         <tr>
                             <td><a href="${role.link}" title="${role.bio}" target="AM"><img src='<g:resource file="${role.icon}"/>' alt="expedition person icon"/></a></td>
-                            <td><strong>${role.name}: </strong><cl:listUsersInRole users="${role.members}"/></td>
+                            <td><strong>${role.name}: </strong><cl:listUsersInRole users="${role.members}" projectId="${projectInstance.id}"/></td>
                         </tr>
                     </g:each>
                 </tbody>

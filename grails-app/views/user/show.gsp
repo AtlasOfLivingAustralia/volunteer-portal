@@ -65,6 +65,12 @@
         <td>
         <table style="border: none; margin-top: 8px;">
           <tbody>
+          <g:if test="${project}">
+               <tr class="prop">
+                   <td valign="top" class="name"><g:message code="project.label" default="Project"/></td>
+                   <td valign="top" class="value">${project} (<a href="${createLink(controller:'user', action:'show', id:userInstance.id)}">View tasks from all projects</a> )</td>
+              </tr>
+          </g:if>
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks edited"/></td>
             <td valign="top" class="value">${numberOfTasksEdited}</td>
@@ -101,7 +107,11 @@
     </g:if>
     <g:else>
       ${fieldValue(bean: userInstance, field: "displayName")}
-    </g:else> (${totalTranscribedTasks} tasks found)
+    </g:else>
+    <g:if test="${project}">
+        - for ${project}
+    </g:if>
+    (${totalTranscribedTasks} tasks found)
     </h2>
     <div class="list">
         <div class="list">
@@ -115,12 +125,11 @@
 
                         <th>Catalog Number</th>
 
-                        %{--<g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q:params.q]}"/>--}%
+                        <g:sortableColumn property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
 
                         <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
 
                         <th style="text-align: center;">Action</th>
-                        %{--<th>debug</th>--}%
 
                     </tr>
                 </thead>
@@ -134,12 +143,7 @@
 
                         <td>${fieldsInTask?.get(taskInstance.id)?.get(0)?.catalogNumber}</td>
 
-                        %{--<td>--}%
-                            %{--<g:if test="${taskInstance.fullyTranscribedBy}">--}%
-                                %{--<g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>--}%
-                                %{--<g:link controller="user" action="show" id="${thisUser.id}">${thisUser.displayName}</g:link>--}%
-                            %{--</g:if>--}%
-                        %{--</td>--}%
+                        <td>${fieldValue(bean: taskInstance, field: "project")}</td>
 
                         <td style="text-align: center;">
                             <g:if test="${taskInstance.isValid == true}">validated</g:if>
@@ -156,15 +160,13 @@
                             </g:else>
                         </td>
 
-                        %{--<td><cl:loggedInName /></td>--}%
-
                     </tr>
                 </g:each>
                 </tbody>
             </table>
     </div>
     <div class="paginateButtons">
-      <g:paginate total="${totalTranscribedTasks}" id="${userInstance?.id}" />
+      <g:paginate total="${totalTranscribedTasks}" id="${userInstance?.id}" params="${params}"/>
     </div>
 %{--
     <div class="list">
