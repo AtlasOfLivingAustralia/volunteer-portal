@@ -145,7 +145,8 @@ function updateMarkerPosition(latLng) {
         100: 1000000,
         1000: 10000,
         10000: 100,
-        100000: 1
+        100000: 10,
+        1000000: 1
     }
     var coordUncertainty = $("#infoUncert").val();
     var key = (coordUncertainty) ? coordUncertainty : 1000;
@@ -154,12 +155,16 @@ function updateMarkerPosition(latLng) {
     if (precisionMap[key]) {
         rnd = precisionMap[key];
     } else {
-        if (key > 10000) {
+        if (key > 100000) {
             rnd = 1;
-        } else if (key > 1000) {
+        } else if (key >= 10000) {
+            rnd = 10;
+        } else if (key >= 5000) {
             rnd = 100;
+        } else if (key >= 1000) {
+            rnd = 1000;
         } else {
-            rnd = 1;
+            rnd = 10000;
         }
     }
 
