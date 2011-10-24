@@ -149,7 +149,20 @@ function updateMarkerPosition(latLng) {
     }
     var coordUncertainty = $("#infoUncert").val();
     var key = (coordUncertainty) ? coordUncertainty : 1000;
-    var rnd = precisionMap[key];
+    var rnd;
+
+    if (precisionMap[key]) {
+        rnd = precisionMap[key];
+    } else {
+        if (key > 10000) {
+            rnd = 1;
+        } else if (key > 1000) {
+            rnd = 100;
+        } else {
+            rnd = 1;
+        }
+    }
+
     // round to N decimal places
     var lat = Math.round(latLng.lat() * rnd) / rnd;
     var lng = Math.round(latLng.lng() * rnd) / rnd;
@@ -190,6 +203,7 @@ $(document).ready(function() {
     $('.coordinatePrecision, #infoUncert').change(function(e) {
         var rad = parseInt($(this).val());
         circle.setRadius(rad);
+        console.log("#infoUncert", $(this).val(), rad);
         updateMarkerPosition(marker.getPosition());
         //updateTitleAttr(rad);
     })
