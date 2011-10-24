@@ -38,7 +38,7 @@
         isValid: ${(taskInstance?.isValid) ? "true" : "false"}
     };
 </script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'cicadaTranscribe.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
 </head>
 
 <body class="two-column-right">
