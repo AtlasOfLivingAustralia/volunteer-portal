@@ -27,6 +27,9 @@
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
+<script src="http://cdn.jquerytools.org/1.2.6/all/jquery.tools.min.js"></script>
+%{--<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/standalone.css"/>--}%
+<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>--}%
 <script type="text/javascript">
     // global Object 
@@ -113,7 +116,16 @@
             e.preventDefault();
             location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id)}";
         });
+
+        $(":range").rangeinput({
+            onSlide: zoomJournalImage
+        }).change(zoomJournalImage);
     });
+
+    function zoomJournalImage(event, value) {
+        //console.info("value changed to", value);
+        $("#journalPageImg").css("width", value + "%");
+    }
 </script>
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'journalTranscribe.js')}"></script>--}%
 </head>
@@ -142,13 +154,16 @@
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
-            <div class="dialog" style="clear: both">
+            <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
+            <g:set var="defaultWidthPercent" value="80" />
+            <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
+            <div class="dialog" style="clear: both; overflow-x: auto; overflow-y: auto;">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-                    <div class="pageViewer" style="width:100%;height:300px;overflow-y:scroll;">
+                    <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
                         <img src="${imageUrl}" style="width:100%;"/>
                     </div>
-
+                    
                 </g:each>
             </div>
             <div class="fields" id="journalText">
