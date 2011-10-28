@@ -31,6 +31,7 @@
 %{--<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/standalone.css"/>--}%
 <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>--}%
+<script type="text/javascript" src="${resource(dir: 'js', file: 'ScottSisitersSketches.js')}"></script>
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {
@@ -39,7 +40,14 @@
     };
 
     $(document).ready(function() {
-        //
+        // prevent enter key submitting form
+        $(window).keydown(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+        // 
         var maxEntries = $("tr.fieldNoteFields").size();
         showHideEntries();
         $(":input#noOfEntries").change(showHideEntries);
@@ -55,37 +63,6 @@
                 }
             });
         }
-//        $("tr.fieldNoteFields").each(function(i, el) {
-//            var html = "<div>";
-//            if ((i + 1) < maxEntries) {
-//                html += "<a href='#' class='entry addEntry' id='addEntry_" + i + "'>Add Entry</a> ";
-//            }
-//            if (i > 0) {
-//                html +=  "<a href='#' class='entry removeEntry' id='removeEntry_" + i + "'>Remove Entry</a>";
-//            }
-//            html += "</div>";
-//            $(el).find("td").append(html);
-//            if (i > 0) {
-//                $(el).hide();
-//            }
-//
-//            $("a.entry").click(manipulateEntries);
-//        });
-//
-//        function manipulateEntries(e) {
-//            e.preventDefault();
-//            if ($(this).hasClass('addEntry')) {
-//                var thisEntry = ($(this).attr("id").toString().replace(/addEntry_/, '') * 1);
-//                var nextEntry = (thisEntry + 1); // coerce to number by x 1
-//                $("tr.fieldNoteFields#" + nextEntry).fadeIn();
-//                $("a.addEntry#addEntry_"+thisEntry).fadeOut();
-//            } else if ($(this).hasClass('removeEntry')) {
-//                var thisEntry = ($(this).attr("id").toString().replace(/removeEntry_/, '') * 1); // coerce to number by x 1
-//                var prevEntry = (thisEntry - 1);
-//                $("tr.fieldNoteFields#" + thisEntry).fadeOut();
-//                $("a.addEntry#addEntry_"+prevEntry).fadeIn();
-//            }
-//        }
 
         // Context sensitive help popups
         $("a.fieldHelp").qtip({
@@ -120,6 +97,19 @@
         $(":range").rangeinput({
             onSlide: zoomJournalImage
         }).change(zoomJournalImage);
+
+        // Display painting for a given painting number
+        $("#showPainting").click(function(e) {
+            e.preventDefault();
+            var paintingRef = $(":input#paintingRefNo").val();
+            var uri = getSketchUri(paintingRef); 
+
+            if (uri) {
+                window.open(uri, "paintingWindow");
+            } else {
+                alert("Painting number " + paintingRef + " was not found");
+            }
+        });
     });
 
     function zoomJournalImage(event, value) {
