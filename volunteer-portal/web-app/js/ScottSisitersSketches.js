@@ -208,9 +208,9 @@ var prefixUri = "http://volunteer.ala.org.au/uploads/scottSisters/Sketches/";
 
 function getSketchUri(sketchNumber) {
     var sketchUri = null;
-    console.log("sketchNumber", sketchNumber);
     var intRegex = /^\d+$/;
-    if(intRegex.test(sketchNumber) && sketchesMap[sketchNumber]) {
+
+    if (intRegex.test(sketchNumber) && sketchesMap[sketchNumber]) {
         sketchUri = prefixUri + sketchesMap[sketchNumber]
     }
 
