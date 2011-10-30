@@ -42,7 +42,7 @@
     $(document).ready(function() {
         // prevent enter key submitting form
         $(window).keydown(function(event) {
-            if (event.keyCode == 13) {
+            if (event.keyCode == 13 && event.target.nodeName != "TEXTAREA") {
                 event.preventDefault();
                 return false;
             }
