@@ -27,11 +27,12 @@
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
 <script src="http://cdn.jquerytools.org/1.2.6/all/jquery.tools.min.js"></script>
 %{--<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/standalone.css"/>--}%
 <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>--}%
-<script type="text/javascript" src="${resource(dir: 'js', file: 'ScottSisitersSketches.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'ScottSisiters.js')}"></script>
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {
@@ -110,6 +111,36 @@
                 alert("Painting number " + paintingRef + " was not found");
             }
         });
+
+        // display previous journal page in new window
+        $("#showPreviousJournalPage").click(function(e) {
+            e.preventDefault();
+            var uri = showNotebookPage("${taskInstance?.externalIdentifier}", -1);
+
+            if (uri) {
+                window.open(uri, "journalWindow");
+            } else {
+                alert("Previous journal page was not found");
+            }
+        });
+
+        // display next journal page in new window
+        $("#showNextJournalPage").click(function(e) {
+            e.preventDefault();
+            var uri = showNotebookPage("${taskInstance?.externalIdentifier}", 1);
+
+            if (uri) {
+                window.open(uri, "journalWindow");
+            } else {
+                alert("Next journal page was not found");
+            }
+        });
+
+        $("#imagePane").scrollview({
+            grab:"${resource(dir: 'images', file: 'openhand.cur')}",
+            grabbing:"${resource(dir: 'images', file: 'closedhand.cur')}"
+        });
+
     });
 
     function zoomJournalImage(event, value) {
@@ -136,7 +167,7 @@
             There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
         </div>
     </g:hasErrors>
-    <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.id})</h1>
+    <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
     <div id="videoLinks" style="padding-top: 6px; float: right;">
         ${taskInstance?.project?.tutorialLinks}
     </div>
@@ -145,13 +176,17 @@
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
-            <g:set var="defaultWidthPercent" value="80" />
+            <g:set var="defaultWidthPercent" value="100" />
             <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
-            <div class="dialog" style="clear: both; overflow-x: auto; overflow-y: auto;">
+            <span id="journalPageButtons">
+                <button id="showPreviousJournalPage" title="displays page in new window">&lt;&ndash; show previous journal page</button>
+                <button id="showNextJournalPage" title="displays page in new window">show next journal page &ndash;&gt;</button>
+            </span>
+            <div class="dialog" id="imagePane">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
-                        <img src="${imageUrl}" style="width:100%;"/>
+                        <div><img src="${imageUrl}" style="width:100%;"/></div>
                     </div>
                     
                 </g:each>
@@ -164,8 +199,8 @@
                                 <h3>1. Transcribe all text from the above field<br/>note page into this box as it appears</h3>
                             </th>
                             <th>
-                                Paint Ref No. <input type="text" id="paintingRefNo" value="" size="5"/> <input type="button" id="showPainting" value="Show Me">
-                                <a href="#" class="fieldHelp" title="Displays the associated painting to assist in transcribing text from field note"><span class="help-container">&nbsp;</span></a>
+                                <div>Paint Ref No. <input type="text" id="paintingRefNo" value="" size="5"/> <input type="button" id="showPainting" value="Show Me">
+                                    <a href="#" class="fieldHelp" title="Displays the associated painting to assist in transcribing text from field note"><span class="help-container">&nbsp;</span></a></div>
                             </th>
                         </tr>
                     </thead>

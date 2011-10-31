@@ -664,3 +664,14 @@ tr.fieldNoteFields td input {
 #journalNotes {
     clear: both;
 }
+
+#imagePane {
+    clear: both;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+#journalPageButtons {
+    display: inline-block;
+    margin: 4px 10px;
+}
