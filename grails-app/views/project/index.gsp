@@ -170,8 +170,10 @@
                     ${news.body}
                 </g:each>
             </div>
-            <div id="recordMapLabel"><h4>Showing location of records transcribed to date</h4></div>
-            <div id="recordsMap"></div>
+            <g:if test="${(projectInstance.showMap)}">
+                <div id="recordMapLabel"><h4>Showing location of records transcribed to date</h4></div>
+                <div id="recordsMap"></div>
+            </g:if>
         </div>
     </div>
     <div style="clear: both">&nbsp;</div>

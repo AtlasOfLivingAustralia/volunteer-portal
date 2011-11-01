@@ -96,6 +96,13 @@
                             </td>
                             
                         </tr>
+
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="project.showMap.label" default="Show Map" /></td>
+
+                            <td valign="top" class="value"><g:formatBoolean boolean="${projectInstance?.showMap}" /></td>
+
+                        </tr>
                     
                         %{--<tr class="prop">--}%
                             %{--<td valign="top" class="name"><g:message code="project.tasks.label" default="Tasks" /></td>--}%

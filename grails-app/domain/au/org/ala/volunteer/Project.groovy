@@ -6,6 +6,7 @@ class Project {
   String description
   String bannerImage
   String tutorialLinks
+  Boolean showMap = true
   Date created
 
   static belongsTo = [template: Template]
@@ -25,6 +26,7 @@ class Project {
     template nullable: true
     created nullable: true
     bannerImage nullable: true
+    showMap nullable: true
     tutorialLinks nullable: true, maxSize: 2000, widget:'textarea'
   }
 
