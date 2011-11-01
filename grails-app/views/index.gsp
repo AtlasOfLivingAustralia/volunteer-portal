@@ -60,7 +60,7 @@
                 when and where .</p>
             </div>
             <div>
-                <img src="${resource(dir:'images/vp',file:'scott-sisters-logo.jpg')}"/>
+                <img src="${resource(dir:'images/vp',file:'scott-sisters-logo.jpg')}" class="active""/>
                 <g:link controller="project" action="index" id="42780" class="projectLink">Scott Sisters Expedition</g:link>
                 <h3>Australian Museum</h3>
                 <p>Who were the <a href="http://australianmuseum.net.au/Beauty-from-Nature-art-of-the-Scott-Sisters/" target="_blank">Scott
