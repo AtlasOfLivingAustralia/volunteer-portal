@@ -19,6 +19,7 @@ class Field {
   static constraints = {
     task nullable: true
     name maxSize: 200
+    value type:'text'
     recordIdx nullable: true
     transcribedByUserId maxSize: 200
     validatedByUserId nullable: true, maxSize: 200

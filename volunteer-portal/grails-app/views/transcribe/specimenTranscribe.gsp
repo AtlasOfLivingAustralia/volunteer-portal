@@ -57,6 +57,9 @@
         There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
     </div>
     </g:hasErrors>
+    <g:if test="${flash.message}">
+        <div class="errors">${flash.message}</div>
+    </g:if>
     <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.id})</h1>
     <div id="videoLinks" style="padding-top: 6px; float: right;">
         ${taskInstance?.project?.tutorialLinks}
