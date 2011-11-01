@@ -154,10 +154,8 @@
 <body class="two-column-right">
 <div class="nav">
     <a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-    <g:link controller="project" action="list" class="crumb">Projects</g:link>
-    <g:set var="action" value="${(validator) ? 'projectAdmin' : 'project'}"/>
-    <a class="crumb" href="${createLink(action: action, controller: 'task', id: taskInstance?.project?.id)}"><g:message
-            code="default.task.label" default="${taskInstance?.project?.name}"/></a>
+    %{--<g:link controller="project" action="list" class="crumb">Projects</g:link>--}%
+    <g:link controller="project" action="index" id="${taskInstance?.project?.id}" class="crumb">${taskInstance?.project?.name}</g:link>
     ${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}
 </div>
 
