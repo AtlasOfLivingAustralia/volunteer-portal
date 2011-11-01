@@ -87,6 +87,15 @@
                                     <g:textField name="bannerImage" value="${projectInstance?.bannerImage}" />
                                 </td>
                             </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="showMap"><g:message code="project.showMap.label" default="Show Map" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'showMap', 'errors')}">
+                                    <g:checkBox name="showMap" value="${projectInstance?.showMap}" />
+                                </td>
+                            </tr>
                         
                         </tbody>
                     </table>
