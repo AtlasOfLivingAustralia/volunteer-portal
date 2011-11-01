@@ -101,6 +101,9 @@ class TranscribeController {
                 redirect(action: 'showNextAction', id: params.id)
             }
             else {
+                def msg = "Task save partial failed: " + taskInstance.hasErrors()
+                log.error(msg)
+                flash.message = msg
                 render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: params.recordValues])
             }
         } else {
@@ -119,7 +122,15 @@ class TranscribeController {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, null)
-            redirect(action: 'showNextAction', id: params.id)
+            if (!taskInstance.hasErrors()) {
+                redirect(action: 'showNextAction', id: params.id)
+            }
+            else {
+                def msg = "Task save partial failed: " + taskInstance.hasErrors()
+                log.error(msg)
+                flash.message = msg
+                render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: params.recordValues])
+            }
         } else {
             redirect(view: '/index')
         }

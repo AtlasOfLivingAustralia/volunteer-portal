@@ -167,6 +167,9 @@
             There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
         </div>
     </g:hasErrors>
+    <g:if test="${flash.message}">
+        <div class="errors">${flash.message}</div>
+    </g:if>
     <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
     <div id="videoLinks" style="padding-top: 6px; float: right;">
         ${taskInstance?.project?.tutorialLinks}
@@ -245,7 +248,7 @@
             <div class="fields" id="journalNotes" style="width:${(validator) ? '100%' : '50%'}">
                 <table style="width: 100%">
                     <thead>
-                    <tr><th><h3>Notes</h3> &ndash; Record any comments here that may assist in validating this specimen </th></tr>
+                    <tr><th><h3>Notes</h3> &ndash; Record any comments here that may assist in validating this task </th></tr>
                     </thead>
                     <tbody>
                         <tr class="prop">
