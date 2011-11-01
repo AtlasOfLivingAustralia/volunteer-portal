@@ -35,9 +35,9 @@
     <div id="project-picker">
         <p>Browse our current projects and click on one to start the expedition.</p>
         <ul id="rollovers">
-            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'cicada-rollover.png')}"/></li>
-            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'moth-rollover.png')}"/></li>
-            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'scott-sisters-rollover.png')}"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'cicada-rollover.png')}" class="active" id="6306"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'moth-rollover.png')}" class="active" id="52670"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'scott-sisters-rollover.png')}" class="active" id="42780"/></li>
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'leafhopper-rollover-coming-soon.png')}"/></li>
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'anic-cicada-rollover-coming-soon.png')}"/></li>
         </ul>
@@ -102,6 +102,9 @@
         });
         $('#description-panes img.active').click(function() {
             document.location.href = $(this).next('a').attr('href');
+        });
+        $('#rollovers img.active').css("cursor","pointer").click(function() {
+            document.location.href = "${resource(dir:'project/index/')}" + $(this).attr('id');
         });
     </script>
   </body>
