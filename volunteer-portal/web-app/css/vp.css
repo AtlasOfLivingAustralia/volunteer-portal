@@ -126,9 +126,10 @@ h3 {
     width: 502px;
     padding-right: 10px;
     margin: -1px;
+}
+#description-panes > div img.active {
     cursor: pointer;
 }
-
 #description-panes > div p {
     padding: 5px;
     margin: 0;
