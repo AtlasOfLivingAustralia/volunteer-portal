@@ -106,7 +106,7 @@ function geocodePosition(pos) {
  */
 function codeAddress() {
     var address = $(':input#address').val().replace(/\n/g, " ");
-    console.log("address", address);
+    //console.log("address", address);
     if (geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
         quotaCount++
@@ -208,7 +208,7 @@ $(document).ready(function() {
     $('.coordinatePrecision, #infoUncert').change(function(e) {
         var rad = parseInt($(this).val());
         circle.setRadius(rad);
-        console.log("#infoUncert", $(this).val(), rad);
+        //console.log("#infoUncert", $(this).val(), rad);
         updateMarkerPosition(marker.getPosition());
         //updateTitleAttr(rad);
     })
