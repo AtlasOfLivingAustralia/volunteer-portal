@@ -34,7 +34,9 @@
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/superfish/superfish.js"></script>
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery.autocomplete.js"></script>
   <script type="text/javascript">
-
+    tinyMCE.init({
+        convert_urls : false
+    });
     // initialise plugins
     jQuery(function() {
       jQuery('ul.sf').superfish({
