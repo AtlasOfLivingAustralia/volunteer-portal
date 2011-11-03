@@ -164,13 +164,14 @@
             <div id="recordsChartWidget"></div>
             <div style="clear: both"></div>
             <h2>Expedition News</h2>
-            <div id="news">
+            <g:set var="divHeight"><g:if test="${!(projectInstance.showMap)}">height:360px;</g:if></g:set>
+            <div id="news" style="${divHeight}">
                 <g:each in="${recentNewsItems}" var="news" status="i">
                     <p><b>${news.title} (<g:formatDate format="dd-MM-yyyy" date="${news.created}"/>)</b></p>
                     ${news.body}
                 </g:each>
             </div>
-            <g:if test="${(projectInstance.showMap)}">
+            <g:if test="${projectInstance.showMap}">
                 <div id="recordMapLabel"><h4>Showing location of records transcribed to date</h4></div>
                 <div id="recordsMap"></div>
             </g:if>
