@@ -27,16 +27,23 @@
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/form.js"></script>
 <!--  <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.5.2.min.js"></script>-->
   <g:javascript library="jquery" plugin="jquery"/>
-  <tinyMce:importJs />
+  <tinyMce:resources />
+  <script type="text/javascript">
+    tinyMCE.init({
+        mode: "textareas",
+        theme: "advanced",
+        editor_selector: "mceadvanced",
+        theme_advanced_toolbar_location : "top",
+        convert_urls : false
+    });
+  </script>
+
   %{--<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/ui.core.js"></script>--}%
   %{--<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/ui.tabs.js"></script>--}%
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/hoverintent-min.js"></script>
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/superfish/superfish.js"></script>
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery.autocomplete.js"></script>
   <script type="text/javascript">
-    tinyMCE.init({
-        convert_urls : false
-    });
     // initialise plugins
     jQuery(function() {
       jQuery('ul.sf').superfish({
