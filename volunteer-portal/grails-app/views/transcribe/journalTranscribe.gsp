@@ -41,6 +41,12 @@
     };
 
     $(document).ready(function() {
+        // prompt user to save if page has been open for too long
+        var timeoutInMin = 30;
+        var message = "Please save your work by clicking the 'save unfinished record' button as it has been " +
+                timeoutInMin + " minutes since the last page refresh.";
+        window.setTimeout(function() { alert(message); }, timeoutInMin * 60 * 1000);
+        
         // prevent enter key submitting form
         $(window).keydown(function(event) {
             if (event.keyCode == 13 && event.target.nodeName != "TEXTAREA") {
