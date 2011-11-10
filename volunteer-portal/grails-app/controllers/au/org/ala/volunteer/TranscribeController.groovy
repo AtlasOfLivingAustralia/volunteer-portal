@@ -120,7 +120,7 @@ class TranscribeController {
         def currentUser = authService.username()
         if (currentUser) {
             def taskInstance = Task.get(params.id)
-            WebUtils.cleanRecordValues(params.recordValues)
+            WebUtils.cleanRecordValues(params.recordValues) // removes strange characters from UTF-8 pages
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, null)
             if (!taskInstance.hasErrors()) {
                 redirect(action: 'showNextAction', id: params.id)
