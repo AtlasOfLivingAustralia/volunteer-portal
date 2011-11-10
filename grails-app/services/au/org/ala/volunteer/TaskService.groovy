@@ -170,6 +170,7 @@ class TaskService {
                and (viewedTasks.userId != :userId or viewedTasks.userId is null)
                order by viewedTasks.lastView""", [projectId: project.id, userId: userId, max: 1])
         if (tasks) {
+            log.info("getNextTask: project " + project.id + " - found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
             tasks.get(0)
         } else {
             //show
@@ -181,6 +182,7 @@ class TaskService {
                and t.fullyTranscribedBy is null
                order by viewedTasks.lastView""", [projectId: project.id, max: 1])
             if(!tasks.isEmpty()){
+                log.info("getNextTask: found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
               tasks.get(0)
             } else {
               null

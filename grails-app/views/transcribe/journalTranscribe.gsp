@@ -147,6 +147,12 @@
             grabbing:"${resource(dir: 'images', file: 'closedhand.cur')}"
         });
 
+        var isReadonly = VP_CONF.isReadonly;
+        if (isReadonly) {
+            // readonly more
+            $(":input").not('.skip').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+        }
+
     });
 
     function zoomJournalImage(event, value) {
@@ -277,7 +283,7 @@
                              value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
                     <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
                              value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
-                    <span class="button"><button id="showNextFromProject">Skip</button></span>
+                    <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
                     <span style="color:gray;">&nbsp;&nbsp;[is valid: ${taskInstance?.isValid} | validatedBy:  ${taskInstance?.fullyValidatedBy}]</span>
                 </g:if>
                 <g:else>
@@ -288,7 +294,7 @@
                     <span class="button">
                         %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
                              %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
-                        <button id="showNextFromProject">Skip</button>
+                        <button id="showNextFromProject" class="skip">Skip</button>
                     </span>
                 </g:else>
             </div>

@@ -135,7 +135,9 @@ class FieldSyncService {
 
         if (isValid != null) {
             task.isValid = isValid
-        } 
+        }
+
+        task.viewed++; // increment view count
 
         task.save(flush: true)
     }
