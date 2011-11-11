@@ -329,6 +329,35 @@ class TaskService {
         where fields.transcribedByUserId = :userId""", [userId: userId], params)
     }
 
+  /**
+   * Get tasks saved by this user. Includes partial edits.
+   *
+   * @param userId
+   * @return list of tasks
+   */
+    List<Task> getRecentlySavedTasks(String userId, Map params) {
+      Task.executeQuery("""select distinct t from Task t
+        inner join t.fields fields
+        where t.fullyTranscribedBy is null and
+        fields.transcribedByUserId = :userId
+        and fields.superceded = false""", [userId: userId], params)
+    }
+
+    /**
+   * Get tasks saved by this user. Includes partial edits.
+   *
+   * @param userId
+   * @return list of tasks
+   */
+    List<Task> getRecentlySavedTasksByProject(String userId, Project project, Map params) {
+      Task.executeQuery("""select distinct t from Task t
+        inner join t.fields fields
+        where t.fullyTranscribedBy is null and
+        t.project = :project and
+        fields.transcribedByUserId = :userId
+        and fields.superceded = false""", [userId: userId, project:project], params)
+    }
+
     /**
      * GET the image via its URL and save various forms to local disk
      *

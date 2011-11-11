@@ -91,18 +91,27 @@ class UserController {
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
         def recentTasks
         def totalTranscribedTasks
+        def savedTasks
+        def totalSavedTasks
         def project = Project.get(params.projectId)
 
         if (project) {
+            savedTasks = taskService.getRecentlySavedTasksByProject(userInstance.getUserId(), project, params)
+            totalSavedTasks = taskService.getRecentlySavedTasksByProject(userInstance.getUserId(), project, new HashMap<String, Object>()).size()
             recentTasks = Task.findAllByFullyTranscribedByAndProject(userInstance.getUserId(), project, params)
             totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), project)
         } else {
-            //def recentTasks = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), params)
+            savedTasks = taskService.getRecentlySavedTasks(userInstance.getUserId(), params)
+            totalSavedTasks = taskService.getRecentlySavedTasks(userInstance.getUserId(), new HashMap<String, Object>()).size()
             recentTasks = Task.findAllByFullyTranscribedBy(userInstance.getUserId(), params)
             totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
         }
 
         def fieldsInTask = [:] // map of task id to saved fields for that task
+        savedTasks.each {
+            // get the fields as a Map (to be able to display catalogNumber
+            fieldsInTask.put(it.id, fieldSyncService.retrieveFieldsForTask(it))
+        }
         recentTasks.each {
             // get the fields as a Map (to be able to display catalogNumber
             fieldsInTask.put(it.id, fieldSyncService.retrieveFieldsForTask(it))
@@ -122,7 +131,8 @@ class UserController {
         }
         else {
             [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser, numberOfTasksEdited: numberOfTasksEdited,
-                    pointsTotal: pointsTotal, totalTranscribedTasks: totalTranscribedTasks, fieldsInTask: fieldsInTask, extraFields: extraFields, project: project]
+                    pointsTotal: pointsTotal, totalTranscribedTasks: totalTranscribedTasks, fieldsInTask: fieldsInTask,
+                    extraFields: extraFields, project: project, savedTasks: savedTasks, totalSavedTasks: totalSavedTasks]
         }
     }
 
