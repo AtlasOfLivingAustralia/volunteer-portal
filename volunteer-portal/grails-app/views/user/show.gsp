@@ -101,7 +101,7 @@
   </div>
 
   <g:if test="${savedTasks}">
-    <h2>Recently &quot;Saved Unfinished&quot; Tasks by
+    <h2>&quot;Saved Unfinished&quot; Tasks by
     <g:if test="${userInstance.userId == currentUser}">
       you
     </g:if>
@@ -171,7 +171,7 @@
   </g:if>
 
   <g:if test="${taskInstanceList}">
-    <h2>Recently Transcribed Tasks by
+    <h2>Transcribed Tasks by
     <g:if test="${userInstance.userId == currentUser}">
       you
     </g:if>
