@@ -100,6 +100,76 @@
     </table>
   </div>
 
+  <g:if test="${savedTasks}">
+    <h2>Recently &quot;Saved Unfinished&quot; Tasks by
+    <g:if test="${userInstance.userId == currentUser}">
+      you
+    </g:if>
+    <g:else>
+      ${fieldValue(bean: userInstance, field: "displayName")}
+    </g:else>
+    <g:if test="${project}">
+        - for ${project}
+    </g:if>
+    (${totalSavedTasks} tasks found)
+    </h2>
+    <div class="list">
+            <table style="border-top: 2px solid #D9D9D9; width: 100%;">
+                <thead>
+                    <tr>
+
+                        <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
+
+                        <g:sortableColumn property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
+
+                        <th>Catalog Number</th>
+
+                        <g:sortableColumn property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
+
+                        <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
+
+                        <th style="text-align: center;">Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                <g:each in="${savedTasks}" status="i" var="taskInstance">
+                    <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+
+                        <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
+
+                        <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
+
+                        <td>${fieldsInTask?.get(taskInstance.id)?.get(0)?.catalogNumber}</td>
+
+                        <td>${fieldValue(bean: taskInstance, field: "project")}</td>
+
+                        <td style="text-align: center;">
+                            <g:if test="${taskInstance.isValid == true}">validated</g:if>
+                            <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
+                            <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
+                            <g:else>saved</g:else>
+                        </td>
+
+                        <td style="text-align: center;">
+                            <g:if test="${taskInstance.fullyTranscribedBy}">
+                                <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
+                            </g:if>
+                            <g:else>
+                                <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                            </g:else>
+                        </td>
+
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+    </div>
+    <div class="paginateButtons">
+      <g:paginate total="${totalSavedTasks}" id="${userInstance?.id}" params="${params}"/>
+    </div>
+  </g:if>
+
   <g:if test="${taskInstanceList}">
     <h2>Recently Transcribed Tasks by
     <g:if test="${userInstance.userId == currentUser}">
@@ -114,7 +184,6 @@
     (${totalTranscribedTasks} tasks found)
     </h2>
     <div class="list">
-        <div class="list">
             <table style="border-top: 2px solid #D9D9D9; width: 100%;">
                 <thead>
                     <tr>
@@ -149,6 +218,7 @@
                             <g:if test="${taskInstance.isValid == true}">validated</g:if>
                             <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
                             <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
+                            <g:else>saved</g:else>
                         </td>
 
                         <td style="text-align: center;">
@@ -176,6 +246,7 @@
       <g:paginate total="${allTasksTotal}"/>
     </div>--}%
   </g:if>
+
 </div>
 </body>
 </html>
