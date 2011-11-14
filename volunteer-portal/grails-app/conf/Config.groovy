@@ -66,7 +66,7 @@ grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 // Mappings for expedition labels, icons, etc
 expedition = [
         [name: "Expedition Leader", bio: "Gerard Krefft", link: "http://www.australianmuseum.net.au/image/Gerard-Krefft/",
-                icon: "images/explorers/expedition-leader.png",  max: 1,     threshold: 100],
+                icon: "images/explorers/expedition-leader.png",  max: 1,     threshold: 1],
         [name: "Scientists", bio: "Edward Pierson Ramsay", link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
                 icon: "images/explorers/scientist.png",          max: 9999,  threshold: 50],
         [name: "Collection Managers", bio: "Helena Scott", link: "http://www.australianmuseum.net.au/A-biography-of-the-Scott-sisters/",
