@@ -116,7 +116,7 @@
             if (uri) {
                 window.open(uri, "paintingWindow");
             } else {
-                alert("Painting number " + paintingRef + " was not found");
+                alert("There is no painting corresponding to reference number " + paintingRef + ". Not all field notes have a corresponding painting.");
             }
         });
 
