@@ -32,7 +32,7 @@
                         
                             <g:sortableColumn property="defaultValue" title="${message(code: 'templateField.defaultValue.label', default: 'Default Value')}" />
                         
-                            <g:sortableColumn property="mandatory" title="${message(code: 'templateField.mandatory.label', default: 'Mandatory')}" />
+                            <g:sortableColumn property="mandatory" title="${message(code: 'templateField.displayOrder.label', default: 'Display Order')}" />
                         
                             <g:sortableColumn property="template" title="${message(code: 'templateField.template.label', default: 'Template')}" />
                         
@@ -52,7 +52,7 @@
                         
                             <td>${fieldValue(bean: templateFieldInstance, field: "defaultValue")}</td>
                         
-                            <td><g:formatBoolean boolean="${templateFieldInstance.mandatory}" /></td>
+                            <td>${fieldValue(bean: templateFieldInstance, field: "displayOrder")}</td>
                         
                             <td>${fieldValue(bean: templateFieldInstance, field: "template")}</td>
                         
