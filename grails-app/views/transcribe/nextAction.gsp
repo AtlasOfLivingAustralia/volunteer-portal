@@ -12,9 +12,9 @@
                 window.location.href = "${createLink(action:'task', id: id, controller:'transcribe')}";
             });
 
-            $("li#viewList a").click(function(e) {
+            $("li#projectHome a").click(function(e) {
                 e.preventDefault();
-                window.location.href = "${createLink(action:'project', controller:'task', id: taskInstance?.project?.id)}";
+                window.location.href = "${createLink(action:'index', controller:'project', id: taskInstance?.project?.id)}";
             });
 
             $("li#viewTask a").click(function(e) {
@@ -48,7 +48,7 @@
         <ul>
             <li id="goBack"><a href="#">Return to the saved task</a></li>
             <li id="viewTask"><a href="#">Transcribe another task</a></li>
-            <li id="viewList"><a href="#">View list of Tasks</a></li>
+            <li id="projectHome"><a href="#">Return to project start page</a></li>
             <li id="viewStats"><a href="#">View My Stats</a></li>
         </ul>
     </div>

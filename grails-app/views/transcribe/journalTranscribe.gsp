@@ -100,7 +100,7 @@
 
         $("#showNextFromProject").click(function(e) {
             e.preventDefault();
-            location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id)}";
+            location.href = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
         });
 
         $(":range").rangeinput({
