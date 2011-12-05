@@ -137,7 +137,7 @@
                             information appears in the labels</th></tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.collectionEvent, template, [sort:'id'])}" var="field">
+                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.collectionEvent, template, [sort:'displayOrder'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                             <tr class='prop' style="width:950px;border-top:2px solid white;padding-top:5px;">
@@ -146,7 +146,7 @@
                                     </td>
                                 <td class='value'>
                                     <textarea name="recordValues.0.verbatimLocality" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea><a href='#' class='fieldHelp' title='Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label'><span class='help-container'>&nbsp;</span></a></td>
-                            </tr> 
+                            </tr>
                         </tbody>
                     </table>
 
@@ -161,7 +161,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.location, template, [sort:'id'])}" var="field">
+                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.location, template, [sort:'displayOrder'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                         </tbody>
@@ -224,7 +224,7 @@
                         <tr><th><h3>4. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section </th></tr>
                         </thead>
                         <tbody>
-                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.identification, template, [sort:'id'])}" var="field">
+                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.identification, template, [sort:'displayOrder'])}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                         </tbody>

@@ -86,6 +86,13 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="templateField.displayOrder.label" default="Display Order" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: templateFieldInstance, field: "displayOrder")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="templateField.category.label" default="Category" /></td>
                             
                             <td valign="top" class="value">${templateFieldInstance?.category?.encodeAsHTML()}</td>
