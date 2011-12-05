@@ -213,7 +213,7 @@ $(document).ready(function() {
         //updateTitleAttr(rad);
     })
 
-    $("input.scientificName, input.acceptedNameUsage").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
+    $("input.scientificName, input.originalNameUsage").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
             extraParams: {
                 limit: 100
             },
