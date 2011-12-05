@@ -34,7 +34,7 @@
                         
                             <g:sortableColumn property="mandatory" title="${message(code: 'templateField.mandatory.label', default: 'Mandatory')}" />
                         
-                            <g:sortableColumn property="multiValue" title="${message(code: 'templateField.multiValue.label', default: 'Multi Value')}" />
+                            <g:sortableColumn property="template" title="${message(code: 'templateField.template.label', default: 'Template')}" />
                         
                         </tr>
                     </thead>
@@ -54,7 +54,7 @@
                         
                             <td><g:formatBoolean boolean="${templateFieldInstance.mandatory}" /></td>
                         
-                            <td><g:formatBoolean boolean="${templateFieldInstance.multiValue}" /></td>
+                            <td>${fieldValue(bean: templateFieldInstance, field: "template")}</td>
                         
                         </tr>
                     </g:each>

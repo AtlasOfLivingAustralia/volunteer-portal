@@ -105,6 +105,15 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="displayOrder"><g:message code="templateField.displayOrder.label" default="Display Order" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'displayOrder', 'errors')}">
+                                    <g:textField name="displayOrder" value="${fieldValue(bean: templateFieldInstance, field: 'displayOrder')}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="category"><g:message code="templateField.category.label" default="Category" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'category', 'errors')}">

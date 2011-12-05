@@ -12,6 +12,7 @@ class TemplateField {
     String helpText
     String validationRule
     Template template
+    Integer displayOrder
 
     static mapping = {
         version false
@@ -26,6 +27,7 @@ class TemplateField {
         helpText nullable:true, widget:'textarea', maxSize: 2000
         validationRule nullable:true
         template nullable: true
+        displayOrder nullable: true
     }
 }
 
