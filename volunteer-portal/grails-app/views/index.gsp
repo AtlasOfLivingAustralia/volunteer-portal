@@ -38,8 +38,9 @@
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'cicada-rollover.png')}" class="active" id="6306"/></li>
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'moth-rollover.png')}" class="active" id="52670"/></li>
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'scott-sisters-rollover.png')}" class="active" id="42780"/></li>
-            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'leafhopper-rollover-coming-soon.png')}"/></li>
-            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'anic-cicada-rollover-coming-soon.png')}"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'plume-moth-rollover.png')}" class="active" id="122476"/></li>
+            %{--<li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'leafhopper-rollover-coming-soon.png')}"/></li>--}%
+            %{--<li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'anic-cicada-rollover-coming-soon.png')}"/></li>--}%
         </ul>
         <div id="description-panes">
             <div>
@@ -60,7 +61,7 @@
                 when and where .</p>
             </div>
             <div>
-                <img src="${resource(dir:'images/vp',file:'scott-sisters-logo.jpg')}" class="active""/>
+                <img src="${resource(dir:'images/vp',file:'scott-sisters-logo.jpg')}" class="active"/>
                 <g:link controller="project" action="index" id="42780" class="projectLink">Scott Sisters Expedition</g:link>
                 <h3>Australian Museum</h3>
                 <p>Who were the <a href="http://australianmuseum.net.au/Beauty-from-Nature-art-of-the-Scott-Sisters/" target="_blank">Scott
@@ -69,8 +70,15 @@
                 of the species they so beautifully illustrated! Share their journey; share their most intimate thoughts!</p>
             </div>
             <div>
+                <img src="${resource(dir:'images/vp',file:'plume-moffs-logo.jpg')}" class="active"/>
+                <g:link controller="project" action="index" id="122476" class="projectLink">ANIC Plume Moths</g:link>
+                <h3>Australian National Insect Collection, CSIRO</h3>
+                <p>Some Australian plume moths are common and can be seen at windows by night all over the country.
+                Others are rare and little known.  With your help, we can map these moths and find out how they are
+                spread across different environments.</p>
+            </div>
+            %{--<div>
                 <img src="${resource(dir:'images/vp',file:'leaf-hoppers-logo-coming-soon.jpg')}"/>
-                %{--<g:link controller="project" action="index" id="99999" class="projectLink">Leaf Hoppers Expedition</g:link>--}%
                 <h2>Leaf Hoppers Expedition</h2>
                 <h3>Australian Museum</h3>
                 <p>Ever wondered what it's like to leap from leaf to leaf through the steamy undergrowth, and suck the
@@ -79,12 +87,11 @@
             </div>
             <div>
                 <img src="${resource(dir:'images/vp',file:'anic-cicada-coming-soon.jpg')}"/>
-                %{--<g:link controller="project" action="index" id="99999" class="projectLink">ANIC Cicada Expedition</g:link>--}%
                 <h2>Cicada Expedition</h2>
-                <h3>Australian National Insect Collection</h3>
+                <h3>Australian National Insect Collection, CSIRO</h3>
                 <p>For those of you who can't get enough of transcribing cicada labels, here are more, with the extra
                 enticement of new species from Australia and around the world</p>
-            </div>
+            </div>--}%
         </div>
     </div>
     <div id="vp-footer">
