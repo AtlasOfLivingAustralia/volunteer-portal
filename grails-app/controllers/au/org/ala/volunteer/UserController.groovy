@@ -34,6 +34,21 @@ class UserController {
           params.order = "asc"
         }
         def currentUser = authService.username()
+        def userList = User.list(params)
+        userList.each { user ->
+            def count = taskService.getCountsForUserId(user.userId)?.get(0)
+            log.debug(user.userId + " count: " + count)
+            if (user.transcribedCount != count) {
+                // Update incorrect transcribed count (from prev bug)
+                user.transcribedCount = count.toInteger()
+                if (!user.hasErrors() && user.save(flush:true)) {
+                    log.info("Updating counts for " + user.displayName)
+                } else {
+                    log.error("Failed to update user: " + user.userId + " - " + user.hasErrors())
+                }
+            }
+        }
+
         [userInstanceList: User.list(params), userInstanceTotal: User.count(),currentUser: currentUser]
     }
 
@@ -50,18 +65,13 @@ class UserController {
                 def count = taskService.getCountsForProjectAndUserId(projectInstance, user.userId)?.get(0)
                 log.debug(user.userId + " count: " + count)
                 if (user.transcribedCount != count) {
-                    // Update incorrect transcribed count
-                    user.transcribedCount = count.toInteger()
-                    if (!user.hasErrors() && user.save(flush:true)) {
-                        log.info("Updating counts for " + user.displayName)
-                    } else {
-                        log.error("Failed to update user: " + user.userId + " - " + user.hasErrors())
-                    }
+                    // get counts for current project 
+                    user.transcribedCount = count.toInteger() // temp set counts for just current project
                 }
             }
 
             def currentUser = authService.username()
-            render(view: "list", model:[userInstanceList: userList, userInstanceTotal: User.count(),currentUser: currentUser])
+            render(view: "list", model:[userInstanceList: userList, userInstanceTotal: User.count(), currentUser: currentUser, projectInstance: projectInstance])
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
