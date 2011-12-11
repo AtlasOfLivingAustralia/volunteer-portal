@@ -9,10 +9,13 @@
 <body class="two-column-right">
   <div class="nav">
     <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+    <g:if test="${projectInstance}">
+        <g:link controller="project" action="index" id="${projectInstance?.id}" class="crumb">${projectInstance?.name}</g:link>
+    </g:if>
     <span class="menuButton">Volunteers</span>
   </div>
   <div class="body">
-  <h1>Volunteer list</h1>
+  <h1>Volunteer list <g:if test="${projectInstance}">for ${projectInstance.name}</g:if></h1>
   <g:if test="${flash.message}">
     <div class="message">${flash.message}</div>
   </g:if>
