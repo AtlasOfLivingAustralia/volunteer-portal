@@ -35,6 +35,7 @@
 <body class="two-column-right">
 <div class="nav">
     <a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+    <g:link controller="project" action="index" id="${taskInstance?.project?.id}" class="crumb">${taskInstance?.project?.name}</g:link>
     <span>What next?</span>
 </div>
 
