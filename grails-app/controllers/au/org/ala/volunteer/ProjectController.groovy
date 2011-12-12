@@ -29,7 +29,7 @@ class ProjectController {
             // project info
             def taskCount = Task.countByProject(projectInstance)
             def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
-            def userIds = taskService.getUserIdsAndCountsForProject(projectInstance)
+            def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
             def expedition = ConfigurationHolder.config.expedition
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"

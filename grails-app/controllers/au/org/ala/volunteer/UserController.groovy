@@ -29,9 +29,10 @@ class UserController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        if(!params.sort){
-          params.sort = params.sort ? params.sort : "displayName"
-          params.order = "asc"
+        if (!params.sort){
+          // set default sort and order
+          params.sort = params.sort ? params.sort : "transcribedCount"
+          params.order = "desc"
         }
         def currentUser = authService.username()
         def userList = User.list(params)
@@ -60,18 +61,32 @@ class UserController {
               params.sort = params.sort ? params.sort : "displayName"
               params.order = "asc"
             }
-            def userList = User.list(params)
-            userList.each { user ->
-                def count = taskService.getCountsForProjectAndUserId(projectInstance, user.userId)?.get(0)
-                log.debug(user.userId + " count: " + count)
-                if (user.transcribedCount != count) {
-                    // get counts for current project 
-                    user.transcribedCount = count.toInteger() // temp set counts for just current project
+            //def userList = User.list(params)
+            def userList = []
+            def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, params)
+            def userCount = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>()).size()
+            userIds.each {
+                // iterate over each user and assign to a role.
+                def userId = it[0]
+                def count = it[1]
+                def user = User.findByUserId(userId)
+                if (user) {
+                    user.transcribedCount = count
+                    userList.add(user)
                 }
             }
 
+//            userList.each { user ->
+//                def count = taskService.getCountsForProjectAndUserId(projectInstance, user.userId)?.get(0)
+//                log.debug(user.userId + " count: " + count)
+//                if (user.transcribedCount != count) {
+//                    // get counts for current project
+//                    user.transcribedCount = count.toInteger() // temp set counts for just current project
+//                }
+//            }
+
             def currentUser = authService.username()
-            render(view: "list", model:[userInstanceList: userList, userInstanceTotal: User.count(), currentUser: currentUser, projectInstance: projectInstance])
+            render(view: "list", model:[userInstanceList: userList, userInstanceTotal: userCount, currentUser: currentUser, projectInstance: projectInstance])
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
