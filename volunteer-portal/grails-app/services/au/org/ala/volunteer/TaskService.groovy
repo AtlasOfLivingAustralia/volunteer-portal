@@ -101,11 +101,11 @@ class TaskService {
      * @param project
      * @return List of user id
      */
-    List getUserIdsAndCountsForProject(Project project) {
+    List getUserIdsAndCountsForProject(Project project, Map params) {
         def userIds = Task.executeQuery(
             """select t.fullyTranscribedBy, count(t)
                from Task t where t.fullyTranscribedBy is not null and
-               t.project = :project group by t.fullyTranscribedBy order by count(t) desc""", [project: project])
+               t.project = :project group by t.fullyTranscribedBy order by count(t) desc""", [project: project], params)
         userIds.toList()
     }
 
