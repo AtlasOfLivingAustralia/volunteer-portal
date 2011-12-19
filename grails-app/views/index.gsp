@@ -39,7 +39,11 @@
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'moth-rollover.png')}" class="active" id="52670"/></li>
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'scott-sisters-rollover.png')}" class="active" id="42780"/></li>
             <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'plume-moth-rollover.png')}" class="active" id="122476"/></li>
-            %{--<li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'leafhopper-rollover-coming-soon.png')}"/></li>--}%
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'leafhoppers-rollover.png')}" class="active" id="147659"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'froghoppers-rollover.png')}" class="active" id="147660"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'treehopper-rollover.png')}" class="active" id="147662"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'planthoppers-rollover.png')}" class="active" id="147661"/></li>
+            <li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'nectar-scarab-beetles-rollover.png')}" class="active" id="147663"/></li>
             %{--<li class="rollover-tab"><img src="${resource(dir:'images/vp',file:'anic-cicada-rollover-coming-soon.png')}"/></li>--}%
         </ul>
         <div id="description-panes">
@@ -77,15 +81,53 @@
                 Others are rare and little known.  With your help, we can map these moths and find out how they are
                 spread across different environments.</p>
             </div>
-            %{--<div>
-                <img src="${resource(dir:'images/vp',file:'leaf-hoppers-logo-coming-soon.jpg')}"/>
-                <h2>Leaf Hoppers Expedition</h2>
+            <div>
+                <img src="${resource(dir:'images/vp',file:'leaf-hoppers-logo.jpg')}" class="active"/>
+                <g:link controller="project" action="index" id="147659" class="projectLink">Australian Museum Leafhoppers Expedition</g:link>
                 <h3>Australian Museum</h3>
-                <p>Ever wondered what it's like to leap from leaf to leaf through the steamy undergrowth, and suck the
-                sap out of leaves and branches? You might never know; but you can get an idea of what these little
-                Tarzan’s look like, transcribe their labels s and make some scientists very happy.</p>
+                <p>One of the largest families of plant-feeding insects, the <a href="http://www.inhs.uiuc.edu/~dietrich/Leafhome.html"
+                target="_blank">Leafhoppers</a> are tent-shaped insects which
+                resemble small cicadas. Just like their relatives the cicadas, the leafhoppers also have sound producing
+                organs, however their songs are too faint to be heard by human ears. </p>
             </div>
             <div>
+                <img src="${resource(dir:'images/vp',file:'froghoppers-logo.jpg')}" class="active"/>
+                <g:link controller="project" action="index" id="147660" class="projectLink">Australian Museum Froghoppers Expedition</g:link>
+                <h3>Australian Museum</h3>
+                <p><a href="http://gardening.about.com/od/insectpestid/a/Spittlebugs.htm" target="_blank">Froghoppers</a>
+                are the insect world’s greatest leaper. Measuring only 6 millimetres long it can launch
+                itself up to 70 centimetres into the air. The adults leap between plants in search for food and the developing
+                young create a frothy mass of spit on plants to hide from predators such as ants.</p>
+            </div>
+            <div>
+                <img src="${resource(dir:'images/vp',file:'treehoppers-logo.jpg')}" class="active"/>
+                <g:link controller="project" action="index" id="147662" class="projectLink">Australian Museum Treehoppers Expedition</g:link>
+                <h3>Australian Museum</h3>
+                <p><a href="http://www.inhs.uiuc.edu/~dietrich/treehome.html" target="_blank">Treehoppers</a>
+                are a diverse group of plant-feeding insects and they attract attention due to their bizarre forms and
+                unusual behaviours. Some treehopper species are attended to by ants which collect the sugary secretions
+                that they produce.</p>
+            </div>Planthoppers
+            <div>
+                <img src="${resource(dir:'images/vp',file:'planthoppers-logo.jpg')}" class="active"/>
+                <g:link controller="project" action="index" id="147661" class="projectLink">Australian Museum Planthoppers Expedition</g:link>
+                <h3>Australian Museum</h3>
+                <p><a href="http://www1.dpi.nsw.gov.au/keys/fulgor/fulgorid/index.html" target="_blank">Planthoppers</a>
+                have been named because of their resemblance to leaves and other plants and by the way they ‘hop’ for
+                quick transportation in a similar way to that of grasshoppers. However, planthoppers generally walk very
+                slowly so as not to attract attention. %{-- Some of the most spectacular planthoppers are the group Lantern--}%
+                %{--flies. This species was named based on an incorrect report that they produced light when they mated. </p>--}%
+            </div>
+            <div>
+                <img src="${resource(dir:'images/vp',file:'nectar-scarab-beetles-logo.jpg')}" class="active"/>
+                <g:link controller="project" action="index" id="147663" class="projectLink">Australian Museum Nectar Scarab Beetles Expedition</g:link>
+                <h3>Australian Museum</h3>
+                <p>The <a href="http://www.ento.csiro.au/education/insects/coleoptera_families/scarabaeidae.html" target="_blank">Nectar Scarab Beetles</a>
+                are small brown and black beetles also know as chafers. Both the male and the female look the same.
+                Some are active during the day and feed on leaves and flowers. Others are active in both the day and
+                night and are attracted to the light at night.</p>
+            </div>
+            %{--<div>
                 <img src="${resource(dir:'images/vp',file:'anic-cicada-coming-soon.jpg')}"/>
                 <h2>Cicada Expedition</h2>
                 <h3>Australian National Insect Collection, CSIRO</h3>

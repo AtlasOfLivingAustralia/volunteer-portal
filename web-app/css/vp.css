@@ -68,7 +68,7 @@ h3 {
 
 #project-picker {
     margin: 60px 0 30px 50px;
-    width: 752px;
+    width: 1000px;
     text-align: center;
 }
 
@@ -100,6 +100,7 @@ h3 {
     position: relative;
     width: 752px;
     height: 203px;
+    margin: 0 auto;
 }
 
 #description-panes a.projectLink {
