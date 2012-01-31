@@ -11,6 +11,7 @@ class TranscribeController {
     def authService
     def userService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
+    def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
 
     static allowedMethods = [saveTranscription: "POST"]
 
@@ -36,9 +37,9 @@ class TranscribeController {
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
             def isReadonly
-            println(currentUser + " has role: " + authService.userInRole(ROLE_ADMIN))
+            println(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
 
-            if (taskInstance.fullyTranscribedBy && (taskInstance.fullyTranscribedBy != currentUser && !authService.userInRole(ROLE_ADMIN))) {
+            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
                 isReadonly = "readonly"
             }
 
