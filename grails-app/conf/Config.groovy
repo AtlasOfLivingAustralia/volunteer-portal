@@ -59,7 +59,8 @@ if (!security.cas.bypass) {
 // server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
 
-auth.admin_role = "ROLE_ADMIN"
+auth.admin_role = "ROLE_VP_ADMIN"
+auth.validator_role = "ROLE_VP_VALIDATOR"
 
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 
