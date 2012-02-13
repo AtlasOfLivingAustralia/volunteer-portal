@@ -82,8 +82,8 @@ class TaskController {
         def taskInstance = Task.get(params.id)
         Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
         def jsonObj = [:]
-        jsonObj.put("cat", recordValues?.get(0).catalogNumber)
-        jsonObj.put("name", recordValues?.get(0).scientificName)
+        jsonObj.put("cat", recordValues?.get(0)?.catalogNumber)
+        jsonObj.put("name", recordValues?.get(0)?.scientificName)
         jsonObj.put("transcriber", User.findByUserId(taskInstance.fullyTranscribedBy).displayName)
         render jsonObj as JSON
     }
