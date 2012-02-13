@@ -1,30 +1,41 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page contentType="text/html;charset=UTF-8" import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE html>
 <html>
   <head>
       <title>Volunteer Portal - Atlas of Living Australia</title>
+      <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
-      <link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico"/>
-      <g:javascript library="jquery-1.5.1.min"/>
+      %{--<link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico"/>--}%
+      %{--<g:javascript library="jquery-1.5.1.min"/>--}%
       <g:javascript library="jquery.tools.min"/>
+      <style type="text/css">
+        body {
+            background: #FAF9F8 url(${resource(dir:'images/vp',file:'bkg.jpg')}) top center no-repeat !important;
+            text-align: center;
+            margin: 0;
+        }
+        div#wrapper > div#content {
+            background-color: transparent !important;
+        }
+      </style>
+
   </head>
   <body>
-    <div id="vp-menu">
-        <img alt="ala" src="${resource(dir:'/images/vp',file:'ala-logo.png')}"/>
-        <ul>
-            <li>
-                <g:link controller="user" action="myStats" >
-                my stats
-            </g:link>
-            </li>
-            <li style="display:none;">
-                <cl:isLoggedIn>
-                    <g:link controller="project" action="list">Admin</g:link>
-                </cl:isLoggedIn>
-            </li>
-        </ul>
-    </div>
+    %{--<div id="vp-menu">--}%
+        %{--<img alt="ala" src="${resource(dir:'/images/vp',file:'ala-logo.png')}"/>--}%
+        %{--<ul>--}%
+            %{--<li>--}%
+                %{--<g:link controller="user" action="myStats" >--}%
+                %{--my stats--}%
+            %{--</g:link>--}%
+            %{--</li>--}%
+            %{--<li style="display:none;">--}%
+                %{--<cl:isLoggedIn>--}%
+                    %{--<g:link controller="project" action="list">Admin</g:link>--}%
+                %{--</cl:isLoggedIn>--}%
+            %{--</li>--}%
+        %{--</ul>--}%
+    %{--</div>--}%
     <div id="vp-header">
         <h1>Volunteer for Australia's Biodiversity</h1>
         <h2>Join one of our virtual expeditions</h2>
@@ -136,15 +147,15 @@
             </div>--}%
         </div>
     </div>
-    <div id="vp-footer">
-        <div class="copyright">
-            <p><a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="left no-pipe">
-                <img src="http://www.ala.org.au/wp-content/themes/ala/images/creativecommons.png" width="88" height="31" alt=""></a>
-                This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons">Creative Commons Attribution 3.0 Australia License</a>
-                <span style="padding-left: 15px;">Provider content may be covered by other <span class="asterisk-container"><a href="http://www.ala.org.au/about/terms-of-use/" title="Terms of Use">Terms of Use</a>.</span></span>
-            </p>
-        </div>
-    </div>
+    %{--<div id="vp-footer">--}%
+        %{--<div class="copyright">--}%
+            %{--<p><a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="left no-pipe">--}%
+                %{--<img src="http://www.ala.org.au/wp-content/themes/ala/images/creativecommons.png" width="88" height="31" alt=""></a>--}%
+                %{--This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons">Creative Commons Attribution 3.0 Australia License</a>--}%
+                %{--<span style="padding-left: 15px;">Provider content may be covered by other <span class="asterisk-container"><a href="http://www.ala.org.au/about/terms-of-use/" title="Terms of Use">Terms of Use</a>.</span></span>--}%
+            %{--</p>--}%
+        %{--</div>--}%
+    %{--</div>--}%
     <script type="text/javascript">
         $(function() {
         	$("#rollovers").tabs("#description-panes > div", {event:'mouseover', effect: 'fade', fadeOutSpeed: 400});

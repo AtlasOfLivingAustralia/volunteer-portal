@@ -78,7 +78,13 @@ expedition = [
 
 volunteer.defaultProjectId = 6306
 
-grails.project.groupId = "au.org.ala.volunteer" // change this to alter the default package name and Maven publishing destination
+ala.skin = "ala2"
+ala.baseURL = "http://www.ala.org.au"
+bie.baseURL = "http://bie.ala.org.au"
+bie.searchPath = "/search"
+headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
+
+  grails.project.groupId = "au.org.ala.volunteer" // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
 grails.mime.types = [ html: ['text/html','application/xhtml+xml'],

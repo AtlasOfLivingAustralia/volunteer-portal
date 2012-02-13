@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="main"/>
+    <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
     <title>Volunteer Portal - Atlas of Living Australia</title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir:'js', file:'markerclusterer.js')}" type="text/javascript"></script>

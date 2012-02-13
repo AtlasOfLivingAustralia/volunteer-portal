@@ -67,7 +67,7 @@ h3 {
 }
 
 #project-picker {
-    margin: 60px 0 30px 50px;
+    margin: 60px 0 30px 0px;
     width: 1000px;
     text-align: center;
 }
@@ -105,10 +105,14 @@ h3 {
 
 #description-panes a.projectLink {
     color: #993300;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     display: block;
     margin-top: 8px;
+}
+
+#description-panes h3 {
+    font-size: 16px;
 }
 
 #description-panes > div {
@@ -134,6 +138,8 @@ h3 {
 #description-panes > div p {
     padding: 5px;
     margin: 0;
+    line-height: 15px;
+    font-size: 12px;
 }
 
 #vp-footer {

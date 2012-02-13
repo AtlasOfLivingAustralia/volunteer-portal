@@ -20,7 +20,7 @@ body .ac_results li {
 
 /* these styles override the site style.css to use the explorer-themed banner */
 body {
-    background:transparent url(../images/explorer-banner.jpg) center 0 repeat-x ! important;
+    background:transparent url(../images/explorer-banner.jpg) center 20px repeat-x ! important;
 }
 
 #banner {
@@ -674,4 +674,8 @@ tr.fieldNoteFields td input {
 #journalPageButtons {
     display: inline-block;
     margin: 4px 10px;
+}
+
+#content {
+    padding-bottom: 20px;
 }
