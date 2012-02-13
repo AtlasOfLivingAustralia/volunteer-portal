@@ -1,10 +1,8 @@
-
-
-<%@ page import="au.org.ala.volunteer.Template" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.volunteer.Template" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="main" />
+        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
         <title><g:message code="default.create.label" args="[entityName]" /></title>
     </head>
