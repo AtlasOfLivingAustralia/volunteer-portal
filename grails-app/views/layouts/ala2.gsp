@@ -114,7 +114,7 @@
 <body class="${pageProperty(name:'body.class')} getinvolved">
 <div id="wrapper">
 
-    <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}"/>
+    <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/public/logout"/>
 
     %{--<hf:menu/>--}%
 
