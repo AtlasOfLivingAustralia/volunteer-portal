@@ -8,17 +8,18 @@ class HeaderFooterTagLib {
     static namespace = 'hf'     // namespace for headers and footers
 
     /**
-     * All includes assume the existence of these config declarations:
+     * All the following statics can be overridden by the specified config declarations.
      *
-     *  ala.baseURL - usually "http://www.ala.org.au"
-     *  bie.baseURL - usually "http://bie.ala.org.au"
-     *  bie.searchPath - usually "/search"
-     *  headerAndFooter.baseURL - usually "http://www2.ala.org.au/commonui"
-     *  security.cas.loginUrl - usually "https://auth.ala.org.au/cas/login"
-     *  security.cas.logoutUrl - usually "https://auth.ala.org.au/cas/logout"
-     *
-     *  The banner include assumes that ala-cas-client exists in the app library.
+     * The banner include assumes that ala-cas-client exists in the app library.
      */
+
+    static alaBaseURL = ConfigurationHolder.config.ala.baseURL ?: "http://www.ala.org.au"
+    static bieBaseURL = ConfigurationHolder.config.bie.baseURL ?: "http://bie.ala.org.au"
+    static bieSearchPath = ConfigurationHolder.config.bie.searchPath ?: "/search"
+    static headerAndFooterBaseURL = ConfigurationHolder.config.headerAndFooter.baseURL ?: "http://www2.ala.org.au/commonui"
+    // the next two can also be overridden by tag attributes
+    static casLoginUrl = ConfigurationHolder.config.security.cas.loginUrl ?: "https://auth.ala.org.au/cas/login"
+    static casLogoutUrl = ConfigurationHolder.config.security.cas.logoutUrl ?: "https://auth.ala.org.au/cas/logout"
 
     /**
      * Display the page banner. Includes login/logout link and search box.
@@ -101,8 +102,7 @@ class HeaderFooterTagLib {
      * @return
      */
     String getContent(which) {
-        def url = ConfigurationHolder.config.headerAndFooter.baseURL + '/' + which + ".html"
-        //println url
+        def url = headerAndFooterBaseURL + '/' + which + ".html"
         def conn = new URL(url).openConnection()
         try {
             conn.setConnectTimeout(10000)
@@ -125,9 +125,9 @@ class HeaderFooterTagLib {
      * @return
      */
     String transform(content, attrs) {
-        content = content.replaceAll(/::centralServer::/, ConfigurationHolder.config.ala.baseURL)
-        content = content.replaceAll(/::searchServer::/, ConfigurationHolder.config.bie.baseURL)
-        content = content.replaceAll(/::searchPath::/, ConfigurationHolder.config.bie.searchPath)
+        content = content.replaceAll(/::centralServer::/, alaBaseURL)
+        content = content.replaceAll(/::searchServer::/, bieBaseURL)
+        content = content.replaceAll(/::searchPath::/, bieSearchPath)
         if (content =~ "::loginLogoutListItem::") {
             // only do the work if it is needed
             content = content.replaceAll(/::loginLogoutListItem::/, buildLoginoutLink(attrs))
@@ -145,8 +145,8 @@ class HeaderFooterTagLib {
         def logoutUrl = attrs.logoutUrl ?: ConfigurationHolder.config.grails.serverURL + "/session/logout"
         def loginReturnToUrl = attrs.loginReturnToUrl ?: requestUri
         def logoutReturnToUrl = attrs.logoutReturnToUrl ?: requestUri
-        def casLoginUrl = attrs.casLoginUrl ?: ConfigurationHolder.config.security.cas.loginUrl
-        def casLogoutUrl = attrs.casLogoutUrl ?: ConfigurationHolder.config.security.cas.logoutUrl
+        def casLoginUrl = attrs.casLoginUrl ?: casLoginUrl
+        def casLogoutUrl = attrs.casLogoutUrl ?: casLogoutUrl
 
         if ((attrs.ignoreCookie != "true" &&
                 AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) ||
