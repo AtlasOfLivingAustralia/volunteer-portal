@@ -12,6 +12,7 @@ class TaskController {
     def fieldService
     def authService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
+    def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
     def load = {
         [projectList: Project.list()]
     }
@@ -30,7 +31,7 @@ class TaskController {
 
     def projectAdmin = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && (authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
             renderListWithSearch(params, ["catalogNumber","scientificName"], "adminList")
         } else {
             flash.message = "You do not have permission to view the Admin Task List page (${ROLE_ADMIN} required)"
