@@ -269,9 +269,15 @@ class ProjectController {
     }
 
     def create = {
-        def projectInstance = new Project()
-        projectInstance.properties = params
-        return [projectInstance: projectInstance, templateList: Template.list()]
+        def currentUser = authService.username()
+        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+            def projectInstance = new Project()
+            projectInstance.properties = params
+            return [projectInstance: projectInstance, templateList: Template.list()]
+        } else {
+            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            redirect(controller: "project", action: "index", id: params.id)
+        }
     }
 
     def save = {
@@ -312,13 +318,19 @@ class ProjectController {
     }
 
     def edit = {
-        def projectInstance = Project.get(params.id)
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            return [projectInstance: projectInstance]
+        def currentUser = authService.username()
+        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+            def projectInstance = Project.get(params.id)
+            if (!projectInstance) {
+                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+                redirect(action: "list")
+            }
+            else {
+                return [projectInstance: projectInstance]
+            }
+        } else {
+            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
