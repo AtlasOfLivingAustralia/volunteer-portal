@@ -272,8 +272,8 @@ class TaskService {
      * @return
      */
     def loadCSV(Integer projectId, String text) {
-
-        println("ProjectID: " + projectId)
+        def flashMsg = ""
+        log.debug("ProjectID: " + projectId)
         def project = Project.get(projectId)
         text.eachCsvLine { tokens ->
             //only one line in this case
@@ -291,33 +291,30 @@ class TaskService {
               imageUrl = tokens[1].trim()
             } else if (tokens.length == 5) {
                 println("CSV has 5 token: " + tokens.join('|'))
-                task.externalIdentifier = tokens[0].trim()
+                def externalIdentifier = tokens[0].trim()
+                task.externalIdentifier = externalIdentifier
                 imageUrl = tokens[1].trim()
-                def catalogNumber = tokens[3].trim()
                 // check for duplicate catalog number (overwrite duplicates)
-                def fullList = Task.findAllByProject(project, [max: 999])
-                def params = new GrailsParameterMap([max:999, offset:0],null)
-
-                if (fullList.size() > 0) {
-                    def taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, catalogNumber, params) // look for existing catalogNumber records
-
-                    for (Task t : taskInstanceList) {
-                        log.warn "Duplicate found (will be deleted): " + t.id + " - " + t.externalIdentifier + " (catalogNumber: " + catalogNumber + ")"
-                        t.delete(flush: true)
-                    }
+                def dupes = Task.findAllByExternalIdentifier(externalIdentifier)
+                for (Task t : dupes) {
+                    def msg = "Duplicate found (will be deleted): " + t.id + " - " + t.externalIdentifier
+                    flashMsg += msg + "<br/>"
+                    log.warn msg
+                    t.delete(flush: true)
                 }
-
                 // create associated fields
                 fields.add(new Field(name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()).save(flush: true))
-                fields.add(new Field(name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: catalogNumber).save(flush: true))
+                fields.add(new Field(name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()).save(flush: true))
                 fields.add(new Field(name: 'scientificName', recordIdx: 0, transcribedByUserId: 'system', value: tokens[4].trim()).save(flush: true))
             } else {
                 // error
-                println "CSV file has incorrect number of fields"
+                def msg = "CSV file has incorrect number of fields"
+                flashMsg += msg + "<br/>"
+                log.error msg
                 task = null // force save to error
             }
 
-            if (!task.hasErrors()) {
+            if (task && !task.hasErrors()) {
 
                 task.save(flush: true)
 
@@ -342,11 +339,15 @@ class TaskService {
                 multimedia.filePath = filePath.dir + "/" +filePath.raw
                 multimedia.filePathToThumbnail = filePath.dir + "/" +filePath.thumb
                 multimedia.save(flush: true)
-                println("Saved..." + tokens)
+                log.info "Saved..." + tokens
             } else {
-                println("Has errors..." + task.errors)
+                def msg = "Saving Task errors: " + task.errors
+                flashMsg += msg + "<br/>"
+                log.error msg
             }
         }
+
+        return flashMsg
     }
 
   /**

@@ -129,7 +129,7 @@ class TaskController {
 
     def loadCSV = {
         def projectId = params.int('projectId')
-        taskService.loadCSV(projectId, params.csv)
+        flash.message = taskService.loadCSV(projectId, params.csv)
         redirect(action: "list", params: [id:  projectId])
     }
 
