@@ -4,11 +4,13 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import com.thebuzzmedia.imgscalr.Scalr
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class TaskService {
 
     javax.sql.DataSource dataSource
     def config = ConfigurationHolder.config
+    def fieldService
 
     static transactional = true
 
@@ -291,10 +293,28 @@ class TaskService {
                 println("CSV has 5 token: " + tokens.join('|'))
                 task.externalIdentifier = tokens[0].trim()
                 imageUrl = tokens[1].trim()
+                def catalogNumber = tokens[3].trim()
+                // check for duplicate catalog number (overwrite duplicates)
+                def fullList = Task.findAllByProject(project, [max: 999])
+                def params = new GrailsParameterMap([max:999, offset:0],null)
+
+                if (fullList.size() > 0) {
+                    def taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, catalogNumber, params) // look for existing catalogNumber records
+
+                    for (Task t : taskInstanceList) {
+                        log.warn "Duplicate found (will be deleted): " + t.id + " - " + t.externalIdentifier + " (catalogNumber: " + catalogNumber + ")"
+                        t.delete(flush: true)
+                    }
+                }
+
+                // create associated fields
                 fields.add(new Field(name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()).save(flush: true))
-                fields.add(new Field(name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()).save(flush: true))
+                fields.add(new Field(name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: catalogNumber).save(flush: true))
                 fields.add(new Field(name: 'scientificName', recordIdx: 0, transcribedByUserId: 'system', value: tokens[4].trim()).save(flush: true))
-                //task.fields = fields
+            } else {
+                // error
+                println "CSV file has incorrect number of fields"
+                task = null // force save to error
             }
 
             if (!task.hasErrors()) {
