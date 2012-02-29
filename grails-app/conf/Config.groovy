@@ -135,9 +135,9 @@ environments {
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
     }
     development {
-        grails.serverURL = "http://nickdos.ala.org.au:8090/${appName}"
-        server.url = "http://nickdos.ala.org.au"
-        security.cas.appServerName = "http://nickdos.ala.org.au:8090"
+        grails.serverURL = "http://localhost:8080/${appName}"
+        server.url = "http://localhost"
+        security.cas.appServerName = "http://localhost:8080"
         security.cas.contextPath = "/${appName}"
         //log4j.appender.'errors.File'="stacktrace.log"
     }
@@ -158,9 +158,9 @@ log4j = {
     // Example of changing the log pattern for the default console
     // appender:
     //
-//    appenders {
-//        console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-//    }
+    appenders {
+        console name:'stdout', layout:pattern(conversionPattern: '%-5p [%c{2}] %m%n')
+    }
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP
@@ -172,8 +172,10 @@ log4j = {
            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
            'org.springframework',
            'org.hibernate',
-           'net.sf.ehcache.hibernate'
+           'net.sf.ehcache.hibernate',
+           'grails.app'
 
-    warn   'org.mortbay.log'
+    warn   'org.mortbay.log',
+           'grails.app'
     info   'grails.app'
 }
