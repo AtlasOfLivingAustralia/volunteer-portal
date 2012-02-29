@@ -13,6 +13,7 @@ class TaskController {
     def authService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
+
     def load = {
         [projectList: Project.list()]
     }
@@ -127,8 +128,9 @@ class TaskController {
     }
 
     def loadCSV = {
-        taskService.loadCSV(params.int('projectId'), params.csv)
-        redirect(action: "list")
+        def projectId = params.int('projectId')
+        taskService.loadCSV(projectId, params.csv)
+        redirect(action: "list", params: [id:  projectId])
     }
 
     def index = {
