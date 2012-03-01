@@ -38,8 +38,9 @@
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                 Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
                 &nbsp;&nbsp;
-                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated tasks</button>
-                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:false])}'">Export transcribed tasks</button>
+                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id)}'">Export all</button>
+                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[transcribed:true])}'">Export transcribed</button>
+                <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated</button>
                 <input type="text" name="q" id="q" value="${params.q}" size="30"/>
                 <button id="searchButton">search</button>
             </div>

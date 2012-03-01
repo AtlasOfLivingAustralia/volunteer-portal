@@ -174,14 +174,17 @@ class ProjectController {
      */
     def exportCSV = {
         def projectInstance = Project.get(params.id)
-        boolean validatedOnly = params.validated.toBoolean()
+        boolean transcribedOnly = params.transcribed?.toBoolean()
+        boolean validatedOnly = params.validated?.toBoolean()
         
         if (projectInstance) {
             def taskList
-            if (validatedOnly) {
+            if (transcribedOnly) {
+                taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
+            } else if (validatedOnly) {
                 taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
             } else {
-                taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
+                taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
             }
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
             def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier"]
