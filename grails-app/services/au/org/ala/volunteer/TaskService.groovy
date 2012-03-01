@@ -332,14 +332,11 @@ class TaskService {
                 multimedia.save(flush: true)
                 // GET the image via its URL and save various forms to local disk
                 def filePath = copyImageToStore(imageUrl, task.id, multimedia.id)
-                println("Saved..." + tokens + " -> " + filePath['raw'])
-
-                filePath = createImageThumbs(filePath)
-
+                filePath = createImageThumbs(filePath) // creates thumbnail versions of images
                 multimedia.filePath = filePath.dir + "/" +filePath.raw
                 multimedia.filePathToThumbnail = filePath.dir + "/" +filePath.thumb
                 multimedia.save(flush: true)
-                log.info "Saved..." + tokens
+                log.info "Saved..." + tokens + " -> " + filePath['raw']
             } else {
                 def msg = "Saving Task errors: " + task.errors
                 flashMsg += msg + "<br/>"
