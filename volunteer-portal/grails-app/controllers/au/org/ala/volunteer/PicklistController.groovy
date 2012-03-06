@@ -16,6 +16,50 @@ class PicklistController {
         picklistService.load(params.name, params.picklist)
         redirect(action: "list")
     }
+    
+    def uploadEx = {
+        picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist)
+        redirect(action: "manage")
+    }
+
+    def manage = {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
+    }
+
+    def loadcsv = {
+        def picklist = Picklist.get(params.picklistId)
+        def csvdata = ''
+        if (picklist) {
+            def items = PicklistItem.findAllByPicklist(picklist)
+            def sb = new StringBuilder()
+            for (item in items) {
+                sb << "'" << (item.value ?: "") << "'"
+                if (item.key) {
+                    sb << ',' << item.key;
+                }
+                sb << '\n'
+            }
+            csvdata = sb.toString()
+        }
+        render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id])
+    }
+    
+    def download = {
+        def picklist = Picklist.get(params.picklistId)
+        if (picklist) {
+            response.setHeader("Content-disposition", "attachment;filename=" + picklist.name + ".csv")
+            response.contentType = "text/csv"
+            def items = PicklistItem.findAllByPicklist(picklist)            
+            for (item in items) {
+                response.outputStream << "'" << (item.value ?: "") << "'"
+                if (item.key) {
+                    response.outputStream << item.value
+                }
+                response.outputStream << '\n'
+            }
+        }
+    }
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
