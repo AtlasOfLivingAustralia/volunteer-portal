@@ -21,7 +21,7 @@
             <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
             <span class="menuButton"><g:link controller="project" action="list"> Projects </g:link></span>
             <g:if test="${projectInstance}">
-                <span class="menuButton">${projectInstance.name}</span>
+                <span class="menuButton"><g:link controller="project" action="index" id="${projectInstance.id}">${projectInstance.name}</g:link></span>
             </g:if>
             <g:else>
                 <span class="menuButton">Tasks</span>

@@ -12,6 +12,8 @@ class TaskService {
     def config = ConfigurationHolder.config
     def fieldService
 
+    def LAST_VIEW_TIMEOUT_MINUTES = ConfigurationHolder.config.viewedTask.timeout
+
     static transactional = true
 
     def serviceMethod() {}
@@ -174,15 +176,15 @@ class TaskService {
      * @return
      */
     Task getNextTask(String userId, Project project) {
-
+        def currentTime = System.currentTimeMillis() - LAST_VIEW_TIMEOUT_MINUTES
         def tasks = Task.executeQuery(
             """select t from Task t
                left outer join t.viewedTasks viewedTasks
                where
                t.project.id = :projectId
                and t.fullyTranscribedBy is null
-               and (viewedTasks.userId != :userId or viewedTasks.userId is null)
-               order by viewedTasks.lastView""", [projectId: project.id, userId: userId, max: 1])
+               and (viewedTasks.userId is null or (viewedTasks.userId != :userId and viewedTasks.lastView < :currentTime))
+               order by viewedTasks.lastView desc""", [projectId: project.id, userId: userId, currentTime: currentTime, max: 1])
         if (tasks) {
             log.info("getNextTask: project " + project.id + " - found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
             tasks.get(0)
@@ -194,7 +196,7 @@ class TaskService {
                where
                t.project.id = :projectId
                and t.fullyTranscribedBy is null
-               order by viewedTasks.lastView""", [projectId: project.id, max: 1])
+               order by viewedTasks.lastView desc""", [projectId: project.id, max: 1])
             if(!tasks.isEmpty()){
                 log.info("getNextTask: found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
               tasks.get(0)

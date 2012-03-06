@@ -12,6 +12,7 @@ class TranscribeController {
     def userService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
+    def LAST_VIEW_TIMEOUT_MINUTES = grailsApplication.config.viewedTask.timeout
 
     static allowedMethods = [saveTranscription: "POST"]
 
@@ -32,8 +33,34 @@ class TranscribeController {
         userService.registerCurrentUser()
 
         if (taskInstance) {
-            //record the viewing of the task
-            auditService.auditTaskViewing(taskInstance, currentUser)
+            // determine if task has been recently viewed by another user
+            def prevUserId = null
+            def prevLastView = 0
+            taskInstance.viewedTasks.each { viewedTask ->
+                // viewedTasks is a set so order is not guaranteed
+                if (viewedTask.lastView > prevLastView) {
+                    // store the most recent viewedTask
+                    prevUserId = viewedTask.userId
+                    prevLastView = viewedTask.lastView
+                }
+            }
+
+            log.debug "userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
+            def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
+
+            if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MINUTES) {
+                // task is already being viewed by another user (with timeout period)
+                log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago."
+                def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/editted by another user. " +
+                        "You have been allocated a new task"
+                // redirect to another task
+                redirect(action: "showNextFromProject", id: taskInstance.project.id,
+                        params: [msg: msg, prevId: taskInstance.id, prevUserId: prevUserId])
+            } else {
+                // go ahead with this task
+                auditService.auditTaskViewing(taskInstance, currentUser)
+            }
+
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
             def isReadonly
@@ -147,16 +174,23 @@ class TranscribeController {
     def showNextFromProject = {
         def currentUser = authService.username()
         def project = Project.get(params.id)
-        log.debug("params.id =" + params.id);
+        log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
+        flash.message = params.msg
+        def previousId = params.prevId?:-1
+        def prevUserId = params.prevUserId?:-1
         def taskInstance = taskService.getNextTask(currentUser, project)
-
         //retrieve the details of the template
-        if (taskInstance && project) {
+        if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {
+            log.debug "1."
+            render(view: 'noTasks')
+        } else if (taskInstance && project) {
+            log.debug "2."
             redirect(action: 'task', id: taskInstance.id)
         } else if (!project) {
             log.error("Project not found for id: " + params.id)
             redirect(view: '/index')
         } else {
+            log.debug "4."
             render(view: 'noTasks')
         }
     }
