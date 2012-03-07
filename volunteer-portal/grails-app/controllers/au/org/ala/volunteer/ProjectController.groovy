@@ -80,25 +80,28 @@ class ProjectController {
         if (projectInstance) {
             private long startQ  = System.currentTimeMillis();
             def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:999])
-            def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
-            def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList, params))
-            private long endQ  = System.currentTimeMillis();
-            log.debug("DB query took " + (endQ - startQ) + " ms")
-            log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
-            taskList.eachWithIndex { tsk, i ->
-                def jsonObj = [:]
-                jsonObj.put("id",tsk.id)
 
-                if (lats.containsKey(tsk.id) && lngs.containsKey(tsk.id)) {
-                    jsonObj.put("lat",lats.get(tsk.id))
-                    jsonObj.put("lng",lngs.get(tsk.id))
-                    taskListFields.add(jsonObj)
+            if (taskList.size() > 0) {
+                def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
+                def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList, params))
+                private long endQ  = System.currentTimeMillis();
+                log.debug("DB query took " + (endQ - startQ) + " ms")
+                log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
+                taskList.eachWithIndex { tsk, i ->
+                    def jsonObj = [:]
+                    jsonObj.put("id",tsk.id)
+
+                    if (lats.containsKey(tsk.id) && lngs.containsKey(tsk.id)) {
+                        jsonObj.put("lat",lats.get(tsk.id))
+                        jsonObj.put("lng",lngs.get(tsk.id))
+                        taskListFields.add(jsonObj)
+                    }
                 }
-            }
 
-            private long endJ  = System.currentTimeMillis();
-            log.debug("JSON loop took " + (endJ - endQ) + " ms")
-            log.debug("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
+                private long endJ  = System.currentTimeMillis();
+                log.debug("JSON loop took " + (endJ - endQ) + " ms")
+                log.debug("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
+            }
             render taskListFields as JSON
         } else {
             // no project found

@@ -31,6 +31,7 @@
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {
+        taskId: "${taskInstance?.id}",
         picklistAutocompleteUrl: "${createLink(action:'autocomplete', controller:'picklistItem')}",
         updatePicklistUrl: "${createLink(controller:'picklistItem', action:'updateLocality')}",
         nextTaskUrl:  "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}",
@@ -251,7 +252,7 @@
                 </div>
             </div>
 
-            <div class="buttons" style="clear: both">
+            <div class="vp-buttons" style="clear: both">
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                 <g:if test="${validator}">
                     <span class="button"><g:actionSubmit class="validate" action="validate"
@@ -259,6 +260,7 @@
                     <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
                              value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
                     <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
+                    <span style="color:gray;">&nbsp;&nbsp;<g:link controller="task" action="projectAdmin" id="${taskInstance?.project?.id}">Validation List</g:link></span>
                     <span style="color:gray;">&nbsp;&nbsp;[is valid: ${taskInstance?.isValid} | validatedBy:  ${taskInstance?.fullyValidatedBy}]</span>
                 </g:if>
                 <g:else>
@@ -266,7 +268,7 @@
                              value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
                     <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
                              value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                    <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
+                    <span class="button"><button id="link" class="skip">Skip</button></span>
                 </g:else>
             </div>
             <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>
