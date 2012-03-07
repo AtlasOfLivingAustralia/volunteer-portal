@@ -77,6 +77,7 @@ expedition = [
 ]
 
 volunteer.defaultProjectId = 6306
+viewedTask.timeout = 60 * 60 * 1000
 
 ala.skin = "ala2"
 ala.baseURL = "http://www.ala.org.au"
