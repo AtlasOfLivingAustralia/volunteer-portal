@@ -568,7 +568,6 @@ $(document).ready(function() {
     // skip/next task button
     $("#showNextFromProject").click(function(e) {
         e.preventDefault();
-        alert("#showNextFromProject " + VP_CONF.taskId);
         location.href = VP_CONF.nextTaskUrl + "?taskId=" + VP_CONF.taskId;
     });
 
