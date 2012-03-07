@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import au.com.bytecode.opencsv.CSVWriter
+
 class PicklistController {
 
     static allowedMethods = [upload: "POST", save: "POST", update: "POST", delete: "POST"]
@@ -17,7 +19,7 @@ class PicklistController {
         redirect(action: "list")
     }
     
-    def uploadEx = {
+    def uploadCsvData = {
         picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist)
         redirect(action: "manage")
     }
@@ -27,20 +29,25 @@ class PicklistController {
         [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
     }
 
+    def writeItemsCsv(Writer writer, Picklist picklist) {
+        if (picklist) {
+            CSVWriter csvWriter = new CSVWriter(writer)
+
+            def items = PicklistItem.findAllByPicklist(picklist)
+            
+            for (item in items) {
+                csvWriter.writeNext( [ (item.value ?: ""), (item.key ?: "") ] as String[] )
+            }
+        }
+    }
+
     def loadcsv = {
         def picklist = Picklist.get(params.picklistId)
         def csvdata = ''
         if (picklist) {
-            def items = PicklistItem.findAllByPicklist(picklist)
-            def sb = new StringBuilder()
-            for (item in items) {
-                sb << "'" << (item.value ?: "") << "'"
-                if (item.key) {
-                    sb << ',' << item.key;
-                }
-                sb << '\n'
-            }
-            csvdata = sb.toString()
+            StringWriter sw = new StringWriter();
+            writeItemsCsv(sw, picklist)
+            csvdata = sw.toString();
         }
         render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id])
     }
@@ -50,14 +57,10 @@ class PicklistController {
         if (picklist) {
             response.setHeader("Content-disposition", "attachment;filename=" + picklist.name + ".csv")
             response.contentType = "text/csv"
-            def items = PicklistItem.findAllByPicklist(picklist)            
-            for (item in items) {
-                response.outputStream << "'" << (item.value ?: "") << "'"
-                if (item.key) {
-                    response.outputStream << item.value
-                }
-                response.outputStream << '\n'
-            }
+            OutputStreamWriter writer = new OutputStreamWriter(response.outputStream);
+            writeItemsCsv(writer, picklist)
+            writer.flush();
+            writer.close();
         }
     }
 
