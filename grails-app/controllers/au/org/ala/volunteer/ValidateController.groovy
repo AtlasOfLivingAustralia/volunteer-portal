@@ -95,7 +95,7 @@ class ValidateController {
 
     def showNextFromProject = {
         def project = Project.get(params.id)
-        def taskInstance = taskService.getNextTaskForValidationForProject(project)
+        def taskInstance = taskService.getNextTaskForValidationForProject(project, params.taskId)
         if (taskInstance != null) {
             redirect(action: 'task', id: taskInstance.id)
         } else {

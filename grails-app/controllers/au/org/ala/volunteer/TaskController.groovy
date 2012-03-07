@@ -65,8 +65,11 @@ class TaskController {
             } else {
                 taskInstanceList = Task.findAllByProject(projectInstance, params)
                 taskInstanceTotal = Task.countByProject(projectInstance)
-                fieldNames.each {
-                    extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
+                if (taskInstanceTotal) {
+                    fieldNames.each {
+                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
+                    }
+                    //extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
                 }
             }
             // add some associated "field" values

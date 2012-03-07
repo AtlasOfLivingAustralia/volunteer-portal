@@ -568,7 +568,8 @@ $(document).ready(function() {
     // skip/next task button
     $("#showNextFromProject").click(function(e) {
         e.preventDefault();
-        location.href = VP_CONF.nextTaskUrl;
+        alert("#showNextFromProject " + VP_CONF.taskId);
+        location.href = VP_CONF.nextTaskUrl + "?taskId=" + VP_CONF.taskId;
     });
 
 }); // end document ready
