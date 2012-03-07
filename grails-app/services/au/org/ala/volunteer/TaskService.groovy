@@ -234,12 +234,12 @@ class TaskService {
      */
     Task getNextTaskForValidationForProject(Project project, String taskId) {
         def previousTaskId = (taskId) ? taskId.toLong() : -1L
-        log.info("taskId = " + taskId + " || previousTaskId = " + previousTaskId)
+        log.debug("taskId = " + taskId + " || previousTaskId = " + previousTaskId)
         def tasks = Task.executeQuery(
             """select t from Task t
                where t.fullyTranscribedBy is not null
                and t.fullyValidatedBy is null and t.project = :project
-               and t.id != :previousTaskId order
+               and t.id != :previousTaskId
                """, [project:project, previousTaskId: previousTaskId, max: 1])
         if (tasks) {
             tasks.get(0)
