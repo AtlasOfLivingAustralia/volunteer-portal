@@ -2,8 +2,8 @@ dataSource {
     pooled = true
     //driverClassName = "com.mysql.jdbc.Driver"
     driverClassName = "org.postgresql.Driver"
-    username = "postgres"
-    password = "temp99"
+    username = "root"
+    password = "password"
     loggingSql = false
 }
 hibernate {
