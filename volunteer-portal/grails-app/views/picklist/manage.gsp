@@ -11,6 +11,7 @@
   <g:form controller="picklist" action="manage">
     <div class="nav">
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+      <span class="menuButton"><a class="home" href="${createLink(uri: '/admin/index')}"><g:message code="default.admin.label" default="Admin"/></a></span>
       <span class="menuButton">Picklists</span>
     </div>
     <h1><g:message code="manage.list.label" args="[entityName]" default="Manage picklists"/></h1>
