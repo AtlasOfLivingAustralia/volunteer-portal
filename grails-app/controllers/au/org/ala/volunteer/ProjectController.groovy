@@ -190,7 +190,7 @@ class ProjectController {
                 taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
             }
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
-            def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier"]
+            def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier", "exportComment"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
             log.debug("Fields: "+ fieldNames);
             //render("tasks: " + taskList.size()) as JSON
@@ -222,6 +222,8 @@ class ProjectController {
     String[] getFieldsforTask(Task task, List fields, Map taskMap) {
         List fieldValues = []
         def taskId = task.id
+        
+        def date = new Date().format("dd-MMM-yyyy")
 
         if (taskMap.containsKey(taskId)) {
             def fieldMap = taskMap.get(taskId)
@@ -238,6 +240,14 @@ class ProjectController {
                 }
                 else if (i == 3) {
                     fieldValues.add(task.externalIdentifier)
+                }
+                else if (i == 4) {
+                    def sb = new StringBuilder()
+                    if (!task.fullyTranscribedBy.isEmpty()) {
+                        sb.append("Fully transcribed by ${task.fullyTranscribedBy}. ")
+                    }
+                    sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
+                    fieldValues.add((String) sb.toString())
                 }
                 else if (fieldMap.containsKey(it)) {
                     fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", '\\\\n'))

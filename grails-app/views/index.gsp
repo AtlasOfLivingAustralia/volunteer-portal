@@ -21,6 +21,11 @@
 
   </head>
   <body>
+
+    <g:if test="${flash.message}">
+      <div class="message">${flash.message}</div>
+    </g:if>
+
     %{--<div id="vp-menu">--}%
         %{--<img alt="ala" src="${resource(dir:'/images/vp',file:'ala-logo.png')}"/>--}%
         %{--<ul>--}%
@@ -43,6 +48,7 @@
         Help turn this information into valuable knowledge that will be used for understanding the relationships
         between organisms, learning where they live and how they might be affected by habitat loss and climate change.</p>
     </div>
+
     <div id="project-picker">
         <p>Browse our current projects and click on one to start the expedition.</p>
         <ul id="rollovers">
@@ -147,6 +153,10 @@
             </div>--}%
         </div>
     </div>
+
+    <cl:isLoggedIn>
+      <g:link controller="admin" action="index" style="color:#DDDDDD;">Admin</g:link>
+    </cl:isLoggedIn>
     %{--<div id="vp-footer">--}%
         %{--<div class="copyright">--}%
             %{--<p><a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="left no-pipe">--}%

@@ -130,7 +130,6 @@ class VolunteerTagLib {
         return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
     }
 
-
     /**
      * Authorisation for editing is determined by roles and rights
      *

@@ -32,7 +32,7 @@ if (!ala.baseURL) {
 \******************************************************************************/
 if (!security.cas.urlPattern) {
     security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*,/validate/save.*," +
-            "/validate/.*,/user/.*,/project/mailingList/.*,/task/projectAdmin.*,/newsItem/.*, /picklist/.*"
+            "/validate/.*,/user/.*,/project/.*,/task/projectAdmin.*,/newsItem/.*, /picklist/.*, /admin/.*"
 }
 if (!security.cas.urlExclusionPattern) {
     security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
@@ -136,9 +136,9 @@ environments {
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
-        server.url = "http://localhost"
-        security.cas.appServerName = "http://localhost:8080"
+        grails.serverURL = "http://baird.ala.org.au:8080/${appName}"
+        server.url = "http://baird.ala.org.au"
+        security.cas.appServerName = "http://baird.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         //log4j.appender.'errors.File'="stacktrace.log"
     }
