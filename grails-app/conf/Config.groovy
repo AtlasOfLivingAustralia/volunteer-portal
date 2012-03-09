@@ -143,9 +143,9 @@ environments {
         //log4j.appender.'errors.File'="stacktrace.log"
     }
     test {
-        grails.serverURL = "http://localhost:8080/${appName}"
-        server.url = "http://localhost"
-        security.cas.appServerName = "http://localhost:8080"
+        grails.serverURL = "http://bdrs-test.ala.org.au:8080/${appName}"
+        server.url = "http://bdrs-test.ala.org.au"
+        security.cas.appServerName = "http://bdrs-test.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
     }
