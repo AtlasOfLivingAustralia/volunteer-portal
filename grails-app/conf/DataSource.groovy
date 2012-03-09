@@ -25,7 +25,7 @@ environments {
     }
     test {
         dataSource {
-            dbCreate = "create"
+            dbCreate = "update"
             //url = "jdbc:mysql://localhost/volunteerstest"
             url = "jdbc:postgresql://localhost/volunteerstest"
             driverClassName = "org.postgresql.Driver"
