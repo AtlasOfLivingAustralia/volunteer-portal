@@ -27,7 +27,7 @@ environments {
         dataSource {
             dbCreate = "update"
             //url = "jdbc:mysql://localhost/volunteerstest"
-            url = "jdbc:postgresql://localhost/volunteers"
+            url = "jdbc:postgresql://localhost/volunteerstest"
             driverClassName = "org.postgresql.Driver"
             //driverClassName = "com.mysql.jdbc.Driver"
             username = "postgres"
