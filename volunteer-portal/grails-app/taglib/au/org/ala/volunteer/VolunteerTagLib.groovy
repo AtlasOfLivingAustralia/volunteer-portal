@@ -8,6 +8,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 import au.org.ala.cas.util.AuthenticationCookieUtils
+import grails.util.Environment
 
 class VolunteerTagLib {
     //def authenticateService
@@ -128,6 +129,12 @@ class VolunteerTagLib {
 
     private boolean isAdmin() {
         return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
+    }
+
+    def ifTest = { attrs, body ->
+        if (Environment.current == Environment.TEST)      {
+            out << body()
+        }
     }
 
     /**
