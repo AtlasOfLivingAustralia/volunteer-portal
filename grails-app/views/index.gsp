@@ -22,6 +22,10 @@
   </head>
   <body>
 
+    <cl:ifTest>
+      <div class="message">Test Environment</div>
+    </cl:ifTest>
+
     <g:if test="${flash.message}">
       <div class="message">${flash.message}</div>
     </g:if>

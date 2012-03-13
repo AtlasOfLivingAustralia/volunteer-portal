@@ -17,7 +17,7 @@ environments {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
             //url = "jdbc:mysql://localhost/volunteers"
-            username="root"
+            username="postgres"
             password="password"
             url = "jdbc:postgresql://localhost/volunteers"
             loggingSql = false
@@ -27,7 +27,7 @@ environments {
         dataSource {
             dbCreate = "update"
             //url = "jdbc:mysql://localhost/volunteerstest"
-            url = "jdbc:postgresql://localhost/volunteerstest"
+            url = "jdbc:postgresql://localhost/volunteers"
             driverClassName = "org.postgresql.Driver"
             //driverClassName = "com.mysql.jdbc.Driver"
             username = "postgres"
