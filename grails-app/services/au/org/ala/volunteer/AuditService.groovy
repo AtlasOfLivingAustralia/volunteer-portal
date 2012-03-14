@@ -36,6 +36,7 @@ class AuditService {
     }
 
     def auditTaskViewing(Task taskInstance, String userId) {
+        log.debug "Audit service: " + taskInstance.id
         if (taskInstance.viewedTasks) {
             //update the viewed task
             taskInstance.viewedTasks.each { viewedTask ->

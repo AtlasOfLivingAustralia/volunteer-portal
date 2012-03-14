@@ -249,6 +249,47 @@ class TaskService {
     }
 
     /**
+     * Get the next task for this user (with checking for concurrent access)
+     *
+     * @param userId
+     * @param project
+     * @return
+     */
+    Task getNextTaskForValidationForProject(String userId, Project project) {
+        log.debug "getNextTaskForValidationForProject checking access..."
+        def currentTime = System.currentTimeMillis() - LAST_VIEW_TIMEOUT_MINUTES
+        def tasks = Task.executeQuery(
+                """select t from Task t
+               left outer join t.viewedTasks viewedTasks
+               where
+               t.project.id = :projectId
+               and t.fullyTranscribedBy is not null
+               and t.fullyValidatedBy is null
+               and (viewedTasks.userId is null or (viewedTasks.userId != :userId and viewedTasks.lastView < :currentTime))
+               order by viewedTasks.lastView desc""", [projectId: project.id, userId: userId, currentTime: currentTime, max: 1])
+        if (tasks) {
+            log.info("getNextTask: project " + project.id + " - found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
+            tasks.get(0)
+        } else {
+            //show
+            tasks = Task.executeQuery(
+                    """select t from Task t
+               left outer join t.viewedTasks viewedTasks
+               where
+               t.project.id = :projectId
+               and t.fullyTranscribedBy is not null
+               and t.fullyValidatedBy is null
+               order by viewedTasks.lastView desc""", [projectId: project.id, max: 1])
+            if(!tasks.isEmpty()){
+                log.info("getNextTask: found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
+                tasks.get(0)
+            } else {
+                null
+            }
+        }
+    }
+
+    /**
      * Get the next task for this user for this project.
      *
      * @param userId
