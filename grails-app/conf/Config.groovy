@@ -32,13 +32,13 @@ if (!ala.baseURL) {
 \******************************************************************************/
 if (!security.cas.urlPattern) {
     security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*,/validate/save.*," +
-            "/validate/.*,/user/.*,/project/.*,/task/projectAdmin.*,/newsItem/.*, /picklist/.*, /admin/.*"
+            "/validate/.*,/user/.*,/project/((?!index).)*,/task/.*,/newsItem/.*, /picklist/.*, /admin/.*"
 }
 if (!security.cas.urlExclusionPattern) {
     security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
 }
 if (!security.cas.authenticateOnlyIfLoggedInPattern) {
-    security.cas.authenticateOnlyIfLoggedInPattern = "/"
+    security.cas.authenticateOnlyIfLoggedInPattern = "/,/project/index/*"
 }
 if (!security.cas.casServerName) {
     security.cas.casServerName = "https://auth.ala.org.au"

@@ -163,9 +163,15 @@ class TaskController {
     }
 
     def create = {
-        def taskInstance = new Task()
-        taskInstance.properties = params
-        return [taskInstance: taskInstance]
+        def currentUser = authService.username()
+        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+            def taskInstance = new Task()
+            taskInstance.properties = params
+            return [taskInstance: taskInstance]
+        } else {
+            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            redirect(view: '/index')
+        }
     }
 
     def save = {
@@ -191,13 +197,19 @@ class TaskController {
     }
 
     def edit = {
-        def taskInstance = Task.get(params.id)
-        if (!taskInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            return [taskInstance: taskInstance]
+        def currentUser = authService.username()
+        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+            def taskInstance = Task.get(params.id)
+            if (!taskInstance) {
+                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
+                redirect(action: "list")
+            }
+            else {
+                return [taskInstance: taskInstance]
+            }
+        } else {
+            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            redirect(view: '/index')
         }
     }
 
