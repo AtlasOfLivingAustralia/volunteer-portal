@@ -136,9 +136,9 @@ environments {
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
     }
     development {
-        grails.serverURL = "http://baird.ala.org.au:8080/${appName}"
-        server.url = "http://baird.ala.org.au"
-        security.cas.appServerName = "http://baird.ala.org.au:8080"
+        grails.serverURL = "http://localhost:8080/${appName}"
+        server.url = "http://localhost"
+        security.cas.appServerName = "http://localhost:8080"
         security.cas.contextPath = "/${appName}"
         //log4j.appender.'errors.File'="stacktrace.log"
     }
@@ -148,7 +148,8 @@ environments {
         security.cas.appServerName = "http://bdrs-test.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
-    }}
+    }
+}
 
 //hibernate.SQL="trace,stdout"
 //hibernate.type="trace,stdout"
