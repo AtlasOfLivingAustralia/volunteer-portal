@@ -174,6 +174,12 @@ class TranscribeController {
     def showNextFromProject = {
         def currentUser = authService.username()
         def project = Project.get(params.id)
+
+        if (project == null) {
+            log.error("Project not found for id: " + params.id)
+            redirect(view: '/index')
+        }
+
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
         flash.message = params.msg
         def previousId = params.prevId?:-1
@@ -183,12 +189,9 @@ class TranscribeController {
         if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {
             log.debug "1."
             render(view: 'noTasks')
-        } else if (taskInstance && project) {
+        } else if (taskInstance) {
             log.debug "2."
             redirect(action: 'task', id: taskInstance.id)
-        } else if (!project) {
-            log.error("Project not found for id: " + params.id)
-            redirect(view: '/index')
         } else {
             log.debug "4."
             render(view: 'noTasks')
