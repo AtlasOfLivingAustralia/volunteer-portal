@@ -167,34 +167,26 @@
 
 <body class="sublevel sub-site volunteerportal">
 
-<nav id="nav-site">
-  <ul class="sf sf-js-enabled">
-    <li class="nav-bvp"><a href="${createLink(uri:'/')}">Biodiversity Volunteer Portal</a></li>
-    <li class="nav-expeditions selected"><g:link controller="project" action="list">Expeditions</g:link></li>
-    <li class="nav-tutorials"><a href="${createLink(uri:'/tutorials.gsp')}">Tutorials</a></li>
-    <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
-    <li class="nav-aboutbvp"><a href="${createLink(uri:'/about.gsp')}">About the Portal</a></li>
-  </ul>
-</nav>
+  <cl:navbar selected="expeditions" />
 
-<header id="page-header">
-  <div class="inner">
-    <g:if test="${flash.message}">
-      <div class="message">${flash.message}</div>
-    </g:if>
+  <header id="page-header">
+    <div class="inner">
+      <g:if test="${flash.message}">
+        <div class="message">${flash.message}</div>
+      </g:if>
 
-    <nav id="breadcrumb">
-      <ol>
-        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <li><g:link controller="project" action="index" id="${taskInstance?.project?.id}" class="crumb">${taskInstance?.project?.name}</g:link></li>
-        <li class="last">${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}</li>
-      </ol>
-    </nav>
-    <hgroup>
-      <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
-    </hgroup>
-  </div>
-</header>
+      <nav id="breadcrumb">
+        <ol>
+          <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+          <li><g:link controller="project" action="index" id="${taskInstance?.project?.id}" class="crumb">${taskInstance?.project?.name}</g:link></li>
+          <li class="last">${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}</li>
+        </ol>
+      </nav>
+      <hgroup>
+        <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
+      </hgroup>
+    </div>
+  </header>
 
 <div class="body">
     <g:hasErrors bean="${taskInstance}">

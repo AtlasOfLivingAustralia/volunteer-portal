@@ -35,15 +35,7 @@
 
 <body class="sublevel sub-site volunteerportal">
 
-<nav id="nav-site">
-    <ul class="sf sf-js-enabled">
-      <li class="nav-bvp"><a href="${createLink(uri:'/')}">Biodiversity Volunteer Portal</a></li>
-      <li class="nav-expeditions"><g:link controller="project" action="list">Expeditions</g:link></li>
-      <li class="nav-tutorials selected"><a href="${createLink(uri:'/tutorials.gsp')}">Tutorials</a></li>
-      <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
-      <li class="nav-aboutbvp"><a href="${createLink(uri:'/about.gsp')}">About the Portal</a></li>
-    </ul>
-  </nav>
+  <cl:navbar selected="expeditions" />
 
   <header id="page-header">
     <div class="inner">

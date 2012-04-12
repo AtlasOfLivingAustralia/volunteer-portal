@@ -40,26 +40,19 @@
     </script>
   </head>
   <body class="sublevel sub-site volunteerportal">
-  <nav id="nav-site">
-    <ul class="sf sf-js-enabled">
-      <li class="nav-bvp"><a href="${createLink(uri: '/')}">Biodiversity Volunteer Portal</a></li>
-      <li class="nav-expeditions"><a href="${createLink(controller: 'project', action:'list')}">Expeditions</a></li>
-      <li class="nav-tutorials"><a href="${createLink(uri: '/tutorials.gsp')}">Tutorials</a></li>
-      <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
-      <li class="nav-aboutbvp"><a href="${createLink(uri: '/about.gsp')}">About the Portal</a></li></ul>
-  </nav>
-  <header id="page-header">
-    <div class="inner">
-      <nav id="breadcrumb">
-        <ol>
-          <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-          <li><a href="${createLink(controller: 'user', action:'list')}">Volunteers</a></li>
-          <li class="last">${fieldValue(bean: userInstance, field: "displayName")}</li>
-        </ol>
-      </nav>
-      <h1>Volunteer: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(thats you!)</g:if></h1>
-    </div><!--inner-->
-  </header>
+    <cl:navbar selected="" />
+    <header id="page-header">
+      <div class="inner">
+        <nav id="breadcrumb">
+          <ol>
+            <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+            <li><a href="${createLink(controller: 'user', action:'list')}">Volunteers</a></li>
+            <li class="last">${fieldValue(bean: userInstance, field: "displayName")}</li>
+          </ol>
+        </nav>
+        <h1>Volunteer: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(thats you!)</g:if></h1>
+      </div><!--inner-->
+    </header>
 
 <div class="inner">
   <g:if test="${flash.message}">
@@ -83,7 +76,7 @@
           <g:if test="${project}">
                <tr class="prop">
                    <td valign="top" class="name"><g:message code="project.label" default="Project"/></td>
-                   <td valign="top" class="value">${project} (<a href="${createLink(controller:'user', action:'show', id:userInstance.id)}">View tasks from all projects</a> )</td>
+                   <td valign="top" class="value">${project.featuredLabel} (<a href="${createLink(controller:'user', action:'show', id:userInstance.id)}">View tasks from all projects</a> )</td>
               </tr>
           </g:if>
           %{--<tr class="prop">--}%
@@ -124,7 +117,7 @@
       ${fieldValue(bean: userInstance, field: "displayName")}
     </g:else>
     <g:if test="${project}">
-        - for ${project}
+        for ${project.featuredLabel}
     </g:if>
     (${totalSavedTasks} tasks found)
     </h2>
@@ -194,7 +187,7 @@
       ${fieldValue(bean: userInstance, field: "displayName")}
     </g:else>
     <g:if test="${project}">
-        - for ${project}
+        for ${project.featuredLabel}
     </g:if>
     (${totalTranscribedTasks} tasks found)
     </h2>

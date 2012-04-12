@@ -127,15 +127,7 @@
 
 <body class="sublevel sub-site volunteerportal">
 
-  <nav id="nav-site">
-    <ul class="sf sf-js-enabled">
-      <li class="nav-bvp"><a href="${createLink(uri:'/')}">Biodiversity Volunteer Portal</a></li>
-      <li class="nav-expeditions selected"><g:link controller="project" action="list">Expeditions</g:link></li>
-      <li class="nav-tutorials"><a href="${createLink(uri:'/tutorials.gsp')}">Tutorials</a></li>
-      <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
-      <li class="nav-aboutbvp"><a href="${createLink(uri:'/about.gsp')}">About the Portal</a></li>
-    </ul>
-  </nav>
+  <cl:navbar selected="expeditions" />
 
   <header id="page-header">
     <div class="inner">
@@ -162,7 +154,7 @@
         <section class="padding-bottom centertext">
           <a href="${createLink(controller: 'transcribe', action:'index', id: projectInstance.id)}" class="button orange fullwidth">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a><br>
           <a href="${createLink(uri: '/tutorials.gsp')}" class="button">View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt=""></a>
-          <a href="${createLink(controller: 'user', action:'myStats', id: projectInstance.id)}" class="button last">My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt=""></a><br>
+          <a href="${createLink(controller: 'user', action:'myStats', params: [projectId:projectInstance.id])}" class="button last">My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt=""></a><br>
         </section>
         <section class="padding-bottom">
           <h2>${projectInstance.featuredLabel} progress</h2>

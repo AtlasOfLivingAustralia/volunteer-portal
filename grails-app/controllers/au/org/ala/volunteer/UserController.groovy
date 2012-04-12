@@ -24,7 +24,7 @@ class UserController {
       userService.registerCurrentUser()
       def currentUser = authService.username()
       def userInstance = User.findByUserId(currentUser)
-      redirect(action: "show", id: userInstance.id)
+      redirect(action: "show", id: userInstance.id, params: params )
     }
 
     def list = {

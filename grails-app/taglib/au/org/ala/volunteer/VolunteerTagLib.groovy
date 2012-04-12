@@ -1414,4 +1414,35 @@ class VolunteerTagLib {
         }
         out << (formattedUsers.join(", "))
     }
+
+    // Renders a nav bar as an unordered list
+    def navbar = { attrs, body ->
+
+        def selected = null;
+
+        if (attrs.containsKey('selected')) {
+            selected = attrs.selected as String;
+        }
+
+        def items = [
+                        bvp:[link: createLink(uri: '/'), title: 'Biodiversity Volunteer Portal'],
+                        expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions'],
+                        tutorials: [link: createLink(uri: '/tutorials.gsp'), title: 'Tutorials'],
+                        submitexpedition: [link: createLink(uri: '/submitAnExpedition.gsp'), title: 'Submit an Expedition'],
+                        aboutbvp: [link: createLink(uri: '/about.gsp'), title: 'About the Portal'],
+                    ]
+
+        out << '<nav id="nav-site">'
+        out << '<ul class="sf sf-js-enabled">'
+        for (def key : items.keySet()) {
+            def item = items[key]
+            out << '<li class="nav-' + key;
+            if (selected == key) {
+                out << ' selected'
+            }
+            out << '"><a href="' + item.link + '">' + item.title + '</a></li>'
+        }
+        out << '</ul>'
+        out << '</nav>'
+    }
 }

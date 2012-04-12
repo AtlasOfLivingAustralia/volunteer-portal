@@ -434,6 +434,31 @@ class TaskService {
         and fields.superceded = false""", [userId: userId, project:project], params)
     }
 
+    List<Task> getTranscribedTasksByUserAndProjectQuery(String userId, Project project, Map params) {
+
+        String query = "%" + (params.q?:"") + "%";
+        query= query.toLowerCase()
+
+        def tasks = Task.executeQuery("""select t from Task t
+                                         where t.fullyTranscribedBy = :userId and t.project = :project and
+                                         (lower(t.project.name) like :query or lower(t.externalIdentifier) like :query)""",
+                                        [userId: userId, project: project, query: query], params)
+        return tasks.toList()
+    }
+
+    List<Task> getTranscribedTasksByUserQuery(String userId, Map params) {
+
+        String query = "%" + (params.q?:"") + "%";
+        query= query.toLowerCase()
+
+        def tasks = Task.executeQuery("""select t from Task t
+                                         where t.fullyTranscribedBy = :userId and
+                                         (lower(t.project.name) like :query or lower(t.externalIdentifier) like :query)""",
+                                        [userId: userId, query: query], params)
+        return tasks.toList()
+    }
+
+
     /**
      * GET the image via its URL and save various forms to local disk
      *
