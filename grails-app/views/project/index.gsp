@@ -5,7 +5,7 @@
 <g:set var="tasksDone" value="${tasksTranscribed?:0}"/>
 <g:set var="tasksTotal" value="${taskCount?:0}"/>
 <g:set var="tasksDonePercent" value="${(taskCount > 0) ? ((tasksDone / tasksTotal) * 100) : 0}"/>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
@@ -104,82 +104,119 @@
             loadMap();
         });
     </script>
+
+    <style type="text/css">
+
+    .ui-widget-header {
+      border: 1px solid #3A5C83;
+      background: white url(${resource(dir:'images/vp',file:'progress_1x100b.png')}) 50% 50% repeat-x;
+    }
+
+    .ui-widget-content {
+      border: 1px solid #3A5C83;
+    }
+
+    #recordsMap img {
+      max-width: initial;
+      max-height: initial;
+    }
+
+
+    </style>
 </head>
 
-<body class="two-column-right">
-<div class="nav">
-  <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-  <span class="menuButton">${projectInstance.name?:'Project'}</span>
-</div>
-<div class="body">
-    <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
-    <g:if test="${flash.message}">
-        <script type="text/javascript">
-            alert("${flash.message}");
-        </script>
-    </g:if>
-    <div id="projectInfo">
-        ${projectInstance.description}
-    </div>
-    <div class='front-image'>
-        <img src="${resource(file: projectInstance.bannerImage)}"/>
-    </div>
+<body class="sublevel sub-site volunteerportal">
 
-    <div class='front-buttons buttons-big'>
-        <g:link controller="transcribe" id="${projectInstance.id}">
-            <img src="${resource(dir: 'images', file: 'start-generic.png')}"/>
-        </g:link>
-    </div>
-    <div class='front-buttons buttons-small'>
-        <g:link controller="user" action="project" id="${projectInstance.id}" params="[sort:'transcribedCount',order:'desc']">
-            <img src="${resource(dir: 'images', file: 'score.png')}"/>
-        </g:link><br/>
-        <g:link controller="user" action="myStats" >
-            <img src="${resource(dir: 'images', file: 'stats.png')}"/>
-        </g:link>
-    </div>
+  <nav id="nav-site">
+    <ul class="sf sf-js-enabled">
+      <li class="nav-bvp"><a href="${createLink(uri:'/')}">Biodiversity Volunteer Portal</a></li>
+      <li class="nav-expeditions selected"><g:link controller="project" action="list">Expeditions</g:link></li>
+      <li class="nav-tutorials"><a href="${createLink(uri:'/tutorials.gsp')}">Tutorials</a></li>
+      <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
+      <li class="nav-aboutbvp"><a href="${createLink(uri:'/about.gsp')}">About the Portal</a></li>
+    </ul>
+  </nav>
 
-    <div id="expedition">
-        <div id="personnel">
-            <h2>Expedition Personnel</h2>
-            <table>
-                <thead style="display: none">
-                    <tr><td>Role</td><td>Members</td></tr>
-                </thead>
-                <tbody>
-                    <g:each in="${roles}" status="i" var="role">
-                        <tr>
-                            <td><a href="${role.link}" title="${role.bio}" target="AM"><img src='<g:resource file="${role.icon}"/>' alt="expedition person icon"/></a></td>
-                            <td><strong>${role.name}: </strong><cl:listUsersInRole users="${role.members}" projectId="${projectInstance.id}"/></td>
-                        </tr>
-                    </g:each>
-                </tbody>
-            </table>
-        </div>
-        <div id="progress" class="">
-            <h2>Expedition Progress</h2>
-            <div id="recordsChart">
-                Records captured: <span style="white-space: nowrap;">${tasksDone} of ${tasksTotal}</span> (<g:formatNumber number="${tasksDonePercent}" format="#"/>%)
+  <header id="page-header">
+    <div class="inner">
+      <g:if test="${flash.message}">
+        <div class="message">${flash.message}</div>
+      </g:if>
+
+      <nav id="breadcrumb">
+        <ol>
+          <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+          <li class="last">${projectInstance.featuredLabel?:'Volunteer Portal'}</li>
+        </ol>
+      </nav>
+      <hgroup>
+        <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
+      </hgroup>
+    </div>
+  </header>
+
+
+  <div class="inner">
+    <div class="col-narrow margin-bottom-0">
+      <section class="boxed attached">
+        <section class="padding-bottom centertext">
+          <a href="${createLink(controller: 'transcribe', action:'index', id: projectInstance.id)}" class="button orange fullwidth">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a><br>
+          <a href="${createLink(uri: '/tutorials.gsp')}" class="button">View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt=""></a>
+          <a href="${createLink(controller: 'user', action:'myStats', id: projectInstance.id)}" class="button last">My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt=""></a><br>
+        </section>
+        <section class="padding-bottom">
+          <h2>${projectInstance.featuredLabel} progress</h2>
+          <div id="recordsChart">
+            <strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${tasksDonePercent}" format="#"/>%</strong>)</div>
+            <div id="recordsChartWidget1" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="41">
+              <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: ${formatNumber(format:"#", number: tasksDonePercent)}%; "></div>
             </div>
-            <div id="recordsChartWidget"></div>
-            <div style="clear: both"></div>
-            <g:if test="${recentNewsItems}">
-                <h2>Expedition News</h2>
-                <g:set var="divHeight"><g:if test="${!(projectInstance.showMap)}">height:360px;</g:if></g:set>
-                <div id="news" style="${divHeight}">
-                    <g:each in="${recentNewsItems}" var="news" status="i">
-                        <p><b>${news.title} (<g:formatDate format="dd-MM-yyyy" date="${news.created}"/>)</b></p>
-                        ${news.body}
-                    </g:each>
-                </div>
-            </g:if>
-            <g:if test="${projectInstance.showMap}">
-                <div id="recordMapLabel"><h4>Showing location of records transcribed to date</h4></div>
-                <div id="recordsMap"></div>
-            </g:if>
-        </div>
+        </section>
+
+        <g:if test="${projectInstance.showMap}">
+          <h2>Transcribed records</h2>
+          <div id="recordsMap" style="margin-bottom: 12px"></div>
+          <p/>
+        </g:if>
+
+      </section>
     </div>
-    <div style="clear: both">&nbsp;</div>
+
+    <div class="col-wide last">
+      <section class="no-padding">
+        <section>
+        <h2>${projectInstance.featuredLabel} overview</h2>
+        <img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124" class="alignleft size-full"/>${projectInstance.description}
+        <g:if test="${!projectInstance.disableNewsItems && newsItem}">
+          <h2>${projectInstance.featuredLabel} news</h2>
+          <article class="margin-bottom-0">
+            <time datetime="${formatDate(format: "dd MMMM yyyy", date: newsItem.created)}"><g:formatDate format="dd MMMM yyyy" date="${newsItem.created}" /></time>
+            <br />
+            <h3><a href="${createLink(controller: 'newsItem', action: 'list', id: projectInstance.id)}">${newsItem.title}</a></h3>
+            ${newsItem.body}
+            %{--<g:link controller="newsItem" action="list" id="${projectInstance.id}">All ${projectInstance.featuredLabel} news...</g:link>--}%
+          </article>
+
+        </g:if>
+        </section>
+
+        <section id="personnel">
+          <h2>${projectInstance.featuredLabel} personnel</h2>
+          <g:each in="${roles}" status="i" var="role">
+            <section>
+              <h3><img src='<g:resource file="${role.icon}"/>' width="100" height="99" alt="">${role.name}</h3>
+              <ol>
+                <g:each in="${role.members}" var="member">
+                  <li><a href="${createLink(controller: 'user', action:'show', id: member.id)}">${member.name} (${member.count})</a></li>
+                </g:each>
+
+              </ol>
+            </section>
+          </g:each>
+        </section>
+
+      </section>
+    </div>
     <cl:isLoggedIn>
         <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" style="color:#DDDDDD;">Admin</g:link>
     </cl:isLoggedIn>

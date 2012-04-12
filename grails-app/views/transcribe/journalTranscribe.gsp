@@ -165,13 +165,36 @@
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'journalTranscribe.js')}"></script>--}%
 </head>
 
-<body class="two-column-right">
-<div class="nav">
-    <a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-    %{--<g:link controller="project" action="list" class="crumb">Projects</g:link>--}%
-    <g:link controller="project" action="index" id="${taskInstance?.project?.id}" class="crumb">${taskInstance?.project?.name}</g:link>
-    ${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}
-</div>
+<body class="sublevel sub-site volunteerportal">
+
+<nav id="nav-site">
+  <ul class="sf sf-js-enabled">
+    <li class="nav-bvp"><a href="${createLink(uri:'/')}">Biodiversity Volunteer Portal</a></li>
+    <li class="nav-expeditions selected"><g:link controller="project" action="list">Expeditions</g:link></li>
+    <li class="nav-tutorials"><a href="${createLink(uri:'/tutorials.gsp')}">Tutorials</a></li>
+    <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
+    <li class="nav-aboutbvp"><a href="${createLink(uri:'/about.gsp')}">About the Portal</a></li>
+  </ul>
+</nav>
+
+<header id="page-header">
+  <div class="inner">
+    <g:if test="${flash.message}">
+      <div class="message">${flash.message}</div>
+    </g:if>
+
+    <nav id="breadcrumb">
+      <ol>
+        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+        <li><g:link controller="project" action="index" id="${taskInstance?.project?.id}" class="crumb">${taskInstance?.project?.name}</g:link></li>
+        <li class="last">${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}</li>
+      </ol>
+    </nav>
+    <hgroup>
+      <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
+    </hgroup>
+  </div>
+</header>
 
 <div class="body">
     <g:hasErrors bean="${taskInstance}">
@@ -182,10 +205,11 @@
     <g:if test="${flash.message}">
         <div class="errors">${flash.message}</div>
     </g:if>
-    <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
-    <div id="videoLinks" style="padding-top: 6px; float: right;">
-        ${taskInstance?.project?.tutorialLinks}
-    </div>
+    <div class="inner">
+      <div id="videoLinks" style="padding-top: 6px; float: right;">
+          ${taskInstance?.project?.tutorialLinks}
+      </div>
+
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
@@ -193,6 +217,7 @@
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
             <g:set var="defaultWidthPercent" value="100" />
             <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
+
             <span id="journalPageButtons">
                 <button id="showPreviousJournalPage" title="displays page in new window">&lt;&ndash; show previous journal page</button>
                 <button id="showNextJournalPage" title="displays page in new window">show next journal page &ndash;&gt;</button>
@@ -321,6 +346,7 @@
     <g:else>
         No tasks loaded for this project !
     </g:else>
+  </div>
 </div>
 </body>
 </html>

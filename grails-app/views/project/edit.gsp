@@ -5,15 +5,16 @@
         <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
+        <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
     </head>
-    <body>
+    <body class="sublevel sub-site volunteerportal">
         <div class="nav">
             <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <span class="menuButton"><g:message code="default.edit.label" args="[entityName]" /></span>
         </div>
         <div class="body">
-            <h1><g:message code="default.edit.label" args="[entityName]" /></h1>
+            <h2><g:message code="default.edit.label" args="[entityName]" /></h2>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
@@ -25,8 +26,8 @@
             <g:form method="post" >
                 <g:hiddenField name="id" value="${projectInstance?.id}" />
                 <g:hiddenField name="version" value="${projectInstance?.version}" />
-                <div class="dialog">
-                    <table>
+                <div class="inner">
+                    <table align="center">
                         <tbody>
                         
                             <tr class="prop">
@@ -88,7 +89,43 @@
                                     <g:textField name="bannerImage" value="${projectInstance?.bannerImage}" />
                                 </td>
                             </tr>
-                        
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="shortDescription"><g:message code="project.shortDescription.label" default="Short description" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'shortDescription', 'errors')}">
+                                    <g:textArea name="shortDescription" value="${projectInstance?.shortDescription}" rows="5" cols="100" />
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="featuredLabel"><g:message code="project.featuredLabel.label" default="Featured Label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredLabel', 'errors')}">
+                                    <g:textField name="featuredLabel" value="${projectInstance?.featuredLabel}" />
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="featuredOwner"><g:message code="project.featuredOwner.label" default="Featured Owner" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredOwner', 'errors')}">
+                                    <g:textField name="featuredOwner" value="${projectInstance?.featuredOwner}" />
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="disableNewsItems"><g:message code="project.disableNewsItems.label" default="Disable news items for this project" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'disableNewsItems', 'errors')}">
+                                    <g:checkBox name="disableNewsItems" value="${projectInstance?.disableNewsItems}" />
+                                </td>
+                            </tr>
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                   <label for="newsItems"><g:message code="project.newsItems.label" default="News Items" /></label>
@@ -129,6 +166,16 @@
                                     <g:checkBox name="showMap" value="${projectInstance?.showMap}" />
                                 </td>
                             </tr>
+
+                            <tr class="prop">
+                                <td valign="middle" class="name">
+                                    <label><g:message code="project.tasks.label" default="Tasks" /></label>
+                                </td>
+                                <td valign="middle" class="value">
+                                  <a class="button" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks...</a>
+                                </td>
+                            </tr>
+
                         
                             %{--<tr class="prop">--}%
                                 %{--<td valign="top" class="name">--}%
@@ -154,6 +201,27 @@
                     <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
                 </div>
             </g:form>
+        </div>
+        <br />
+        <div>
+          <table align="center" border="1">
+            <thead><tr><td colspan="3">Image Upload</td></tr></thead>
+            <tr>
+              <td style="vertical-align: middle;">
+                <label><g:message code="project.featuredImage.label" default="Featured Image" /></label>
+              </td>
+              <td>
+                <img src="${projectInstance?.featuredImage}" align="middle"/>
+              </td>
+              <td style="vertical-align: middle;">
+                <g:form action="uploadFeaturedImage" controller="project" method="post" enctype="multipart/form-data">
+                  <input type="file" name="featuredImage" />
+                  <input type="hidden" name="id" value="${projectInstance.id}" />
+                  <g:submitButton name="Upload" />
+                </g:form>
+              </td>
+            </tr>
+          </table>
         </div>
     </body>
 </html>

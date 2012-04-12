@@ -4,10 +4,14 @@ import groovy.sql.Sql
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVWriter
+import org.springframework.web.multipart.MultipartHttpServletRequest
+import org.springframework.web.multipart.MultipartFile
 
 class ProjectController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+
+    static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
 
     def taskService
     def fieldService
@@ -60,13 +64,10 @@ class ProjectController {
                 }
             }
 
-            // get the 5 most recent news items
-            def recentNewsItems = projectInstance.newsItems.toArray()
-            if (recentNewsItems.size() > 5) {
-                recentNewsItems = recentNewsItems.getAt( [0..4] )
-            }
+            def items = projectInstance.newsItems.asList()
+            def newsItem = items.size() > 0 ? items[0] : null;
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, recentNewsItems: recentNewsItems])
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem])
         }
     }
 
@@ -274,13 +275,87 @@ class ProjectController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [projectInstanceList: Project.list(params), projectInstanceTotal: Project.count(),
-                projectTaskCounts: taskService.getProjectTaskCounts(),
-                projectFullyTranscribedCounts: taskService.getProjectTaskFullyTranscribedCounts(),
-                projectTaskTranscribedCounts: taskService.getProjectTaskTranscribedCounts(),
-                projectTaskValidatedCounts: taskService.getProjectTaskValidatedCounts(),
-                projectTaskViewedCounts: auditService.getProjectTaskViewedCounts(),
-                viewCountPerProject: auditService.getViewCountPerProject()
+
+        params.sort = params.sort ? params.sort : session.expeditionSort ? session.expeditionSort : 'completed'
+
+        def projectList = Project.list()
+
+        def taskCounts = taskService.getProjectTaskCounts()
+        def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+
+        def projects = [:]
+        def incompleteCount = 0;
+        for (Project project : projectList) {
+            def percent = 0;
+            if (taskCounts[project.id] && fullyTranscribedCounts[project.id]) {
+                percent = ((fullyTranscribedCounts[project.id] / taskCounts[project.id]) * 100)
+            }
+            if (percent < 100) {
+                incompleteCount++;
+            }
+            def iconImage = 'icon_specimens.png'
+            def iconLabel = 'Specimens'
+
+            if (project.template.name.equalsIgnoreCase('Journal')) {
+                iconImage = 'icon_fieldnotes.png'
+                iconLabel = 'Field notes'
+            }
+
+            def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")
+
+            projects[project.id] = [id: project.id, project: project, iconLabel: iconLabel, iconImage: iconImage, volunteerCount: volunteer.size(), countComplete: fullyTranscribedCounts[project.id] , percentComplete: percent ? Math.round(percent) : 0 ]
+
+        }
+
+        def numberOfUncompletedProjects = incompleteCount < numbers.size() ? numbers[incompleteCount] : "" + incompleteCount;
+
+        def renderList = projects.collect({ kvp -> kvp.value })
+
+        renderList = renderList.sort { p ->
+
+            if (params.sort == 'completed') {
+                return p.percentComplete
+            }
+
+            if (params.sort == 'volunteers') {
+                return p.volunteerCount;
+            }
+
+            if (params.sort == 'institution') {
+                return p.project.featuredOwner;
+            }
+
+            if (params.sort == 'type') {
+                return p.iconLabel;
+            }
+
+            p.project.featuredLabel
+        }
+
+        int startIndex = params.offset ? params.int('offset') : 0;
+        if (startIndex >= renderList.size()) {
+            startIndex = renderList.size() - max;
+            if (startIndex < 0) {
+                startIndex = 0;
+            }
+        }
+
+        int endIndex = startIndex + params.int('max') - 1;
+        if (endIndex >= renderList.size()) {
+            endIndex = renderList.size() - 1;
+        }
+
+        if (params.order == 'desc') {
+            renderList = renderList.reverse()
+        }
+
+
+        session.expeditionSort = params.sort;
+
+        [
+            projects: renderList[startIndex .. endIndex],
+            projectInstanceTotal: Project.count(),
+            numberOfUncompletedProjects: numberOfUncompletedProjects
         ]
     }
 
@@ -394,5 +469,35 @@ class ProjectController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         }
+    }
+    
+    def uploadFeaturedImage = {
+        def projectInstance = Project.get(params.id)
+
+        if(request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
+            
+            if (f != null) {
+                def allowedMimeTypes = ['image/jpeg']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.message = "Image must be one of: ${allowedMimeTypes}"
+                    render(view:'edit', model:[projectInstance:projectInstance])
+                    return;
+                }
+
+                try {
+                    def filePath = "${ConfigurationHolder.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+                    def file = new File(filePath);
+                    file.getParentFile().mkdirs();
+                    f.transferTo(file);
+                } catch (Exception ex) {
+                    flash.message = "Failed to upload image: " + ex.message;
+                    render(view:'edit', model:[projectInstance:projectInstance])
+                    return;
+                }
+
+            }
+        }
+        redirect(action: "edit", id: params.id)
     }
 }

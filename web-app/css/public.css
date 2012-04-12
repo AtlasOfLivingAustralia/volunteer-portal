@@ -20,7 +20,11 @@ body .ac_results li {
 
 /* these styles override the site style.css to use the explorer-themed banner */
 body {
-    background:transparent url(../images/explorer-banner.jpg) center 20px repeat-x ! important;
+    /*background:transparent url(../images/explorer-banner.jpg) center 20px repeat-x ! important;*/
+    font: normal 1.2em/1.8em Arial, Helvetica, sans-serif;
+    width: 100%;
+    background-color: #FFFEF7;
+    color: #333A3F;
 }
 
 #banner {
@@ -74,13 +78,13 @@ html {
     color: black;
 }
 
-div.nav { margin-bottom: 10px; }
+/* div.nav { margin-bottom: 10px; } */
 
 div.nav a, #breadcrumb a {
     background: url('http://www.ala.org.au/wp-content/themes/ala/images/breadcrumb-bg.png') right center no-repeat;
     padding-right: 5px;
     margin-right: 3px;
-    text-decoration: none;
+    /* text-decoration: none; */
 }
 
 .section > #breadcrumb {
@@ -399,38 +403,58 @@ div#ui-datepicker-div {
 
 /* temporary pagination buttons */
 
+.step {
+    text-decoration: none;
+    border: 1px solid #3A5C83;
+    padding: 3px 7px;
+    margin: 2px;
+    text-decoration: none !important;
+}
+
+.currentStep {
+    border: 1px solid #DF4A21;
+    color: white;
+    background-color: #DF4A21;
+    cursor: default;
+    padding: 3px 7px;
+    margin: 2px;
+}
+
 .paginateButtons {
     float: right;
-    margin-right: 60px;
     text-align:center;
     padding-bottom: 20px;
 }
 
-.paginateButtons span {
-    float:right;
-    margin:0 auto;
-}
-.section .paginateButtons a, .currentStep{
-    display:inline-block;
-    padding:0 5px;
-    border:1px solid #01716e;
-    text-decoration:none;
-    float:left;
-    margin:0 5px 0 0;
+.nextLink {
+    display: none;
 }
 
-span.currentStep{
-    display:inline-block;
-    padding:0 5px;
-    border:1px solid #01716e;
-    text-decoration:none;
-    float:left;
-    margin:0 5px 0 0;
+.prevLink {
+    display: none;
 }
 
-span.currentStep { border-color:#ccc; color:#dd3102; }
+/*.section .paginateButtons a, .currentStep{*/
+    /*display:inline-block;*/
+    /*padding:0 5px;*/
+    /*border:1px solid #01716e;*/
+    /*text-decoration:none;*/
+    /*float:left;*/
+    /*margin:0 5px 0 0;*/
+/*}*/
 
-.paginateButtons a:hover {border-color:#dd3102;text-decoration:underline;}
+/*span.currentStep{*/
+    /*display:inline-block;*/
+    /*padding:0 5px;*/
+    /*border:1px solid #01716e;*/
+    /*text-decoration:none;*/
+    /*float:left;*/
+    /*margin:0 5px 0 0;*/
+/*}*/
+
+/*span.currentStep { border-color:#ccc; color:#dd3102; }*/
+
+/*.paginateButtons a:hover {border-color:#dd3102;text-decoration:underline;}*/
 .section .paginateButtons .prevLink, .section .paginateButtons .nextLink {border:none;}
 .prevLink {text-align:right;}
 .nextLink {text-align:center;}
@@ -529,35 +553,37 @@ div.list table tr.odd {
     padding-bottom: 5px;
 }
 
-#recordsChart {
+/*#recordsChart {*/
     /*width: 140px;*/
-    float: left;
-    padding:  12px;
-    height: 1.5em;
-}
+    /*float: left;*/
+    /*padding:  12px;*/
+    /*height: 1.5em;*/
+/*}*/
 
-#recordsChartWidget {
+/*#recordsChartWidget {*/
     /*display: inline-block;*/
     /*float: right;*/
-    width: 395px;
-    margin: 10px 0;
-    height: 1.5em;
-    vertical-align: middle;
-}
+    /*width: 395px;*/
+    /*margin: 10px 0;*/
+    /*height: 1.5em;*/
+    /*vertical-align: middle;*/
+/*}*/
 
-#recordsChartWidget .ui-widget-header {
-    border: 1px solid #C9AB67;
-    background: #CEC193 url(../images/progress_1x100b.png) 50% 50% repeat-x;
-}
+/*#recordsChartWidget .ui-widget-header {*/
+    /*border: 1px solid #C9AB67;*/
+    /*background: #CEC193 url(../images/progress_1x100b.png) 50% 50% repeat-x;*/
+/*}*/
 
 #progress .ui-widget-content {
     border: 1px solid #C9AB67;
 }
 
 #recordsMap {
-    width: 400px;
-    height: 400px;
-    margin: 10px 0;
+    width: 204px;
+    height: 204px;
+    max-height: 204px;
+    max-width: 204px;
+    margin: 0px 0;
     /*float: right;*/
 }
 
@@ -687,3 +713,8 @@ tr.fieldNoteFields td input {
     margin: 10px 0 5px 0;
     padding: 5px 5px 5px 30px
 }
+
+.avatar {
+    padding-top: 6px !important;
+}
+

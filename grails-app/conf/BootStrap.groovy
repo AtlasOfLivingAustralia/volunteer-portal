@@ -7,6 +7,9 @@ import au.org.ala.volunteer.TemplateField
 import au.org.ala.volunteer.DarwinCoreField
 import au.org.ala.volunteer.User
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import au.org.ala.volunteer.FrontPage
+import au.org.ala.volunteer.Project
+import org.apache.commons.lang.StringUtils
 
 class BootStrap {
 
@@ -22,6 +25,26 @@ class BootStrap {
         }
         myMap
       }
+        
+      if (FrontPage.list()[0] == null) {
+          def frontPage = new FrontPage()
+          def projectList = Project.list()
+          frontPage.projectOfTheDay = projectList[0]
+          frontPage.featuredProject1 = projectList[1]
+          frontPage.featuredProject2 = projectList[2]
+          frontPage.featuredProject3 = projectList[3]
+
+          frontPage.save()
+      }
+
+      FrontPage.metaClass.'static'.getFeaturedProject = { ->
+          FrontPage.list()[0]?.featuredProject
+      }
+
+      String.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate, len) ?: '' }
+
+      GString.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate.toString(), len) }
+
 
       //DDL - add cascading, currently not working from generated DDL from grails
       def sql = new groovy.sql.Sql(dataSource)

@@ -6,18 +6,18 @@
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
     </head>
-    <body>
+    <body class="sublevel sub-site volunteerportal">
         <div class="nav">
             <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
         </div>
         <div class="body">
-            <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+            <h1><g:message code="default.show.label" args="[entityName]" /> - ${projectInstance.featuredLabel}</h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
-            <div class="dialog">
+            <div class="inner">
                 <table>
                     <tbody>
                     
@@ -65,10 +65,20 @@
                     
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="project.bannerImage.label" default="Banner Image" /></td>
-                            
                             <td valign="top" class="value">${fieldValue(bean: projectInstance, field: "bannerImage")}</td>
-                            
                         </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name"><g:message code="project.featuredImage.label" default="Featured Image" /></td>
+                        <td valign="top" class="value"><img src="${fieldValue(bean: projectInstance, field: "featuredImage")}" height="150"/></td>
+                    </tr>
+
+
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="project.disableNewsItems.label" default="Disable news items for this project" /></td>
+                            <td valign="top" class="value"><g:formatBoolean boolean="${projectInstance?.disableNewsItems}" /></td>
+                        </tr>
+
                     
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="project.newsItems.label" default="News Items" /></td>

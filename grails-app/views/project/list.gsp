@@ -6,61 +6,95 @@
   <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
   <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
   <title><g:message code="default.list.label" args="[entityName]"/></title>
+  <style type="text/css">
+
+    .ui-widget-header {
+      border: 1px solid #3A5C83;
+      background: white url(${resource(dir:'images/vp',file:'progress_1x100b.png')}) 50% 50% repeat-x;
+    }
+
+    .ui-widget-content {
+      border: 1px solid #3A5C83;
+    }
+  </style>
 </head>
-<body class="two-column-right">
-    <div class="nav">
-      <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-      <span class="menuButton">Projects</span>
-    </div>
-    <div class="body">
-      <h1>Projects</h1>
-      <div class="list">
-        <table>
-          <thead>
+<body class="sublevel sub-site volunteerportal">
+  <nav id="nav-site">
+    <ul class="sf sf-js-enabled">
+      <li class="nav-bvp"><a href="${createLink(uri: '/')}">Biodiversity Volunteer Portal</a></li>
+      <li class="nav-expeditions selected"><a href="${createLink(controller: 'project', action:'list')}">Expeditions</a></li>
+      <li class="nav-tutorials"><a href="${createLink(uri: '/tutorials.gsp')}">Tutorials</a></li>
+      <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
+      <li class="nav-aboutbvp"><a href="${createLink(uri: '/about.gsp')}">About the Portal</a></li></ul>
+  </nav>
+    <header id="page-header">
+      <div class="inner">
+        <nav id="breadcrumb">
+          <ol>
+            <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+            <li class="last">Virtual expeditions</li>
+          </ol>
+        </nav>
+        <hgroup>
+          <h1>Volunteer for a virtual expedition</h1>
+        </hgroup>
+      </div><!--inner-->
+    </header>
+    <div class="inner">
+      <h2>${numberOfUncompletedProjects} expeditions need your help. Join now!</h2>
+      <table class="bvp-expeditions">
+        <colgroup>
+          <col style="width:165px" />
+        </colgroup>
+        <thead>
+        <tr>
+          <th><a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a></th>
+          <th><a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a></th>
+          <th><a href="?sort=volunteers&order=${params.sort == 'volunteers' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0" class="button ${params.sort == 'volunteers' ? 'current' : ''}">Volunteers</a></th>
+          <th><a href="?sort=institution&order=${params.sort == 'institution' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0" class="button ${params.sort == 'institution' ? 'current' : ''}">Sponsoring Institution</a></th>
+          <th><a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <g:each in="${projects}" status="i" var="projectInstance">
           <tr>
-            <td>&nbsp;</td>
-            <g:sortableColumn property="name" title="${message(code: 'project.name.label', default: 'Name')}"/>
-            <g:sortableColumn property="description" title="${message(code: 'project.description.label', default: 'Description')}"/>
-            <td>Number of Tasks</td>
-            <td>Fully transcribed</td>
-            <td>Partially transcribed</td>
-            <td>Validated</td>
-            <td>Tasks viewed</td>
-            <!--<td>Total task views</td>-->
-            <td></td>
-            <!--<td></td>-->
+            <th colspan="4">
+                <h2><a href="${createLink(controller: 'project', action:'index', id: projectInstance.id)}">${projectInstance['project'].featuredLabel}</a></h2>
+            </th>
+            <th align="center">
+              <cl:ifGranted role="ROLE_VP_ADMIN">
+                <g:link style="color: #d3d3d3;" controller="project" action="edit" id="${projectInstance['project'].id}">Edit</g:link>
+              </cl:ifGranted>
+            </th>
           </tr>
-          </thead>
-          <tbody>
-          <g:each in="${projectInstanceList}" status="i" var="projectInstance">
-            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-              <td>
-                <img src="${resource(file: projectInstance.bannerImage)}" style="width:200px;"/>
-              </td>
-              <td><g:link action="index" controller="project" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "name")}</g:link></td>
-              <td>${projectInstance?.description}</td>
-              <td>${projectTaskCounts.get(projectInstance.id) ? projectTaskCounts.get(projectInstance.id) : 0 }</td>
-              <td>${projectFullyTranscribedCounts.get(projectInstance.id) ? projectFullyTranscribedCounts.get(projectInstance.id) : 0}</td>
-              <td>${projectTaskTranscribedCounts.get(projectInstance.id) ? projectTaskTranscribedCounts.get(projectInstance.id) - (projectFullyTranscribedCounts.get(projectInstance.id) ? projectFullyTranscribedCounts.get(projectInstance.id) : 0) : 0}</td>
-              <td>${projectTaskValidatedCounts.get(projectInstance.id) ? projectTaskValidatedCounts.get(projectInstance.id) : 0}</td>
-              <td>${projectTaskViewedCounts.get(projectInstance.id) ? projectTaskViewedCounts.get(projectInstance.id) : 0}</td>
-              <!--<td>${viewCountPerProject.get(projectInstance.id) ? viewCountPerProject.get(projectInstance.id) : 0}</td>-->
-              <td>
-                <g:if test="${projectFullyTranscribedCounts.get(projectInstance.id) < projectTaskCounts.get(projectInstance.id)}">
-                  <g:link action="showNextFromProject" controller="transcribe" id="${projectInstance.id}">Transcribe</g:link>
-                </g:if>
-                <g:else>
-                  Transcription complete
-                </g:else>
-              </td>
-              <!--<td><g:link action="showNextFromProject" controller="validate" id="${projectInstance.id}">Validate</g:link></td>-->
-            </tr>
-          </g:each>
-          </tbody>
-        </table>
-      </div>
+          <tr>
+            <%-- Project thumbnail --%>
+            <td><a href="${createLink(controller: 'project', action:'index', id: projectInstance['project'].id)}">
+                <img src="${projectInstance['project'].featuredImage}" width="147" height="81" />
+              </a>
+            </td>
+            <%-- Progress bar --%>
+            <td>
+              <div id="recordsChart">
+                <strong>${projectInstance['countComplete'] ? projectInstance['countComplete'] : 0}</strong> tasks completed (<strong>${projectInstance['percentComplete']}%</strong>)
+              </div>
+              <div id="recordsChartWidget${i}" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${projectInstance['percentComplete']}">
+                <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectInstance['percentComplete']}%; "></div>
+              </div>
+            </td>
+            <%-- Volunteer count --%>
+            <td class="bold centertext">${projectInstance['volunteerCount']}</td>
+            <%-- Institution --%>
+            <td>${projectInstance['project'].featuredOwner}</td>
+            <%-- Project type --%>
+            <td class="type"><img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectInstance['iconImage']}" width="40" height="36" alt="">${projectInstance['iconLabel']}</td>
+
+          </tr>
+        </g:each>
+        </tbody>
+      </table>
       <div class="paginateButtons">
-        <g:paginate total="${projectInstanceTotal}"/>
+        <g:paginate total="${projectInstanceTotal}" prev="" next="" />
       </div>
 </div>
 </body>

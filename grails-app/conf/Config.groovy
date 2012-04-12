@@ -32,7 +32,7 @@ if (!ala.baseURL) {
 \******************************************************************************/
 if (!security.cas.urlPattern) {
     security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*,/validate/save.*," +
-            "/validate/.*,/user/.*,/project/((?!index).)*,/task/.*,/newsItem/.*, /picklist/.*, /admin/.*"
+            "/validate/.*,/user/.*,/project/((?!index).)*,/task/.*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport"
 }
 if (!security.cas.urlExclusionPattern) {
     security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
@@ -78,6 +78,8 @@ expedition = [
 
 volunteer.defaultProjectId = 6306
 viewedTask.timeout = 2 * 60 * 60 * 1000
+
+leaderBoard.count = 5
 
 ala.skin = "ala2"
 ala.baseURL = "http://www.ala.org.au"
@@ -134,19 +136,21 @@ environments {
         security.cas.appServerName = server.url
         security.cas.contextPath = ""
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
+        images.home = '/data/volunteer'
     }
     development {
         grails.serverURL = "http://localhost:8080/${appName}"
         server.url = "http://localhost"
         security.cas.appServerName = "http://localhost:8080"
         security.cas.contextPath = "/${appName}"
+        images.home = '/data/volunteer'
         //log4j.appender.'errors.File'="stacktrace.log"
     }
     test {
-        grails.serverURL = "http://bdrs-test.ala.org.au:8080/${appName}"
-        server.url = "http://bdrs-test.ala.org.au"
-        security.cas.appServerName = "http://bdrs-test.ala.org.au:8080"
-        security.cas.contextPath = "/${appName}"
+        grails.serverURL = "http://volunteer-dev.ala.org.au"
+        server.url = "http://volunteer-dev.ala.org.au"
+        security.cas.appServerName = "http://volunteer-dev.ala.org.au"
+        security.cas.contextPath = ""
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
     }
 }

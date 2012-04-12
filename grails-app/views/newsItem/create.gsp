@@ -34,6 +34,15 @@
                                     <g:textField name="title" value="${newsItemInstance?.title}" />
                                 </td>
                             </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="shortDescription"><g:message code="newsItem.shortDescription.label" default="Short description" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'shortDescription', 'errors')}">
+                                    <g:textField name="shortDescription" value="${newsItemInstance?.shortDescription}" />
+                                </td>
+                            </tr>
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
@@ -70,7 +79,7 @@
                                     <label for="project"><g:message code="newsItem.project.label" default="Project" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'project', 'errors')}">
-                                    <g:select name="project.id" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${newsItemInstance?.project?.id}"  />
+                                    <g:select name="project" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${newsItemInstance?.project?.id}"  />
                                 </td>
                             </tr>
 

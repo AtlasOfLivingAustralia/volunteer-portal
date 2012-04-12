@@ -5,24 +5,26 @@
         <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title><g:message code="default.create.label" args="[entityName]" /></title>
+        <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
     </head>
-    <body>
+    <body class="sublevel sub-site volunteerportal">
         <div class="nav">
             <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
+            <span class="menuButton"><g:message code="default.create.label" args="[entityName]" /></span>
         </div>
         <div class="body">
-            <h1><g:message code="default.create.label" args="[entityName]" /></h1>
+            <h2><g:message code="default.create.label" args="[entityName]" /></h2>
             <g:if test="${flash.message}">
-            <div class="message">${flash.message}</div>
+              <div class="message">${flash.message}</div>
             </g:if>
             <g:hasErrors bean="${projectInstance}">
-            <div class="errors">
+              <div class="errors">
                 <g:renderErrors bean="${projectInstance}" as="list" />
-            </div>
+              </div>
             </g:hasErrors>
             <g:form action="save" >
-                <div class="dialog">
+                <div class="inner">
                     <table>
                         <tbody>
                         

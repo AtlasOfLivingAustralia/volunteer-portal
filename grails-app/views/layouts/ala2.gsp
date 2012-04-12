@@ -11,16 +11,20 @@
         <meta name="description" content="Explore Australia's Biodiversity by region."/>
     </g:else>
     <title><g:layoutTitle /></title>
-    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2010.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2011.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/bvp.css" type="text/css" media="screen" />
+    %{--<link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2010.css" type="text/css" media="screen" />--}%
+    %{--<link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2011.css" type="text/css" media="screen" />--}%
     <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/wp-styles.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/buttons.css" type="text/css" media="screen" />
     <link rel="icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
     <link rel="shortcut icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/jquery.autocomplete.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/search.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/skin.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/sf.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/sf-blue.css" />
+
 
     <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
     <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
@@ -64,6 +68,7 @@
             -khtml-border-radius: 0;
             border-radius: 0;
         }
+
     </style>
 
     <g:layoutHead />
@@ -112,34 +117,34 @@
     </script>
 </head>
 <body class="${pageProperty(name:'body.class')} getinvolved">
-<div id="wrapper">
+  <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/public/logout" logoutReturnToUrl="${ConfigurationHolder.config.grails.serverURL}"/>
 
-    <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/public/logout" logoutReturnToUrl="${ConfigurationHolder.config.grails.serverURL}"/>
+  %{--<hf:menu/>--}%
 
-    %{--<hf:menu/>--}%
+  <g:layoutBody/>
 
-    <div id="content" style="">
-        <div class="section">
-            <g:layoutBody/>
-        </div>
-    </div>
-    <hf:footer/>
-</div>
-<script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-    var pageTracker = _gat._getTracker("UA-4355440-1");
-    pageTracker._initData();
-    pageTracker._trackPageview();
-</script>
-<script type="text/javascript">
-    // show warning if using IE6
-    if ($.browser.msie && $.browser.version.slice(0,1) == '6') {
-        $('#header').prepend($('<div style="text-align:center;color:red;">WARNING: This page is not compatible with IE6.' +
-                ' Many functions will still work but layout and image transparency will be disrupted.</div>'));
-    }
-</script>
+  %{--<div id="content" style="">--}%
+      %{--<div class="section">--}%
+          %{----}%
+      %{--</div>--}%
+  %{--</div>--}%
+  <hf:footer/>
+
+  <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+      var pageTracker = _gat._getTracker("UA-4355440-1");
+      pageTracker._initData();
+      pageTracker._trackPageview();
+  </script>
+  <script type="text/javascript">
+      // show warning if using IE6
+      if ($.browser.msie && $.browser.version.slice(0,1) == '6') {
+          $('#header').prepend($('<div style="text-align:center;color:red;">WARNING: This page is not compatible with IE6.' +
+                  ' Many functions will still work but layout and image transparency will be disrupted.</div>'));
+      }
+  </script>
 </body>
 </html>

@@ -1,8 +1,17 @@
+/*body {*/
+    /*background: #faf9f8 url(../images/vp/bkg.jpg) no-repeat;*/
+    /*text-align: center;*/
+    /*margin: 0;*/
+/*}*/
+
 body {
-    background: #faf9f8 url(../images/vp/bkg.jpg) no-repeat;
     text-align: center;
-    margin: 0;
+    color: #333A3F;
 }
+
+/*body div header, body div nav, footer {*/
+    /*font: normal 1.2em/1.8em Arial, Helvetica, sans-serif;*/
+/*}*/
 
 #vp-menu {
     background-color: white;
@@ -17,6 +26,10 @@ body {
     -khtml-border-radius: 7px 0 0 7px;
     -moz-border-radius: 7px 0 0 7px;
     border-radius: 0 0 10px 10px; /* Opera 10.5, IE 9 */
+}
+
+#content-getinvolved a.button, #content-search form button, a.button.orange, button.orange {
+    font:normal 1.2em/1.8em;
 }
 
 #vp-menu img {
@@ -45,15 +58,44 @@ body {
     text-align: left;
 }
 
-h1 {
-    font-family: Helvetica, Arial, sans-serif;
-    color: #333;
+.page-template-landing_w_search-php #page-header, .page-template-landing_wo_search-php #page-header, .species #page-header, .sublevel #page-header, #sp-help #page-header, .page-template-landing_sub-php #page-header, .sub-site #page-header{
+	padding-top:38px;
+	position:relative;
+	top:-38px;
+	margin-bottom:-38px;
+	/* background-color:#486688; */
+}
+
+#page-header p {
+	font-size:1.2em;
+	padding-bottom:0;
+}
+
+#page-header hgroup h2 {
+    font: 1.2em/1.6em Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Arial Narrow", Arial, Helvetica,sans-serif;
+    font-weight: narrow;
+}
+
+h1, article.article-1 h2 {
+    font-size: 3.0em;
+    line-height: 1;
+    padding-bottom: 12px;
+}
+
+h2, #articles h1, .col-two .boxed h1 {
+    font-size: 2em;
+    line-height: 1;
+    padding-bottom: 12px;
 }
 
 h2 {
-    color: #993300;
-    margin-bottom: 1px;
-    margin-top: 8px;
+    /*color: #993300;*/
+    /*margin-bottom: 1px;*/
+    /*margin-top: 8px;*/
 }
 
 h3 {
@@ -169,4 +211,3 @@ h3 {
     opacity: 0.6;
     border: none;
 }
-

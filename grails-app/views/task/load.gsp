@@ -42,8 +42,10 @@
 
 <body class="two-column-right">
 <div class="nav">
-    <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-    </span>
+    <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+    <g:if test="${params.id}">
+      <span class="menuButton"><a class="home" href="${createLink(controller: 'project', action:'edit', id: params.id)}">Edit project</a></span>
+    </g:if>
 </div>
 
 <div class="body">
@@ -58,8 +60,7 @@
                         <label for="projectId"><g:message code="record.projectId.label" default="Project Id"/></label>
                     </td>
                     <td valign="top" class="value">
-                        <g:select name="projectId" id="projectId" from="${projectList}" optionKey="id"
-                                  optionValue="name"/>
+                        <g:select name="projectId" id="projectId" from="${projectList}" optionKey="id" optionValue="name" value="${params.id}" />
                     </td>
                 </tr>
 

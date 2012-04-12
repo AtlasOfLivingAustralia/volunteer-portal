@@ -16,23 +16,45 @@
             }); // end .ready()
         </script>
     </head>
-    <body>
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link controller="project" action="list"> Projects </g:link></span>
-            <g:if test="${projectInstance}">
-                <span class="menuButton">${projectInstance.name}</span>
-            </g:if>
-            <g:else>
-                <span class="menuButton">Tasks</span>
-            </g:else>
-        </div>
+    <body class="sublevel sub-site volunteerportal">
+      <nav id="nav-site">
+        <ul class="sf sf-js-enabled">
+          <li class="nav-bvp"><a href="${createLink(uri: '/')}">Biodiversity Volunteer Portal</a></li>
+          <li class="nav-expeditions selected"><a href="${createLink(controller: 'project', action:'list')}">Expeditions</a></li>
+          <li class="nav-tutorials"><a href="${createLink(uri: '/tutorials.gsp')}">Tutorials</a></li>
+          <li class="nav-submitexpedition"><a href="${createLink(uri:'/submitAnExpedition.gsp')}">Submit an Expedition</a></li>
+          <li class="nav-aboutbvp"><a href="${createLink(uri: '/about.gsp')}">About the Portal</a></li></ul>
+      </nav>
+        <header id="page-header">
+          <div class="inner">
+            <nav id="breadcrumb">
+              <ol>
+                <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                <g:if test="${projectInstance}">
+                  <li><g:link controller="project" action="index" id="${projectInstance.id}" class="crumb">${projectInstance.featuredLabel}</g:link></li>
+                </g:if>
+                <li class="last">Project Admin</li>
+              </ol>
+            </nav>
+            <hgroup>
+              <h1>Project Admin -
+                <g:if test="${projectInstance}">
+                    ${projectInstance.featuredLabel}
+                </g:if>
+                <g:else>
+                    Tasks
+                </g:else>
+              </h1>
+              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
+              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
+              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
+              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'picklist', id:projectInstance.id)}'">Picklists</button>
+
+            </hgroup>
+          </div><!--inner-->
+        </header>
+
         <div class="body">
-            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
-            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
-            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
-            <button style="float:right;margin:5px;" onclick="location.href='${createLink(controller:'picklist', id:projectInstance.id)}'">Picklists</button>
-            <h1>Admin: Validation <g:message code="default.list.label" args="[entityName]" /></h1>
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
@@ -44,6 +66,7 @@
                 <input type="text" name="q" id="q" value="${params.q}" size="30"/>
                 <button id="searchButton">search</button>
             </div>
+          <div class="inner">
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
@@ -111,6 +134,7 @@
             <div class="paginateButtons">
                 <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q:params.q]}"/>
             </div>
+          </div>
         </div>
     </body>
 </html>

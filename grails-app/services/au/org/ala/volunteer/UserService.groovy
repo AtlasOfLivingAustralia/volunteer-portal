@@ -47,4 +47,17 @@ class UserService {
         }
       }
     }
+
+    def getUserCounts = {
+
+        User.executeQuery("""
+            select u.displayName, count(t)
+            from Task t, User u
+            where t.fullyTranscribedBy = u.userId
+            and t.fullyTranscribedBy is not null
+            group by u.displayName
+            order by count(t) desc
+        """)
+
+    }
 }

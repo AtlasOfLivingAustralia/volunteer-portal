@@ -187,6 +187,7 @@ function updateMarkerAddress(str, addressObj) {
 }
 
 $(document).ready(function() {
+
     // Google maps API code
     //initialize();
 
@@ -566,9 +567,11 @@ $(document).ready(function() {
     });
 
     // skip/next task button
+
     $("#showNextFromProject").click(function(e) {
         e.preventDefault();
-        location.href = VP_CONF.nextTaskUrl + "?taskId=" + VP_CONF.taskId;
+        var url = VP_CONF.nextTaskUrl + "?taskId=" + VP_CONF.taskId;
+        location.href = url;
     });
 
 }); // end document ready

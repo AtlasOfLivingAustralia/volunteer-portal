@@ -13,7 +13,22 @@ class NewsItemController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [newsItemInstanceList: NewsItem.list(params), newsItemInstanceTotal: NewsItem.count()]
+        def newsItems = null
+        def project = null
+        if (params.id) {
+            project = Project.get(params.id)
+            if (project) {
+                // find by project
+
+                newsItems = NewsItem.findAllByProject(project, [:], params)
+            }
+        }
+
+        if (!newsItems) {
+            newsItems = NewsItem.list(params).asList()
+        }
+
+        [newsItemInstanceList: newsItems, newsItemInstanceTotal: newsItems?.size(), projectInstance: project]
     }
 
     def create = {

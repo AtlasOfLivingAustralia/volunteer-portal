@@ -483,4 +483,14 @@ class TaskService {
 
         return fileMap
     }
+
+    int countTranscribedByProjectType(String projectType) {
+        Task.executeQuery("""
+            select count(*) from Task t
+            WHERE t.fullyTranscribedBy IS NOT NULL and t.project.id in (
+              select id from Project p  where p.template.id  in (select id from Template where name = '${projectType}')
+            )
+        """)[0]
+    }
+
 }
