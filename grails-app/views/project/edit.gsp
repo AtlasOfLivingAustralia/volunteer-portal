@@ -219,6 +219,8 @@
                   <input type="hidden" name="id" value="${projectInstance.id}" />
                   <g:submitButton name="Upload" />
                 </g:form>
+                <br/>
+                Images should be 254 x 158 pixels in size
               </td>
             </tr>
           </table>

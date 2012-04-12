@@ -117,8 +117,8 @@
     }
 
     #recordsMap img {
-      max-width: initial;
-      max-height: initial;
+      max-width: none;
+      max-height: none;
     }
 
 
