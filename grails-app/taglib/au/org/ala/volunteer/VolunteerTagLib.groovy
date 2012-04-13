@@ -1429,6 +1429,7 @@ class VolunteerTagLib {
                         expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions'],
                         tutorials: [link: createLink(uri: '/tutorials.gsp'), title: 'Tutorials'],
                         submitexpedition: [link: createLink(uri: '/submitAnExpedition.gsp'), title: 'Submit an Expedition'],
+                        contact: [link: createLink(uri: '/contact.gsp'), title: 'Contact Us'],
                         aboutbvp: [link: createLink(uri: '/about.gsp'), title: 'About the Portal'],
                     ]
 
