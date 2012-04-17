@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import org.springframework.validation.Errors
 import org.springframework.web.context.request.RequestContextHolder
+import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
 
@@ -112,6 +113,42 @@ class TranscribeController {
     }
 
     /**
+     * Save the values of selected fields to their picklists, if the value does not already exist...
+     */
+    def updatePicklists(Task task) {
+
+        // Add the name of the picklist here if it is to be updated with user entered values
+        def updateablePicklists = ['recordedBy']
+
+        // Find the template fields used by this tasks template
+        def templateFields = TemplateField.findAllByTemplate(task.project.template)
+
+        // Isolate the fields whose names coincide with a picklist, and for which this task has a value
+        for (TemplateField tf : templateFields) {
+            def f = task.fields.find { it.name == tf.fieldType.name() }
+            // The fieldname/picklist name must also be in the list of updateable picklists
+            if (f && updateablePicklists.contains(f.name) && StringUtils.isNotEmpty(f.value)) {
+                log.debug("Checking picklist ${f.name} for value ${f.value}")
+                // Check that the picklist actually exists...
+                def picklist = Picklist.findByName(f.name)
+                if (picklist) {
+                    // And see if it already contains this value
+                    def existing = PicklistItem.findByPicklistAndValue(picklist, f.value)
+                    if (existing) {
+                        log.debug("Will not update picklist: value ${f.value} already exisits in picklist ${picklist.name}.")
+                    } else {
+                        // Add the new value to the picklist
+                        log.debug("Adding new picklist item to picklist '${picklist.name} with value '${f.value}")
+                        def newItem = new PicklistItem(picklist: picklist, value: f.value)
+                        newItem.save(flush: true)
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
      * Sync fields.
      * TODO record validation using the template information. Hoping some data validation
      *
@@ -126,10 +163,11 @@ class TranscribeController {
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false, null)
             if (!taskInstance.hasErrors()) {
+                updatePicklists(taskInstance)
                 redirect(action: 'showNextAction', id: params.id)
             }
             else {
-                def msg = "Task save partial failed: " + taskInstance.hasErrors()
+                def msg = "Task save failed: " + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
                 render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: params.recordValues])
@@ -151,6 +189,7 @@ class TranscribeController {
             WebUtils.cleanRecordValues(params.recordValues) // removes strange characters from UTF-8 pages
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, null)
             if (!taskInstance.hasErrors()) {
+                updatePicklists(taskInstance)
                 redirect(action: 'showNextAction', id: params.id)
             }
             else {
