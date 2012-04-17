@@ -344,8 +344,8 @@ div#ui-datepicker-div {
 
 .map-control {
     position: absolute;
-    top: 30px;
-    right: 10px;
+    top: 20px;
+    left: 10px;
     background: url(../images/map-control.png) no-repeat;
     height: 63px;
     width: 100px;
