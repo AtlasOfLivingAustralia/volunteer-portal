@@ -142,8 +142,10 @@ class TaskLoadService {
                                 // GET the image via its URL and save various forms to local disk
                                 def filePath = taskService.copyImageToStore(taskDesc.imageUrl, t.id, multimedia.id)
                                 filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
-                                multimedia.filePath = filePath.dir + "/" + filePath.raw
-                                multimedia.filePathToThumbnail = filePath.dir + "/" + filePath.thumb
+
+                                multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+                                multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
+
                                 multimedia.save()
 
                                 // Attempt to predict when the import will complete

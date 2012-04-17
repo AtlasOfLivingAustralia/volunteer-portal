@@ -470,6 +470,12 @@ class TaskService {
         def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
         def conn = url.openConnection()
         def fileMap = [:]
+
+        String urlPrefix = ConfigurationHolder.config.images.urlPrefix
+        if (!urlPrefix.endsWith('/')) {
+            urlPrefix += '/'
+        }
+
         try {
             println("content type = " + conn.contentType + " | " + filename)
             def dir = new File(config.images.home + '/' + taskId + "/" + multimediaId)
@@ -481,6 +487,7 @@ class TaskService {
             def file = new File(dir, filename)
             file << conn.inputStream
             fileMap.raw = file.name
+            fileMap.localUrlPrefix = urlPrefix + "${taskId}/${multimediaId}/"
             return fileMap
             //file.close()
         } catch (Exception e) {
