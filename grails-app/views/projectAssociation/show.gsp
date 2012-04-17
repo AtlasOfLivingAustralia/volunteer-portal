@@ -17,7 +17,7 @@
                                                                                args="[entityName]"/></g:link></span>
 </div>
 
-<div class="body">
+<div>
     <h1><g:message code="default.show.label" args="[entityName]"/></h1>
     <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>

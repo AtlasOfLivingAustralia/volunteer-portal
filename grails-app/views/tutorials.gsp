@@ -44,7 +44,7 @@
         </hgroup>
       </div>
     </header>
-    <div class="body">
+    <div>
       <div class="inner">
         <table class="bvp-expeditions">
           <tr>

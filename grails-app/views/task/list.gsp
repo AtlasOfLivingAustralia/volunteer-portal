@@ -27,7 +27,7 @@
                 <span class="menuButton">Tasks</span>
             </g:else>
         </div>
-        <div class="body">
+        <div class="inner">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},

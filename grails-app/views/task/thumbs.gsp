@@ -22,7 +22,7 @@
   </g:else>
 </div>
 
-<div class="body">
+<div class="inner">
   <h1>Task list <g:if test="${projectInstance}">for ${projectInstance.name}</g:if></h1>
   <g:if test="${taskInstanceList}">
     <div class="list">

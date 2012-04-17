@@ -16,7 +16,7 @@
     </div>
     <h1><g:message code="manage.list.label" args="[entityName]" default="Manage picklists"/></h1>
     <br >
-    <div class="body">
+    <div>
       <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${id}" />
       <g:actionSubmit name="download.picklist" value="${message(code:'download.picklist.label', default: 'Download')}" action="download" />
       <g:actionSubmit name="load.textarea" value="${message(code:'loadtextarea.label', default: 'Load items into text area')}" action="loadcsv" />

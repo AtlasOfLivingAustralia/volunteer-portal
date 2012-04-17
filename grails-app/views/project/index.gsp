@@ -138,6 +138,7 @@
       <nav id="breadcrumb">
         <ol>
           <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+          <li><a href="${createLink(controller: 'project', action:'list')}"><g:message code="default.projects.label"/></a></li>
           <li class="last">${projectInstance.featuredLabel?:'Volunteer Portal'}</li>
         </ol>
       </nav>

@@ -55,6 +55,7 @@
       <nav id="breadcrumb">
         <ol>
           <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+          <li><a href="${createLink(controller: 'project', action:'list')}"><g:message code="default.projects.label"/></a></li>
           <li><g:link controller="project" action="index" id="${taskInstance?.project?.id}" class="crumb">${taskInstance?.project?.name}</g:link></li>
           <li class="last">${(validator) ? 'Validate' : 'Transcribe'} Task - ${(recordValues?.get(0)?.catalogNumber) ? recordValues?.get(0)?.catalogNumber : taskInstance?.id}</li>
         </ol>
@@ -65,7 +66,7 @@
     </div>
   </header>
 
-<div class="body">
+<div class="inner">
     <g:hasErrors bean="${taskInstance}">
     <div class="errors">
         There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
@@ -78,7 +79,7 @@
     <div id="videoLinks" style="padding-top: 6px; float: right;">
         ${taskInstance?.project?.tutorialLinks}
     </div>
-<div class="inner">
+
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
@@ -309,6 +310,6 @@
         No tasks loaded for this project !
     </g:else>
   </div>
-</div>
+
 </body>
 </html>

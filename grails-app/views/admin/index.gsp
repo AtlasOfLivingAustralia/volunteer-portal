@@ -11,7 +11,7 @@
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
       <span class="menuButton">Admin</span>
     </div>
-    <div class="body">
+    <div>
       <h2>Administration</h2>
       <div class="inner">
         <table class="bvp-expeditions">

@@ -11,7 +11,7 @@
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
       <span class="menuButton">ConfigureFrontPage</span>
     </div>
-    <div class="body">
+    <div class="inner">
       <h1>Front Page Configuration</h1>
       <g:if test="${flash.message}">
       <div class="message">${flash.message}</div>

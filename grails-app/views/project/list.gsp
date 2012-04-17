@@ -27,7 +27,7 @@
         <nav id="breadcrumb">
           <ol>
             <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-            <li class="last">Virtual expeditions</li>
+            <li class="last">Expeditions</li>
           </ol>
         </nav>
         <hgroup>

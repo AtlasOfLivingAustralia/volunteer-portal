@@ -41,7 +41,7 @@
         <h1>Submit an Expedition</h1>
       </div>
     </header>
-    <div class="body">
+    <div>
       <div class="inner">
         <p style="font-size: 1.2em">
         The Biodiversity Volunteer Portal is open to any institution or individual who has suitable biodiversity

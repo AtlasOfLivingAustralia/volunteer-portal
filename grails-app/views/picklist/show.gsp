@@ -16,13 +16,13 @@
             }); // end .ready()
         </script>
     </head>
-<body class="two-column-right">
+<body class="sublevel sub-site volunteerportal">
         <div class="nav">
             <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
             <span class="menuButton"><g:link class="crumb" action="list" controller="picklist">Picklists</g:link></span>
             <span>${fieldValue(bean: picklistInstance, field: "name")}</span>
         </div>
-        <div class="body">
+        <div class="inner">
             <h1><g:message code="default.show.label" args="[entityName]" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>

@@ -11,7 +11,7 @@
     <div class="nav">
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
     </div>
-    <div class="body">
+    <div>
       <h1>Load Picklist</h1>
       <g:form method="post" action="upload" controller="picklist">
         <div class="dialog">

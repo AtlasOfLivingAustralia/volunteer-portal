@@ -6,12 +6,12 @@
         <g:set var="entityName" value="${message(code: 'picklistItem.label', default: 'PicklistItem')}" />
         <title><g:message code="default.create.label" args="[entityName]" /></title>
     </head>
-    <body>
+    <body class="sublevel sub-site volunteerportal">
         <div class="nav">
             <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
         </div>
-        <div class="body">
+        <div class="inner">
             <h1><g:message code="default.create.label" args="[entityName]" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -40,7 +40,7 @@
                                     <label for="picklist"><g:message code="picklistItem.picklist.label" default="Picklist" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: picklistItemInstance, field: 'picklist', 'errors')}">
-                                    <g:select name="picklist.id" from="${au.org.ala.volunteer.Picklist.list()}" optionKey="id" value="${picklistItemInstance?.picklist?.id}"  />
+                                    <g:select name="picklist.id" from="${au.org.ala.volunteer.Picklist.list()}" optionKey="id" value="${picklistItemInstance?.picklist?.id}" optionValue="name"  />
                                 </td>
                             </tr>
                         

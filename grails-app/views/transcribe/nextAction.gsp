@@ -55,19 +55,17 @@
     </div>
   </header>
 
-  <div class="body">
-      <div class="inner">
-          <p></p>
-          <h2>Thank you - your transcription was saved <span id="dateSaved">at
-          <g:formatDate date="${ViewedTask.findByTaskAndUserId(taskInstance, userId)?.lastUpdated}" format="h:mm:ss a z 'on' d MMMM yyyy"/></span></h2>
-          %{--<h3>What do you want to do next?</h3>--}%
-          <ul>
-              <li id="goBack"><a href="#">Return to the saved task</a></li>
-              <li id="viewTask"><a href="#">Transcribe another task</a></li>
-              <li id="projectHome"><a href="#">Return to project start page</a></li>
-              <li id="viewStats"><a href="#">View My Stats</a></li>
-          </ul>
-      </div>
+  <div class="inner">
+        <p></p>
+        <h2>Thank you - your transcription was saved <span id="dateSaved">at
+        <g:formatDate date="${ViewedTask.findByTaskAndUserId(taskInstance, userId)?.lastUpdated}" format="h:mm:ss a z 'on' d MMMM yyyy"/></span></h2>
+        %{--<h3>What do you want to do next?</h3>--}%
+        <ul>
+            <li id="goBack"><a href="#">Return to the saved task</a></li>
+            <li id="viewTask"><a href="#">Transcribe another task</a></li>
+            <li id="projectHome"><a href="#">Return to project start page</a></li>
+            <li id="viewStats"><a href="#">View My Stats</a></li>
+        </ul>
   </div>
 </body>
 </html>

@@ -66,52 +66,50 @@
         <h1>Task Load Progress</h1>
       </div>
     </header>
-    <div class="body">
-      <div class="inner">
+    <div class="inner">
 
-        <div id="progress" style="display: none;">
-          <h2>Task load progress</h2>
-          <table>
-            <tr>
-              <td>Import started:</td>
-              <td><b><span id="start_time"></b></td>
-            </tr>
-            <tr>
-              <td>Started by:</td>
-              <td><b><span id="start_by"></span></b></td>
-            </tr>
-            <tr>
-              <td>Total number of tasks</td>
-              <td><b><span id="total_records"></span></b></td>
-            </tr>
-            <tr>
-              <td>Errors</td>
-              <td><b><span id="error_count"></span></b></td>
-            </tr>
-          </table>
+      <div id="progress" style="display: none;">
+        <h2>Task load progress</h2>
+        <table>
+          <tr>
+            <td>Import started:</td>
+            <td><b><span id="start_time"></b></td>
+          </tr>
+          <tr>
+            <td>Started by:</td>
+            <td><b><span id="start_by"></span></b></td>
+          </tr>
+          <tr>
+            <td>Total number of tasks</td>
+            <td><b><span id="total_records"></span></b></td>
+          </tr>
+          <tr>
+            <td>Errors</td>
+            <td><b><span id="error_count"></span></b></td>
+          </tr>
+        </table>
 
-          Tasks loaded: <b><span id="completed_tasks"></span></b> (<b><span id="completed_percent"></span>%</b>), <span id="time_remaining"></span> remaining<br/>
-          <div class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div id="progressBar" class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: 0%; "></div>
-          </div>
-          Currently loading: <b><span id="current_item"></span></b>
-          <br />
-          <button style="margin:5px;" onclick="location.href='${createLink(controller:'task', action:'cancelLoad')}'">Cancel load</button>
+        Tasks loaded: <b><span id="completed_tasks"></span></b> (<b><span id="completed_percent"></span>%</b>), <span id="time_remaining"></span> remaining<br/>
+        <div class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="progressBar" class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: 0%; "></div>
         </div>
-
-        <div id="notasks" style="display: none">
-          There are currently no tasks being loaded.
-        </div>
-
-
-        <div id="error-link" style="display: none">
-          <br/>
-          <b>
-            Errors or warnings have occurred during the last (or current) load. Click <g:link controller="ajax" action="taskLoadReport">here</g:link> for more information.
-          </b>
-        </div>
-
+        Currently loading: <b><span id="current_item"></span></b>
+        <br />
+        <button style="margin:5px;" onclick="location.href='${createLink(controller:'task', action:'cancelLoad')}'">Cancel load</button>
       </div>
+
+      <div id="notasks" style="display: none">
+        There are currently no tasks being loaded.
+      </div>
+
+
+      <div id="error-link" style="display: none">
+        <br/>
+        <b>
+          Errors or warnings have occurred during the last (or current) load. Click <g:link controller="ajax" action="taskLoadReport">here</g:link> for more information.
+        </b>
+      </div>
+
     </div>
   </body>
 </html>

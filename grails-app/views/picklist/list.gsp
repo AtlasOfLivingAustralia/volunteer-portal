@@ -7,12 +7,12 @@
   <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}"/>
   <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>
-<body class="two-column-right">
+<body class="sublevel sub-site volunteerportal">
     <div class="nav">
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
       <span class="menuButton">Picklists</span>
     </div>
-    <div class="body">
+    <div class="inner">
       <h1><g:message code="default.list.label" args="[entityName]"/></h1>
       <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>

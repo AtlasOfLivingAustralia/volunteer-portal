@@ -28,13 +28,9 @@
       </div>
     </header>
 
-  <div class="body">
-
     <div class="inner">
-
       <p style="text-align: center">There are currently no new tasks ready to transcribe.</p>
       <p style="text-align: center">Please check back later for more transcription tasks.</p>
     </div>
-  </div>
   </body>
 </html>

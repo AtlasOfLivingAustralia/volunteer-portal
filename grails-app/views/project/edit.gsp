@@ -13,7 +13,7 @@
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:message code="default.edit.label" args="[entityName]" /></span>
         </div>
-        <div class="body">
+        <div>
             <h2><g:message code="default.edit.label" args="[entityName]" /></h2>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>

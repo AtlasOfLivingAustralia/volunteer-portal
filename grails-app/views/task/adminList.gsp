@@ -49,7 +49,7 @@
           </div><!--inner-->
         </header>
 
-        <div class="body">
+        <div>
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},

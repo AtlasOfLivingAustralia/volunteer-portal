@@ -31,7 +31,7 @@
         <h1>Contact Us</h1>
       </div>
     </header>
-    <div class="body">
+    <div>
       <div class="inner">
         <h2>Help in using the BVP and reporting issues</h2>
         <b>E</b> paul.flemons at austmus.gov.au<br/>
