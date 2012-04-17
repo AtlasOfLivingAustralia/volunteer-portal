@@ -83,7 +83,12 @@
         </div>
 
         <div class="buttons">
-            <span class="button"><g:actionSubmit class="submit" action="loadCSV"
+          Duplicate handling mode:
+            <select name="duplicateMode">
+              <option value="skip">Skip duplicates</option>
+              <option value="replace">Replace duplicates</option>
+            </select>
+            <span class="button"><g:actionSubmit class="submit" action="loadCSVAsync"
                                                  value="${message(code: 'default.button.submit.label', default: 'Submit')}"/></span>
             <span class="button"><g:actionSubmit class="cancel" action="list"
                                                  value="${message(code: 'default.button.cancel.label', default: 'Cancel')}"/></span>

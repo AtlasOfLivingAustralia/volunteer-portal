@@ -472,7 +472,7 @@ class TaskService {
         def fileMap = [:]
         try {
             println("content type = " + conn.contentType + " | " + filename)
-            def dir = new File(config.images.urlPrefix + taskId + "/" + multimediaId)
+            def dir = new File(config.images.home + '/' + taskId + "/" + multimediaId)
             if (!dir.exists()) {
                 println("Creating dir " + dir.absolutePath)
                 dir.mkdirs()

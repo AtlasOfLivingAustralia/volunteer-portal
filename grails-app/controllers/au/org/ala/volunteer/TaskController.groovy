@@ -2,6 +2,8 @@ package au.org.ala.volunteer
 
 import grails.converters.*
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import java.util.concurrent.Callable
+import grails.plugin.executor.PersistenceContextExecutorWrapper
 
 class TaskController {
 
@@ -11,8 +13,11 @@ class TaskController {
     def fieldSyncService
     def fieldService
     def authService
+    def taskLoadService
+
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
+
 
     def load = {
         [projectList: Project.list()]
@@ -132,8 +137,32 @@ class TaskController {
 
     def loadCSV = {
         def projectId = params.int('projectId')
-        flash.message = taskService.loadCSV(projectId, params.csv)
-        redirect(action: "list", params: [id:  projectId])
+
+        if (params.csv) {
+            def csv = params.csv;
+            flash.message = taskService.loadCSV(projectId, csv)
+        }
+    }
+
+    def loadCSVAsync = {
+        def projectId = params.int('projectId')
+        def replaceDuplicates = params.duplicateMode == 'replace'
+        if (projectId && params.csv) {
+            def project = Project.get(projectId)
+            if (project) {
+                def (success, message) = taskLoadService.loadTaskFromCSV(project, params.csv, replaceDuplicates)
+                if (!success) {
+                    flash.message = message + " - Try again when current load is complete."
+                }
+                redirect( uri: "/loadProgress.gsp")
+            }
+        }
+    }
+
+    def cancelLoad = {
+        taskLoadService.cancelLoad()
+        flash.message = "Cancelled!"
+        redirect( uri: "/loadProgress.gsp")
     }
 
     def index = {

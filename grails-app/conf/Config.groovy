@@ -139,9 +139,9 @@ environments {
         images.home = '/data/volunteer'
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
-        server.url = "http://localhost"
-        security.cas.appServerName = "http://localhost:8080"
+        grails.serverURL = "http://baird.ala.org.au:8080/${appName}"
+        server.url = "http://baird.ala.org.au"
+        security.cas.appServerName = "http://baird.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer'
         //log4j.appender.'errors.File'="stacktrace.log"
@@ -152,6 +152,7 @@ environments {
         security.cas.appServerName = "http://volunteer-dev.ala.org.au"
         security.cas.contextPath = ""
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
+        images.home = '/data/volunteer/data/volunteer'
     }
 }
 

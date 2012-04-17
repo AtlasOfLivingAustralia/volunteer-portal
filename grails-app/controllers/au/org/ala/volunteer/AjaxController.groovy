@@ -3,12 +3,14 @@ package au.org.ala.volunteer
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVWriter
+import java.text.SimpleDateFormat
 
 class AjaxController {
 
     def taskService;
     def userService;
     def authService;
+    def taskLoadService;
 
     def index = {
         render(['VolunteerPortal' : 'Version 1.0'] as JSON)
@@ -83,4 +85,36 @@ class AjaxController {
             render report as JSON
         }
     }
+
+    def loadProgress = {
+
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 1L);
+        response.setHeader("Cache-Control", "no-cache");
+        response.addHeader("Cache-Control", "no-store");
+
+        render( taskLoadService.status() as JSON)
+    }
+
+    def taskLoadReport = {
+
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 1L);
+        response.setHeader("Cache-Control", "no-cache");
+        response.addHeader("Cache-Control", "no-store");
+        response.addHeader("Content-type", "text/plain")
+
+        def writer = new CSVWriter(response.writer, (char) '\t')
+        writer.writeNext("time", "project", "task id", "succeeded", "message", "image url")
+
+        def errors = taskLoadService.lastReport
+        if (errors && errors.size() > 0) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd")
+            for (def error : errors) {
+                writer.writeNext( sdf.format(error.time), error.taskDescriptor.project.name, (String) error.taskDescriptor.externalIdentifier, (String) error.succeeded, error.message, error.taskDescriptor.imageUrl );
+            }
+        }
+        writer.flush()
+    }
+
 }
