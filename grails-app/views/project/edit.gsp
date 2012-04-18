@@ -6,6 +6,11 @@
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
         <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
+        <script type="text/javascript">
+          confirmDeleteAllTasks = function() {
+            return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?")
+          }
+        </script>
     </head>
     <body class="sublevel sub-site volunteerportal">
         <div class="nav">
@@ -172,27 +177,14 @@
                                     <label><g:message code="project.tasks.label" default="Tasks" /></label>
                                 </td>
                                 <td valign="middle" class="value">
+                                  <span style="padding-right: 10px"><a href="${createLink(controller: 'task', action:'list', id: projectInstance.id)}">${taskCount} tasks</a></span>
                                   <a class="button" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks...</a>
+                                  <span style="padding-left:5px; padding-top: 7px; padding-right: 5px; padding-bottom: 8px; background-image: url(${resource(dir: '/images', file: 'warning-button.png')})">
+                                      <span class="button"><g:actionSubmit style="width: 100px" class="delete" action="deleteTasks" value="Delete all tasks" onclick="return confirmDeleteAllTasks()" /></span>
+                                  </span>
                                 </td>
                             </tr>
 
-                        
-                            %{--<tr class="prop">--}%
-                                %{--<td valign="top" class="name">--}%
-                                  %{--<label for="tasks"><g:message code="project.tasks.label" default="Tasks" /></label>--}%
-                                %{--</td>--}%
-                                %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tasks', 'errors')}">--}%
-                                    %{----}%
-%{--<ul>--}%
-%{--<g:each in="${projectInstance?.tasks?}" var="t">--}%
-    %{--<li><g:link controller="task" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></li>--}%
-%{--</g:each>--}%
-%{--</ul>--}%
-%{--<g:link controller="task" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'task.label', default: 'Task')])}</g:link>--}%
-
-                                %{--</td>--}%
-                            %{--</tr>--}%
-                        
                         </tbody>
                     </table>
                 </div>

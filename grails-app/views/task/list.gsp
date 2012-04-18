@@ -28,7 +28,10 @@
             </g:else>
         </div>
         <div class="inner">
-            <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+            <h1><g:message code="default.list.label" args="[entityName]" />
+              <g:if test="${projectInstance}"> - ${projectInstance.featuredLabel}</g:if>
+              <g:else> - All expeditions</g:else>
+            </h1>
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
                 <g:if test="${projectInstance}">

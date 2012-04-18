@@ -266,11 +266,14 @@ class ProjectController {
 
         def sql = new Sql(dataSource)
         def projectInstance = Project.get(params.id)
-        sql.call("delete from task where project_id=" + params.id)
-
-//      Multimedia.executeUpdate("delete Multimedia m inner join m.task where m.task.project.id = :projectId", [projectId:params.long('id')])
-        //      Task.executeUpdate("delete Task t where t.project.id = :projectId", [projectId:params.long('id')])
-        redirect(action: "show", id: projectInstance.id)
+        if (projectInstance) {
+            def tasks = Task.findAllByProject(projectInstance)
+            for (Task t : tasks) {
+                t.delete()
+            }
+//            sql.call("delete from task where project_id=${projectInstance.id}")
+        }
+        redirect(action: "edit", id: projectInstance?.id)
     }
 
     def list = {
@@ -415,9 +418,9 @@ class ProjectController {
             if (!projectInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
-            }
-            else {
-                return [projectInstance: projectInstance]
+            } else {
+
+                return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size()]
             }
         } else {
             flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"

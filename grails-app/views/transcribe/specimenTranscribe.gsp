@@ -161,9 +161,10 @@
                             <tr class='prop' style="width:950px;border-top:2px solid white;padding-top:5px;">
                                 <td class='name'>
                                     <yield>Verbatim Locality</yield>
-                                    </td>
+                                </td>
                                 <td class='value'>
-                                    <textarea name="recordValues.0.verbatimLocality" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea><a href='#' class='fieldHelp' title='Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label'><span class='help-container'>&nbsp;</span></a></td>
+                                    <textarea name="recordValues.0.verbatimLocality" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea><a href='#' class='fieldHelp' title='Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label'><span class='help-container'>&nbsp;</span></a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

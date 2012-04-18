@@ -159,7 +159,7 @@ html {
     font-weight: bold;
 }
 
-div.body a.fieldHelp {
+div.inner a.fieldHelp {
     text-decoration: none;
     display: inline-block;
     vertical-align: top;
