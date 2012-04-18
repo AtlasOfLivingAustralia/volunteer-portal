@@ -4,19 +4,26 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVWriter
 import java.text.SimpleDateFormat
+import javax.servlet.http.HttpServletResponse
+import groovy.sql.Sql
+import javax.sql.DataSource
+import java.sql.ResultSet
 
 class AjaxController {
 
-    def taskService;
-    def userService;
-    def authService;
-    def taskLoadService;
+    def taskService
+    def userService
+    def authService
+    def taskLoadService
+    DataSource dataSource
 
     def index = {
         render(['VolunteerPortal' : 'Version 1.0'] as JSON)
     }
 
     def stats = {
+
+        setNoCache()
 
         def stats = [:]
 
@@ -51,6 +58,8 @@ class AjaxController {
     }
 
     def userReport = {
+
+        setNoCache()
 
         if (!authService.userInRole("ROLE_VP_ADMIN")) {
             render "Must be logged in as an administrator to use this service!"
@@ -87,21 +96,12 @@ class AjaxController {
     }
 
     def loadProgress = {
-
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 1L);
-        response.setHeader("Cache-Control", "no-cache");
-        response.addHeader("Cache-Control", "no-store");
-
+        setNoCache()
         render( taskLoadService.status() as JSON)
     }
 
     def taskLoadReport = {
-
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 1L);
-        response.setHeader("Cache-Control", "no-cache");
-        response.addHeader("Cache-Control", "no-store");
+        setNoCache()
         response.addHeader("Content-type", "text/plain")
 
         def writer = new CSVWriter(response.writer, (char) '\t')
@@ -115,6 +115,73 @@ class AjaxController {
             }
         }
         writer.flush()
+    }
+
+    def expeditionInfo = {
+        setNoCache()
+        def sql = new Sql(dataSource:dataSource)
+
+        def projects = Project.list()
+        def results = []
+        for (Project p : projects) {
+            def project = [:]
+            project.name = p.name
+            project.description = p.description
+            project.expeditionPageURL = createLink(controller: 'project', action: 'index', id: p.id, absolute: true)
+            project.taskCount = Task.countByProject(p)
+            project.transcribedCount = Task.countByProjectAndFullyTranscribedByNotIsNull(p)
+            project.validatedCount = Task.countByProjectAndFullyValidatedByNotIsNull(p)
+
+            sql.query("select count(distinct(fully_transcribed_by)) from task where project_id = ${p.id} and length(fully_transcribed_by) > 0") { ResultSet rs ->
+                if (rs.next()) {
+                    project.volunteerCount = rs.getInt(1)
+                }
+            }
+
+            project.biocacheDataURL = createLink(controller: 'ajax', action: 'expeditionBiocacheData', id: p.id, absolute: true)
+
+            results.add(project)
+        }
+
+        render results as JSON
+    }
+
+    def expeditionBiocacheData = {
+
+        setNoCache()
+        response.addHeader("Content-type", "text/plain")
+        def writer = new CSVWriter(response.writer)
+        writer.writeNext("catalog_id", "institution_code", "scientific_name", "image_url", "task_page_url")
+
+        if (params.id) {
+
+            def fieldNames = ['catalogNumber', 'institutionCode', 'scientificName']
+
+            def projectInstance = Project.get(params.id)
+            if (projectInstance) {
+                def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
+
+                for (Task t : fields.keySet()) {
+                    def fieldValues = fields[t]
+                    def values = []
+                    values.add(fieldValues.find { it.name == 'catalogNumber' } ?.value?:"")
+                    values.add(fieldValues.find { it.name == 'institutionCode' } ?.value?:"")
+                    values.add(fieldValues.find { it.name == 'scientificName' } ?.value?:"")
+                    values.add("${ConfigurationHolder.config.server.url}${t.multimedia.toList()[0].filePath}")
+                    values.add(createLink(controller: 'task', action: 'show', id: t.id, absolute: true ))
+                    writer.writeNext((String[]) values.toArray())
+                }
+            }
+        }
+
+        writer.flush()
+    }
+
+    private def setNoCache() {
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 1L);
+        response.setHeader("Cache-Control", "no-cache");
+        response.addHeader("Cache-Control", "no-store");
     }
 
 }

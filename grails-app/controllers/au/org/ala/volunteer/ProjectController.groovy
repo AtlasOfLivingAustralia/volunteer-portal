@@ -264,14 +264,12 @@ class ProjectController {
 
     def deleteTasks = {
 
-        def sql = new Sql(dataSource)
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             def tasks = Task.findAllByProject(projectInstance)
             for (Task t : tasks) {
                 t.delete()
             }
-//            sql.call("delete from task where project_id=${projectInstance.id}")
         }
         redirect(action: "edit", id: projectInstance?.id)
     }
