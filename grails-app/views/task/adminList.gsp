@@ -49,7 +49,7 @@
           </div><!--inner-->
         </header>
 
-        <div>
+        <div class="inner">
             <div style="margin: 8px 0 6px 0; clear: both;">
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
@@ -61,7 +61,7 @@
                 <input type="text" name="q" id="q" value="${params.q}" size="30"/>
                 <button id="searchButton">search</button>
             </div>
-          <div class="inner">
+          <div>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>

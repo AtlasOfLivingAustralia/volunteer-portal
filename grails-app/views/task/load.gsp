@@ -48,7 +48,7 @@
     </g:if>
 </div>
 
-<div>
+<div class="inner">
     <h1>Load CSV</h1>
 
     <g:form method="post">
