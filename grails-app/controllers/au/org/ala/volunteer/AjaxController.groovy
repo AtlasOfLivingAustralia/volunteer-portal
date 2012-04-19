@@ -138,7 +138,7 @@ class AjaxController {
                 }
             }
 
-            project.biocacheDataURL = createLink(controller: 'ajax', action: 'expeditionBiocacheData', id: p.id, absolute: true)
+            project.dataURL = createLink(controller: 'ajax', action: 'expeditionBiocacheData', id: p.id, absolute: true)
 
             results.add(project)
         }
@@ -151,7 +151,7 @@ class AjaxController {
         setNoCache()
         response.addHeader("Content-type", "text/plain")
         def writer = new CSVWriter(response.writer)
-        writer.writeNext("catalog_id", "institution_code", "scientific_name", "image_url", "task_page_url")
+        writer.writeNext("catalog_id", "institution_code", "scientific_name", "associated_media", "occurance_id")
 
         if (params.id) {
 
