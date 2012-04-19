@@ -74,8 +74,12 @@
                             
                             <td valign="top" style="text-align: left;" class="value">
                                 <ul>
-                                <g:each in="${taskInstance.fields}" var="f">
-                                    <li><g:link controller="field" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link></li>
+                                <g:each in="${taskInstance.fields.sort { it.superceded } }" var="f">
+                                    <li><g:link controller="field" action="show" id="${f.id}">
+                                      <g:if test="${f.superceded == true}">
+                                        (Superceded)&nbsp;
+                                      </g:if>
+                                      ${f?.name + ' = ' + f.value}</g:link></li>
                                 </g:each>
                                 </ul>
                             </td>

@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import groovy.sql.Sql
+
 class UserController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -9,6 +11,7 @@ class UserController {
     def userService
     def fieldSyncService
     def fieldService
+    def dataSource
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
 
     def index = {
@@ -111,53 +114,98 @@ class UserController {
     }
 
     def show = {
+        // Getting the list of tasks for the user is a bit tricky because
+        // we need to get the catalog number, if it exists, for each task.
+        // The way this used to work was to get all the tasks, then extract all the
+        // field values, and match them up, it this was fine, but it meant that
+        // you couldn't sort by catalog number, but more importantly, you couldn't
+        // search by catalog number, which is a user requested feature.
+
+        // So instead this method performs a custom SQL query that performs the outer join
+        // and can also handle the sort and pagination parameters
+
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
+
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
-        def recentTasks
-        def totalTranscribedTasks
+        params.offset = params.int('offset') ?: 0
+        params.order = params.order ?: ""
+
+        def project = Project.get(params.projectId)
+        def sql = new Sql(dataSource: dataSource)
+
+        String sort_clause = "t.id ${params.order}"
+        String search_clause = ""
+
+        if (project) {
+            search_clause = " AND p.id = ${params.projectId}"
+        }
+
+        if (params.q) {
+            String q = params.q?.toString()?.toLowerCase()
+            search_clause += " AND (lower(t.external_identifier) like '%${q}%' OR lower(field.value) like '%${q}%' OR lower(p.featured_label) like '%${q}%')"
+        }
+
+        if (params.sort) {
+            sort_clause = "${params.sort} ${params.order}"
+        }
+
+        String select = "SELECT t.id as id, t.external_identifier as externalIdentifier, t.fully_transcribed_by as fullyTranscribedBy, t.is_valid as isValid, field.value as catalogNumber, p.id as projectId, p.featured_label as project"
+
+        String fromWhere = """
+            FROM Project p, Task t left outer join (select f.task_id, f.value from Field f where f.name = 'catalogNumber') as field on field.task_id = t.id
+            WHERE t.fully_transcribed_by = '${userInstance.userId}' and p.id = t.project_id ${search_clause}
+        """
+
+        String pageinationControl = """
+            ORDER BY ${sort_clause}
+            LIMIT ${params.int('max')}
+            OFFSET ${params.int('offset')}
+        """
+
+        String query = "${select} ${fromWhere} ${pageinationControl}"
+        String countQuery = "SELECT count(*) ${fromWhere}"
+
+        def totalMatchingTasks = sql.firstRow(countQuery)[0]
+
+        def viewList = []
+
+        sql.eachRow(query) { row ->
+                    def taskRow = [id: row.id, externalIdentifier:row.externalIdentifier, catalogNumber: row.catalogNumber, fullyTranscribedBy: row.fullyTranscribedBy, projectId: row.projectId, project:  row.project ]
+
+                    if (row.isValid == true) {
+                        taskRow.status = "Validated"
+                    } else if (row.isValid == false) {
+                        taskRow.status = "Invalidated"
+                    } else if (row.fullyTranscribedBy?.length() > 0) {
+                        taskRow.status = "Transcribed"
+                    } else {
+                        taskRow.status = "Saved"
+                    }
+                    viewList.add(taskRow)
+        }
+
+        int totalTranscribedTasks
         def savedTasks
         def totalSavedTasks
-        def project = Project.get(params.projectId)
 
         if (project) {
             savedTasks = taskService.getRecentlySavedTasksByProject(userInstance.getUserId(), project, params)
             totalSavedTasks = taskService.getRecentlySavedTasksByProject(userInstance.getUserId(), project, new HashMap<String, Object>()).size()
-            recentTasks = Task.findAllByFullyTranscribedByAndProject(userInstance.getUserId(), project, params)
             totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), project)
         } else {
             savedTasks = taskService.getRecentlySavedTasks(userInstance.getUserId(), params)
             totalSavedTasks = taskService.getRecentlySavedTasks(userInstance.getUserId(), new HashMap<String, Object>()).size()
-            recentTasks = Task.findAllByFullyTranscribedBy(userInstance.getUserId(), params)
             totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
         }
-
-        def fieldsInTask = [:] // map of task id to saved fields for that task
-        savedTasks.each {
-            // get the fields as a Map (to be able to display catalogNumber
-            fieldsInTask.put(it.id, fieldSyncService.retrieveFieldsForTask(it))
-        }
-        recentTasks.each {
-            // get the fields as a Map (to be able to display catalogNumber
-            fieldsInTask.put(it.id, fieldSyncService.retrieveFieldsForTask(it))
-        }
-        def extraFields = [:]
-        def fieldNames = ["catalogNumber"];
-        fieldNames.each {
-            if (recentTasks) extraFields[it] = fieldService.getLatestFieldsWithTasks(it, recentTasks, params)
-        }
-
-        def numberOfTasksEdited = taskService.getRecentlyTranscribedTasks(userInstance.getUserId(), [:]).size()
-        def pointsTotal =  (userInstance.transcribedCount * 100) + ((numberOfTasksEdited - userInstance.transcribedCount ) * 10)
 
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
-        }
-        else {
-            [userInstance: userInstance, taskInstanceList: recentTasks, currentUser: currentUser, numberOfTasksEdited: numberOfTasksEdited,
-                    pointsTotal: pointsTotal, totalTranscribedTasks: totalTranscribedTasks, fieldsInTask: fieldsInTask,
-                    extraFields: extraFields, project: project, savedTasks: savedTasks, totalSavedTasks: totalSavedTasks]
+        } else {
+            [   userInstance: userInstance, currentUser: currentUser, project: project,
+                matchingTasks: viewList, totalMatchingTasks: totalMatchingTasks, totalTranscribedTasks: totalTranscribedTasks,
+                savedTasks: savedTasks, totalSavedTasks: totalSavedTasks]
         }
     }
 

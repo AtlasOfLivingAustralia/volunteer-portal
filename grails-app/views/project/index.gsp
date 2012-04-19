@@ -200,7 +200,7 @@
               <h3><img src='<g:resource file="${role.icon}"/>' width="100" height="99" alt="">${role.name}</h3>
               <ol>
                 <g:each in="${role.members}" var="member">
-                  <li><a href="${createLink(controller: 'user', action:'show', id: member.id)}">${member.name} (${member.count})</a></li>
+                  <li><a href="${createLink(controller: 'user', action:'show', id: member.id, params:[projectId:projectInstance.id])}">${member.name} (${member.count})</a></li>
                 </g:each>
 
               </ol>

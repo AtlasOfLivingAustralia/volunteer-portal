@@ -36,7 +36,20 @@
               }
           });
 
+        $('#searchbox').bind('keypress', function(e) {
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if(code == 13) {
+              doSearch();
+            }
+        });
+
       });
+
+      doSearch = function() {
+        var searchTerm = $('#searchbox').val()
+        var link = "${createLink(controller: 'user', action: 'show', id: userInstance.id)}?q=" + searchTerm
+        window.location.href = link;
+      }
     </script>
   </head>
   <body class="sublevel sub-site volunteerportal">
@@ -91,10 +104,6 @@
             <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks Validated"/></td>
             <td valign="top" class="value">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
           </tr>
-          <!--<tr class="prop">
-            <td valign="top" class="name"><g:message code="user.userId.points.tally.label" default="Points"/></td>
-            <td valign="top" class="value">${pointsTotal}</td>
-          </tr>-->
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
             <td valign="top" class="value">
@@ -178,87 +187,87 @@
     </div>
   </g:if>
 
-  <g:if test="${taskInstanceList}">
-    <h2>Transcribed Tasks by
-    <g:if test="${userInstance.userId == currentUser}">
-      you
-    </g:if>
-    <g:else>
-      ${fieldValue(bean: userInstance, field: "displayName")}
-    </g:else>
-    <g:if test="${project}">
-        for ${project.featuredLabel}
-    </g:if>
-    (${totalTranscribedTasks} tasks found)
-    </h2>
-    <div class="list">
-            <table class="bvp-expeditions">
-                <thead>
-                    <tr>
 
-                        <g:sortableColumn style="text-align: left" property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
-
-                        <g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
-
-                        <th style="text-align: left">Catalog Number</th>
-
-                        <g:sortableColumn style="text-align: left" property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
-
-                        <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
-
-                        <th style="text-align: center;">Action</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                <g:each in="${taskInstanceList}" status="i" var="taskInstance">
-                    <tr>
-
-                        <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
-
-                        <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
-
-                        <td>${fieldsInTask?.get(taskInstance.id)?.get(0)?.catalogNumber}</td>
-
-                        <td>${fieldValue(bean: taskInstance, field: "project")}</td>
-
-                        <td style="text-align: center;">
-                            <g:if test="${taskInstance.isValid == true}">validated</g:if>
-                            <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
-                            <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
-                            <g:else>saved</g:else>
-                        </td>
-
-                        <td style="text-align: center;">
-                            <g:if test="${taskInstance.fullyTranscribedBy}">
-                                <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
-                            </g:if>
-                            <g:else>
-                                <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
-                            </g:else>
-                        </td>
-
-                    </tr>
-                </g:each>
-                </tbody>
-            </table>
-    </div>
-    <div class="paginateButtons">
-      <g:paginate total="${totalTranscribedTasks}" id="${userInstance?.id}" params="${params}"/>
-    </div>
-%{--
-    <div class="list">
-      <g:renderTaskList taskInstanceList="${allTasks}" noOfColumns="4"/>
-    </div>
-    <div class="paginateButtons">
-      <g:paginate total="${allTasksTotal}"/>
-    </div>--}%
+  <h2>Transcribed Tasks by
+  <g:if test="${userInstance.userId == currentUser}">
+    you
   </g:if>
+  <g:else>
+    ${fieldValue(bean: userInstance, field: "displayName")}
+  </g:else>
+  <g:if test="${project}">
+      for ${project.featuredLabel}
+  </g:if>
+  <g:if test="${!matchingTasks}">
+  <span>(No matching tasks found)</span>
+  </g:if>
+  <g:else>
+    (${totalMatchingTasks} tasks found)
+  </g:else>
+  </h2>
+  <div class="list">
+          <table class="bvp-expeditions">
+              <thead>
+                  <tr>
+                    <th colspan="6" style="text-align: right">
+                      <g:textField id="searchbox" value="${params.q}" name="searchbox" onkeypress=""/>
+                      <button onclick="doSearch()">Search</button>
+                    </th>
+                  </tr>
+                  <tr>
 
-</div>
-  <script type="text/javascript">
-    $("th > a").addClass("button")
-    $("th.sorted > a").addClass("current")
-  </script>
-</body>
+                      <g:sortableColumn style="text-align: left" property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
+
+                      <g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
+
+                      <g:sortableColumn style="text-align: left" property="catalogNumber" title="${message(code: 'task.catalogNumber.label', default: 'Catalog Number')}" params="${[q:params.q]}"/>
+
+                      <g:sortableColumn style="text-align: left" property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
+
+                      <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
+
+                      <th style="text-align: center;">Action</th>
+
+                  </tr>
+              </thead>
+              <tbody>
+              <g:each in="${matchingTasks}" status="i" var="taskInstance">
+                  <tr>
+
+                      <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${taskInstance.id}</g:link></td>
+
+                      <td>${taskInstance.externalIdentifier}</td>
+
+                      <td>${taskInstance.catalogNumber}</td>
+
+                      <td><g:link controller="project" action="index" id="${taskInstance.projectId}">${taskInstance.project}</g:link></td>
+
+                      <td style="text-align: center;">
+                          ${taskInstance.status}
+                      </td>
+
+                      <td style="text-align: center;">
+                          <g:if test="${taskInstance.fullyTranscribedBy}">
+                              <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
+                          </g:if>
+                          <g:else>
+                              <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                          </g:else>
+                      </td>
+
+                  </tr>
+              </g:each>
+              </tbody>
+          </table>
+  </div>
+  <div class="paginateButtons">
+    <g:paginate total="${totalMatchingTasks}" id="${userInstance?.id}" params="${params}"/>
+  </div>
+
+  </div>
+    <script type="text/javascript">
+      $("th > a").addClass("button")
+      $("th.sorted > a").addClass("current")
+    </script>
+  </body>
 </html>
