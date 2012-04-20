@@ -143,17 +143,18 @@ class UserController {
 
         if (params.q) {
             String q = params.q?.toString()?.toLowerCase()
-            search_clause += " AND (lower(t.external_identifier) like '%${q}%' OR lower(field.value) like '%${q}%' OR lower(p.featured_label) like '%${q}%')"
+            search_clause += " AND (lower(t.external_identifier) like '%${q}%' OR lower(field.value) like '%${q}%' OR lower(p.featured_label) like '%${q}%' or lower(to_char(lastEdit, 'dd MON, yyyy HH24:MI.SS')) like '%${q}%')"
         }
 
         if (params.sort) {
-            sort_clause = "${params.sort} ${params.order}"
+            sort_clause = "${params.sort} IS NOT NULL, ${params.sort} ${params.order}"
         }
 
-        String select = "SELECT t.id as id, t.external_identifier as externalIdentifier, t.fully_transcribed_by as fullyTranscribedBy, t.is_valid as isValid, field.value as catalogNumber, p.id as projectId, p.featured_label as project"
+        String select = "SELECT t.id as id, t.external_identifier as externalIdentifier, t.fully_transcribed_by as fullyTranscribedBy, t.is_valid as isValid, field.value as catalogNumber, p.id as projectId, p.featured_label as project, field2.lastEdit as lastEdit"
 
         String fromWhere = """
-            FROM Project p, Task t left outer join (select f.task_id, f.value from Field f where f.name = 'catalogNumber') as field on field.task_id = t.id
+            FROM Project p, Task t LEFT OUTER JOIN (select f.task_id, f.value from Field f where f.name = 'catalogNumber') as field on field.task_id = t.id
+            LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = '${userInstance.userId}' group by f.task_id) as field2 on field2.task_id = t.id
             WHERE t.fully_transcribed_by = '${userInstance.userId}' and p.id = t.project_id ${search_clause}
         """
 
@@ -172,6 +173,8 @@ class UserController {
 
         sql.eachRow(query) { row ->
                     def taskRow = [id: row.id, externalIdentifier:row.externalIdentifier, catalogNumber: row.catalogNumber, fullyTranscribedBy: row.fullyTranscribedBy, projectId: row.projectId, project:  row.project ]
+
+                    taskRow.lastEdit = row.lastEdit
 
                     if (row.isValid == true) {
                         taskRow.status = "Validated"

@@ -209,7 +209,7 @@
           <table class="bvp-expeditions">
               <thead>
                   <tr>
-                    <th colspan="6" style="text-align: right">
+                    <th colspan="7" style="text-align: right">
                       <g:textField id="searchbox" value="${params.q}" name="searchbox" onkeypress=""/>
                       <button onclick="doSearch()">Search</button>
                     </th>
@@ -223,6 +223,8 @@
                       <g:sortableColumn style="text-align: left" property="catalogNumber" title="${message(code: 'task.catalogNumber.label', default: 'Catalog Number')}" params="${[q:params.q]}"/>
 
                       <g:sortableColumn style="text-align: left" property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
+
+                      <g:sortableColumn property="lastEdit" title="${message(code: 'task.transcribed.label', default: 'Transcribed')}" params="${[q:params.q]}" style="text-align: left;"/>
 
                       <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
 
@@ -241,6 +243,11 @@
                       <td>${taskInstance.catalogNumber}</td>
 
                       <td><g:link controller="project" action="index" id="${taskInstance.projectId}">${taskInstance.project}</g:link></td>
+
+                      <td>
+                        <g:formatDate date="${taskInstance.lastEdit}" format="dd MMM, yyyy HH:mm:ss" />
+
+                      </td>
 
                       <td style="text-align: center;">
                           ${taskInstance.status}
