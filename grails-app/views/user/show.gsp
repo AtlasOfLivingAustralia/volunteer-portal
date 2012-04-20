@@ -43,6 +43,31 @@
             }
         });
 
+    // Context sensitive help popups
+    $("a.fieldHelp").qtip({
+        tip: true,
+        position: {
+            corner: {
+                target: 'topMiddle',
+                tooltip: 'bottomRight'
+            }
+        },
+        style: {
+            width: 400,
+            padding: 8,
+            background: 'white', //'#f0f0f0',
+            color: 'black',
+            textAlign: 'left',
+            border: {
+                width: 4,
+                radius: 5,
+                color: '#E66542'// '#E66542' '#DD3102'
+            },
+            tip: 'bottomRight',
+            name: 'light' // Inherit the rest of the attributes from the preset light style
+        }
+    }).bind('click', function(e){ e.preventDefault(); return false; });
+
       });
 
       doSearch = function() {
@@ -135,15 +160,26 @@
                 <thead>
                     <tr>
 
-                        <g:sortableColumn style="text-align: left" property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
+                        <th style="text-align: left">Id</th>
 
-                        <g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
+                        <th style="text-align: left">Image ID</th>
 
                         <th style="text-align: left">Catalog Number</th>
 
-                        <g:sortableColumn style="text-align: left" property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
+                        <th style="text-align: left">Project</th>
 
-                        <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
+                        <th style="text-align: left">Status</th>
+
+                        %{--<g:sortableColumn style="text-align: left" property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>--}%
+
+                        %{--<g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>--}%
+
+
+
+
+                        %{--<g:sortableColumn style="text-align: left" property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>--}%
+
+                        %{--<g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>--}%
 
                         <th style="text-align: center;">Action</th>
 
@@ -210,23 +246,26 @@
               <thead>
                   <tr>
                     <th colspan="7" style="text-align: right">
+                      <span>
+                        <a style="vertical-align: middle;" href="#" class="fieldHelp" title="Enter search text here to show only tasks matching values in the ImageID, CatalogNumber, Project and Transcribed columns"><span class="help-container">&nbsp;</span></a>
+                      </span>
                       <g:textField id="searchbox" value="${params.q}" name="searchbox" onkeypress=""/>
                       <button onclick="doSearch()">Search</button>
                     </th>
                   </tr>
                   <tr>
 
-                      <g:sortableColumn style="text-align: left" property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
+                      <g:sortableColumn style="text-align: left" property="t.id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
 
-                      <g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
+                      <g:sortableColumn style="text-align: left" property="external_identifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
 
-                      <g:sortableColumn style="text-align: left" property="catalogNumber" title="${message(code: 'task.catalogNumber.label', default: 'Catalog Number')}" params="${[q:params.q]}"/>
+                      <g:sortableColumn style="text-align: left" property="value" title="${message(code: 'task.catalogNumber.label', default: 'Catalog Number')}" params="${[q:params.q]}"/>
 
-                      <g:sortableColumn style="text-align: left" property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
+                      <g:sortableColumn style="text-align: left" property="featured_label" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
 
                       <g:sortableColumn property="lastEdit" title="${message(code: 'task.transcribed.label', default: 'Transcribed')}" params="${[q:params.q]}" style="text-align: left;"/>
 
-                      <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
+                      <g:sortableColumn property="is_valid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
 
                       <th style="text-align: center;">Action</th>
 
