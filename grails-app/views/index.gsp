@@ -116,7 +116,13 @@
               <g:if test="${newsItem?.created}">
                 <time datetime="${formatDate(format: "yyyy-MM-dd", date: newsItem.created)}"><g:formatDate format="dd MMM yyyy" date="${newsItem.created}" /></time>
               </g:if>
-              <h3><g:link action="show" controller="newsItem" id="${newsItem.id}">${newsItem.title}</g:link></h3>
+              <h3>
+                <g:if test="${frontPage.useGlobalNewsItem == false}">
+                  <g:link action="show" controller="newsItem" id="${newsItem.id}">${newsItem.title}</g:link></h3>
+                </g:if>
+                <g:else>
+                  ${newsItem.title}
+                </g:else>
               <p>
                 ${newsItem.shortDescription}
                 <g:if test="${frontPage.useGlobalNewsItem == false}">
