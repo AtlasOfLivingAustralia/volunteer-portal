@@ -255,7 +255,7 @@
                             </g:each>
                           </table>
                         </div>
-                      </div>                      d
+                      </div>
                     </g:if>
                   </li>
                 </g:each>
