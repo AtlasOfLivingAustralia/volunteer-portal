@@ -151,7 +151,7 @@ class AjaxController {
         setNoCache()
         response.addHeader("Content-type", "text/plain")
         def writer = new CSVWriter(response.writer)
-        writer.writeNext("catalog_id", "institution_code", "scientific_name", "associated_media", "occurance_id")
+        writer.writeNext("catalog_id", "institution_code", "scientific_name", "associated_media", "occurrence_id")
 
         if (params.id) {
 
