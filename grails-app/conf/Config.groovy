@@ -66,14 +66,57 @@ grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 
 // Mappings for expedition labels, icons, etc
 expedition = [
-        [name: "Expedition Leader", bio: "Gerard Krefft", link: "http://www.australianmuseum.net.au/image/Gerard-Krefft/",
-                icon: "images/explorers/expedition-leader.png",  max: 1,     threshold: 1],
-        [name: "Scientists", bio: "Edward Pierson Ramsay", link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
-                icon: "images/explorers/scientist.png",          max: 9999,  threshold: 50],
-        [name: "Collection Managers", bio: "Helena Scott", link: "http://www.australianmuseum.net.au/A-biography-of-the-Scott-sisters/",
-                icon: "images/explorers/collection-manager.png", max: 9999,  threshold: 10],
-        [name: "Technical Officers", bio: "William Sheridan Wall", link: "http://www.australianmuseum.net.au/image/William-Sheridan-Wall/",
-                icon: "images/explorers/technical-officer.png",  max: 9999,  threshold: 1 ]
+        [name: "Expedition Leader",
+                icons: [
+                        [
+                            icon: "images/explorers/expedition-leader.png",
+                            link: "http://www.australianmuseum.net.au/image/Gerard-Krefft/",
+                            name: "Gerard Krefft",
+                            bio: "Curator and Secretary of the Australian Museum 1861-1874"
+                        ],[
+                            icon: "images/explorers/expedition-leader-female.png",
+                            link: "",
+                            name: "Elsie Bramell",
+                            bio:  "Fred McCarthy and Elsie Bramell both worked at the Australian Museum during the 1930s. When the couple married in 1940, public service rules prohibiting married couples from working together meant that Elsie had to resign from her position at the Museum"
+                        ]
+                ],
+                max: 1,
+                threshold: 1],
+        [name: "Scientists",
+                icons: [
+                        [
+                            icon:"images/explorers/scientist.png",
+                            name: "Edward Pierson Ramsay",
+                            link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
+                            bio: "Curator of the Australian Museum 1874-1894"
+                        ]
+                ],
+                max: 9999,
+                threshold: 50],
+        [name: "Collection Managers",
+                icons: [
+                        [
+                            icon: "images/explorers/collection-manager.png",
+                            name: "Helena Scott",
+                            link: "http://www.australianmuseum.net.au/A-biography-of-the-Scott-sisters/",
+                            bio: "Helena and Harriet (known as the Scott sisters) were two of 19th century Australia’s most prominent natural history illustrators and possibly the first professional female illustrators in the country"
+                        ]
+                ],
+                max: 9999,
+                threshold: 10],
+        [name: "Technical Officers",
+                icons: [
+                        [
+                            icon: "images/explorers/technical-officer.png",
+                            name: "William Sheridan Wall",
+                            link: "http://www.australianmuseum.net.au/image/William-Sheridan-Wall/",
+                            bio: "Curator of the Australian Museum c. 1844-1858"
+                        ]
+                ],
+                max: 9999,
+                threshold: 1
+        ]
+
 ]
 
 volunteer.defaultProjectId = 6306

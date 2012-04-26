@@ -6,6 +6,7 @@ import grails.converters.*
 import au.com.bytecode.opencsv.CSVWriter
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
+import au.org.ala.cas.util.AuthenticationCookieUtils
 
 class ProjectController {
 
@@ -25,11 +26,15 @@ class ProjectController {
      */
     def index = {
         def projectInstance = Project.get(params.id)
+
+        String currentUserId = null
+
+        currentUserId = AuthenticationCookieUtils.getUserName(request)
+
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
-        }
-        else {
+        } else {
             // project info
             def taskCount = Task.countByProject(projectInstance)
             def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
@@ -53,7 +58,7 @@ class ProjectController {
                     roles.eachWithIndex { role, i ->
                         if (count >= role.threshold && role.members.size() < role.max && !assigned) {
                             // assign role
-                            def userMap = [name: user.displayName, id: user.id, count: count]
+                            def userMap = [name: user.displayName, id: user.id, count: count, userId: user.userId]
                             role.get("members").add(userMap)
                             assigned = true
                             log.debug("assigned: " + userId)
@@ -67,7 +72,7 @@ class ProjectController {
             def items = projectInstance.newsItems.asList()
             def newsItem = items.size() > 0 ? items[0] : null;
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem])
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId])
         }
     }
 
@@ -500,5 +505,22 @@ class ProjectController {
             }
         }
         redirect(action: "edit", id: params.id)
+    }
+
+    def setLeaderIconIndex = {
+        if (params.id) {
+            def project = Project.get(params.id)
+            if (project) {
+                def iconIndex = params.int("iconIndex")?:0
+                def role = ConfigurationHolder.config.expedition[0]
+                def icons = role.icons
+                if (iconIndex >= 0 && iconIndex < icons.size()) {
+                    project.leaderIconIndex = iconIndex
+                    project.save()
+                }
+            }
+        }
+
+        redirect(action: "index", id: params.id)
     }
 }

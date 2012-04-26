@@ -14,6 +14,7 @@ class Project {
     String featuredLabel
     String featuredOwner
     Boolean disableNewsItems = false
+    Integer leaderIconIndex = 0
 
     static belongsTo = [template: Template]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem]
@@ -39,6 +40,7 @@ class Project {
         featuredOwner nullable: true
         shortDescription nullable: true
         disableNewsItems nullable: true
+        leaderIconIndex nullable: true
     }
 
     public String toString() {

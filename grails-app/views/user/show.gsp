@@ -88,7 +88,7 @@
             <li class="last">${fieldValue(bean: userInstance, field: "displayName")}</li>
           </ol>
         </nav>
-        <h1>Volunteer: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(thats you!)</g:if></h1>
+        <h1>Volunteer: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(that's you!)</g:if></h1>
       </div><!--inner-->
     </header>
 

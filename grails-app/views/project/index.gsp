@@ -14,6 +14,9 @@
     <script src="${resource(dir:'js', file:'markerclusterer.js')}" type="text/javascript"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
+
     <script type='text/javascript'>
         google.load('visualization', '1', {packages:['gauge']});
 
@@ -102,7 +105,25 @@
             $("#recordsChartWidget").progressbar({ value: <g:formatNumber number="${tasksDonePercent}" format="#"/> });
             //load map
             loadMap();
+
+            var opts = {
+                titleShow: false,
+                onComplete: initialize,
+                autoDimensions: false,
+                width: 500
+            }
+            $('button#show_icon_selector').fancybox(opts);
+
         });
+
+        function initialize() {
+
+        }
+
+        showIconSelector = function() {
+          $("#icon_selector").css("display", "block");
+          return true
+        }
     </script>
 
     <style type="text/css">
@@ -197,10 +218,46 @@
           <h2>${projectInstance.featuredLabel} personnel</h2>
           <g:each in="${roles}" status="i" var="role">
             <section>
-              <h3><img src='<g:resource file="${role.icon}"/>' width="100" height="99" alt="">${role.name}</h3>
+              <g:set var="iconIndex"  value="${(((role.name == 'Expedition Leader') && projectInstance.leaderIconIndex) ? projectInstance.leaderIconIndex : 0)}" scope="page"/>
+              <g:set var="roleIcon" value="${role.icons[iconIndex]}" />
+              <h3><img src='<g:resource file="${roleIcon.icon}"/>' width="100" height="99" title="${roleIcon.name}" alt="${roleIcon.name}">${role.name}</h3>
               <ol>
                 <g:each in="${role.members}" var="member">
-                  <li><a href="${createLink(controller: 'user', action:'show', id: member.id, params:[projectId:projectInstance.id])}">${member.name} (${member.count})</a></li>
+                  <li><a href="${createLink(controller: 'user', action:'show', id: member.id, params:[projectId:projectInstance.id])}">${member.name} (${member.count})</a>
+                    <g:if test="${currentUserId == member.userId}">
+                      <span>
+                        <g:if test="${role.name == 'Expedition Leader'}">
+                          <button id="show_icon_selector" href="#icon_selector">Change leader icon</button>
+                        </g:if>
+                      </span>
+                      <div style="display: none;">
+                        <div id="icon_selector" >
+                          <table>
+                            <thead>
+                              <tr>
+                                <th colspan="2">
+                                  <h3>As expedition leader you have the privilege of selecting the icon for the expedition leader of the project</h3>
+                                </th>
+                              </tr>
+                            </thead>
+                            <g:each in="${role.icons}" var="icon" status="imgIndex">
+                              <tr>
+                                  <td style="vertical-align: top;">
+                                    <a href="${createLink(controller: 'project', action:'setLeaderIconIndex', id:projectInstance.id, params:[iconIndex: imgIndex])}">
+                                      <img src='<g:resource file="${icon.icon}"/>' width="100" height="99" alt="">
+                                    </a>
+                                  </td>
+                                  <td style="text-align: left">
+                                    <b><a href="${createLink(controller: 'project', action:'setLeaderIconIndex', id:projectInstance.id, params:[iconIndex: imgIndex])}">${icon.name}</a></b><br />
+                                    ${icon.bio}
+                                  </td>
+                              </tr>
+                            </g:each>
+                          </table>
+                        </div>
+                      </div>                      d
+                    </g:if>
+                  </li>
                 </g:each>
 
               </ol>
