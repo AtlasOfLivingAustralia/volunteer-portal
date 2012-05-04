@@ -51,7 +51,7 @@ class TranscribeController {
 
             if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MINUTES) {
                 // task is already being viewed by another user (with timeout period)
-                log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago."
+                log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
                 def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/editted by another user. " +
                         "You have been allocated a new task"
                 // redirect to another task

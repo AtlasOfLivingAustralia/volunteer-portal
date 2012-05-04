@@ -2,8 +2,6 @@ package au.org.ala.volunteer
 
 import grails.converters.*
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import java.util.concurrent.Callable
-import grails.plugin.executor.PersistenceContextExecutorWrapper
 
 class TaskController {
 
@@ -14,9 +12,11 @@ class TaskController {
     def fieldService
     def authService
     def taskLoadService
+    def userService
 
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
+    def LAST_VIEW_TIMEOUT_MILLIS = grailsApplication.config.viewedTask.timeout
 
 
     def load = {
@@ -219,9 +219,58 @@ class TaskController {
         if (!taskInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
             redirect(action: "list")
-        }
-        else {
-            [taskInstance: taskInstance]
+        } else {
+
+            def currentUser = authService.username()
+
+            def readonly = false
+            def msg = ""
+
+
+            if (taskInstance) {
+
+                // first check is user is logged in...
+                if (!currentUser) {
+                    readonly = true
+                    msg = "You are not logged in. In order to transcribe tasks you need to register and log in."
+                } else {
+                    // work out if the task is currently being edited by someone else...
+                    def prevUserId = null
+                    def prevLastView = 0
+                    taskInstance.viewedTasks.each { viewedTask ->
+                        // viewedTasks is a set so order is not guaranteed
+                        if (viewedTask.lastView > prevLastView) {
+                            // store the most recent viewedTask
+                            prevUserId = viewedTask.userId
+                            prevLastView = viewedTask.lastView
+                        }
+                    }
+
+                    log.debug "<task.show> userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
+                    def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
+
+                    if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MILLIS) {
+                        // task is already being viewed by another user (with timeout period)
+                        log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
+                        msg = "This task is being viewed/editted by another user, and is currently read-only"
+                        readonly = true
+                    }
+                }
+            }
+
+            flash.message = msg
+            if (!readonly) {
+                redirect(controller: 'transcribe', action: 'task', id: params.id)
+            } else {
+                def project = Project.findById(taskInstance.project.id)
+                def template = Template.findById(project.template.id)
+                def isReadonly = 'readonly'
+                println(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
+
+                //retrieve the existing values
+                Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+                render(view: '/transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template])
+            }
         }
     }
 

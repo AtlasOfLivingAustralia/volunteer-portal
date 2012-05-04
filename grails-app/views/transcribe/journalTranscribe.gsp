@@ -313,7 +313,9 @@
                     <span class="button">
                         %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
                              %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
-                        <button id="showNextFromProject" class="skip">Skip</button>
+                        <cl:isLoggedIn>
+                            <button id="showNextFromProject" class="skip">Skip</button>
+                        </cl:isLoggedIn>
                     </span>
                 </g:else>
             </div>

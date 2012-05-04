@@ -48,10 +48,6 @@
 
   <header id="page-header">
     <div class="inner">
-      <g:if test="${flash.message}">
-        <div class="message">${flash.message}</div>
-      </g:if>
-
       <nav id="breadcrumb">
         <ol>
           <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
@@ -269,7 +265,6 @@
                     </table>
                 </div>
             </div>
-
             <div class="vp-buttons" style="clear: both">
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                 <g:if test="${validator}">
@@ -286,7 +281,9 @@
                              value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
                     <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
                              value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                    <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
+                    <cl:isLoggedIn>
+                        <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
+                    </cl:isLoggedIn>
                 </g:else>
             </div>
             <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>

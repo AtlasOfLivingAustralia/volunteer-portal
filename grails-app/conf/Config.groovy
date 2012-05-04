@@ -31,14 +31,14 @@ if (!ala.baseURL) {
  *  SECURITY
 \******************************************************************************/
 if (!security.cas.urlPattern) {
-    security.cas.urlPattern = "/transcribe/task/.*,/transcribe/save.*,/transcribe/.*,/validate/save.*," +
-            "/validate/.*,/user/.*,/project/((?!index).)*,/task/.*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport"
+    security.cas.urlPattern = "/validate/save.*," +
+            "/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!show).)*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport"
 }
 if (!security.cas.urlExclusionPattern) {
     security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
 }
 if (!security.cas.authenticateOnlyIfLoggedInPattern) {
-    security.cas.authenticateOnlyIfLoggedInPattern = "/,/project/index/*"
+    security.cas.authenticateOnlyIfLoggedInPattern = "/,/project/index/.*,/transcribe/.*,/task/show/.*"
 }
 if (!security.cas.casServerName) {
     security.cas.casServerName = "https://auth.ala.org.au"
@@ -78,6 +78,26 @@ expedition = [
                             link: "",
                             name: "Elsie Bramell",
                             bio:  "Fred McCarthy and Elsie Bramell both worked at the Australian Museum during the 1930s. When the couple married in 1940, public service rules prohibiting married couples from working together meant that Elsie had to resign from her position at the Museum"
+                        ],[
+                            icon: "images/explorers/badge-leader-female02.png",
+                            link: "",
+                            name: "?",
+                            bio:  ""
+                        ],[
+                            icon: "images/explorers/badge-leader-female03.png",
+                            link: "",
+                            name: "?",
+                            bio:  ""
+                        ],[
+                            icon: "images/explorers/badge-leader-male02.png",
+                            link: "",
+                            name: "?",
+                            bio:  ""
+                        ],[
+                            icon: "images/explorers/badge-leader-male03.png",
+                            link: "",
+                            name: "?",
+                            bio:  ""
                         ]
                 ],
                 max: 1,
@@ -227,4 +247,6 @@ log4j = {
     warn   'org.mortbay.log',
            'grails.app'
     info   'grails.app'
+
+//    debug   'au.org.ala.cas.client'
 }
