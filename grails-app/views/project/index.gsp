@@ -220,38 +220,46 @@
             <section>
               <g:set var="iconIndex"  value="${(((role.name == 'Expedition Leader') && projectInstance.leaderIconIndex) ? projectInstance.leaderIconIndex : 0)}" scope="page"/>
               <g:set var="roleIcon" value="${role.icons[iconIndex]}" />
-              <h3><img src='<g:resource file="${roleIcon.icon}"/>' width="100" height="99" title="${roleIcon.name}" alt="${roleIcon.name}">
+              <h3><img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" title="${roleIcon?.name}" alt="${roleIcon?.name}">
               ${role.name}
-              <g:if test="${role.name == 'Expedition Leader' && leader.userId == currentUserId}">
-                  <span style="">
-                      <button id="show_icon_selector" href="#icon_selector" style="color: #808080; font-size: 0.6em; font-style: normal; font-weight: normal;">Change leader icon</button>
-                  </span>
-                  <div style="display: none;">
-                    <div id="icon_selector" >
-                      <table>
-                        <thead>
-                          <tr>
-                            <th colspan="2">
-                              <h3>As expedition leader you have the privilege of selecting the icon for the expedition leader of the project</h3>
-                            </th>
-                          </tr>
-                        </thead>
-                        <g:each in="${role.icons}" var="icon" status="imgIndex">
-                          <tr>
-                              <td style="vertical-align: top;">
-                                <a href="${createLink(controller: 'project', action:'setLeaderIconIndex', id:projectInstance.id, params:[iconIndex: imgIndex])}">
-                                  <img src='<g:resource file="${icon.icon}"/>' width="100" height="99" alt="">
-                                </a>
-                              </td>
-                              <td style="text-align: left">
-                                <b><a href="${createLink(controller: 'project', action:'setLeaderIconIndex', id:projectInstance.id, params:[iconIndex: imgIndex])}">${icon.name}</a></b><br />
-                                ${icon.bio}
-                              </td>
-                          </tr>
-                        </g:each>
-                      </table>
+              <g:if test="${role.name == 'Expedition Leader'}">
+                  <g:if test="${leader.userId == currentUserId}">
+                    <span style="">
+                        <button id="show_icon_selector" href="#icon_selector" style="font-size: 0.6em; font-style: normal; font-weight: normal;">Change leader icon</button>
+                    </span>
+                    <div style="display: none;">
+                      <div id="icon_selector" >
+                        <table>
+                          <thead>
+                            <tr>
+                              <th colspan="2">
+                                <h3>As expedition leader you have the privilege of selecting the icon for the expedition leader of the project</h3>
+                              </th>
+                            </tr>
+                          </thead>
+                          <g:each in="${role.icons}" var="icon" status="imgIndex">
+                            <tr>
+                                <td style="vertical-align: top;">
+                                  <a href="${createLink(controller: 'project', action:'setLeaderIconIndex', id:projectInstance.id, params:[iconIndex: imgIndex])}">
+                                    <img src='<g:resource file="${icon.icon}"/>' width="100" height="99" alt="">
+                                  </a>
+                                </td>
+                                <td style="text-align: left">
+                                  <b><a href="${createLink(controller: 'project', action:'setLeaderIconIndex', id:projectInstance.id, params:[iconIndex: imgIndex])}">${icon.name}</a></b><br />
+                                  ${icon.bio}
+                                </td>
+                            </tr>
+                          </g:each>
+                        </table>
+                      </div>
                     </div>
-                  </div>
+                  </g:if>
+                  <g:else>
+                    <span style="">
+                      <button disabled="true" title="Only the expedition leader can choose the leader's icon" id="show_icon_selector" href="" style="color: #808080; font-size: 0.6em; font-style: normal; font-weight: normal;">Change leader icon</button>
+                    </span>
+                  </g:else>
+
               </g:if>
 
             </h3>

@@ -118,11 +118,12 @@
               </g:if>
               <h3>
                 <g:if test="${frontPage.useGlobalNewsItem == false}">
-                  <g:link action="show" controller="newsItem" id="${newsItem.id}">${newsItem.title}</g:link></h3>
+                  <g:link action="show" controller="newsItem" id="${newsItem.id}">${newsItem.title}</g:link>
                 </g:if>
                 <g:else>
                   ${newsItem.title}
                 </g:else>
+              </h3>
               <p>
                 ${newsItem.shortDescription}
                 <g:if test="${frontPage.useGlobalNewsItem == false}">

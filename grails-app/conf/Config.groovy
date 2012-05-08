@@ -69,35 +69,30 @@ expedition = [
         [name: "Expedition Leader",
                 icons: [
                         [
-                            icon: "images/explorers/expedition-leader.png",
+                            icon: "images/explorers/Gerard Krefft.png",
                             link: "http://www.australianmuseum.net.au/image/Gerard-Krefft/",
-                            name: "Gerard Krefft",
-                            bio: "Curator and Secretary of the Australian Museum 1861-1874"
+                            name: "Gerard Krefft (1830-1881)",
+                            bio: "In June 1860 Kreft was appointed Assistant Curator of the Australian Museum, then acting Curator and Secretary after Simon Rood Pittard's death.Krefft built up the Museum's collections and won international repute as a scientist, corresponding with Charles Darwin, Sir Richard Owen and Albert Gunther of the British Museum. He was an early supporter of Darwin's theory of evolution. Krefft's discovery of the Queensland lungfish and its description in 1870, and his exploration of Wellington Caves in 1866, and writings of its fossils, are two of his significant achievements. During Krefft's time, Barnet's College Street extension to the building was erected (1861-1867)."
                         ],[
-                            icon: "images/explorers/expedition-leader-female.png",
+                            icon: "images/explorers/Helena Forde.png",
+                            name: "Helena Forde (nee Scott) (1832-1910)",
+                            link: "http://www.australianmuseum.net.au/A-biography-of-the-Scott-sisters/",
+                            bio: "Helena and Harriet (known as the Scott sisters) were two of 19th century Australia’s most prominent natural history illustrators and possibly the first professional female illustrators in the country"
+                        ],[
+                            icon: "images/explorers/Elsie Brammel.png",
                             link: "",
                             name: "Elsie Bramell",
                             bio:  "Fred McCarthy and Elsie Bramell both worked at the Australian Museum during the 1930s. When the couple married in 1940, public service rules prohibiting married couples from working together meant that Elsie had to resign from her position at the Museum"
                         ],[
-                            icon: "images/explorers/badge-leader-female02.png",
-                            link: "",
-                            name: "?",
-                            bio:  ""
+                            icon: "images/explorers/Robert Etheridge.png",
+                            link: "http://www.australianmuseum.net.au/Curators-and-Directors-of-the-Australian-Museum/",
+                            name: "Robert Etheridge Jnr (1846-1920)",
+                            bio:  "Robert Etheridge Jnr trained as a palaeontologist and was appointed curator of the Australian Mueseum in 1895. During his time, the museum building was enlarged with the erection of the south wing, public lectures resumed and cadetships were introduced."
                         ],[
-                            icon: "images/explorers/badge-leader-female03.png",
-                            link: "",
-                            name: "?",
-                            bio:  ""
-                        ],[
-                            icon: "images/explorers/badge-leader-male02.png",
-                            link: "",
-                            name: "?",
-                            bio:  ""
-                        ],[
-                            icon: "images/explorers/badge-leader-male03.png",
-                            link: "",
-                            name: "?",
-                            bio:  ""
+                            icon: "images/explorers/George Bennet.png",
+                            link: "http://www.australianmuseum.net.au/Curators-and-Directors-of-the-Australian-Museum/",
+                            name: "Dr George Bennett (1804-1893)",
+                            bio:  "George Bennett, a distinguished naturalist and medical practitioner, travelled extensively, visiting Sydney in 1829 and 1832, before settling there in 1835. Bennett lobbied for the position of Curator at the fledgling Museum, and was appointed in 1835. His major achievement was the publication in 1837 of the first published 'Catalogue of Specimens of Natural History and Miscellaneous Curiosities deposited in the Australian Museum', which then comprised 36 mammal species, 317 Australian birds and 25 exotic birds, 15 reptiles, 6 fishes, 211 insects, 25 shells, 57 foreign fossils and 25 'native ornaments, weapons, utensils'."
                         ]
                 ],
                 max: 1,
@@ -105,7 +100,7 @@ expedition = [
         [name: "Scientists",
                 icons: [
                         [
-                            icon:"images/explorers/scientist.png",
+                            icon:"images/explorers/Edward Pierson Ramsay.png",
                             name: "Edward Pierson Ramsay",
                             link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
                             bio: "Curator of the Australian Museum 1874-1894"
@@ -116,10 +111,10 @@ expedition = [
         [name: "Collection Managers",
                 icons: [
                         [
-                            icon: "images/explorers/collection-manager.png",
-                            name: "Helena Scott",
-                            link: "http://www.australianmuseum.net.au/A-biography-of-the-Scott-sisters/",
-                            bio: "Helena and Harriet (known as the Scott sisters) were two of 19th century Australia’s most prominent natural history illustrators and possibly the first professional female illustrators in the country"
+                            icon: "images/explorers/Susan Emily Naegueli.png",
+                            link: "http://www.australianmuseum.net.au/Harry-Burrell-Glass-Plate-Negative-Collection/",
+                            name: "Susan Emily Naegueli",
+                            bio:  "Susan Emily Naegueli, also known as Mrs Harry Burrell. Harry Burrell invented the ‘platypussary’ and referred to himself as the ‘platypoditudinarian’.  Susan worked with Harry on his research and was also a naturalist in her own right, lecturing to school and other groups on monotremes."
                         ]
                 ],
                 max: 9999,
@@ -127,7 +122,7 @@ expedition = [
         [name: "Technical Officers",
                 icons: [
                         [
-                            icon: "images/explorers/technical-officer.png",
+                            icon: "images/explorers/William Sheridan Wall.png",
                             name: "William Sheridan Wall",
                             link: "http://www.australianmuseum.net.au/image/William-Sheridan-Wall/",
                             bio: "Curator of the Australian Museum c. 1844-1858"
