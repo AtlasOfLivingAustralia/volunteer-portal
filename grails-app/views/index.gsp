@@ -22,9 +22,7 @@
 
     <header id="page-header">      
       <div class="inner">
-        <g:if test="${flash.message}">
-          <div class="message">${flash.message}</div>
-        </g:if>
+        <cl:messages />
 
         <hgroup>
               <h1>Biodiversity Volunteer Portal</h1>

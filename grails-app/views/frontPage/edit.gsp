@@ -7,15 +7,14 @@
     <title><g:message code="frontPage.label" default="Front Page Configuration"/></title>
   </head>
   <body class="sublevel sub-site volunteerportal">
+    <cl:navbar selected="" />
     <div class="nav">
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
       <span class="menuButton">ConfigureFrontPage</span>
     </div>
     <div class="inner">
       <h1>Front Page Configuration</h1>
-      <g:if test="${flash.message}">
-      <div class="message">${flash.message}</div>
-      </g:if>
+      <cl:messages />
       <g:hasErrors bean="${frontPage}">
       <div class="errors">
           <g:renderErrors bean="${frontPage}" as="list" />
@@ -79,8 +78,8 @@
                   </td>
                   <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'useGlobalNewsItem', 'errors')}">
                       <g:checkBox name="useGlobalNewsItem" value="${frontPage.useGlobalNewsItem}"  />
+                      <div style="color: #808080;">If unchecked the most recent project news item will be used instead</div>
                   </td>
-                <td width="100">Otherwise the most recent project news item</td>
               </tr>
 
               <tr class="prop">
@@ -109,6 +108,16 @@
                       <g:datePicker name="newsCreated" precision="day" value="${frontPage?.newsCreated}"  />
                   </td>
               </tr>
+
+            <tr class="prop">
+                <td valign="top" class="name">
+                    <label for="systemMessage"><g:message code="frontPage.systemMessage.label" default="System message" /></label>
+                    <div style="color: #808080;">(Displayed on every page)</div>
+                </td>
+                <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'systemMessage', 'errors')}">
+                    <g:textArea cols="50" rows="4" name="systemMessage" value="${frontPage?.systemMessage}" />
+                </td>
+            </tr>
 
             </tbody>
           </table>

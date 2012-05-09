@@ -171,9 +171,8 @@
 
   <header id="page-header">
     <div class="inner">
-      <g:if test="${flash.message}">
-        <div class="message">${flash.message}</div>
-      </g:if>
+
+      <cl:messages />
 
       <nav id="breadcrumb">
         <ol>
@@ -195,12 +194,9 @@
             There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
         </div>
     </g:hasErrors>
-    <g:if test="${flash.message}">
-        <div class="errors">${flash.message}</div>
-    </g:if>
-      <div id="videoLinks" style="padding-top: 6px; float: right;">
-          ${taskInstance?.project?.tutorialLinks}
-      </div>
+    <div id="videoLinks" style="padding-top: 6px; float: right;">
+        ${taskInstance?.project?.tutorialLinks}
+    </div>
 
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">

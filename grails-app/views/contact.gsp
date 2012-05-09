@@ -19,9 +19,7 @@
 
     <header id="page-header">      
       <div class="inner">
-        <g:if test="${flash.message}">
-          <div class="message">${flash.message}</div>
-        </g:if>
+        <cl:messages />
         <nav id="breadcrumb">
           <ol>
             <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>

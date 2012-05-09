@@ -42,9 +42,7 @@
                 <input type="text" name="q" id="q" value="${params.q}" size="40" />
                 <button id="searchButton">search</button>
             </div>
-            <g:if test="${flash.message}">
-            <div class="message">${flash.message}</div>
-            </g:if>
+            <cl:messages />
             <div class="list">
                 <table style="border-top: 2px solid #D9D9D9; width: 100%;">
                     <thead>

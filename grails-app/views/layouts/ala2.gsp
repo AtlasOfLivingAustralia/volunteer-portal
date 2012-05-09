@@ -69,6 +69,16 @@
             border-radius: 0;
         }
 
+        .systemMessage {
+            background: #fffacd url(${resource(dir:'images/skin', file: 'exclamation.png')}) 8px 50% no-repeat;
+            border: 2px solid red;
+            color: #000000;
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+            padding: 5px 5px 5px 30px
+        }
+
+
     </style>
 
     <g:layoutHead />

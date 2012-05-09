@@ -93,9 +93,9 @@
     </header>
 
 <div class="inner">
-  <g:if test="${flash.message}">
-    <div class="message">${flash.message}</div>
-  </g:if>
+
+  <cl:messages />
+
   <div class="list">
     <table class="bvp-expeditions">
        <tr>

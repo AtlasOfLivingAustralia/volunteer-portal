@@ -1427,10 +1427,10 @@ class VolunteerTagLib {
         def items = [
                         bvp:[link: createLink(uri: '/'), title: 'Biodiversity Volunteer Portal'],
                         expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions'],
-                        tutorials: [link: createLink(uri: '/tutorials.gsp'), title: 'Tutorials'],
-                        submitexpedition: [link: createLink(uri: '/submitAnExpedition.gsp'), title: 'Submit an Expedition'],
-                        contact: [link: createLink(uri: '/contact.gsp'), title: 'Contact Us'],
-                        aboutbvp: [link: createLink(uri: '/about.gsp'), title: 'About the Portal'],
+                        tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials'],
+                        submitexpedition: [link: createLink(controller: 'submitAnExpedition'), title: 'Submit an Expedition'],
+                        contact: [link: createLink(controller: 'contact'), title: 'Contact Us'],
+                        aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal'],
                     ]
 
         out << '<nav id="nav-site">'
@@ -1445,5 +1445,16 @@ class VolunteerTagLib {
         }
         out << '</ul>'
         out << '</nav>'
+    }
+
+    def messages = { attrs, body ->
+
+        if (flash.message) {
+            out << '<div class="message">' + flash.message + '</div>'
+        }
+
+        if (flash.systemMessage) {
+            out << '<div class="systemMessage">' + flash.systemMessage + '</div>'
+        }
     }
 }

@@ -70,9 +70,6 @@ class ProjectController {
             }
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
-
-            println leader
-
             def items = projectInstance.newsItems.asList()
             def newsItem = items.size() > 0 ? items[0] : null;
 

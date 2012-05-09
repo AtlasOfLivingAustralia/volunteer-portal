@@ -13,10 +13,13 @@ class FrontPage {
     String newsBody
     Date newsCreated
 
+    String systemMessage
+
     static constraints = {
         newsTitle nullable: true, maxSize: 100
         newsBody nullable: true, maxSize: 255
         newsCreated nullable: true
+        systemMessage nullable:  true
     }
 
     static FrontPage instance() {

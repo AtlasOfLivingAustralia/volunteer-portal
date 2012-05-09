@@ -63,14 +63,14 @@
   </header>
 
 <div class="inner">
+
+    <cl:messages />
+
     <g:hasErrors bean="${taskInstance}">
-    <div class="errors">
-        There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
-    </div>
+        <div class="errors">
+            There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list" />
+        </div>
     </g:hasErrors>
-    <g:if test="${flash.message}">
-        <div class="errors">${flash.message}</div>
-    </g:if>
 
     <div id="videoLinks" style="padding-top: 6px; float: right;">
         ${taskInstance?.project?.tutorialLinks}

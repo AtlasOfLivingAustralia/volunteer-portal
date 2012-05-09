@@ -252,7 +252,7 @@ class TaskController {
                     if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MILLIS) {
                         // task is already being viewed by another user (with timeout period)
                         log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
-                        msg = "This task is being viewed/editted by another user, and is currently read-only"
+                        msg = "This task is being viewed/edited by another user, and is currently read-only"
                         readonly = true
                     }
                 }

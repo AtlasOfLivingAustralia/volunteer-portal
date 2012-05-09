@@ -465,7 +465,12 @@ div#ui-datepicker-div {
 
 .taskTable td.editable { }
 
-div.errors { border:1px solid red; padding: 10px; margin-bottom: 10px; }
+div.errors {
+    border:1px solid red;
+    padding: 10px;
+    margin-bottom:
+    10px;
+}
 
 
 .front-image {

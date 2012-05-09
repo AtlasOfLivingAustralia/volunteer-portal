@@ -26,6 +26,8 @@ class FrontPageController {
         frontPage.newsBody = params["newsBody"]
         frontPage.newsCreated = params["newsCreated"]
 
+        frontPage.systemMessage = params["systemMessage"]
+
         frontPage.save();
 
         flash.message = "${message(code: 'default.updated.message', args: [message(code: 'frontPage.label', default: 'Front Page'), ''])}"
