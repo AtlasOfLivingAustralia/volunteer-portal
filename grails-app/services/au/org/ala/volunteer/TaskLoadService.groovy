@@ -58,34 +58,37 @@ class TaskLoadService {
             return [false, 'Load operation already in progress!']
         }
 
-        csv.eachCsvLine { tokens ->
-            //only one line in this case
-            def taskDesc = new TaskDescriptor()
-            taskDesc.project = project
+        try {
+            csv.eachCsvLine { tokens ->
+                //only one line in this case
+                def taskDesc = new TaskDescriptor()
+                taskDesc.project = project
 
-            String imageUrl = ""
-            List<Field> fields = new ArrayList<Field>()
+                String imageUrl = ""
+                List<Field> fields = new ArrayList<Field>()
 
-            if (tokens.length == 1) {
-                taskDesc.externalIdentifier = tokens[0]
-                taskDesc.imageUrl = tokens[0].trim()
-            } else if (tokens.length == 2) {
-                taskDesc.externalIdentifier = tokens[0]
-                taskDesc.imageUrl = tokens[1].trim()
-            } else if (tokens.length == 5) {
-                taskDesc.externalIdentifier = tokens[0].trim()
-                taskDesc.imageUrl = tokens[1].trim()
+                if (tokens.length == 1) {
+                    taskDesc.externalIdentifier = tokens[0]
+                    taskDesc.imageUrl = tokens[0].trim()
+                } else if (tokens.length == 2) {
+                    taskDesc.externalIdentifier = tokens[0]
+                    taskDesc.imageUrl = tokens[1].trim()
+                } else if (tokens.length == 5) {
+                    taskDesc.externalIdentifier = tokens[0].trim()
+                    taskDesc.imageUrl = tokens[1].trim()
 
-                // create associated fields
-                taskDesc.fields.add([name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()])
-                taskDesc.fields.add([name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()])
-                taskDesc.fields.add([name: 'scientificName', recordIdx: 0, transcribedByUserId: 'system', value: tokens[4].trim()])
-            } else {
-                // error
-                return [false, "CSV file has incorrect number of fields"]
+                    // create associated fields
+                    taskDesc.fields.add([name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()])
+                    taskDesc.fields.add([name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()])
+                    taskDesc.fields.add([name: 'scientificName', recordIdx: 0, transcribedByUserId: 'system', value: tokens[4].trim()])
+                } else {
+                    // error
+                    throw new RuntimeException("CSV has the incorrect number of fields! (has ${tokens.length}, expected 1, 2 or 5")
+                }
+                _loadQueue.put(taskDesc)
             }
-
-            _loadQueue.put(taskDesc)
+        } catch (Exception ex) {
+            return [false, ex.message]
         }
 
         backgroundProcessQueue(replaceDuplicates)

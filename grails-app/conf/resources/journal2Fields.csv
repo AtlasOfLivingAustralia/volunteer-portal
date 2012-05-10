@@ -1,0 +1,5 @@
+occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",
+eventDate,Date,,dataset,text,0,0,"Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD",
+locality,Location,,dataset,text,0,0,,
+scientificName,Species,,dataset,text,0,0,"This will consist of two words, the first being the Genus and the second the species. Begin entering the Genus name first and an autocomplete list will offer you options as to what the name might be. Choose the one that matches exactly the text on the label (or which you think is the same name). If there is no match then enter the full text yourself",
+individualCount,No. Entries on page,0,none,select,0,0,,

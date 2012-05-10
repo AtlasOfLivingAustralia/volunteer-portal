@@ -232,7 +232,7 @@ div#mapWidgets {
 
 #transcribeFields > table, #taskMetadata table, .fields table {
     margin: 10px 0;
-    background-color: #f0f0f0;
+    background-color: #F0F0E8;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     -o-border-radius: 8px;
@@ -718,6 +718,15 @@ tr.fieldNoteFields td input {
     margin: 10px 0 5px 0;
     padding: 5px 5px 5px 30px
 }
+
+.systemMessage {
+    background: #fffacd url(../images/skin/exclamation.png) 8px 50% no-repeat;
+    border: 1px solid red;
+    color: #006dba;
+    margin: 10px 0 5px 0;
+    padding: 5px 5px 5px 30px
+}
+
 
 .avatar {
     padding-top: 6px !important;

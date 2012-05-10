@@ -1,8 +1,7 @@
-package au.org.ala.volunteer
-
 import org.apache.commons.lang.StringUtils
 import java.text.SimpleDateFormat
 import au.org.ala.cas.util.AuthenticationCookieUtils
+import au.org.ala.volunteer.FrontPage
 
 class MessageFilters {
 
@@ -24,7 +23,8 @@ class MessageFilters {
                 def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
                 def sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
                 def dateStr = sdf.format(new Date())
-                println "[${dateStr}] Session: ${session.id} user: ${username} request:${request.requestURI}"
+
+                println "[${dateStr}] BVP Session: ${session.id} user: ${username}/${request.remoteAddr} request:${request.requestURI}"
             }
             afterView = {
                 

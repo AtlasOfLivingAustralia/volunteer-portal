@@ -95,27 +95,15 @@ class BootStrap {
         }
         
         // populate default set of TemplateFields
-        def defaultFields = ApplicationHolder.application.parentContext.getResource("classpath:resources/defaultFields.csv").inputStream.text
-        defaultFields.eachCsvLine { fs ->
-            DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
-            if (!TemplateField.findByFieldType(dwcf)) {
-                println "creating new FieldType: " + fs + " size="+fs.size()
-                TemplateField tf = new TemplateField(
-                        fieldType: dwcf,
-                        label: fs[1].trim(),
-                        defaultValue: fs[2].trim(),
-                        category: FieldCategory.valueOf(fs[3].trim()),
-                        type: FieldType.valueOf(fs[4].trim()),
-                        mandatory: ((fs[5].trim() == '1') ? true : false),
-                        multiValue: ((fs[6].trim() == '1') ? true : false),
-                        helpText: fs[7].trim(),
-                        validationRule: fs[8].trim(),
-                        template: template
-                ).save(flush:true, failOnError: true)
-            } else {
-                println "Field already exists: " + dwcf
-            }
+        populateTemplateFields(template, "defaultFields")
+
+        template = Template.findByName("Journal2")
+        if (!template) {
+            println "creating new Template: Journal2"
+            template = new Template(name: "Journal2", viewName: "journal2Transcribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '').save(flush: true, failOnError: true)
         }
+
+        populateTemplateFields(template, "journal2Fields")
 
         // add system user
         if (!User.findByUserId('system')) {
@@ -129,5 +117,31 @@ class BootStrap {
 //        """)
     }
     def destroy = {
+    }
+
+    void populateTemplateFields(Template template, String resourceName) {
+        // populate default set of TemplateFields
+        def fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/${resourceName}.csv").inputStream.text
+        fields.eachCsvLine { fs ->
+            DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
+            if (!TemplateField.findByFieldTypeAndTemplate(dwcf, template)) {
+                println "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
+                TemplateField tf = new TemplateField(
+                        fieldType: dwcf,
+                        label: fs[1].trim(),
+                        defaultValue: fs[2].trim(),
+                        category: FieldCategory.valueOf(fs[3].trim()),
+                        type: FieldType.valueOf(fs[4].trim()),
+                        mandatory: ((fs[5].trim() == '1') ? true : false),
+                        multiValue: ((fs[6].trim() == '1') ? true : false),
+                        helpText: fs[7].trim(),
+                        validationRule: fs[8].trim(),
+                        template: template
+                ).save(flush:true, failOnError: true)
+            } else {
+                println "Field already exists for template ${template.name} ${dwcf}"
+            }
+        }
+
     }
 }

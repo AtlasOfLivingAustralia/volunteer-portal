@@ -219,8 +219,8 @@
               <g:set var="roleIcon" value="${role.icons[iconIndex]}" />
               <h3><img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" title="${roleIcon?.name}" alt="${roleIcon?.name}">
               ${role.name}
-              <g:if test="${role.name == 'Expedition Leader'}">
-                  <g:if test="${leader.userId == currentUserId}">
+              <g:if test="${role?.name == 'Expedition Leader'}">
+                  <g:if test="${leader?.userId == currentUserId}">
                     <span style="">
                         <button id="show_icon_selector" href="#icon_selector" style="font-size: 0.6em; font-style: normal; font-weight: normal;">Change leader icon</button>
                     </span>
