@@ -80,8 +80,20 @@
       }
     }
 
+    function syncEntries() {
+      for (entryIndex in entries) {
+        for (fieldIndex in entries[entryIndex]) {
+          var e = entries[entryIndex][fieldIndex];
+          e.value = $('#recordValues\\.' + entryIndex + '\\.' + e.name).val();
+        }
+      }
+    }
+
     function addEntry() {
       try {
+
+        // first we need to save any edits to the entry list
+        syncEntries();
         var entry = [
         <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" var="field">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
@@ -97,6 +109,7 @@
     }
 
     function deleteEntry(index) {
+      syncEntries()
       if (index > 0 && index <= entries.length) {
         entries.splice(index, 1);
         renderEntries();

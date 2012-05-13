@@ -13,6 +13,7 @@ class UserController {
     def fieldService
     def dataSource
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
+    def achievementService
 
     def index = {
         redirect(action: "list", params: params)
@@ -202,13 +203,17 @@ class UserController {
             totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
         }
 
+        println "here"
+
+        def achievements = achievementService.calculateAchievements(userInstance)
+
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         } else {
             [   userInstance: userInstance, currentUser: currentUser, project: project,
                 matchingTasks: viewList, totalMatchingTasks: totalMatchingTasks, totalTranscribedTasks: totalTranscribedTasks,
-                savedTasks: savedTasks, totalSavedTasks: totalSavedTasks]
+                savedTasks: savedTasks, totalSavedTasks: totalSavedTasks, achievements: achievements]
         }
     }
 

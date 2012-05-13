@@ -134,6 +134,14 @@ expedition = [
 
 ]
 
+achievements = [
+        [ name: 'first_transcription', label:"First transcription", description:'Submit one transcription task for validation', icon: 'images/achievements/first_transcription.png' ],
+        [ name: 'tenth_transcription', label:"Tenth transcription", description:'Submit 10 transcription tasks for validation', icon: 'images/achievements/tenth_transcription.png' ],
+        [ name: 'hundredth_transcription', label:"100 transcriptions", description:'Submit 100 transcription tasks for validation', icon: 'images/achievements/hundredth_transcription.png' ],
+        [ name: 'three_projects', label:"Three expeditions", description:'Transcribe tasks across three different expeditions', icon: 'images/achievements/three_projects.png' ],
+
+]
+
 volunteer.defaultProjectId = 6306
 viewedTask.timeout = 2 * 60 * 60 * 1000
 
