@@ -135,10 +135,12 @@ expedition = [
 ]
 
 achievements = [
-        [ name: 'first_transcription', label:"First transcription", description:'Submit one transcription task for validation', icon: 'images/achievements/first_transcription.png' ],
-        [ name: 'tenth_transcription', label:"Tenth transcription", description:'Submit 10 transcription tasks for validation', icon: 'images/achievements/tenth_transcription.png' ],
-        [ name: 'hundredth_transcription', label:"100 transcriptions", description:'Submit 100 transcription tasks for validation', icon: 'images/achievements/hundredth_transcription.png' ],
-        [ name: 'three_projects', label:"Three expeditions", description:'Transcribe tasks across three different expeditions', icon: 'images/achievements/three_projects.png' ],
+        [ name: 'tenth_transcription', label:"10th transcription", description:'Submit ten transcription tasks for validation', icon: 'images/achievements/bronze_lens.png' ],
+        [ name: 'hundredth_transcription', label:"100th transcription", description:'Submit one hundred transcription tasks for validation', icon: 'images/achievements/silver_telescope.png' ],
+        [ name: 'fivehundredth_transcription', label:"500th transcription", description:'Submit five hundred transcription tasks for validation', icon: 'images/achievements/gold_microscope.png' ],
+        [ name: 'three_projects', label:"Three expeditions", description:'Transcribe tasks across three different expeditions', icon: 'images/achievements/bronze_net.png' ],
+        [ name: 'five_projects', label:"Five expeditions", description:'Transcribe tasks across five different expeditions', icon: 'images/achievements/silver_binoculars.png' ],
+        [ name: 'seven_projects', label:"Seven expeditions", description:'Transcribe tasks across seven different expeditions', icon: 'images/achievements/gold_telescope.png' ],
 
 ]
 

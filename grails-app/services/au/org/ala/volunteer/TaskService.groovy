@@ -5,6 +5,7 @@ import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import com.thebuzzmedia.imgscalr.Scalr
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 
 class TaskService {
 
@@ -523,6 +524,26 @@ class TaskService {
               select id from Project p  where p.template.id  in (select id from Template where name = '${projectType}')
             )
         """)[0]
+    }
+
+    List<Map> transcribedDatesByUser(String userid) {
+        String select = """
+            SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
+            FROM Project p, Task t
+            LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = '${userid}' group by f.task_id) as field2 on field2.task_id = t.id
+            WHERE t.fully_transcribed_by = '${userid}' and p.id = t.project_id
+            ORDER BY lastEdit ASC
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def taskRow = [id: row.id, lastEdit: row.lastEdit, isValid: row.isValid, project: row.project ]
+            results.add(taskRow)
+        }
+
+        return results;
     }
 
 }

@@ -12,6 +12,7 @@ class FrontPage {
     String newsTitle
     String newsBody
     Date newsCreated
+    Boolean showAchievements = false
 
     String systemMessage
 
@@ -20,6 +21,7 @@ class FrontPage {
         newsBody nullable: true, maxSize: 255
         newsCreated nullable: true
         systemMessage nullable:  true
+        showAchievements nullable: true
     }
 
     static FrontPage instance() {

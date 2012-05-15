@@ -119,6 +119,15 @@
                 </td>
             </tr>
 
+            <tr class="prop">
+              <td valign="top" class="name">
+                  <label for="showAchievements"><g:message code="frontPage.showAchievements.label" default="Show achievements on User stats page" /></label>
+              </td>
+              <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'showAchievements', 'errors')}">
+                  <g:checkBox name="showAchievements" value="${frontPage.showAchievements}"  />
+              </td>
+            </tr>
+
             </tbody>
           </table>
         </div>

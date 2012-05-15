@@ -138,22 +138,26 @@
           </tbody>
         </table>
         </td>
-         <td style="vertical-align: top">
-           <table class="bvp-expeidtions" style="margin:10px; border: 1px solid gray;text-align: center" width="300px">
-             <thead>
-              <tr><td style="border:none"><h3>Achievements</h3></td></tr>
-             </thead>
-             <tr>
-               <td>
-                 <g:each in="${achievements}" var="ach">
-                    <div style="float:left;margin: 5px">
-                      <img src='<g:resource file="${ach.icon}"/>' width="30px" alt="${ach.label}" title="${ach.description}"/>
-                      <div style="font:0.8em">${ach.label}</div>
-                    </div>
-                 </g:each>
-               </td>
-             </tr>
-           </table>
+         <td style="vertical-align: top" align="right">
+           <g:if test="${achievements.size() > 0}">
+             <table class="bvp-expeidtions" style="margin:10px; border: 1px solid #d3d3d3;text-align: center; border-collapse: separate;" width="400px">
+               <thead>
+                <tr><td colspan="5" style="border:none"><h3>Achievements</h3></td></tr>
+               </thead>
+               <tbody>
+                  <tr>
+                    <td>
+                   <g:each in="${achievements}" var="ach" status="i">
+                      <div style="float:left;margin: 10px">
+                        <img src='<g:resource file="${ach.icon}"/>' width="50px" alt="${ach.label}" title="${ach.description}"/>
+                        %{--<div style="font:0.6em">${ach.label}</div>--}%
+                      </div>
+                   </g:each>
+                  </td>
+                  </tr>
+               </tbody>
+             </table>
+           </g:if>
          </td>
        </tr>
     </table>

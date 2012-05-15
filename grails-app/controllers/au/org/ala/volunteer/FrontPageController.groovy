@@ -28,6 +28,8 @@ class FrontPageController {
 
         frontPage.systemMessage = params["systemMessage"]
 
+        frontPage.showAchievements = params['showAchievements'] == 'on'
+
         frontPage.save();
 
         flash.message = "${message(code: 'default.updated.message', args: [message(code: 'frontPage.label', default: 'Front Page'), ''])}"
