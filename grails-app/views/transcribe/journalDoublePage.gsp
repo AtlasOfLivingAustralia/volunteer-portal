@@ -314,31 +314,37 @@
             </span>
             <div class="dialog" id="imagePane">
                 <g:each in="${taskInstance.multimedia}" var="m">
-
+                  <g:if test="${m.mimeType != 'text/plain'}">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
                         <div><img src="${imageUrl}" style="width:100%;"/></div>
                     </div>
-
+                  </g:if>
                 </g:each>
             </div>
             <div class="fields" id="journal2Text">
+                <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
+                <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
                 <table>
                     <thead>
                         <tr>
                             <th>
-                                <h3>1. Transcribe all text from the above field note page into this box as it appears</h3>
-                                <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
-                                <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
+                              <h3>1. Transcribe all text from the left hand page into this box as it appears</h3>
                             </th>
+                          <th>
+                              <h3>2. Transcribe all text from the right hand page into this box as it appears</h3>
+                          </th>
+
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="2">
-                                <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}"
-                                          id="transcribeAllText" rows="12" cols="40" style="width:98%;height:300px;"/>
+                            <td>
+                                <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="transcribeAllText1" rows="12" cols="30" style="width:98%;height:300px;"/>
                             </td>
+                          <td>
+                              <g:textArea name="recordValues.1.occurrenceRemarks" value="${recordValues?.get(1)?.occurrenceRemarks}" id="transcribeAllText2" rows="12" cols="30" style="width:98%;height:300px;"/>
+                          </td>
                         </tr>
                     </tbody>
                 </table>
@@ -349,7 +355,7 @@
                     <thead>
                         <tr>
                             <th colspan="2">
-                                <h3>2. Where a species or common name appears in the text please enter any relevant information into the fields below</h3>
+                                <h3>3. Where a species or common name appears in the text please enter any relevant information into the fields below</h3>
                                 <button onclick="addEntry(); return false;">Add row</button>
                             </th>
                         </tr>

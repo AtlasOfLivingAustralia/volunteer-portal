@@ -6,7 +6,14 @@ public class TaskDescriptor {
     String externalIdentifier
     String imageUrl
     ArrayList<Map> fields = new ArrayList<Map>()
+    ArrayList<MediaLoadDescriptor> media = new ArrayList<MediaLoadDescriptor>();
 
+}
+
+public class MediaLoadDescriptor {
+    String mediaUrl;
+    String mimeType;
+    Closure afterDownload
 }
 
 public class TaskLoadStatus {

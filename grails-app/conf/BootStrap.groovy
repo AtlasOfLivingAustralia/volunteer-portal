@@ -105,6 +105,14 @@ class BootStrap {
 
         populateTemplateFields(template, "journal2Fields")
 
+        template = Template.findByName("JournalDoublePage")
+        if (!template) {
+            println "creating new Template: JournalDoublePage"
+            template = new Template(name: "JournalDoublePage", viewName: "journalDoublePage", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '').save(flush: true, failOnError: true)
+        }
+
+        populateTemplateFields(template, "journalDoublePageFields")
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', displayName: 'System User')
