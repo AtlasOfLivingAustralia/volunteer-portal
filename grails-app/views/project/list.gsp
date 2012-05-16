@@ -60,6 +60,7 @@
             <th align="center">
               <cl:ifGranted role="ROLE_VP_ADMIN">
                 <g:link style="color: #d3d3d3;" controller="project" action="edit" id="${projectInstance['project'].id}">Edit</g:link>
+                <g:link style="color: #d3d3d3;" controller="task" action="projectAdmin" id="${projectInstance['project'].id}">Admin</g:link>
               </cl:ifGranted>
             </th>
           </tr>

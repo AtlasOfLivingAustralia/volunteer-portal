@@ -177,6 +177,11 @@ class TaskService {
      * @return
      */
     Task getNextTask(String userId, Project project) {
+
+        if (!project || !userId) {
+            return null;
+        }
+
         def currentTime = System.currentTimeMillis() - LAST_VIEW_TIMEOUT_MINUTES
         def tasks = Task.executeQuery(
             """select t from Task t
@@ -488,6 +493,7 @@ class TaskService {
             def file = new File(dir, filename)
             file << conn.inputStream
             fileMap.raw = file.name
+            fileMap.localPath = file.getAbsolutePath()
             fileMap.localUrlPrefix = urlPrefix + "${taskId}/${multimediaId}/"
             return fileMap
             //file.close()
@@ -544,6 +550,24 @@ class TaskService {
         }
 
         return results;
+    }
+
+
+    public Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
+        String select ="""
+            SELECT t.id as id
+            FROM Project p, Task t
+            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f where f.name = 'sequenceNumber' group by f.task_id) as fields on fields.task_id = t.id
+            WHERE p.id = $project.id and p.id = t.project_id and fields.value = '$fieldValue'
+        """
+
+        def sql = new Sql(dataSource: dataSource)
+        int taskId = -1;
+        def row = sql.firstRow(select)
+        if (row) {
+            taskId = row[0]
+        }
+        return Task.findById(taskId)
     }
 
 }

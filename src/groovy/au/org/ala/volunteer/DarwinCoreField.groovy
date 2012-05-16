@@ -192,7 +192,8 @@ enum DarwinCoreField {
     // non DwC
     miscellaneous(""),
     transcriberNotes("Transcriber Notes"),
-    validatorNotes("Validator Notes")
+    validatorNotes("Validator Notes"),
+    sequenceNumber("Sequence Number")
     
     def label
     DarwinCoreField(label) { this.label = label }

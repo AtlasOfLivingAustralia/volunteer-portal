@@ -11,7 +11,7 @@ class FieldService {
         def order = params.order?:"asc"
         def fieldValues = Field.executeQuery(
             """select f from Field f
-               where f.name = :name and f.superceded = false and
+               where f.name = :name and f.superceded = false and f.recordIdx = 0 and
                f.task in (:list) order by ${sort} ${order}""",
             [name: fieldName, list: taskList])
         fieldValues.toList()

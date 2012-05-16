@@ -184,31 +184,37 @@
         // display previous journal page in new window
         $("#showPreviousJournalPage").click(function(e) {
             e.preventDefault();
-            var uri = showNotebookPage("${taskInstance?.externalIdentifier}", -1);
-
-            if (uri) {
-                window.open(uri, "journalWindow");
-            } else {
-                alert("Previous journal page was not found");
-            }
+            <g:if test="${prevTask}">
+              var uri = "${createLink(controller: 'task', action:'showImage', id: prevTask.id)}"
+              newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+          	  if (window.focus) {newwindow.focus()}
+            </g:if>
         });
 
         // display next journal page in new window
         $("#showNextJournalPage").click(function(e) {
             e.preventDefault();
-            var uri = showNotebookPage("${taskInstance?.externalIdentifier}", 1);
-
-            if (uri) {
-                window.open(uri, "journalWindow");
-            } else {
-                alert("Next journal page was not found");
-            }
+            <g:if test="${nextTask}">
+              var uri = "${createLink(controller: 'task', action:'showImage', id: nextTask.id)}"
+              newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+              if (window.focus) {newwindow.focus()}
+            </g:if>
         });
 
         $("#imagePane").scrollview({
             grab:"${resource(dir: 'images', file: 'openhand.cur')}",
             grabbing:"${resource(dir: 'images', file: 'closedhand.cur')}"
         });
+
+      $("#rotateImage").click(function(e) {
+        e.preventDefault();
+        var r = $("#image_0");
+        if (!r.hasClass("rotate-image")) {
+          r.addClass("rotate-image");
+        } else {
+          r.removeClass("rotate-image");
+        }
+      });
 
         var isReadonly = VP_CONF.isReadonly;
         if (isReadonly) {
@@ -264,6 +270,15 @@
         border-bottom: none;
     }
 
+    .rotate-image {
+        -moz-transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        -o-transform: rotate(180deg);
+        transform: rotate(180deg);
+        -ms-filter: flipv fliph; /*IE*/
+        filter: flipv fliph; /*IE*/
+    }
+
   </style>
 </head>
 
@@ -286,6 +301,10 @@
       </nav>
       <hgroup>
         <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
+        <g:if test="${sequenceNumber}">
+          <span>Image sequence number: ${sequenceNumber}</span>
+        </g:if>
+
       </hgroup>
     </div>
   </header>
@@ -309,15 +328,16 @@
             <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
 
             <span id="journalPageButtons">
-                <button id="showPreviousJournalPage" title="displays page in new window">&lt;&ndash; show previous journal page</button>
-                <button id="showNextJournalPage" title="displays page in new window">show next journal page &ndash;&gt;</button>
+                <button id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous journal page</button>
+                <button id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
+                <button id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
             </span>
             <div class="dialog" id="imagePane">
-                <g:each in="${taskInstance.multimedia}" var="m">
+                <g:each in="${taskInstance.multimedia}" var="m" status="i">
                   <g:if test="${m.mimeType != 'text/plain'}">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
-                        <div><img src="${imageUrl}" style="width:100%;"/></div>
+                        <div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>
                     </div>
                   </g:if>
                 </g:each>

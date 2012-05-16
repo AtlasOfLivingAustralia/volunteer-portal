@@ -63,20 +63,20 @@ class TaskController {
                 taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
                 if (taskInstanceTotal) {
                     fieldNames.each {
-                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
+                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
                     }
-                    //extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
                 }
             } else {
                 taskInstanceList = Task.findAllByProject(projectInstance, params)
                 taskInstanceTotal = Task.countByProject(projectInstance)
                 if (taskInstanceTotal) {
                     fieldNames.each {
-                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
+                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
                     }
-                    //extraField = fieldService.getLatestFieldsWithTasks(fieldName, taskInstanceList, params)
                 }
             }
+
+            println extraFields
             // add some associated "field" values
             render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
                     projectInstance: projectInstance, extraFields: extraFields])
@@ -334,6 +334,27 @@ class TaskController {
         else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
             redirect(action: "list")
+        }
+    }
+
+    def showImage = {
+
+        if (params.id) {
+            def task = Task.findById(params.int("id"))
+
+            if (task) {
+                Task prevTask = null
+                Task nextTask = null
+                Integer sequenceNumber = null;
+                def field = Field.findByTaskAndName(task, "sequenceNumber")
+                if (field) {
+                    sequenceNumber = Integer.parseInt(field.value)
+                    prevTask = taskService.findByProjectAndFieldValue(task.project, "sequenceNumber", (sequenceNumber - 1).toString())
+                    nextTask = taskService.findByProjectAndFieldValue(task.project, "sequenceNumber", (sequenceNumber + 1).toString())
+                }
+
+                [taskInstance: task, sequenceNumber: sequenceNumber, prevTask:prevTask, nextTask:nextTask]
+            }
         }
     }
 }

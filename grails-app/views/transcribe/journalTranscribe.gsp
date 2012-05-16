@@ -33,6 +33,18 @@
 <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'ScottSisiters.js')}"></script>
+<style type="text/css">
+
+  .rotate-image {
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+    -ms-filter: flipv fliph; /*IE*/
+    filter: flipv fliph; /*IE*/
+  }
+
+  </style>
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {
@@ -149,6 +161,17 @@
             grabbing:"${resource(dir: 'images', file: 'closedhand.cur')}"
         });
 
+        $("#rotateImage").click(function(e) {
+          e.preventDefault();
+          var r = $("#image_0");
+          if (!r.hasClass("rotate-image")) {
+            r.addClass("rotate-image");
+          } else {
+            r.removeClass("rotate-image");
+          }
+        });
+
+
         var isReadonly = VP_CONF.isReadonly;
         if (isReadonly) {
             // readonly more
@@ -207,14 +230,15 @@
             <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
 
             <span id="journalPageButtons">
-                <button id="showPreviousJournalPage" title="displays page in new window">&lt;&ndash; show previous journal page</button>
-                <button id="showNextJournalPage" title="displays page in new window">show next journal page &ndash;&gt;</button>
+                <button id="showPreviousJournalPage" title="displays page in new window">&lt;&ndash; show previous page</button>
+                <button id="showNextJournalPage" title="displays page in new window">show next page &ndash;&gt;</button>
+                <button id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
             </span>
             <div class="dialog" id="imagePane">
-                <g:each in="${taskInstance.multimedia}" var="m">
+                <g:each in="${taskInstance.multimedia}" var="m" status="i">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
-                        <div><img src="${imageUrl}" style="width:100%;"/></div>
+                        <div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>
                     </div>
                     
                 </g:each>

@@ -29,7 +29,7 @@ class TranscribeController {
 
     def task = {
 
-        def taskInstance = Task.get(params.id)
+        def taskInstance = Task.get(params.int('id'))
         def currentUser = authService.username()
         userService.registerCurrentUser()
 
@@ -73,8 +73,19 @@ class TranscribeController {
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-            log.debug("recordValues = " + recordValues)
-            render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template])
+
+            Task prevTask = null;
+            Task nextTask = null;
+            Integer sequenceNumber = null
+
+            if (recordValues[0]?.sequenceNumber) {
+                sequenceNumber = Integer.parseInt(recordValues[0]?.sequenceNumber);
+                // prev task
+                prevTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber - 1).toString())
+                nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
+            }
+
+            render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber])
         } else {
             redirect(view: 'list', controller: "task")
         }

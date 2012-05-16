@@ -88,9 +88,11 @@
                     <g:each in="${taskInstanceList}" status="i" var="taskInstance">
                         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                         
-                            <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
+                            <td><g:link controller="task" action="show" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
                         
-                            <g:each in="${extraFields}" var="field"><td>${field.value[i]?.value}</td></g:each>
+                            <g:each in="${extraFields}" var="field">
+                              <td>${field?.value[taskInstance.id]?.value?.getAt(0)}</td>
+                            </g:each>
                         
                             <td>
                                 <g:if test="${taskInstance.fullyTranscribedBy}">

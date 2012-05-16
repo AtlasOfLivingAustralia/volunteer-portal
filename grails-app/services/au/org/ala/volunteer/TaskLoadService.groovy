@@ -59,11 +59,15 @@ class TaskLoadService {
         }
 
         try {
-            csv.eachCsvLine { tokens ->
+            csv.eachCsvLine { String[] tokens ->
                 //only one line in this case
-                def taskDesc = createTaskDescriptorFromTokens(project, tokens)
-                if (taskDesc) {
-                    _loadQueue.put(taskDesc)
+                if (tokens.length > 1) {
+                    def taskDesc = createTaskDescriptorFromTokens(project, tokens)
+                    if (taskDesc) {
+                        _loadQueue.put(taskDesc)
+                    }
+                } else {
+                    println 'Skipping empty line'
                 }
             }
         } catch (Exception ex) {
@@ -117,18 +121,19 @@ class TaskLoadService {
 
     def import_Journal2 = { TaskDescriptor taskDesc, String[] tokens ->
         List<Field> fields = new ArrayList<Field>()
-        if (tokens.length >= 3) {
+        if (tokens.length >= 4) {
             taskDesc.externalIdentifier = tokens[0].trim()
             taskDesc.imageUrl = tokens[1].trim()
 
             // create associated fields
             taskDesc.fields.add([name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()])
+            taskDesc.fields.add([name: 'sequenceNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()])
 
-            if (tokens.length >= 4) {
-                def pageUrl = tokens[3].trim()
+            if (tokens.length >= 5) {
+                def pageUrl = tokens[4].trim()
                 if (pageUrl) {
-                    taskDesc.media.add(new MediaLoadDescriptor(mediaUrl: pageUrl, mimeType: "text/plain", afterDownload: { Task t, Multimedia media ->
-                        def text = new File(media.filePath).getText("utf-8")
+                    taskDesc.media.add(new MediaLoadDescriptor(mediaUrl: pageUrl, mimeType: "text/plain", afterDownload: { Task t, Multimedia media, Map fileMap ->
+                        def text = new File(fileMap.localPath).getText("utf-8")
                         def field = new Field(task: t, name: 'occurrenceRemarks', recordIdx: 0, transcribedByUserId: 'system', value: text)
                         field.save(flush: true)
                     }))
@@ -143,29 +148,30 @@ class TaskLoadService {
 
     def import_JournalDoublePage = { TaskDescriptor taskDesc, String[] tokens ->
         List<Field> fields = new ArrayList<Field>()
-        if (tokens.length >= 3) {
-            taskDesc.externalIdentifier = tokens[0].trim()
-            taskDesc.imageUrl = tokens[1].trim()
+        if (tokens.length >= 4) {
+            taskDesc.imageUrl = tokens[0].trim()
+            taskDesc.externalIdentifier = tokens[1].trim()
 
-            // create associated fields
             taskDesc.fields.add([name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()])
+            taskDesc.fields.add([name: 'sequenceNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()])
 
-            if (tokens.length >= 4) {
-                def lhpageUrl = tokens[3].trim()
+            // Additional media (ocr text - loading to be deferred)
+            if (tokens.length >= 5) {
+                def lhpageUrl = tokens[4].trim()
                 if (lhpageUrl) {
-                    taskDesc.media.add(new MediaLoadDescriptor(mediaUrl: lhpageUrl, mimeType: "text/plain", afterDownload: { Task t, Multimedia media ->
-                        def text = new File(media.filePath).getText("utf-8")
+                    taskDesc.media.add(new MediaLoadDescriptor(mediaUrl: lhpageUrl, mimeType: "text/plain", afterDownload: { Task t, Multimedia media, Map fileMap ->
+                        def text = new File(fileMap.localPath).getText("utf-8")
                         def field = new Field(task: t, name: 'occurrenceRemarks', recordIdx: 0, transcribedByUserId: 'system', value: text)
                         field.save(flush: true)
                     }))
                 }
             }
 
-            if (tokens.length >= 5) {
-                def rhpageUrl = tokens[4]
+            if (tokens.length >= 6) {
+                def rhpageUrl = tokens[5]
                 if (rhpageUrl) {
-                    taskDesc.media.add(new MediaLoadDescriptor(mediaUrl: rhpageUrl, mimeType: "text/plain", afterDownload: { Task t, Multimedia media ->
-                        def text = new File(media.filePath).getText("utf-8")
+                    taskDesc.media.add(new MediaLoadDescriptor(mediaUrl: rhpageUrl, mimeType: "text/plain", afterDownload: { Task t, Multimedia media, Map fileMap ->
+                        def text = new File(fileMap.localPath).getText("utf-8")
                         def field = new Field(task: t, name: 'occurrenceRemarks', recordIdx: 1, transcribedByUserId: 'system', value: text)
                         field.save(flush: true)
                     }))
@@ -174,7 +180,7 @@ class TaskLoadService {
 
         } else {
             // error
-            throw new RuntimeException("CSV has the incorrect number of fields for import into template journalDoublePage! (has ${tokens.length}, expected 3,4 or 5")
+            throw new RuntimeException("CSV has the incorrect number of fields for import into template journalDoublePage! (has ${tokens.length}, expected 4,5 or 6")
         }
     }
 
@@ -243,7 +249,11 @@ class TaskLoadService {
                                         multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
                                         multimedia.save()
                                         if (md.afterDownload) {
-                                            md.afterDownload(t, multimedia)
+                                            try {
+                                                md.afterDownload(t, multimedia, filePath)
+                                            } catch (Exception ex) {
+                                                println "Error calling after media download hook: " + ex.message;
+                                            }
                                         }
                                     }
                                 }
