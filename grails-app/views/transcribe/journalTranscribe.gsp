@@ -33,18 +33,7 @@
 <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'ScottSisiters.js')}"></script>
-<style type="text/css">
 
-  .rotate-image {
-    -moz-transform: rotate(180deg);
-    -webkit-transform: rotate(180deg);
-    -o-transform: rotate(180deg);
-    transform: rotate(180deg);
-    -ms-filter: flipv fliph; /*IE*/
-    filter: flipv fliph; /*IE*/
-  }
-
-  </style>
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {
@@ -163,14 +152,8 @@
 
         $("#rotateImage").click(function(e) {
           e.preventDefault();
-          var r = $("#image_0");
-          if (!r.hasClass("rotate-image")) {
-            r.addClass("rotate-image");
-          } else {
-            r.removeClass("rotate-image");
-          }
+          $("#image_0").toggleClass("rotate-image");
         });
-
 
         var isReadonly = VP_CONF.isReadonly;
         if (isReadonly) {

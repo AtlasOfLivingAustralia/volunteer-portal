@@ -740,3 +740,12 @@ span.help-container {
 span.help-container:hover {
 	background-position:right -81px;
 }
+
+.rotate-image {
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+    -ms-filter: flipv fliph; /*IE*/
+    filter: flipv fliph; /*IE*/
+}

@@ -495,6 +495,7 @@ class TaskService {
             fileMap.raw = file.name
             fileMap.localPath = file.getAbsolutePath()
             fileMap.localUrlPrefix = urlPrefix + "${taskId}/${multimediaId}/"
+            fileMap.contentType = conn.contentType
             return fileMap
             //file.close()
         } catch (Exception e) {

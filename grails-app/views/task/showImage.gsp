@@ -52,20 +52,13 @@
         }
 
         button:disabled {
-          color: #dcdcdc;
+          opacity : 0.4;
+          filter: alpha(opacity=40); // msie
         }
 
         button[disabled]:hover {
-          color: #dcdcdc;
-        }
-
-        .rotate-image {
-          -moz-transform: rotate(180deg);
-          -webkit-transform: rotate(180deg);
-          -o-transform: rotate(180deg);
-          transform: rotate(180deg);
-          -ms-filter: flipv fliph; /*IE*/
-          filter: flipv fliph; /*IE*/
+          opacity : 0.4;
+          filter: alpha(opacity=40); // msie
         }
 
       </style>
@@ -107,16 +100,10 @@
 
         $("#rotateImage").click(function(e) {
           e.preventDefault();
-          var r = $("#image_0");
-          if (!r.hasClass("rotate-image")) {
-            r.addClass("rotate-image");
-          } else {
-            r.removeClass("rotate-image");
-          }
+          $("#image_0").toggleClass("rotate-image");
         });
 
       });
-
 
       function zoomJournalImage(event, value) {
           console.info("value changed to", value);
@@ -150,7 +137,7 @@
 
         <div class="dialog" id="imagePane">
             <g:each in="${taskInstance.multimedia}" var="m" status="i">
-              <g:if test="${m.mimeType != 'text/plain'}">
+              <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
                 <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                 <div class="pageViewer" id="journalPageImg" style="height:600px;">
                     <div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>

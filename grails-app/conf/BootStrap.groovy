@@ -97,33 +97,27 @@ class BootStrap {
         // populate default set of TemplateFields
         populateTemplateFields(template, "defaultFields")
 
-        template = Template.findByName("Journal2")
+        template = Template.findByName("FieldNoteBook")
         if (!template) {
-            println "creating new Template: Journal2"
-            template = new Template(name: "Journal2", viewName: "journal2Transcribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '').save(flush: true, failOnError: true)
+            println "creating new Template: FieldNoteBook"
+            template = new Template(name: "FieldNoteBook", viewName: "fieldNoteBookTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
         }
+        populateTemplateFields(template, "fieldNoteBookFields")
 
-        populateTemplateFields(template, "journal2Fields")
-
-        template = Template.findByName("JournalDoublePage")
+        template = Template.findByName("FieldNoteBookDoublePage")
         if (!template) {
-            println "creating new Template: JournalDoublePage"
-            template = new Template(name: "JournalDoublePage", viewName: "journalDoublePage", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '').save(flush: true, failOnError: true)
+            println "creating new Template: FieldNoteBookDoublePage"
+            template = new Template(name: "FieldNoteBookDoublePage", viewName: "fieldNoteBookTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [doublePage: 'true']).save(flush: true, failOnError: true)
         }
-
-        populateTemplateFields(template, "journalDoublePageFields")
+        populateTemplateFields(template, "fieldNoteBookFields")
 
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', displayName: 'System User')
         }
 
-        //add templates
-//      sql.execute("""
-//          TRUNCATE TEMPLATE CASCADE;
-//          INSERT INTO template (id, name, view_name) VALUES (1, 'Specimen Transcription', 'specimenTranscribe');
-//        """)
     }
+
     def destroy = {
     }
 

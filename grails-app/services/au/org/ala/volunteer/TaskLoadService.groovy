@@ -109,7 +109,10 @@ class TaskLoadService {
         println("Looking for import function for template: " + project.template.name)
         def import_function = this.metaClass.properties.find() { it.name == "import_" + project.template.name }
         if (!import_function) {
+            println("Using default CSV Import routine for template: " + project.template.name)
             import_function = default_csv_import
+        } else {
+            println("Using 'import_${project.template.name} for import")
         }
 
         if (import_function) {
@@ -119,11 +122,11 @@ class TaskLoadService {
         return taskDesc;
     }
 
-    def import_Journal2 = { TaskDescriptor taskDesc, String[] tokens ->
+    def import_FieldNoteBook = { TaskDescriptor taskDesc, String[] tokens ->
         List<Field> fields = new ArrayList<Field>()
         if (tokens.length >= 4) {
-            taskDesc.externalIdentifier = tokens[0].trim()
-            taskDesc.imageUrl = tokens[1].trim()
+            taskDesc.imageUrl = tokens[0].trim()
+            taskDesc.externalIdentifier = tokens[1].trim()
 
             // create associated fields
             taskDesc.fields.add([name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()])
@@ -146,7 +149,7 @@ class TaskLoadService {
         }
     }
 
-    def import_JournalDoublePage = { TaskDescriptor taskDesc, String[] tokens ->
+    def import_FieldNoteBookDoublePage = { TaskDescriptor taskDesc, String[] tokens ->
         List<Field> fields = new ArrayList<Field>()
         if (tokens.length >= 4) {
             taskDesc.imageUrl = tokens[0].trim()
@@ -235,6 +238,7 @@ class TaskLoadService {
                                 filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
                                 multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
                                 multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
+                                multimedia.mimeType = filePath.contentType
                                 multimedia.save()
 
 
@@ -247,6 +251,7 @@ class TaskLoadService {
                                         // GET the image via its URL and save various forms to local disk
                                         filePath = taskService.copyImageToStore(md.mediaUrl, t.id, multimedia.id)
                                         multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+                                        multimedia.mimeType = filePath.contentType
                                         multimedia.save()
                                         if (md.afterDownload) {
                                             try {
