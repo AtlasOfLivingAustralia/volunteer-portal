@@ -70,7 +70,7 @@
                     <thead>
                         <tr>
                         
-                            <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
+                            <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'External Id')}" params="${[q:params.q]}"/>
                         
                             <g:each in="${extraFields}" var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
                         
@@ -88,7 +88,7 @@
                     <g:each in="${taskInstanceList}" status="i" var="taskInstance">
                         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                         
-                            <td><g:link controller="task" action="show" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
+                            <td><g:link controller="task" action="show" id="${taskInstance.id}">${taskInstance.externalIdentifier}</g:link></td>
                         
                             <g:each in="${extraFields}" var="field">
                               <td>${field?.value[taskInstance.id]?.value?.getAt(0)}</td>

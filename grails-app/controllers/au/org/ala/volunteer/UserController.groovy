@@ -39,8 +39,8 @@ class UserController {
           params.order = "desc"
         }
         def currentUser = authService.username()
-        def userList = User.list(params)
-        userList.each { user ->
+        def results = userService.filteredUserList(params)
+        results.list.each { user ->
             def count = taskService.getCountsForUserId(user.userId)?.get(0)
             log.debug(user.userId + " count: " + count)
             if (user.transcribedCount != count) {
@@ -54,7 +54,7 @@ class UserController {
             }
         }
 
-        [userInstanceList: User.list(params), userInstanceTotal: User.count(),currentUser: currentUser]
+        [userInstanceList: results.list, userInstanceTotal: results.count, currentUser: currentUser]
     }
 
     def project = {
@@ -202,8 +202,6 @@ class UserController {
             totalSavedTasks = taskService.getRecentlySavedTasks(userInstance.getUserId(), new HashMap<String, Object>()).size()
             totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
         }
-
-        println "here"
 
         def achievements = achievementService.calculateAchievements(userInstance)
 

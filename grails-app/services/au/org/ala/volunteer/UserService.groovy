@@ -60,4 +60,23 @@ class UserService {
         """)
 
     }
+
+    Map filteredUserList(Map params) {
+        String query = '%'
+        if (params.q) {
+            query = "%" + (params.q?:"") + "%"
+        }
+
+        query= query.toLowerCase()
+
+        def count = User.executeQuery("""select count(u) from User u
+                                         where lower(u.displayName) like :query""",
+                                        [query: query], [:])[0]
+
+
+        def users = User.executeQuery("""select u from User u
+                                         where lower(u.displayName) like :query order by $params.sort $params.order""",
+                                        [query: query], params)
+        return [count: count, list: users.toList()]
+    }
 }

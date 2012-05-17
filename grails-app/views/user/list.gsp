@@ -5,7 +5,56 @@
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
       <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
       <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
+
+      <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
+
       <title>Volunteers</title>
+      <script type="text/javascript">
+        $(document).ready(function () {
+
+          // Context sensitive help popups
+          $("a.fieldHelp").qtip({
+              tip: true,
+              position: {
+                  corner: {
+                      target: 'topMiddle',
+                      tooltip: 'bottomRight'
+                  }
+              },
+              style: {
+                  width: 400,
+                  padding: 8,
+                  background: 'white', //'#f0f0f0',
+                  color: 'black',
+                  textAlign: 'left',
+                  border: {
+                      width: 4,
+                      radius: 5,
+                      color: '#E66542'// '#E66542' '#DD3102'
+                  },
+                  tip: 'bottomRight',
+                  name: 'light' // Inherit the rest of the attributes from the preset light style
+              }
+          }).bind('click', function(e){ e.preventDefault(); return false; });
+
+          $('#searchbox').bind('keypress', function(e) {
+
+              var code = (e.keyCode ? e.keyCode : e.which);
+              if(code == 13) {
+                doSearch();
+              }
+          });
+
+        });
+
+        doSearch = function() {
+          var searchTerm = $('#searchbox').val()
+          var link = "${createLink(controller: 'user', action: 'list')}?q=" + searchTerm
+          window.location.href = link;
+        }
+
+
+      </script>
   </head>
 
   <body class="sublevel sub-site volunteerportal">
@@ -32,6 +81,15 @@
         <table class="bvp-expeditions">
             <thead>
               <tr>
+                <th colspan="5" style="text-align: right">
+                  <span>
+                    <a style="vertical-align: middle;" href="#" class="fieldHelp" title="Enter search text here to show only members with matching names"><span class="help-container">&nbsp;</span></a>
+                  </span>
+                  <g:textField id="searchbox" value="${params.q}" name="searchbox" onkeypress="" />
+                  <button onclick="doSearch()">Search</button>
+                </th>
+              </tr>
+              <tr>
                   <g:if test="${projectInstance}">
                       <th></th>
                       <th>Name</th>
@@ -41,10 +99,10 @@
                   </g:if>
                   <g:else>
                       <th></th>
-                      <g:sortableColumn style="text-align: left" property="displayName" title="${message(code: 'user.user.label', default: 'Name')}"/>
-                      <g:sortableColumn property="transcribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}"/>
-                      <g:sortableColumn property="validatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}"/>
-                      <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'A volunteer since')}"/>
+                      <g:sortableColumn style="text-align: left" property="displayName" title="${message(code: 'user.user.label', default: 'Name')}" params="${[q:params.q]}"/>
+                      <g:sortableColumn property="transcribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}" params="${[q:params.q]}"/>
+                      <g:sortableColumn property="validatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}" params="${[q:params.q]}"/>
+                      <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'A volunteer since')}" params="${[q:params.q]}"/>
                   </g:else>
 
               </tr>

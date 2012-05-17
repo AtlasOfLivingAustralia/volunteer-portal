@@ -682,9 +682,10 @@ div#journalFields tr:last-child td {
 
 tr.fieldNoteFields td label {
     display: inline-block;
-    width: 120px;
+    /*width: 120px;*/
     text-align: right;
     padding-right: 6px;
+    padding-left: 6px;
 }
 
 tr.fieldNoteFields td input {

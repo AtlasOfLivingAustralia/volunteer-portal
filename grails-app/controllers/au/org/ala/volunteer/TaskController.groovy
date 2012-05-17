@@ -29,7 +29,7 @@ class TaskController {
         params.sort = params.sort ? params.sort : "id"
         //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
         if (params.id) {
-            renderProjectListWithSearch(params, ["catalogNumber","scientificName"], "list")
+            renderProjectListWithSearch(params, "list")
         } else {
             render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
         }
@@ -38,15 +38,34 @@ class TaskController {
     def projectAdmin = {
         def currentUser = authService.username()
         if (currentUser != null && (authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
-            renderProjectListWithSearch(params, ["catalogNumber","scientificName"], "adminList")
+            renderProjectListWithSearch(params, "adminList")
         } else {
             flash.message = "You do not have permission to view the Admin Task List page (${ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
-    def renderProjectListWithSearch(GrailsParameterMap params, List fieldNames, String view) {
+    def extra_fields_default = ["catalogNumber","scientificName"]
+
+    def extra_fields_FieldNoteBook = []
+
+    def extra_fields_FieldNoteBookDoublePage = []
+
+    def renderProjectListWithSearch(GrailsParameterMap params, String view) {
+
         def projectInstance = Project.get(params.id)
+
+        String[] fieldNames = null;
+
+        def extraFieldProperty = this.metaClass.properties.find() { it.name == "extra_fields_" + projectInstance.template.name }
+
+        if (extraFieldProperty) {
+            fieldNames = extraFieldProperty.getProperty(this)
+        }
+
+        if (fieldNames == null) {
+            fieldNames = extra_fields_default
+        }
 
         if (projectInstance) {
             params.max = Math.min(params.max ? params.int('max') : 20, 50)
@@ -76,7 +95,6 @@ class TaskController {
                 }
             }
 
-            println extraFields
             // add some associated "field" values
             render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
                     projectInstance: projectInstance, extraFields: extraFields])
@@ -177,7 +195,7 @@ class TaskController {
         //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
         if (params.id) {
             //redirect(action: "project", params: params)
-            renderProjectListWithSearch(params, ["catalogNumber","scientificName"], "list")
+            renderProjectListWithSearch(params, "list")
         } else {
             //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
             renderListWithSearch(params, ["catalogNumber","scientificName"], "list")
