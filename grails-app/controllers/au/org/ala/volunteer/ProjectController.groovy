@@ -1,9 +1,8 @@
 package au.org.ala.volunteer
 
-import groovy.sql.Sql
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.*
-import au.com.bytecode.opencsv.CSVWriter
+
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
@@ -19,6 +18,7 @@ class ProjectController {
     def auditService
     def fieldSyncService
     def authService
+    def exportService
     javax.sql.DataSource dataSource
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     /**
@@ -165,14 +165,24 @@ class ProjectController {
 
         fieldList.each {
             if (it.value) {
-                def fm = [:]
+                Map fm = null;
 
                 if (taskMap.containsKey(it.task.id)) {
                     fm = taskMap.get(it.task.id)
+                } else {
+                    fm = [:]
+                    taskMap[it.task.id] = fm
                 }
 
-                fm[it.name] = it.value
-                taskMap.put(it.task.id, fm)
+                Map valueMap = null;
+                if (fm.containsKey(it.name)) {
+                   valueMap = fm[it.name]
+                } else {
+                    valueMap = [:]
+                    fm[it.name] = valueMap
+                }
+
+                valueMap[it.recordIdx] = it.value
             }
         }
 
@@ -186,7 +196,7 @@ class ProjectController {
         def projectInstance = Project.get(params.id)
         boolean transcribedOnly = params.transcribed?.toBoolean()
         boolean validatedOnly = params.validated?.toBoolean()
-        
+
         if (projectInstance) {
             def taskList
             if (transcribedOnly) {
@@ -200,73 +210,69 @@ class ProjectController {
             def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier", "exportComment"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
             log.debug("Fields: "+ fieldNames);
-            //render("tasks: " + taskList.size()) as JSON
-            def filename = "Project-" + projectInstance.id + "-DwC"
-            response.setHeader("Cache-Control", "must-revalidate");
-            response.setHeader("Pragma", "must-revalidate");
-            response.setHeader("Content-Disposition", "attachment;filename=" + filename +".txt");
-            response.setContentType("text/plain");
-            OutputStream fout= response.getOutputStream();
-            OutputStream bos = new BufferedOutputStream(fout);
-            OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
 
-            CSVWriter writer = new CSVWriter(outputwriter);
-            // write header line (field names)
-            writer.writeNext(fieldNames.toArray(new String[0]))
-
-            taskList.each { task ->
-                String[] values = getFieldsforTask(task, fieldNames, taskMap)
-                writer.writeNext(values)
+            Closure export_func = exportService.export_default
+            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
+            if (exporter_func_property) {
+                export_func = exporter_func_property.getProperty(exportService)
             }
 
-            writer.close()
+            if (export_func) {
+                response.setHeader("Cache-Control", "must-revalidate");
+                response.setHeader("Pragma", "must-revalidate");
+
+                export_func(projectInstance, taskList, taskMap, fieldNames, response)
+            } else {
+                throw new Exception("No export function for template ${projectInstance.template.name}!")
+            }
+
         }
         else {
             throw new Exception("No project found for id: " + params.id)
         }
     }
 
-    String[] getFieldsforTask(Task task, List fields, Map taskMap) {
-        List fieldValues = []
-        def taskId = task.id
-        
-        def date = new Date().format("dd-MMM-yyyy")
-
-        if (taskMap.containsKey(taskId)) {
-            def fieldMap = taskMap.get(taskId)
-            fields.eachWithIndex { it, i ->
-
-                if (i == 0) {
-                    fieldValues.add(taskId.toString())
-                }
-                else if (i == 1) {
-                    fieldValues.add(task.fullyTranscribedBy)
-                }
-                else if (i == 2) {
-                    fieldValues.add(task.fullyValidatedBy)
-                }
-                else if (i == 3) {
-                    fieldValues.add(task.externalIdentifier)
-                }
-                else if (i == 4) {
-                    def sb = new StringBuilder()
-                    if (!task.fullyTranscribedBy.isEmpty()) {
-                        sb.append("Fully transcribed by ${task.fullyTranscribedBy}. ")
-                    }
-                    sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
-                    fieldValues.add((String) sb.toString())
-                }
-                else if (fieldMap.containsKey(it)) {
-                    fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", '\\\\n'))
-                }
-                else {
-                    fieldValues.add("") // need to leave blank
-                }
-            }
-        }
-
-        return fieldValues.toArray(new String[0]) // String array
-    }
+//    String[] getFieldsforTask(Task task, List fields, Map taskMap) {
+//        List fieldValues = []
+//        def taskId = task.id
+//
+//        def date = new Date().format("dd-MMM-yyyy")
+//
+//        if (taskMap.containsKey(taskId)) {
+//            def fieldMap = taskMap.get(taskId)
+//            fields.eachWithIndex { it, i ->
+//
+//                if (i == 0) {
+//                    fieldValues.add(taskId.toString())
+//                }
+//                else if (i == 1) {
+//                    fieldValues.add(task.fullyTranscribedBy)
+//                }
+//                else if (i == 2) {
+//                    fieldValues.add(task.fullyValidatedBy)
+//                }
+//                else if (i == 3) {
+//                    fieldValues.add(task.externalIdentifier)
+//                }
+//                else if (i == 4) {
+//                    def sb = new StringBuilder()
+//                    if (task.fullyTranscribedBy) {
+//                        sb.append("Fully transcribed by ${task.fullyTranscribedBy}. ")
+//                    }
+//                    sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
+//                    fieldValues.add((String) sb.toString())
+//                }
+//                else if (fieldMap.containsKey(it)) {
+//                    fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", '\\\\n'))
+//                }
+//                else {
+//                    fieldValues.add("") // need to leave blank
+//                }
+//            }
+//        }
+//
+//        return fieldValues.toArray(new String[0]) // String array
+//    }
 
     def deleteTasks = {
 

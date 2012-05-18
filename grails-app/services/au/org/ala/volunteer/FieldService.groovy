@@ -50,4 +50,5 @@ class FieldService {
                f.task in (:list) order by f.name""", [list: taskList])
         fieldValues.toList()
     }
+
 }
