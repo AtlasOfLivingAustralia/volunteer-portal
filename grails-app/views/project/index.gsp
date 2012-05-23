@@ -4,7 +4,6 @@
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
 <g:set var="tasksDone" value="${tasksTranscribed?:0}"/>
 <g:set var="tasksTotal" value="${taskCount?:0}"/>
-<g:set var="tasksDonePercent" value="${(taskCount > 0) ? ((tasksDone / tasksTotal) * 100) : 0}"/>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -26,7 +25,7 @@
             data.addColumn('number', 'Value');
             data.addRows(3);
             data.setValue(0, 0, '%');
-            data.setValue(0, 1, <g:formatNumber number="${tasksDonePercent}" format="#"/>);
+            data.setValue(0, 1, <g:formatNumber number="${percentComplete}" format="#"/>);
 
             var chart = new google.visualization.Gauge(document.getElementById('recordsChartWidget'));
             var options = {width: 150, height: 150, minorTicks: 5, majorTicks: ["0%","25%","50%","75%","100%"]};
@@ -102,7 +101,7 @@
 
         $(document).ready(function() {
             // load chart
-            $("#recordsChartWidget").progressbar({ value: <g:formatNumber number="${tasksDonePercent}" format="#"/> });
+            $("#recordsChartWidget").progressbar({ value: <g:formatNumber number="${percentComplete}" format="#"/> });
             //load map
             loadMap();
 
@@ -178,9 +177,9 @@
         <section class="padding-bottom">
           <h2>${projectInstance.featuredLabel} progress</h2>
           <div id="recordsChart">
-            <strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${tasksDonePercent}" format="#"/>%</strong>)</div>
+            <strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${percentComplete}" format="#"/>%</strong>)</div>
             <div id="recordsChartWidget1" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="41">
-              <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: ${formatNumber(format:"#", number: tasksDonePercent)}%; "></div>
+              <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: ${formatNumber(format:"#", number: percentComplete)}%; "></div>
             </div>
         </section>
 
@@ -197,7 +196,13 @@
       <section class="no-padding">
         <section>
         <h2>${projectInstance.featuredLabel} overview</h2>
-        <img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124" class="alignleft size-full"/>${projectInstance.description}
+        <span class="alignleft size-full">
+          <img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124" />
+          <g:if test="${projectInstance.featuredImageCopyright}">
+            <div style="font-size: 0.8em; font-style: italic;vertical-align: top; text-align: center; line-height: 1.2em">${projectInstance.featuredImageCopyright}</div>
+          </g:if>
+        </span>
+          ${projectInstance.description}
         <g:if test="${!projectInstance.disableNewsItems && newsItem}">
           <h2>${projectInstance.featuredLabel} news</h2>
           <article class="margin-bottom-0">
@@ -274,7 +279,10 @@
       </section>
     </div>
     <cl:isLoggedIn>
-        <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" style="color:#DDDDDD;">Admin</g:link>
+      <cl:ifGranted role="ROLE_VP_ADMIN">
+        <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" style="color:#DDDDDD;">Admin</g:link>&nbsp;
+        <g:link controller="project" action="edit" id="${projectInstance.id}" style="color:#DDDDDD;">Edit</g:link>
+      </cl:ifGranted>
     </cl:isLoggedIn>
 </div>
 </body>

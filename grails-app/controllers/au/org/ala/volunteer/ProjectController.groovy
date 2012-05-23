@@ -73,7 +73,13 @@ class ProjectController {
             def items = projectInstance.newsItems.asList()
             def newsItem = items.size() > 0 ? items[0] : null;
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader])
+            def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
+            if (percentComplete > 99 && taskCount != tasksTranscribed) {
+                // Avoid reporting 100% unless the transcribed count actually equals the task count
+                percentComplete = 99;
+            }
+
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete])
         }
     }
 
@@ -302,6 +308,10 @@ class ProjectController {
             def percent = 0;
             if (taskCounts[project.id] && fullyTranscribedCounts[project.id]) {
                 percent = ((fullyTranscribedCounts[project.id] / taskCounts[project.id]) * 100)
+                if (percent > 99 && taskCounts[project.id] != fullyTranscribedCounts[project.id]) {
+                    // Avoid reported 100% unless the transcribed count actually equals the task count
+                    percent = 99;
+                }
             }
             if (percent < 100) {
                 incompleteCount++;
@@ -309,7 +319,7 @@ class ProjectController {
             def iconImage = 'icon_specimens.png'
             def iconLabel = 'Specimens'
 
-            if (project.template.name.equalsIgnoreCase('Journal')) {
+            if (project.template.name.equalsIgnoreCase('Journal') || project.template.name?.toLowerCase().startsWith("fieldnotebook")) {
                 iconImage = 'icon_fieldnotes.png'
                 iconLabel = 'Field notes'
             }

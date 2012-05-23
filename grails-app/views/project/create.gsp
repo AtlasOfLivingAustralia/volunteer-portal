@@ -88,6 +88,16 @@
 
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="featuredImageCopyright"><g:message code="project.featuredImageCopyright.label" default="Featured Image Copyright (Optional)" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredImageCopyright', 'errors')}">
+                                    <g:textField name="featuredImageCopyright" value="${projectInstance?.featuredImageCopyright}" />
+                                </td>
+                            </tr>
+
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="featuredOwner"><g:message code="project.featuredOwner.label" default="Featured Owner" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredOwner', 'errors')}">
