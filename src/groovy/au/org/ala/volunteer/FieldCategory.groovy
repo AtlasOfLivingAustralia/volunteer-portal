@@ -20,6 +20,7 @@ package au.org.ala.volunteer
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 enum FieldCategory {
+    labelText("Label text"),
     dataset("Dataset"), 
     location("Location"), 
     identification("Identification"), 

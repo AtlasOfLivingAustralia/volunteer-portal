@@ -1,5 +1,5 @@
 <div>
-  <h3>Previous tasks for ${projectInstance}</h3>
+  <h3>Your previously transcribed tasks in ${projectInstance.featuredLabel}</h3>
 
   <g:if test="${taskList?.size}">
     <div id="task_list" style="display: none" currentTaskIndex="0" taskCount="${taskList.size}">
@@ -73,7 +73,20 @@
         updateLocation();
       }
 
+      function clearTaskData() {
+
+        $('[id*="recordValues\\."]').each(function(index) {
+          // Don't clear the hidden fields
+          if ($(this).attr('type') != 'hidden') {
+            $(this).val('')
+          }
+        });
+      }
+
       function copyDataFromTask(taskId) {
+
+        // First we need to clear old data...
+        clearTaskData();
 
         var taskDataUrl = "${createLink(controller: 'task', action:'ajaxTaskData')}?taskId=" + taskId;
         $.ajax({url:taskDataUrl, success: function(data) {

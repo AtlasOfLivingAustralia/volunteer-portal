@@ -423,7 +423,7 @@ class TaskController {
                 if (templateField && field.value && templateField.type != FieldType.hidden) {
                     def category = templateField.category;
                     if (templateField.fieldType == DarwinCoreField.occurrenceRemarks) {
-                        category = FieldCategory.miscellaneous
+                        category = FieldCategory.labelText
                     } else if (templateField.fieldType == DarwinCoreField.verbatimLocality) {
                         category = FieldCategory.location
                     }
@@ -438,12 +438,23 @@ class TaskController {
                 }
             }
 
-            [taskInstance: task, fieldMap: fieldMap, fieldLabels: fieldLabels ]
+            // These categories should be in this order
+            def categoryNames  =[ FieldCategory.labelText, FieldCategory.collectionEvent, FieldCategory.location, FieldCategory.identification, FieldCategory.miscellaneous ]
+            // any remaining categories can go in any order...
+            for (TemplateField tf : templateFields) {
+                if (!categoryNames.contains(tf.category)) {
+                    categoryNames << tf.category
+                }
+            }
+
+            [taskInstance: task, fieldMap: fieldMap, fieldLabels: fieldLabels, sortedCategories: categoryNames ]
         }
     }
 
     def ajaxTaskData = {
         def task = Task.get(params.int("taskId"))
+
+        def username = authService.username();
 
         if (task) {
             def c = Field.createCriteria();
@@ -452,7 +463,7 @@ class TaskController {
                 and {
                     eq("task", task)
                     eq("superceded", false)
-                    eq("transcribedByUserId", authService.username())
+                    eq("transcribedByUserId", username)
                 }
             }
 
@@ -466,7 +477,7 @@ class TaskController {
                     it.fieldType.toString() == field.name
                 }
                 if (templateField && field.value && templateField.type != FieldType.hidden) {
-                    results["recordValues\\.${field.recordIdx}\\.${field.name}"] = field.value
+                    results["recordValues\\.${field.recordIdx?:0}\\.${field.name}"] = field.value
                 }
             }
 

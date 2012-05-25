@@ -48,6 +48,7 @@
           titleShow: false,
           onComplete: initialize,
           autoDimensions: false,
+          scrolling: 'no',
           onStart: function() {
             $.fancybox.showActivity();
             $.ajax({url:"${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}", success: function(data) {
@@ -57,7 +58,7 @@
 
           },
           width: 640,
-          height: 480
+          height: 400
       }
 
       $('button#show_task_selector').fancybox(opts);
