@@ -45,7 +45,14 @@ class NewsItemController {
     }
 
     def save = {
+        def projectId = params.int("project")
+        params.project = null
         def newsItemInstance = new NewsItem(params)
+        if (projectId) {
+            def project = Project.get(projectId)
+            newsItemInstance.project = project
+        }
+
         if (newsItemInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"
             redirect(action: "show", id: newsItemInstance.id)

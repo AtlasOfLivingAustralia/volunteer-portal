@@ -111,6 +111,14 @@ class BootStrap {
         }
         populateTemplateFields(template, "fieldNoteBookFields")
 
+        template = Template.findByName("SpecimenLabel")
+        if (!template) {
+            println "creating new Template: SpecimenLabel"
+            template = new Template(name: "SpecimenLabel", viewName: "specimenLabelTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
+        }
+        populateTemplateFields(template, "specimenLabelFields")
+
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', displayName: 'System User')

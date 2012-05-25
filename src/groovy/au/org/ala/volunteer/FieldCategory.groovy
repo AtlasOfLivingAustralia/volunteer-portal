@@ -24,6 +24,7 @@ enum FieldCategory {
     location("Location"), 
     identification("Identification"), 
     collectionEvent("Collection Event"),
+    miscellaneous("Miscellaneous"),
     none("")
     
     def label

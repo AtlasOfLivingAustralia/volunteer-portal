@@ -156,7 +156,7 @@ class ExportService {
                     fieldValues.add((String) sb.toString())
                 }
                 else if (fieldMap.containsKey(fieldName)) {
-                    fieldValues.add(fieldMap.get(cleanseValue(fieldName)?.getAt(0)))
+                    fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
                 }
                 else {
                     fieldValues.add("") // need to leave blank

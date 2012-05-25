@@ -27,10 +27,13 @@ class TranscribeTagLib {
      *  
      *  @attr templateField REQUIRED
      *  @attr recordValues REQUIRED
+     *  @attr recordIdx
      */
     def fieldFromTemplateField = { attrs, body ->
         def field = attrs.templateField
         def recordValues = attrs.recordValues
+        def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
+
         def name = field.fieldType.name()
         //println "TranscribeTagLib: recordValues = " + recordValues
         def label
@@ -62,7 +65,7 @@ class TranscribeTagLib {
                 switch (field.type) {
                     case FieldType.textarea:
                         w = g.textArea(
-                            name:'recordValues.0.' + name,
+                            name:"recordValues.${recordIdx}.${name}",
                             rows: ((name == 'occurrenceRemarks') ? 6 : 4),
                             //style: 'width: 100%',
                             value:recordValues?.get(0)?.get(name),
@@ -71,7 +74,7 @@ class TranscribeTagLib {
                         break
                     case FieldType.hidden:
                         w = g.hiddenField(
-                            name:'recordValues.0.' + name,
+                            name:"recordValues.${recordIdx}.${name}",
                             value:recordValues?.get(0)?.get(name),
                             'class':cssClass
                         )
@@ -81,7 +84,7 @@ class TranscribeTagLib {
                         if (pl) {
                             def options = PicklistItem.findAllByPicklist(pl)
                             w = g.select(
-                                name:'recordValues.0.' + name,
+                                name:"recordValues.${recordIdx}.${name}",
                                 from: options,
                                 optionValue:'value',
                                 optionKey:'value',
@@ -99,7 +102,7 @@ class TranscribeTagLib {
                         cssClass = cssClass + " autocomplete"
                     default:
                         w = g.textField(
-                            name:'recordValues.0.' + name,
+                            name:"recordValues.${recordIdx}.${name}",
                             maxLength:200,
                             value:recordValues?.get(0)?.get(name),
                             'class':cssClass

@@ -199,7 +199,7 @@
         <span class="alignleft size-full">
           <img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124" />
           <g:if test="${projectInstance.featuredImageCopyright}">
-            <div style="font-size: 0.8em; font-style: italic;vertical-align: top; text-align: center; line-height: 1.2em">${projectInstance.featuredImageCopyright}</div>
+            <div class="copyright-label">${projectInstance.featuredImageCopyright}</div>
           </g:if>
         </span>
           ${projectInstance.description}

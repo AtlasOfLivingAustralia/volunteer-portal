@@ -375,4 +375,102 @@ class TaskController {
             }
         }
     }
+
+    def taskBrowserFragment = {
+        if (params.projectId) {
+            Task task = null;
+            if (params.taskId) {
+                task = Task.get(params.int("taskId"))
+            }
+            def projectInstance = Project.get(params.int("projectId"))
+            def username = authService.username()
+
+            def taskList = Task.findAllByProjectAndFullyTranscribedBy(projectInstance, username,[sort:'id'])
+            if (task) {
+                taskList.remove(task)
+            }
+            [projectInstance: projectInstance, taskList: taskList.toList() ]
+        }
+    }
+
+    def taskDetailsFragment = {
+        def task = Task.get(params.int("taskId"))
+        if (task) {
+
+            def username = authService.username();
+
+            def c = Field.createCriteria();
+
+            def fields = c {
+                and {
+                    eq("task", task)
+                    eq("superceded", false)
+                    eq("transcribedByUserId", username)
+                }
+            }
+
+            def projectInstance = task.project;
+            def template = projectInstance.template;
+            def templateFields = TemplateField.findAllByTemplate(template, )
+
+            def fieldMap = [:]
+            def fieldLabels = [:]
+            for (Field field : fields) {
+
+                def templateField = templateFields.find {
+                    it.fieldType.toString() == field.name
+                }
+                if (templateField && field.value && templateField.type != FieldType.hidden) {
+                    def category = templateField.category;
+                    if (templateField.fieldType == DarwinCoreField.occurrenceRemarks) {
+                        category = FieldCategory.miscellaneous
+                    } else if (templateField.fieldType == DarwinCoreField.verbatimLocality) {
+                        category = FieldCategory.location
+                    }
+
+                    def fieldList = fieldMap[category]
+                    if (!fieldList) {
+                        fieldList = []
+                        fieldMap[category] = fieldList
+                    }
+                    fieldList << field;
+                    fieldLabels[field.name] = templateField.label ?: templateField.fieldType.label
+                }
+            }
+
+            [taskInstance: task, fieldMap: fieldMap, fieldLabels: fieldLabels ]
+        }
+    }
+
+    def ajaxTaskData = {
+        def task = Task.get(params.int("taskId"))
+
+        if (task) {
+            def c = Field.createCriteria();
+
+            def fields = c {
+                and {
+                    eq("task", task)
+                    eq("superceded", false)
+                    eq("transcribedByUserId", authService.username())
+                }
+            }
+
+            def projectInstance = task.project;
+            def template = projectInstance.template;
+            def templateFields = TemplateField.findAllByTemplate(template, )
+            def results = [:]
+            for (Field field : fields) {
+
+                def templateField = templateFields.find {
+                    it.fieldType.toString() == field.name
+                }
+                if (templateField && field.value && templateField.type != FieldType.hidden) {
+                    results["recordValues\\.${field.recordIdx}\\.${field.name}"] = field.value
+                }
+            }
+
+            render results as JSON
+        }
+    }
 }

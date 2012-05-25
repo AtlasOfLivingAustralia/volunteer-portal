@@ -750,3 +750,11 @@ span.help-container:hover {
     -ms-filter: flipv fliph; /*IE*/
     filter: flipv fliph; /*IE*/
 }
+
+.copyright-label {
+    font-size: 0.8em;
+    font-style: italic;
+    vertical-align: top;
+    text-align: center;
+    line-height: 1.2em
+}
