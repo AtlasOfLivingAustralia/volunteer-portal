@@ -385,11 +385,15 @@ class TaskController {
             def projectInstance = Project.get(params.int("projectId"))
             def username = authService.username()
 
-            def taskList = Task.findAllByProjectAndFullyTranscribedBy(projectInstance, username,[sort:'id'])
+            def taskList = taskService.transcribedDatesByUserAndProject(authService.username(), projectInstance.id)
+            taskList = taskList.sort { it.lastEdit }
+
+            // def taskList = Task.findAllByProjectAndFullyTranscribedBy(projectInstance, username,[sort:'id'])
+
             if (task) {
                 taskList.remove(task)
             }
-            [projectInstance: projectInstance, taskList: taskList.toList() ]
+            [projectInstance: projectInstance, taskList: taskList.toList(), taskInstance: task]
         }
     }
 
@@ -408,6 +412,8 @@ class TaskController {
                     eq("transcribedByUserId", username)
                 }
             }
+
+            def lastEdit = fields.max({ it.updated })?.updated
 
             def projectInstance = task.project;
             def template = projectInstance.template;
@@ -447,7 +453,9 @@ class TaskController {
                 }
             }
 
-            [taskInstance: task, fieldMap: fieldMap, fieldLabels: fieldLabels, sortedCategories: categoryNames ]
+            def catalogNumberField = fieldService.getFieldForTask(task, "catalogNumber")
+
+            [taskInstance: task, fieldMap: fieldMap, fieldLabels: fieldLabels, sortedCategories: categoryNames, dateTranscribed: lastEdit, catalogNumber: catalogNumberField?.value ]
         }
     }
 

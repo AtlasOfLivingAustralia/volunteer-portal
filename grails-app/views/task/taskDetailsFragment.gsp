@@ -29,7 +29,18 @@
         <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
         <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" width="200" style="padding-right: 10px" />
     </g:each>
-    <div>Task: ${taskInstance?.id}</div>
+    <table>
+    <g:if test="${catalogNumber}">
+      <tr>
+        <td>Catalog No.</td>
+        <td style="text-align: left"><b>${catalogNumber}</b></td>
+      </tr>
+    </g:if>
+      <tr>
+        <td>Transcribed</td>
+        <td style="text-align: left"><b>${formatDate(date: dateTranscribed, format: "dd MMM yyyy HH:mm:ss")}</b></td>
+      </tr>
+    </table>
   </div>
 
   <div class="task_summary" >

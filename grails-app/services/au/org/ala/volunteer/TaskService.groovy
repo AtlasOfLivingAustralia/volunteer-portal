@@ -554,6 +554,28 @@ class TaskService {
     }
 
 
+    List<Map> transcribedDatesByUserAndProject(String userid, long projectId) {
+        String select = """
+            SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
+            FROM Project p, Task t
+            LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = '${userid}' group by f.task_id) as field2 on field2.task_id = t.id
+            WHERE t.fully_transcribed_by = '${userid}' and p.id = t.project_id and p.id = ${projectId}
+            ORDER BY lastEdit ASC
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def taskRow = [id: row.id, lastEdit: row.lastEdit, isValid: row.isValid, project: row.project ]
+            results.add(taskRow)
+        }
+
+        return results;
+    }
+
+
+
     public Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
         String select ="""
             SELECT t.id as id

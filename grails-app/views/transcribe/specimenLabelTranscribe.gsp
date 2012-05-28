@@ -58,7 +58,7 @@
 
           },
           width: 640,
-          height: 400
+          height: 600
       }
 
       $('button#show_task_selector').fancybox(opts);
@@ -67,6 +67,19 @@
     });
 
   </script>
+  <style type="text/css">
+
+    button:disabled {
+      opacity : 0.4;
+      filter: alpha(opacity=40); // msie
+    }
+
+    button[disabled]:hover {
+      opacity : 0.4;
+      filter: alpha(opacity=40); // msie
+    }
+
+  </style>
 </head>
 
 <body class="sublevel sub-site volunteerportal">

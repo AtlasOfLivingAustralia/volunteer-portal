@@ -51,4 +51,17 @@ class FieldService {
         fieldValues.toList()
     }
 
+    Field getFieldForTask(Task task, String fieldName) {
+        def c = Field.createCriteria()
+
+        def fields = c {
+            and {
+                eq("task", task)
+                eq("superceded", false)
+                eq("name", fieldName)
+            }
+        }
+
+        fields?.get(0)
+    }
 }
