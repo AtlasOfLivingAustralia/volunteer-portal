@@ -44,7 +44,7 @@
   <script type="text/javascript">
     $(document).ready(function() {
 
-      var opts = {
+      var task_selector_opts = {
           titleShow: false,
           onComplete: initialize,
           autoDimensions: false,
@@ -61,10 +61,68 @@
           height: 600
       }
 
-      $('button#show_task_selector').fancybox(opts);
+      $('button#show_task_selector').fancybox(task_selector_opts);
+
+      var collection_event_selector_opts = {
+          titleShow: false,
+          onComplete: initialize,
+          autoDimensions: false,
+          scrolling: 'no',
+          onStart: function() {
+            $.fancybox.showActivity();
+
+            var queryParams = ""
+            for (i = 0; i < 4; i++) {
+              queryParams += "&collector" + i + "=" + encodeURIComponent($('#recordValues\\.' + i + '\\.recordedBy').val())
+            }
+            queryParams += '&eventDate=' + encodeURIComponent($('#recordValues\\.0\\.eventDate').val())
+
+            $.ajax({url:"${createLink(controller: 'collectionEvent', action:'searchFragment', params: [taskId: taskInstance.id])}" + queryParams, success: function(data) {
+              $("#collection_event_selector_content").html(data);
+              $.fancybox.hideActivity();
+            }})
+
+          },
+          width: 800,
+          height: 600
+      }
+
+      $("input[name$='recordedBy']").change(function (e) {
+        checkFindCollectionEventAvailability();
+      });
+
+      $("input[name$='eventDate']").change(function (e) {
+        checkFindCollectionEventAvailability();
+      });
+
+      $('button#show_collection_event_selector').fancybox(collection_event_selector_opts);
+
 
 
     });
+
+    function checkFindCollectionEventAvailability() {
+      var hasCollector = false;
+      $("input[name$='recordedBy']").each(function (e) {
+        if (this.value != null && this.value != '') {
+          hasCollector = true;
+        }
+      });
+
+      var hasDate = false;
+      $("input[name$='eventDate']").each(function (e) {
+        if (this.value != null && this.value != '') {
+          hasDate = true;
+        }
+      });
+
+      if (hasCollector && hasDate) {
+        $('#show_collection_event_selector').removeAttr('disabled');
+      } else {
+        $('#show_collection_event_selector').attr('disabled', 'true');
+      }
+
+    }
 
   </script>
   <style type="text/css">
@@ -168,12 +226,12 @@
                         <button id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
                         <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
                     </span>
-                    <div style="display: none;">
-                      <div id="task_selector" >
-                        <div id="task_selector_content">
-                        </div>
+                  <div style="display: none;">
+                    <div id="task_selector" >
+                      <div id="task_selector_content">
                       </div>
                     </div>
+                  </div>
 
                     <table>
                         <thead>
@@ -217,6 +275,22 @@
                         </tr>
 
                         <g:fieldFromTemplateField templateField="${TemplateField.findByFieldType(DarwinCoreField.eventDate)}" recordValues="${recordValues}" />
+                        <tr class="prop" style="width: 950px">
+                          <td class="name">
+
+                          </td>
+                          <td class="value" style="width:700px">
+                            <button id="show_collection_event_selector" href="#collection_event_selector" disabled="true">Find collection event</button>
+                            <div style="display: none;">
+                              <div id="collection_event_selector" >
+                                <div id="collection_event_selector_content">
+                                </div>
+                              </div>
+                            </div>
+
+                            <a href="#" class="fieldHelp" title="Find an existing collection event based on the collector names and the event date you have entered."><span class="help-container">&nbsp;</span></a>
+                          </td>
+                        </tr>
 
                         %{--<g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.collectionEvent, template, [sort:'displayOrder'])}" var="field">--}%
                             %{--<g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>--}%
