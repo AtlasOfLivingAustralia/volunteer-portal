@@ -82,6 +82,22 @@ class ExportService {
         zipStream.close();
     }
 
+    def exportTaskComments(List<Task> taskList, CSVWriter writer) {
+        def columnNames = ['taskID', 'externalIdentifier','userId', 'userDisplayName', 'date', 'comment']
+
+        writer.writeNext(columnNames.toArray(new String[0]))
+        taskList.each { Task task ->
+            def c = TaskComment.createCriteria();
+            def comments = c {
+                eq("task", task)
+                order('date', 'asc')
+            }
+            for (TaskComment comment : comments) {
+                List<String> outputValues = [task.id.toString(), task.externalIdentifier, comment.user.userId, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss")]
+            }
+        }
+    }
+
     def export_FieldNoteBookDoublePage = export_FieldNoteBook
 
     def export_Journal = export_FieldNoteBook

@@ -509,7 +509,7 @@ $(document).ready(function() {
     var isReadonly = VP_CONF.isReadonly;
     if (isReadonly) {
         // readonly more
-        $(":input").not('.skip').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
     } else {
         // editting mode
         //window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);

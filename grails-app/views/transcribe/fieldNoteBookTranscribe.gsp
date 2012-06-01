@@ -122,7 +122,9 @@
             var timeoutInMin = 30;
             var message = "Please save your work by clicking the 'save unfinished record' button as it has been " +
                     timeoutInMin + " minutes since the last page refresh.";
-            window.setTimeout(function() { alert(message); }, timeoutInMin * 60 * 1000);
+            window.setTimeout(function() {
+              alert(message);
+            }, timeoutInMin * 60 * 1000);
         }
         // prevent enter key submitting form
         $(window).keydown(function(event) {
@@ -345,15 +347,21 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>
-                              <h3>1. Transcribe all text from the left hand page into this box as it appears</h3>
-                            </th>
                             <g:if test="${taskInstance.project.template?.viewParams.doublePage}">
+                              <th>
+                                <h3>1. Transcribe all text from the left hand page into this box as it appears</h3>
+                              </th>
+
                               <th>
                                   <h3>Transcribe all text from the right hand page into this box as it appears</h3>
                               </th>
                             </g:if>
+                            <g:else>
+                              <th>
+                                <h3>1. Transcribe all text from the page above into this box as it appears</h3>
+                              </th>
 
+                            </g:else>
                         </tr>
                     </thead>
                     <tbody>
@@ -407,6 +415,10 @@
                         </g:if>
                     </tbody>
                 </table>
+            </div>
+
+            <div class="fields" id="journal2Fields">
+                <cl:taskComments task="${taskInstance}" />
             </div>
 
             <div class="buttons" style="clear: both">

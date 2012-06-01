@@ -758,3 +758,39 @@ span.help-container:hover {
     text-align: center;
     line-height: 1.2em
 }
+
+.comments-content {
+    width: 600px;
+}
+
+.task-comment-container {
+    background: white;
+    border-radius: 5px;
+    border: 1px solid white;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.task-comment-container hr {
+    padding-bottom: 0px;
+    margin-bottom: 5px;
+    height: 1px;
+    border: none;
+}
+
+.task-comment-username {
+    float: left;
+    font-weight: bold;
+}
+
+.task-comment-date {
+    float: right;
+    font-weight: bold;
+}
+
+.task-comment-header {
+}
+
+.task-comment-delete {
+}
+

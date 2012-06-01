@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import grails.util.Environment
+import groovy.xml.MarkupBuilder
 
 class VolunteerTagLib {
     //def authenticateService
@@ -1457,4 +1458,98 @@ class VolunteerTagLib {
             out << '<div class="systemMessage">' + flash.systemMessage + '</div>'
         }
     }
+
+    /**
+     * @param task The task instance
+     */
+    def taskComments = { attrs, body ->
+        Task task = attrs.task;
+
+        def mb = new MarkupBuilder(out)
+
+        mb.table(style: 'width: 100%', class: "comment-control") {
+            thead {
+                tr {
+                    th {
+                        h3('Comments', style: "padding-bottom: 0px;min-height: 0px")
+                    }
+                }
+            }
+            tbody {
+                tr {
+                    td {
+                        div(class:"comments-content", id:"comments-content") {
+
+                        }
+                    }
+                }
+                if (authService.username()) {
+                    tr(class: 'prop', style: 'width: 100%; min-height: 0px') {
+                        td(style: 'padding-bottom: 0px; padding-top: 0px;') {
+                            span('Add a new comment by typing in the box below, and clicking "Save comment"') {}
+                        }
+                    }
+                    tr(class:'prop',style: 'width: 100%') {
+                        td(style: 'padding-top: 0px; padding-bottom: 0px;') {
+                            textarea("", name:'comment_textarea', id:'comment_textarea', cols: '80', rows: '3', style:'width: 600px')
+                        }
+                    }
+                    tr(class:'prop', style: 'width: 100%') {
+                        td(class: 'name',style: "text-align: left; vertical-align: bottom; padding-top: 0px") {
+                            button(id: 'addCommentButton', 'Save comment')
+                        }
+                    }
+                }
+            }
+        }
+
+        def script = """
+
+            loadComments();
+
+            \$('#addCommentButton').click(function(e) {
+                e.preventDefault();
+                saveComment();
+            });
+
+            function saveComment() {
+                var comment  = \$('#comment_textarea').val();
+                \$.ajax({url:"${createLink(action: 'saveComment', controller: 'taskComment', params: [taskId: task.id])}&comment=" + encodeURIComponent(comment), success: function(data) {
+                    loadComments();
+                    \$('#comment_textarea').val("");
+                }});
+            }
+
+            function loadComments() {
+                var urlbase = "${createLink(action: 'getCommentsAjax', controller: 'taskComment', params: [taskId: task.id])}"
+                \$.ajax({url:urlbase, success: function(data) {
+                    \$("#comments-content").html(data);
+                }});
+            }
+
+            function deleteTaskComment(e, taskCommentId) {
+                e.preventDefault();
+
+                \$.ajax({url:"${createLink(action: 'deleteComment', controller: 'taskComment')}?commentId=" + taskCommentId, success: function(data) {
+                    loadComments();
+                }});
+            }
+
+
+
+
+
+
+        """
+
+
+
+        mb.script() {
+            mkp.yieldUnescaped(script)
+        }
+
+
+    }
+
+
 }

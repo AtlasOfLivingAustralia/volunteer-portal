@@ -417,8 +417,14 @@
                             </g:if>
                         </tbody>
                     </table>
+
+                    <cl:taskComments task="${taskInstance}"/>
+
                 </div>
             </div>
+
+
+
             <div class="vp-buttons" style="clear: both">
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                 <g:if test="${validator}">
