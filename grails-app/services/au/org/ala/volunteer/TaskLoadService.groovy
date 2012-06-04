@@ -201,91 +201,84 @@ class TaskLoadService {
             runAsync {
                 TaskDescriptor taskDesc
                 while ((taskDesc = _loadQueue.poll()) && !_cancel) {
-                        _currentItemMessage = "${taskDesc.externalIdentifier}"
+                    _currentItemMessage = "${taskDesc.externalIdentifier}"
 
-                        def existing = Task.findAllByExternalIdentifierAndProject(taskDesc.externalIdentifier, taskDesc.project);
+                    def existing = Task.findAllByExternalIdentifierAndProject(taskDesc.externalIdentifier, taskDesc.project);
 
-                        if (existing && existing.size() > 0) {
-                            if (replaceDuplicates) {
-                                for (Task t : existing) {
-                                    t.delete();
-                                }
-                            } else {
-                                synchronized (_report) {
-                                    _report.add(new TaskLoadStatus(succeeded:false, taskDescriptor: taskDesc, message: "Skipped because task id already exists", time: Calendar.instance.time))
-                                }
-                                continue
+                    if (existing && existing.size() > 0) {
+                        if (replaceDuplicates) {
+                            for (Task t : existing) {
+                                t.delete();
                             }
+                        } else {
+                            synchronized (_report) {
+                                _report.add(new TaskLoadStatus(succeeded:false, taskDescriptor: taskDesc, message: "Skipped because task id already exists", time: Calendar.instance.time))
+                            }
+                            continue
                         }
+                    }
 
-                        Task.withTransaction { status ->
-                            try {
-                                Task t = new Task()
-                                t.project = taskDesc.project
-                                t.externalIdentifier = taskDesc.externalIdentifier
-                                t.save(flush: true)
-                                for (Map fd : taskDesc.fields) {
-                                    fd.task = t;
-                                    new Field(fd).save(flush: true)
-                                }
+                    Task.withTransaction { status ->
 
-                                def multimedia = new Multimedia()
-                                multimedia.task = t
-                                multimedia.filePath = taskDesc.imageUrl
-                                multimedia.save()
-                                // GET the image via its URL and save various forms to local disk
-                                def filePath = taskService.copyImageToStore(taskDesc.imageUrl, t.id, multimedia.id)
-                                filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
-                                multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
-                                multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
-                                multimedia.mimeType = filePath.contentType
-                                multimedia.save()
+                        try {
+                            Task t = new Task()
+                            t.project = taskDesc.project
+                            t.externalIdentifier = taskDesc.externalIdentifier
+                            t.save(flush: true)
+                            for (Map fd : taskDesc.fields) {
+                                fd.task = t;
+                                new Field(fd).save(flush: true)
+                            }
+
+                            def multimedia = new Multimedia()
+                            multimedia.task = t
+                            multimedia.filePath = taskDesc.imageUrl
+                            multimedia.save()
+                            // GET the image via its URL and save various forms to local disk
+                            def filePath = taskService.copyImageToStore(taskDesc.imageUrl, t.id, multimedia.id)
+                            filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
+                            multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+                            multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
+                            multimedia.mimeType = filePath.contentType
+                            multimedia.save()
 
 
-                                if (taskDesc.media) {
-                                    for (MediaLoadDescriptor md : taskDesc.media) {
-                                        multimedia = new Multimedia()
-                                        multimedia.task = t
-                                        multimedia.mimeType = md.mimeType
-                                        multimedia.save() // need to get an id...
-                                        // GET the image via its URL and save various forms to local disk
-                                        filePath = taskService.copyImageToStore(md.mediaUrl, t.id, multimedia.id)
-                                        multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
-                                        multimedia.mimeType = filePath.contentType
-                                        multimedia.save()
-                                        if (md.afterDownload) {
-                                            try {
-                                                md.afterDownload(t, multimedia, filePath)
-                                            } catch (Exception ex) {
-                                                println "Error calling after media download hook: " + ex.message;
-                                            }
+                            if (taskDesc.media) {
+                                for (MediaLoadDescriptor md : taskDesc.media) {
+                                    multimedia = new Multimedia()
+                                    multimedia.task = t
+                                    multimedia.mimeType = md.mimeType
+                                    multimedia.save() // need to get an id...
+                                    // GET the image via its URL and save various forms to local disk
+                                    filePath = taskService.copyImageToStore(md.mediaUrl, t.id, multimedia.id)
+                                    multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+                                    multimedia.mimeType = filePath.contentType
+                                    multimedia.save()
+                                    if (md.afterDownload) {
+                                        try {
+                                            md.afterDownload(t, multimedia, filePath)
+                                        } catch (Exception ex) {
+                                            println "Error calling after media download hook: " + ex.message;
                                         }
                                     }
                                 }
-
-                                // Attempt to predict when the import will complete
-                                def now = Calendar.instance.time;
-                                def remainingMillis = _loadQueue.size() * ((now.time - _currentBatchStart.time) / (_currentBatchSize - _loadQueue.size()))
-                                def expectedEndTime = new Date((long) (now.time + remainingMillis))
-                                _timeRemaining = formatDuration(TimeCategory.minus(expectedEndTime, now))
-                                synchronized (_report) {
-                                    _report.add(new TaskLoadStatus(succeeded:true, taskDescriptor: taskDesc, message: "", time: Calendar.instance.time))
-                                }
-
-                            } catch (Exception ex) {
-                                synchronized (_report) {
-                                    _report.add(new TaskLoadStatus(succeeded:false, taskDescriptor: taskDesc, message: ex.toString(), time: Calendar.instance.time))
-                                }
-                                // Something bad happened. If it is failing consistently we don't want this thread
-                                // killing everything, so we'll sleep and try again
-                                println(ex)
-                                ex.printStackTrace();
-                                status.setRollbackOnly()
-                                Thread.sleep(1000);
                             }
 
-                        }
+                            // Attempt to predict when the import will complete
+                            def now = Calendar.instance.time;
+                            def remainingMillis = _loadQueue.size() * ((now.time - _currentBatchStart.time) / (_currentBatchSize - _loadQueue.size()))
+                            def expectedEndTime = new Date((long) (now.time + remainingMillis))
+                            _timeRemaining = formatDuration(TimeCategory.minus(expectedEndTime, now))
+                            synchronized (_report) {
+                                _report.add(new TaskLoadStatus(succeeded:true, taskDescriptor: taskDesc, message: "", time: Calendar.instance.time))
+                            }
 
+                        } catch (Exception ex) {
+                            synchronized (_report) {
+                                _report.add(new TaskLoadStatus(succeeded:false, taskDescriptor: taskDesc, message: ex.toString(), time: Calendar.instance.time))
+                            }
+                        }
+                    }
                 }
 
                 if (_cancel) {

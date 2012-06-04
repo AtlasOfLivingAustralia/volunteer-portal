@@ -79,6 +79,66 @@ class ExportService {
         writer.flush();
         zipStream.closeEntry();
 
+        zipStream.putNextEntry(new ZipEntry("taskComments.csv"))
+        exportTaskComments(taskList, writer);
+        writer.flush();
+        zipStream.closeEntry()
+
+        zipStream.close();
+    }
+
+    def export_SpecimenLabel = { Project project, taskList, valueMap, List fieldNames, response ->
+        // Work out which fields are a repeating group...
+        def templateFields = TemplateField.findAllByTemplate(project.template)
+
+        def dataSetFields = templateFields.findAll {
+            it.category == FieldCategory.dataset
+        }
+        def dataSetFieldNames = dataSetFields.collect { it.fieldType.toString() }
+        // These fields are in a repeating group, and will be exported in a separated (normalized) file, so remove
+        // them from the list of columns to go in the main file...
+        fieldNames.removeAll { dataSetFieldNames.contains(it) }
+
+        fieldNames.remove("recordedBy")  // this gets handled specially for journal tasks...
+
+        def filename = "Project-" + project.featuredLabel.replaceAll(" ","") + "-DwC"
+        response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
+        response.setContentType("application/zip, application/octet-stream");
+
+        def zipStream = new ZipOutputStream(response.getOutputStream())
+        OutputStream bos = new BufferedOutputStream(zipStream);
+        OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+
+        CSVWriter writer = new CSVWriter(outputwriter);
+
+        zipStream.putNextEntry(new ZipEntry("tasks.csv"));
+        // write header line (field names)
+        writer.writeNext(fieldNames.toArray(new String[0]))
+
+        taskList.each { task ->
+            String[] values = getFieldsForTask(task, fieldNames, valueMap)
+            writer.writeNext(values)
+        }
+        writer.flush();
+        zipStream.closeEntry();
+
+        // Dataset files...
+        zipStream.putNextEntry(new ZipEntry(dataSetFieldNames.join("_") +".csv"))
+        exportDataSet(taskList, valueMap, writer,dataSetFieldNames)
+        writer.flush();
+        zipStream.closeEntry();
+
+        // Occurrence remarks (transcription)
+        zipStream.putNextEntry(new ZipEntry("recordedBy.csv"))
+        exportDataSet(taskList, valueMap, writer, ['recordedBy'])
+        writer.flush();
+        zipStream.closeEntry();
+
+        zipStream.putNextEntry(new ZipEntry("taskComments.csv"))
+        exportTaskComments(taskList, writer);
+        writer.flush();
+        zipStream.closeEntry()
+
         zipStream.close();
     }
 
@@ -93,7 +153,7 @@ class ExportService {
                 order('date', 'asc')
             }
             for (TaskComment comment : comments) {
-                List<String> outputValues = [task.id.toString(), task.externalIdentifier, comment.user.userId, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss")]
+                List<String> outputValues = [task.id.toString(), task.externalIdentifier, comment.user.userId, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
             }
         }
     }

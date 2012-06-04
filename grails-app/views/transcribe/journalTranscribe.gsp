@@ -158,7 +158,7 @@
         var isReadonly = VP_CONF.isReadonly;
         if (isReadonly) {
             // readonly more
-            $(":input").not('.skip').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+            $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
         }
 
     });
@@ -298,6 +298,11 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="fields">
+                <cl:taskComments task="${taskInstance}" />
+            </div>
+
             <div class="buttons" style="clear: both">
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                 <g:if test="${validator}">

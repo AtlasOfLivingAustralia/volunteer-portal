@@ -29,10 +29,8 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
 <script src="http://cdn.jquerytools.org/1.2.6/all/jquery.tools.min.js"></script>
-%{--<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/standalone.css"/>--}%
 <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
-%{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>--}%
-<script type="text/javascript" src="${resource(dir: 'js', file: 'ScottSisiters.js')}"></script>
+
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {
@@ -55,7 +53,6 @@
         ],
     </g:each>
     ];
-
 
     function renderEntries() {
       try {
@@ -120,10 +117,8 @@
         // prompt user to save if page has been open for too long
         if (!VP_CONF.isReadonly && !VP_CONF.validator) {
             var timeoutInMin = 30;
-            var message = "Please save your work by clicking the 'save unfinished record' button as it has been " +
-                    timeoutInMin + " minutes since the last page refresh.";
             window.setTimeout(function() {
-              alert(message);
+              $('#promptUserLink').click()
             }, timeoutInMin * 60 * 1000);
         }
         // prevent enter key submitting form
@@ -170,19 +165,6 @@
             onSlide: zoomJournalImage
         }).change(zoomJournalImage);
 
-        // Display painting for a given painting number
-        $("#showPainting").click(function(e) {
-            e.preventDefault();
-            var paintingRef = $(":input#paintingRefNo").val();
-            var uri = getSketchUri(paintingRef); 
-
-            if (uri) {
-                window.open(uri, "paintingWindow");
-            } else {
-                alert("There is no painting corresponding to reference number " + paintingRef + ". Not all field notes have a corresponding painting.");
-            }
-        });
-
         // display previous journal page in new window
         $("#showPreviousJournalPage").click(function(e) {
             e.preventDefault();
@@ -208,18 +190,48 @@
             grabbing:"${resource(dir: 'images', file: 'closedhand.cur')}"
         });
 
-      $("#rotateImage").click(function(e) {
-        e.preventDefault();
-        $("#image_0").toggleClass("rotate-image");
-      });
+        $("#rotateImage").click(function(e) {
+          e.preventDefault();
+          $("#image_0").toggleClass("rotate-image");
+        });
 
         var isReadonly = VP_CONF.isReadonly;
         if (isReadonly) {
             // readonly more
-            $(":input").not('.skip').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+            $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
         }
 
+        // timeout on page to prompt user to save or reload
+        $("#promptUserLink").fancybox({
+            modal: true,
+            centerOnScroll: true,
+            hideOnOverlayClick: false,
+            //title: "Alert - lock has expired",
+            //titlePosition: "over",
+            padding: 20,
+            onComplete: function() {
+                var i = 5; // minutes to countdown before reloading page
+                var countdownInterval = 1 * 60 * 1000;
+                function countDownByOne() {
+                    i--;
+                    $("#reloadCounter").html(i);
+                    if (i > 0) {
+                        window.setTimeout(countDownByOne, countdownInterval);
+                    } else {
+                        clickSaveButton();
+                    }
+                }
+                window.setTimeout(countDownByOne, countdownInterval);
+            }
+        });
+
+
     });
+
+    function clickSaveButton() {
+      $(":input[name='_action_save']").click();
+    }
+
 
     function zoomJournalImage(event, value) {
         //console.info("value changed to", value);
@@ -417,7 +429,7 @@
                 </table>
             </div>
 
-            <div class="fields" id="journal2Fields">
+            <div class="fields">
                 <cl:taskComments task="${taskInstance}" />
             </div>
 
@@ -448,11 +460,12 @@
             <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>
             <div style="display: none">
                 <div id="promptUser">
-                    <h2>Lock has Expired</h2>
+                    <h2>Lock will expire soon!</h2>
                     The lock on this record is about to expire.<br/>
                     Please either save your changes:<br/>
-                    <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
+                    <span class="button">
+                      <input type="button" value="Save unfinished record" onclick="clickSaveButton()"/>
+                    </span>
                     <br>
                     Or reload the page (Note: any changes you may have made will be lost)
                     <br/>
