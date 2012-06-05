@@ -29,6 +29,7 @@ class FrontPageController {
         frontPage.systemMessage = params["systemMessage"]
 
         frontPage.showAchievements = params['showAchievements'] == 'on'
+        frontPage.enableTaskComments = params['enableTaskComments'] == 'on'
 
         frontPage.save();
 

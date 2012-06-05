@@ -1,5 +1,5 @@
 <html>
-<%@ page import="au.org.ala.volunteer.Task" %>
+<%@ page import="javax.swing.text.html.HTML; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
@@ -48,7 +48,8 @@
         <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" var="field">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            {name:'${fieldName}', label:'${fieldLabel}', value: '${recordValues?.get(i)?.get(field.fieldType.name())}'},
+            <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}" />
+            {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"},
         </g:each>
         ],
     </g:each>
@@ -86,7 +87,7 @@
       }
     }
 
-    function addEntry() {
+    function addEntry(e) {
       try {
 
         // first we need to save any edits to the entry list
@@ -103,6 +104,7 @@
       } catch (e) {
         alert(e)
       }
+
     }
 
     function deleteEntry(index) {
@@ -111,6 +113,7 @@
         entries.splice(index, 1);
         renderEntries();
       }
+      return false;
     }
 
     $(document).ready(function() {
@@ -127,6 +130,11 @@
                 event.preventDefault();
                 return false;
             }
+        });
+
+        $("#addRowButton").click(function(e) {
+          e.preventDefault();
+          addEntry();
         });
 
         renderEntries();
@@ -397,7 +405,7 @@
                         <tr>
                             <th colspan="2">
                                 <h3>3. Where a species or common name appears in the text please enter any relevant information into the fields below</h3>
-                                <button onclick="addEntry(); return false;">Add row</button>
+                                <button id="addRowButton">Add row</button>
                             </th>
                         </tr>
                     </thead>

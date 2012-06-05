@@ -128,6 +128,15 @@
               </td>
             </tr>
 
+            <tr class="prop">
+              <td valign="top" class="name">
+                  <label for="enableTaskComments"><g:message code="frontPage.enableTaskComments.label" default="Enable task commenting" /></label>
+              </td>
+              <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'errors')}">
+                  <g:checkBox name="enableTaskComments" value="${frontPage.enableTaskComments}"  />
+              </td>
+            </tr>
+
             </tbody>
           </table>
         </div>

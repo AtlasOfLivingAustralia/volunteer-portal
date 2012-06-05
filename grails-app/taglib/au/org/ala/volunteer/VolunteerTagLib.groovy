@@ -1463,6 +1463,11 @@ class VolunteerTagLib {
      * @param task The task instance
      */
     def taskComments = { attrs, body ->
+
+        if (!FrontPage.instance().enableTaskComments) {
+            return ;
+        }
+
         Task task = attrs.task;
 
         def mb = new MarkupBuilder(out)
