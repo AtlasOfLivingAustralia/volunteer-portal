@@ -16,7 +16,7 @@
 <!--  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>-->
 <script type="text/javascript" src="${resource(dir: 'js', file: 'mapbox.min.js')}"></script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>
@@ -27,7 +27,8 @@
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'gmaps.js')}"></script>
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {

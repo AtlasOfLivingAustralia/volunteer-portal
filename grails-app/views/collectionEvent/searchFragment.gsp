@@ -56,37 +56,49 @@
 
 <script type="text/javascript">
 
-  function doSearch() {
+    function doSearch() {
 
-    $('#search_results').html("<div>Searching...</div>")
+        $('#search_results').html("<div>Searching...</div>")
 
-    var queryParams = ""
-    for (i = 0; i < 4; i++) {
-      queryParams += "&collector" + i + "=" + encodeURIComponent($('#search_collector_' + i).val())
+        var queryParams = ""
+        for (i = 0; i < 4; i++) {
+            queryParams += "&collector" + i + "=" + encodeURIComponent($('#search_collector_' + i).val())
+        }
+        queryParams += '&eventDate=' + encodeURIComponent($('#search_event_date').val());
+
+        var taskUrl = "${createLink(controller: 'collectionEvent', action:'searchResultsFragment', params: [taskId:taskInstance.id])}" + queryParams;
+
+        console.log(taskUrl)
+
+        $.ajax({url:taskUrl, success: function(data) {
+            $("#search_results").html(data);
+        }})
+
     }
-    queryParams += '&eventDate=' + encodeURIComponent($('#search_event_date').val());
 
-    var taskUrl = "${createLink(controller: 'collectionEvent', action:'searchResultsFragment', params: [taskId:taskInstance.id])}" + queryParams;
+    var event_map;
 
-    console.log(taskUrl)
+    $(document).ready(function(e) {
+      event_map = new GMaps({
+        div: '#event_map',
+        lat: -34.397,
+        lng: 150.644,
+        zoom: 10
+      });
+    });
 
-    $.ajax({url:taskUrl, success: function(data) {
-      $("#search_results").html(data);
-    }})
-
-  }
-
-  var latLng = new google.maps.LatLng(-34.397, 150.644);
-
-  var eventMapOptions = {
-          zoom: 10,
-          center: latLng,
-          scrollwheel: false,
-          scaleControl: true,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
-
-      var eventmap = new google.maps.Map(document.getElementById("event_map"), eventMapOptions);
+//
+//    var latLng = new google.maps.LatLng(-34.397, 150.644);
+//
+//    var eventMapOptions = {
+//        zoom: 10,
+//        center: latLng,
+//        scrollwheel: false,
+//        scaleControl: true,
+//        mapTypeId: google.maps.MapTypeId.ROADMAP
+//    };
+//
+//    var eventmap = new google.maps.Map(document.getElementById("event_map"), eventMapOptions);
 
 </script>
 
@@ -152,6 +164,12 @@
 
     $("#event_search_button").click(function(e) {
        doSearch();
+    });
+
+    $(":input").keydown(function (e) {
+       if (e.keyCode == 13) {
+         doSearch();
+       }
     });
 
     doSearch();

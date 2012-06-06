@@ -24,30 +24,58 @@ class CollectionEventController {
 
         int maxRows = params.maxResults ? params.int("maxResults") : 100;
 
+        def eventDate = params.eventDate
+        def events = []
+        def finished = false;
+
         def collectors = []
         (0..3).each {
             collectors << params["collector" + it] ?: ""
         }
 
-        def eventDate = params.eventDate
-        def events = []
-        def finished = false;
-        def queryDate = eventDate.toString();
-
         int loopcount = 0;
+
+        def queryDate = eventDate.toString();
         while (!events && !finished && loopcount < 10) {
 
-            events = collectionEventService.findCollectionEvents(taskInstance.project.featuredOwner, collectors, queryDate, maxRows)
+            List<List<String>> collectorNames = []
+            (0..3).each {
+                Arrays.asList(String.class)
+                collectorNames << new ArrayList<String>(Arrays.asList((params["collector" + it] ?: "").split("\\s")))
+            }
 
+            while (collectorNames.find { it.size() > 0 }) {
+                def queryCollectors = collectorNames.collect { it.join(" ")?.trim() }
+
+                println "Trying '${queryDate}' and ${queryCollectors}"
+
+                events = collectionEventService.findCollectionEvents(taskInstance.project.featuredOwner, queryCollectors, queryDate, maxRows)
+                if (events && events.size() > 0) {
+                    finished = true;
+                    break;
+                }
+
+                collectorNames.each { if (it.size() > 0) {
+                    it.remove(0);
+                }}
+
+            }
             if (queryDate.indexOf("-") > 0) {
                 queryDate = queryDate.substring(0, queryDate.lastIndexOf("-"))
             } else {
                 finished = true;
+                break;
             }
+
             loopcount++;
         }
 
+
         [collectors:collectors, eventDate: eventDate, collectionEvents: events, searchWidened: loopcount > 1, taskInstance: taskInstance]
+    }
+
+    boolean collectorNameHasSpace(List<String> names) {
+
     }
 
     def load = {
