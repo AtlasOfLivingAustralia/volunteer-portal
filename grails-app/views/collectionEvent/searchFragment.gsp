@@ -31,7 +31,7 @@
     margin-bottom: 0px;
   }
 
-  #collection_search_content td {
+  .collection_search_content td {
     text-align: left;
     padding: 5px
   }
@@ -39,10 +39,6 @@
   #search_header td {
     padding-bottom: 0px;
     margin: 2px;
-  }
-
-  .even {
-    background: #F0F0E8
   }
 
   #event_map {
@@ -102,7 +98,7 @@
 
 </script>
 
-<div id="collection_search_content">
+<div id="collection_search_content" class="collection_search_content">
   <g:if test="${taskInstance}">
     <div id="current_task_header">
       <h3>Image from current task</h3>
@@ -127,7 +123,7 @@
         <td>Collector(s)</td>
         <td>
           <g:each in="${collectors}" var="collector" status="i">
-            <input id="search_collector_${i}" type="text" value="${collector}"></span>&nbsp;
+            <input style="width:130px" id="search_collector_${i}" type="text" value="${collector}"></span>&nbsp;
           </g:each>
         </td>
         <td rowspan="2" style="vertical-align: middle">
@@ -141,7 +137,7 @@
         Event date
       </td>
       <td>
-        <input type="text" id="search_event_date" value="${eventDate}" />
+        <input style="width:130px" type="text" id="search_event_date" value="${eventDate}" />
       </td>
     </tr>
   </table>
@@ -166,7 +162,7 @@
        doSearch();
     });
 
-    $(":input").keydown(function (e) {
+    $(".collection_search_content :input").keydown(function (e) {
        if (e.keyCode == 13) {
          doSearch();
        }

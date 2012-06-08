@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import org.hibernate.FlushMode
 import java.util.regex.Pattern
 import org.springframework.web.multipart.MultipartFile
+import grails.converters.JSON
 
 class CollectionEventController {
 
@@ -46,9 +47,6 @@ class CollectionEventController {
 
             while (collectorNames.find { it.size() > 0 }) {
                 def queryCollectors = collectorNames.collect { it.join(" ")?.trim() }
-
-                println "Trying '${queryDate}' and ${queryCollectors}"
-
                 events = collectionEventService.findCollectionEvents(taskInstance.project.featuredOwner, queryCollectors, queryDate, maxRows)
                 if (events && events.size() > 0) {
                     finished = true;
@@ -97,6 +95,13 @@ class CollectionEventController {
         flash.message = results.message
 
         render(view: 'load')
+    }
+
+    def getCollectionEventJSON = {
+        def event = CollectionEvent.get(params.long("collectionEventId"))
+        if (event) {
+            render(event as JSON)
+        }
     }
 
 

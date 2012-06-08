@@ -32,3 +32,5 @@ minimumDepthInMeters,Depth (from),,miscellaneous,text,0,0,"Minimum depth in wate
 maximumDepthInMeters,Depth (to),,miscellaneous,text,0,0,"Maximum depth in water",,default
 habitat,Habitat,,miscellaneous,text,0,0,"",,default
 fieldNotes,Boat details,,miscellaneous,text,0,0,"Vessel name, vessel type, cruise number etc.",,default
+locationID,,,none,hidden,1,0,,,default
+eventID,,,none,hidden,1,0,,,default

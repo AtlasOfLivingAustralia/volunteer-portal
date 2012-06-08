@@ -88,17 +88,39 @@
           height: 600
       }
 
-      $("input[name$='recordedBy']").change(function (e) {
-        checkFindCollectionEventAvailability();
+//      $("input[name$='recordedBy']").change(function (e) {
+//        checkFindCollectionEventAvailability();
+//      });
+//
+//      $("input[name$='eventDate']").change(function (e) {
+//        checkFindCollectionEventAvailability();
+//      });
+
+      $('#collection_event_selector_link').fancybox(collection_event_selector_opts);
+
+      $('#show_collection_event_selector').click(function(e) {
+          e.preventDefault();
+          if (checkFindCollectionEventAvailability()) {
+              $('#collection_event_selector_link').click();
+          } else {
+              alert("You must first enter both a date and at least one collector!")
+          }
       });
 
-      $("input[name$='eventDate']").change(function (e) {
-        checkFindCollectionEventAvailability();
+      $(".insert-symbol-button").each(function(index) {
+        $(this).html($(this).attr("symbol"));
       });
 
-      $('button#show_collection_event_selector').fancybox(collection_event_selector_opts);
+      $(".insert-symbol-button").click(function(e) {
+          e.preventDefault();
+          var input = $("#recordValues\\.0\\.occurrenceRemarks");
+          var text = $(input).val();
+          var char = $(this).attr('symbol');
+          $(input).val(text + char);
+          $(input).focus();
+      });
 
-
+      checkFindCollectionEventAvailability();
 
     });
 
@@ -118,11 +140,41 @@
       });
 
       if (hasCollector && hasDate) {
-        $('#show_collection_event_selector').removeAttr('disabled');
-      } else {
-        $('#show_collection_event_selector').attr('disabled', 'true');
+        return true;
       }
 
+      return false;
+    }
+
+    function bindToCollectionEvent(eventId) {
+      var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?collectionEventId=" + eventId;
+      $.ajax(url).done(function (collectionEvent) {
+        setFieldValue('eventID', collectionEvent.externalEventId)
+        setFieldValue('locationID', collectionEvent.externalLocalityId)
+        setFieldValue('locality', collectionEvent.locality)
+        setFieldValue('decimalLatitude', collectionEvent.latitude)
+        setFieldValue('decimalLongitude', collectionEvent.longitude)
+        setFieldValue('stateProvince', collectionEvent.state)
+        setFieldValue('country', collectionEvent.country)
+      });
+    }
+
+    function setFieldValue(fieldName, value) {
+        var id = "recordValues\\.0\\." + fieldName;
+        $("#" + id).val(value);
+    }
+
+    function bindToCollectionEventLocality(eventId) {
+      var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?collectionEventId=" + eventId;
+      $.ajax(url).done(function (collectionEvent) {
+        setFieldValue('eventID', '')
+        setFieldValue('locationID', collectionEvent.externalLocalityId)
+        setFieldValue('locality', collectionEvent.locality)
+        setFieldValue('decimalLatitude', collectionEvent.latitude)
+        setFieldValue('decimalLongitude', collectionEvent.longitude)
+        setFieldValue('stateProvince', collectionEvent.state)
+        setFieldValue('country', collectionEvent.country)
+      });
     }
 
   </script>
@@ -137,6 +189,31 @@
       opacity : 0.4;
       filter: alpha(opacity=40); // msie
     }
+
+    .insert-symbol-button {
+      font-family: courier;
+      /*display: inline-block;*/
+      /*width: 10px;*/
+      /*text-align: center;*/
+      /*font-size: 20px;*/
+      /*line-height: 13px;*/
+      /*text-decoration: none;*/
+      color: #DDDDDD;
+      background: #4075C2;
+      /*padding: 4px 2px 0 2px;*/
+      -moz-border-radius: 4px;
+      -webkit-border-radius: 4px;
+      -o-border-radius: 4px;
+      -icab-border-radius: 4px;
+      -khtml-border-radius: 4px;
+      border-radius: 4px;
+    }
+
+    .insert-symbol-button:hover {
+      background: #0046AD;
+      color: #DDDDDD;
+    }
+
 
   </style>
 </head>
@@ -179,6 +256,10 @@
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
+
+            <g:hiddenField name="recordValues.0.eventID" class="eventID" id="recordValues.0.eventID" value="${recordValues?.get(0)?.eventID?:TemplateField.findByFieldType(DarwinCoreField.eventID)?.defaultValue}"/>
+            <g:hiddenField name="recordValues.0.locationID" class="locationID" id="recordValues.0.locationID" value="${recordValues?.get(0)?.eventID?:TemplateField.findByFieldType(DarwinCoreField.locationID)?.defaultValue}"/>
+
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
@@ -244,10 +325,19 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>
+                                <td style="padding-bottom: 0px;">
                                     <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}"
                                               id="recordValues.0.occurrenceRemarks" rows="12" cols="40" style="width: 100%"/>
                                 </td>
+                            </tr>
+                            <tr>
+                              <td style="padding-top: 0px;">
+                                <button class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol" />
+                                <button class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol" />
+                                <button class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol" />
+                                <button class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol" />
+                                <button class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol" />
+                              </td>
                             </tr>
                         </tbody>
                     </table>
@@ -270,7 +360,7 @@
                           </td>
                           <td class="value" style="width: 800px" >
                             <g:each in="${0..3}" var="idx">
-                              <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" autocomplete="off" />
+                              <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" autocomplete="off" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />
                             </g:each>
                           </td>
                         </tr>
@@ -281,8 +371,9 @@
 
                           </td>
                           <td class="value" style="width:700px">
-                            <button id="show_collection_event_selector" href="#collection_event_selector" disabled="true">Find collection event</button>
+                            <button id="show_collection_event_selector">Find collection event</button>
                             <div style="display: none;">
+                              <a id="collection_event_selector_link" href="#collection_event_selector"></a>
                               <div id="collection_event_selector" >
                                 <div id="collection_event_selector_content">
                                 </div>

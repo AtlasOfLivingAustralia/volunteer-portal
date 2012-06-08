@@ -132,6 +132,11 @@ class UserController {
         params.offset = params.int('offset') ?: 0
         params.order = params.order ?: ""
 
+        if (!params.sort) {
+            params.sort = "lastEdit"
+            params.order = "desc"
+        }
+
         def project = Project.get(params.projectId)
         def sql = new Sql(dataSource: dataSource)
 

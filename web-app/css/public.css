@@ -616,23 +616,23 @@ div.list table tr.odd {
 span.coordsIcons {
     height: 18px;
 }
- span.coordsIcons a {
-     display: inline-block;
-     width: 10px;
-     text-align: center;
-     font-size: 20px;
-     line-height: 13px;
-     text-decoration: none;
-     color: #DDDDDD;
-     background-color: #4075C2;
-     padding: 4px 2px 0 2px;
+span.coordsIcons a {
+    display: inline-block;
+    width: 10px;
+    text-align: center;
+    font-size: 20px;
+    line-height: 13px;
+    text-decoration: none;
+    color: #DDDDDD;
+    background-color: #4075C2;
+    padding: 4px 2px 0 2px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -o-border-radius: 4px;
     -icab-border-radius: 4px;
     -khtml-border-radius: 4px;
     border-radius: 4px;
- }
+}
 
 span.coordsIcons a:hover {
     background-color: #0046AD;
