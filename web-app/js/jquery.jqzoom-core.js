@@ -145,7 +145,7 @@
 
                     //prevent fast mouse mevements not to fire the mouseout event
                     if (e.pageX > smallimage.pos.r || e.pageX < smallimage.pos.l || e.pageY < smallimage.pos.t || e.pageY > smallimage.pos.b) {
-                        lens.setcenter();
+                        // lens.setcenter();
                         return false;
                     }
                     el.zoom_active = true;
@@ -215,7 +215,7 @@
                     img.attr('title', el.imagetitle);
                     $(el).attr('title', el.title);
                     if (settings.alwaysOn) {
-                        lens.setcenter();
+                        // lens.setcenter();
                     } else {
                         stage.hide();
                         lens.hide();

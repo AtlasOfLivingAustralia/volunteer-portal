@@ -19,7 +19,7 @@
         </tr>
         <tr>
           <td colspan="2" class="event-locality">${event.locality}</td>
-          <td class="event-latlong">[${event.latitude}, ${event.longitude}]</td>
+          <td class="event-latlong"><a href="#" class="find_on_map_link" title="Locate on map">[${event.latitude}, ${event.longitude}]</a></td>
           <td class="result-select-button">
             <button class="select_location_button" eventId="${event.id}" title="Use just the locality information from this collection event">Select&nbsp;location</button>
           </td>
@@ -79,8 +79,9 @@
             });
 
             event_map.fitZoom();
+            correctZoom();
         } catch (ex) {
-
+            alert(ex)
        }
      }
   });
@@ -100,6 +101,38 @@
       setMarkerAnimation(eventId, null);
     }
   });
+
+  $('.find_on_map_link').click(function(e) {
+      e.preventDefault();
+      var node = $(this).closest('.collection-event-result')
+      console.log("node = " + node)
+      if (node) {
+          console.log(node.collection_event_id);
+          var eventId = node.attr('collection_event_id');
+          if (eventId) {
+            zoomToEventMarker(node.attr('collection_event_id'));
+          }
+      }
+  });
+
+  function correctZoom() {
+      var zoom = event_map.map.getZoom();
+      if (zoom > 10) {
+          event_map.setZoom(10);
+      }
+  }
+
+  function zoomToEventMarker(eventId) {
+      for (index in event_map.markers) {
+          var marker = event_map.markers[index];
+          if (marker.collection_event_id == eventId) {
+              var latLngs = [marker.getPosition()];
+              event_map.fitBounds(latLngs);
+              correctZoom();
+              break;
+          }
+      }
+  }
 
   function setMarkerAnimation(eventId, animation) {
       // Find the marker...

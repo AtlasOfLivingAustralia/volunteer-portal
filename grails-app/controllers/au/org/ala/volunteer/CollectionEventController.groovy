@@ -36,6 +36,8 @@ class CollectionEventController {
 
         int loopcount = 0;
 
+        def locality = params.search_locality
+
         def queryDate = eventDate.toString();
         while (!events && !finished && loopcount < 10) {
 
@@ -47,7 +49,7 @@ class CollectionEventController {
 
             while (collectorNames.find { it.size() > 0 }) {
                 def queryCollectors = collectorNames.collect { it.join(" ")?.trim() }
-                events = collectionEventService.findCollectionEvents(taskInstance.project.featuredOwner, queryCollectors, queryDate, maxRows)
+                events = collectionEventService.findCollectionEvents(taskInstance.project.featuredOwner, queryCollectors, queryDate, locality, maxRows)
                 if (events && events.size() > 0) {
                     finished = true;
                     break;

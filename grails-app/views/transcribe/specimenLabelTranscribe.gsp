@@ -85,7 +85,7 @@
 
           },
           width: 800,
-          height: 600
+          height: 520
       }
 
 //      $("input[name$='recordedBy']").change(function (e) {

@@ -11,8 +11,7 @@ class CollectionEventService {
     def sessionFactory
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
-
-    List<CollectionEvent> findCollectionEvents(String institutionCode, List<String> collectors, String eventDate, int maxRows) {
+    List<CollectionEvent> findCollectionEvents(String institutionCode, List<String> collectors, String eventDate, String locality, int maxRows) {
         def c = CollectionEvent.createCriteria();
         c {
             and {
@@ -23,6 +22,14 @@ class CollectionEventService {
                 for (collector in collectors) {
                     if (collector) {
                         like('collectorNormalised', '%' + normaliseCollector(collector) + '%')
+                    }
+                }
+                if (locality) {
+                    or {
+                        ilike('locality', '%' + locality + '%')
+                        ilike('state', '%' + locality + '%')
+                        ilike('country', '%' + locality + '%')
+                        ilike('township', '%' + locality + '%')
                     }
                 }
             }

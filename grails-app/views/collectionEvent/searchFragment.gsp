@@ -1,4 +1,6 @@
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
+<link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
 
 <style type="text/css">
 
@@ -36,6 +38,10 @@
     padding: 5px
   }
 
+  .collection_search_content td[colspan="2"] {
+    border-bottom: none;
+  }
+
   #search_header td {
     padding-bottom: 0px;
     margin: 2px;
@@ -61,6 +67,7 @@
             queryParams += "&collector" + i + "=" + encodeURIComponent($('#search_collector_' + i).val())
         }
         queryParams += '&eventDate=' + encodeURIComponent($('#search_event_date').val());
+        queryParams += '&search_locality=' + encodeURIComponent($('#search_locality').val());
 
         var taskUrl = "${createLink(controller: 'collectionEvent', action:'searchResultsFragment', params: [taskId:taskInstance.id])}" + queryParams;
 
@@ -83,19 +90,6 @@
       });
     });
 
-//
-//    var latLng = new google.maps.LatLng(-34.397, 150.644);
-//
-//    var eventMapOptions = {
-//        zoom: 10,
-//        center: latLng,
-//        scrollwheel: false,
-//        scaleControl: true,
-//        mapTypeId: google.maps.MapTypeId.ROADMAP
-//    };
-//
-//    var eventmap = new google.maps.Map(document.getElementById("event_map"), eventMapOptions);
-
 </script>
 
 <div id="collection_search_content" class="collection_search_content">
@@ -108,9 +102,12 @@
       <g:each in="${taskInstance.multimedia}" var="m" status="i">
         <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
           <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-          <div class="pageViewer" id="journalPageImg" style="height:240px">
-              <div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>
-          </div>
+            <a href="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" class="image_viewer" title="">
+                <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" title="" style="height: 150px">
+            </a>
+            %{--<div class="pageViewer" id="journalPageImg" style="height:240px">--}%
+              %{--<div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>--}%
+          %{--</div>--}%
         </g:if>
       </g:each>
     </div>
@@ -120,25 +117,28 @@
   <div id="search_header">
     <table>
       <tr>
-        <td>Collector(s)</td>
-        <td>
-          <g:each in="${collectors}" var="collector" status="i">
-            <input style="width:130px" id="search_collector_${i}" type="text" value="${collector}"></span>&nbsp;
-          </g:each>
-        </td>
-        <td rowspan="2" style="vertical-align: middle">
-          <button id="event_search_button">Search</button>
-          <button id="close_event_popup_button">Cancel</button>
-        </td>
+        <td><span>Collector(s)</span></td>
 
+          <g:each in="${collectors}" var="collector" status="i">
+              <td>
+                <input style="width:100%" id="search_collector_${i}" type="text" value="${collector}"></span>
+              </td>
+          </g:each>
+          <td>&nbsp;</td>
       </tr>
     <tr>
       <td>
         Event date
       </td>
       <td>
-        <input style="width:130px" type="text" id="search_event_date" value="${eventDate}" />
+        <input style="width:100%" type="text" id="search_event_date" value="${eventDate}" />
       </td>
+      <td style="text-align: right"><span>Locality</span></td>
+      <td colspan="2"><g:textField name="search_locality" id="search_locality" style="width:100%"/></td>
+      <td style="vertical-align: middle; width: 150px; text-align: center">
+        <button id="event_search_button">Search</button>&nbsp;<button id="close_event_popup_button">Cancel</button>
+      </td>
+
     </tr>
   </table>
 
@@ -169,6 +169,25 @@
     });
 
     doSearch();
+    var zoom_options = {
+        zoomType: 'drag',
+        lens:true,
+        preloadImages: true,
+        alwaysOn:true,
+        zoomWidth: 300,
+        zoomHeight: 150,
+        xOffset:90,
+        yOffset:0,
+        position:'left'
+    };
+
+    var zopts = {
+        zoomType: 'drag',
+        zoomWidth: 500,
+        zoomHeight: 150,
+        lens:true
+    }
+    $('.image_viewer').jqzoom(zopts);
 
   </script>
 </div>
