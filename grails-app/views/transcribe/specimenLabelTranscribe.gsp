@@ -29,6 +29,10 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'gmaps.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
+<link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
+
 <script type="text/javascript">
     // global Object 
     var VP_CONF = {
@@ -41,7 +45,7 @@
     };
 </script>
 
-  <script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
+
   <script type="text/javascript">
     $(document).ready(function() {
 
@@ -59,7 +63,7 @@
 
           },
           width: 640,
-          height: 600
+          height: 500
       }
 
       $('button#show_task_selector').fancybox(task_selector_opts);
@@ -214,6 +218,13 @@
       color: #DDDDDD;
     }
 
+    .zoomPup {
+      background-color: pink;
+      background-image: url(${resource(dir:'images', file:'zoom.png')});
+      background-repeat: no-repeat;
+      background-position: bottom right;
+      border: 1px solid black;
+    }
 
   </style>
 </head>
@@ -258,7 +269,7 @@
             <g:hiddenField name="redirect" value="${params.redirect}"/>
 
             <g:hiddenField name="recordValues.0.eventID" class="eventID" id="recordValues.0.eventID" value="${recordValues?.get(0)?.eventID?:TemplateField.findByFieldType(DarwinCoreField.eventID)?.defaultValue}"/>
-            <g:hiddenField name="recordValues.0.locationID" class="locationID" id="recordValues.0.locationID" value="${recordValues?.get(0)?.eventID?:TemplateField.findByFieldType(DarwinCoreField.locationID)?.defaultValue}"/>
+            <g:hiddenField name="recordValues.0.locationID" class="locationID" id="recordValues.0.locationID" value="${recordValues?.get(0)?.locationID?:TemplateField.findByFieldType(DarwinCoreField.locationID)?.defaultValue}"/>
 
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
@@ -361,6 +372,7 @@
                           <td class="value" style="width: 800px" >
                             <g:each in="${0..3}" var="idx">
                               <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" autocomplete="off" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />
+                              <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}" />
                             </g:each>
                           </td>
                         </tr>

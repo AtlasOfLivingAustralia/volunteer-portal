@@ -23,7 +23,7 @@ class CollectionEventController {
 
         def taskInstance = Task.get(params.int("taskId"))
 
-        int maxRows = params.maxResults ? params.int("maxResults") : 100;
+        int maxRows = params.maxResults ? params.int("maxResults") : 500;
 
         def eventDate = params.eventDate
         def events = []

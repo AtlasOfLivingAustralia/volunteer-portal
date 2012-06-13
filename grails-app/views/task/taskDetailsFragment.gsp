@@ -23,7 +23,7 @@
   }
 </style>
 
-<div style="overflow: auto; height: 300px">
+<div style="overflow: auto; height: 250px">
   <div style="float:right;">
     <g:each in="${taskInstance.multimedia}" var="m">
         <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>

@@ -65,7 +65,8 @@
             <h2 class="grey"><a href="${ConfigurationHolder.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay.id}">${frontPage.projectOfTheDay.name}</a></h2>
             <p>${frontPage.projectOfTheDay.shortDescription} <a href="${ConfigurationHolder.config.grails.serverURL}/transcribe/index/${frontPage.projectOfTheDay.id}" class="button">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe.png" width="37" height="18" alt=""></a></p>
           </div>
-
+        </section>
+        <section>
           <hgroup><h2 class="alignleft">More expeditions</h2><a href="${createLink(controller: 'project', action: 'list')}" class="button alignright">View all</a></hgroup>
           <nav>
             <ol>

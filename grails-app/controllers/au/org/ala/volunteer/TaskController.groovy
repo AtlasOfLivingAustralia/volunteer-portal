@@ -383,25 +383,39 @@ class TaskController {
                 task = Task.get(params.int("taskId"))
             }
             def projectInstance = Project.get(params.int("projectId"))
-            def username = authService.username()
+            [projectInstance: projectInstance, taskInstance: task]
+        }
+    }
 
-            def taskList = taskService.transcribedDatesByUserAndProject(authService.username(), projectInstance.id)
+
+    def taskBrowserTaskList = {
+        if (params.taskId) {
+            def task = Task.get(params.int("taskId"))
+            def projectInstance = task?.project
+            def taskList = taskService.transcribedDatesByUserAndProject(getUserId(), projectInstance.id, params.search_text)
+
             taskList = taskList.sort { it.lastEdit }
-
-            // def taskList = Task.findAllByProjectAndFullyTranscribedBy(projectInstance, username,[sort:'id'])
 
             if (task) {
                 taskList.remove(task)
             }
             [projectInstance: projectInstance, taskList: taskList.toList(), taskInstance: task]
         }
+
+    }
+
+    def getUserId = {
+        def userId = authService.username();
+        // overridden for testing --- please comment out!!!
+        // userId = 'Donald.Hobern@csiro.au'
+        return userId;
     }
 
     def taskDetailsFragment = {
         def task = Task.get(params.int("taskId"))
         if (task) {
 
-            def username = authService.username();
+            def userId = getUserId();
 
             def c = Field.createCriteria();
 
@@ -409,7 +423,7 @@ class TaskController {
                 and {
                     eq("task", task)
                     eq("superceded", false)
-                    eq("transcribedByUserId", username)
+                    eq("transcribedByUserId", userId)
                 }
             }
 
@@ -417,7 +431,7 @@ class TaskController {
 
             def projectInstance = task.project;
             def template = projectInstance.template;
-            def templateFields = TemplateField.findAllByTemplate(template, )
+            def templateFields = TemplateField.findAllByTemplate(template)
 
             def fieldMap = [:]
             def fieldLabels = [:]
@@ -462,7 +476,7 @@ class TaskController {
     def ajaxTaskData = {
         def task = Task.get(params.int("taskId"))
 
-        def username = authService.username();
+        def username = getUserId();
 
         if (task) {
             def c = Field.createCriteria();

@@ -1,6 +1,4 @@
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
-<link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
 
 <style type="text/css">
 
@@ -70,9 +68,6 @@
         queryParams += '&search_locality=' + encodeURIComponent($('#search_locality').val());
 
         var taskUrl = "${createLink(controller: 'collectionEvent', action:'searchResultsFragment', params: [taskId:taskInstance.id])}" + queryParams;
-
-        console.log(taskUrl)
-
         $.ajax({url:taskUrl, success: function(data) {
             $("#search_results").html(data);
         }})
@@ -124,7 +119,7 @@
                 <input style="width:100%" id="search_collector_${i}" type="text" value="${collector}"></span>
               </td>
           </g:each>
-          <td>&nbsp;</td>
+          <td style="vertical-align: middle; width: 150px; text-align: center"><button id="event_search_button">Search</button>&nbsp;<button id="close_event_popup_button">Cancel</button></td>
       </tr>
     <tr>
       <td>
@@ -136,7 +131,7 @@
       <td style="text-align: right"><span>Locality</span></td>
       <td colspan="2"><g:textField name="search_locality" id="search_locality" style="width:100%"/></td>
       <td style="vertical-align: middle; width: 150px; text-align: center">
-        <button id="event_search_button">Search</button>&nbsp;<button id="close_event_popup_button">Cancel</button>
+        <span id="search_results_status" />
       </td>
 
     </tr>
@@ -181,9 +176,15 @@
         position:'left'
     };
 
+    var imageWidth = $('.image_viewer').first().width();
+    var zoomWidth = 500;
+    if (imageWidth > 0) {
+      zoomWidth = 800 - imageWidth;
+    }
+
     var zopts = {
         zoomType: 'drag',
-        zoomWidth: 500,
+        zoomWidth: zoomWidth - 15,
         zoomHeight: 150,
         lens:true
     }

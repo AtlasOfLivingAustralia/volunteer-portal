@@ -105,15 +105,15 @@
   $('.find_on_map_link').click(function(e) {
       e.preventDefault();
       var node = $(this).closest('.collection-event-result')
-      console.log("node = " + node)
       if (node) {
-          console.log(node.collection_event_id);
           var eventId = node.attr('collection_event_id');
           if (eventId) {
             zoomToEventMarker(node.attr('collection_event_id'));
           }
       }
   });
+
+  $('#search_results_status').text('${collectionEvents.size()} matching ${collectionEvents.size() == 1 ? "event":"events"}');
 
   function correctZoom() {
       var zoom = event_map.map.getZoom();

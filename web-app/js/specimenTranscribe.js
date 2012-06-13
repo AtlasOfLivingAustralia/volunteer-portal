@@ -273,7 +273,35 @@ $(document).ready(function() {
         selectFirst: false
     }).result(function(event, item) {
         // user has selected an autocomplete item
-        $(':input.recordedByID').val(item.key);
+        // There can be multiple collector boxes on a transcribe form, so we need to update the correct collector id...
+        var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+        if (matches.length > 0) {
+            var recordIdx = matches[1]
+            $('#recordValues\\.' + recordIdx + '\\.recordedByID').val(item.key);
+            // We store the collector name in the form attribute so we can compare it on a change event
+            // to see if we need to wipe the collectorid out should the name in the inputfield change
+            $('#recordValues\\.' + recordIdx + '\\.recordedByID').attr('collector_name', item.name);
+        } else {
+            $(':input.recordedByID').val(item.key);
+        }
+
+    });
+
+    $("input.recordedBy").change(function(e) {
+        // If the value of the recordedBy field does not match the name in the collector_name attribute
+        // of the recordedByID element it means that the collector name no longer matches the id, so the id
+        // must be cleared.
+        var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+        var value = $(this).val();
+        if (matches.length > 0) {
+            var recordIdx = matches[1]
+            var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
+            var collectorName = $(elemSelector).attr("collector_name");
+            if (value != collectorName) {
+                $(elemSelector).val('');
+                $(elemSelector).attr("collector_name", "");
+            }
+        }
     });
 
     $(":input.verbatimLocality").autocomplete(VP_CONF.picklistAutocompleteUrl, {
