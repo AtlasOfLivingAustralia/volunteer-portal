@@ -352,11 +352,12 @@
                 <button id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
             </span>
             <div class="dialog" id="imagePane">
+                <g:set var="imageIndex" value="0"/>
                 <g:each in="${taskInstance.multimedia}" var="m" status="i">
                   <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
-                        <div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>
+                        <div><img id="image_${imageIndex++}" src="${imageUrl}" style="width:100%;"/></div>
                     </div>
                   </g:if>
                 </g:each>

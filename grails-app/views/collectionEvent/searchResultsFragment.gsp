@@ -21,7 +21,7 @@
           <td colspan="2" class="event-locality">${event.locality}</td>
           <td class="event-latlong"><a href="#" class="find_on_map_link" title="Locate on map">[${event.latitude}, ${event.longitude}]</a></td>
           <td class="result-select-button">
-            <button class="select_location_button" eventId="${event.id}" title="Use just the locality information from this collection event">Select&nbsp;location</button>
+            %{--<button class="select_location_button" eventId="${event.id}" title="Use just the locality information from this collection event">Select&nbsp;location</button>--}%
           </td>
         </tr>
 

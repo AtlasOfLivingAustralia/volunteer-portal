@@ -38,10 +38,6 @@
           <a href="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" class="image_viewer" title="">
               <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" title="" style="height: 150px">
           </a>
-
-          %{--<div class="pageViewer" id="journalPageImg" style="height:200px">--}%
-              %{--<div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>--}%
-          %{--</div>--}%
         </g:if>
       </g:each>
     </div>

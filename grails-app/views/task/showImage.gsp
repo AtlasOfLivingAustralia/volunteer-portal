@@ -61,6 +61,10 @@
           filter: alpha(opacity=40); // msie
         }
 
+        #imageContainer {
+          overflow: auto;
+        }
+
       </style>
 
     <script type="text/javascript">
@@ -93,7 +97,7 @@
            window.close();
         });
 
-        $("#imagePane").scrollview({
+        $("#imageContainer").scrollview({
             grab:"${resource(dir: 'images', file: 'openhand.cur')}",
             grabbing:"${resource(dir: 'images', file: 'closedhand.cur')}"
         });
@@ -108,13 +112,14 @@
       function zoomJournalImage(event, value) {
           console.info("value changed to", value);
           $("#journalPageImg").css("width", value + "%");
+          $("#journalPageImg").css("height", value + "%");
       }
 
 
     </script>
 
   </head>
-  <body class="sublevel sub-site volunteerportal">
+  <body class="sublevel sub-site volunteerportal" style="overflow-x: hidden; overflow-y: scroll;">
     <div>
       <div class="inner">
         <cl:messages />
@@ -124,7 +129,7 @@
         </g:if>
       </div>
 
-      <div class="inner">
+      <div>
         <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
         <g:set var="defaultWidthPercent" value="100" />
         <input type="range" name="width" min="50" max="150" value="100" />
@@ -135,16 +140,21 @@
             <button id="closeWindow" title="Close this window">Close</button>
         </span>
 
-        <div class="dialog" id="imagePane">
-            <g:each in="${taskInstance.multimedia}" var="m" status="i">
-              <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-                <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-                <div class="pageViewer" id="journalPageImg" style="height:600px;">
-                    <div><img id="image_${i}" src="${imageUrl}" style="width:100%;"/></div>
+
+        <div id="imageContainer">
+          <g:set var="imageIndex" value="0"/>
+          <g:each in="${taskInstance.multimedia}" var="m" status="i">
+            <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
+              <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+
+                <div class="pageViewer" id="journalPageImg">
+                    <img id="image_${imageIndex++}" src="${imageUrl}" style="width:100%;"/>
                 </div>
-              </g:if>
-            </g:each>
+
+            </g:if>
+          </g:each>
         </div>
+
       </div>
     </div>
   </body>

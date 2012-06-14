@@ -247,9 +247,9 @@ div#mapWidgets {
     float: left;
 }
 
+
 #transcribeFields > table thead tr {
     width: 900px;
-
 }
 
 #transcribeFields > table thead th, #taskMetadata > table thead th {
@@ -274,14 +274,64 @@ div#mapWidgets {
     border: none;
 }
 
-#transcribeFields > table thead th {
-    /*text-align: right;*/
-}
-
 #transcribeFields td.value, .fields td.value {
     width: 295px;
     color: #666;
 }
+
+#collectionEventFields {
+    width: 950px;
+}
+
+
+#collectionEventFields > table {
+    margin: 10px 0;
+    background-color: #F0F0E8;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -o-border-radius: 8px;
+    -icab-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    border-radius: 8px;
+}
+
+#collectionEventFields > table tr {
+    width: 900px;
+    min-height: 34px;
+}
+
+#collectionEventFields > table thead tr {
+    width: 900px;
+}
+
+#collectionEventFields > table thead th {
+    vertical-align: middle;
+    color: #666;
+}
+
+#collectionEventFields > table thead tr h3 {
+    display: inline-block;
+}
+
+#collectionEventFields td.name {
+    width: 135px;
+    text-align: right;
+}
+
+#collectionEventFields tr.hidden {
+    display: none;
+}
+
+#collectionEventFields > table thead {
+    border: none;
+}
+
+#collectionEventFields td.value {
+    width: 295px;
+    color: #666;
+}
+
+
 
 .value input, .value textarea {
     width: 260px;

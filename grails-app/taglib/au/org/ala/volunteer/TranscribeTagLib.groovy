@@ -15,12 +15,105 @@
 
 package au.org.ala.volunteer
 
+import groovy.xml.MarkupBuilder
+
 /**
  * Tag Lib for Transcribe page
  * 
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 class TranscribeTagLib {
+
+    private def renderWidgetTD(MarkupBuilder mb, TemplateField field, recordValues, recordIdx) {
+
+        def name = field.fieldType.name()
+
+        def cssClass = name
+
+        if (name =~ /[Dd]ate/) {
+            // so we can add a date widget with JQuery
+            cssClass = cssClass + ' datePicker';
+        }
+        if (field.mandatory) {
+            cssClass = cssClass + " validate[required]"
+        }
+
+        mb.td(class:"value") {
+            def w // widget
+            switch (field.type) {
+                case FieldType.textarea:
+                    w = g.textArea(
+                        name:"recordValues.${recordIdx}.${name}",
+                        rows: ((name == 'occurrenceRemarks') ? 6 : 4),
+                        //style: 'width: 100%',
+                        value:recordValues?.get(0)?.get(name),
+                        'class':cssClass
+                    )
+                    break
+                case FieldType.hidden:
+                    w = g.hiddenField(
+                        name:"recordValues.${recordIdx}.${name}",
+                        value:recordValues?.get(0)?.get(name),
+                        'class':cssClass
+                    )
+                    break;
+                case FieldType.select:
+                    def pl = Picklist.findByName(name)
+                    if (pl) {
+                        def options = PicklistItem.findAllByPicklist(pl)
+                        w = g.select(
+                            name:"recordValues.${recordIdx}.${name}",
+                            from: options,
+                            optionValue:'value',
+                            optionKey:'value',
+                            value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                            noSelection:['':''],
+                            style: 'max-width: 295px;',
+                            'class':cssClass
+                        )
+                        break
+                    }
+                case FieldType.radio: // fall through TODO
+                case FieldType.checkbox: // fall through TODO
+                case FieldType.text: // fall through
+                case FieldType.autocomplete:
+                    cssClass = cssClass + " autocomplete"
+                default:
+                    w = g.textField(
+                        name:"recordValues.${recordIdx}.${name}",
+                        maxLength:200,
+                        value:recordValues?.get(0)?.get(name),
+                        'class':cssClass
+                    )
+            }
+            mkp.yieldUnescaped(w)
+
+            if (field.helpText) {
+                def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
+                mkp.yieldUnescaped(help)
+            }
+        }
+
+    }
+
+    private def renderWidgetLabelTD(MarkupBuilder mb, TemplateField field) {
+
+        def name = field.fieldType.name()
+        def label
+        if (field.label) {
+            label = field.label
+        } else {
+            label = field.fieldType.label
+        }
+
+        mb.td(class:'name') {
+            if (field.type != FieldType.hidden) {
+                mb.yield(g.message(code:'record.' + name +'.label', default:label))
+            }
+        }
+
+    }
+
     /**
      *  Create the field label and form field for the requested
      *  TemplateField type
@@ -34,87 +127,40 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
 
-        def name = field.fieldType.name()
-        //println "TranscribeTagLib: recordValues = " + recordValues
-        def label
-        if (field.label) {
-            label = field.label
-        } else {
-            label = field.fieldType.label
-        }
-        def cssClass = name
-
-        if (name =~ /[Dd]ate/) {
-            // so we can add a date widget with JQuery
-            cssClass = cssClass + ' datePicker';
-        }
-        if (field.mandatory) {
-            cssClass = cssClass + " validate[required]"
-        }
         // Uses MarkupBuilder to create HTML
         def mb = new groovy.xml.MarkupBuilder(out)
         def trClass = (field.type == FieldType.hidden) ? 'hidden' : 'prop'
         mb.tr(class:trClass) {
-            td(class:'name') {
-                if (field.type != FieldType.hidden) {
-                    mb.yield(g.message(code:'record.' + name +'.label', default:label))
-                }
-            }
-            td(class:"value") {
-                def w // widget
-                switch (field.type) {
-                    case FieldType.textarea:
-                        w = g.textArea(
-                            name:"recordValues.${recordIdx}.${name}",
-                            rows: ((name == 'occurrenceRemarks') ? 6 : 4),
-                            //style: 'width: 100%',
-                            value:recordValues?.get(0)?.get(name),
-                            'class':cssClass
-                        )
-                        break
-                    case FieldType.hidden:
-                        w = g.hiddenField(
-                            name:"recordValues.${recordIdx}.${name}",
-                            value:recordValues?.get(0)?.get(name),
-                            'class':cssClass
-                        )
-                        break;
-                    case FieldType.select:
-                        def pl = Picklist.findByName(name)
-                        if (pl) {
-                            def options = PicklistItem.findAllByPicklist(pl)
-                            w = g.select(
-                                name:"recordValues.${recordIdx}.${name}",
-                                from: options,
-                                optionValue:'value',
-                                optionKey:'value',
-                                value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
-                                noSelection:['':''],
-                                style: 'max-width: 295px;',
-                                'class':cssClass
-                            )
-                            break
-                        } 
-                    case FieldType.radio: // fall through TODO
-                    case FieldType.checkbox: // fall through TODO
-                    case FieldType.text: // fall through
-                    case FieldType.autocomplete:
-                        cssClass = cssClass + " autocomplete"
-                    default:
-                        w = g.textField(
-                            name:"recordValues.${recordIdx}.${name}",
-                            maxLength:200,
-                            value:recordValues?.get(0)?.get(name),
-                            'class':cssClass
-                        )
-                }
-                mkp.yieldUnescaped(w)
-
-                if (field.helpText) {
-                    def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
-                    mkp.yieldUnescaped(help)
-                }
-            }
+            renderWidgetLabelTD(delegate, field);
+            renderWidgetTD(delegate, field, recordValues, recordIdx)
         }
+    }
+
+    /**
+     *  Create the field label and form field for the requested
+     *  TemplateField type
+     *
+     *  @attr task REQUIRED
+     *  @attr fieldType REQUIRED
+     *  @attr recordValues REQUIRED
+     *  @attr recordIdx
+     */
+    def fieldTDPair = { attrs, body ->
+
+        Task task = attrs.task;
+        DarwinCoreField fieldType = attrs.fieldType;
+        def template = task.project.template;
+
+        TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
+
+        def recordValues = attrs.recordValues
+        def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
+
+        // Uses MarkupBuilder to create HTML
+        def mb = new groovy.xml.MarkupBuilder(out)
+
+        renderWidgetLabelTD(mb, field);
+        renderWidgetTD(mb, field, recordValues, recordIdx)
+
     }
 }

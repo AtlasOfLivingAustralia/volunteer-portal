@@ -32,6 +32,7 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.7.3.custom.min.js')}"></script>--}%
 
 <script type="text/javascript">
     // global Object 
@@ -92,14 +93,6 @@
           height: 520
       }
 
-//      $("input[name$='recordedBy']").change(function (e) {
-//        checkFindCollectionEventAvailability();
-//      });
-//
-//      $("input[name$='eventDate']").change(function (e) {
-//        checkFindCollectionEventAvailability();
-//      });
-
       $('#collection_event_selector_link').fancybox(collection_event_selector_opts);
 
       $('#show_collection_event_selector').click(function(e) {
@@ -125,6 +118,27 @@
       });
 
       checkFindCollectionEventAvailability();
+
+      // display previous journal page in new window
+      $("#showImageButton").click(function(e) {
+          e.preventDefault();
+          var uri = "${createLink(controller: 'task', action:'showImage', id: taskInstance.id)}"
+          newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+          if (window.focus) {newwindow.focus()}
+      });
+
+
+      $(".closeSection").click(function(e) {
+        e.preventDefault();
+        var body = $(this).closest("table").find('tbody');
+        if (body.css('display') == 'none') {
+          body.css('display', 'block');
+          $(this).text("Shrink")
+        } else {
+          body.css('display', 'none');
+          $(this).text("Expand")
+        }
+      })
 
     });
 
@@ -226,10 +240,15 @@
       border: 1px solid black;
     }
 
+    .step_heading {
+      font-weight: bold;
+    }
+
   </style>
 </head>
 
 <body class="sublevel sub-site volunteerportal">
+
 
   <cl:navbar selected="expeditions" />
 
@@ -251,6 +270,7 @@
 
 <div class="inner">
 
+
     <cl:messages />
 
     <g:hasErrors bean="${taskInstance}">
@@ -259,10 +279,7 @@
         </div>
     </g:hasErrors>
 
-    <div id="videoLinks" style="padding-top: 6px; float: right;">
-        ${taskInstance?.project?.tutorialLinks}
-    </div>
-
+    <button id="showImageButton">Show image in seperate window</button>
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
@@ -292,6 +309,7 @@
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
                         </div>
+
                         <div class="map-control">
                             <a href="#left" class="left">Left</a>
                             <a href="#right" class="right">Right</a>
@@ -300,9 +318,11 @@
                             <a href="#zoom" class="zoom">Zoom</a>
                             <a href="#zoom_out" class="back">Back</a>
                         </div>
+
                     </div>
 
                 </g:each>
+
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
                     <h3>Specimen Information</h3>
@@ -353,37 +373,52 @@
                         </tbody>
                     </table>
                 </div>
+
                 <div style="clear:both;"></div>
 
-                <div id="transcribeFields">
+                <div id="collectionEventFields">
 
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>2. Collection Event</h3> &ndash; This records information directly from the label
-                            about when, where and by whom the specimen was collected. Only fill in fields for which
-                            information appears in the labels</th></tr>
+                            <tr>
+                                <th colspan="4">
+                                  <h3>2. Collection Event</h3> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
+                                  <a style="float:right" class="closeSection" href="#">Shrink</a>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
-
-                        <tr class="prop" style="width: 950px">
+                        <tr class="prop">
+                          <td class="name"/>
+                          <td class="name" style="text-align: left;" >
+                            <span class="step_heading">a. Enter Collector and Event date</span>
+                          </td>
+                        </tr>
+                        <tr class="prop">
                           <td class="name">
                             Collector(s)
                           </td>
-                          <td class="value" style="width: 800px" >
+                          <td class="value" style="" colspan="3" >
                             <g:each in="${0..3}" var="idx">
-                              <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" autocomplete="off" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />
+                              <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" autocomplete="off" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />&nbsp;
                               <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}" />
                             </g:each>
                           </td>
                         </tr>
 
                         <g:fieldFromTemplateField templateField="${TemplateField.findByFieldType(DarwinCoreField.eventDate)}" recordValues="${recordValues}" />
-                        <tr class="prop" style="width: 950px">
-                          <td class="name">
 
+                        <tr class="prop">
+                          <td class="name" style="" >
+                            <span class="step_heading">AND EITHER</span>
                           </td>
-                          <td class="value" style="width:700px">
-                            <button id="show_collection_event_selector">Find collection event</button>
+                        </tr>
+
+                        <tr class="prop">
+                          <td class="name"></td>
+                          <td class="name" colspan="4" style="text-align: left" >
+                            <span class="step_heading">b. Find Existing Collection Event</span>&nbsp;
+                            <button id="show_collection_event_selector">Find existing collection event</button>
                             <div style="display: none;">
                               <a id="collection_event_selector_link" href="#collection_event_selector"></a>
                               <div id="collection_event_selector" >
@@ -394,37 +429,65 @@
 
                             <a href="#" class="fieldHelp" title="Find an existing collection event based on the collector names and the event date you have entered."><span class="help-container">&nbsp;</span></a>
                           </td>
+
                         </tr>
 
-                        %{--<g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.collectionEvent, template, [sort:'displayOrder'])}" var="field">--}%
-                            %{--<g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>--}%
-                        %{--</g:each>--}%
-                            <tr class='prop' style="width:950px;">
-                                <td class='name'>
-                                    Verbatim Locality
-                                </td>
-                                <td class='value'>
-                                    <textarea name="recordValues.0.verbatimLocality" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
-                                  <a href='#' class='fieldHelp' title='Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label'><span class='help-container'>&nbsp;</span></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <tr class="prop">
+                          <td class="name" style="" >
+                            <span class="step_heading">OR</span>
+                          </td>
+                        </tr>
 
-                    <table style="width: 100%">
-                        <thead>
+                        <tr class="prop">
+                          <td class="name"></td>
+                          <td class="name" colspan="4" style="text-align: left" >
+                            <span class="step_heading">c. Create a new Collection event</span> &ndash; you have already entered a collector and date id a. above so now you need to enter a locality
+                          </td>
+                        </tr>
+
                         <tr>
-                            <th><h3>3. Interpreted Location</h3>
-                                <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use
-                                mapping tool</button>
-                                &ndash; Use the mapping tool before attempting to enter values manually
-                            </th>
+                          <td/>
+                          <td colspan="3"><div>i. Find an existing locality or, where none exists, enter the locality exactly as it appears on the label/s - (if a locality in the list is an
+                          exact match except for differences in punctuation (e.g. spaces, commas or full stops/periods) please select it.)</div></td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.location, template, [sort:'displayOrder'])}" var="field">
-                            <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
-                        </g:each>
+
+                        <tr class='prop'>
+                            <td class='name'>
+                                Verbatim Locality
+                            </td>
+                            <td class='value'>
+                                <textarea name="recordValues.0.verbatimLocality" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
+                              <a href='#' class='fieldHelp' title='Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label'><span class='help-container'>&nbsp;</span></a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                          <td/>
+                          <td colspan="3"><div>ii. Confirm or select a latitude, longitude and location uncertainty</div></td>
+                        </tr>
+
+                        <tr>
+                          <td/>
+                          <td>
+                            <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use mapping tool</button>
+                          </td>
+                        </tr>
+
+                        <tr class="prop">
+                          <g:fieldTDPair fieldType="${DarwinCoreField.locality}" recordValues="${recordValues}" task="${taskInstance}" />
+                          <g:fieldTDPair fieldType="${DarwinCoreField.stateProvince}" recordValues="${recordValues}" task="${taskInstance}" />
+                        </tr>
+
+                        <tr class="prop">
+                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLatitude}" recordValues="${recordValues}" task="${taskInstance}" />
+                          <g:fieldTDPair fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" />
+                        </tr>
+
+                        <tr class="prop">
+                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLongitude}" recordValues="${recordValues}" task="${taskInstance}" />
+                          <g:fieldTDPair fieldType="${DarwinCoreField.coordinateUncertaintyInMeters}" recordValues="${recordValues}" task="${taskInstance}" />
+                        </tr>
+
                         </tbody>
                     </table>
 
@@ -437,9 +500,6 @@
                             <div id="mapInfo">
                                 <div id="sightingAddress">
                                     <h3>Locality Search</h3>
-                                    %{--<label for="address">Locality/Coodinates: </label>
-                                    <input type="button" value="Copy verbatim locality into search box" onclick="$(':input#address').val($(':input.verbatimLocality').val())"/>
-                                    <br/>--}%
                                     <textarea name="address" id="address" size="32" rows="2" value=""></textarea>
                                     <input id="locationSearch" type="button" value="Search" style="display:table-cell;vertical-align: top;"/>
                                     <div class="searchHint">Interpret the
@@ -480,10 +540,16 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <div id="transcribeFields">
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>4. Miscellaneous</h3> &ndash; This section is for a range of fields. Many labels will not contain information for any or all of this fields.</th></tr>
+                        <tr style="width: 950px">
+                          <th style="width:950px">
+                            <h3>3. Miscellaneous</h3> &ndash; This section is for a range of fields. Many labels will not contain information for any or all of this fields.
+                            <a style="float:right" class="closeSection" href="#">Shrink</a>
+                          </th></tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.miscellaneous, template, [sort:'displayOrder'])}" var="field">
@@ -494,7 +560,12 @@
 
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>4. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section </th></tr>
+                        <tr style="width:950px">
+                          <th style="width:950px">
+                            <h3>4. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section
+                            <a style="float:right" class="closeSection" href="#">Shrink</a>
+                          </th>
+                        </tr>
                         </thead>
                         <tbody>
                         <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.identification, template, [sort:'displayOrder'])}" var="field">
@@ -504,7 +575,12 @@
                     </table>
                     <table style="width: 100%">
                         <thead>
-                        <tr><th><h3>Notes</h3> &ndash; Record any comments here that may assist in validating this specimen </th></tr>
+                        <tr style="width:950px">
+                          <th style="width:950px">
+                            <h3>5. Notes</h3> &ndash; Record any comments here that may assist in validating this specimen
+                            <a style="float:right" class="closeSection" href="#">Shrink</a>
+                          </th>
+                        </tr>
                         </thead>
                         <tbody>
                             <tr class="prop">
