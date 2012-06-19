@@ -46,15 +46,15 @@
   <div class="nav">
       <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
       <g:if test="${params.id}">
-        <span class="menuButton"><a class="home" href="${createLink(controller: 'project', action:'edit', id: params.id)}">Load collection events</a></span>
+        <span class="menuButton"><a class="home" href="${createLink(controller: 'project', action:'edit', id: params.id)}">Load localities</a></span>
       </g:if>
   </div>
 
   <div class="inner">
-      <h1>Load Collection Events from CSV</h1>
+      <h1>Load Locality data from CSV</h1>
 
       <div class="buttons">
-          <g:uploadForm action="loadCSV" controller="collectionEvent">
+          <g:uploadForm action="loadCSV" controller="locality">
               <table>
                   <tr>
                     <td>Institution:</td>

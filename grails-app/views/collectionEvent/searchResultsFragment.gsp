@@ -1,5 +1,5 @@
 <g:if test="${collectionEvents}">
-  <div id="search-results">
+  <div id="">
     <g:each in="${collectionEvents}" var="event" status="i">
       <g:set var="rowclass" value="${i % 2 == 0 ? 'even' : 'odd'}"/>
       <table class="${rowclass} collection-event-result" collection_event_id="${i}" lat="${event.latitude}" lng="${event.longitude}" locality="${event.locality}">

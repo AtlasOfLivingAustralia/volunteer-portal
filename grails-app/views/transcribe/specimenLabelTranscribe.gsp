@@ -104,6 +104,29 @@
           }
       });
 
+      var locality_selector_opts = {
+          titleShow: false,
+          onComplete: initialize,
+          autoDimensions: false,
+          scrolling: 'no',
+          onStart: function() {
+            $.fancybox.showActivity();
+            $.ajax("${createLink(controller: 'locality', action:'searchFragment', params: [taskId: taskInstance.id])}").done( function(data) {
+              $("#locality_selector_content").html(data);
+              $.fancybox.hideActivity();
+            });
+          },
+          width: 800,
+          height: 520
+      }
+
+      $('#locality_selector_link').fancybox(locality_selector_opts);
+
+      $('#show_locality_selector').click(function(e) {
+          e.preventDefault();
+          $('#locality_selector_link').click();
+      });
+
       $(".insert-symbol-button").each(function(index) {
         $(this).html($(this).attr("symbol"));
       });
@@ -111,9 +134,7 @@
       $(".insert-symbol-button").click(function(e) {
           e.preventDefault();
           var input = $("#recordValues\\.0\\.occurrenceRemarks");
-          var text = $(input).val();
-          var char = $(this).attr('symbol');
-          $(input).val(text + char);
+          $(input).insertAtCaret($(this).attr('symbol'));
           $(input).focus();
       });
 
@@ -279,7 +300,7 @@
         </div>
     </g:hasErrors>
 
-    <button id="showImageButton">Show image in seperate window</button>
+    %{--<button id="showImageButton">Show image in seperate window</button>--}%
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
@@ -348,17 +369,33 @@
 
                     <table>
                         <thead>
-                          <tr>
-                            <th>
-                              <h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
-                            </th>
-                          </tr>
+                            <tr>
+                                <th>
+                                    <h3>1. Transcribe All Text</h3> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="padding-bottom: 0px;">
-                                    <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}"
-                                              id="recordValues.0.occurrenceRemarks" rows="12" cols="40" style="width: 100%"/>
+                              <td style="padding-bottom:0px; margin-bottom:0px; padding-top:0px;">
+                                Verbatim Locality
+                              </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top:0px; margin-top: 0px; margin-bottom: 0px; padding-bottom: 0px">
+                                    <textarea name="recordValues.0.verbatimLocality" cols="38" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
+                                    <a href='#' class='fieldHelp' title='Enter the locality as it appears in the label(s)'><span class='help-container'>&nbsp;</span></a>
+                                </td>
+                            </tr>
+                            <tr>
+                              <td style="padding-bottom:0px; margin-bottom:0px; margin-top: 0px; padding-top:0px">
+                                All other text
+                              </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-bottom: 0px; margin-top:0px">
+                                    <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="4" cols="38" />
+                                    <a href='#' class='fieldHelp' title='Enter all text apart from locality here - as it appears on the label(s)'><span class='help-container'>&nbsp;</span></a>
                                 </td>
                             </tr>
                             <tr>
@@ -388,10 +425,15 @@
                             </tr>
                         </thead>
                         <tbody>
+                        <tr>
+                          <td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em">
+                            <span class="step_heading">Step 1</span>
+                          </td>
+                        </tr>
                         <tr class="prop">
                           <td class="name"/>
                           <td class="name" style="text-align: left;" >
-                            <span class="step_heading">a. Enter Collector and Event date</span>
+                            <span class="step_heading">Enter Collector and Event date</span>
                           </td>
                         </tr>
                         <tr class="prop">
@@ -408,16 +450,24 @@
 
                         <g:fieldFromTemplateField templateField="${TemplateField.findByFieldType(DarwinCoreField.eventDate)}" recordValues="${recordValues}" />
 
-                        <tr class="prop">
-                          <td class="name" style="" >
-                            <span class="step_heading">AND EITHER</span>
+                        <tr>
+                          <td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em">
+                            <span class="step_heading">Step 2</span>
                           </td>
                         </tr>
 
                         <tr class="prop">
-                          <td class="name"></td>
+                          <td class="name" style="text-align: left; padding-left: 50px" >
+                            <span class="step_heading" style="">EITHER</span>
+                          </td>
+                        </tr>
+
+                        <tr class="prop">
+                          <td class="name" style="text-align: left; padding-left: 100px" colspan="3"><span class="step_heading">a. Find Existing Collection Event</span></td>
+                        <tr>
+                          <tr>
+                          <td/>
                           <td class="name" colspan="4" style="text-align: left" >
-                            <span class="step_heading">b. Find Existing Collection Event</span>&nbsp;
                             <button id="show_collection_event_selector">Find existing collection event</button>
                             <div style="display: none;">
                               <a id="collection_event_selector_link" href="#collection_event_selector"></a>
@@ -426,44 +476,53 @@
                                 </div>
                               </div>
                             </div>
-
                             <a href="#" class="fieldHelp" title="Find an existing collection event based on the collector names and the event date you have entered."><span class="help-container">&nbsp;</span></a>
                           </td>
 
                         </tr>
 
                         <tr class="prop">
-                          <td class="name" style="" >
+                          <td class="name" style="text-align: left; padding-left: 50px" >
                             <span class="step_heading">OR</span>
                           </td>
                         </tr>
 
                         <tr class="prop">
-                          <td class="name"></td>
-                          <td class="name" colspan="4" style="text-align: left" >
-                            <span class="step_heading">c. Create a new Collection event</span> &ndash; you have already entered a collector and date id a. above so now you need to enter a locality
+                          <td class="name" colspan="4" style="text-align: left; padding-left: 100px" colspan="3" >
+                            <span class="step_heading">b. Create a new Collection event</span> &ndash; you have already entered a collector and date above so now you need to enter a locality
                           </td>
                         </tr>
 
                         <tr>
                           <td/>
-                          <td colspan="3"><div>i. Find an existing locality or, where none exists, enter the locality exactly as it appears on the label/s - (if a locality in the list is an
-                          exact match except for differences in punctuation (e.g. spaces, commas or full stops/periods) please select it.)</div></td>
+                          <td colspan="3"><div><b>i. Find an existing locality</b>: Click on <em>Find existing locality</em> and use the locality search tool to find a suitable location from the database. If no suitable location is found close the tool and proceed to Step 2 ii below</div></td>
                         </tr>
 
                         <tr class='prop'>
                             <td class='name'>
-                                Verbatim Locality
                             </td>
-                            <td class='value'>
-                                <textarea name="recordValues.0.verbatimLocality" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
-                              <a href='#' class='fieldHelp' title='Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label'><span class='help-container'>&nbsp;</span></a>
+                            <td class="name" colspan="4" style="text-align: left" >
+                              <button id="show_locality_selector">Find existing locality</button>
+                              <div style="display: none;">
+                                <a id="locality_selector_link" href="#locality_selector"></a>
+                                <div id="locality_selector" >
+                                  <div id="locality_selector_content">
+                                  </div>
+                                </div>
+                              </div>
                             </td>
+                        </tr>
+
+                        <tr class="prop">
+                          <td class="name">
+                            OR
+                          </td>
                         </tr>
 
                         <tr>
                           <td/>
-                          <td colspan="3"><div>ii. Confirm or select a latitude, longitude and location uncertainty</div></td>
+                          <td colspan="3"><div><b>ii. Create a new locality</b> if no existing locality can be found use the mapping tool to create a new one. Type the location details in the entry box in the tool until you get a
+                          suitable location. Please also choose a suitable coordinate uncertainty in metres</div></td>
                         </tr>
 
                         <tr>
