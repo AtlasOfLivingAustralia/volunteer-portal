@@ -4,10 +4,10 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVWriter
 import java.text.SimpleDateFormat
-import javax.servlet.http.HttpServletResponse
 import groovy.sql.Sql
 import javax.sql.DataSource
 import java.sql.ResultSet
+import javax.servlet.http.HttpServletRequest
 
 class AjaxController {
 
@@ -175,6 +175,10 @@ class AjaxController {
         }
 
         writer.flush()
+    }
+
+    def keepSessionAlive = {
+        render(['status':'ok', 'currentTime': formatDate(date: new Date(), format: "dd MMM yyyy hh:mm:ss") ] as JSON)
     }
 
     private def setNoCache() {

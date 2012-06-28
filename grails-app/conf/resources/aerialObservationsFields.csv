@@ -1,0 +1,12 @@
+eventDate,Date,,none,text,0,0,"Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD",
+fieldNumber,Aircraft,,none,text,0,0,,
+occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",
+sightingCount,Number of sightings,0,none,hidden,0,0,"",,
+year,Year,,none,text,0,0,,
+datasetID,Data set id,,none,text,0,0,,
+scientificName,Species,,dataset,text,0,0,"This will consist of two words, the first being the Genus and the second the species. Begin entering the Genus name first and an autocomplete list will offer you options as to what the name might be. Choose the one that matches exactly the text on the label (or which you think is the same name). If there is no match then enter the full text yourself",
+individualCount,No. Entries on page,0,dataset,select,0,0,,
+measurementValue,Size,,dataset,text,0,0,,
+verbatimLocality,Verbatim Location,,dataset,textarea,0,0,"",,default
+fieldNotes,Conditions - water/weather,,dataset,text,0,0,,
+eventRemarks,Behaviour/Interaction,,dataset,text,0,0,,

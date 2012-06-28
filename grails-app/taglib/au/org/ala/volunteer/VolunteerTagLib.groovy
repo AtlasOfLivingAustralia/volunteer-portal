@@ -1556,5 +1556,95 @@ class VolunteerTagLib {
 
     }
 
+    /**
+     *
+     */
+    def timeoutPopup = { attrs, body ->
+
+        def mb = new MarkupBuilder(out)
+
+        mb.a(href:'#promptUser', id: 'promptUserLink' /*, style: 'display: none'*/ ) {
+            mkp.yield("Show prompt to save");
+        }
+        mb.div(style: "display: none") {
+            div(id: "promptUser") {
+                h2("Lock will expire soon!")
+                span("The lock on this record is about to expire.")
+                br()
+                span("Please save your changes to avoid losing work")
+                br()
+                span(class:'button') {
+                    input(type:'button', value:'Save unfinished record', class:'saveUnfinishedTaskButton')
+                }
+                br()
+                span {
+                    mkp.yield("NOTE: The page will be automatically saved in ")
+                    span(id:'reloadCounter') {
+                        mkp.yield("5")
+                    }
+                    mkp.yield(" minutes if no action is taken.")
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    def timeoutScriptFragment = { attrs, body ->
+
+        def taskLockTimeout = 90;
+        def keepAliveInterval = 10;
+
+        out.write("""
+
+            // prompt user to save if page has been open for too long
+            if (!VP_CONF.isReadonly && !VP_CONF.validator) {
+                window.setTimeout(function() {
+                  \$('#promptUserLink').click()
+                }, ${taskLockTimeout} * 60 * 1000);
+            }
+
+            // timeout on page to prompt user to save or reload
+            \$("#promptUserLink").fancybox({
+                modal: false,
+                centerOnScroll: true,
+                hideOnOverlayClick: false,
+                padding: 20,
+                onComplete: function() {
+                    var i = 5; // minutes to countdown before reloading page
+                    var countdownInterval = 1 * 60 * 1000;
+                    function countDownByOne() {
+                        i--;
+                        \$("#reloadCounter").html(i);
+                        if (i > 0) {
+                            window.setTimeout(countDownByOne, countdownInterval);
+                        } else {
+                            clickSaveButton();
+                        }
+                    }
+                    window.setTimeout(countDownByOne, countdownInterval);
+                }
+            });
+
+          \$(".saveUnfinishedTaskButton").click(function(e) {
+              e.preventDefault();
+              clickSaveButton();
+          });
+
+          var intervalSeconds = 60 * ${keepAliveInterval};
+          // Set up the session keep alive
+          setInterval(function() {
+            \$.ajax("${createLink(controller: 'ajax', action:'keepSessionAlive')}").done(function(data) {
+               console.log(data);
+            });
+          }, intervalSeconds * 1000);
+
+          function clickSaveButton() {
+            \$(\":input[name='_action_save']\").click();
+          }
+
+        """)
+    }
 
 }

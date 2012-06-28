@@ -27,6 +27,13 @@
 
   <script type="text/javascript">
 
+      $(".selectLocalityButton").click(function(e) {
+          e.preventDefault();
+          bindToLocality($(this).attr("localityId"));
+          $.fancybox.close();
+      });
+
+
       $('#searchResultsStatus').text('${localities.size()} matching ${localities.size() == 1 ? "locality" : "localities"}');
 
       localityMap.removeMarkers();
@@ -63,7 +70,7 @@
                 localityMap.fitZoom();
                 correctZoom(localityMap);
             } catch (ex) {
-                alert(ex)
+                console.log(ex);
             }
          }
       });

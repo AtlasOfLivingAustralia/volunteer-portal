@@ -27,13 +27,13 @@
 
 
     <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
-    <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
+    %{--<link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>--}%
 
     %{--<script language="JavaScript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>--}%
     <g:javascript library="application" />
     %{--<g:javascript library="jquery-1.7.min"/>--}%
     <g:javascript library="jquery" plugin="jquery"/>
-    <g:javascript library="jquery-ui-1.8.14.custom-notabs.min"/>
+    %{--<g:javascript library="jquery-ui-1.8.14.custom-notabs.min"/>--}%
     <tinyMce:resources />
     <script type="text/javascript">
         tinyMCE.init({

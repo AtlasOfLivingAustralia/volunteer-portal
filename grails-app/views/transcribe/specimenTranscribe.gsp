@@ -290,22 +290,8 @@
                     </cl:isLoggedIn>
                 </g:else>
             </div>
-            <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>
-            <div style="display: none">
-                <div id="promptUser">
-                    <h2>Lock has Expired</h2>
-                    The lock on this record is about to expire.<br/>
-                    Please either save your changes:<br/>
-                    <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                    <br>
-                    Or reload the page (Note: any changes you may have made will be lost)
-                    <br/>
-                    <input type="button" value="Reload Page" onclick="window.location.reload()"/>
-                    <br/>
-                    NOTE: the page will be automatically saved in <span id="reloadCounter">5</span> minutes if no action if taken
-                </div>
-            </div>
+
+            <cl:timeoutPopup />
         </g:form>
     </g:if>
     <g:else>

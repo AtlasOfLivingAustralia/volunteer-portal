@@ -41,7 +41,9 @@ class WebUtils {
                     // Also see http://blog.saddey.net/2010/02/06/grails-utf-8-form-input-garbled-when-running-within-tomcat/ which indicates
                     // there maybe something we can do configuration wise to get rid of this hack
 
-                    keyValue.value = new String(keyValue.value.getBytes("8859_1"), "utf-8")
+                    if (keyValue instanceof String) {
+                        keyValue.value = new String(keyValue.value.getBytes("8859_1"), "utf-8")
+                    } // Todo: could be an array in the case where the same fieldname is included more than once in the submission!
                 }
 
                 idx = idx + 1

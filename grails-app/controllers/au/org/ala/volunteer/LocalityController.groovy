@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import org.springframework.web.multipart.MultipartFile
+import grails.converters.JSON
 
 class LocalityController {
 
@@ -42,4 +43,20 @@ class LocalityController {
             return [taskInstance: taskInstance, localities: localities]
         }
     }
+
+    def getLocalityJSON = {
+        Locality locality = null;
+        if (params.localityId) {
+            locality = Locality.get(params.long("localityId"))
+        } else if (params.externalLocalityId) {
+            locality = Locality.findByExternalLocalityId(params.long('externalLocalityId'));
+        }
+
+        if (locality) {
+            render(locality as JSON)
+        } else {
+            return(null as JSON)
+        }
+    }
+
 }

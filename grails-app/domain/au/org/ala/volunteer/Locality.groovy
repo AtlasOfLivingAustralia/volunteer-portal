@@ -24,4 +24,5 @@ class Locality {
         longitudeDMS nullable: true
         externalLocalityId nullable: true
     }
+
 }

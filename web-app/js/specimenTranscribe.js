@@ -331,7 +331,7 @@ $(document).ready(function() {
         }
     });
 
-    $(":input.verbatimLocality").autocomplete(VP_CONF.picklistAutocompleteUrl, {
+    $(":input.verbatimLocality").not('[noAutoComplete]').autocomplete(VP_CONF.picklistAutocompleteUrl, {
         extraParams: {
             picklist: "verbatimLocality"
         },
@@ -538,7 +538,7 @@ $(document).ready(function() {
 
     // timeout on page to prompt user to save or reload
     $("#promptUserLink").fancybox({
-        modal: true,
+        modal: false,
         centerOnScroll: true,
         hideOnOverlayClick: false,
         //title: "Alert - lock has expired",
@@ -561,13 +561,31 @@ $(document).ready(function() {
         }
     });
 
+    $(".saveUnfinishedTaskButton").click(function(e) {
+        e.preventDefault();
+        clickSaveButton();
+    });
+
+    function clickSaveButton() {
+      $(":input[name='_action_save']").click();
+    }
+
+    var intervalSeconds = 60 * 5;
+    // Set up the session keep alive
+    setInterval(function() {
+      $.ajax("${createLink(controller: 'ajax', action:'keepSessionAlive')}").done(function(data) {
+         console.log(data);
+      });
+    }, intervalSeconds * 1000);
+
     var isReadonly = VP_CONF.isReadonly;
     if (isReadonly) {
         // readonly more
         $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
     } else {
-        // editting mode
-        //window.setTimeout(function() { $("#promptUserLink").click(); }, 25 * 60 * 1000);
+        // editing mode
+        var timeoutMinutes = 90;
+        window.setTimeout(function() { $("#promptUserLink").click(); }, timeoutMinutes * 60 * 1000);
     }
 
     // disable submit if validated

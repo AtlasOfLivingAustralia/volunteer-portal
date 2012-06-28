@@ -100,9 +100,18 @@ class CollectionEventController {
     }
 
     def getCollectionEventJSON = {
-        def event = CollectionEvent.get(params.long("collectionEventId"))
+
+        CollectionEvent event = null;
+        if (params.collectionEventId) {
+            event = CollectionEvent.get(params.long("collectionEventId"))
+        } else if (params.externalCollectionEventId) {
+            event = CollectionEvent.findByExternalEventId(params.long('externalCollectionEventId'));
+        }
+
         if (event) {
             render(event as JSON)
+        } else {
+            return(null as JSON)
         }
     }
 

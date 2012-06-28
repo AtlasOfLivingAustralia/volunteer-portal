@@ -93,12 +93,12 @@
           height: 520
       }
 
-      $('#collection_event_selector_link').fancybox(collection_event_selector_opts);
+      $('#collectionEventSelectorLink').fancybox(collection_event_selector_opts);
 
       $('#show_collection_event_selector').click(function(e) {
           e.preventDefault();
           if (checkFindCollectionEventAvailability()) {
-              $('#collection_event_selector_link').click();
+              $('#collectionEventSelectorLink').click();
           } else {
               alert("You must first enter both a date and at least one collector!")
           }
@@ -122,7 +122,7 @@
 
       $('#locality_selector_link').fancybox(locality_selector_opts);
 
-      $('#show_locality_selector').click(function(e) {
+      $('#showLocalitySelector').click(function(e) {
           e.preventDefault();
           $('#locality_selector_link').click();
       });
@@ -159,9 +159,23 @@
           body.css('display', 'none');
           $(this).text("Expand")
         }
-      })
+      });
+
+      updateBindStatus();
 
     });
+
+    function updateBindStatus() {
+      var eventId = getFieldValue("eventID");
+      if ($.isNumeric(eventId)) {
+        updateEventBindStatus(eventId)
+        return;
+      }
+      var localityId = getFieldValue("locationID");
+      if ($.isNumeric(localityId)) {
+        updateLocalityBindStatus(localityId);
+      }
+    }
 
     function checkFindCollectionEventAvailability() {
       var hasCollector = false;
@@ -178,24 +192,139 @@
         }
       });
 
-      if (hasCollector && hasDate) {
+      if (hasCollector || hasDate) {
         return true;
       }
 
       return false;
     }
 
+    function clearLocalityFields() {
+      setFieldValue("locality", "");
+      setFieldValue("stateProvince", "");
+      setFieldValue("decimalLatitude", "");
+      setFieldValue("country", "");
+      setFieldValue("decimalLongitude");
+      setFieldValue("coordinateUncertaintyInMeters", "");
+    }
+
     function bindToCollectionEvent(eventId) {
-      var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?collectionEventId=" + eventId;
-      $.ajax(url).done(function (collectionEvent) {
-        setFieldValue('eventID', collectionEvent.externalEventId)
-        setFieldValue('locationID', collectionEvent.externalLocalityId)
-        setFieldValue('locality', collectionEvent.locality)
-        setFieldValue('decimalLatitude', collectionEvent.latitude)
-        setFieldValue('decimalLongitude', collectionEvent.longitude)
-        setFieldValue('stateProvince', collectionEvent.state)
-        setFieldValue('country', collectionEvent.country)
-      });
+      if (eventId == null) {
+        setFieldValue('eventID', "");
+        setFieldValue('locationID', "");
+        updateEventBindStatus(null);
+      } else {
+        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?collectionEventId=" + eventId;
+        $.ajax(url).done(function (collectionEvent) {
+          clearLocalityFields();
+          setFieldValue('eventID', collectionEvent.externalEventId);
+          setFieldValue('locationID', collectionEvent.externalLocalityId);
+          updateEventBindStatus(collectionEvent.externalEventId);
+        });
+      }
+    }
+
+    function bindToLocality(localityId) {
+      if (localityId == null) {
+        setFieldValue('locationID', "");
+        updateLocalityBindStatus(null);
+      } else {
+        var url = "${createLink(controller: 'locality', action: 'getLocalityJSON')}?localityId=" + localityId;
+        $.ajax(url).done(function (locality) {
+          clearLocalityFields();
+          setFieldValue('locationID', locality.externalLocalityId)
+          updateLocalityBindStatus(locality.externalLocalityId);
+        });
+      }
+
+    }
+
+    function disableSection(classSelector) {
+      $(classSelector + " :input").attr("disabled", "true");
+      $(classSelector).css("opacity","0.5");
+    }
+
+    function enableSection(classSelector) {
+      $(classSelector + " :input").removeAttr("disabled");
+      $(classSelector).css("opacity","1");
+    }
+
+    function renderLocalityDescription(locality) {
+      var s = "";
+
+      if (locality.locality) {
+        s += "<em>" + locality.locality + "</em>";
+      }
+
+      if (locality.township) {
+        if (s) s += ', ';
+        s+= locality.township;
+      }
+
+      if (locality.state) {
+        if (s) s += ', ';
+        s+= locality.state;
+      }
+
+      if (locality.country) {
+        if (s) s += ', ';
+        s += locality.country;
+      }
+
+      s += " (" + locality.longitude + ", " + locality.latitude + ")";
+
+      return s;
+    }
+
+    function updateLocalityBindStatus(externalLocalityId) {
+
+      if($.isNumeric(externalLocalityId)) {
+        // its an external event id need to extract from server...
+        var url = "${createLink(controller: 'locality', action: 'getLocalityJSON')}?externalLocalityId=" + externalLocalityId;
+        $.ajax(url).done(function (locality) {
+          var localityDesc = '<span>' + renderLocalityDescription(locality) + '</span>';
+          var html = "This specimen is linked with an existing Locality: <br/>" + localityDesc + '<span style="float:right"><a href="#" id="unlinkLocality">Undo</a></span>'
+          $("#boundLocality").html(html).css("display","block");
+          $("#unlinkLocality").click(function(e) {
+            e.preventDefault();
+            bindToLocality(null);
+          });
+          disableSection(".collectionEventSection");
+          disableSection(".newLocalitySection");
+        });
+
+      } else {
+        $("#boundLocality").css("display","none");
+        enableSection(".collectionEventSection");
+        enableSection(".newLocalitySection");
+      }
+    }
+
+
+    function updateEventBindStatus(externalEventId) {
+
+      if($.isNumeric(externalEventId)) {
+        // its an external event id
+        // need to extract from server...
+        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId;
+        $.ajax(url).done(function (collectionEvent) {
+          var eventDesc = '<span>' + renderLocalityDescription(collectionEvent) + '<br/>' + collectionEvent.collector + " (" + collectionEvent.eventDate + ")";
+          var html = "This specimen is linked with an existing collection event: <br/>" + eventDesc + '</span><span style="float:right"><a href="#" id="unlinkCollectionEvent">Undo</a></span>'
+          $("#boundCollectionEvent").html(html).css("display","block");
+          $("#unlinkCollectionEvent").click(function(e) {
+            e.preventDefault();
+            bindToCollectionEvent(null);
+          });
+          disableSection(".existingLocalitySection");
+          disableSection(".newLocalitySection");
+        });
+
+      } else {
+        $("#boundCollectionEvent").css("display","none");
+        enableSection(".existingLocalitySection");
+        enableSection(".newLocalitySection");
+      }
+
     }
 
     function setFieldValue(fieldName, value) {
@@ -203,20 +332,13 @@
         $("#" + id).val(value);
     }
 
-    function bindToCollectionEventLocality(eventId) {
-      var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?collectionEventId=" + eventId;
-      $.ajax(url).done(function (collectionEvent) {
-        setFieldValue('eventID', '')
-        setFieldValue('locationID', collectionEvent.externalLocalityId)
-        setFieldValue('locality', collectionEvent.locality)
-        setFieldValue('decimalLatitude', collectionEvent.latitude)
-        setFieldValue('decimalLongitude', collectionEvent.longitude)
-        setFieldValue('stateProvince', collectionEvent.state)
-        setFieldValue('country', collectionEvent.country)
-      });
+    function getFieldValue(fieldName) {
+      var id = "recordValues\\.0\\." + fieldName;
+      return $("#" + id).val();
     }
 
   </script>
+
   <style type="text/css">
 
     button:disabled {
@@ -263,6 +385,13 @@
 
     .step_heading {
       font-weight: bold;
+    }
+
+    .boundInfo {
+      background-color: #D2F5C4;
+      border: 1px solid #A2F283;
+      padding: 5px;
+      margin-right: 30px;
     }
 
   </style>
@@ -383,7 +512,7 @@
                             </tr>
                             <tr>
                                 <td style="padding-top:0px; margin-top: 0px; margin-bottom: 0px; padding-bottom: 0px">
-                                    <textarea name="recordValues.0.verbatimLocality" cols="38" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
+                                    <textarea noAutoComplete="true" name="recordValues.0.verbatimLocality" cols="38" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
                                     <a href='#' class='fieldHelp' title='Enter the locality as it appears in the label(s)'><span class='help-container'>&nbsp;</span></a>
                                 </td>
                             </tr>
@@ -450,27 +579,23 @@
 
                         <g:fieldFromTemplateField templateField="${TemplateField.findByFieldType(DarwinCoreField.eventDate)}" recordValues="${recordValues}" />
 
-                        <tr>
-                          <td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em">
-                            <span class="step_heading">Step 2</span>
-                          </td>
-                        </tr>
+                        %{--<tr>--}%
+                          %{--<td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em; vertical-align: middle;">--}%
+                            %{--<span class="step_heading">Step 2&nbsp;-&nbsp;EITHER</span>--}%
+                          %{--</td>--}%
+                          %{--<td class="name" style="text-align: left;" colspan="3"><span class="step_heading">a. Find Existing Collection Event</span>--}%
+                          %{--</td>--}%
+                        %{--</tr>--}%
 
-                        <tr class="prop">
-                          <td class="name" style="text-align: left; padding-left: 50px" >
-                            <span class="step_heading" style="">EITHER</span>
-                          </td>
-                        </tr>
-
-                        <tr class="prop">
-                          <td class="name" style="text-align: left; padding-left: 100px" colspan="3"><span class="step_heading">a. Find Existing Collection Event</span></td>
                         <tr>
                           <tr>
-                          <td/>
-                          <td class="name" colspan="4" style="text-align: left" >
-                            <button id="show_collection_event_selector">Find existing collection event</button>
+                          <td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em; vertical-align: top;">
+                            <span class="step_heading">Step 2&nbsp;-&nbsp;EITHER</span>
+                          </td>
+                          <td class="name collectionEventSection" style="text-align: left; vertical-align: top" >
+                            <span><b>a.</b>&nbsp;</span><button id="show_collection_event_selector">Find existing collection event</button>
                             <div style="display: none;">
-                              <a id="collection_event_selector_link" href="#collection_event_selector"></a>
+                              <a id="collectionEventSelectorLink" href="#collection_event_selector"></a>
                               <div id="collection_event_selector" >
                                 <div id="collection_event_selector_content">
                                 </div>
@@ -478,31 +603,32 @@
                             </div>
                             <a href="#" class="fieldHelp" title="Find an existing collection event based on the collector names and the event date you have entered."><span class="help-container">&nbsp;</span></a>
                           </td>
+                          <td colspan="3" style="border-bottom: none">
+                            <div id="boundCollectionEvent" class="boundInfo" style="display:none"></div>
+                          </td>
 
                         </tr>
 
-                        <tr class="prop">
+                        <tr class="prop existingLocalitySection">
                           <td class="name" style="text-align: left; padding-left: 50px" >
                             <span class="step_heading">OR</span>
                           </td>
-                        </tr>
-
-                        <tr class="prop">
-                          <td class="name" colspan="4" style="text-align: left; padding-left: 100px" colspan="3" >
+                          <td class="name" colspan="3" style="text-align: left;" colspan="3" >
                             <span class="step_heading">b. Create a new Collection event</span> &ndash; you have already entered a collector and date above so now you need to enter a locality
                           </td>
                         </tr>
 
-                        <tr>
-                          <td/>
-                          <td colspan="3"><div><b>i. Find an existing locality</b>: Click on <em>Find existing locality</em> and use the locality search tool to find a suitable location from the database. If no suitable location is found close the tool and proceed to Step 2 ii below</div></td>
-                        </tr>
+                        %{--<tr class="prop existingLocalitySection">--}%
+                          %{--<td/>--}%
+                          %{--<td colspan="3"><b>i. Find an existing locality</b>:--}%
+                            %{--<a href="#" class="fieldHelp" title="Click on <em>Find existing locality</em> and use the locality search tool to find a suitable location from the database. If no suitable location is found close the tool and proceed to Step 2 ii below"><span class="help-container">&nbsp;</span></a>--}%
+                          %{--</td>--}%
+                        %{--</tr>--}%
 
-                        <tr class='prop'>
-                            <td class='name'>
-                            </td>
-                            <td class="name" colspan="4" style="text-align: left" >
-                              <button id="show_locality_selector">Find existing locality</button>
+                        <tr class='prop existingLocalitySection'>
+                            <td/>
+                            <td class="name" style="text-align: left" >
+                              <span><b>i. </b>&nbsp;</span><button id="showLocalitySelector">Find existing locality</button>
                               <div style="display: none;">
                                 <a id="locality_selector_link" href="#locality_selector"></a>
                                 <div id="locality_selector" >
@@ -510,39 +636,46 @@
                                   </div>
                                 </div>
                               </div>
+                              <span>&nbsp;<b>OR</b></span>
+                            </td>
+                            <td colspan="3" style="border-bottom: none">
+                              <div id="boundLocality" class="boundInfo" style="display:none"></div>
                             </td>
                         </tr>
 
-                        <tr class="prop">
-                          <td class="name">
-                            OR
-                          </td>
-                        </tr>
+                        %{--<tr class="prop">--}%
+                          %{--<td></td>--}%
+                          %{--<td class="name" style="text-align: left">--}%
+                            %{--<b>OR</b>--}%
+                          %{--</td>--}%
+                        %{--</tr>--}%
 
-                        <tr>
+                        <tr class="prop newLocalitySection">
                           <td/>
-                          <td colspan="3"><div><b>ii. Create a new locality</b> if no existing locality can be found use the mapping tool to create a new one. Type the location details in the entry box in the tool until you get a
-                          suitable location. Please also choose a suitable coordinate uncertainty in metres</div></td>
+                          <td colspan="3"><b>ii. Create a new locality</b>
+                            <a href="#" class="fieldHelp" title="if no existing locality can be found use the mapping tool to create a new one. Type the location details in the entry box in the tool until you get a
+                                                      suitable location. Please also choose a suitable coordinate uncertainty in metres"><span class="help-container">&nbsp;</span></a>
+                            </td>
                         </tr>
 
-                        <tr>
+                        <tr class="prop newLocalitySection">
                           <td/>
                           <td>
                             <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use mapping tool</button>
                           </td>
                         </tr>
 
-                        <tr class="prop">
+                        <tr class="prop newLocalitySection" >
                           <g:fieldTDPair fieldType="${DarwinCoreField.locality}" recordValues="${recordValues}" task="${taskInstance}" />
                           <g:fieldTDPair fieldType="${DarwinCoreField.stateProvince}" recordValues="${recordValues}" task="${taskInstance}" />
                         </tr>
 
-                        <tr class="prop">
+                        <tr class="prop newLocalitySection">
                           <g:fieldTDPair fieldType="${DarwinCoreField.decimalLatitude}" recordValues="${recordValues}" task="${taskInstance}" />
                           <g:fieldTDPair fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" />
                         </tr>
 
-                        <tr class="prop">
+                        <tr class="prop newLocalitySection">
                           <g:fieldTDPair fieldType="${DarwinCoreField.decimalLongitude}" recordValues="${recordValues}" task="${taskInstance}" />
                           <g:fieldTDPair fieldType="${DarwinCoreField.coordinateUncertaintyInMeters}" recordValues="${recordValues}" task="${taskInstance}" />
                         </tr>
@@ -662,8 +795,6 @@
                 </div>
             </div>
 
-
-
             <div class="vp-buttons" style="clear: both">
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                 <g:if test="${validator}">
@@ -685,22 +816,8 @@
                     </cl:isLoggedIn>
                 </g:else>
             </div>
-            <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>
-            <div style="display: none">
-                <div id="promptUser">
-                    <h2>Lock has Expired</h2>
-                    The lock on this record is about to expire.<br/>
-                    Please either save your changes:<br/>
-                    <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                    <br>
-                    Or reload the page (Note: any changes you may have made will be lost)
-                    <br/>
-                    <input type="button" value="Reload Page" onclick="window.location.reload()"/>
-                    <br/>
-                    NOTE: the page will be automatically saved in <span id="reloadCounter">5</span> minutes if no action if taken
-                </div>
-            </div>
+
+            <cl:timeoutPopup />
         </g:form>
     </g:if>
     <g:else>

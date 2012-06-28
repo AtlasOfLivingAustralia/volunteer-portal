@@ -49,6 +49,9 @@
         <param-value>@security.cas.authenticateOnlyIfLoggedInPattern@</param-value>
     </context-param>
 
+    <listener>
+        <listener-class>au.org.ala.volunteer.BVPSessionListener</listener-class>
+    </listener>
 
     <!-- CAS Authentication Service filters -->
     <filter>

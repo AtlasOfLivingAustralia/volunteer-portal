@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import au.com.bytecode.opencsv.CSVWriter
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 class ExportService {
 
@@ -32,79 +33,51 @@ class ExportService {
         writer.close()
     }
 
+    def export_AerialObservations = { Project project, taskList, valueMap, List fieldNames, response ->
+        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset],[])
+    }
+
     def export_FieldNoteBook = { Project project, taskList, valueMap, List fieldNames, response ->
-
-        // Work out which fields are a repeating group...
-        def templateFields = TemplateField.findAllByTemplate(project.template)
-        def dataSetFields = templateFields.findAll {
-            it.category == FieldCategory.dataset
-        }
-        def dataSetFieldNames = dataSetFields.collect { it.fieldType.toString() }
-        // These fields are in a repeating group, and will be exported in a seperated (normalized) file, so remove
-        // them from the list of columns to go in the main file...
-        fieldNames.removeAll { dataSetFieldNames.contains(it) }
-
-        fieldNames.remove("occurrenceRemarks")  // this gets handled specially for journal tasks...
-
-        def filename = "Project-" + project.featuredLabel.replaceAll(" ","") + "-DwC"
-        response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
-        response.setContentType("application/zip, application/octet-stream");
-
-        def zipStream = new ZipOutputStream(response.getOutputStream())
-        OutputStream bos = new BufferedOutputStream(zipStream);
-        OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
-
-        CSVWriter writer = new CSVWriter(outputwriter);
-
-        zipStream.putNextEntry(new ZipEntry("tasks.csv"));
-        // write header line (field names)
-        writer.writeNext(fieldNames.toArray(new String[0]))
-
-        taskList.each { task ->
-            String[] values = getFieldsForTask(task, fieldNames, valueMap)
-            writer.writeNext(values)
-        }
-        writer.flush();
-        zipStream.closeEntry();
-
-        // Dataset files...
-        zipStream.putNextEntry(new ZipEntry(dataSetFieldNames.join("_") +".csv"))
-        exportDataSet(taskList, valueMap, writer,dataSetFieldNames)
-        writer.flush();
-        zipStream.closeEntry();
-
-        // Occurrence remarks (transcription)
-        zipStream.putNextEntry(new ZipEntry("occurrenceRemarks.csv"))
-        exportDataSet(taskList, valueMap, writer, ['occurrenceRemarks'])
-        writer.flush();
-        zipStream.closeEntry();
-
-        zipStream.putNextEntry(new ZipEntry("taskComments.csv"))
-        exportTaskComments(taskList, writer);
-        writer.flush();
-        zipStream.closeEntry()
-
-        zipStream.close();
+        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['occurrenceRemarks'])
     }
 
     def export_SpecimenLabel = { Project project, taskList, valueMap, List fieldNames, response ->
-        // Work out which fields are a repeating group...
-        def templateFields = TemplateField.findAllByTemplate(project.template)
+        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['recordedBy'])
+    }
 
-        def dataSetFields = templateFields.findAll {
-            it.category == FieldCategory.dataset
+    def export_FieldNoteBookDoublePage = export_FieldNoteBook
+
+    def export_Journal = export_FieldNoteBook
+
+
+
+    private void zipExport(Project project, taskList, valueMap, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
+        def datasetCategoryFields = [:]
+        if (datasetCategories) {
+            datasetCategories.each { category ->
+                // Work out which fields are a repeating group...
+                def templateFields = TemplateField.findAllByTemplate(project.template)
+                def dataSetFields = templateFields.findAll { it.category == category }
+                def dataSetFieldNames = dataSetFields.collect { it.fieldType.toString() }
+                // These fields are in a repeating group, and will be exported in a seperated (normalized) file, so remove
+                // them from the list of columns to go in the main file...
+                fieldNames.removeAll { dataSetFieldNames.contains(it) }
+                datasetCategoryFields[category] = dataSetFieldNames
+            }
         }
-        def dataSetFieldNames = dataSetFields.collect { it.fieldType.toString() }
-        // These fields are in a repeating group, and will be exported in a separated (normalized) file, so remove
-        // them from the list of columns to go in the main file...
-        fieldNames.removeAll { dataSetFieldNames.contains(it) }
 
-        fieldNames.remove("recordedBy")  // this gets handled specially for journal tasks...
+        if (otherRepeatingFields) {
+            otherRepeatingFields.each {
+                fieldNames.remove(it)  // this will get export in its own file
+            }
+        }
 
+        // Prepare the response for a zip file - use the project name as a basis of the filename
         def filename = "Project-" + project.featuredLabel.replaceAll(" ","") + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
         response.setContentType("application/zip, application/octet-stream");
 
+        // First up write out the main tasks file -all the remaining fields are single value only
         def zipStream = new ZipOutputStream(response.getOutputStream())
         OutputStream bos = new BufferedOutputStream(zipStream);
         OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
@@ -113,7 +86,7 @@ class ExportService {
 
         zipStream.putNextEntry(new ZipEntry("tasks.csv"));
         // write header line (field names)
-        writer.writeNext(fieldNames.toArray(new String[0]))
+        writer.writeNext((String[]) fieldNames.toArray(new String[0]))
 
         taskList.each { task ->
             String[] values = getFieldsForTask(task, fieldNames, valueMap)
@@ -122,24 +95,35 @@ class ExportService {
         writer.flush();
         zipStream.closeEntry();
 
-        // Dataset files...
-        zipStream.putNextEntry(new ZipEntry(dataSetFieldNames.join("_") +".csv"))
-        exportDataSet(taskList, valueMap, writer,dataSetFieldNames)
-        writer.flush();
-        zipStream.closeEntry();
+        // now for each repeating field category...
+        if (datasetCategoryFields) {
+            datasetCategoryFields.keySet().each { category ->
+                // Dataset files...
+                def dataSetFieldNames = datasetCategoryFields[category]
+                zipStream.putNextEntry(new ZipEntry(category.toString() +".csv"))
+                exportDataSet(taskList, valueMap, writer, dataSetFieldNames)
+                writer.flush();
+                zipStream.closeEntry();
+            }
+        }
+        // Now for the other repeating fields...
+        if (otherRepeatingFields) {
+            otherRepeatingFields.each {
+                zipStream.putNextEntry(new ZipEntry("${it}.csv"))
+                exportDataSet(taskList, valueMap, writer, [it])
+                writer.flush();
+                zipStream.closeEntry();
+            }
+        }
 
-        // Occurrence remarks (transcription)
-        zipStream.putNextEntry(new ZipEntry("recordedBy.csv"))
-        exportDataSet(taskList, valueMap, writer, ['recordedBy'])
-        writer.flush();
-        zipStream.closeEntry();
-
+        // And finally the task comments, if any
         zipStream.putNextEntry(new ZipEntry("taskComments.csv"))
         exportTaskComments(taskList, writer);
         writer.flush();
         zipStream.closeEntry()
 
         zipStream.close();
+
     }
 
     def exportTaskComments(List<Task> taskList, CSVWriter writer) {
@@ -154,13 +138,11 @@ class ExportService {
             }
             for (TaskComment comment : comments) {
                 List<String> outputValues = [task.id.toString(), task.externalIdentifier, comment.user.userId, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
+                writer.writeNext((String[]) outputValues.toArray(new String[0]))
             }
         }
     }
 
-    def export_FieldNoteBookDoublePage = export_FieldNoteBook
-
-    def export_Journal = export_FieldNoteBook
 
     private void exportDataSet(List<Task> taskList, Map valueMap, CSVWriter writer, List dataSetFieldNames) {
 

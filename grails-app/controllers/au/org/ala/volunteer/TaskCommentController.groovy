@@ -12,16 +12,22 @@ class TaskCommentController {
     }
 
     def saveComment = {
-        if (params.taskId && params.comment) {
-            def user = User.findByUserId(authService.username())
-            def task = Task.get(params.int("taskId"))
 
-            def taskComment = new TaskComment(user: user, task: task, date: new Date(), comment: params.comment)
-            taskComment.save(flush: true)
-            render([message: 'ok'] as JSON)
-        } else {
-            render([message: 'failed! Missing a required parameter'] as JSON)
+        println authService.username();
+
+        if (params.taskId && params.comment) {
+            def username = AuthenticationCookieUtils.getUserName(request)
+            if (username) {
+                def user = User.findByUserId(username)
+                def task = Task.get(params.int("taskId"))
+                def taskComment = new TaskComment(user: user, task: task, date: new Date(), comment: params.comment)
+                taskComment.save(flush: true)
+                render([message: 'ok'] as JSON)
+                return
+            }
         }
+
+        render([message: 'failed! Missing a required parameter'] as JSON)
     }
 
     def deleteComment = {

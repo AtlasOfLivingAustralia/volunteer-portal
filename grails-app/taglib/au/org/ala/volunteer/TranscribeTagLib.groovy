@@ -24,11 +24,12 @@ import groovy.xml.MarkupBuilder
  */
 class TranscribeTagLib {
 
-    private def renderWidgetTD(MarkupBuilder mb, TemplateField field, recordValues, recordIdx) {
+    private def renderWidgetTD(MarkupBuilder mb, TemplateField field, recordValues, recordIdx, attrs) {
 
         def name = field.fieldType.name()
 
         def cssClass = name
+        def tdcssClass = "td_" + name;
 
         if (name =~ /[Dd]ate/) {
             // so we can add a date widget with JQuery
@@ -38,13 +39,17 @@ class TranscribeTagLib {
             cssClass = cssClass + " validate[required]"
         }
 
-        mb.td(class:"value") {
+        mb.td(class:"value ${tdcssClass}" ) {
             def w // widget
             switch (field.type) {
                 case FieldType.textarea:
+                    int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
+                    if (attrs.rows) {
+                        rows = Integer.parseInt(attrs.rows);
+                    }
                     w = g.textArea(
                         name:"recordValues.${recordIdx}.${name}",
-                        rows: ((name == 'occurrenceRemarks') ? 6 : 4),
+                        rows: rows,
                         //style: 'width: 100%',
                         value:recordValues?.get(0)?.get(name),
                         'class':cssClass
@@ -132,7 +137,7 @@ class TranscribeTagLib {
         def trClass = (field.type == FieldType.hidden) ? 'hidden' : 'prop'
         mb.tr(class:trClass) {
             renderWidgetLabelTD(delegate, field);
-            renderWidgetTD(delegate, field, recordValues, recordIdx)
+            renderWidgetTD(delegate, field, recordValues, recordIdx, attrs)
         }
     }
 
@@ -160,7 +165,30 @@ class TranscribeTagLib {
         def mb = new groovy.xml.MarkupBuilder(out)
 
         renderWidgetLabelTD(mb, field);
-        renderWidgetTD(mb, field, recordValues, recordIdx)
+        renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
 
+    }
+    /**
+     *  Create the field label and form field for the requested
+     *  TemplateField type
+     *
+     *  @attr task REQUIRED
+     *  @attr fieldType REQUIRED
+     *  @attr recordValues REQUIRED
+     *  @attr recordIdx
+     */
+    def fieldWidget = { attrs, body ->
+        Task task = attrs.task;
+        DarwinCoreField fieldType = attrs.fieldType;
+        def template = task.project.template;
+
+        TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
+
+        def recordValues = attrs.recordValues
+        def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
+
+        // Uses MarkupBuilder to create HTML
+        def mb = new groovy.xml.MarkupBuilder(out)
+        renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
     }
 }

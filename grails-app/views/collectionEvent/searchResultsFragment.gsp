@@ -7,6 +7,10 @@
           <td class="event-date">${event.eventDate}</td>
           <td class="event-collector">${event.collector}</td>
           <td class="event-political-region">
+            <g:if test="${event.township}">
+              ${event.township},&nbsp;
+            </g:if>
+
             ${event.state}
             <g:if test="${event.state && event.country}">
               <span>, </span>
@@ -81,7 +85,7 @@
             event_map.fitZoom();
             correctZoom();
         } catch (ex) {
-            alert(ex)
+            console.log(ex);
        }
      }
   });

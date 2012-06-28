@@ -58,11 +58,23 @@ class TaskLoadService {
             return [false, 'Load operation already in progress!']
         }
 
+        Closure importClosure = default_csv_import
+
+        println("Looking for import function for template: " + project.template.name)
+        MetaProperty importClosureProperty = this.metaClass.properties.find() { it.name == "import_" + project.template.name }
+        if (importClosureProperty) {
+            println("Using 'import_${project.template.name} for import")
+            importClosure = importClosureProperty.getProperty(this) as Closure
+        } else {
+            println("Using default CSV import routine")
+        }
+
         try {
+            def linenumber = 0;
             csv.eachCsvLine { String[] tokens ->
                 //only one line in this case
                 if (tokens.length > 1) {
-                    def taskDesc = createTaskDescriptorFromTokens(project, tokens)
+                    def taskDesc = createTaskDescriptorFromTokens(project, tokens, importClosure, ++linenumber)
                     if (taskDesc) {
                         _loadQueue.put(taskDesc)
                     }
@@ -102,21 +114,12 @@ class TaskLoadService {
         }
     }
 
-    private TaskDescriptor createTaskDescriptorFromTokens(Project project, String[] tokens) {
+    private TaskDescriptor createTaskDescriptorFromTokens(Project project, String[] tokens, Closure importClosure, int lineNumber) {
         def taskDesc = new TaskDescriptor()
         taskDesc.project = project
 
-        println("Looking for import function for template: " + project.template.name)
-        def import_function = this.metaClass.properties.find() { it.name == "import_" + project.template.name }
-        if (!import_function) {
-            println("Using default CSV Import routine for template: " + project.template.name)
-            import_function = default_csv_import
-        } else {
-            println("Using 'import_${project.template.name} for import")
-        }
-
-        if (import_function) {
-            import_function.getProperty(this)(taskDesc, tokens)
+        if (importClosure) {
+            importClosure(taskDesc, tokens, lineNumber)
         }
 
         return taskDesc;
@@ -147,6 +150,27 @@ class TaskLoadService {
             // error
             throw new RuntimeException("CSV has the incorrect number of fields for import into template journalDoublePage! (has ${tokens.length}, expected 3 or 4")
         }
+    }
+
+    def import_AerialObservations = { TaskDescriptor taskDesc, String[] tokens, lineNumber ->
+        List<Field> fields = new ArrayList<Field>()
+        if (tokens.length >= 6) {
+
+            taskDesc.externalIdentifier = tokens[0].trim()
+            taskDesc.imageUrl = tokens[1].trim()
+
+            taskDesc.fields.add([name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()])
+            taskDesc.fields.add([name: 'year', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()])
+            String dataSetId = "${taskDesc.externalIdentifier} page ${tokens[4].trim()} line ${tokens[5].trim()}"
+            taskDesc.fields.add([name: 'datasetID', recordIdx: 0, transcribedByUserId: 'system', value: dataSetId])
+            taskDesc.fields.add([name: 'sequenceNumber', recordIdx: 0, transcribedByUserId: 'system', value: lineNumber])
+
+
+        } else {
+            // error
+            throw new RuntimeException("CSV has the incorrect number of fields for import into template AerialObservations! (has ${tokens.length}, expected 6")
+        }
+
     }
 
     def import_FieldNoteBookDoublePage = { TaskDescriptor taskDesc, String[] tokens ->

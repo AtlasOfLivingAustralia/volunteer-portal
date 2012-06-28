@@ -118,6 +118,12 @@ class BootStrap {
         }
         populateTemplateFields(template, "specimenLabelFields")
 
+        template = Template.findByName("AerialObservations")
+        if (!template) {
+            println "creating new Template: AerialObservations"
+            template = new Template(name: "AerialObservations", viewName: "aerialObservationsTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
+        }
+        populateTemplateFields(template, "aerialObservationsFields")
 
         // add system user
         if (!User.findByUserId('system')) {
