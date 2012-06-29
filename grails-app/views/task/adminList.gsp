@@ -118,8 +118,11 @@
                                 <g:if test="${taskInstance.fullyValidatedBy}">
                                     <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
                                 </g:if>
-                                <g:else>
+                                <g:elseif test="${taskInstance.fullyTranscribedBy}">
                                     <button onclick="location.href='${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">validate</button>
+                                </g:elseif>
+                                <g:else>
+                                  <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
                                 </g:else>
                             </td>
 

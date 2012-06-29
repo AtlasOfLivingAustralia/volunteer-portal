@@ -89,7 +89,7 @@
             <tbody>
               <g:each in="${leaderBoard}" var="transcriber">
                 <tr>
-                  <td>${transcriber.displayName}</td>
+                  <td><g:link controller="user" action="show" id="${transcriber.id}">${transcriber.displayName}</g:link></td>
                   <td>
                     <g:if test="${transcriber.transcribedCount > 0}">
                       ${transcriber.transcribedCount}

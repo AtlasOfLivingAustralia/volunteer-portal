@@ -61,6 +61,64 @@ class UserService {
 
     }
 
+    def getUserScore(User user) {
+        def t = new CodeTimer("Calculating score")
+        def transcribedCount = getTranscribedCount(user)
+        def tasksTheyHaveValidatedCount = getValidatedCount(user)
+        def theirTasksValidated = getOwnTasksValidatedCount(user)
+        def score = transcribedCount + theirTasksValidated + tasksTheyHaveValidatedCount
+        println "Calculated score for ${user.userId}: ${transcribedCount} (Transcribed) + ${theirTasksValidated} (number of THEIR tasks validated) + ${tasksTheyHaveValidatedCount} (tasks they have validated) = ${score}"
+        t.stop(true)
+
+        return score
+    }
+
+    def getOwnTasksValidatedCount(User user, Project project = null) {
+        def c = Task.createCriteria()
+        return c {
+            projections {
+                count('id')
+            }
+            and {
+                eq("fullyTranscribedBy", user.userId)
+                isNotNull("fullyValidatedBy")
+                if (project) {
+                    eq("project", project)
+                }
+            }
+        }[0]
+    }
+
+    def getTranscribedCount(User user, Project project = null) {
+        def vc = Task.createCriteria();
+        return vc {
+            projections {
+                count('id')
+            }
+            and {
+                eq('fullyTranscribedBy', user.getUserId())
+                if (project) {
+                    eq("project", project)
+                }
+            }
+        }[0]
+    }
+
+    long getValidatedCount(User user, Project project = null) {
+        def vc = Task.createCriteria();
+        return vc {
+            projections {
+                count('id')
+            }
+            and {
+                eq('fullyValidatedBy', user.getUserId())
+                if (project) {
+                    eq("project", project)
+                }
+            }
+        }[0]
+    }
+
     Map filteredUserList(Map params) {
         String query = '%'
         if (params.q) {

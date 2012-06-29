@@ -80,15 +80,6 @@ class UserController {
                 }
             }
 
-//            userList.each { user ->
-//                def count = taskService.getCountsForProjectAndUserId(projectInstance, user.userId)?.get(0)
-//                log.debug(user.userId + " count: " + count)
-//                if (user.transcribedCount != count) {
-//                    // get counts for current project
-//                    user.transcribedCount = count.toInteger() // temp set counts for just current project
-//                }
-//            }
-
             def currentUser = authService.username()
             render(view: "list", model:[userInstanceList: userList, userInstanceTotal: userCount, currentUser: currentUser, projectInstance: projectInstance])
         } else {
@@ -209,6 +200,7 @@ class UserController {
         }
 
         def achievements = achievementService.calculateAchievements(userInstance)
+        def score = userService.getUserScore(userInstance)
 
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
@@ -216,7 +208,7 @@ class UserController {
         } else {
             [   userInstance: userInstance, currentUser: currentUser, project: project,
                 matchingTasks: viewList, totalMatchingTasks: totalMatchingTasks, totalTranscribedTasks: totalTranscribedTasks,
-                savedTasks: savedTasks, totalSavedTasks: totalSavedTasks, achievements: achievements]
+                savedTasks: savedTasks, totalSavedTasks: totalSavedTasks, achievements: achievements, validatedCount: userService.getValidatedCount(userInstance, project), score:score ]
         }
     }
 

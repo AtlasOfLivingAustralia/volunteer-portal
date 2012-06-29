@@ -35,6 +35,7 @@ class ValidateController {
                 }
             }
 
+
             log.debug "userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
             def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
@@ -46,17 +47,31 @@ class ValidateController {
                 // redirect to another task
                 redirect(action: "showNextFromProject", id: taskInstance.project.id,
                         params: [msg: msg, prevId: taskInstance.id, prevUserId: prevUserId])
+                return
             } else {
                 // go ahead with this task
                 auditService.auditTaskViewing(taskInstance, currentUser)
             }
+
+            def isReadonly
+
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
-            def isReadonly
+
             println(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
 
             if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
                 isReadonly = "readonly"
+            } else {
+                // check that the validator is not the transcriber...Admins can, though!
+                if ((currentUser == taskInstance.fullyTranscribedBy)) {
+                    if (authService.userInRole(ROLE_ADMIN)) {
+                        flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
+                    } else {
+                        flash.message = "This task is read-only. You cannot validate your own tasks!"
+                        isReadonly = "readonly"
+                    }
+                }
             }
 
             //retrieve the existing values

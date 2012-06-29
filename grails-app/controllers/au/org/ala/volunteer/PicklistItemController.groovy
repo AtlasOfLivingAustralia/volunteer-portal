@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
+
 class PicklistItemController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -7,16 +9,19 @@ class PicklistItemController {
     def autocomplete = {
         def picklistName = params.picklist
         def query = params.q
-        // PicklistItem.findAllByPicklist(Picklist.findByName(field.name()))
-        def picklist = Picklist.findByName(picklistName)
-        def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklist("%"+query+"%", picklist)
-        render(contentType:"application/json") {
-            autoCompleteList = array {
-                for (pli in picklistItemInstance) {
-                    picklistItem(name:pli.value, key:pli.key)
+        if (picklistName) {
+            def picklist = Picklist.findByName(picklistName)
+            def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklist("%"+query+"%", picklist)
+            render(contentType:"application/json") {
+                autoCompleteList = array {
+                    for (pli in picklistItemInstance) {
+                        picklistItem(name:pli.value, key:pli.key)
+                    }
                 }
-            }	
-	    }
+            }
+        } else {
+            render([] as JSON)
+        }
     }
 
     def updateLocality = {

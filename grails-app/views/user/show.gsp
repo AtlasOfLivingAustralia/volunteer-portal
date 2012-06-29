@@ -117,17 +117,17 @@
                    <td valign="top" class="value">${project.featuredLabel} (<a href="${createLink(controller:'user', action:'show', id:userInstance.id)}">View tasks from all projects</a> )</td>
               </tr>
           </g:if>
-          %{--<tr class="prop">--}%
-            %{--<td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks edited"/></td>--}%
-            %{--<td valign="top" class="value">${numberOfTasksEdited}</td>--}%
-          %{--</tr>--}%
           <tr class="prop">
-            <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
-            <td valign="top" class="value">${totalTranscribedTasks}</td>
+            <td valign="top" class="name"><g:message code="user.score.label" default="Volunteer score"/></td>
+            <td valign="top" class="value">${score}</td>
           </tr>
           <tr class="prop">
-            <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks Validated"/></td>
-            <td valign="top" class="value">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
+            <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
+            <td valign="top" class="value">${totalTranscribedTasks} (${userInstance.validatedCount} validated)</td>
+          </tr>
+          <tr class="prop">
+            <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks validated"/></td>
+            <td valign="top" class="value">${validatedCount}</td>
           </tr>
           <tr class="prop">
             <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>
