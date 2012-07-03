@@ -53,6 +53,11 @@
         <listener-class>au.org.ala.volunteer.BVPSessionListener</listener-class>
     </listener>
 
+    <filter>
+        <filter-name>BVPServletFilter</filter-name>
+        <filter-class>au.org.ala.volunteer.BVPServletFilter</filter-class>
+    </filter>
+
     <!-- CAS Authentication Service filters -->
     <filter>
         <filter-name>CAS Single Sign Out Filter</filter-name>
@@ -97,6 +102,11 @@
             <param-value>au.org.ala.cas.client.AlaHttpServletRequestWrapperFilter</param-value>
         </init-param>
     </filter>
+
+    <filter-mapping>
+        <filter-name>BVPServletFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
        <filter-name>CAS Single Sign Out Filter</filter-name>

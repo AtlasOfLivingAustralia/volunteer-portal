@@ -12,6 +12,7 @@ class TaskController {
     def fieldService
     def authService
     def taskLoadService
+    def logService
     def userService
 
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
@@ -283,7 +284,7 @@ class TaskController {
                 def project = Project.findById(taskInstance.project.id)
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
-                println(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
+                logService.log currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR)
 
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)

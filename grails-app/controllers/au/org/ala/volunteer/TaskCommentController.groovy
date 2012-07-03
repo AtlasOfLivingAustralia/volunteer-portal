@@ -13,8 +13,6 @@ class TaskCommentController {
 
     def saveComment = {
 
-        println authService.username();
-
         if (params.taskId && params.comment) {
             def username = AuthenticationCookieUtils.getUserName(request)
             if (username) {

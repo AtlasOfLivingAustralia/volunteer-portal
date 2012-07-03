@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils
 class BootStrap {
 
     javax.sql.DataSource dataSource
+    def logService
 
     def init = { servletContext ->
 
@@ -65,12 +66,12 @@ class BootStrap {
         """)
         
         // add some picklist values if not already loaded
-        println("creating picklists...")
+        logService.log "creating picklists..."
         def items = ["country", "stateProvince", "typeStatus", "institutionCode", "recordedBy", "verbatimLocality",  "coordinateUncertaintyInMeters"]
         items.each {
-            println("checking picklist: " + it)
+            logService.log("checking picklist: " + it)
             if (!Picklist.findByName(it)) {
-                println("creating new picklist " + it)
+                logService.log("creating new picklist " + it)
                 Picklist picklist = new Picklist(name:it).save(flush:true, failOnError: true)
                 def csvText = ApplicationHolder.application.parentContext.getResource("classpath:resources/"+it+".csv").inputStream.text
                 csvText.eachCsvLine { tokens ->
@@ -89,7 +90,7 @@ class BootStrap {
         // Create default template if not in DB
         Template template = Template.findByName('default')
         if (!template) {
-            println "creating new Template: default"
+            logService.log "creating new Template: default"
             template = new Template(name:'default', viewName:'specimenTranscribe', author:'webmaster@ala.org.au',
                 created:new Date(), fieldOrder:'').save(flush:true, failOnError: true)
         }
@@ -99,28 +100,28 @@ class BootStrap {
 
         template = Template.findByName("FieldNoteBook")
         if (!template) {
-            println "creating new Template: FieldNoteBook"
+            logService.log "creating new Template: FieldNoteBook"
             template = new Template(name: "FieldNoteBook", viewName: "fieldNoteBookTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
         }
         populateTemplateFields(template, "fieldNoteBookFields")
 
         template = Template.findByName("FieldNoteBookDoublePage")
         if (!template) {
-            println "creating new Template: FieldNoteBookDoublePage"
+            logService.log "creating new Template: FieldNoteBookDoublePage"
             template = new Template(name: "FieldNoteBookDoublePage", viewName: "fieldNoteBookTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [doublePage: 'true']).save(flush: true, failOnError: true)
         }
         populateTemplateFields(template, "fieldNoteBookFields")
 
         template = Template.findByName("SpecimenLabel")
         if (!template) {
-            println "creating new Template: SpecimenLabel"
+            logService.log "creating new Template: SpecimenLabel"
             template = new Template(name: "SpecimenLabel", viewName: "specimenLabelTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
         }
         populateTemplateFields(template, "specimenLabelFields")
 
         template = Template.findByName("AerialObservations")
         if (!template) {
-            println "creating new Template: AerialObservations"
+            logService.log "creating new Template: AerialObservations"
             template = new Template(name: "AerialObservations", viewName: "aerialObservationsTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
         }
         populateTemplateFields(template, "aerialObservationsFields")
@@ -141,7 +142,7 @@ class BootStrap {
         fields.eachCsvLine { fs ->
             DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
             if (!TemplateField.findByFieldTypeAndTemplate(dwcf, template)) {
-                println "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
+                logService.log "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
                 TemplateField tf = new TemplateField(
                         fieldType: dwcf,
                         label: fs[1].trim(),
@@ -155,7 +156,7 @@ class BootStrap {
                         template: template
                 ).save(flush:true, failOnError: true)
             } else {
-                println "Field already exists for template ${template.name} ${dwcf}"
+                logService.log "Field already exists for template ${template.name} ${dwcf}"
             }
         }
 

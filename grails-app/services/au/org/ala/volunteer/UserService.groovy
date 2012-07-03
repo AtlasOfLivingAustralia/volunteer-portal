@@ -3,10 +3,9 @@ package au.org.ala.volunteer
 class UserService {
 
     def authService
+    def logService
 
     static transactional = true
-
-    def serviceMethod() {}
 
    /**
     * Update a user stats
@@ -36,7 +35,7 @@ class UserService {
     def registerCurrentUser = {
       def userId = authService.username()
       def displayName = authService.displayName()
-      println("Checking user is registered: " + userId+", " + displayName )
+      logService.log("Checking user is registered: " + userId+", " + displayName )
       if(userId){
         if(User.findByUserId(userId)==null){
           User user = new User()
@@ -67,7 +66,7 @@ class UserService {
         def tasksTheyHaveValidatedCount = getValidatedCount(user)
         def theirTasksValidated = getOwnTasksValidatedCount(user)
         def score = transcribedCount + theirTasksValidated + tasksTheyHaveValidatedCount
-        println "Calculated score for ${user.userId}: ${transcribedCount} (Transcribed) + ${theirTasksValidated} (number of THEIR tasks validated) + ${tasksTheyHaveValidatedCount} (tasks they have validated) = ${score}"
+        logService.log "Calculated score for ${user.userId}: ${transcribedCount} (Transcribed) + ${theirTasksValidated} (number of THEIR tasks validated) + ${tasksTheyHaveValidatedCount} (tasks they have validated) = ${score}"
         t.stop(true)
 
         return score

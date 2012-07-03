@@ -645,7 +645,6 @@ class VolunteerTagLib {
         if (!email)
             email = body().toString()
         int index = email.indexOf('@')
-        //println "index=${index}"
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
         }
@@ -1274,7 +1273,6 @@ class VolunteerTagLib {
 
     def showRecordsExceptions = {attrs ->
         def exceptions = attrs.exceptions
-        println exceptions
         if (exceptions) {
            out << '<div class="child-institutions">'
            switch (exceptions.listType) {

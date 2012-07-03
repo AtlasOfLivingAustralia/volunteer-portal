@@ -33,7 +33,7 @@ if (!ala.baseURL) {
 if (!security.cas.urlPattern) {
     security.cas.urlPattern = "/validate/save.*," +
             "/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!show).)*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*" +
-            "/locality/.*,/collectionEvent/.*"
+            "/locality/.*,/collectionEvent/.*,/ajax/keepSessionAlive.*"
 }
 if (!security.cas.urlExclusionPattern) {
     security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"

@@ -7,6 +7,7 @@ class ValidateController {
     def taskService
     def authService
     def userService
+    def logService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
     def LAST_VIEW_TIMEOUT_MINUTES = grailsApplication.config.viewedTask.timeout
@@ -58,7 +59,7 @@ class ValidateController {
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
 
-            println(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
+            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
 
             if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
                 isReadonly = "readonly"
@@ -172,7 +173,7 @@ class ValidateController {
 
     def listForProject = {
         def projectInstance = Task.get(params.id)
-        def tasks = Task.executeQuery(""""select t from Task t
+        def tasks = Task.executeQuery("""select t from Task t
          where t.project = :project and t.fullyTranscribedBy is not null""",
                 project: projectInstance)
         render(view: '../task/list', model: [tasks: tasks, project: projectInstance])

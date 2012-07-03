@@ -11,6 +11,7 @@ class TaskService {
 
     javax.sql.DataSource dataSource
     def config = ConfigurationHolder.config
+    def logService
     def fieldService
 
     def LAST_VIEW_TIMEOUT_MINUTES = ConfigurationHolder.config.viewedTask.timeout
@@ -342,7 +343,6 @@ class TaskService {
               task.externalIdentifier = tokens[0]
               imageUrl = tokens[1].trim()
             } else if (tokens.length == 5) {
-                println("CSV has 5 token: " + tokens.join('|'))
                 def externalIdentifier = tokens[0].trim()
                 task.externalIdentifier = externalIdentifier
                 imageUrl = tokens[1].trim()
@@ -483,10 +483,9 @@ class TaskService {
         }
 
         try {
-            println("content type = " + conn.contentType + " | " + filename)
             def dir = new File(config.images.home + '/' + taskId + "/" + multimediaId)
             if (!dir.exists()) {
-                println("Creating dir " + dir.absolutePath)
+                logService.log "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
             }
             fileMap.dir = dir.absolutePath
@@ -499,7 +498,7 @@ class TaskService {
             return fileMap
             //file.close()
         } catch (Exception e) {
-            println("Failed to load URL: " + imageUrl + ". " + e)
+            logService.log "Failed to load URL: ${imageUrl} : ${e}"
         }
     }
 

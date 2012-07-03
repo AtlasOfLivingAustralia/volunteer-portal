@@ -8,6 +8,7 @@ class LocalityService {
     static transactional = true
     def sessionFactory
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def logService
 
     public ImportResult importLocalities(String institutionCode, MultipartFile file) {
 
@@ -23,7 +24,7 @@ class LocalityService {
                 def rowsProcessed = 0;
 
                 def rowsDeleted = Locality.executeUpdate("delete Locality where institutionCode = '${institutionCode}'")
-                println "${rowsDeleted} rows deleted from Locality table"
+                logService.log "${rowsDeleted} rows deleted from Locality table"
 
                 Map<String, Integer> col =[:]
 
@@ -72,7 +73,7 @@ class LocalityService {
                         sessionFactory.currentSession.flush()
                         sessionFactory.currentSession.clear()
                         propertyInstanceMap.get().clear()
-                        println "${rowsProcessed} rows processed, ${count} rows imported..."
+                        logService.log "${rowsProcessed} rows processed, ${count} rows imported..."
                     }
 
                 }

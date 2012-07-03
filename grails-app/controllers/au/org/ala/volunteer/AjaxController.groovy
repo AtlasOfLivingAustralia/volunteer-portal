@@ -178,7 +178,7 @@ class AjaxController {
     }
 
     def keepSessionAlive = {
-        render(['status':'ok', 'currentTime': formatDate(date: new Date(), format: "dd MMM yyyy hh:mm:ss") ] as JSON)
+        render(['status':'ok', 'currentTime': formatDate(date: new Date(), format: "dd MMM yyyy hh:mm:ss"), systemMessage: flash.systemMessage ] as JSON)
     }
 
     private def setNoCache() {

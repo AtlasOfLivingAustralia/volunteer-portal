@@ -6,6 +6,7 @@ class PicklistService {
 
     static transactional = true
     def sessionFactory
+    def logService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
@@ -35,13 +36,13 @@ class PicklistService {
         def picklist = Picklist.get(picklistId)
         // First delete the existing items...
         if (picklist) {
-            println "Deleting existing items..."
+            logService.log "Deleting existing items..."
             int itemsDeleted = 0;
             PicklistItem.findAllByPicklist(picklist).each {
                 it.delete();
                 itemsDeleted++;
             }
-            println "${itemsDeleted} existing items deleted from picklist '${picklist.name}'"
+            logService.log "${itemsDeleted} existing items deleted from picklist '${picklist.name}'"
         }
 
         def pattern = ~/^(['"])(.*)(\1)$/
@@ -66,7 +67,7 @@ class PicklistService {
                     sessionFactory.currentSession.flush()
                     sessionFactory.currentSession.clear()
                     propertyInstanceMap.get().clear()
-                    println "${rowsProcessed} picklist items imported (${picklist.name})"
+                    logService.log "${rowsProcessed} picklist items imported (${picklist.name})"
                 }
             }
         } finally {

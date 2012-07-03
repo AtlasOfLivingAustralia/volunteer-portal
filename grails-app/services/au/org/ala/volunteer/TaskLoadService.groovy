@@ -22,6 +22,7 @@ class TaskLoadService {
 
     def taskService
     def authService
+    def logService
     def executorService
 
     static transactional = true
@@ -60,13 +61,14 @@ class TaskLoadService {
 
         Closure importClosure = default_csv_import
 
-        println("Looking for import function for template: " + project.template.name)
+        logService.log "Looking for import function for template: ${project.template.name}"
+
         MetaProperty importClosureProperty = this.metaClass.properties.find() { it.name == "import_" + project.template.name }
         if (importClosureProperty) {
-            println("Using 'import_${project.template.name} for import")
+            logService.log("Using 'import_${project.template.name} for import")
             importClosure = importClosureProperty.getProperty(this) as Closure
         } else {
-            println("Using default CSV import routine")
+            logService.log "Using default CSV import routine"
         }
 
         try {
@@ -79,7 +81,7 @@ class TaskLoadService {
                         _loadQueue.put(taskDesc)
                     }
                 } else {
-                    println 'Skipping empty line'
+                    logService.log 'Skipping empty line'
                 }
             }
         } catch (Exception ex) {
@@ -282,7 +284,7 @@ class TaskLoadService {
                                         try {
                                             md.afterDownload(t, multimedia, filePath)
                                         } catch (Exception ex) {
-                                            println "Error calling after media download hook: " + ex.message;
+                                            logService.log "Error calling after media download hook: ${ex.message}"
                                         }
                                     }
                                 }

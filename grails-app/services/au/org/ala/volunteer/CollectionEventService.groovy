@@ -10,6 +10,7 @@ class CollectionEventService {
     static Pattern normalisePattern = Pattern.compile('\\s|\\.|,|;|:|"|')
     def sessionFactory
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def logService
 
     List<CollectionEvent> findCollectionEvents(String institutionCode, List<String> collectors, String eventDate, String locality, int maxRows) {
         def c = CollectionEvent.createCriteria();
@@ -57,7 +58,7 @@ class CollectionEventService {
                 def rowsProcessed = 0;
 
                 def rowsDeleted = CollectionEvent.executeUpdate("delete CollectionEvent where institutionCode = '${institutionCode}'")
-                println "${rowsDeleted} rows deleted from CollectionEvent table"
+                logService.log "${rowsDeleted} rows deleted from CollectionEvent table"
 
                 Map<String, Integer> col =[:]
 
@@ -117,7 +118,7 @@ class CollectionEventService {
                         sessionFactory.currentSession.flush()
                         sessionFactory.currentSession.clear()
                         propertyInstanceMap.get().clear()
-                        println "${rowsProcessed} rows processed, ${count} rows imported..."
+                        logService.log "${rowsProcessed} rows processed, ${count} rows imported..."
                     }
 
                 }

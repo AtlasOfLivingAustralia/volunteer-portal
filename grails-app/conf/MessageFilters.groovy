@@ -20,11 +20,6 @@ class MessageFilters {
 
             }
             after = {
-                def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
-                def sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
-                def dateStr = sdf.format(new Date())
-
-                println "[${dateStr}] BVP Session: ${session.id} user: ${username}/${request.remoteAddr} request:${request.requestURI}"
             }
             afterView = {
                 

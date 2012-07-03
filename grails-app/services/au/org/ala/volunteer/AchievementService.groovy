@@ -6,7 +6,8 @@ class AchievementService {
 
     static transactional = true
 
-    def taskService;
+    def taskService
+    def logService
 
     def calculateAchievements(User user) {
 
@@ -32,16 +33,16 @@ class AchievementService {
                 def rule = this.metaClass.properties.find() { it.name == desc.name + "_rule" }
 
                 if (rule) {
-                    println "Checking rule for achievement ${desc.name}"
+                    logService.log "Checking rule for achievement ${desc.name}"
                     AchievementRuleResult result = rule.getProperty(this)(user, tasks);
                     if (result && result.success) {
-                        println "${user.userId} just achieved ${desc.name}!"
+                        logService.log "${user.userId} just achieved ${desc.name}!"
                         Date dateAchieved = result.dateAchieved ?: new Date();
                         ach = new Achievement( name: desc.name, user: user, dateAchieved: dateAchieved)
                         ach.save()
                     }
                 } else {
-                    println "Rule for achievement ${desc.name} not found!"
+                    logService.log "Rule for achievement ${desc.name} not found!"
                 }
             }
 
