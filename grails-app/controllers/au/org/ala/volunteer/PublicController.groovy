@@ -2,6 +2,8 @@ package au.org.ala.volunteer
 
 class PublicController {
 
+    def logService
+
     def index = { }
 
     /**
@@ -11,6 +13,7 @@ class PublicController {
      * @param appUrl the url to redirect back to after the logout
      */
     def logout = {
+        logService.log "Invalidating Session (PublicController.logout): ${session.id}"
         session.invalidate()
         redirect(url: "${params.casUrl}?url=${params.appUrl}")
     }

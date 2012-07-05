@@ -93,7 +93,7 @@ class TaskLoadService {
         return [true, ""]
     }
 
-    def default_csv_import = { TaskDescriptor taskDesc, String[] tokens ->
+    def default_csv_import = { TaskDescriptor taskDesc, String[] tokens, int linenumber ->
         List<Field> fields = new ArrayList<Field>()
 
         if (tokens.length == 1) {
@@ -127,7 +127,7 @@ class TaskLoadService {
         return taskDesc;
     }
 
-    def import_FieldNoteBook = { TaskDescriptor taskDesc, String[] tokens ->
+    def import_FieldNoteBook = { TaskDescriptor taskDesc, String[] tokens, int linenumber ->
         List<Field> fields = new ArrayList<Field>()
         if (tokens.length >= 4) {
             taskDesc.imageUrl = tokens[0].trim()
@@ -175,7 +175,7 @@ class TaskLoadService {
 
     }
 
-    def import_FieldNoteBookDoublePage = { TaskDescriptor taskDesc, String[] tokens ->
+    def import_FieldNoteBookDoublePage = { TaskDescriptor taskDesc, String[] tokens, int linenumber ->
         List<Field> fields = new ArrayList<Field>()
         if (tokens.length >= 4) {
             taskDesc.imageUrl = tokens[0].trim()

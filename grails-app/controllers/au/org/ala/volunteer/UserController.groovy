@@ -14,12 +14,14 @@ class UserController {
     def dataSource
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def achievementService
+    def logService
 
     def index = {
         redirect(action: "list", params: params)
     }
 
     def logout = {
+        logService.log "Invalidating Session (UserController.logout): ${session.id}"
         session.invalidate()
         redirect(url:"${params.casUrl}?url=${params.appUrl}")
     }

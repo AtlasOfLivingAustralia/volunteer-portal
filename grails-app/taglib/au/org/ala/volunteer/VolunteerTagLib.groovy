@@ -1645,4 +1645,24 @@ class VolunteerTagLib {
         """)
     }
 
+    def loginLink = { attrs, body ->
+        def casLoginUrl = ConfigurationHolder.config.security.cas.loginUrl ?: "https://auth.ala.org.au/cas/login"
+        def requestUri = removeContext(ConfigurationHolder.config.grails.serverURL) + request.forwardURI
+        def loginReturnToUrl = attrs.loginReturnToUrl ?: requestUri
+        def mb = new MarkupBuilder(out)
+        mb.a(href: "${casLoginUrl}?service=${loginReturnToUrl}") {
+            span {
+                mkp.yield("Log in")
+            }
+        }
+    }
+
+    String removeContext(urlString) {
+        def url = urlString.toURL()
+        def protocol = url.protocol != -1 ? url.protocol + "://" : ""
+        def port = url.port != -1 ? ":" + url.port : ""
+        return protocol + url.host + port
+    }
+
+
 }

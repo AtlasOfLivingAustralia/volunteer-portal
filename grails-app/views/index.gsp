@@ -32,7 +32,7 @@
           <ol>
             <li>
               <cl:isNotLoggedIn>
-                <span class="numbered">1</span> <a href="https://auth.ala.org.au/emmet/selfRegister.html" class="button orange">Register</a> <p>Already registered with the Atlas?<br><a href="https://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.grails.serverURL}?redirect_to=${ConfigurationHolder.config.grails.serverURL}">Log in</a>.</p>
+                <span class="numbered">1</span> <a href="https://auth.ala.org.au/emmet/selfRegister.html" class="button orange">Register</a> <p>Already registered with the Atlas?<br/><cl:loginLink /></p>
               </cl:isNotLoggedIn>
               <cl:isLoggedIn>
                 <span class="numbered">1</span> <h2>Hi !</h2><p>You're registered with the Atlas, so <a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay.id, action: 'index')}">start transcribing</a> or <a href="${createLink(controller: 'user', action:'myStats')}">view your tasks</a>.</p>

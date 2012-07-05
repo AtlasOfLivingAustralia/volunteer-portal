@@ -570,14 +570,6 @@ $(document).ready(function() {
       $(":input[name='_action_save']").click();
     }
 
-    var intervalSeconds = 60 * 5;
-    // Set up the session keep alive
-    setInterval(function() {
-      $.ajax("${createLink(controller: 'ajax', action:'keepSessionAlive')}").done(function(data) {
-         console.log(data);
-      });
-    }, intervalSeconds * 1000);
-
     var isReadonly = VP_CONF.isReadonly;
     if (isReadonly) {
         // readonly more

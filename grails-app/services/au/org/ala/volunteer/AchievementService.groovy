@@ -23,9 +23,8 @@ class AchievementService {
             return results
         }
 
-        def existing = Achievement.findByUser(user)
+        def existing = Achievement.findAllByUser(user)
         def tasks = taskService.transcribedDatesByUser(user.userId)
-        // def tasks = Task.findAllByFullyTranscribedBy(user.userId)
 
         for (Map desc : achievements) {
             Achievement ach = existing.find { it.name == desc.name }
@@ -38,8 +37,9 @@ class AchievementService {
                     if (result && result.success) {
                         logService.log "${user.userId} just achieved ${desc.name}!"
                         Date dateAchieved = result.dateAchieved ?: new Date();
-                        ach = new Achievement( name: desc.name, user: user, dateAchieved: dateAchieved)
-                        ach.save()
+                        def newAchievement = new Achievement( name: desc.name, user: user, dateAchieved: dateAchieved)
+                        newAchievement.save(flush: true, failOnError: true)
+                        ach = newAchievement
                     }
                 } else {
                     logService.log "Rule for achievement ${desc.name} not found!"
