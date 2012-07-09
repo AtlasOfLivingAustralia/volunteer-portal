@@ -40,7 +40,7 @@
             </li>
             <li class="double"><div style="float:left;postition:relative;">
               <span class="numbered">2</span> <a href="${createLink(controller: 'project', action: 'list')}" class="button orange">Join a virtual expedition</a> <p><a href="${createLink(controller: 'project', action: 'list')}">Find a virtual expedition</a> that suits you.</p></div><span class="grey" style="float:left;postition:relative;">or</span>
-              <div style="float:left;postition:relative;"><a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay.id, action: 'index')}" class="button orange">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a> <p>Join the <a href="${createLink(controller: 'project', id: frontPage.projectOfTheDay.id, action: 'index')}">virutal expedition of the day</a>.</p></div>
+              <div style="float:left;postition:relative;"><a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay.id, action: 'index')}" class="button orange">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a> <p>Join the <a href="${createLink(controller: 'project', id: frontPage.projectOfTheDay.id, action: 'index')}">virtual expedition of the day</a>.</p></div>
             </li>
 
             <li class="last">
