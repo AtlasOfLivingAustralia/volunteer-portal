@@ -70,7 +70,6 @@
                 localityMap.fitZoom();
                 correctZoom(localityMap);
             } catch (ex) {
-                console.log(ex);
             }
          }
       });

@@ -61,7 +61,6 @@ function initialize() {
                 map: map,
                 draggable: true
             });
-    //console.log("adding marker: " + latLng + " (count: " + quotaCount +")");
     // Add a Circle overlay to the map.
     var radius = parseInt($(':input#infoUncert').val());
     circle = new google.maps.Circle({
@@ -120,7 +119,6 @@ function geocodePosition(pos) {
             },
             function(responses) {
                 if (responses && responses.length > 0) {
-                    //console.log("geocoded position", responses[0]);
                     updateMarkerAddress(responses[0].formatted_address, responses[0]);
                 } else {
                     updateMarkerAddress('Cannot determine address at this location.');
@@ -133,7 +131,6 @@ function geocodePosition(pos) {
  */
 function codeAddress() {
     var address = $(':input#address').val().replace(/\n/g, " ");
-    //console.log("address", address);
     if (geocoder && address) {
         //geocoder.getLocations(address, addAddressToPage);
         quotaCount++
@@ -150,8 +147,6 @@ function codeAddress() {
                         var locationStr = results[0].formatted_address;
                         updateMarkerAddress(locationStr, results[0]);
                         updateMarkerPosition(latLng);
-                        //initialize();
-                        //console.log("moving marker: " + latLng + " (count: " + quotaCount +")");
                         marker.setPosition(latLng);
                         map.panTo(latLng);
                         return true;
@@ -236,10 +231,8 @@ $(document).ready(function() {
     $('.coordinatePrecision, #infoUncert').change(function(e) {
         var rad = parseInt($(this).val());
         circle.setRadius(rad);
-        //console.log("#infoUncert", $(this).val(), rad);
         updateMarkerPosition(marker.getPosition());
-        //updateTitleAttr(rad);
-    })
+    });
 
     $("input.scientificName, input.originalNameUsage").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
             extraParams: {
@@ -447,7 +440,6 @@ $(document).ready(function() {
                 var name = locationObj[i].long_name;
                 var type = locationObj[i].types[0];
                 var hasLocality = false;
-                //console.log(i+". type: "+type+" = "+name);
                 // go through each avail option
                 if (type == 'country') {
                     //$(':input.countryCode').val(name1);
@@ -492,7 +484,6 @@ $(document).ready(function() {
             //alert("Validation failed.");
             e.preventDefault();
             $("form.transcribeForm").validationEngine();
-            //console.log("Validation failed");
         }
     });
 

@@ -1634,7 +1634,7 @@ class VolunteerTagLib {
           // Set up the session keep alive
           setInterval(function() {
             \$.ajax("${createLink(controller: 'ajax', action:'keepSessionAlive')}").done(function(data) {
-               console.log(data);
+               // console.log(data);
             });
           }, intervalSeconds * 1000);
 

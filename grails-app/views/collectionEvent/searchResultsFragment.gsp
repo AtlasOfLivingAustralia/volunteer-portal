@@ -85,7 +85,6 @@
             event_map.fitZoom();
             correctZoom();
         } catch (ex) {
-            console.log(ex);
        }
      }
   });

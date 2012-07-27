@@ -157,9 +157,7 @@ YAHOO.namespace("plugin");
 		 if ($L.isFunction(config.onLoad)) {
 		   config.onLoad.apply ( config, [config.element] );
 		 }
-		 //console.log ("config: ", config);
 		 if (!config.underground && YAHOO.Bubbling) {
-		 //console.log ('el:', (config.tab || config.element));
 			 YAHOO.Bubbling.fire ('onAsyncRequestEnd', {
 				element: config.element
 			 });
