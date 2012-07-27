@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 import au.org.ala.volunteer.FrontPage
 import au.org.ala.volunteer.Project
 import org.apache.commons.lang.StringUtils
+import java.util.regex.Pattern
 
 class BootStrap {
 
@@ -138,11 +139,23 @@ class BootStrap {
 
     void populateTemplateFields(Template template, String resourceName) {
         // populate default set of TemplateFields
+        //
+        def numberRegex = Pattern.compile('^\\d+\$')
         def fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/${resourceName}.csv").inputStream.text
         fields.eachCsvLine { fs ->
             DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
             if (!TemplateField.findByFieldTypeAndTemplate(dwcf, template)) {
                 logService.log "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
+                // Work out the display order - by default it will be a large number
+                def displayOrder = 999
+                if (fs.size() >= 10) {
+                    def orderString = fs[9].trim()
+                    def m = numberRegex.matcher(orderString)
+                    if (m.matches()) {
+                        displayOrder = Integer.parseInt(orderString)
+                    }
+                }
+
                 TemplateField tf = new TemplateField(
                         fieldType: dwcf,
                         label: fs[1].trim(),
@@ -153,7 +166,8 @@ class BootStrap {
                         multiValue: ((fs[6].trim() == '1') ? true : false),
                         helpText: fs[7].trim(),
                         validationRule: fs[8].trim(),
-                        template: template
+                        template: template,
+                        displayOrder: displayOrder
                 ).save(flush:true, failOnError: true)
             } else {
                 logService.log "Field already exists for template ${template.name} ${dwcf}"

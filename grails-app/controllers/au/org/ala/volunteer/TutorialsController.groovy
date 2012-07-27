@@ -5,4 +5,8 @@ class TutorialsController {
     def index = {
         render(view: '/tutorials')
     }
+
+    def transcribingFieldNotes = {
+
+    }
 }

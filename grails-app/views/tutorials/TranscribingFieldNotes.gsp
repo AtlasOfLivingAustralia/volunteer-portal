@@ -27,49 +27,30 @@
 
     <cl:navbar selected="tutorials" />
 
-    <header id="page-header">      
+    <header id="page-header">
       <div class="inner">
         <cl:messages />
         <nav id="breadcrumb">
           <ol>
             <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-            <li class="last"><g:message code="default.tutorials.label" default="Tutorials" /></li>
+            <li><a href="${createLink(uri: '/tutorials.gsp')}"><g:message code="default.tutorials.label" default="Tutorials"/></a></li>
+            <li class="last"><g:message code="default.fieldnotestutorial.label" default="Tutorials - Transcribing Field Notes" /></li>
           </ol>
         </nav>
-        <hgroup>
-          <h1>Tutorials</h1>
-        </hgroup>
+        <h1>Transcribing Field Notes</h1>
       </div>
     </header>
     <div>
       <div class="inner">
-        <table class="bvp-expeditions">
-          <tr>
-            <td>
-              <A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Introduction.swf"><g:message code="default.tutorial.introduction.label" default="Introduction (Video)"/></a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Mapping_Tool2.swf"><g:message code="default.tutorial.mapping.label" default="Mapping tool (Video)"/></a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Transcribing.swf"><g:message code="default.tutorial.transcribing.label" default="Transcribing (Video)"/></a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <A href="${createLink(controller: 'tutorials', action: 'transcribingFieldNotes')}"><g:message code="default.tutorial.fieldnotes.label" default="Transcribing Field Notes (Text)"/></a>
-            </td>
-          </tr>
+        <h3>Login to the Biodiversity Volunteer Portal using your email and password.</h3>
+        <h3>Join a virtual expedition.</h3>
+        <br />
+        <img src="${resource(dir: 'images/tutorials', file:'fieldnotes_01.png')}" />
+        <h3>To join a field notes expedition choose an expedition with the field notes icon in the type column.
+        Once in the expedition, click on <img src="${resource(dir:'images/tutorials', file:'fieldnotes_02.png')}" />
+        </h3>
 
-        </table>
       </div>
-
     </div>
-
-
   </body>
 </html>

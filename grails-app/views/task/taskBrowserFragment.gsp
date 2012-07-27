@@ -157,6 +157,10 @@
         });
       }
 
+      function endsWith(str, suffix) {
+          return str.indexOf(suffix, str.length - suffix.length) !== -1;
+      }
+
       function copyDataFromTask(taskId) {
         // First we need to clear old data...
         clearTaskData();
@@ -165,10 +169,21 @@
         $.ajax({url:taskDataUrl, success: function(data) {
           // the data is the form of a dictionary with the keys being the form element id for each data element
           // being copied, and the value being the field value
-          for (key in data) {
+          var excluded = ['locality','stateProvince', 'decimalLatitude', 'decimalLongitude', 'country', 'coordinateUncertaintyInMeters']
+          for (var key in data) {
             // copy over the data
-            var selector = "#" + key;
-            $(selector).val(data[key])
+            var skip = false;
+            for (var excludeIdx in excluded) {
+              var exclude = excluded[excludeIdx]
+              if (endsWith(key, '.' + exclude)) {
+                skip = true;
+                break;
+              }
+            }
+            if (!skip) {
+              var selector = "#" + key;
+              $(selector).val(data[key])
+            }
           }
         }});
 

@@ -124,6 +124,10 @@
                 selectFirst: false
             });
         });
+
+        // Some browsers (I'm looking at you, IE8!) do not expose the console object
+        if (!window.console) console = {log: function() {}};
+
     </script>
 </head>
 <body class="${pageProperty(name:'body.class')} getinvolved">

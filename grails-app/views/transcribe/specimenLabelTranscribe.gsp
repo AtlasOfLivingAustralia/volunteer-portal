@@ -505,6 +505,19 @@
                             </tr>
                         </thead>
                         <tbody>
+
+                            <tr>
+                              <td style="padding-bottom:0px; margin-bottom:0px; margin-top: 0px; padding-top:0px">
+                                All text
+                              </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-bottom: 0px; margin-top:0px">
+                                    <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="6" cols="38" />
+                                    <a href='#' class='fieldHelp' title='Enter all text apart from locality here - as it appears on the label(s)'><span class='help-container'>&nbsp;</span></a>
+                                </td>
+                            </tr>
+
                             <tr>
                               <td style="padding-bottom:0px; margin-bottom:0px; padding-top:0px;">
                                 Verbatim Locality
@@ -512,19 +525,8 @@
                             </tr>
                             <tr>
                                 <td style="padding-top:0px; margin-top: 0px; margin-bottom: 0px; padding-bottom: 0px">
-                                    <textarea noAutoComplete="true" name="recordValues.0.verbatimLocality" cols="38" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
+                                    <textarea noAutoComplete="true" name="recordValues.0.verbatimLocality" cols="38" rows="2" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
                                     <a href='#' class='fieldHelp' title='Enter the locality as it appears in the label(s)'><span class='help-container'>&nbsp;</span></a>
-                                </td>
-                            </tr>
-                            <tr>
-                              <td style="padding-bottom:0px; margin-bottom:0px; margin-top: 0px; padding-top:0px">
-                                All other text
-                              </td>
-                            </tr>
-                            <tr>
-                                <td style="padding-bottom: 0px; margin-top:0px">
-                                    <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="4" cols="38" />
-                                    <a href='#' class='fieldHelp' title='Enter all text apart from locality here - as it appears on the label(s)'><span class='help-container'>&nbsp;</span></a>
                                 </td>
                             </tr>
                             <tr>
@@ -643,13 +645,6 @@
                             </td>
                         </tr>
 
-                        %{--<tr class="prop">--}%
-                          %{--<td></td>--}%
-                          %{--<td class="name" style="text-align: left">--}%
-                            %{--<b>OR</b>--}%
-                          %{--</td>--}%
-                        %{--</tr>--}%
-
                         <tr class="prop newLocalitySection">
                           <td/>
                           <td colspan="3"><b>ii. Create a new locality</b>
@@ -671,12 +666,12 @@
                         </tr>
 
                         <tr class="prop newLocalitySection">
-                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLatitude}" recordValues="${recordValues}" task="${taskInstance}" />
+                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLongitude}" recordValues="${recordValues}" task="${taskInstance}" />
                           <g:fieldTDPair fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" />
                         </tr>
 
                         <tr class="prop newLocalitySection">
-                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLongitude}" recordValues="${recordValues}" task="${taskInstance}" />
+                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLatitude}" recordValues="${recordValues}" task="${taskInstance}" />
                           <g:fieldTDPair fieldType="${DarwinCoreField.coordinateUncertaintyInMeters}" recordValues="${recordValues}" task="${taskInstance}" />
                         </tr>
 
