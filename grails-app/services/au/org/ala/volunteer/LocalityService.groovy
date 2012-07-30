@@ -98,11 +98,55 @@ class LocalityService {
 
     Object findLocalities(String query, String institution, int maxRows) {
 
+        // First try and find an exact match...
         def c = Locality.createCriteria();
+
+        query = query?.trim();
+
+        def results = c {
+            and {
+                eq('institutionCode', institution)
+                and {
+                    or {
+                        ilike('locality', "${query}")
+                        ilike('township', "${query}")
+                    }
+                }
+            }
+            maxResults(maxRows)
+        }
+
+        if (results.size() > 0) {
+            return results;
+        }
+
+        // Now try just a partial match on either locality ot township
+        c = Locality.createCriteria();
+
+        results = c {
+            and {
+                eq('institutionCode', institution)
+                and {
+                    or {
+                        ilike('locality', "%${query}%")
+                        ilike('township', "%${query}%")
+                    }
+                }
+            }
+            maxResults(maxRows)
+        }
+
+        if (results.size() > 0) {
+            return results;
+        }
+
+
+        // try and break it down and make the search more liberal
+        c = Locality.createCriteria();
 
         String[] bits = query.split(" ");
 
-        def results = c {
+        results = c {
             and {
                 eq('institutionCode', institution)
                 and {
