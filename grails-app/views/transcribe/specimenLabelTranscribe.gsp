@@ -100,7 +100,7 @@
           if (checkFindCollectionEventAvailability()) {
               $('#collectionEventSelectorLink').click();
           } else {
-              alert("You must first enter both a date and at least one collector!")
+              alert("You must first enter either a date or at least one collector!")
           }
       });
 
@@ -111,7 +111,9 @@
           scrolling: 'no',
           onStart: function() {
             $.fancybox.showActivity();
-            $.ajax("${createLink(controller: 'locality', action:'searchFragment', params: [taskId: taskInstance.id])}").done( function(data) {
+            var verbatimLocality = $('#recordValues\\.0\\.verbatimLocality').val();
+            verbatimLocality = verbatimLocality.replace(/(\r\n|\n|\r)/gm, ' ');
+            $.ajax("${createLink(controller: 'locality', action:'searchFragment', params: [taskId: taskInstance.id])}&verbatimLocality=" + encodeURIComponent(verbatimLocality)).done( function(data) {
               $("#locality_selector_content").html(data);
               $.fancybox.hideActivity();
             });
@@ -517,6 +519,15 @@
                                     <a href='#' class='fieldHelp' title='Enter all text apart from locality here - as it appears on the label(s)'><span class='help-container'>&nbsp;</span></a>
                                 </td>
                             </tr>
+                            <tr>
+                                <td style="padding-top: 0px;">
+                                    <button class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol" />
+                                    <button class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol" />
+                                    <button class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol" />
+                                    <button class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol" />
+                                    <button class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol" />
+                                </td>
+                            </tr>
 
                             <tr>
                               <td style="padding-bottom:0px; margin-bottom:0px; padding-top:0px;">
@@ -528,15 +539,6 @@
                                     <textarea noAutoComplete="true" name="recordValues.0.verbatimLocality" cols="38" rows="2" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
                                     <a href='#' class='fieldHelp' title='Enter the locality as it appears in the label(s)'><span class='help-container'>&nbsp;</span></a>
                                 </td>
-                            </tr>
-                            <tr>
-                              <td style="padding-top: 0px;">
-                                <button class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol" />
-                                <button class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol" />
-                                <button class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol" />
-                                <button class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol" />
-                                <button class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol" />
-                              </td>
                             </tr>
                         </tbody>
                     </table>
@@ -689,14 +691,7 @@
                                     <h3>Locality Search</h3>
                                     <textarea name="address" id="address" size="32" rows="2" value=""></textarea>
                                     <input id="locationSearch" type="button" value="Search" style="display:table-cell;vertical-align: top;"/>
-                                    <div class="searchHint">Interpret the
-                                        locality information in the labels into a form that is most likely to result in as accurate
-                                        geographic coordinates as possible. Expand abbreviations, and remove unnecessary words and
-                                        punctuation. Eg. &quot;Stott&apos;s Is. Tweed R. near Tumbulgum NSW&quot; would become
-                                        &quot;Stott&apos;s Island, Tweed River, Tumbulgum, NSW&quot;. If that doesn&apos;t map
-                                        correctly then try breaking the description up into single words to see if the map tool
-                                        can find a location. Where the map tool cant find a location simply fill in the State/territory
-                                        and Country fields</div>
+                                    <div class="searchHint">If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description. Choose a location, or move the pin to a location that you think represents the Verbatim Locality as sensibly as possible. Where the map tool cant find a location simply fill in the State/territory and Country fields</div>
                                 </div>
                                 <h3>Coordinate Uncertainty</h3>
                                 <div>Adjust Uncertainty (in metres):

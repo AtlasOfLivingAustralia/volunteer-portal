@@ -28,7 +28,10 @@
           Locality
         </td>
         <td>
-          <input style="width:100%" type="text" id="localitySearch" value="" />
+          <input style="width:100%" type="text" id="localitySearch" value="${verbatimLocality}" />
+        </td>
+        <td>
+          <a href="#" class="fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas. Only choose an existing location if you think it is the same place as the verbatim locality."><span class="help-container">&nbsp;</span></a>
         </td>
         <td style="vertical-align: middle; width: 150px; text-align: center">
           <span id="searchResultsStatus" />
@@ -90,6 +93,36 @@
           doLocalitySearch();
         }
       });
+
+      var searchTerm = $('#localitySearch').val();
+      if (searchTerm != '') {
+        doLocalitySearch();
+      }
+
+    // Context sensitive help popups
+    $("a.fieldHelp").qtip({
+        tip: true,
+        position: {
+            corner: {
+                target: 'topMiddle',
+                tooltip: 'bottomRight'
+            }
+        },
+        style: {
+            width: 400,
+            padding: 8,
+            background: 'white', //'#f0f0f0',
+            color: 'black',
+            textAlign: 'left',
+            border: {
+                width: 4,
+                radius: 5,
+                color: '#E66542'// '#E66542' '#DD3102'
+            },
+            tip: 'bottomRight',
+            name: 'light' // Inherit the rest of the attributes from the preset light style
+        }
+    }).bind('click', function(e){ e.preventDefault(); return false; });
 
     });
 

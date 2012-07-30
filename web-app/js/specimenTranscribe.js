@@ -151,7 +151,7 @@ function codeAddress() {
                         map.panTo(latLng);
                         return true;
                     } else {
-                        alert("Geocode was not successful for the following reason: " + status + " (count: " + quotaCount + ")");
+                        // alert("Geocode was not successful for the following reason: " + status + " (count: " + quotaCount + ")");
                     }
                 });
     }

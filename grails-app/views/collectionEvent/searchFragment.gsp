@@ -66,6 +66,7 @@
         }
         queryParams += '&eventDate=' + encodeURIComponent($('#search_event_date').val());
         queryParams += '&search_locality=' + encodeURIComponent($('#search_locality').val());
+        queryParams += '&expandedSearch=' + $('#expandedSearch').is(':checked');
 
         var taskUrl = "${createLink(controller: 'collectionEvent', action:'searchResultsFragment', params: [taskId:taskInstance.id])}" + queryParams;
         $.ajax({url:taskUrl, success: function(data) {
@@ -118,21 +119,28 @@
           </g:each>
           <td style="vertical-align: middle; width: 150px; text-align: center"><button id="event_search_button">Search</button>&nbsp;<button id="close_event_popup_button">Cancel</button></td>
       </tr>
-    <tr>
-      <td>
-        Event date
-      </td>
-      <td>
-        <input style="width:100%" type="text" id="search_event_date" value="${eventDate}" />
-      </td>
-      <td style="text-align: right"><span>Locality</span></td>
-      <td colspan="2"><g:textField name="search_locality" id="search_locality" style="width:100%"/></td>
-      <td style="vertical-align: middle; width: 150px; text-align: center">
-        <span id="search_results_status" />
-      </td>
-
-    </tr>
-  </table>
+      <tr>
+        <td>
+          Event date
+        </td>
+        <td>
+          <input style="width:100%" type="text" id="search_event_date" value="${eventDate}" />
+        </td>
+        <td style="text-align: right"><span>Locality</span></td>
+        <td colspan="2"><g:textField name="search_locality" id="search_locality" style="width:100%"/></td>
+        <td style="vertical-align: middle; width: 150px; text-align: center">
+          <span id="search_results_status" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+        </td>
+        <td colspan="3">
+          <label for="expandedSearch">Use expanded search</label>
+          <g:checkBox name="expandedSearch" checked="true" value="checked" id="expandedSearch"></g:checkBox>
+        </td>
+      </tr>
+    </table>
 
     <hr/>
   </div>

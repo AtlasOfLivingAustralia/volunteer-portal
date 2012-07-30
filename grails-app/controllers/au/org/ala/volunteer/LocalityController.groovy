@@ -6,6 +6,7 @@ import grails.converters.JSON
 class LocalityController {
 
     def localityService;
+    def logService;
 
     def index = { }
 
@@ -32,7 +33,8 @@ class LocalityController {
 
     def searchFragment = {
         def taskInstance = Task.get(params.long("taskId"))
-        [taskInstance: taskInstance]
+        def verbatimLocality = params["verbatimLocality"] as String
+        [taskInstance: taskInstance, verbatimLocality: verbatimLocality]
     }
 
     def searchResultsFragment = {

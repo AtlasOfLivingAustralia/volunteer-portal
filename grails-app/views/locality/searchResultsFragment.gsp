@@ -11,6 +11,10 @@
         </tr>
         <tr>
           <td class="localityPoliticalRegion">
+            ${locality.township}
+            <g:if test="${locality.township}">
+              <span>, </span>
+            </g:if>
             ${locality.state}
             <g:if test="${locality.state && locality.country}">
               <span>, </span>

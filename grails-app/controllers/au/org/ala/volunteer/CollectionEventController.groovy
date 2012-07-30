@@ -8,6 +8,7 @@ import grails.converters.JSON
 class CollectionEventController {
 
     def collectionEventService
+    def logService
 
     def searchFragment = {
         def taskInstance = Task.get(params.int("taskId"))
@@ -39,18 +40,21 @@ class CollectionEventController {
         def locality = params.search_locality
 
         def queryDate = eventDate.toString();
+
+        def useExpandedSearch = params.boolean('expandedSearch')
+
         while (!events && !finished && loopcount < 10) {
 
             List<List<String>> collectorNames = []
             (0..3).each {
                 Arrays.asList(String.class)
-                collectorNames << new ArrayList<String>(Arrays.asList((params["collector" + it] ?: "").split("\\s")))
+                collectorNames << new ArrayList<String>(Arrays.asList((params["collector" + it] ?: "").split("\\.|\\s")))
             }
 
             while (collectorNames.find { it.size() > 0 }) {
                 def queryCollectors = collectorNames.collect { it.join(" ")?.trim() }
                 events = collectionEventService.findCollectionEvents(taskInstance.project.featuredOwner, queryCollectors, queryDate, locality, maxRows)
-                if (events && events.size() > 0) {
+                if (events && events.size() > 0 || !useExpandedSearch) {
                     finished = true;
                     break;
                 }
@@ -60,7 +64,7 @@ class CollectionEventController {
                 }}
 
             }
-            if (queryDate.indexOf("-") > 0) {
+            if (queryDate.indexOf("-") > 0 && useExpandedSearch) {
                 queryDate = queryDate.substring(0, queryDate.lastIndexOf("-"))
             } else {
                 finished = true;

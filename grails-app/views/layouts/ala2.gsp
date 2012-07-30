@@ -43,6 +43,11 @@
             theme_advanced_toolbar_location : "top",
             convert_urls : false
         });
+
+        $.ajaxSetup({
+            cache: false
+        });
+
     </script>
 
     <style type="text/css">
