@@ -2,6 +2,8 @@ package au.org.ala.volunteer
 
 import org.springframework.web.multipart.MultipartFile
 import org.hibernate.FlushMode
+import org.hibernate.Criteria
+import groovy.sql.Sql
 
 class LocalityService {
 
@@ -9,6 +11,9 @@ class LocalityService {
     def sessionFactory
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def logService
+    javax.sql.DataSource dataSource
+
+    private List<String> _allStates = null;
 
     public ImportResult importLocalities(String institutionCode, MultipartFile file) {
 
@@ -96,73 +101,159 @@ class LocalityService {
         return result
     }
 
-    Object findLocalities(String query, String institution, int maxRows) {
-
+    private Closure wholeTerm = {String query, String institution, int maxRows, boolean wildcard ->
         // First try and find an exact match...
         def c = Locality.createCriteria();
-
-        query = query?.trim();
+        def wildcardChar = (wildcard ? "%" : "")
 
         def results = c {
             and {
                 eq('institutionCode', institution)
                 and {
                     or {
-                        ilike('locality', "${query}")
-                        ilike('township', "${query}")
+                        ilike('locality', "${wildcardChar}${query}${wildcardChar}")
+                        ilike('township', "${wildcardChar}${query}${wildcardChar}")
                     }
                 }
             }
             maxResults(maxRows)
         }
 
-        if (results.size() > 0) {
-            return results;
-        }
+        return results;
+    }
 
-        // Now try just a partial match on either locality ot township
-        c = Locality.createCriteria();
-
-        results = c {
-            and {
-                eq('institutionCode', institution)
-                and {
-                    or {
-                        ilike('locality', "%${query}%")
-                        ilike('township', "%${query}%")
-                    }
-                }
-            }
-            maxResults(maxRows)
-        }
-
-        if (results.size() > 0) {
-            return results;
-        }
-
-
+    private Closure splitTerms = { String query, String institution, int maxRows, boolean wildcard ->
         // try and break it down and make the search more liberal
-        c = Locality.createCriteria();
-
+        def c = Locality.createCriteria();
+        def wildcardChar = (wildcard ? "%" : "")
         String[] bits = query.split(" ");
 
-        results = c {
+        def results = c {
             and {
                 eq('institutionCode', institution)
                 and {
                     for (String bit : bits) {
                         or {
-                            ilike('locality', "%${bit}%")
-                            ilike('state', "%${bit}%")
-                            ilike('country', "%${bit}%")
-                            ilike('township', "%${bit}%")
+                            ilike('locality', "${wildcardChar}${bit}${wildcardChar}")
+                            ilike('state', "${wildcardChar}${bit}${wildcardChar}")
+                            ilike('country', "${wildcardChar}${bit}${wildcardChar}")
+                            ilike('township', "${wildcardChar}${bit}${wildcardChar}")
                         }
                     }
                 }
             }
             maxResults(maxRows)
         }
-
-        return results
+        return results;
     }
+
+
+
+    private synchronized String findState(String query) {
+        if (_allStates == null) {
+            _allStates = new ArrayList<String>()
+            def sql = new Sql(dataSource: dataSource)
+            sql.eachRow("SELECT DISTINCT(LOWER(State)) from locality") { row ->
+                def state = row[0] as String
+                if (state) {
+                    logService.log("Adding state to cache: ${state}")
+                    _allStates.add(state)
+                }
+            }
+        }
+
+        for (String state : _allStates) {
+            if (query.contains(state)) {
+                return state
+            }
+        }
+    }
+
+    private Closure stateMatchWhole = { String query, String institution, int maxRows, boolean wildcard ->
+        query = query.toLowerCase()
+        String state = findState(query)
+
+        if (state == null) {
+            return null;
+        }
+
+        // need to strip out the state from the query...
+        query = query.replaceAll(state, "").trim()
+        logService.log("Found state: ${state}, modified query is now ${query}")
+
+        def wildcardChar = (wildcard ? "%" : "")
+        def c  = Locality.createCriteria();
+
+        def results = c {
+            and {
+                eq('institutionCode', institution)
+                and {
+                    or {
+                        ilike('locality', "${wildcardChar}${query}${wildcardChar}")
+                        ilike('country', "${wildcardChar}${query}${wildcardChar}")
+                        ilike('township', "${wildcardChar}${query}${wildcardChar}")
+                    }
+                    ilike('state', "${state}")
+                }
+            }
+            maxResults(maxRows)
+        }
+        return results;
+    }
+
+    private Closure stateMatchSplit = { String query, String institution, int maxRows, boolean wildcard ->
+        query = query.toLowerCase()
+        String state = findState(query)
+
+        if (state == null) {
+            return null;
+        }
+
+        // need to strip out the state from the query...
+        query = query.replaceAll(state, "").trim()
+        logService.log("Found state: ${state}, modified query is now ${query}")
+
+        def wildcardChar = (wildcard ? "%" : "")
+        def c  = Locality.createCriteria();
+        String[] bits = query.split(" ");
+
+        def results = c {
+            and {
+                eq('institutionCode', institution)
+                and {
+                    for (String bit : bits) {
+                        or {
+                            ilike('locality', "${wildcardChar}${bit}${wildcardChar}")
+                            ilike('country', "${wildcardChar}${bit}${wildcardChar}")
+                            ilike('township', "${wildcardChar}${bit}${wildcardChar}")
+                        }
+                    }
+                    ilike('state', "${state}")
+                }
+            }
+            maxResults(maxRows)
+        }
+        return results;
+    }
+
+
+    Object findLocalities(String query, String institution, int maxRows) {
+
+        query = query?.trim();
+        List<Closure> criteriaFunctions = [wholeTerm, stateMatchWhole, stateMatchSplit, splitTerms ]
+
+        List<Locality> results = null;
+        for (boolean wildcard in [false, true]) {
+            for (Closure searchFunction : criteriaFunctions) {
+                results = searchFunction(query, institution, maxRows, wildcard)
+                if (results?.size() > 0) {
+                    return results;
+                }
+            }
+        }
+
+        return results;
+    }
+
 }
+
