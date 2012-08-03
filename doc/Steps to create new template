@@ -1,7 +1,7 @@
 Steps to create new template
 ============================
 
-1. Create a csv file under Configuration -> resources with the name of the template (i.e. aerialObservations.csv). Include in this file the field defintions for this template.
+1. Create a csv file under Configuration -> resources with the name of the template (i.e. aerialObservations.csv). Include in this file the field definitions for this template.
 
 2. Make sure template is created if not already existing in the bootstap.groovy section - see existing template checks to see how this is done
 

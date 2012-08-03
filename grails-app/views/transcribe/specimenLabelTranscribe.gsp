@@ -592,7 +592,6 @@
                         %{--</tr>--}%
 
                         <tr>
-                          <tr>
                           <td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em; vertical-align: top;">
                             <span class="step_heading">Step 2&nbsp;-&nbsp;EITHER</span>
                           </td>
@@ -621,13 +620,6 @@
                             <span class="step_heading">b. Create a new Collection event</span> &ndash; you have already entered a collector and date above so now you need to enter a locality
                           </td>
                         </tr>
-
-                        %{--<tr class="prop existingLocalitySection">--}%
-                          %{--<td/>--}%
-                          %{--<td colspan="3"><b>i. Find an existing locality</b>:--}%
-                            %{--<a href="#" class="fieldHelp" title="Click on <em>Find existing locality</em> and use the locality search tool to find a suitable location from the database. If no suitable location is found close the tool and proceed to Step 2 ii below"><span class="help-container">&nbsp;</span></a>--}%
-                          %{--</td>--}%
-                        %{--</tr>--}%
 
                         <tr class='prop existingLocalitySection'>
                             <td/>

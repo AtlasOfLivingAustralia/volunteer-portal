@@ -84,6 +84,7 @@ class CollectionEventController {
 
     def load = {
         def collectionCodes = Project.createCriteria().list {
+            isNotNull("featuredOwner")
             projections {
                 distinct("featuredOwner")
             }

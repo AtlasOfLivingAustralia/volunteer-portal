@@ -41,6 +41,15 @@
             <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'project', action:'create')}'">Create project</button></td>
             <td>Create a new volunteer project</td>
           </tr>
+          <tr>
+            <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'collectionEvent', action:'load')}'">Load collection events</button></td>
+            <td>Load/Replace collection events for a particular institution</td>
+          </tr>
+          <tr>
+            <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'locality', action:'load')}'">Load localities</button></td>
+            <td>Load/Replace localities for a particular institution</td>
+          </tr>
+
         </table>
 
       </div>

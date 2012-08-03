@@ -319,7 +319,7 @@ class ProjectController {
             def iconImage = 'icon_specimens.png'
             def iconLabel = 'Specimens'
 
-            if (project.template.name.equalsIgnoreCase('Journal') || project.template.name?.toLowerCase().startsWith("fieldnotebook")) {
+            if (project.template.name.equalsIgnoreCase('Journal') || project.template?.name?.toLowerCase().startsWith("fieldnotebook")) {
                 iconImage = 'icon_fieldnotes.png'
                 iconLabel = 'Field notes'
             }
@@ -396,12 +396,18 @@ class ProjectController {
 
     def save = {
         def projectInstance = new Project(params)
-        if (projectInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
-            redirect(action: "show", model: [id: projectInstance.id])
-        }
-        else {
+
+        if (!projectInstance.template) {
+            flash.message = "Please select a template before continuing!"
             render(view: "create", model: [projectInstance: projectInstance])
+        } else {
+
+            if (projectInstance.save(flush: true)) {
+                flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
+                redirect(action: "show", model: [id: projectInstance.id])
+            } else {
+                render(view: "create", model: [projectInstance: projectInstance])
+            }
         }
     }
 
