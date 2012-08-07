@@ -11,6 +11,8 @@ class TutorialsController {
     }
 
     def transcribingSpecimenLabels = {
+    }
 
+    def transcribingAnicCockroaches = {
     }
 }

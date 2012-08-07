@@ -69,8 +69,11 @@
               <A href="${createLink(controller: 'tutorials', action: 'transcribingSpecimenLabels')}"><g:message code="default.tutorial.specimenlabels.label" default="Transcribing Specimen Labels"/></a>
             </td>
           </tr>
-
-
+          <tr>
+            <td>
+              <A href="${createLink(controller: 'tutorials', action: 'transcribingAnicCockroaches')}"><g:message code="default.tutorial.specimenlabels.label" default="Transcribing ANIC Cockroaches - supplemental"/></a>
+            </td>
+          </tr>
         </table>
       </div>
 
