@@ -9,4 +9,8 @@ class TutorialsController {
     def transcribingFieldNotes = {
 
     }
+
+    def transcribingSpecimenLabels = {
+
+    }
 }

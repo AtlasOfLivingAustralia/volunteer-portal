@@ -31,7 +31,7 @@
           <input style="width:100%" type="text" id="localitySearch" value="${verbatimLocality}" />
         </td>
         <td>
-          <a href="#" class="fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas. Only choose an existing location if you think it is the same place as the verbatim locality."><span class="help-container">&nbsp;</span></a>
+          <a href="#" class="fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality."><span class="help-container">&nbsp;</span></a>
         </td>
         <td style="vertical-align: middle; width: 150px; text-align: center">
           <span id="searchResultsStatus" />

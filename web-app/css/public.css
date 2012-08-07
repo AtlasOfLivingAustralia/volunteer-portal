@@ -394,12 +394,12 @@ div#ui-datepicker-div {
 
 .map-control {
     position: absolute;
-    top: 20px;
+    top: 330px;
     left: 10px;
     background: url(../images/map-control.png) no-repeat;
     height: 63px;
     width: 100px;
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 .map-control a {

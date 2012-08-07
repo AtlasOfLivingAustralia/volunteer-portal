@@ -583,14 +583,6 @@
 
                         <g:fieldFromTemplateField templateField="${TemplateField.findByFieldType(DarwinCoreField.eventDate)}" recordValues="${recordValues}" />
 
-                        %{--<tr>--}%
-                          %{--<td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em; vertical-align: middle;">--}%
-                            %{--<span class="step_heading">Step 2&nbsp;-&nbsp;EITHER</span>--}%
-                          %{--</td>--}%
-                          %{--<td class="name" style="text-align: left;" colspan="3"><span class="step_heading">a. Find Existing Collection Event</span>--}%
-                          %{--</td>--}%
-                        %{--</tr>--}%
-
                         <tr>
                           <td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em; vertical-align: top;">
                             <span class="step_heading">Step 2&nbsp;-&nbsp;EITHER</span>

@@ -44,26 +44,32 @@
     <div>
       <div class="inner">
         <table class="bvp-expeditions">
+          %{--<tr>--}%
+            %{--<td>--}%
+              %{--<A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Introduction.swf"><g:message code="default.tutorial.introduction.label" default="Introduction (Video)"/></a>--}%
+            %{--</td>--}%
+          %{--</tr>--}%
+          %{--<tr>--}%
+            %{--<td>--}%
+              %{--<A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Mapping_Tool2.swf"><g:message code="default.tutorial.mapping.label" default="Mapping tool (Video)"/></a>--}%
+            %{--</td>--}%
+          %{--</tr>--}%
+          %{--<tr>--}%
+            %{--<td>--}%
+              %{--<A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Transcribing.swf"><g:message code="default.tutorial.transcribing.label" default="Transcribing (Video)"/></a>--}%
+            %{--</td>--}%
+          %{--</tr>--}%
           <tr>
             <td>
-              <A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Introduction.swf"><g:message code="default.tutorial.introduction.label" default="Introduction (Video)"/></a>
+              <A href="${createLink(controller: 'tutorials', action: 'transcribingFieldNotes')}"><g:message code="default.tutorial.fieldnotes.label" default="Transcribing Field Notes"/></a>
             </td>
           </tr>
           <tr>
             <td>
-              <A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Mapping_Tool2.swf"><g:message code="default.tutorial.mapping.label" default="Mapping tool (Video)"/></a>
+              <A href="${createLink(controller: 'tutorials', action: 'transcribingSpecimenLabels')}"><g:message code="default.tutorial.specimenlabels.label" default="Transcribing Specimen Labels"/></a>
             </td>
           </tr>
-          <tr>
-            <td>
-              <A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Transcribing.swf"><g:message code="default.tutorial.transcribing.label" default="Transcribing (Video)"/></a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <A href="${createLink(controller: 'tutorials', action: 'transcribingFieldNotes')}"><g:message code="default.tutorial.fieldnotes.label" default="Transcribing Field Notes (Text)"/></a>
-            </td>
-          </tr>
+
 
         </table>
       </div>
