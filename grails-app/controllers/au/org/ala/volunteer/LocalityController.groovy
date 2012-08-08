@@ -11,13 +11,7 @@ class LocalityController {
     def index = { }
 
     def load = {
-        def collectionCodes = Project.createCriteria().list {
-            isNotNull("featuredOwner")
-            projections {
-                distinct("featuredOwner")
-            }
-        }
-
+        def collectionCodes = localityService.getCollectionCodes()
         [collectionCodes: collectionCodes]
     }
 
@@ -42,7 +36,8 @@ class LocalityController {
         def taskInstance = Task.get(params.long("taskId"))
         if (taskInstance) {
             def q = params.searchLocality;
-            def localities = localityService.findLocalities(q, taskInstance.project.featuredOwner, 500)
+            def collectionCode = taskInstance.project?.localityLookupCollectionCode ?: taskInstance.project?.featuredOwner
+            def localities = localityService.findLocalities(q, collectionCode, 500)
             return [taskInstance: taskInstance, localities: localities]
         }
     }

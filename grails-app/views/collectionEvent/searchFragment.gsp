@@ -23,7 +23,7 @@
 
   #search_results {
     overflow-y:auto;
-    height: 250px
+    height: 224px
   }
 
   #collection_search_content table {

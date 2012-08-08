@@ -216,6 +216,12 @@
         </g:if>
         </section>
 
+        <section id="tutorial">
+          <g:if test="${projectInstance?.tutorialLinks}">
+            ${projectInstance.tutorialLinks}
+          </g:if>
+        </section>
+
         <section id="personnel">
           <h2>${projectInstance.featuredLabel} personnel</h2>
           <g:each in="${roles}" status="i" var="role">

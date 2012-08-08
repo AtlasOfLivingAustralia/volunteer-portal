@@ -19,6 +19,8 @@ class ProjectController {
     def fieldSyncService
     def authService
     def exportService
+    def collectionEventService
+    def localityService
     javax.sql.DataSource dataSource
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     /**
@@ -297,7 +299,13 @@ class ProjectController {
 
         params.sort = params.sort ? params.sort : session.expeditionSort ? session.expeditionSort : 'completed'
 
-        def projectList = Project.list()
+        def projectList
+
+        if (authService.userInRole(ROLE_ADMIN)) {
+            projectList = Project.list()
+        } else {
+            projectList = Project.findAllByInactiveOrInactive(false, null)
+        }
 
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
@@ -357,7 +365,7 @@ class ProjectController {
 
         int startIndex = params.offset ? params.int('offset') : 0;
         if (startIndex >= renderList.size()) {
-            startIndex = renderList.size() - max;
+            startIndex = renderList.size() - params.int('max');
             if (startIndex < 0) {
                 startIndex = 0;
             }
@@ -445,8 +453,14 @@ class ProjectController {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
             } else {
+                def eventCollectionCodes = [""]
+                eventCollectionCodes.addAll(collectionEventService.getCollectionCodes())
 
-                return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size()]
+                def localityCollectionCodes = [""]
+                localityCollectionCodes.addAll(localityService.getCollectionCodes())
+
+
+                return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes ]
             }
         } else {
             flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"

@@ -122,6 +122,24 @@
 
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="collectionEventLookupCollectionCode"><g:message code="project.collectionEventLookupCollectionCode.label" default="Collection Event Lookup collection code" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'collectionEventLookupInstitution', 'errors')}">
+                                    <g:select name="collectionEventLookupCollectionCode" from="${eventCollectionCodes}" value="${projectInstance?.collectionEventLookupCollectionCode}" />
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="localityLookupCollectionCode"><g:message code="project.localityLookupCollectionCode.label" default="Locality Lookup collection code" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'localityEventLookupInstitution', 'errors')}">
+                                  <g:select name="localityLookupCollectionCode" from="${eventCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}" />
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="featuredImageCopyright"><g:message code="project.featuredImageCopyright.label" default="Featured Image Copyright (Optional)" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredImageCopyright', 'errors')}">
@@ -129,6 +147,14 @@
                                 </td>
                             </tr>
 
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="inactive"><g:message code="project.inactive.label" default="Deactivate this project (will not appear in expedition list if ticked)" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'inactive', 'errors')}">
+                                    <g:checkBox name="inactive" value="${projectInstance?.inactive}" />
+                                </td>
+                            </tr>
 
                             <tr class="prop">
                                 <td valign="top" class="name">

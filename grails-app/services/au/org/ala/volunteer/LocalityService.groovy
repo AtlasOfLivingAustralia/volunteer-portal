@@ -15,6 +15,19 @@ class LocalityService {
 
     private List<String> _allStates = null;
 
+    public List<String> getCollectionCodes() {
+        def c = Locality.createCriteria();
+
+        def results = c {
+            isNotNull("institutionCode")
+            projections {
+                distinct("institutionCode")
+            }
+        }
+
+        return results
+    }
+
     public ImportResult importLocalities(String institutionCode, MultipartFile file) {
 
         def result = new ImportResult(success: false, message: '');
@@ -43,17 +56,22 @@ class LocalityService {
 
                     } else {
                         def item = [:]
-                        item.localityId = Long.parseLong(tokens[col.site_irn])
-                        item.country = tokens[col.LocCountry]
-                        item.state = tokens[col.LocProvinceStateTerritory]
-                        item.township = tokens[col.LocTownship]
-                        item.locality = tokens[col.LocPreciseLocation]
-                        item.latitudeDMS = tokens[col.LatLatitude]
-                        item.longitudeDMS = tokens[col.LatLongitude]
-                        item.latitude = tokens[col.LatLatitudeDecimal] ? Double.parseDouble(tokens[col.LatLatitudeDecimal]) : null
-                        item.longitude = tokens[col.LatLongitudeDecimal] ? Double.parseDouble(tokens[col.LatLongitudeDecimal]) : null
+                        def localityId = tokens[col.site_irn]
+                        if (localityId) {
+                            item.localityId = Long.parseLong(localityId)
+                            item.country = tokens[col.LocCountry]
+                            item.state = tokens[col.LocProvinceStateTerritory]
+                            item.township = tokens[col.LocTownship]
+                            item.locality = tokens[col.LocPreciseLocation]
+                            item.latitudeDMS = tokens[col.LatLatitude]
+                            item.longitudeDMS = tokens[col.LatLongitude]
+                            item.latitude = tokens[col.LatLatitudeDecimal] ? Double.parseDouble(tokens[col.LatLatitudeDecimal]) : null
+                            item.longitude = tokens[col.LatLongitudeDecimal] ? Double.parseDouble(tokens[col.LatLongitudeDecimal]) : null
+                        }
 
-                        if (!item.latitude || !item.longitude) {
+                        if (!item || !item.localityId) {
+                            reasons['No LocalityID'] = (reasons['No LocalityID'] ?: 0) + 1
+                        } else if (!item.latitude || !item.longitude) {
                             reasons['No Position'] = (reasons['No Position'] ?: 0) + 1
                         } else {
                             def locality = new Locality(
@@ -83,7 +101,7 @@ class LocalityService {
 
                 }
 
-                result.rowsSkipped = reasons.collect({ it.value }).sum()
+                result.rowsSkipped = reasons.collect({ it.value })?.sum() ?: 0
                 result.message = "${count} localities loaded. ${result.rowsSkipped} skipped (${reasons.toString()})"
                 result.rowsProcessed = count;
             } else {

@@ -53,7 +53,10 @@ class CollectionEventController {
 
             while (collectorNames.find { it.size() > 0 }) {
                 def queryCollectors = collectorNames.collect { it.join(" ")?.trim() }
-                events = collectionEventService.findCollectionEvents(taskInstance.project.featuredOwner, queryCollectors, queryDate, locality, maxRows)
+
+                def collectionCode = taskInstance?.project?.collectionEventLookupCollectionCode ?: taskInstance?.project?.featuredOwner
+                events = collectionEventService.findCollectionEvents(collectionCode, queryCollectors, queryDate, locality, maxRows)
+
                 if (events && events.size() > 0 || !useExpandedSearch) {
                     finished = true;
                     break;
@@ -83,12 +86,7 @@ class CollectionEventController {
     }
 
     def load = {
-        def collectionCodes = Project.createCriteria().list {
-            isNotNull("featuredOwner")
-            projections {
-                distinct("featuredOwner")
-            }
-        }
+        def collectionCodes = collectionEventService.getCollectionCodes()?.join(", ");
 
         [collectionCodes: collectionCodes]
     }

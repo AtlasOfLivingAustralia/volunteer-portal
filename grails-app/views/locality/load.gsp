@@ -58,7 +58,11 @@
               <table>
                   <tr>
                     <td>Institution:</td>
-                    <td><g:select from="${collectionCodes}" name="collectionCode"/></td>
+                    <td>
+                      <g:textField name="collectionCode" />
+                      %{--<g:select from="${collectionCodes}" name="collectionCode"/>--}%
+                    </td>
+                    <td>Existing collection codes: ${collectionCodes?.join(", ")}</td>
                   </tr>
                   <tr>
                       <td>File:</td>

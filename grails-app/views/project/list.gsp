@@ -16,6 +16,11 @@
     .ui-widget-content {
       border: 1px solid #3A5C83;
     }
+
+    [inactive=true] {
+      background-color: #808080;
+    }
+
   </style>
 </head>
 <body class="sublevel sub-site volunteerportal">
@@ -53,9 +58,13 @@
         </thead>
         <tbody>
         <g:each in="${projects}" status="i" var="projectInstance">
-          <tr>
+          <tr inactive="${projectInstance.project.inactive}">
             <th colspan="4">
-                <h2><a href="${createLink(controller: 'project', action:'index', id: projectInstance.id)}">${projectInstance['project'].featuredLabel}</a></h2>
+                <h2><a href="${createLink(controller: 'project', action:'index', id: projectInstance.id)}">${projectInstance['project'].featuredLabel}</a>
+                  <g:if test="${projectInstance.project.inactive}">
+                    - Deactivated
+                  </g:if>
+                </h2>
             </th>
             <th align="center">
               <cl:ifGranted role="ROLE_VP_ADMIN">
@@ -64,7 +73,7 @@
               </cl:ifGranted>
             </th>
           </tr>
-          <tr>
+          <tr inactive="${projectInstance.project.inactive}">
             <%-- Project thumbnail --%>
             <td><a href="${createLink(controller: 'project', action:'index', id: projectInstance['project'].id)}">
                 <img src="${projectInstance['project'].featuredImage}" width="147" height="81" />

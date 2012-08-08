@@ -16,6 +16,9 @@ class Project {
     Boolean disableNewsItems = false
     Integer leaderIconIndex = 0
     String featuredImageCopyright = null
+    Boolean inactive = false
+    String collectionEventLookupCollectionCode
+    String localityLookupCollectionCode
 
     static belongsTo = [template: Template]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem]
@@ -43,6 +46,9 @@ class Project {
         disableNewsItems nullable: true
         leaderIconIndex nullable: true
         featuredImageCopyright nullable: true
+        inactive nullable: true
+        collectionEventLookupCollectionCode nullable: true
+        localityLookupCollectionCode nullable: true
     }
 
     public String toString() {

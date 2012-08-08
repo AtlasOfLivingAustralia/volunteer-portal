@@ -431,6 +431,10 @@
         </div>
     </g:hasErrors>
 
+    <g:if test="${taskInstance?.project?.tutorialLinks}">
+      ${taskInstance.project.tutorialLinks}
+    </g:if>
+
     %{--<button id="showImageButton">Show image in seperate window</button>--}%
     <g:if test="${taskInstance}">
         <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
@@ -443,7 +447,7 @@
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-                    <div class="imageWrapper">
+                    <div class="imageWrapper" style="margin-top: 0px; padding-top: 0px">
                         <div id="viewport">
                             <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: 400px;">
                                 <!--top level map content goes here-->

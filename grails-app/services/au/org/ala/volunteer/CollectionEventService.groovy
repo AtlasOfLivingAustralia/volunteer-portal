@@ -44,6 +44,18 @@ class CollectionEventService {
         return collector?.replaceAll(normalisePattern,'')?.toLowerCase()
     }
 
+    public List<String> getCollectionCodes() {
+        def c = CollectionEvent.createCriteria();
+        def results = c {
+            isNotNull("institutionCode")
+            projections {
+                distinct("institutionCode")
+            }
+        }
+        return results;
+    }
+
+
     public ImportResult importEvents(String institutionCode, MultipartFile file) {
 
         def result = new ImportResult(success: false, message: '');

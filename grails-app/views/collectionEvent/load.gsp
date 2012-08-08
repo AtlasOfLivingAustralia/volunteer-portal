@@ -57,8 +57,9 @@
           <g:uploadForm action="loadCSV" controller="collectionEvent">
               <table>
                   <tr>
-                    <td>Institution:</td>
-                    <td><g:select from="${collectionCodes}" name="collectionCode"/></td>
+                    <td>Collection code:</td>
+                    <td><g:textField name="collectionCode" /></td>
+                    <td>Existing codes: ${collectionCodes}</td>
                   </tr>
                   <tr>
                       <td>File:</td>
