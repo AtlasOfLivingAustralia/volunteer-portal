@@ -134,7 +134,7 @@
                                   <label for="localityLookupCollectionCode"><g:message code="project.localityLookupCollectionCode.label" default="Locality Lookup collection code" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'localityEventLookupInstitution', 'errors')}">
-                                  <g:select name="localityLookupCollectionCode" from="${eventCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}" />
+                                  <g:select name="localityLookupCollectionCode" from="${localityCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}" />
                                 </td>
                             </tr>
 

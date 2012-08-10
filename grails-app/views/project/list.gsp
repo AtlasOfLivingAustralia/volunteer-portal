@@ -18,7 +18,17 @@
     }
 
     [inactive=true] {
-      background-color: #808080;
+      background-color: #d3d3d3;
+      opacity: 0.5;
+    }
+
+    tr .adminLink {
+      color: #d3d3d3;
+    }
+
+    tr[inactive=true] .adminLink {
+      color: black;
+      opacity: 1;
     }
 
   </style>
@@ -68,8 +78,8 @@
             </th>
             <th align="center">
               <cl:ifGranted role="ROLE_VP_ADMIN">
-                <g:link style="color: #d3d3d3;" controller="project" action="edit" id="${projectInstance['project'].id}">Edit</g:link>
-                <g:link style="color: #d3d3d3;" controller="task" action="projectAdmin" id="${projectInstance['project'].id}">Admin</g:link>
+                <g:link class="adminLink" controller="project" action="edit" id="${projectInstance['project'].id}">Edit</g:link>
+                <g:link class="adminLink" controller="task" action="projectAdmin" id="${projectInstance['project'].id}">Admin</g:link>
               </cl:ifGranted>
             </th>
           </tr>

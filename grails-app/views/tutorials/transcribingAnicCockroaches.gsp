@@ -21,7 +21,7 @@
         }
 
         .screenshot {
-          /*width: 50%;*/
+          width: 75%;
         }
 
     .tutorialText {
@@ -55,6 +55,8 @@
           <li>There is no need to enter a collection event in this case</li>
         </ul>
         <t:screenshot file="cockroach_01.png" />
+        <br/>
+        <br/>
         <t:p>The diagrams below provide a general guide to what information goes into what fields in the template.</t:p>
         <ol>
           <li><t:screenshot file="cockroach_02.png" /></li>

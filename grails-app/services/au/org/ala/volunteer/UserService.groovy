@@ -65,7 +65,7 @@ class UserService {
         def transcribedCount = getTranscribedCount(user)
         def tasksTheyHaveValidatedCount = getValidatedCount(user)
         def theirTasksValidated = getOwnTasksValidatedCount(user)
-        def score = transcribedCount + theirTasksValidated + tasksTheyHaveValidatedCount
+        def score = transcribedCount /* + theirTasksValidated */ + tasksTheyHaveValidatedCount
         logService.log "Calculated score for ${user.userId}: ${transcribedCount} (Transcribed) + ${theirTasksValidated} (number of THEIR tasks validated) + ${tasksTheyHaveValidatedCount} (tasks they have validated) = ${score}"
         t.stop(true)
 
