@@ -74,6 +74,13 @@
               <A href="${createLink(controller: 'tutorials', action: 'transcribingAnicCockroaches')}"><g:message code="default.tutorial.specimenlabels.label" default="Transcribing ANIC Cockroaches - supplemental"/></a>
             </td>
           </tr>
+
+          <tr>
+            <td>
+              <A href="${resource(dir:'pdf', file:'whaleSharkTutorial.pdf')}"><g:message code="default.tutorial.whalesharks.label" default="Transcribing Whaleshark observations - supplemental"/></a>
+            </td>
+          </tr>
+
         </table>
       </div>
 

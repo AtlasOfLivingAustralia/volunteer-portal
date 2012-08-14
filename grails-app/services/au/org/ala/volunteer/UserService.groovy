@@ -2,6 +2,9 @@ package au.org.ala.volunteer
 
 class UserService {
 
+    def ROLE_ADMIN = "ROLE_VP_ADMIN"
+    def ROLE_VALIDATOR = "ROLE_VP_VALIDATOR"
+
     def authService
     def logService
 
@@ -135,5 +138,35 @@ class UserService {
                                          where lower(u.displayName) like :query order by $params.sort $params.order""",
                                         [query: query], params)
         return [count: count, list: users.toList()]
+    }
+
+    /**
+     * returns true if the current user can validate tasks from the specified project
+     * @param project
+     * @return
+     */
+    public boolean isValidator(Project project) {
+        def userId = authService.username()
+
+        // If there the user has been granted the ALA-AUTH roles then these override everything
+        if (authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR)) {
+            return true
+        }
+
+        // Otherwise check the intra app roles...
+
+        def user = User.findByUserId(userId)
+        if (user) {
+            def validatorRole = Role.findByNameIlike("validator")
+            def role = user.userRoles.find { it.role.id == validatorRole.id && (it.project == null || it.project.id == project?.id) }
+            if (role) {
+                // a role exists for the current user and the specified project (or the user has a role with a null project
+                // indicating that they can validate tasks from any project
+                return true;
+            }
+        }
+
+        return false;
+
     }
 }

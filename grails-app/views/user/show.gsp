@@ -140,7 +140,7 @@
         </td>
          <td style="vertical-align: top" align="right">
            <g:if test="${achievements.size() > 0}">
-             <table class="bvp-expeidtions" style="margin:10px; border: 1px solid #d3d3d3;text-align: center; border-collapse: separate;" width="400px">
+             <table class="bvp-expeditions" style="margin:10px; border: 1px solid #d3d3d3;text-align: center; border-collapse: separate;" width="400px">
                <thead>
                 <tr><td colspan="5" style="border:none"><h3>Achievements</h3></td></tr>
                </thead>
@@ -158,6 +158,14 @@
                </tbody>
              </table>
            </g:if>
+         </td>
+       </tr>
+       <tr>
+         <td colspan="3">
+           <cl:ifGranted role="ROLE_VP_ADMIN">
+             <g:link controller="user" action="editRoles" id="${userInstance.id}">Manage user roles</g:link>
+           </cl:ifGranted>
+
          </td>
        </tr>
     </table>

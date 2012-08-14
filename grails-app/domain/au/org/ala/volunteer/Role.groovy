@@ -5,15 +5,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 
 class Role implements Serializable {
 
-  User user
-  String role
+    String name
 
-  static mapping = {
+    static mapping = {
     version false
-  }
+    }
 
-  static constraints = {
-    userId maxSize: 200
-    role maxSize: 100
-  }
+    static constraints = {
+        name nullable: false
+    }
+
 }

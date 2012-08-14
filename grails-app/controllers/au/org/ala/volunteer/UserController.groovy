@@ -121,6 +121,12 @@ class UserController {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
 
+        if (!userInstance) {
+            flash.message = "Missing user id, or user not found!"
+            redirect(action: 'list')
+            return
+        }
+
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
         params.offset = params.int('offset') ?: 0
         params.order = params.order ?: ""
@@ -277,5 +283,79 @@ class UserController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         }
+    }
+
+    def editRoles = {
+
+        def userInstance = User.get(params.id)
+        def currentUser = authService.username()
+        if (!userInstance || !currentUser) {
+            flash.message = "User not found!"
+            redirect(action: "list")
+            return
+        }
+
+        if (!authService.userInRole(ROLE_ADMIN)) {
+            flash.message = "You have insufficient priviliges to manage the roles for this user!"
+            redirect(action: "show")
+        }
+
+        [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list()]
+    }
+
+    def updateRoles = {
+        def userInstance = User.get(params.id)
+
+        if (!userInstance) {
+            flash.message = "User not found!"
+            redirect(action: "list")
+            return
+        }
+
+        if (!authService.userInRole(ROLE_ADMIN)) {
+            flash.message = "You have insufficient priviliges to manage the roles for this user!"
+            redirect(action: "show")
+            return
+        }
+
+        def roleAction = params.selectedUserRoleAction
+        def userRoleId = params.selectedUserRoleId
+        if (roleAction == 'delete' && userRoleId) {
+            def userRole = UserRole.get(userRoleId)
+            if (userRole) {
+                userRole.delete(flush: true)
+            }
+        } else if (roleAction == 'addRole') {
+            def role = Role.list()[0]
+            def userRole = new UserRole(user: userInstance, role: role, project: null)
+            userInstance.addToUserRoles(userRole)
+        } else if (roleAction == 'update') {
+            // This is an update....
+            def userRoles = UserRole.findAllByUser(userInstance)
+            userRoles.each { userRole ->
+                def roleId = params.int("userRole_${userRole.id}_role")
+                def projectId = params.int("userRole_${userRole.id}_project")
+                println "Testing userRole ${userRole.id} against role: ${roleId} and project: ${projectId}"
+                boolean changed = false;
+                if (userRole.role.id != roleId) {
+                    changed = true;
+                }
+                if (userRole.project?.id != projectId) {
+                    changed = true;
+                }
+
+                if (changed) {
+                    println "UserRole ${userRoleId} has changed - updating and saving."
+                    userRole.role = Role.get(roleId)
+                    userRole.project = Project.get(projectId)
+
+                    userRole.save(flush: true, failOnError: true)
+                }
+
+            }
+        }
+
+        redirect(action: 'editRoles', id: userInstance?.id)
+
     }
 }

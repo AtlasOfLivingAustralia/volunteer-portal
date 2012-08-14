@@ -331,7 +331,7 @@
                 <g:each in="${taskInstance.multimedia}" var="m" status="i">
                   <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-                    <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:55px;">
+                    <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:100px;">
                         <div><img id="image_${imageIndex++}" src="${imageUrl}" style="width:100%;"/></div>
                     </div>
                   </g:if>

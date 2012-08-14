@@ -11,6 +11,7 @@ import au.org.ala.volunteer.FrontPage
 import au.org.ala.volunteer.Project
 import org.apache.commons.lang.StringUtils
 import java.util.regex.Pattern
+import au.org.ala.volunteer.Role
 
 class BootStrap {
 
@@ -132,6 +133,17 @@ class BootStrap {
             User u = new User(userId: 'system', displayName: 'System User')
         }
 
+        ensureRoleExists("validator")
+
+    }
+
+    def ensureRoleExists(String rolename) {
+        def role = Role.findByNameIlike(rolename)
+        if (!role) {
+            role = new Role(name: rolename)
+            role.save(flush:  true, failOnError: true)
+        }
+        return role
     }
 
     def destroy = {
