@@ -25,10 +25,10 @@ class Project {
 
     static mapping = {
         version false
-        tasks cascade: 'all-delete-orphan'
-        projectAssociations cascade: 'all-delete-orphan'
+        tasks cascade: 'all,delete-orphan'
+        projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
-        newsItems sort: 'created', order: 'desc'
+        newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
     }
 
     static constraints = {

@@ -216,6 +216,11 @@
                                   <span style="padding-left:5px; padding-top: 7px; padding-right: 5px; padding-bottom: 8px; background-image: url(${resource(dir: '/images', file: 'warning-button.png')})">
                                       <span class="button"><g:actionSubmit style="width: 100px" class="delete" action="deleteTasks" value="Delete all tasks" onclick="return confirmDeleteAllTasks()" /></span>
                                   </span>
+                                  <span>
+                                    &nbsp;Delete task images&nbsp;<g:checkBox style="width:20px" name="deleteImages" value="true"></g:checkBox>
+                                  </span>
+
+                                  
                                 </td>
                             </tr>
 

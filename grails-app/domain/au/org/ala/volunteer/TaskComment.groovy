@@ -2,7 +2,8 @@ package au.org.ala.volunteer
 
 class TaskComment {
 
-    Task task
+    static belongsTo = [task:Task]
+
     User user
     Date date
     String comment

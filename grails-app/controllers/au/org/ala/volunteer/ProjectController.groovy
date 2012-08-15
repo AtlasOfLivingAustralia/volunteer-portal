@@ -15,6 +15,8 @@ class ProjectController {
 
     def taskService
     def fieldService
+    def multimediaService
+    def logService
     def auditService
     def fieldSyncService
     def authService
@@ -240,55 +242,27 @@ class ProjectController {
         }
     }
 
-//    String[] getFieldsforTask(Task task, List fields, Map taskMap) {
-//        List fieldValues = []
-//        def taskId = task.id
-//
-//        def date = new Date().format("dd-MMM-yyyy")
-//
-//        if (taskMap.containsKey(taskId)) {
-//            def fieldMap = taskMap.get(taskId)
-//            fields.eachWithIndex { it, i ->
-//
-//                if (i == 0) {
-//                    fieldValues.add(taskId.toString())
-//                }
-//                else if (i == 1) {
-//                    fieldValues.add(task.fullyTranscribedBy)
-//                }
-//                else if (i == 2) {
-//                    fieldValues.add(task.fullyValidatedBy)
-//                }
-//                else if (i == 3) {
-//                    fieldValues.add(task.externalIdentifier)
-//                }
-//                else if (i == 4) {
-//                    def sb = new StringBuilder()
-//                    if (task.fullyTranscribedBy) {
-//                        sb.append("Fully transcribed by ${task.fullyTranscribedBy}. ")
-//                    }
-//                    sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
-//                    fieldValues.add((String) sb.toString())
-//                }
-//                else if (fieldMap.containsKey(it)) {
-//                    fieldValues.add(fieldMap.get(it).replaceAll("\r\n|\n\r|\n|\r", '\\\\n'))
-//                }
-//                else {
-//                    fieldValues.add("") // need to leave blank
-//                }
-//            }
-//        }
-//
-//        return fieldValues.toArray(new String[0]) // String array
-//    }
-
     def deleteTasks = {
 
         def projectInstance = Project.get(params.id)
+        boolean deleteImages = params.deleteImages?.toBoolean()
         if (projectInstance) {
             def tasks = Task.findAllByProject(projectInstance)
             for (Task t : tasks) {
-                t.delete()
+                try {
+                    if (deleteImages == true) {
+                        t.multimedia.each { image ->
+                            try {
+                                multimediaService.deleteMultimedia(image)
+                            } catch (IOException ex) {
+                                logService.log("Failed to delete multimedia: " + ex.message)
+                            }
+                        }
+                    }
+                    t.delete()
+                } catch (Exception ex) {
+                    logService.log("Failed to delete task ${t.id}: " + ex.message)
+                }
             }
         }
         redirect(action: "edit", id: projectInstance?.id)

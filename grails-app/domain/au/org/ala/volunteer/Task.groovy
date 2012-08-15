@@ -11,13 +11,14 @@ class Task {
   Integer viewed = -1
   Date created
 
-  static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field]
+  static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
 
   static mapping = {
     version false
     multimedia cascade:'all,delete-orphan'
     viewedTasks cascade: 'all,delete-orphan'
     fields cascade: 'all,delete-orphan'
+    comments cascade: 'all,delete-orphan'
   }
 
   static constraints = {
