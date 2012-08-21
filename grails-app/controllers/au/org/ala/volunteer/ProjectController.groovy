@@ -287,6 +287,7 @@ class ProjectController {
         def projects = [:]
         def incompleteCount = 0;
         for (Project project : projectList) {
+
             def percent = 0;
             if (taskCounts[project.id] && fullyTranscribedCounts[project.id]) {
                 percent = ((fullyTranscribedCounts[project.id] / taskCounts[project.id]) * 100)
@@ -295,9 +296,10 @@ class ProjectController {
                     percent = 99;
                 }
             }
-            if (percent < 100) {
+            if (percent < 100 && !project.inactive) {
                 incompleteCount++;
             }
+
             def iconImage = 'icon_specimens.png'
             def iconLabel = 'Specimens'
 

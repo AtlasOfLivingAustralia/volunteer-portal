@@ -81,6 +81,13 @@
             </td>
           </tr>
 
+          <tr>
+            <td>
+              <A href="${resource(dir:'pdf', file:'whaleSharkMap.pdf')}"><g:message code="default.tutorial.whalesharksmap.label" default="Whaleshark area map - supplemental"/></a>
+            </td>
+          </tr>
+
+
         </table>
       </div>
 

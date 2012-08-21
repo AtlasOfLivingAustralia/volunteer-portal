@@ -101,7 +101,12 @@
                       <th></th>
                       <g:sortableColumn style="text-align: left" property="displayName" title="${message(code: 'user.user.label', default: 'Name')}" params="${[q:params.q]}"/>
                       <g:sortableColumn property="transcribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}" params="${[q:params.q]}"/>
-                      <g:sortableColumn property="validatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}" params="${[q:params.q]}"/>
+                      <cl:ifValidator project="${null}">
+                          <g:sortableColumn property="validatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}" params="${[q:params.q]}"/>
+                      </cl:ifValidator>
+                      <cl:ifNotValidator>
+                        <th></th>
+                      </cl:ifNotValidator>
                       <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'A volunteer since')}" params="${[q:params.q]}"/>
                   </g:else>
 
@@ -116,7 +121,11 @@
                         <g:if test="${userInstance.userId == currentUser}">(that's you!)</g:if>
                     </td>
                     <td class="bold centertext">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
-                    <td class="bold centertext">${fieldValue(bean: userInstance, field: "validatedCount")}</td>
+                    <td class="bold centertext">
+                      <cl:ifValidator project="${null}">
+                        ${userInstance?.validatedCount}
+                      </cl:ifValidator>
+                    </td>
                     <td class="bold centertext"><prettytime:display date="${userInstance?.created}"/></td>
                 </tr>
             </g:each>

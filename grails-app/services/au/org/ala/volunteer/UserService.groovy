@@ -1,5 +1,9 @@
 package au.org.ala.volunteer
 
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import javax.sql.DataSource
+import groovy.sql.Sql
+
 class UserService {
 
     def ROLE_ADMIN = "ROLE_VP_ADMIN"
@@ -7,6 +11,9 @@ class UserService {
 
     def authService
     def logService
+
+    DataSource dataSource
+    def config = ConfigurationHolder.config
 
     static transactional = true
 
@@ -121,24 +128,24 @@ class UserService {
         }[0]
     }
 
-    Map filteredUserList(Map params) {
-        String query = '%'
-        if (params.q) {
-            query = "%" + (params.q?:"") + "%"
-        }
-
-        query= query.toLowerCase()
-
-        def count = User.executeQuery("""select count(u) from User u
-                                         where lower(u.displayName) like :query""",
-                                        [query: query], [:])[0]
-
-
-        def users = User.executeQuery("""select u from User u
-                                         where lower(u.displayName) like :query order by $params.sort $params.order""",
-                                        [query: query], params)
-        return [count: count, list: users.toList()]
-    }
+//    Map filteredUserList(Map params) {
+//        String query = '%'
+//        if (params.q) {
+//            query = "%" + (params.q?:"") + "%"
+//        }
+//
+//        query= query.toLowerCase()
+//
+//        def count = User.executeQuery("""select count(u) from User u
+//                                         where lower(u.displayName) like :query""",
+//                                        [query: query], [:])[0]
+//
+//
+//        def users = User.executeQuery("""select u from User u
+//                                         where lower(u.displayName) like :query order by $params.sort $params.order""",
+//                                        [query: query], params)
+//        return [count: count, list: users.toList()]
+//    }
 
     /**
      * returns true if the current user can validate tasks from the specified project
@@ -155,10 +162,13 @@ class UserService {
 
         // Otherwise check the intra app roles...
 
+        // If project is null, return true if the user can validate in any project
+        // If project is not null, return true only if they are validator for that project, or if they have a null project in their validator role (meaning 'all projects')
+
         def user = User.findByUserId(userId)
         if (user) {
             def validatorRole = Role.findByNameIlike("validator")
-            def role = user.userRoles.find { it.role.id == validatorRole.id && (it.project == null || it.project.id == project?.id) }
+            def role = user.userRoles.find { it.role.id == validatorRole.id && (it.project == null || project == null || it.project.id == project?.id) }
             if (role) {
                 // a role exists for the current user and the specified project (or the user has a role with a null project
                 // indicating that they can validate tasks from any project
@@ -169,4 +179,73 @@ class UserService {
         return false;
 
     }
+
+    def getValidatedCounts(Collection<String> usernames) {
+        def c = Task.createCriteria();
+        def counts = c {
+            projections {
+                groupProperty("fullyValidatedBy")
+                count("fullyValidatedBy")
+            }
+            if (usernames) {
+                'in'("fullyValidatedBy", usernames)
+            }
+        }
+
+        def results = [:]
+
+        counts.each {
+            results[it[0]] = it[1]
+        }
+
+        logService.log("Validate Counts: ${results}")
+
+        return results
+    }
+
+    public Map getUserList(params) {
+        // Because we have to calculate the number of tasks that a user has validated
+        // we have to use SQL to do a join...
+
+        def limit = params.int("limit") ?: 10;
+        def offset = params.int("offset") ?: 0;
+        def sort = params.sort ?: "displayName"
+        def order = params.order ?:  (sort == 'displayName' ? "asc" : "desc")
+        String query = '%'
+        if (params.q) {
+            query = "%" + (params.q?:"") + "%"
+        }
+
+        query = query.toLowerCase()
+
+        def count = User.executeQuery("select count(u) from User u where lower(u.displayName) like :query", [query: query], [:])[0]
+
+        def select = """
+            select id, user_id as userId, display_name as displayName, transcribed_count as transcribedCount, created, coalesce(v.c, 0) as validatedCount from vp_user
+            left outer join (select fully_validated_by, count(fully_validated_by) as c from Task group by fully_validated_by) as v on user_id = v.fully_validated_by
+            where lower(display_name) like '${query}'
+            order by ${sort} ${order}
+            LIMIT ${limit}
+            OFFSET ${offset}
+        """.toString()
+
+        def results = new ArrayList<UserListDTO>()
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select, { row ->
+            def user = new UserListDTO(id: row.id, userId: row.userId, displayName: row.displayName, transcribedCount: row.transcribedCount, created: row.created, validatedCount: row.validatedCount)
+            results.add(user)
+        })
+
+        return [count: count, list: results]
+    }
+}
+
+class UserListDTO {
+    long id
+    String userId
+    String displayName
+    int transcribedCount
+    Date created
+    int validatedCount
 }

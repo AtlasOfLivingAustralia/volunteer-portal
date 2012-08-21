@@ -9,6 +9,34 @@
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.8.23.custom.min.js')}"></script>
+    <style type="text/css">
+      .ui-widget {
+        font:1em Arial, Helvetica, sans-serif;
+        line-height: 1.2em;
+      }
+
+      .ui-widget button {
+        font: bold 1em Arial, Helvetica, sans-serif;
+        margin: 5px;
+      }
+
+      .ui-widget-content .listLink {
+        color: #3A5C83;
+        margin-top: 20px;
+      }
+
+      #taskTabs .ui-state-active {
+        background: #FFFEF7;
+        font-weight: bold;
+      }
+
+      .ui-tabs .ui-tabs-panel {
+        background-color: #FFFEF7;
+        padding-bottom: 25px;
+      }
+
+    </style>
     <script type="text/javascript">
       $(document).ready(function() {
           // Context sensitive help popups
@@ -36,12 +64,6 @@
               }
           });
 
-        $('#searchbox').bind('keypress', function(e) {
-            var code = (e.keyCode ? e.keyCode : e.which);
-            if(code == 13) {
-              doSearch();
-            }
-        });
 
     // Context sensitive help popups
     $("a.fieldHelp").qtip({
@@ -68,13 +90,19 @@
         }
     }).bind('click', function(e){ e.preventDefault(); return false; });
 
+        $("#taskTabs").tabs({selected: ${params.selectedTab ?: 0}, show: function(e) {
+          var $tabs = $('#taskTabs').tabs();
+          var newIndex = $tabs.tabs('option', 'selected');
+
+          if (newIndex != ${params.selectedTab ?: 0}) {
+            var url = "${createLink(action:'show', id:userInstance.id)}?selectedTab=" + newIndex + "&projectId=${project?.id ?: ''}";
+            window.location.href = url;
+          }
+
+        } });
+
       });
 
-      doSearch = function() {
-        var searchTerm = $('#searchbox').val()
-        var link = "${createLink(controller: 'user', action: 'show', id: userInstance.id)}?q=" + searchTerm
-        window.location.href = link;
-      }
     </script>
   </head>
   <body class="sublevel sub-site volunteerportal">
@@ -171,173 +199,44 @@
     </table>
   </div>
 
-  <g:if test="${savedTasks}">
-    <h2>&quot;Saved Unfinished&quot; Tasks by
-    <g:if test="${userInstance.userId == currentUser}">
-      you
-    </g:if>
-    <g:else>
-      ${fieldValue(bean: userInstance, field: "displayName")}
-    </g:else>
-    <g:if test="${project}">
-        for ${project.featuredLabel}
-    </g:if>
-    (${totalSavedTasks} tasks found)
-    </h2>
-    <div class="list">
-            <table class="bvp-expeditions">
-                <thead>
-                    <tr>
+  <div id="taskTabs">
 
-                        <th style="text-align: left">Id</th>
-
-                        <th style="text-align: left">Image ID</th>
-
-                        <th style="text-align: left">Catalog Number</th>
-
-                        <th style="text-align: left">Project</th>
-
-                        <th style="text-align: left">Status</th>
-
-                        %{--<g:sortableColumn style="text-align: left" property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>--}%
-
-                        %{--<g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>--}%
-
-
-
-
-                        %{--<g:sortableColumn style="text-align: left" property="project" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>--}%
-
-                        %{--<g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>--}%
-
-                        <th style="text-align: center;">Action</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                <g:each in="${savedTasks}" status="i" var="taskInstance">
-                    <tr>
-
-                        <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
-
-                        <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
-
-                        <td>${fieldsInTask?.get(taskInstance.id)?.get(0)?.catalogNumber}</td>
-
-                        <td>${fieldValue(bean: taskInstance, field: "project")}</td>
-
-                        <td style="text-align: center;">
-                            <g:if test="${taskInstance.isValid == true}">validated</g:if>
-                            <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
-                            <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
-                            <g:else>saved</g:else>
-                        </td>
-
-                        <td style="text-align: center;">
-                            <g:if test="${taskInstance.fullyTranscribedBy}">
-                                <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
-                            </g:if>
-                            <g:else>
-                                <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
-                            </g:else>
-                        </td>
-
-                    </tr>
-                </g:each>
-                </tbody>
-            </table>
-    </div>
-    <div class="paginateButtons">
-      <g:paginate total="${totalSavedTasks}" id="${userInstance?.id}" params="${params}"/>
-    </div>
-  </g:if>
-
-
-  <h2>Transcribed Tasks by
-  <g:if test="${userInstance.userId == currentUser}">
-    you
-  </g:if>
-  <g:else>
-    ${fieldValue(bean: userInstance, field: "displayName")}
-  </g:else>
-  <g:if test="${project}">
-      for ${project.featuredLabel}
-  </g:if>
-  <g:if test="${!matchingTasks}">
-  <span>(No matching tasks found)</span>
-  </g:if>
-  <g:else>
-    (${totalMatchingTasks} tasks found)
-  </g:else>
-  </h2>
-  <div class="list">
-          <table class="bvp-expeditions">
-              <thead>
-                  <tr>
-                    <th colspan="7" style="text-align: right">
-                      <span>
-                        <a style="vertical-align: middle;" href="#" class="fieldHelp" title="Enter search text here to show only tasks matching values in the ImageID, CatalogNumber, Project and Transcribed columns"><span class="help-container">&nbsp;</span></a>
-                      </span>
-                      <g:textField id="searchbox" value="${params.q}" name="searchbox" onkeypress=""/>
-                      <button onclick="doSearch()">Search</button>
-                    </th>
-                  </tr>
-                  <tr>
-
-                      <g:sortableColumn style="text-align: left" property="t.id" title="${message(code: 'task.id.label', default: 'Id')}" params="${[q:params.q]}"/>
-
-                      <g:sortableColumn style="text-align: left" property="external_identifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${[q:params.q]}"/>
-
-                      <g:sortableColumn style="text-align: left" property="value" title="${message(code: 'task.catalogNumber.label', default: 'Catalog Number')}" params="${[q:params.q]}"/>
-
-                      <g:sortableColumn style="text-align: left" property="featured_label" title="${message(code: 'task.project.name', default: 'Project')}" params="${[q:params.q]}"/>
-
-                      <g:sortableColumn property="lastEdit" title="${message(code: 'task.transcribed.label', default: 'Transcribed')}" params="${[q:params.q]}" style="text-align: left;"/>
-
-                      <g:sortableColumn property="is_valid" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[q:params.q]}" style="text-align: center;"/>
-
-                      <th style="text-align: center;">Action</th>
-
-                  </tr>
-              </thead>
-              <tbody>
-              <g:each in="${matchingTasks}" status="i" var="taskInstance">
-                  <tr>
-
-                      <td><g:link controller="transcribe" action="task" id="${taskInstance.id}">${taskInstance.id}</g:link></td>
-
-                      <td>${taskInstance.externalIdentifier}</td>
-
-                      <td>${taskInstance.catalogNumber}</td>
-
-                      <td><g:link controller="project" action="index" id="${taskInstance.projectId}">${taskInstance.project}</g:link></td>
-
-                      <td>
-                        <g:formatDate date="${taskInstance.lastEdit}" format="dd MMM, yyyy HH:mm:ss" />
-
-                      </td>
-
-                      <td style="text-align: center;">
-                          ${taskInstance.status}
-                      </td>
-
-                      <td style="text-align: center;">
-                          <g:if test="${taskInstance.fullyTranscribedBy}">
-                              <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
-                          </g:if>
-                          <g:else>
-                              <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
-                          </g:else>
-                      </td>
-
-                  </tr>
-              </g:each>
-              </tbody>
-          </table>
+      <ul>
+          <li><a href="#tabs-1">Transcribed Tasks</a></li>
+          <li><a href="#tabs-2">Saved Tasks</a></li>
+          <cl:ifValidator>
+            <li><a href="#tabs-3">Validated Tasks</a></li>
+          </cl:ifValidator>
+      </ul>
+      <g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}" />
+      <div id="tabs-1" class="tabContent">
+        <g:if test="${selectedTab == 0}">
+          <g:include action="taskListFragment" params="${includeParams + [projectId:project?.id]}" />
+        </g:if>
+        <g:else>
+          <span>Loading...</span>
+        </g:else>
+      </div>
+      <div id="tabs-2" class="tabContent">
+        <g:if test="${selectedTab == 1}">
+          <g:include action="taskListFragment" params="${includeParams  + [projectId:project?.id]}" />
+        </g:if>
+        <g:else>
+          <span>Loading...</span>
+        </g:else>
+      </div>
+      <cl:ifValidator>
+        <div id="tabs-3" class="tabContent">
+          <g:if test="${selectedTab == 2}">
+            <g:include action="taskListFragment" params="${includeParams  + [projectId:project?.id]}" />
+          </g:if>
+          <g:else>
+            <span>Loading...</span>
+          </g:else>
+        </div>
+      </cl:ifValidator>
   </div>
-  <div class="paginateButtons">
-    <g:paginate total="${totalMatchingTasks}" id="${userInstance?.id}" params="${params}"/>
-  </div>
+
 
   </div>
     <script type="text/javascript">

@@ -38,10 +38,11 @@ class TaskController {
 
     def projectAdmin = {
         def currentUser = authService.username()
-        if (currentUser != null && (authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
+        def project = Project.get(params.int("id"))
+        if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, "adminList")
         } else {
-            flash.message = "You do not have permission to view the Admin Task List page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view the Admin Task List page (you need to be either an adminstrator or a validator)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
@@ -55,6 +56,9 @@ class TaskController {
     def renderProjectListWithSearch(GrailsParameterMap params, String view) {
 
         def projectInstance = Project.get(params.id)
+
+        def currentUser = authService.username()
+        def userInstance = User.findByUserId(currentUser)
 
         String[] fieldNames = null;
 
@@ -98,7 +102,7 @@ class TaskController {
 
             // add some associated "field" values
             render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
-                    projectInstance: projectInstance, extraFields: extraFields])
+                    projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance])
         }
         else {
             flash.message = "No project found for ID " + params.id

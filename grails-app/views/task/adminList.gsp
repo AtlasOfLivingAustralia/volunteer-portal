@@ -40,10 +40,12 @@
                     Tasks
                 </g:else>
               </h1>
-              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
-              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
-              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
-              <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'picklist', id:projectInstance.id)}'">Picklists</button>
+              <cl:ifAdmin>
+                <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
+                <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
+                <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
+                <button style="float:left;margin:5px;" onclick="location.href='${createLink(controller:'picklist', id:projectInstance.id)}'">Picklists</button>
+              </cl:ifAdmin>
 
             </hgroup>
           </div><!--inner-->
@@ -54,6 +56,7 @@
                 Total Tasks: ${taskInstanceTotal},
                 Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                 Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                <g:link controller="user" action="myStats" id="${userInstance.id}" params="${['projectId':projectInstance.id]}">My stats</g:link>
                 &nbsp;&nbsp;
                 <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id)}'">Export all</button>
                 <button onclick="location.href='${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[transcribed:true])}'">Export transcribed</button>

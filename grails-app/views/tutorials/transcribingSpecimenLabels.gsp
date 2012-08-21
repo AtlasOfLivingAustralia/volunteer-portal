@@ -289,7 +289,6 @@
         <t:p><i>Submit for validation</i>: The transcription of the label is finished and can be validated. After clicking on this button it will automatically bring up a new task. If the task that appears is a previously saved unfinished record which is only partially complete, it will need to be reviewed to ensure the information is correct.</t:p>
         <t:p><i>Save unfinished record</i>: The transcription of the labels is not complete and can be saved to be completed at a later date. This saved unfinished record will be returned to the pool of untranscribed specimens.</t:p>
         <t:p><i>Skip</i>: This may be used if the transcriber finds the labels too difficult to transcribe.</t:p>
-        <t:p><i>Show prompt to save</i>: this will bring up the below window. This may be used if you have been working on the task for more than half an hour.</t:p>
         <t:screenshot file="labels_34.png" />
 
       </div>

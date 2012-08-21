@@ -130,6 +130,15 @@
             });
         });
 
+        $(document).ready(function() {
+            $("button[href]").click(function(e) {
+                var url = $(this).attr('href');
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
+
     </script>
 </head>
 <body class="${pageProperty(name:'body.class')} getinvolved">

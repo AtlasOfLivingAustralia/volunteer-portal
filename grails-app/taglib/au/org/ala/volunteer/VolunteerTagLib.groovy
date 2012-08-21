@@ -17,6 +17,7 @@ class VolunteerTagLib {
     static namespace = 'cl'
 
     def authService
+    def userService
 
     def loggedInName = {
         def userName = authService.username()
@@ -120,6 +121,30 @@ class VolunteerTagLib {
         }
     }
 
+    /**
+     * @param project
+     *
+     */
+    def ifValidator = {attrs, body ->
+        Project p = attrs.project as Project
+        if (userService.isValidator(p)) {
+            out << body()
+        }
+    }
+
+    def ifNotValidator = {attrs, body ->
+        Project p = attrs.project as Project
+        if (!userService.isValidator(p)) {
+            out << body()
+        }
+    }
+
+    def ifAdmin = {attrs, body ->
+        if (isAdmin()) {
+            out << body()
+        }
+    }
+
     def loggedInUsername = { attrs ->
         if (ConfigurationHolder.config.security.cas.bypass) {
             out << 'cas bypassed'
@@ -129,7 +154,7 @@ class VolunteerTagLib {
     }
 
     private boolean isAdmin() {
-        return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
+        return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole("ROLE_VP_ADMIN")
     }
 
     def ifTest = { attrs, body ->
@@ -1561,7 +1586,7 @@ class VolunteerTagLib {
 
         def mb = new MarkupBuilder(out)
 
-        mb.a(href:'#promptUser', id: 'promptUserLink' /*, style: 'display: none'*/ ) {
+        mb.a(href:'#promptUser', id: 'promptUserLink', style: 'display: none' ) {
             mkp.yield("Show prompt to save");
         }
         mb.div(style: "display: none") {

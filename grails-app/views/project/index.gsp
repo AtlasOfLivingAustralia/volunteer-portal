@@ -282,6 +282,12 @@
           </g:each>
         </section>
 
+        <cl:ifValidator project="${projectInstance}">
+          <section id="validator">
+            <button href="${createLink(controller: 'task', action:'projectAdmin', id:projectInstance.id)}">Validate tasks</button>
+          </section>
+        </cl:ifValidator>
+
       </section>
     </div>
     <cl:isLoggedIn>

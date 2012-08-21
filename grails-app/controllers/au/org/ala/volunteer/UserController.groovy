@@ -1,6 +1,10 @@
 package au.org.ala.volunteer
 
 import groovy.sql.Sql
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import java.text.SimpleDateFormat
+import org.codehaus.groovy.util.StringUtil
+import org.apache.commons.lang.StringUtils
 
 class UserController {
 
@@ -41,22 +45,27 @@ class UserController {
           params.order = "desc"
         }
         def currentUser = authService.username()
-        def results = userService.filteredUserList(params)
-        results.list.each { user ->
+        def results = userService.getUserList(params)
+        //def results = userService.filteredUserList(params)
+        def userList = results.list
+
+        userList.each { user ->
             def count = taskService.getCountsForUserId(user.userId)?.get(0)
-            log.debug(user.userId + " count: " + count)
             if (user.transcribedCount != count) {
                 // Update incorrect transcribed count (from prev bug)
-                user.transcribedCount = count.toInteger()
-                if (!user.hasErrors() && user.save(flush:true)) {
-                    log.info("Updating counts for " + user.displayName)
+                User domainUser = User.get(user.id)
+                domainUser.transcribedCount = count.toInteger()
+                if (!domainUser.hasErrors() && domainUser.save(flush:true)) {
+                    log.info("Updating counts for " + domainUser.displayName)
                 } else {
-                    log.error("Failed to update user: " + user.userId + " - " + user.hasErrors())
+                    log.error("Failed to update user: " + domainUser.userId + " - " + domainUser.hasErrors())
                 }
             }
         }
+//        def userIds = userList.collect() { User user -> user.userId }
+//        def validatedCounts = userService.getValidatedCounts(userIds)
 
-        [userInstanceList: results.list, userInstanceTotal: results.count, currentUser: currentUser]
+        [userInstanceList: userList, userInstanceTotal: results.count, currentUser: currentUser ]
     }
 
     def project = {
@@ -107,27 +116,22 @@ class UserController {
         }
     }
 
-    def show = {
-        // Getting the list of tasks for the user is a bit tricky because
-        // we need to get the catalog number, if it exists, for each task.
-        // The way this used to work was to get all the tasks, then extract all the
-        // field values, and match them up, it this was fine, but it meant that
-        // you couldn't sort by catalog number, but more importantly, you couldn't
-        // search by catalog number, which is a user requested feature.
+    /**
+     * Creates a list of task information (in the form of a list of maps) that is suitable for rendering in a view.
+     * Takes into account pagination and search request parameters to return a map containing the total number of
+     * matching tasks, as well as the list of currently visible tasks (paginated)
+     *
+     * @param tasks
+     * @param params
+     * @return
+     */
+    def createViewList(List<Task> tasks, GrailsParameterMap params) {
 
-        // So instead this method performs a custom SQL query that performs the outer join
-        // and can also handle the sort and pagination parameters
-
-        def userInstance = User.get(params.id)
-        def currentUser = authService.username()
-
-        if (!userInstance) {
-            flash.message = "Missing user id, or user not found!"
-            redirect(action: 'list')
-            return
+        if (!tasks) {
+            return [totalMatchingTasks: 0, viewList: []]
         }
 
-        params.max = Math.min(params.max ? params.int('max') : 20, 50)
+        params.max = Math.min(params.max ? params.int('max') : 10, 50)
         params.offset = params.int('offset') ?: 0
         params.order = params.order ?: ""
 
@@ -136,87 +140,172 @@ class UserController {
             params.order = "desc"
         }
 
-        def project = Project.get(params.projectId)
-        def sql = new Sql(dataSource: dataSource)
-
-        String sort_clause = "t.id ${params.order}"
-        String search_clause = ""
-
-        if (project) {
-            search_clause = " AND p.id = ${params.projectId}"
+        def c = Field.createCriteria();
+        def fields = c {
+            projections {
+                property("value")
+                property("task")
+                and {
+                    "in"( "task", tasks)
+                    eq("name", "catalogNumber")
+                }
+            }
         }
 
-        if (params.q) {
-            String q = params.q?.toString()?.toLowerCase()
-            search_clause += " AND (lower(t.external_identifier) like '%${q}%' OR lower(field.value) like '%${q}%' OR lower(p.featured_label) like '%${q}%' or lower(to_char(lastEdit, 'dd MON, yyyy HH24:MI.SS')) like '%${q}%')"
+        def cc = Field.createCriteria()
+        def dates = cc {
+            projections {
+                max("updated")
+                groupProperty("task")
+            }
+
         }
 
-        if (params.sort) {
-            sort_clause = "${params.sort} IS NOT NULL, ${params.sort} ${params.order}"
-        }
-
-        String select = "SELECT t.id as id, t.external_identifier as externalIdentifier, t.fully_transcribed_by as fullyTranscribedBy, t.is_valid as isValid, field.value as catalogNumber, p.id as projectId, p.featured_label as project, field2.lastEdit as lastEdit"
-
-        String fromWhere = """
-            FROM Project p, Task t LEFT OUTER JOIN (select f.task_id, f.value from Field f where f.name = 'catalogNumber') as field on field.task_id = t.id
-            LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = '${userInstance.userId}' group by f.task_id) as field2 on field2.task_id = t.id
-            WHERE t.fully_transcribed_by = '${userInstance.userId}' and p.id = t.project_id ${search_clause}
-        """
-
-        String pageinationControl = """
-            ORDER BY ${sort_clause}
-            LIMIT ${params.int('max')}
-            OFFSET ${params.int('offset')}
-        """
-
-        String query = "${select} ${fromWhere} ${pageinationControl}"
-        String countQuery = "SELECT count(*) ${fromWhere}"
-
-        def totalMatchingTasks = sql.firstRow(countQuery)[0]
+        def fieldsByTask = fields.groupBy { it[1] }
+        def datesByTask = dates.groupBy { it[1] }
 
         def viewList = []
 
-        sql.eachRow(query) { row ->
-                    def taskRow = [id: row.id, externalIdentifier:row.externalIdentifier, catalogNumber: row.catalogNumber, fullyTranscribedBy: row.fullyTranscribedBy, projectId: row.projectId, project:  row.project ]
+        def codeTimer = new CodeTimer("merging")
 
-                    taskRow.lastEdit = row.lastEdit
+        def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
 
-                    if (row.isValid == true) {
-                        taskRow.status = "Validated"
-                    } else if (row.isValid == false) {
-                        taskRow.status = "Invalidated"
-                    } else if (row.fullyTranscribedBy?.length() > 0) {
-                        taskRow.status = "Transcribed"
-                    } else {
-                        taskRow.status = "Saved"
-                    }
-                    viewList.add(taskRow)
+        for (Task t : tasks) {
+            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy, projectId: t.projectId, project: t.project, projectName: t.project.name]
+
+            List<Field> taskFields = fieldsByTask[t]
+
+            def lastEdit =  datesByTask.get(t)?.get(0)?.getAt(0)
+            def catalogNumber = taskFields?.get(0)?.getAt(0)
+
+            taskRow.lastEdit = lastEdit
+            taskRow.catalogNumber = catalogNumber
+
+            def status = ""
+            if (t.isValid == true || t.fullyValidatedBy) {
+                status = "Validated"
+            } else if (t.isValid == false) {
+                status = "Invalidated"
+            } else if (t.fullyTranscribedBy?.length() > 0) {
+                status = "Transcribed"
+            } else {
+                status = "Saved"
+            }
+
+            taskRow.status = status
+
+            // This pseudo column concatenates all the searchable columns to make row filtering easier.
+
+            def dateStr = lastEdit ? sdf.format(lastEdit) : ""
+
+            def sb = new StringBuilder(128)
+            sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
+            sb.append(t.externalIdentifier).append(";").append(dateStr).append(";").append(t.id)
+            taskRow.searchColumn = sb.toString().toLowerCase()
+
+            viewList.add(taskRow)
+        }
+
+        codeTimer.stop(true)
+
+        // Filtering...
+        if (params.q) {
+            def q = params.q.toLowerCase()
+            viewList = viewList.findAll {
+                it.searchColumn?.find("\\Q${q}\\E")
+            }
+        }
+
+        def totalMatchingTasks = viewList.size()
+
+        // Sorting
+        if (params.sort) {
+            viewList = viewList.sort { it[params.sort] }
+            if (params.order == 'asc') {
+                viewList = viewList.reverse();
+            }
+        }
+
+        if (viewList.size() >= params.int("offset")) {
+            viewList = viewList[params.int("offset")..Math.min(viewList.size() - 1, params.int("offset") + params.int("max") - 1)]
+        }
+
+        [totalMatchingTasks: totalMatchingTasks, viewList: viewList]
+    }
+
+    def taskListFragment = {
+
+        def selectedTab = params.int("selectedTab") ?: 0
+        def projectInstance = Project.get(params.int("projectId"))
+        def userInstance = User.get(params.id)
+
+        def tasks = []
+
+        switch (selectedTab) {
+            case 0:
+                if (projectInstance) {
+                    tasks = Task.findAllByProjectAndFullyTranscribedBy(projectInstance, userInstance.userId)
+                } else {
+                    tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
+                }  
+                break;
+            case 1:
+                if (projectInstance) {
+                    tasks = taskService.getRecentlySavedTasksByProject(userInstance.userId, projectInstance,[:])
+                } else {
+                    tasks = taskService.getRecentlySavedTasks(userInstance.userId, [:])
+                }
+                break;
+            case 2:
+                if (projectInstance) {
+                    tasks = Task.findAllByProjectAndFullyValidatedBy(projectInstance, userInstance.userId)
+                } else {
+                    tasks = Task.findAllByFullyValidatedBy(userInstance.userId)
+                }
+        }
+
+        def results = createViewList(tasks, params);
+
+        [viewList: results.viewList, totalMatchingTasks: results.totalMatchingTasks, selectedTab: selectedTab, projectInstance: projectInstance, userInstance: userInstance]
+
+    }
+
+    def show = {
+
+        def userInstance = User.get(params.int("id"))
+        def currentUser = authService.username()
+
+        if (!userInstance) {
+            flash.message = "Missing user id, or user not found!"
+            redirect(action: 'list')
+            return
+        }
+
+        def projectInstance = null
+        if (params.projectId) {
+            projectInstance = Project.get(params.projectId)
         }
 
         int totalTranscribedTasks
-        def savedTasks
-        def totalSavedTasks
 
-        if (project) {
-            savedTasks = taskService.getRecentlySavedTasksByProject(userInstance.getUserId(), project, params)
-            totalSavedTasks = taskService.getRecentlySavedTasksByProject(userInstance.getUserId(), project, new HashMap<String, Object>()).size()
-            totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), project)
+        if (projectInstance) {
+            totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), projectInstance)
         } else {
-            savedTasks = taskService.getRecentlySavedTasks(userInstance.getUserId(), params)
-            totalSavedTasks = taskService.getRecentlySavedTasks(userInstance.getUserId(), new HashMap<String, Object>()).size()
             totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
         }
 
         def achievements = achievementService.calculateAchievements(userInstance)
         def score = userService.getUserScore(userInstance)
 
+        int selectedTab = params.int("selectedTab") ?: 0
+
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         } else {
-            [   userInstance: userInstance, currentUser: currentUser, project: project,
-                matchingTasks: viewList, totalMatchingTasks: totalMatchingTasks, totalTranscribedTasks: totalTranscribedTasks,
-                savedTasks: savedTasks, totalSavedTasks: totalSavedTasks, achievements: achievements, validatedCount: userService.getValidatedCount(userInstance, project), score:score ]
+            [   userInstance: userInstance, currentUser: currentUser, project: projectInstance, totalTranscribedTasks: totalTranscribedTasks,
+                achievements: achievements, validatedCount: userService.getValidatedCount(userInstance, projectInstance), score:score, selectedTab: selectedTab
+            ]
         }
     }
 

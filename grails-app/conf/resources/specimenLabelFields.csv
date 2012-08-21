@@ -17,7 +17,7 @@ scientificName,Scientific Name,,identification,text,0,0,"This will consist of tw
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,16
 taxonRank,'',,none,hidden,0,0,,,17
 scientificNameAuthorship,Authorship,,identification,text,0,0,"This may be recorded, along with a date, with the Scientific Name – in which case enter both the Author and the date in this field",,18
-identifiedBy,Identifier,,identification,text,0,0,"This is the identifier of the specimen. You may need to use a process of elimination to decide if a name is that of an identifier. If the name doesn’t appear to be a collector or a scientific name author then it may be the specimen identifier &ndash; in which case enter it here",,19
+identifiedBy,Determined/Identified by,,identification,text,0,0,"This is the identifier of the specimen. You may need to use a process of elimination to decide if a name is that of an identifier. If the name doesn’t appear to be a collector or a scientific name author then it may be the specimen identifier &ndash; in which case enter it here",,19
 typeStatus,,,identification,select,0,0,,,20
 dateIdentified,Date Identified,,identification,text,0,0,"May appear with the Identifier. Enter the date from the label using the format YYYY-MM-DD. If only a year and month appears enter YYYY-MM, if only a year then YYYY",,21
 transcriberNotes,,,none,textarea,0,0,,,22
