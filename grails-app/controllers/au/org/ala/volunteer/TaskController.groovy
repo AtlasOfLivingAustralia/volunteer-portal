@@ -16,7 +16,6 @@ class TaskController {
     def userService
 
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
-    def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
     def LAST_VIEW_TIMEOUT_MILLIS = grailsApplication.config.viewedTask.timeout
 
 
@@ -288,7 +287,8 @@ class TaskController {
                 def project = Project.findById(taskInstance.project.id)
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
-                logService.log currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR)
+                def isValidator = userService.isValidator(project)
+                logService.log currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator
 
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)

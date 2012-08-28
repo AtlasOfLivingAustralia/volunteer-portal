@@ -1689,5 +1689,40 @@ class VolunteerTagLib {
         return protocol + url.host + port
     }
 
+    /**
+     * @param task The task instance
+     */
+    def validationStatus = { attrs, body ->
+
+        def taskInstance = attrs.task as Task
+
+        if (taskInstance) {
+            User userInstance = null;
+            if (taskInstance.fullyValidatedBy) {
+                userInstance = User.findByUserId(taskInstance?.fullyValidatedBy)
+            }
+            def mb = new MarkupBuilder(out)
+
+            // <span style="color:gray;">&nbsp;&nbsp;<g:link controller="task" action="projectAdmin" id="${taskInstance?.project?.id}">Validation List</g:link></span>
+            mb.span(style: "color:gray;") {
+                mkp.yieldUnescaped("&nbsp;&nbsp;")
+                a(href:createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone()), "Validation List")
+
+            }
+
+            mb.span(style: "color:gray;") {
+                mkp.yieldUnescaped("&nbsp;&nbsp;")
+                def status = "Not yet validated";
+                if (taskInstance.isValid == false) {
+                    status = "No"
+                } else if (taskInstance.isValid) {
+                    status = "Yes"
+                }
+
+                mkp.yield("[Is valid: ${status} | validatedBy: ${userInstance?.displayName ?: ''}]")
+            }
+        }
+    }
+
 
 }

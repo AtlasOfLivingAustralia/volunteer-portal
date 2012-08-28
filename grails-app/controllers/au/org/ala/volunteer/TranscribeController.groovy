@@ -13,7 +13,6 @@ class TranscribeController {
     def userService
     def logService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
-    def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
     def LAST_VIEW_TIMEOUT_MINUTES = grailsApplication.config.viewedTask.timeout
 
     static allowedMethods = [saveTranscription: "POST"]
@@ -66,9 +65,10 @@ class TranscribeController {
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
             def isReadonly
-            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
 
-            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
+            def isValidator = userService.isValidator(project)
+            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
+            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || isValidator)) {
                 isReadonly = "readonly"
             }
 

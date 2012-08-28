@@ -9,7 +9,6 @@ class ValidateController {
     def userService
     def logService
     def ROLE_ADMIN = grailsApplication.config.auth.admin_role
-    def ROLE_VALIDATOR = grailsApplication.config.auth.validator_role
     def LAST_VIEW_TIMEOUT_MINUTES = grailsApplication.config.viewedTask.timeout
 
     def index = {
@@ -61,9 +60,10 @@ class ValidateController {
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
 
-            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + authService.userInRole(ROLE_VALIDATOR))
+            def isValidator = userService.isValidator(project)
+            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
 
-            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR))) {
+            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || isValidator)) {
                 isReadonly = "readonly"
             } else {
                 // check that the validator is not the transcriber...Admins can, though!
@@ -98,7 +98,7 @@ class ValidateController {
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true)
             //update the count for validated tasks for the user who transcribed
             userService.updateUserValidatedCount(taskInstance.fullyTranscribedBy)
-            redirect(action: 'showNextFromProject', id:taskInstance.project.id)
+            redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id)
         } else {
             redirect(view: '../index')
         }

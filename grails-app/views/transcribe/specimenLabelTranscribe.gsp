@@ -781,8 +781,7 @@
                     <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
                              value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
                     <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
-                    <span style="color:gray;">&nbsp;&nbsp;<g:link controller="task" action="projectAdmin" id="${taskInstance?.project?.id}">Validation List</g:link></span>
-                    <span style="color:gray;">&nbsp;&nbsp;[is valid: ${taskInstance?.isValid} | validatedBy:  ${taskInstance?.fullyValidatedBy}]</span>
+                    <cl:validationStatus task="${taskInstance}" />
                 </g:if>
                 <g:else>
                     <span class="button"><g:actionSubmit class="save" action="save"
