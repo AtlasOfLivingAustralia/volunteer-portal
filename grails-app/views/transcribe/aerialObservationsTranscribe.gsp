@@ -37,22 +37,24 @@
     var entries = [
     <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
     <g:set var="numItems" value="${(recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue).toInteger()}" />
+    <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" />
 
     <g:each in="${0..numItems}" var="i">
         [
-        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" var="field">
+        <g:each in="${fieldList}" var="field" status="fieldIndex">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
             <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}" />
-            {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"},
+            {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
         </g:each>
-        ],
+        ]<g:if test="${i < numItems}">,</g:if>
     </g:each>
     ];
 
     function renderEntries() {
       try {
         var htmlStr ="";
+        var itemCount = 0;
         for (entryIndex in entries) {
           htmlStr += '<tr class="observatiionFields" id="0"><td><strong>' + (parseInt(entryIndex) + 1) + '.</strong>'
           for (fieldIndex in entries[entryIndex]) {
@@ -64,9 +66,10 @@
             htmlStr += '<td><button style="margin-left: 10px" onclick="deleteEntry(' + entryIndex + '); return false;">Delete</button><td>';
           }
           htmlStr += "</td></tr>"
+          itemCount++;
         }
         $("#observation_fields").html(htmlStr);
-        $("#noOfEntries").attr('value', entries.length - 1);
+        $("#noOfEntries").attr('value', itemCount - 1);
       } catch (e) {
         alert(e)
       }
@@ -87,10 +90,10 @@
         // first we need to save any edits to the entry list
         syncEntries();
         var entry = [
-        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" var="field">
+        <g:each in="${fieldList}" var="field" status="fieldIndex">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            {name:'${fieldName}', label:'${fieldLabel}', value: ''},
+            {name:'${fieldName}', label:'${fieldLabel}', value: ''}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
         </g:each>
         ];
         entries.push(entry);

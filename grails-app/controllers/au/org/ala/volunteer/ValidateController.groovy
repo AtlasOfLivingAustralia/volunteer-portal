@@ -43,11 +43,13 @@ class ValidateController {
             if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MINUTES) {
                 // task is already being viewed by another user (with timeout period)
                 log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago."
-                def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. " +
-                        "You have been allocated a new task"
-                // redirect to another task
-                redirect(action: "showNextFromProject", id: taskInstance.project.id,
-                        params: [msg: msg, prevId: taskInstance.id, prevUserId: prevUserId])
+                def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited/validated by another user. "
+
+                flash.message = msg
+
+                redirect(controller: "task", action:  "projectAdmin", id: taskInstance.project.id, params: params + [projectId:taskInstance.project.id])
+//                redirect(action: "showNextFromProject", id: taskInstance.project.id,
+//                        params: [msg: msg, prevId: taskInstance.id, prevUserId: prevUserId])
                 return
             } else {
                 // go ahead with this task

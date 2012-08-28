@@ -192,6 +192,7 @@
          <td colspan="3">
            <cl:ifGranted role="ROLE_VP_ADMIN">
              <g:link controller="user" action="editRoles" id="${userInstance.id}">Manage user roles</g:link>
+             &nbsp;Email:&nbsp;<a href="mailto:${userInstance.userId}">${userInstance.userId}</a>
            </cl:ifGranted>
 
          </td>

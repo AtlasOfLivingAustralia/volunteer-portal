@@ -155,6 +155,10 @@ class UserService {
     public boolean isValidator(Project project) {
         def userId = authService.username()
 
+        if (!userId) {
+            return false;
+        }
+
         // If there the user has been granted the ALA-AUTH roles then these override everything
         if (authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR)) {
             return true
