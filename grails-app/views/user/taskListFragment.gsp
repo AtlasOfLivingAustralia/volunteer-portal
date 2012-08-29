@@ -49,7 +49,7 @@
           <g:each in="${viewList}" status="i" var="taskInstance">
               <tr>
 
-                  <td><g:link class="listLink" controller="transcribe" action="task" id="${taskInstance.id}">${taskInstance.id}</g:link></td>
+                  <td><g:link class="listLink" controller="task" action="show" id="${taskInstance.id}">${taskInstance.id}</g:link></td>
 
                   <td>${taskInstance.externalIdentifier}</td>
 

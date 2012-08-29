@@ -773,6 +773,7 @@
                 </div>
             </div>
 
+        <g:if test="${!isReadonly}">
             <div class="vp-buttons" style="clear: both">
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                 <g:if test="${validator}">
@@ -793,6 +794,7 @@
                     </cl:isLoggedIn>
                 </g:else>
             </div>
+          </g:if>
 
             <cl:timeoutPopup />
         </g:form>

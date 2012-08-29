@@ -1,4 +1,4 @@
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -256,8 +256,8 @@
                             <th colspan="2">
                                 <h3>2. For each entry on the field note, please transcribe information into the following fields.</h3>
                                 <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
-                                No. Entries on page: <g:select name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" from="${[0:1, 1:2, 2:3, 3:4]}"
-                                                               optionKey="key" optionValue="value" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
+                                No. Entries on page: <g:select name="recordValues.0.${entriesField?.fieldType}" id="noOfEntries" from="${[0:1, 1:2, 2:3, 3:4]}"
+                                                               optionKey="key" optionValue="value" value="${recordValues?.get(0)?.get(entriesField?.fieldType?.name())?:entriesField?.defaultValue}"/>
                             </th>
                         </tr>
                     </thead>
@@ -266,10 +266,10 @@
                             <tr class="fieldNoteFields" id="${i}">
                                 <td><strong>Entry ${i+1}.</strong><br/>
                                     <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" var="field">
-                                        <g:set var="fieldLabel" value="${field.label?:field.fieldtype.label}"/>
-                                        <g:set var="fieldName" value="recordValues.${i}.${field.fieldType.name()}"/>
+                                        <g:set var="fieldLabel" value="${field.label?:field?.fieldtype.label}"/>
+                                        <g:set var="fieldName" value="recordValues.${i}.${field?.fieldType.name()}"/>
                                         <label for="${fieldName}">${fieldLabel}</label>
-                                        <g:textField name="${fieldName}" value="${recordValues?.get(i)?.get(field.fieldType.name())}"/></br/>
+                                        <g:textField name="${fieldName}" value="${recordValues?.get(i)?.get(field?.fieldType.name())}"/></br/>
                                     </g:each>
                                 </td>
                             </tr>
@@ -303,30 +303,32 @@
                 <cl:taskComments task="${taskInstance}" />
             </div>
 
-            <div class="buttons" style="clear: both">
-                <g:hiddenField name="id" value="${taskInstance?.id}"/>
-                <g:if test="${validator}">
-                    <span class="button"><g:actionSubmit class="validate" action="validate"
-                             value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
-                    <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
-                             value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
-                    <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
-                    <cl:validationStatus task="${taskInstance}" />
-                </g:if>
-                <g:else>
-                    <span class="button"><g:actionSubmit class="save" action="save"
-                             value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
-                    <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                    <span class="button">
-                        %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
-                             %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
-                        <cl:isLoggedIn>
-                            <button id="showNextFromProject" class="skip">Skip</button>
-                        </cl:isLoggedIn>
-                    </span>
-                </g:else>
-            </div>
+            <g:if test="${!isReadonly}">
+                <div class="buttons" style="clear: both">
+                    <g:hiddenField name="id" value="${taskInstance?.id}"/>
+                    <g:if test="${validator}">
+                        <span class="button"><g:actionSubmit class="validate" action="validate"
+                                 value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
+                        <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
+                                 value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
+                        <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
+                        <cl:validationStatus task="${taskInstance}" />
+                    </g:if>
+                    <g:else>
+                        <span class="button"><g:actionSubmit class="save" action="save"
+                                 value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
+                        <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
+                                 value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
+                        <span class="button">
+                            %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
+                                 %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
+                            <cl:isLoggedIn>
+                                <button id="showNextFromProject" class="skip">Skip</button>
+                            </cl:isLoggedIn>
+                        </span>
+                    </g:else>
+                </div>
+            </g:if>
             <a href="#promptUser" id="promptUserLink" style="display: none">show prompt to save</a>
             <div style="display: none">
                 <div id="promptUser">

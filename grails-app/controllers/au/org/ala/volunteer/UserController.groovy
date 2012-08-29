@@ -182,7 +182,7 @@ class UserController {
             taskRow.catalogNumber = catalogNumber
 
             def status = ""
-            if (t.isValid == true || t.fullyValidatedBy) {
+            if (t.isValid == true) {
                 status = "Validated"
             } else if (t.isValid == false) {
                 status = "Invalidated"

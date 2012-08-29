@@ -411,31 +411,32 @@
             <div class="fields">
                 <cl:taskComments task="${taskInstance}" />
             </div>
-
-            <div class="buttons" style="clear: both">
-                <g:hiddenField name="id" value="${taskInstance?.id}"/>
-                <g:if test="${validator}">
-                    <span class="button"><g:actionSubmit class="validate" action="validate"
-                             value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
-                    <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
-                             value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
-                    <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
-                    <cl:validationStatus task="${taskInstance}" />
-                </g:if>
-                <g:else>
-                    <span class="button"><g:actionSubmit class="save" action="save"
-                             value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
-                    <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                    <span class="button">
-                        %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
-                             %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
-                        <cl:isLoggedIn>
-                            <button id="showNextFromProject" class="skip">Skip</button>
-                        </cl:isLoggedIn>
-                    </span>
-                </g:else>
-            </div>
+            <g:if test="${!isReadonly}">
+                <div class="buttons" style="clear: both">
+                    <g:hiddenField name="id" value="${taskInstance?.id}"/>
+                    <g:if test="${validator}">
+                        <span class="button"><g:actionSubmit class="validate" action="validate"
+                                 value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
+                        <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
+                                 value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
+                        <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
+                        <cl:validationStatus task="${taskInstance}" />
+                    </g:if>
+                    <g:else>
+                        <span class="button"><g:actionSubmit class="save" action="save"
+                                 value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
+                        <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
+                                 value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
+                        <span class="button">
+                            %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
+                                 %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
+                            <cl:isLoggedIn>
+                                <button id="showNextFromProject" class="skip">Skip</button>
+                            </cl:isLoggedIn>
+                        </span>
+                    </g:else>
+                </div>
+            <g:if />
             <cl:timeoutPopup />
         </g:form>
     </g:if>

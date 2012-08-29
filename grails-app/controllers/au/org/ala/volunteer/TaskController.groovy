@@ -276,6 +276,13 @@ class TaskController {
                         log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
                         msg = "This task is being viewed/edited by another user, and is currently read-only"
                         readonly = true
+                    } else if (taskInstance.fullyValidatedBy && taskInstance.isValid != null) {
+                        msg = "This task has been validated, and is currently read-only."
+                        if (userService.isValidator(taskInstance.project)) {
+                            def link = createLink(controller: 'validate', action: 'task', id: taskInstance.id)
+                            msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
+                        }
+                        readonly = true
                     }
                 }
             }
