@@ -128,6 +128,14 @@ class BootStrap {
         }
         populateTemplateFields(template, "aerialObservationsFields")
 
+        template = Template.findByName("ObservationDiary")
+        if (!template) {
+            logService.log "creating new Template: ObservationDiary"
+            template = new Template(name: "ObservationDiary", viewName: "observationDiaryTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
+        }
+        populateTemplateFields(template, "observationDiaryFields")
+
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', displayName: 'System User')
@@ -155,34 +163,36 @@ class BootStrap {
         def numberRegex = Pattern.compile('^\\d+\$')
         def fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/${resourceName}.csv").inputStream.text
         fields.eachCsvLine { fs ->
-            DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
-            if (!TemplateField.findByFieldTypeAndTemplate(dwcf, template)) {
-                logService.log "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
-                // Work out the display order - by default it will be a large number
-                def displayOrder = 999
-                if (fs.size() >= 10) {
-                    def orderString = fs[9].trim()
-                    def m = numberRegex.matcher(orderString)
-                    if (m.matches()) {
-                        displayOrder = Integer.parseInt(orderString)
+            if (fs.size() > 0) {
+                DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
+                if (!TemplateField.findByFieldTypeAndTemplate(dwcf, template)) {
+                    logService.log "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
+                    // Work out the display order - by default it will be a large number
+                    def displayOrder = 999
+                    if (fs.size() >= 10) {
+                        def orderString = fs[9].trim()
+                        def m = numberRegex.matcher(orderString)
+                        if (m.matches()) {
+                            displayOrder = Integer.parseInt(orderString)
+                        }
                     }
-                }
 
-                TemplateField tf = new TemplateField(
-                        fieldType: dwcf,
-                        label: fs[1].trim(),
-                        defaultValue: fs[2].trim(),
-                        category: FieldCategory.valueOf(fs[3].trim()),
-                        type: FieldType.valueOf(fs[4].trim()),
-                        mandatory: ((fs[5].trim() == '1') ? true : false),
-                        multiValue: ((fs[6].trim() == '1') ? true : false),
-                        helpText: fs[7].trim(),
-                        validationRule: fs[8].trim(),
-                        template: template,
-                        displayOrder: displayOrder
-                ).save(flush:true, failOnError: true)
-            } else {
-                logService.log "Field already exists for template ${template.name} ${dwcf}"
+                    TemplateField tf = new TemplateField(
+                            fieldType: dwcf,
+                            label: fs[1].trim(),
+                            defaultValue: fs[2].trim(),
+                            category: FieldCategory.valueOf(fs[3].trim()),
+                            type: FieldType.valueOf(fs[4].trim()),
+                            mandatory: ((fs[5].trim() == '1') ? true : false),
+                            multiValue: ((fs[6].trim() == '1') ? true : false),
+                            helpText: fs[7].trim(),
+                            validationRule: fs[8].trim(),
+                            template: template,
+                            displayOrder: displayOrder
+                    ).save(flush:true, failOnError: true)
+                } else {
+                    logService.log "Field already exists for template ${template.name} ${dwcf}"
+                }
             }
         }
 

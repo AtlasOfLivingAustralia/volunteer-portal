@@ -1,0 +1,5 @@
+catalogNumber,,,dataset,hidden,1,0,"Please check this number against the typed number on the specimen label in the image to see that it matches. If it does not match then click the &quot;Report an issue&quot; link near the top of the page",,default
+occurrenceRemarks,Verbatim Text,,dataset,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",
+verbatimLocality,,,dataset,textarea,0,0,"Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label",,default
+sightingCount,Number of sightings,0,none,hidden,0,0,"",,
+sequenceNumber,Sequence number,,none,text,0,0,,

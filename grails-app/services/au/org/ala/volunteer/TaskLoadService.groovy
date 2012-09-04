@@ -172,6 +172,21 @@ class TaskLoadService {
             // error
             throw new RuntimeException("CSV has the incorrect number of fields for import into template AerialObservations! (has ${tokens.length}, expected 6")
         }
+    }
+
+    def import_ObservationDiary  = { TaskDescriptor taskDesc, String[] tokens, lineNumber ->
+        List<Field> fields = new ArrayList<Field>()
+        if (tokens.length >= 4) {
+            taskDesc.externalIdentifier = tokens[0].trim()
+            taskDesc.imageUrl = tokens[1].trim()
+            taskDesc.fields.add([name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()])
+            String dataSetId = "${taskDesc.externalIdentifier} page ${tokens[3].trim()}"
+            taskDesc.fields.add([name: 'datasetID', recordIdx: 0, transcribedByUserId: 'system', value: dataSetId])
+            taskDesc.fields.add([name: 'sequenceNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[4]])
+        } else {
+            // error
+            throw new RuntimeException("CSV has the incorrect number of fields for import into template AerialObservations! (has ${tokens.length}, expected 4")
+        }
 
     }
 

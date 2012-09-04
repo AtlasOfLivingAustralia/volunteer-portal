@@ -1,7 +1,5 @@
 <html>
 <%@ page import="javax.swing.text.html.HTML; au.org.ala.volunteer.Task" %>
-<%@ page import="au.org.ala.volunteer.Picklist" %>
-<%@ page import="au.org.ala.volunteer.PicklistItem" %>
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
@@ -13,9 +11,6 @@
 <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <title>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
-<!--  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
-  <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>-->
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'mapbox.min.js')}"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
@@ -40,17 +35,17 @@
     };
 
     var entries = [
-    <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
+    <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
     <g:set var="numItems" value="${(recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue).toInteger()}" />
     <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" />
 
-    <g:each in="${0..numItems}" var="i" >
+    <g:each in="${0..numItems}" var="i">
         [
         <g:each in="${fieldList}" var="field" status="fieldIndex">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
             <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}" />
-            {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
+            {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
         </g:each>
         ]<g:if test="${i < numItems}">,</g:if>
     </g:each>
@@ -59,22 +54,29 @@
     function renderEntries() {
       try {
         var htmlStr ="";
-        var itemCount = 0; // Need to count the entries because IE8 will report an incorrect array size because of a trailing ',' in the original list render
+        var itemCount = 0;
         for (entryIndex in entries) {
-          htmlStr += '<tr class="fieldNoteFields"><td><strong>' + (parseInt(entryIndex) + 1) + '.</strong>'
+          htmlStr += '<tr class="observationFields" id="0"><td><strong>' + (parseInt(entryIndex) + 1) + '.</strong></td>'
           for (fieldIndex in entries[entryIndex]) {
             var e = entries[entryIndex][fieldIndex];
             var name = "recordValues." + entryIndex + "." + e.name;
-            htmlStr += '<label for="' + name + '">' + e.label + "</label>";
-            htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '">';
+            htmlStr += '<td class="value td_' + e.name + '">'
+            if (e.name != "occurrenceRemarks") {
+              htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + '">';
+            } else {
+              htmlStr += '<textarea rows="4" name="' + name + '" id="' + name + '" class="' + e.name + '">' + e.value + '</textarea>';
+            }
+            htmlStr += '</td>';
           }
           if (entryIndex > 0) {
-            htmlStr += '<button style="margin-left: 10px" onclick="deleteEntry(' + entryIndex + '); return false;">Delete</button>';
+            htmlStr += '<td><button style="margin-left: 10px" onclick="deleteEntry(' + entryIndex + '); return false;">Delete</button><td>';
           }
-          htmlStr += "</td></tr>";
+
+          htmlStr += "</tr>"
+
           itemCount++;
         }
-        $("#identification_fields").html(htmlStr);
+        $("#observation_fields").html(htmlStr);
         $("#noOfEntries").attr('value', itemCount - 1);
       } catch (e) {
         alert(e)
@@ -95,12 +97,11 @@
 
         // first we need to save any edits to the entry list
         syncEntries();
-
         var entry = [
-        <g:each in="${fieldList}" var="field" status="i">
+        <g:each in="${fieldList}" var="field" status="fieldIndex">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            {name:'${fieldName}', label:'${fieldLabel}', value: ''}<g:if test="${i < fieldList.size()-1}">,</g:if>
+            {name:'${fieldName}', label:'${fieldLabel}', value: ''}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
         </g:each>
         ];
         entries.push(entry);
@@ -128,6 +129,26 @@
                 event.preventDefault();
                 return false;
             }
+        });
+
+        // display previous journal page in new window
+        $("#showPreviousJournalPage").click(function(e) {
+            e.preventDefault();
+            <g:if test="${prevTask}">
+              var uri = "${createLink(controller: 'task', action:'showImage', id: prevTask.id)}"
+              newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+          	  if (window.focus) {newwindow.focus()}
+            </g:if>
+        });
+
+        // display next journal page in new window
+        $("#showNextJournalPage").click(function(e) {
+            e.preventDefault();
+            <g:if test="${nextTask}">
+              var uri = "${createLink(controller: 'task', action:'showImage', id: nextTask.id)}"
+              newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+              if (window.focus) {newwindow.focus()}
+            </g:if>
         });
 
         $("#addRowButton").click(function(e) {
@@ -171,34 +192,9 @@
             onSlide: zoomJournalImage
         }).change(zoomJournalImage);
 
-        // display previous journal page in new window
-        $("#showPreviousJournalPage").click(function(e) {
-            e.preventDefault();
-            <g:if test="${prevTask}">
-              var uri = "${createLink(controller: 'task', action:'showImage', id: prevTask.id)}"
-              newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
-          	  if (window.focus) {newwindow.focus()}
-            </g:if>
-        });
-
-        // display next journal page in new window
-        $("#showNextJournalPage").click(function(e) {
-            e.preventDefault();
-            <g:if test="${nextTask}">
-              var uri = "${createLink(controller: 'task', action:'showImage', id: nextTask.id)}"
-              newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
-              if (window.focus) {newwindow.focus()}
-            </g:if>
-        });
-
         $("#imagePane").scrollview({
             grab:"${resource(dir: 'images', file: 'openhand.cur')}",
             grabbing:"${resource(dir: 'images', file: 'closedhand.cur')}"
-        });
-
-        $("#rotateImage").click(function(e) {
-          e.preventDefault();
-          $("#image_0").toggleClass("rotate-image");
         });
 
         var isReadonly = VP_CONF.isReadonly;
@@ -212,50 +208,12 @@
     });
 
     function zoomJournalImage(event, value) {
-        //console.info("value changed to", value);
-        $("#journalPageImg").css("width", value + "%");
+        $("#journalPageImg").css("height", value + "%");
     }
+
 </script>
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'journalTranscribe.js')}"></script>--}%
+
   <style type="text/css">
-
-    div#journal2Text {
-        margin-top: 15px;
-    }
-
-    #journal2Text table {
-        width: 100%;
-        padding-bottom: 10px;
-        /*margin-right: 5px;*/
-    }
-
-    #journal2Text #transcribeAllText {
-        font-size: 12px;
-        padding: 2px;
-    }
-
-    #journal2Fields table {
-        width: 100%;
-        padding-bottom: 10px;
-        /*margin-left: 5px;*/
-    }
-
-    div#journal2Fields {
-        margin-top: 15px;
-    }
-
-    div#journal2Fields th {
-        /*border-bottom: 2px solid #ffffff;*/
-    }
-
-    div#journal2Fields tr td {
-        padding: 5px;
-        /*border-bottom: 2px solid #ffffff;*/
-    }
-
-    div#journal2Fields tr:last-child td {
-        border-bottom: none;
-    }
 
     button:disabled {
       opacity : 0.4;
@@ -267,6 +225,31 @@
       filter: alpha(opacity=40); // msie
     }
 
+    .value input {
+      width: auto;
+    }
+
+    /*.observationFields .value input {*/
+        /*width: 100%;*/
+    /*}*/
+
+    td .catalogNumber {
+      width: 50px;
+    }
+
+    td .verbatimLocality {
+      width: 100%;
+    }
+
+    #imagePane {
+      width: 500px;
+      height: 400px;
+      clear: left;
+    }
+
+    .pageDetails, .observationFields {
+      /* float: right; */
+    }
 
   </style>
 </head>
@@ -276,6 +259,7 @@
   <cl:navbar selected="expeditions" />
 
   <header id="page-header">
+
     <div class="inner">
 
       <cl:messages />
@@ -290,10 +274,6 @@
       </nav>
       <hgroup>
         <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
-        <g:if test="${sequenceNumber >= 0}">
-          <span>Image sequence number: ${sequenceNumber}</span>
-        </g:if>
-
       </hgroup>
     </div>
   </header>
@@ -313,78 +293,54 @@
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
-            <g:set var="defaultWidthPercent" value="100" />
-            <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
+            <g:set var="defaultWidthPercent" value="300" />
+            <input type="range" name="width" min="150" max="450" value="${defaultWidthPercent}" />
 
             <span id="journalPageButtons">
                 <button id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous journal page</button>
                 <button id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
-                <button id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
+                %{--<button id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>--}%
             </span>
-            <div class="dialog" id="imagePane">
-                <g:set var="imageIndex" value="0"/>
-                <g:each in="${taskInstance.multimedia}" var="m" status="i">
-                  <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-                    <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-                    <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
-                        <div><img id="image_${imageIndex++}" src="${imageUrl}" style="width:100%;"/></div>
+
+            <table style="width:100%">
+              <tr>
+                <td>
+                    <div class="" id="imagePane">
+                        <g:set var="imageIndex" value="0"/>
+                        <g:each in="${taskInstance.multimedia}" var="m" status="i">
+                          <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
+                            <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+                            <div class="pageViewer" id="journalPageImg" style="width:500px;height:${defaultWidthPercent}%;">
+                                <div><img id="image_${imageIndex++}" src="${imageUrl}" style="height:100%;"/></div>
+                            </div>
+                          </g:if>
+                        </g:each>
                     </div>
-                  </g:if>
-                </g:each>
-            </div>
-            <div class="fields" id="journal2Text">
-                <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
-                <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
-                <table>
-                    <thead>
-                        <tr>
-                            <g:if test="${taskInstance.project.template?.viewParams.doublePage}">
-                              <th>
-                                <h3>1. Transcribe all text from the left hand page into this box as it appears</h3>
-                              </th>
+                </td>
+                <td style="width: 100%">
+                    <div class="pageDetails">
+                        <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
+                        <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
+                    </div>
 
-                              <th>
-                                  <h3>Transcribe all text from the right hand page into this box as it appears</h3>
-                              </th>
-                            </g:if>
-                            <g:else>
-                              <th>
-                                <h3>1. Transcribe all text from the page above into this box as it appears</h3>
-                              </th>
-
-                            </g:else>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="transcribeAllText1" rows="12" cols="30" style="width:98%;height:300px;"/>
-                            </td>
-                            <g:if test="${taskInstance.project.template?.viewParams.doublePage}">
-                                <td>
-                                    <g:textArea name="recordValues.1.occurrenceRemarks" value="${recordValues?.get(1)?.occurrenceRemarks}" id="transcribeAllText2" rows="12" cols="30" style="width:98%;height:300px;"/>
-                                </td>
-                            </g:if>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="fields" id="journal2Fields">
-                <table>
-                    <thead>
-                        <tr>
-                            <th colspan="2">
-                                <h3>3. Where a species or common name appears in the text please enter any relevant information into the fields below</h3>
-                                <button id="addRowButton">Add row</button>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="identification_fields">
-                    </tbody>
-                </table>
-
-            </div>
+                    <div class="observationFields">
+                        <table style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>CatalogNumber</th>
+                                    <th>Transcribe All text</th>
+                                    <th>Verbatim Locality</th>
+                                </tr>
+                            </thead>
+                            <tbody id="observation_fields">
+                            </tbody>
+                        </table>
+                        <button id="addRowButton">Add row</button>
+                    </div>
+                </td>
+              </tr>
+            </table>
 
             <div class="fields" id="journalNotes" style="width:${(validator) ? '100%' : '50%'}">
                 <table style="width: 100%">
@@ -420,7 +376,9 @@
                         <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
                                  value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
                         <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
+
                         <cl:validationStatus task="${taskInstance}" />
+
                     </g:if>
                     <g:else>
                         <span class="button"><g:actionSubmit class="save" action="save"
