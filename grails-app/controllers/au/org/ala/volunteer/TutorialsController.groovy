@@ -7,7 +7,7 @@ class TutorialsController {
     }
 
     def transcribingFieldNotes = {
-
+        redirect(url: resource(dir: 'pdf', file: 'fieldNotesTutorial.pdf'))
     }
 
     def transcribingSpecimenLabels = {

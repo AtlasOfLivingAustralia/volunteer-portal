@@ -61,7 +61,7 @@
           %{--</tr>--}%
           <tr>
             <td>
-              <A href="${createLink(controller: 'tutorials', action: 'transcribingFieldNotes')}"><g:message code="default.tutorial.fieldnotes.label" default="Transcribing Field Notes"/></a>
+              <A href="${resource(dir: 'pdf', file: 'fieldNotesTutorial.pdf')}"><g:message code="default.tutorial.fieldnotes.label" default="Transcribing Field Notes"/></a>
             </td>
           </tr>
           <tr>
