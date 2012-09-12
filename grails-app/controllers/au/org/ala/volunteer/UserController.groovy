@@ -226,7 +226,7 @@ class UserController {
             }
         }
 
-        if (viewList.size() >= params.int("offset")) {
+        if (viewList && viewList.size() >= params.int("offset")) {
             viewList = viewList[params.int("offset")..Math.min(viewList.size() - 1, params.int("offset") + params.int("max") - 1)]
         }
 
