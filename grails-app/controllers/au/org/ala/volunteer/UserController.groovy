@@ -264,7 +264,9 @@ class UserController {
                 }
         }
 
-        def results = createViewList(tasks, params);
+        def results = createViewList(tasks, params)
+
+        def isValidator = userService.isValidator(projectInstance)
 
         [viewList: results.viewList, totalMatchingTasks: results.totalMatchingTasks, selectedTab: selectedTab, projectInstance: projectInstance, userInstance: userInstance]
 

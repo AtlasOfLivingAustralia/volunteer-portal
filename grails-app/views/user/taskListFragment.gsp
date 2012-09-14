@@ -67,13 +67,22 @@
                   </td>
 
                   <td style="text-align: center;">
+                      <span>
                       <g:if test="${taskInstance.fullyTranscribedBy}">
-                        %{--<g:link class="listLink" controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>--}%
                         <button onclick="location.href='${createLink(controller:'task', action:'show', id:taskInstance.id)}'">View</button>
+                        <cl:ifValidator project="${taskInstance.project}">
+                          <g:if test="${taskInstance.status?.equalsIgnoreCase('validated')}">
+                            <button onclick="location.href='${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Review</button>
+                          </g:if>
+                          <g:else>
+                            <button onclick="location.href='${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Validate</button>
+                          </g:else>
+                        </cl:ifValidator>
                       </g:if>
                       <g:else>
-                          <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                          <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
                       </g:else>
+                      </span>
                   </td>
 
               </tr>

@@ -79,7 +79,7 @@ class TaskController {
             def taskInstanceTotal
             def extraFields = [:] // Map
             def query = params.q
-            log.debug("q = " + query)
+
             if (query) {
                 def fullList = Task.findAllByProject(projectInstance, [max: 999])
                 taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)

@@ -9,11 +9,26 @@
             $(document).ready(function() {
                 $("#searchButton").click(function(e) {
                     e.preventDefault();
-                    var query = $("#q").val()
-                    location.href="?q=" + query;
+                    doSearch();
+                });
+
+                $("#q").keypress(function(e) {
+                    if (e.keyCode == 13) {
+                      e.preventDefault();
+                      doSearch();
+                    }
                 });
 
             }); // end .ready()
+
+            function doSearch() {
+              var query = $("#q").val()
+              location.href="?q=" + query;
+            }
+
+          function validateInSeparateWindow(taskId) {
+            window.open("${createLink(controller:'validate', action:'task')}/" + taskId, "bvp_validate_window");
+          }
         </script>
     </head>
     <body class="sublevel sub-site volunteerportal">
@@ -120,9 +135,11 @@
                             <td style="text-align: center;">
                                 <g:if test="${taskInstance.fullyValidatedBy}">
                                     <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
+                                    <button onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir:'/images', file:'right_arrow.png')}"></button>
                                 </g:if>
                                 <g:elseif test="${taskInstance.fullyTranscribedBy}">
                                     <button onclick="location.href='${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
+                                    <button onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir:'/images', file:'right_arrow.png')}"></button>
                                 </g:elseif>
                                 <g:else>
                                   <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'">transcribe</button>

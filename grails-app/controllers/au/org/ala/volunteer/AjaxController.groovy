@@ -82,12 +82,14 @@ class AjaxController {
         // Sort by the transcribed count
         report.sort({ row1, row2 -> row2[2] - row1[2]})
 
+        def nodata = params.nodata ?: 'nodata'
+
         if (params.wt && params.wt == 'csv') {
 
             def writer = new CSVWriter(response.writer, (char) '\t')
             writer.writeNext("user_id", "display_name", "transcribed_count", "validated_count", "last_activity", "projects_count", "volunteer_since")
             for (def row : report) {
-                writer.writeNext((String) row[0], (String) row[1], (String) row[2], (String) row[3], (String) row[4], (String) row[5], (String) row[6] )
+                writer.writeNext((String) row[0], (String) row[1], (String) row[2], (String) row[3], (String) row[4] ?: nodata, (String) row[5], (String) row[6] )
             }
             writer.flush()
         } else {

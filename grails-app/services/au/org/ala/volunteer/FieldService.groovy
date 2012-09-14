@@ -18,10 +18,12 @@ class FieldService {
     }
 
     List findAllFieldsWithTasksAndQuery(List<Task> taskList, String query, Map params) {
+        query = query?.toLowerCase()
+
         def fieldValues = Field.executeQuery(
             """select distinct f.task from Field f
                where f.superceded = false and
-               f.task in (:list) and lower(f.value) like lower(:query)
+               f.task in (:list) and (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query)
                order by 1""", [list: taskList, query: '%'+query+'%'], params)
         fieldValues.toList()
     }
@@ -30,7 +32,7 @@ class FieldService {
         def fieldValues = Field.executeQuery(
             """select count(distinct f.task) from Field f
                where f.superceded = false and
-               f.task in (:list) and lower(f.value) like lower(:query)
+               f.task in (:list) and (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query)
                order by 1""", [list: taskList, query: '%'+query+'%'])
         fieldValues.get(0)
     }
