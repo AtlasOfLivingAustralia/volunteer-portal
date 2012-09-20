@@ -44,21 +44,6 @@
     <div>
       <div class="inner">
         <table class="bvp-expeditions">
-          %{--<tr>--}%
-            %{--<td>--}%
-              %{--<A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Introduction.swf"><g:message code="default.tutorial.introduction.label" default="Introduction (Video)"/></a>--}%
-            %{--</td>--}%
-          %{--</tr>--}%
-          %{--<tr>--}%
-            %{--<td>--}%
-              %{--<A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Mapping_Tool2.swf"><g:message code="default.tutorial.mapping.label" default="Mapping tool (Video)"/></a>--}%
-            %{--</td>--}%
-          %{--</tr>--}%
-          %{--<tr>--}%
-            %{--<td>--}%
-              %{--<A href="${org.codehaus.groovy.grails.commons.ConfigurationHolder.config.server.url}/video/Transcribing.swf"><g:message code="default.tutorial.transcribing.label" default="Transcribing (Video)"/></a>--}%
-            %{--</td>--}%
-          %{--</tr>--}%
           <tr>
             <td>
               <A href="${resource(dir: 'pdf', file: 'fieldNotesTutorial.pdf')}"><g:message code="default.tutorial.fieldnotes.label" default="Transcribing Field Notes"/></a>
@@ -87,6 +72,11 @@
             </td>
           </tr>
 
+          <tr>
+            <td>
+              <A href="${resource(dir:'pdf', file:'kershawDiariesSupplement.pdf')}"><g:message code="default.tutorial.whalesharksmap.label" default="Kershaw Diaries - supplemental"/></a>
+            </td>
+          </tr>
 
         </table>
       </div>

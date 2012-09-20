@@ -6,6 +6,9 @@
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <%@ page contentType="text/html; UTF-8" %>
+
+<g:set var="viewParams" value="${taskInstance.project.template?.viewParams}" />
+
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
@@ -34,32 +37,78 @@
         validator: "${validator}"
     };
 
-    var entries = [
     <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
     <g:set var="numItems" value="${(recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue).toInteger()}" />
     <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" />
 
-    <g:each in="${0..numItems}" var="i">
-        [
-        <g:each in="${fieldList}" var="field" status="fieldIndex">
-            <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
-            <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}" />
-            {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
+    var numItems = ${numItems};
+
+    var entries = [
+
+    <g:if test="${numItems > 0}">
+        <g:each in="${0..numItems-1}" var="i">
+            [
+            <g:each in="${fieldList}" var="field" status="fieldIndex">
+                <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
+                <g:set var="fieldName" value="${field.fieldType.name()}"/>
+                <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}" />
+                {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
+            </g:each>
+            ]<g:if test="${i < (numItems - 1)}">,</g:if>
         </g:each>
-        ]<g:if test="${i < numItems}">,</g:if>
-    </g:each>
+    </g:if>
     ];
 
     function renderEntries() {
       try {
         var htmlStr ="";
         var itemCount = 0;
+
+        var entry = [
+        <g:each in="${fieldList}" var="field" status="fieldIndex">
+            <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
+            <g:set var="fieldName" value="${field.fieldType.name()}"/>
+            {name:'${fieldName}', label:'${fieldLabel}', value: ''}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
+        </g:each>
+        ];
+
+        htmlStr += '<tr class="newRow"><td><strong>New row<strong></td>'
+        var first = true;
+        for (fieldIndex in entry) {
+          var e = entry[fieldIndex]
+          if (e.name == 'verbatimLocality' && ${viewParams?.hideLocality ?: false} == true) {
+            // skip
+            continue;
+          }
+
+          var name = e.name;
+          htmlStr += '<td class="value td_' + e.name
+          if (first) {
+            first = false;
+            htmlStr += ' firstInput';
+          }
+          htmlStr  += '">'
+          if (e.name != "occurrenceRemarks") {
+            htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + '">';
+          } else {
+            htmlStr += '<textarea rows="4" name="' + name + '" id="' + name + '" class="' + e.name + '">' + e.value + '</textarea>';
+          }
+          htmlStr += '</td>';
+        }
+        htmlStr += '<td><button id="addRowButton">Add row</button></td></tr>';
+
         for (entryIndex in entries) {
-          htmlStr += '<tr class="observationFields" id="0"><td><strong>' + (parseInt(entryIndex) + 1) + '.</strong></td>'
+          htmlStr += '<tr class="observationFields"><td><strong>' + (parseInt(entryIndex) + 1) + '.</strong></td>'
           for (fieldIndex in entries[entryIndex]) {
             var e = entries[entryIndex][fieldIndex];
+            if (e.name == 'verbatimLocality' && ${viewParams?.hideLocality ?: false} == true) {
+              // skip
+              continue;
+            }
+
             var name = "recordValues." + entryIndex + "." + e.name;
+
+
             htmlStr += '<td class="value td_' + e.name + '">'
             if (e.name != "occurrenceRemarks") {
               htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + '">';
@@ -68,16 +117,20 @@
             }
             htmlStr += '</td>';
           }
-          if (entryIndex > 0) {
-            htmlStr += '<td><button style="margin-left: 10px" onclick="deleteEntry(' + entryIndex + '); return false;">Delete</button><td>';
-          }
 
+          htmlStr += '<td><button style="margin-left: 10px" onclick="deleteEntry(' + entryIndex + '); return false;">Delete</button></td>';
           htmlStr += "</tr>"
 
           itemCount++;
         }
         $("#observation_fields").html(htmlStr);
-        $("#noOfEntries").attr('value', itemCount - 1);
+        $("#noOfEntries").attr('value', itemCount);
+
+        $("#addRowButton").click(function(e) {
+          e.preventDefault();
+          addEntry();
+        });
+
       } catch (e) {
         alert(e)
       }
@@ -101,11 +154,12 @@
         <g:each in="${fieldList}" var="field" status="fieldIndex">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            {name:'${fieldName}', label:'${fieldLabel}', value: ''}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
+            {name:'${fieldName}', label:'${fieldLabel}', value: $('#${fieldName}').val()}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
         </g:each>
         ];
         entries.push(entry);
         renderEntries();
+        $('.firstInput input').focus();
       } catch (e) {
         alert(e)
       }
@@ -114,7 +168,7 @@
 
     function deleteEntry(index) {
       syncEntries()
-      if (index > 0 && index <= entries.length) {
+      if (index >= 0 && index <= entries.length) {
         entries.splice(index, 1);
         renderEntries();
       }
@@ -149,11 +203,6 @@
               newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
               if (window.focus) {newwindow.focus()}
             </g:if>
-        });
-
-        $("#addRowButton").click(function(e) {
-          e.preventDefault();
-          addEntry();
         });
 
         renderEntries();
@@ -205,6 +254,8 @@
 
         <cl:timeoutScriptFragment />
 
+      $("#imagePane").scrollTop(0);
+
     });
 
     function zoomJournalImage(event, value) {
@@ -234,21 +285,33 @@
     /*}*/
 
     td .catalogNumber {
-      width: 50px;
+      width: 100%;
+    }
+
+    .td_catalogNumber {
+      width: 100px;
     }
 
     td .verbatimLocality {
       width: 100%;
     }
 
+    td .occurrenceRemarks {
+      width: 100%;
+    }
+
     #imagePane {
-      width: 500px;
-      height: 400px;
+      width: 972px;
+      height: 300px;
       clear: left;
     }
 
     .pageDetails, .observationFields {
       /* float: right; */
+    }
+
+    .newRow {
+      background: #F0F0E8
     }
 
   </style>
@@ -293,8 +356,8 @@
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
-            <g:set var="defaultWidthPercent" value="300" />
-            <input type="range" name="width" min="150" max="450" value="${defaultWidthPercent}" />
+            <g:set var="defaultWidthPercent" value="400" />
+            <input type="range" name="width" min="200" max="600" value="${defaultWidthPercent}" />
 
             <span id="journalPageButtons">
                 <button id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous journal page</button>
@@ -302,45 +365,60 @@
                 %{--<button id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>--}%
             </span>
 
-            <table style="width:100%">
-              <tr>
-                <td>
-                    <div class="" id="imagePane">
-                        <g:set var="imageIndex" value="0"/>
-                        <g:each in="${taskInstance.multimedia}" var="m" status="i">
-                          <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-                            <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-                            <div class="pageViewer" id="journalPageImg" style="width:500px;height:${defaultWidthPercent}%;">
-                                <div><img id="image_${imageIndex++}" src="${imageUrl}" style="height:100%;"/></div>
-                            </div>
-                          </g:if>
-                        </g:each>
+            <div class="" id="imagePane">
+                <g:set var="imageIndex" value="0"/>
+                <g:each in="${taskInstance.multimedia}" var="m" status="i">
+                  <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
+                    <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+                    <div class="pageViewer" id="journalPageImg" style="width:972px;height:${defaultWidthPercent}%;">
+                        <div><img id="image_${imageIndex++}" src="${imageUrl}" style="height:100%;"/></div>
                     </div>
-                </td>
-                <td style="width: 100%">
-                    <div class="pageDetails">
-                        <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
-                        <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
-                    </div>
+                  </g:if>
+                </g:each>
+            </div>
+            <div class="pageDetails">
+                <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
+                <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
+            </div>
+          
+            <g:if test="${viewParams?.showMonth}">
+              <div class="fields">
+                  <table style="width: 100%; margin-top: 10px;">
+                      <thead>
+                        <tr>
+                          <th style="width: 250px">
+                            <h3>Enter the month from the top of the page</h3>
+                          </th>
+                          <th style="text-align: right"><strong>Month</strong></th>
+                          <th><g:textField id="recordValues.0.verbatimEventDate" name="recordValues.0.verbatimEventDate" value="${recordValues?.get(0)?.get(DarwinCoreField.verbatimEventDate)}" /></th>
+                        </tr>
+                      </thead>
+                  </table>
+              </div>
+            </g:if>
 
-                    <div class="observationFields">
-                        <table style="width: 100%">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>CatalogNumber</th>
-                                    <th>Transcribe All text</th>
-                                    <th>Verbatim Locality</th>
-                                </tr>
-                            </thead>
-                            <tbody id="observation_fields">
-                            </tbody>
-                        </table>
-                        <button id="addRowButton">Add row</button>
-                    </div>
-                </td>
-              </tr>
-            </table>
+            <div class="observationFields">
+                <table style="width: 100%; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                          <th colspan="5">
+                            <h3>Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.</h3>
+                          </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>CatalogNumber</th>
+                            <th>Transcribe All text</th>
+                            <g:if test="${!viewParams?.hideLocality}">
+                              <th>Verbatim Locality</th>
+                            </g:if>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="observation_fields">
+                    </tbody>
+                </table>
+            </div>
 
             <div class="fields" id="journalNotes" style="width:${(validator) ? '100%' : '50%'}">
                 <table style="width: 100%">
@@ -356,8 +434,7 @@
                         <g:if test="${validator}">
                             <tr class="prop">
                             <td class="name">Validator Notes</td>
-                            <td class="value"><g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}"
-                                id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                            <td class="value"><g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}" id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
                         </tr>
                         </g:if>
                     </tbody>

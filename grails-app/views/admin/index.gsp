@@ -49,6 +49,11 @@
             <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'locality', action:'load')}'">Load localities</button></td>
             <td>Load/Replace localities for a particular institution</td>
           </tr>
+          <tr>
+            <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'stats', action:'index')}'">Stats</button></td>
+            <td>Various Statistics (Experimental!)</td>
+          </tr>
+
 
         </table>
 

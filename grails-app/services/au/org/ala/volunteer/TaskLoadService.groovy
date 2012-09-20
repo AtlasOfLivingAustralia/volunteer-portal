@@ -190,6 +190,8 @@ class TaskLoadService {
 
     }
 
+    def import_ObservationDiaryWithMonth = import_ObservationDiary
+
     def import_FieldNoteBookDoublePage = { TaskDescriptor taskDesc, String[] tokens, int linenumber ->
         List<Field> fields = new ArrayList<Field>()
         if (tokens.length >= 4) {

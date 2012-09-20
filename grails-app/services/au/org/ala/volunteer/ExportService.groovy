@@ -41,6 +41,8 @@ class ExportService {
         zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset],[])
     }
 
+    def export_ObservationDiaryWithMonth = export_ObservationDiary
+
     def export_FieldNoteBook = { Project project, taskList, valueMap, List fieldNames, response ->
         zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['occurrenceRemarks'])
     }

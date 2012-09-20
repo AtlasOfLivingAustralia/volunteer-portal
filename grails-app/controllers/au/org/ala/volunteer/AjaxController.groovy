@@ -15,6 +15,7 @@ class AjaxController {
     def userService
     def authService
     def taskLoadService
+    def statsService
     DataSource dataSource
 
     def index = {
@@ -187,6 +188,12 @@ class AjaxController {
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Cache-Control", "no-cache");
         response.addHeader("Cache-Control", "no-store");
+    }
+
+    def statsTranscriptionsByMonth = {
+        def results = statsService.transcriptionsByMonth()
+        println results
+        render results as JSON
     }
 
 }

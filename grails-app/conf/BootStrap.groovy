@@ -135,6 +135,20 @@ class BootStrap {
         }
         populateTemplateFields(template, "observationDiaryFields")
 
+        template = Template.findByName("ObservationDiaryWithMonth")
+        if (!template) {
+            logService.log "creating new Template: ObservationDiaryWithMonth"
+            template = new Template(name: "ObservationDiaryWithMonth", viewName: "observationDiaryTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [showMonth:true, hideLocality: true]).save(flush: true, failOnError: true)
+        }
+        populateTemplateFields(template, "observationDiaryFields")
+
+        template = Template.findByName("FinnishLabelsTest")
+        if (!template) {
+            logService.log "creating new Template: FinnishLabelsTest"
+            template = new Template(name: "FinnishLabelsTest", viewName: "specimenTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
+        }
+        populateTemplateFields(template, "finnishTestFields")
+
 
         // add system user
         if (!User.findByUserId('system')) {
