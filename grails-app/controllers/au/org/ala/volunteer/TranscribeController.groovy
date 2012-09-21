@@ -3,6 +3,8 @@ package au.org.ala.volunteer
 import org.springframework.validation.Errors
 import org.springframework.web.context.request.RequestContextHolder
 import org.apache.commons.lang.StringUtils
+import javax.imageio.ImageIO
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class TranscribeController {
 
@@ -86,7 +88,28 @@ class TranscribeController {
                 nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
             }
 
-            render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber])
+            def imageMetaData = [:]
+
+            taskInstance.multimedia.each {
+                def path = it.filePath;
+                String urlPrefix = ConfigurationHolder.config.images.urlPrefix
+                String imagesHome = ConfigurationHolder.config.images.home
+                path = imagesHome + '/' + path.substring(urlPrefix.length())  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+                println path
+                CodeTimer t = new CodeTimer("Extracting meta data for ${path}")
+                def image = ImageIO.read(new File(path))
+                def aspectRatio = image.height / image.width
+                def smallSizeHeight = 400
+                if (image.height > image.width) {
+                    def smallWidth = 600 / aspectRatio
+                    smallSizeHeight = smallWidth * aspectRatio
+                }
+                imageMetaData[it.id] = [width: image.width, height: image.height, aspectRatio: aspectRatio, smallSizeHeight: smallSizeHeight]
+                t.stop(true)
+            }
+
+
+            render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
         }

@@ -215,24 +215,6 @@ $(window).load(function() {
 
 $(document).ready(function() {
 
-    var mainImageWidth = $("#mainImage").width();
-    var mainImageHeight = $("#mainImage").height();
-
-    var setSize = function(selector, ratio) {
-        var scaleWidth = mainImageWidth * ratio;
-        var scaleHeight = mainImageHeight * ratio;
-//        console.log("Setting " + selector + " height=" + scaleHeight + " width=" + scaleWidth + "  " + mainImageHeight + "<>" + mainImageWidth);
-        $(selector).css("width", scaleWidth + "px").css("height", scaleHeight + "px");
-        $(selector).offset({left:0, top:0});
-    };
-
-    setSize(".mediumImage", 0.5);
-    setSize(".largeImage", 0.75);
-    setSize(".actualImage", 1);
-
-    // Google maps API code
-    //initialize();
-
     // trigger Google geolocation search on search button
     $('#locationSearch').click(function(e) {
         e.preventDefault();
@@ -630,7 +612,7 @@ $(document).ready(function() {
         $(this).css('width', '140px');
         $(this).after(icons);
     });
-    $(":input.#transcribeAllText").after(icons);
+    // $(":input.#transcribeAllText").after(icons);
 
 
     $(".coordsIcons a").click(function(e) {

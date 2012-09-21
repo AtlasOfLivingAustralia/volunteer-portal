@@ -1,4 +1,5 @@
 catalogNumber,,,none,hidden,1,0,"Please check this number against the typed number on the specimen label in the image to see that it matches. If it does not match then click the &quot;Report an issue&quot; link near the top of the page",,default
+institutionCode,,AM,none,hidden,1,0,,,default
 basisOfRecord,,PreservedSpecimen,none,hidden,1,0,,,default
 occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",,default
 eventDate,,,collectionEvent,text,0,0,"Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD",,default
@@ -29,6 +30,6 @@ transcriberNotes,,,none,textarea,0,0,,,default
 vernacularName,Common Name,,identification,text,0,0,,,default
 sex,Sex,,identification,text,0,0,,,default
 verbatimCoordinates,,,collectionEvent,text,0,0,,,default
+eventRemarks,Occurrence remarks,,collectionEvent,text,0,0,,,default
 fieldNumber,Field Number,,collectionEvent,text,0,0,,,default
-institutionCode,,,collectionEvent,text,0,0,,,default
 disposition,,,collectionEvent,text,0,0,,,default

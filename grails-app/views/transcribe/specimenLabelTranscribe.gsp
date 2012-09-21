@@ -445,22 +445,21 @@
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+                    <g:set var="imageInfo" value="${imageMetaData[m.id]}" />
                     <div class="imageWrapper" style="margin-top: 0px; padding-top: 0px">
                         <div id="viewport">
-                            <div class="smallImage" style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: 400px;">
+                            <div class="smallImage" style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: ${imageInfo.smallSizeHeight}px;">
                                 <!--top level map content goes here-->
                             </div>
-                            <div class="mediumImage" style="height: 1280px; width: 1920px;">
+                            <div style="height: ${imageInfo.height * 0.3}px; width: ${imageInfo.width * 0.3}px">
                                 <img src="${imageUrl}" alt=""/>
-                                %{--<img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" alt=""/>--}%
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div class="largeImage" style="height: 2000px; width: 3000px;">
+                            <div style="height: ${imageInfo.height * 0.6}px; width: ${imageInfo.width * 0.6}px">
                                 <img src="${imageUrl}" alt=""/>
-                                %{--<img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_large.$1')}" alt=""/>--}%
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div class="actualImage" style="height: 3168px; width: 4752px;">
+                            <div style="height: ${imageInfo.height}px; width: ${imageInfo.width}px">
                                 <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>

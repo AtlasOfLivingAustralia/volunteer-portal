@@ -41,20 +41,46 @@
 
     $(document).ready(function(e) {
 
-//      var mainImageWidth = $("#mainImage").width();
-//      var mainImageHeight = $("#mainImage").height();
-//
-//      var setSize = function(selector, ratio) {
-//        console.log("Setting " + selector + " height=" + (mainImageHeight * ratio) + " width=" + (mainImageWidth * ratio) + "  " + mainImageHeight + "<>" + mainImageWidth);
-//        $(selector).width(mainImageWidth * ratio).height(mainImageHeight * ratio);
-//      }
-//
-//      setSize(".mediumImage", 0.33);
-//      setSize(".largeImage", 0.66);
-//      setSize(".actualImage", 1);
+      $(".insert-symbol-button").each(function(index) {
+        $(this).html($(this).attr("symbol"));
+      });
+
+      $(".insert-symbol-button").click(function(e) {
+          e.preventDefault();
+          var input = $("#transcribeAllText");
+          $(input).insertAtCaret($(this).attr('symbol'));
+          $(input).focus();
+      });
 
     })
 </script>
+  <style type="text/css">
+
+  .insert-symbol-button {
+    font-family: courier;
+    /*display: inline-block;*/
+    /*width: 10px;*/
+    /*text-align: center;*/
+    /*font-size: 20px;*/
+    /*line-height: 13px;*/
+    /*text-decoration: none;*/
+    color: #DDDDDD;
+    background: #4075C2;
+    /*padding: 4px 2px 0 2px;*/
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    -icab-border-radius: 4px;
+    -khtml-border-radius: 4px;
+    border-radius: 4px;
+  }
+
+  .insert-symbol-button:hover {
+    background: #0046AD;
+    color: #DDDDDD;
+  }
+
+  </style>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
 </head>
 
@@ -99,20 +125,21 @@
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+                    <g:set var="imageInfo" value="${imageMetaData[m.id]}" />
                     <div class="imageWrapper">
                         <div id="viewport">
-                            <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: 400px;">
+                            <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: ${imageInfo.smallSizeHeight}px;">
                                 <!--top level map content goes here-->
                             </div>
-                            <div class="mediumImage" style="height: 1280px; width: 1920px;">
+                            <div style="height: ${imageInfo.height * 0.3}px; width: ${imageInfo.width * 0.3}px">
                                 <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div class="largeImage" style="height: 2000px; width: 3000px;">
+                            <div style="height: ${imageInfo.height * 0.6}px; width: ${imageInfo.width * 0.6}px">
                                 <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div class="actualImage" style="height: 3168px; width: 4752px;">
+                            <div style="height: ${imageInfo.height}px; width: ${imageInfo.width}px">
                                 <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
@@ -152,6 +179,15 @@
                                 <td>
                                     <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}"
                                               id="transcribeAllText" rows="12" cols="40" style="width: 100%"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 0px;">
+                                    <button class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol" />
+                                    <button class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol" />
+                                    <button class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol" />
+                                    <button class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol" />
+                                    <button class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol" />
                                 </td>
                             </tr>
                         </tbody>
@@ -269,13 +305,13 @@
                             <tr class="prop">
                                 <td class="name">${(validator) ? 'Transcriber' : 'Your'} Notes</td>
                                 <td class="value"><g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}"
-                                    id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                                    id="transcriberNotes" rows="3" cols="40" style="width: 100%"/></td>
                             </tr>
                             <g:if test="${validator}">
                                 <tr class="prop">
                                 <td class="name">Validator Notes</td>
                                 <td class="value"><g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}"
-                                    id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                                    id="transcriberNotes" rows="3" cols="40" style="width: 100%"/></td>
                             </tr>
                             </g:if>
                         </tbody>
