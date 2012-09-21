@@ -32,6 +32,7 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
+
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.7.3.custom.min.js')}"></script>--}%
 
 <script type="text/javascript">
@@ -44,10 +45,7 @@
         isReadonly: "${isReadonly}",
         isValid: ${(taskInstance?.isValid) ? "true" : "false"}
     };
-</script>
 
-
-  <script type="text/javascript">
     $(document).ready(function() {
 
       var task_selector_opts = {
@@ -449,22 +447,26 @@
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <div class="imageWrapper" style="margin-top: 0px; padding-top: 0px">
                         <div id="viewport">
-                            <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: 400px;">
+                            <div class="smallImage" style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: 400px;">
                                 <!--top level map content goes here-->
                             </div>
-                            <div style="height: 1280px; width: 1920px;">
-                                <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" alt=""/>
+                            <div class="mediumImage" style="height: 1280px; width: 1920px;">
+                                <img src="${imageUrl}" alt=""/>
+                                %{--<img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" alt=""/>--}%
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div style="height: 2000px; width: 3000px;">
-                                <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_large.$1')}" alt=""/>
+                            <div class="largeImage" style="height: 2000px; width: 3000px;">
+                                <img src="${imageUrl}" alt=""/>
+                                %{--<img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_large.$1')}" alt=""/>--}%
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div style="height: 3168px; width: 4752px;">
+                            <div class="actualImage" style="height: 3168px; width: 4752px;">
                                 <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
                         </div>
+
+                        <img style="display: none" id="mainImage" src="${imageUrl}" alt=""/>
 
                         <div class="map-control">
                             <a href="#left" class="left">Left</a>

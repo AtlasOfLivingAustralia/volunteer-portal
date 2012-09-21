@@ -208,7 +208,27 @@ function updateMarkerAddress(str, addressObj) {
     }
 }
 
+$(window).load(function() {
+
+
+});
+
 $(document).ready(function() {
+
+    var mainImageWidth = $("#mainImage").width();
+    var mainImageHeight = $("#mainImage").height();
+
+    var setSize = function(selector, ratio) {
+        var scaleWidth = mainImageWidth * ratio;
+        var scaleHeight = mainImageHeight * ratio;
+//        console.log("Setting " + selector + " height=" + scaleHeight + " width=" + scaleWidth + "  " + mainImageHeight + "<>" + mainImageWidth);
+        $(selector).css("width", scaleWidth + "px").css("height", scaleHeight + "px");
+        $(selector).offset({left:0, top:0});
+    };
+
+    setSize(".mediumImage", 0.5);
+    setSize(".largeImage", 0.75);
+    setSize(".actualImage", 1);
 
     // Google maps API code
     //initialize();
@@ -371,7 +391,7 @@ $(document).ready(function() {
         'zoom': true, // does map zoom?
         'pan': true,
         'doubleClickZoom': true,
-        'layerSplit': 2,
+        'layerSplit': 1,
         'mousewheel': true
     });
 
@@ -379,7 +399,7 @@ $(document).ready(function() {
         var viewport = $("#viewport");
         //this.className is same as method to be called
         if (this.className == "zoom" || this.className == "back") {
-            viewport.mapbox(this.className, 2);//step twice
+            viewport.mapbox(this.className, 1);//step twice
         }
         else {
             viewport.mapbox(this.className, 100);

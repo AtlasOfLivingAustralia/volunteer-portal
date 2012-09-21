@@ -38,6 +38,22 @@
         isReadonly: "${isReadonly}",
         isValid: ${(taskInstance?.isValid) ? "true" : "false"}
     };
+
+    $(document).ready(function(e) {
+
+//      var mainImageWidth = $("#mainImage").width();
+//      var mainImageHeight = $("#mainImage").height();
+//
+//      var setSize = function(selector, ratio) {
+//        console.log("Setting " + selector + " height=" + (mainImageHeight * ratio) + " width=" + (mainImageWidth * ratio) + "  " + mainImageHeight + "<>" + mainImageWidth);
+//        $(selector).width(mainImageWidth * ratio).height(mainImageHeight * ratio);
+//      }
+//
+//      setSize(".mediumImage", 0.33);
+//      setSize(".largeImage", 0.66);
+//      setSize(".actualImage", 1);
+
+    })
 </script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
 </head>
@@ -88,19 +104,20 @@
                             <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: 400px;">
                                 <!--top level map content goes here-->
                             </div>
-                            <div style="height: 1280px; width: 1920px;">
-                                <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" alt=""/>
+                            <div class="mediumImage" style="height: 1280px; width: 1920px;">
+                                <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div style="height: 2000px; width: 3000px;">
-                                <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_large.$1')}" alt=""/>
+                            <div class="largeImage" style="height: 2000px; width: 3000px;">
+                                <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
-                            <div style="height: 3168px; width: 4752px;">
+                            <div class="actualImage" style="height: 3168px; width: 4752px;">
                                 <img src="${imageUrl}" alt=""/>
                                 <div class="mapcontent"><!--map content goes here--></div>
                             </div>
                         </div>
+                        <img style="display: none" id="mainImage" src="${imageUrl}" alt=""/>
                         <div class="map-control">
                             <a href="#left" class="left">Left</a>
                             <a href="#right" class="right">Right</a>

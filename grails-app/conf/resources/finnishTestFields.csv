@@ -1,5 +1,4 @@
 catalogNumber,,,none,hidden,1,0,"Please check this number against the typed number on the specimen label in the image to see that it matches. If it does not match then click the &quot;Report an issue&quot; link near the top of the page",,default
-institutionCode,,AM,none,hidden,1,0,,,default
 basisOfRecord,,PreservedSpecimen,none,hidden,1,0,,,default
 occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",,default
 eventDate,,,collectionEvent,text,0,0,"Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD",,default
@@ -17,6 +16,7 @@ stateProvince,State/Territory,,location,select,0,0,,,default
 decimalLatitude,,,location,text,0,0,,,default
 country,,,location,select,0,0,,,default
 decimalLongitude,,,location,text,0,0,,,default
+municipality,Municipality,,location,text,0,0,,,default
 coordinateUncertaintyInMeters,,,location,select,0,0,"Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map",,default
 scientificName,Scientific Name,,identification,text,0,0,"This will consist of two words, the first being the Genus and the second the species. Begin entering the Genus name first and an autocomplete list will offer you options as to what the name might be. Choose the one that matches exactly the text on the label (or which you think is the same name). If there is no match then enter the full text yourself",,default
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
@@ -28,8 +28,7 @@ typeStatus,,,identification,select,0,0,,,default
 transcriberNotes,,,none,textarea,0,0,,,default
 vernacularName,Common Name,,identification,text,0,0,,,default
 sex,Sex,,identification,text,0,0,,,default
-verbatimCoordinates,,,location,text,0,0,,,default
-municipality,Municipality,,location,text,0,0,,,default
+verbatimCoordinates,,,collectionEvent,text,0,0,,,default
 fieldNumber,Field Number,,collectionEvent,text,0,0,,,default
 institutionCode,,,collectionEvent,text,0,0,,,default
-disposition,,,miscellaneous,text,0,0,,,default
+disposition,,,collectionEvent,text,0,0,,,default
