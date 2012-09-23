@@ -77,11 +77,11 @@ class ValidateController {
                 }
             }
 
+            def imageMetaData = taskService.getImageMetaData(taskInstance)
+
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-            //log.info("recordValues = " + recordValues)
-            render(view: '../transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues,
-                    isReadonly: isReadonly, template: template, validator: true])
+            render(view: '../transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, validator: true, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
         }

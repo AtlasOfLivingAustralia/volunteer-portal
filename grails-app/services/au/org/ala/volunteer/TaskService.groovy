@@ -603,4 +603,40 @@ class TaskService {
         return Task.findById(taskId)
     }
 
+
+    public Map getImageMetaData(Task taskInstance) {
+        def imageMetaData = [:]
+
+        taskInstance.multimedia.each {
+            def path = it.filePath
+            String urlPrefix = ConfigurationHolder.config.images.urlPrefix
+            String imagesHome = ConfigurationHolder.config.images.home
+            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+            CodeTimer t = new CodeTimer("Extracting meta data for ${path}")
+            BufferedImage image = null
+
+            try {
+                image = ImageIO.read(new File(path))
+            } catch (Exception ex) {
+                logService.log("Exception trying to read image path: ${path} - ${ex}")
+            }
+
+            if (image) {
+                def aspectRatio = image.height / image.width
+                def smallSizeHeight = 400
+                if (image.height > image.width) {
+                    def smallWidth = 600 / aspectRatio
+                    smallSizeHeight = smallWidth * aspectRatio
+                }
+                imageMetaData[it.id] = [width: image.width, height: image.height, aspectRatio: aspectRatio, smallSizeHeight: smallSizeHeight]
+            } else {
+                logService.log("Could not read image file: ${path} - could not get image metadata")
+            }
+            t.stop(true)
+        }
+
+        return imageMetaData
+
+    }
+
 }

@@ -125,7 +125,7 @@
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
-                    <g:set var="imageInfo" value="${imageMetaData[m.id]}" />
+                    <g:set var="imageInfo" value="${imageMetaData?.getAt(m.id) ?: [height: 0, width: 0, smallSizeHeight: 0]}" />
                     <div class="imageWrapper">
                         <div id="viewport">
                             <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: ${imageInfo.smallSizeHeight}px;">

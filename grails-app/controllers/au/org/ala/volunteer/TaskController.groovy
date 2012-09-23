@@ -2,6 +2,8 @@ package au.org.ala.volunteer
 
 import grails.converters.*
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import javax.imageio.ImageIO
 
 class TaskController {
 
@@ -297,9 +299,11 @@ class TaskController {
                 def isValidator = userService.isValidator(project)
                 logService.log currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator
 
+                def imageMetaData = taskService.getImageMetaData(taskInstance)
+
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-                render(view: '/transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template])
+                render(view: '/transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
             }
         }
     }
