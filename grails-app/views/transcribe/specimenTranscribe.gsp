@@ -188,6 +188,11 @@
                                     <button class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol" />
                                     <button class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol" />
                                     <button class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol" />
+                                    <g:if test="${template.viewParams?.specialChars}">
+                                      <g:each in="${template.viewParams?.specialChars?.split(',')}" var="charCode">
+                                        <button class="insert-symbol-button" symbol="&#${charCode};" title="Insert &#${charCode};" />
+                                      </g:each>
+                                    </g:if>
                                 </td>
                             </tr>
                         </tbody>
