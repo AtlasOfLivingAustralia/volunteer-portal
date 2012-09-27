@@ -541,7 +541,7 @@
                             </tr>
                             <tr>
                                 <td style="padding-top:0px; margin-top: 0px; margin-bottom: 0px; padding-bottom: 0px">
-                                    <textarea noAutoComplete="true" name="recordValues.0.verbatimLocality" cols="38" rows="2" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
+                                    <textarea name="recordValues.0.verbatimLocality" cols="38" rows="2" class="verbatimLocality noAutoComplete" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
                                     <a href='#' class='fieldHelp' title='Enter (or cut and paste from the box above) the locality information into this box'><span class='help-container'>&nbsp;</span></a>
                                 </td>
                             </tr>

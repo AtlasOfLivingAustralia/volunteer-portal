@@ -147,7 +147,7 @@ class BootStrap {
             logService.log "creating new Template: FinnishLabelsTest"
             template = new Template(name: "FinnishLabelsTest", viewName: "specimenTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
         }
-        template.viewParams = [specialChars:"x00e5,x00e4,x00f6,x00e6,x00f8"]
+        template.viewParams = [specialChars:"x00e5,x00e4,x00f6,x00e6,x00f8", noAutoComplete:'recordedBy,verbatimLocality']
         template.save(flush: true, failOnError: true)
 
         populateTemplateFields(template, "finnishTestFields")

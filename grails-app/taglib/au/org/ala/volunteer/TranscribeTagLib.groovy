@@ -39,6 +39,8 @@ class TranscribeTagLib {
             cssClass = cssClass + " validate[required]"
         }
 
+        def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
+
         mb.td(class:"value ${tdcssClass}" ) {
             def w // widget
             switch (field.type) {
@@ -84,6 +86,11 @@ class TranscribeTagLib {
                 case FieldType.autocomplete:
                     cssClass = cssClass + " autocomplete"
                 default:
+
+                    if (noAutoCompleteList?.contains(name)) {
+                        cssClass += ' noAutoComplete'
+                    }
+
                     w = g.textField(
                         name:"recordValues.${recordIdx}.${name}",
                         maxLength:200,

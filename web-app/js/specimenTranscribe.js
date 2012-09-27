@@ -267,7 +267,7 @@ $(document).ready(function() {
             $(':input.taxonConceptID').val(item.guid);
         });
 
-    $("input.recordedBy").autocomplete(VP_CONF.picklistAutocompleteUrl, {
+    $("input.recordedBy").not('.noAutoComplete').autocomplete(VP_CONF.picklistAutocompleteUrl, {
         extraParams: {
             picklist: "recordedBy"
         },
@@ -326,7 +326,7 @@ $(document).ready(function() {
         }
     });
 
-    $(":input.verbatimLocality").not('[noAutoComplete]').autocomplete(VP_CONF.picklistAutocompleteUrl, {
+    $(":input.verbatimLocality").not(".noAutoComplete").autocomplete(VP_CONF.picklistAutocompleteUrl, {
         extraParams: {
             picklist: "verbatimLocality"
         },
