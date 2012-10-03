@@ -49,7 +49,7 @@
         <g:each in="${fieldList}" var="field" status="fieldIndex">
             <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}" />
+            <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\n', '&#10;')?.replaceAll('\r','&#13;')}" />
             {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
         </g:each>
         ]<g:if test="${i < numItems}">,</g:if>

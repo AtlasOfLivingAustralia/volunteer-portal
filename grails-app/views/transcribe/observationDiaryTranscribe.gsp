@@ -51,8 +51,8 @@
             <g:each in="${fieldList}" var="field" status="fieldIndex">
                 <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
                 <g:set var="fieldName" value="${field.fieldType.name()}"/>
-                <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}" />
-                {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
+                <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\n', '&#10;')?.replaceAll('\r','&#13;')}" />
+                {name:'${fieldName}', label:'${fieldLabel}', value: '${fieldValue}'}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
             </g:each>
             ]<g:if test="${i < (numItems - 1)}">,</g:if>
         </g:each>
@@ -145,7 +145,7 @@
       }
     }
 
-    function addEntry(e) {
+    function addEntry() {
       try {
 
         // first we need to save any edits to the entry list
@@ -160,8 +160,8 @@
         entries.push(entry);
         renderEntries();
         $('.firstInput input').focus();
-      } catch (e) {
-        alert(e)
+      } catch (ex) {
+        alert(ex)
       }
 
     }
@@ -252,14 +252,54 @@
             $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
         }
 
-        <cl:timeoutScriptFragment />
+      $("#btnSaveTask").click(function(e) {
+        e.preventDefault();
+        submitForm("${createLink(controller: 'transcribe', action:'save')}");
+      });
+
+      $("#btnSavePartialTask").click(function(e) {
+        e.preventDefault();
+        submitForm("${createLink(controller: 'transcribe', action:'savePartial')}");
+      });
+
+      $("#btnValidateTask").click(function(e) {
+        e.preventDefault();
+        submitForm("${createLink(controller: 'validate', action:'validate')}");
+      });
+
+      $("#btnDontValidateTask").click(function(e) {
+        e.preventDefault();
+        submitForm("${createLink(controller: 'validate', action:'dontValidate')}");
+      });
+
+      <cl:timeoutScriptFragment />
 
       $("#imagePane").scrollTop(0);
 
     });
 
+    function submitForm(action) {
+      // Check to see if we have any unsaved data in the 'new row' fields
+      var haveData = false;
+      <g:each in="${fieldList}" var="field" status="fieldIndex">
+          <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
+          <g:set var="fieldName" value="${field.fieldType.name()}"/>
+          if ($('#${fieldName}').val()) {
+            haveData = true;
+          }
+      </g:each>
+
+      if (haveData) {
+        addEntry();
+      }
+
+      $(".transcribeForm").attr('action', action);
+      $(".transcribeForm").submit();
+    }
+
     function zoomJournalImage(event, value) {
-        $("#journalPageImg").css("height", value + "%");
+      $("#journalPageImg").css("height", value + "%");
+      console.log($("#journalPageImg").css("height"));
     }
 
 </script>
@@ -371,7 +411,7 @@
                   <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <div class="pageViewer" id="journalPageImg" style="width:972px;height:${defaultWidthPercent}%;">
-                        <div><img id="image_${imageIndex++}" src="${imageUrl}" style="height:100%;"/></div>
+                        <img id="image_${imageIndex++}" src="${imageUrl}" style="height:100%;"/>
                     </div>
                   </g:if>
                 </g:each>
@@ -390,7 +430,7 @@
                             <h3>Enter the month from the top of the page</h3>
                           </th>
                           <th style="text-align: right"><strong>Month</strong></th>
-                          <th><g:textField id="recordValues.0.verbatimEventDate" name="recordValues.0.verbatimEventDate" value="${recordValues?.get(0)?.get(DarwinCoreField.verbatimEventDate)}" /></th>
+                          <th><g:textField id="recordValues.0.verbatimEventDate" name="recordValues.0.verbatimEventDate" value="${recordValues?.get(0)?.get('verbatimEventDate')}" /></th>
                         </tr>
                       </thead>
                   </table>
@@ -448,27 +488,15 @@
                 <div class="buttons" style="clear: both">
                     <g:hiddenField name="id" value="${taskInstance?.id}"/>
                     <g:if test="${validator}">
-                        <span class="button"><g:actionSubmit class="validate" action="validate"
-                                 value="${message(code: 'default.button.validate.label', default: 'Validate')}"/></span>
-                        <span class="button"><g:actionSubmit class="dontValidate" action="dontValidate"
-                                 value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/></span>
-                        <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
-
+                        <button class="button validate" id="btnValidateTask">${message(code: 'default.button.validate.label', default: 'Validate')}</button>
+                        <button class="button dontvalidate" id="btnDontValidateTask">${message(code: 'default.button.dont.validate.label', default: "Don't Validate")}</button>
+                        <button id="showNextFromProject" class="skip">Skip</button>
                         <cl:validationStatus task="${taskInstance}" />
-
                     </g:if>
                     <g:else>
-                        <span class="button"><g:actionSubmit class="save" action="save"
-                                 value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
-                        <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                                 value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
-                        <span class="button">
-                            %{--<g:actionSubmit class="skip" action="showNextFromProject" params="[id: ${taskInstance?.project?.id}]"--}%
-                                 %{--value="${message(code: 'default.button.skip.label', default: 'Skip')}"/>--}%
-                            <cl:isLoggedIn>
-                                <button id="showNextFromProject" class="skip">Skip</button>
-                            </cl:isLoggedIn>
-                        </span>
+                        <button class="button save" id="btnSaveTask">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
+                        <button class="button savePartial" id="btnSavePartialTask">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                        <button id="showNextFromProject" class="skip">Skip</button>
                     </g:else>
                 </div>
             </g:if>
