@@ -278,7 +278,7 @@ class TaskLoadService {
                             multimedia.filePath = taskDesc.imageUrl
                             multimedia.save()
                             // GET the image via its URL and save various forms to local disk
-                            def filePath = taskService.copyImageToStore(taskDesc.imageUrl, t.id, multimedia.id)
+                            def filePath = taskService.copyImageToStore(taskDesc.imageUrl, t.projectId, t.id, multimedia.id)
                             filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
                             multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
                             multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
@@ -293,7 +293,7 @@ class TaskLoadService {
                                     multimedia.mimeType = md.mimeType
                                     multimedia.save() // need to get an id...
                                     // GET the image via its URL and save various forms to local disk
-                                    filePath = taskService.copyImageToStore(md.mediaUrl, t.id, multimedia.id)
+                                    filePath = taskService.copyImageToStore(md.mediaUrl, t.projectId, t.id, multimedia.id)
                                     multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
                                     multimedia.mimeType = filePath.contentType
                                     multimedia.save()

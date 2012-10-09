@@ -53,7 +53,14 @@
             <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'stats', action:'index')}'">Stats</button></td>
             <td>Various Statistics (Experimental!)</td>
           </tr>
-
+          <tr>
+            <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'admin', action:'reorganiseFileSystem')}'">Reorganize Filesystem</button></td>
+            <td>One time only!</td>
+          </tr>
+          <tr>
+            <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'admin', action:'taskConsistencyReport')}'">Task consistency report</button></td>
+            <td></td>
+          </tr>
 
         </table>
 

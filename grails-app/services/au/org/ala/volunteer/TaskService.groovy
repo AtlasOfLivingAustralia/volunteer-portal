@@ -383,7 +383,7 @@ class TaskService {
                 multimedia.filePath = imageUrl
                 multimedia.save(flush: true)
                 // GET the image via its URL and save various forms to local disk
-                def filePath = copyImageToStore(imageUrl, task.id, multimedia.id)
+                def filePath = copyImageToStore(imageUrl, task.projectId, task.id, multimedia.id)
                 filePath = createImageThumbs(filePath) // creates thumbnail versions of images
                 multimedia.filePath = filePath.dir + "/" +filePath.raw
                 multimedia.filePathToThumbnail = filePath.dir + "/" +filePath.thumb
@@ -471,9 +471,12 @@ class TaskService {
      * @param imageUrl
      * @return fileMap
      */
-    def copyImageToStore = { String imageUrl, taskId, multimediaId ->
+    def copyImageToStore = { String imageUrl, projectId, taskId, multimediaId ->
         def url = new URL(imageUrl)
         def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
+        if (!filename.trim()) {
+            filename = "image_" + taskId;
+        }
         def conn = url.openConnection()
         def fileMap = [:]
 
@@ -483,7 +486,7 @@ class TaskService {
         }
 
         try {
-            def dir = new File(config.images.home + '/' + taskId + "/" + multimediaId)
+            def dir = new File(config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
             if (!dir.exists()) {
                 logService.log "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
@@ -493,7 +496,7 @@ class TaskService {
             file << conn.inputStream
             fileMap.raw = file.name
             fileMap.localPath = file.getAbsolutePath()
-            fileMap.localUrlPrefix = urlPrefix + "${taskId}/${multimediaId}/"
+            fileMap.localUrlPrefix = urlPrefix + "${projectId}/${taskId}/${multimediaId}/"
             fileMap.contentType = conn.contentType
             return fileMap
             //file.close()
