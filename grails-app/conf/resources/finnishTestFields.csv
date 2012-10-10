@@ -3,15 +3,19 @@ institutionCode,,AM,none,hidden,1,0,,,default
 basisOfRecord,,PreservedSpecimen,none,hidden,1,0,,,default
 occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",,default
 eventDate,,,collectionEvent,text,0,0,"Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD",,default
-verbatimElevation,Verbatim Altitude,,collectionEvent,text,0,0,"If the label/s have an altitude or elevation, record it here as it appears",,default
-recordedBy,Collector,,collectionEvent,text,0,0,"Enter the text here exactly as it appears in the label.",,default
-recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
 verbatimLatitude,,,collectionEvent,text,0,0,"If the label/s have a latitude, record it here as it appears",,default
-samplingProtocol,Collection Method,,collectionEvent,text,0,0,"If the label contains information on the method of collection please enter it as it appears on the label. Examples include pitfall trap, UV Lamp, Malaise Trap",,default
-verbatimLocalityID,verbatim locality ID,,collectionEvent,hidden,0,0,,,default
+recordedBy,Collector,,collectionEvent,text,0,0,"Enter the text here exactly as it appears in the label.",,default
 verbatimLongitude,,,collectionEvent,text,0,0,"If the label/s have a longitude, record it here as it appears",,default
-verbatimLocality,,,none,textarea,0,0,"Enter a description of the locality.",,default
+samplingProtocol,Collection Method,,collectionEvent,text,0,0,"If the label contains information on the method of collection please enter it as it appears on the label. Examples include pitfall trap, UV Lamp, Malaise Trap",,default
+verbatimElevation,Verbatim Altitude,,collectionEvent,text,0,0,"If the label/s have an altitude or elevation, record it here as it appears",,default
+verbatimCoordinates,,,collectionEvent,text,0,0,,,default
+eventRemarks,Occurrence remarks,,collectionEvent,text,0,0,,,default
+fieldNumber,Field Number,,collectionEvent,text,0,0,,,default
+disposition,,,collectionEvent,text,0,0,,,default
 collectionCode,Verbatim Collection,,collectionEvent,text,0,0,"Some labels will have a collection name on them. For example Waterhouse Collection",,default
+verbatimLocalityID,verbatim locality ID,,collectionEvent,hidden,0,0,,,default
+recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
+verbatimLocality,,,none,textarea,0,0,"Enter a description of the locality.",,default
 locality,,,location,text,0,0,,,default
 stateProvince,State/Territory,,location,text,0,0,,,default
 decimalLatitude,,,location,text,0,0,,,default
@@ -19,17 +23,14 @@ country,,,location,text,0,0,,,default
 decimalLongitude,,,location,text,0,0,,,default
 municipality,Municipality,,location,text,0,0,,,default
 coordinateUncertaintyInMeters,,,location,select,0,0,"Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map",,default
-scientificName,Scientific Name,,identification,text,0,0,"This will consist of two words, the first being the Genus and the second the species. Begin entering the Genus name first and an autocomplete list will offer you options as to what the name might be. Choose the one that matches exactly the text on the label (or which you think is the same name). If there is no match then enter the full text yourself",,default
+scientificName,Scientific Name,,none,text,0,0,"",,default
+originalNameUsage,Verbatim Name,,identification,text,0,0,"The scientific name exactly has it appears on the label",,default
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
 taxonRank,'',,none,hidden,0,0,,,default
 scientificNameAuthorship,Authorship,,identification,text,0,0,"This may be recorded, along with a date, with the Scientific Name – in which case enter both the Author and the date in this field",,default
-identifiedBy,Identifier,,identification,text,0,0,"This is the identifier of the specimen. You may need to use a process of elimination to decide if a name is that of an identifier. If the name doesn’t appear to be a collector or a scientific name author then it may be the specimen identifier &ndash; in which case enter it here",,default
+identifiedBy,Determined/Identified by,,identification,text,0,0,"This is the identifier of the specimen. You may need to use a process of elimination to decide if a name is that of an identifier. If the name doesn’t appear to be a collector or a scientific name author then it may be the specimen identifier &ndash; in which case enter it here",,default
 dateIdentified,Date Identified,,identification,text,0,0,"May appear with the Identifier. Enter the date from the label using the format YYYY-MM-DD. If only a year and month appears enter YYYY-MM, if only a year then YYYY",,default
 typeStatus,,,identification,select,0,0,,,default
 transcriberNotes,,,none,textarea,0,0,,,default
 vernacularName,Common Name,,identification,text,0,0,,,default
 sex,Sex,,identification,text,0,0,,,default
-verbatimCoordinates,,,collectionEvent,text,0,0,,,default
-eventRemarks,Occurrence remarks,,collectionEvent,text,0,0,,,default
-fieldNumber,Field Number,,collectionEvent,text,0,0,,,default
-disposition,,,collectionEvent,text,0,0,,,default

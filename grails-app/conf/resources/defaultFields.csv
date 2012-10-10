@@ -18,7 +18,8 @@ decimalLatitude,,,location,text,0,0,,,default
 country,,,location,select,0,0,,,default
 decimalLongitude,,,location,text,0,0,,,default
 coordinateUncertaintyInMeters,,,location,select,0,0,"Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map",,default
-scientificName,Scientific Name,,identification,text,0,0,"This will consist of two words, the first being the Genus and the second the species. Begin entering the Genus name first and an autocomplete list will offer you options as to what the name might be. Choose the one that matches exactly the text on the label (or which you think is the same name). If there is no match then enter the full text yourself",,default
+scientificName,Scientific Name,,none,text,0,0,"",,default
+originalNameUsage,Verbatim Name,,identification,text,0,0,"The scientific name exactly has it appears on the label",,default
 taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
 taxonRank,'',,none,hidden,0,0,,,default
 scientificNameAuthorship,Authorship,,identification,text,0,0,"This may be recorded, along with a date, with the Scientific Name – in which case enter both the Author and the date in this field",,default

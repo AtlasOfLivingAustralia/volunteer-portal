@@ -227,9 +227,10 @@
                         <thead>
                         <tr>
                             <th><h3>3. Interpreted Location</h3>
-                                <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use
-                                mapping tool</button>
+                              <g:if test="${template?.viewParams?.hideMapButton != 'true'}">
+                                <button id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use mapping tool</button>
                                 &ndash; Use the mapping tool before attempting to enter values manually
+                              </g:if>
                             </th>
                         </tr>
                         </thead>

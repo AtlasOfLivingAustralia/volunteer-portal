@@ -657,12 +657,12 @@
                         </tr>
 
                         <tr class="prop newLocalitySection">
-                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLongitude}" recordValues="${recordValues}" task="${taskInstance}" />
+                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLatitude}" recordValues="${recordValues}" task="${taskInstance}" />
                           <g:fieldTDPair fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" />
                         </tr>
 
                         <tr class="prop newLocalitySection">
-                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLatitude}" recordValues="${recordValues}" task="${taskInstance}" />
+                          <g:fieldTDPair fieldType="${DarwinCoreField.decimalLongitude}" recordValues="${recordValues}" task="${taskInstance}" />
                           <g:fieldTDPair fieldType="${DarwinCoreField.coordinateUncertaintyInMeters}" recordValues="${recordValues}" task="${taskInstance}" />
                         </tr>
 

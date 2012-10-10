@@ -78,6 +78,12 @@
             </td>
           </tr>
 
+          <tr>
+            <td>
+              <A href="${resource(dir:'pdf', file:'Finnish specimen supplement.pdf')}"><g:message code="default.tutorial.finnish.label" default="Finnish specimens - supplemental"/></a>
+            </td>
+          </tr>
+
         </table>
       </div>
 

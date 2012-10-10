@@ -147,7 +147,7 @@ class BootStrap {
             logService.log "creating new Template: FinnishLabelsTest"
             template = new Template(name: "FinnishLabelsTest", viewName: "specimenTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
         }
-        template.viewParams = [specialChars:"x00e5,x00e4,x00f6,x00e6,x00f8", noAutoComplete:'recordedBy,verbatimLocality']
+        template.viewParams = [specialChars:"x00e5,x00e4,x00f6,x00e6,x00f8", noAutoComplete:'recordedBy,verbatimLocality', hideMapButton: 'true']
         template.save(flush: true, failOnError: true)
 
         populateTemplateFields(template, "finnishTestFields")
@@ -179,13 +179,15 @@ class BootStrap {
         //
         def numberRegex = Pattern.compile('^\\d+\$')
         def fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/${resourceName}.csv").inputStream.text
+        int fileOrder = 0
         fields.eachCsvLine { fs ->
             if (fs.size() > 0) {
+                fileOrder++
                 DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
                 if (!TemplateField.findByFieldTypeAndTemplate(dwcf, template)) {
                     logService.log "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
-                    // Work out the display order - by default it will be a large number
-                    def displayOrder = 999
+                    // Work out the display order - by default it will be in the order of appearance in the file
+                    def displayOrder = fileOrder
                     if (fs.size() >= 10) {
                         def orderString = fs[9].trim()
                         def m = numberRegex.matcher(orderString)

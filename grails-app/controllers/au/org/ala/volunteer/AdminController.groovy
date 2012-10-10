@@ -118,20 +118,23 @@ class AdminController {
         // confirm/update multimedia records...
         task.multimedia.each { mm ->
             // Main image
-            def imagePath = URLDecoder.decode(imagesHome + '/' + mm.filePath.substring(urlPrefix.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-            def oldImageFile = new File(mm.filePath)
-            def targetImageFile = new File(targetDir.getAbsolutePath() + "/" + mm.id + "/" + oldImageFile.name)
-            if (!targetImageFile.exists()) {
-                if (oldImageFile.exists()) {
-                    throw new RuntimeException("The old image exists, but the new one doesn't - there has been a move error! halting: Task " + task.id + " - image " + oldImageFile.absolutePath)
+
+            if (mm.filePath) {
+                def imagePath = URLDecoder.decode(imagesHome + '/' + mm.filePath.substring(urlPrefix.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+                def oldImageFile = new File(mm.filePath)
+                def targetImageFile = new File(targetDir.getAbsolutePath() + "/" + mm.id + "/" + oldImageFile.name)
+                if (!targetImageFile.exists()) {
+                    if (oldImageFile.exists()) {
+                        throw new RuntimeException("The old image exists, but the new one doesn't - there has been a move error! halting: Task " + task.id + " - image " + oldImageFile.absolutePath)
+                    }
                 }
+                mm.filePath = urlPrefix + "${mm.task.projectId}/${mm.task.id}/${mm.id}/" + targetImageFile.name
             }
-            mm.filePath = urlPrefix + "${mm.task.projectId}/${mm.task.id}/${mm.id}/" + targetImageFile.name
 
             // Thumbnail
             if (mm.filePathToThumbnail) {
-                oldImageFile = new File(mm.filePathToThumbnail)
-                targetImageFile = new File(targetDir.getAbsolutePath() + "/" + mm.id + "/" + oldImageFile.name)
+                def oldImageFile = new File(mm.filePathToThumbnail)
+                def targetImageFile = new File(targetDir.getAbsolutePath() + "/" + mm.id + "/" + oldImageFile.name)
                 if (!targetImageFile.exists()) {
                     if (oldImageFile.exists()) {
                         throw new RuntimeException("The old image thumbnail exists, but the new one doesn't - there has been a move error! halting: Task " + task.id + " - image " + oldImageFile.absolutePath)
