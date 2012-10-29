@@ -79,7 +79,7 @@
       </div> <!-- col-wide -->
 
       <div class="col-narrow last">
-        <section>
+        <section id="leaderBoardSection">
           <table border="0" class="borders">
             <thead>
               <tr>
@@ -87,14 +87,9 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${leaderBoard}" var="transcriber">
+              <g:each in="${1..ConfigurationHolder.config.leaderBoard.count}" var="i">
                 <tr>
-                  <td><g:link controller="user" action="show" id="${transcriber.id}">${transcriber.displayName}</g:link></td>
-                  <td>
-                    <g:if test="${transcriber.transcribedCount > 0}">
-                      ${transcriber.transcribedCount}
-                    </g:if>
-                  </td>
+                  <td><img src="${resource(dir:'images', file:'spinner.gif')}"/></td>
                 </tr>
               </g:each>
             </tbody>
@@ -103,10 +98,7 @@
 
         <section id="expedition-stats">
           <h2>Expedition stats</h2>
-          <ul>
-            <li><strong>${completedTasks}</strong> tasks of <strong>${totalTasks}</strong> completed</li>
-            <li><strong>${transcriberCount}</strong> volunteer transcribers</li>
-          </ul>
+          Calculating statistics...
         </section>
         <section>
           <g:if test="${newsItem}">
@@ -151,6 +143,19 @@
         $('#rollovers img.active').css("cursor","pointer").click(function() {
             document.location.href = "${resource(dir:'project/index/')}" + $(this).attr('id');
         });
+
+        $(document).ready(function(e) {
+          $.ajax("${createLink(controller: 'index', action:'leaderBoardFragment')}").done(function(content) {
+            $("#leaderBoardSection").html(content);
+          });
+
+          $.ajax("${createLink(controller: 'index', action:'statsFragment')}").done(function(content) {
+            $("#expedition-stats").html(content);
+          });
+
+        });
+
+
     </script>
   </body>
 </html>

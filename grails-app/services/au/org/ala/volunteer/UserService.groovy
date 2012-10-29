@@ -71,13 +71,13 @@ class UserService {
     }
 
     def getUserScore(User user) {
-        def t = new CodeTimer("Calculating score")
+//        def t = new CodeTimer("Calculating score")
         def transcribedCount = getTranscribedCount(user)
         def tasksTheyHaveValidatedCount = getValidatedCount(user)
-        def theirTasksValidated = getOwnTasksValidatedCount(user)
+        //def theirTasksValidated = getOwnTasksValidatedCount(user)
         def score = transcribedCount /* + theirTasksValidated */ + tasksTheyHaveValidatedCount
-        logService.log "Calculated score for ${user.userId}: ${transcribedCount} (Transcribed) + ${theirTasksValidated} (number of THEIR tasks validated) + ${tasksTheyHaveValidatedCount} (tasks they have validated) = ${score}"
-        t.stop(true)
+        // logService.log "Calculated score for ${user.userId}: ${transcribedCount} (Transcribed) + ${theirTasksValidated} (number of THEIR tasks validated) + ${tasksTheyHaveValidatedCount} (tasks they have validated) = ${score}"
+//        t.stop(true)
 
         return score
     }
@@ -98,6 +98,52 @@ class UserService {
         }[0]
     }
 
+    def getAllTranscribedCounts(Project project = null) {
+        def vc = Task.createCriteria();
+        def results = vc {
+            projections {
+                groupProperty('fullyTranscribedBy')
+                count('id')
+            }
+            and {
+                if (project) {
+                    eq("project", project)
+                }
+            }
+        }
+        return results.toList()
+    }
+
+    public List<UserScore> getAllUserScores(Project project = null) {
+        def transcribedCounts = getAllTranscribedCounts()
+        def validatedCounts = getAllValidatedCounts()
+
+        def results = [:]
+        transcribedCounts.each {
+            def score = new UserScore(username: it.getAt(0), score: it.getAt(1))
+            results[score.username] = score
+        }
+
+        validatedCounts.each {
+            def userId = it.getAt(0)
+            def score = it.getAt(1)
+            UserScore existing = results[userId] as UserScore
+            if (!existing) {
+                existing = new UserScore(username: it.getAt(0), score: it.getAt(1))
+                results[existing.username] = existing
+            } else {
+                existing.score = existing.score + it.getAt(1)
+            }
+        }
+
+        def r = new ArrayList<UserScore>()
+        results.each {
+            r << it.value
+        }
+
+        return r
+    }
+
     def getTranscribedCount(User user, Project project = null) {
         def vc = Task.createCriteria();
         return vc {
@@ -111,6 +157,23 @@ class UserService {
                 }
             }
         }[0]
+    }
+
+    def getAllValidatedCounts(Project project = null) {
+        def vc = Task.createCriteria();
+        def results = vc {
+            projections {
+                groupProperty('fullyValidatedBy')
+                count('id')
+            }
+            and {
+                if (project) {
+                    eq("project", project)
+                }
+            }
+        }
+
+        results.toList()
     }
 
     long getValidatedCount(User user, Project project = null) {

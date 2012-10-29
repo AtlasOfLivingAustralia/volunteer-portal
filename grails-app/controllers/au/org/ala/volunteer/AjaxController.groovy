@@ -154,11 +154,11 @@ class AjaxController {
         setNoCache()
         response.addHeader("Content-type", "text/plain")
         def writer = new CSVWriter(response.writer)
-        writer.writeNext("catalog_id", "institution_code", "scientific_name", "associated_media", "occurrence_id")
+        writer.writeNext("catalog_id", "institution_code", "scientific_name", "decimal_latitude","decimal_longitude","associated_media", "occurrence_id")
 
         if (params.id) {
 
-            def fieldNames = ['catalogNumber', 'institutionCode', 'scientificName']
+            def fieldNames = ['catalogNumber', 'institutionCode', 'scientificName', 'decimalLatitude', 'decimalLongitude']
 
             def projectInstance = Project.get(params.id)
             if (projectInstance) {
@@ -170,6 +170,8 @@ class AjaxController {
                     values.add(fieldValues.find { it.name == 'catalogNumber' } ?.value?:"")
                     values.add(fieldValues.find { it.name == 'institutionCode' } ?.value?:"")
                     values.add(fieldValues.find { it.name == 'scientificName' } ?.value?:"")
+                    values.add(fieldValues.find { it.name == 'decimalLatitude' } ?.value?:"")
+                    values.add(fieldValues.find { it.name == 'decimalLongitude' } ?.value?:"")
                     values.add("${ConfigurationHolder.config.server.url}${t.multimedia.toList()[0].filePath}")
                     values.add(createLink(controller: 'task', action: 'show', id: t.id, absolute: true ))
                     writer.writeNext((String[]) values.toArray())
