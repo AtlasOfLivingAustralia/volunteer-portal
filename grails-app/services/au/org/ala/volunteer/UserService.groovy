@@ -247,6 +247,34 @@ class UserService {
 
     }
 
+    public User getCurrentUser() {
+        def userId = authService.username()
+
+        if (userId) {
+            return User.findByUserId(userId)
+        }
+
+        return null
+    }
+
+    def isAdmin() {
+        def userId = authService.username()
+
+        if (!userId) {
+            return false
+        }
+
+        if (authService.userInRole(ROLE_ADMIN)) {
+            return true
+        }
+
+        return false
+    }
+
+    def isForumModerator(Project project = null) {
+        return isAdmin()
+    }
+
     def getValidatedCounts(Collection<String> usernames) {
         def c = Task.createCriteria();
         def counts = c {

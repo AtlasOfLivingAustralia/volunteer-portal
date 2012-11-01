@@ -30,6 +30,7 @@ class FrontPageController {
 
         frontPage.showAchievements = params['showAchievements'] == 'on'
         frontPage.enableTaskComments = params['enableTaskComments'] == 'on'
+        frontPage.enableForum = params['enableForum'] == 'on'
 
         frontPage.save();
 

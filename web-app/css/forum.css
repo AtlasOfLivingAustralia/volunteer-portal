@@ -1,0 +1,37 @@
+table.forum-table {
+	width:100%;
+	border:1px solid #d1d1d1;
+}
+table.forum-table thead th {
+	font-weight:bold;
+	background-color:#f0f0e8;
+	text-align:left;
+}
+table.forum-table th, table.bvp-expeditions td {
+	border-bottom:1px solid #d1d1d1;
+}
+table.forum-table thead th {
+	padding:12px 6px;
+	vertical-align:middle;
+}
+
+table.forum-table td {
+	padding:0 6px 6px 6px;
+	vertical-align:middle;
+}
+table.bvp-expeditions td img {
+	padding:0 0 0 6px;
+}
+table.forum-table tbody th {
+	padding: 12px 0 0 12px;
+	border-bottom:none;
+}
+table.forum-table td.type {
+	text-align:center;
+}
+table.forum-table td.type img {
+	display:block;
+	margin:0 auto 6px auto;
+	padding:0;
+	text-align:center;
+}

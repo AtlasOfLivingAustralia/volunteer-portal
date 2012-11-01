@@ -14,6 +14,7 @@ class FrontPage {
     Date newsCreated
     Boolean showAchievements = false
     Boolean enableTaskComments = false
+    Boolean enableForum = false
 
     String systemMessage
 
@@ -24,6 +25,7 @@ class FrontPage {
         systemMessage nullable:  true
         showAchievements nullable: true
         enableTaskComments nullable:  true
+        enableForum nullable: true
     }
 
     static FrontPage instance() {

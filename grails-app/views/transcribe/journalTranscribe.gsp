@@ -286,13 +286,13 @@
                         <tr class="prop">
                             <td class="name">${(validator) ? 'Transcriber' : 'Your'} Notes</td>
                             <td class="value"><g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}"
-                                id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                                id="transcriberNotes" rows="5" cols="40" style="width: 100%"/></td>
                         </tr>
                         <g:if test="${validator}">
                             <tr class="prop">
                             <td class="name">Validator Notes</td>
                             <td class="value"><g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}"
-                                id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                                id="transcriberNotes" rows="5" cols="40" style="width: 100%"/></td>
                         </tr>
                         </g:if>
                     </tbody>

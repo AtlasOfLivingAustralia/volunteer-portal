@@ -42,7 +42,7 @@ class Project {
         featuredImage nullable: true
         featuredLabel nullable: true
         featuredOwner nullable: true
-        shortDescription nullable: true
+        shortDescription nullable: true, maxSize: 500
         disableNewsItems nullable: true
         leaderIconIndex nullable: true
         featuredImageCopyright nullable: true

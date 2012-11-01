@@ -32,6 +32,9 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.8.23.custom.min.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-panZoom.js')}"></script>
 
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.7.3.custom.min.js')}"></script>--}%
 
@@ -47,6 +50,23 @@
     };
 
     $(document).ready(function() {
+
+      $(".pan-image img").panZoom({
+        pan_step: 20,
+        zoom_step: 10,
+        min_width: 200,
+        min_height: 200,
+        mousewheel:true,
+        mousewheel_delta: 2,
+        'zoomIn'    :  $('#zoomin'),
+        'zoomOut'   :  $('#zoomout'),
+        'panUp'     :  $('#pandown'),
+        'panDown'   :  $('#panup'),
+        'panLeft'   :  $('#panright'),
+        'panRight'  :  $('#panleft')
+      });
+
+      $(".pan-image img").panZoom('fit');
 
       var task_selector_opts = {
           titleShow: false,
@@ -353,15 +373,8 @@
 
     .insert-symbol-button {
       font-family: courier;
-      /*display: inline-block;*/
-      /*width: 10px;*/
-      /*text-align: center;*/
-      /*font-size: 20px;*/
-      /*line-height: 13px;*/
-      /*text-decoration: none;*/
       color: #DDDDDD;
       background: #4075C2;
-      /*padding: 4px 2px 0 2px;*/
       -moz-border-radius: 4px;
       -webkit-border-radius: 4px;
       -o-border-radius: 4px;
@@ -392,6 +405,41 @@
       border: 1px solid #A2F283;
       padding: 5px;
       margin-right: 30px;
+    }
+
+    .pan-image {
+      height: 400px;
+      width: 600px;
+      overflow: hidden;
+      background-color: #808080;
+      float: left;
+      cursor: move;
+      margin: 10px auto;
+    }
+
+    .new-window-control {
+        position: absolute;
+        top: 370px;
+        right: 7px;
+        background: url(${resource(dir:'images', file:'image-window.png')}) no-repeat;
+        height: 24px;
+        width: 24px;
+        opacity: 0.9;
+    }
+
+    .new-window-control a {
+        height: 24px;
+        width: 24px;
+        display: block;
+        text-indent: -999em;
+        position: absolute;
+        outline: none;
+    }
+
+    .new-window-control a:hover {
+        background: #535353;
+        opacity: 0.4;
+        filter: alpha(opacity=40);
     }
 
   </style>
@@ -446,36 +494,19 @@
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <g:set var="imageInfo" value="${imageMetaData?.getAt(m.id) ?: [height: 0, width: 0, smallSizeHeight: 0]}" />
-                    <div class="imageWrapper" style="margin-top: 0px; padding-top: 0px">
-                        <div id="viewport">
-                            <div class="smallImage" style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: ${imageInfo?.smallSizeHeight}px;">
-                                <!--top level map content goes here-->
-                            </div>
-                            <div style="height: ${imageInfo?.height * 0.3}px; width: ${imageInfo.width * 0.3}px">
-                                <img src="${imageUrl}" alt=""/>
-                                <div class="mapcontent"><!--map content goes here--></div>
-                            </div>
-                            <div style="height: ${imageInfo?.height * 0.6}px; width: ${imageInfo.width * 0.6}px">
-                                <img src="${imageUrl}" alt=""/>
-                                <div class="mapcontent"><!--map content goes here--></div>
-                            </div>
-                            <div style="height: ${imageInfo?.height}px; width: ${imageInfo.width}px">
-                                <img src="${imageUrl}" alt=""/>
-                                <div class="mapcontent"><!--map content goes here--></div>
-                            </div>
-                        </div>
-
-                        <img style="display: none" id="mainImage" src="${imageUrl}" alt=""/>
-
+                    <div class="pan-image" style="margin-top: 0px; padding-top: 0px">
+                        <img src="${imageUrl}" alt="Task Image" image-height="${imageInfo.height}" image-width="${imageInfo.width}"/>
                         <div class="map-control">
-                            <a href="#left" class="left">Left</a>
-                            <a href="#right" class="right">Right</a>
-                            <a href="#up" class="up">Up</a>
-                            <a href="#down" class="down">Down</a>
-                            <a href="#zoom" class="zoom">Zoom</a>
-                            <a href="#zoom_out" class="back">Back</a>
+                            <a id="panleft" href="#left" class="left">Left</a>
+                            <a id="panright" href="#right" class="right">Right</a>
+                            <a id="panup" href="#up" class="up">Up</a>
+                            <a id="pandown" href="#down" class="down">Down</a>
+                            <a id="zoomin" href="#zoom" class="zoom">Zoom</a>
+                            <a id="zoomout" href="#zoom_out" class="back">Back</a>
                         </div>
-
+                        <div class="new-window-control">
+                          <a id="openImageWindow" href="#">Show in new window</a>
+                        </div>
                     </div>
 
                 </g:each>
@@ -757,13 +788,13 @@
                             <tr class="prop">
                                 <td class="name">${(validator) ? 'Transcriber' : 'Your'} Notes</td>
                                 <td class="value"><g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}"
-                                    id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                                    id="transcriberNotes" rows="5" cols="40" style="width: 100%"/></td>
                             </tr>
                             <g:if test="${validator}">
                                 <tr class="prop">
                                 <td class="name">Validator Notes</td>
                                 <td class="value"><g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}"
-                                    id="transcriberNotes" rows="10" cols="40" style="width: 100%"/></td>
+                                    id="transcriberNotes" rows="5" cols="40" style="width: 100%"/></td>
                             </tr>
                             </g:if>
                         </tbody>

@@ -162,7 +162,7 @@ class AjaxController {
 
             def projectInstance = Project.get(params.id)
             if (projectInstance) {
-                def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
+                def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
 
                 for (Task t : fields.keySet()) {
                     def fieldValues = fields[t]

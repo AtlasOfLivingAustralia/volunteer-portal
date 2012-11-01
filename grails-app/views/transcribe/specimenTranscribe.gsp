@@ -27,6 +27,9 @@
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.8.23.custom.min.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-panZoom.js')}"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
 <script type="text/javascript">
     // global Object 
@@ -52,21 +55,31 @@
           $(input).focus();
       });
 
-    })
+      $(".pan-image img").panZoom({
+        debug: false,
+        pan_step: 20,
+        zoom_step: 20,
+        min_width: 200,
+        min_height: 200,
+        mousewheel: true,
+        mousewheel_delta: 2,
+        'zoomIn'    :  $('#zoomin'),
+        'zoomOut'   :  $('#zoomout'),
+        'panUp'     :  $('#pandown'),
+        'panDown'   :  $('#panup'),
+        'panLeft'   :  $('#panright'),
+        'panRight'  :  $('#panleft')
+      });
+
+    });
+
 </script>
   <style type="text/css">
 
   .insert-symbol-button {
     font-family: courier;
-    /*display: inline-block;*/
-    /*width: 10px;*/
-    /*text-align: center;*/
-    /*font-size: 20px;*/
-    /*line-height: 13px;*/
-    /*text-decoration: none;*/
     color: #DDDDDD;
     background: #4075C2;
-    /*padding: 4px 2px 0 2px;*/
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -o-border-radius: 4px;
@@ -78,6 +91,16 @@
   .insert-symbol-button:hover {
     background: #0046AD;
     color: #DDDDDD;
+  }
+
+  .pan-image {
+    height: 400px;
+    width: 600px;
+    overflow: hidden;
+    background-color: #808080;
+    float: left;
+    cursor: move;
+    margin: 10px auto;
   }
 
   </style>
@@ -126,35 +149,17 @@
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <g:set var="imageInfo" value="${imageMetaData?.getAt(m.id) ?: [height: 0, width: 0, smallSizeHeight: 0]}" />
-                    <div class="imageWrapper">
-                        <div id="viewport">
-                            <div style="background: url(${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}) no-repeat; width: 600px; height: ${imageInfo.smallSizeHeight}px;">
-                                <!--top level map content goes here-->
-                            </div>
-                            <div style="height: ${imageInfo.height * 0.3}px; width: ${imageInfo.width * 0.3}px">
-                                <img src="${imageUrl}" alt=""/>
-                                <div class="mapcontent"><!--map content goes here--></div>
-                            </div>
-                            <div style="height: ${imageInfo.height * 0.6}px; width: ${imageInfo.width * 0.6}px">
-                                <img src="${imageUrl}" alt=""/>
-                                <div class="mapcontent"><!--map content goes here--></div>
-                            </div>
-                            <div style="height: ${imageInfo.height}px; width: ${imageInfo.width}px">
-                                <img src="${imageUrl}" alt=""/>
-                                <div class="mapcontent"><!--map content goes here--></div>
-                            </div>
-                        </div>
-                        <img style="display: none" id="mainImage" src="${imageUrl}" alt=""/>
+                    <div class="pan-image">
+                        <img src="${imageUrl}" alt="Task Image" image-height="${imageInfo.height}" image-width="${imageInfo.width}" />
                         <div class="map-control">
-                            <a href="#left" class="left">Left</a>
-                            <a href="#right" class="right">Right</a>
-                            <a href="#up" class="up">Up</a>
-                            <a href="#down" class="down">Down</a>
-                            <a href="#zoom" class="zoom">Zoom</a>
-                            <a href="#zoom_out" class="back">Back</a>
+                            <a id="panleft" href="#left" class="left">Left</a>
+                            <a id="panright" href="#right" class="right">Right</a>
+                            <a id="panup" href="#up" class="up">Up</a>
+                            <a id="pandown" href="#down" class="down">Down</a>
+                            <a id="zoomin" href="#zoom" class="zoom">Zoom</a>
+                            <a id="zoomout" href="#zoom_out" class="back">Back</a>
                         </div>
                     </div>
-
                 </g:each>
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
