@@ -5,8 +5,6 @@
       <title>Volunteer Portal - Atlas of Living Australia</title>
       <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
-      %{--<link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico"/>--}%
-      %{--<g:javascript library="jquery-1.5.1.min"/>--}%
       <g:javascript library="jquery.tools.min"/>
       <style type="text/css">
 

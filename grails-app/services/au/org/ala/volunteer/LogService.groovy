@@ -4,7 +4,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class LogService {
 
-    static transactional = true
+    static transactional = false
 
     def log(String message) {
         String fullMsg = "[${new Date().format("yyyy-MM-dd HH:mm:ss")}] ${message}"

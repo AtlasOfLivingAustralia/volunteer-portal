@@ -1,17 +1,32 @@
 package au.org.ala.volunteer
 
 import grails.orm.PagedResultList
+import org.codehaus.groovy.grails.plugins.web.taglib.RenderTagLib
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.annotation.Propagation
 
 class ForumService {
 
     static transactional = true
 
-    PagedResultList getProjectForumTopics(Project project, Map params = null) {
+    def logService
+
+    PagedResultList getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
         def c = ProjectForumTopic.createCriteria()
         def results = c.list(max:params?.max, offset: params?.offset) {
-            eq("project", project)
             and {
-                order("sticky")
+                eq("project", project)
+                if (includeDeleted) {
+                    eq("deleted", true)
+                } else {
+                    or {
+                        isNull("deleted")
+                        eq("deleted", false)
+                    }
+                }
+            }
+            and {
+                order("sticky", "desc")
                 order("priority", "desc")
                 order("dateCreated", "desc")
             }
@@ -30,8 +45,7 @@ class ForumService {
         def results = c.list(max:params?.max, offset: params?.offset) {
             eq("topic", topic)
             and {
-                order("sticky")
-                order("date", "desc")
+                order("date", "asc")
             }
             if (params?.max) {
                 maxResults(params.max as Integer)
@@ -42,4 +56,77 @@ class ForumService {
         }
         return results as PagedResultList
     }
+
+    public ForumMessage getFirstMessageForTopic(ForumTopic topic) {
+        def c = ForumMessage.createCriteria()
+        def result = c {
+            eq('topic', topic)
+            min('dateCreated')
+        }
+        return result.first()
+    }
+
+    public boolean isUserWatchingTopic(User user, ForumTopic topic) {
+        def userWatchList = UserForumWatchList.findByUser(user)
+        if (userWatchList && userWatchList.topics) {
+            def existing = userWatchList.topics.find {
+                it.id == topic.id
+            }
+            return existing != null
+        }
+        return false
+    }
+
+    public void watchTopic(User user, ForumTopic topic) {
+        if (user && topic) {
+            def userWatchList = UserForumWatchList.findByUser(user)
+            if (!userWatchList) {
+                userWatchList = new UserForumWatchList(user: user)
+            }
+            if (userWatchList && !userWatchList.topics?.contains(topic)) {
+                userWatchList.addToTopics(topic)
+            }
+            userWatchList.save(flush: true)
+        }
+    }
+
+    public void unwatchTopic(User user, ForumTopic topic) {
+        def userWatchList = UserForumWatchList.findByUser(user)
+        if (userWatchList && userWatchList.topics.contains(topic)) {
+            userWatchList.topics.remove(topic)
+        }
+    }
+
+    public void scheduleTopicNotification(ForumTopic topic, ForumMessage lastMessage) {
+
+        def c = UserForumWatchList.createCriteria()
+
+        def watchLists = c {
+            topics {
+                eq('id', topic.id)
+            }
+        }
+
+        watchLists.each { watchList ->
+            println 'saving new notification message1'
+            def message = new ForumTopicNotificationMessage(user:  watchList.user, topic: topic, message: lastMessage)
+            if (!message.save(failOnError:  true)) {
+                println "failed"
+            }
+            println 'saving new notification message2'
+        }
+    }
+
+    def processPendingNotifications() {
+        def messageList = ForumTopicNotificationMessage.list()
+        if (messageList) {
+            def userMap = messageList.groupBy { it.user }
+            logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
+            userMap.keySet().each { user ->
+                println user.displayName + " " + userMap[user].collect({it.topic.title}).join(", ");
+            }
+        }
+
+    }
+
 }

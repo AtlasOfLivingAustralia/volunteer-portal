@@ -368,27 +368,6 @@ $(document).ready(function() {
         $(':input.verbatimLocalityID').val(item.key);
     });
 
-    // MapBox for image zooming & panning
-    $('#viewport').mapbox({
-        'zoom': true, // does map zoom?
-        'pan': true,
-        'doubleClickZoom': true,
-        'layerSplit': 1,
-        'mousewheel': true
-    });
-
-    $(".map-control a").click(function() {//control panel
-        var viewport = $("#viewport");
-        //this.className is same as method to be called
-        if (this.className == "zoom" || this.className == "back") {
-            viewport.mapbox(this.className, 1);//step twice
-        }
-        else {
-            viewport.mapbox(this.className, 100);
-        }
-        return false;
-    });
-
     // prevent enter key submitting form (for geocode search mainly)
     $(".transcribeForm").keypress(function(e) {
         //alert('form key event = ' + e.which);

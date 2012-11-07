@@ -23,6 +23,12 @@
     <script type="text/javascript">
 
       $(document).ready(function() {
+
+        $("#btnReply").click(function(e) {
+          e.preventDefault();
+          window.location = "${createLink(controller:'forum', action:'postProjectMessage', params: [topicId:topic.id])}";
+        });
+
       });
 
     </script>
@@ -37,16 +43,16 @@
             <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
             <li><a href="${createLink(controller: 'project', action:'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a></li>
             <li><a href="${createLink(controller: 'forum', action:'projectForum', params:[projectId:projectInstance.id])}"><g:message code="forum.project.forum" default="Project Forum"/></a></li>
-            <li class="last"><g:message code="forum.project.topic" default="topic" /></li>
+            <li class="last">${topic.title}</li>
           </ol>
         </nav>
-        <h1>Project Forum - ${projectInstance.featuredLabel} - Topic</h1>
+        <h1>Project Forum - ${projectInstance.featuredLabel} - ${topic.title}</h1>
       </div>
     </header>
     <div>
       <div class="inner">
         <div class="buttonBar">
-          <button id="btnReply" class="button">Post Reply&nbsp;<img src="${resource(dir:'images', file:'forum.png')}"/></button>
+          <button id="btnReply" class="button">Post Reply&nbsp;<img src="${resource(dir:'images', file:'reply.png')}"/></button>
         </div>
 
         <vpf:topicTable topic="${topic}" />

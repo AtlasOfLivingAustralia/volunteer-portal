@@ -379,19 +379,6 @@ div#ui-datepicker-div {
 
 
 /* MapBox CSS */
-#viewport, .imageWrapper {
-    width: 600px;
-    height: 400px;
-    float: left;
-    cursor: move;
-    margin: 10px auto;
-    overflow: hidden;
-}
-
-.imageWrapper {
-    position: relative;
-}
-
 .map-control {
     position: absolute;
     top: 330px;

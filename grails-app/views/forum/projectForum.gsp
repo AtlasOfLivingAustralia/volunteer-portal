@@ -5,12 +5,13 @@
       <title>Volunteer Portal - Atlas of Living Australia</title>
       <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
-    <link rel="stylesheet" href="${resource(dir:'css',file:'forum.css')}" />
+      <link rel="stylesheet" href="${resource(dir:'css',file:'forum.css')}" />
       <g:javascript library="jquery.tools.min"/>
       <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
       <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
       <style type="text/css">
+
         .buttonBar {
           margin-bottom: 10px;
         }
@@ -28,6 +29,19 @@
           e.preventDefault();
           window.location = "${createLink(controller: 'forum', action:'addProjectTopic', params:[projectId: projectInstance.id])}";
         });
+
+        $("#deleteTopicLink").click(function(e) {
+
+          var topicId = $(this).parents("tr[topicId]").attr("topicId");
+
+          if (topicId) {
+            if (confirm("Are you sure you want to delete this topic?")) {
+              window.location = "${createLink(controller:'forum', action:'deleteProjectTopic')}?topicId=" + topicId;
+            }
+
+          }
+        });
+
       });
 
     </script>
@@ -56,29 +70,42 @@
           <table class="forum-table">
             <thead>
               <tr>
-                <th>Topic</th>
+                <th colspan="2">Topic</th>
                 <th>Replies</th>
                 <th>Views</th>
                 <th>Posted by</th>
                 <th>Date</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
             <g:if test="${topics?.size() == 0}">
               <tr>
-                <td colspan="5">
+                <td colspan="7">
                   There are no topics in this forum yet.
                 </td>
               </tr>
             </g:if>
             <g:else>
               <g:each in="${topics}" var="topic">
-                <tr class="${topic.priority}">
+                <tr class="${topic.priority}${topic.sticky ? ' sticky' : ''}" topicId="${topic.id}">
+                  <td style="width: 20px; padding: 0px">
+                    <g:if test="${topic.sticky}">
+                      <img src="${resource(dir:'images', file:'forum_sticky_topic.png')}"/>
+                    </g:if>
+                  </td>
                   <td><a href="${createLink(controller: 'forum', action:'projectForumTopic', id:topic.id)}">${topic.title}</a></td>
-                  <td>0</td>
+                  <td>${topicCounts[topic] - 1}</td>
                   <td>${topic.views ?: 0}</td>
                   <td>${topic.creator.displayName}</td>
                   <td>${formatDate(date: topic.dateCreated, format: 'dd MMM yyyy HH:mm:ss')}</td>
+                  <td>
+                    <a class="button" href="${createLink(controller:'forum', action:'postProjectMessage', params:[topicId: topic.id])}">Reply</a>
+                    <vpf:ifModerator project="${projectInstance}">
+                      <a class="button" href="${createLink(controller:'forum', action:'editProjectTopic', params:[topicId: topic.id])}">Edit</a>
+                      <a class="button" href="#" id="deleteTopicLink">Delete</a>
+                    </vpf:ifModerator>
+                  </td>
                 </tr>
               </g:each>
             </g:else>

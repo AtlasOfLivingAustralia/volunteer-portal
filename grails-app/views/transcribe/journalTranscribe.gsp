@@ -13,14 +13,11 @@
 <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <title>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
-<!--  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
-  <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>-->
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'mapbox.min.js')}"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>--}%
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>--}%
 <link rel="stylesheet" href="${resource(dir: 'css/smoothness', file: 'ui.all.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>

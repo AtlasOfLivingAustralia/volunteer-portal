@@ -5,4 +5,9 @@ enum ForumTopicPriority {
     Important,
     Warning,
     Critical
+
+    static ForumTopicPriority getInstance(ordinal) {
+      ForumTopicPriority.values().find { it.ordinal() == ordinal }
+    }
+
 }

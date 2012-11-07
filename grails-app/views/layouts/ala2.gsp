@@ -13,27 +13,24 @@
     <title><g:layoutTitle /></title>
     <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/bvp.css" type="text/css" media="screen" />
-    %{--<link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2010.css" type="text/css" media="screen" />--}%
-    %{--<link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2011.css" type="text/css" media="screen" />--}%
     <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/wp-styles.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/buttons.css" type="text/css" media="screen" />
     <link rel="icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
     <link rel="shortcut icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/jquery.autocomplete.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/search.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/skin.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/sf-blue.css" />
 
-
     <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
-    %{--<link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>--}%
 
-    %{--<script language="JavaScript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>--}%
+    <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-1.8.2.js')}"></script>
+    <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-ui-1.9.1.custom.min.js')}"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>
+
     <g:javascript library="application" />
-    %{--<g:javascript library="jquery-1.7.min"/>--}%
-    <g:javascript library="jquery" plugin="jquery"/>
-    %{--<g:javascript library="jquery-ui-1.8.14.custom-notabs.min"/>--}%
+
+    %{--<g:javascript library="jquery" plugin="jquery"/>--}%
     <tinyMce:resources />
     <script type="text/javascript">
         tinyMCE.init({
@@ -102,33 +99,34 @@
                 autoArrows:false,
                 dropShadows:false
             });
-
-            jQuery("form#search-form-2011 input#search-2011").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-                extraParams: {limit: 100},
-                dataType: 'jsonp',
-                parse: function(data) {
-                    var rows = new Array();
-                    data = data.autoCompleteList;
-                    for(var i=0; i<data.length; i++){
-                        rows[i] = {
-                            data:data[i],
-                            value: data[i].matchedNames[0],
-                            result: data[i].matchedNames[0]
-                        };
-                    }
-                    return rows;
-                },
-                matchSubset: false,
-                formatItem: function(row, i, n) {
-                    return row.matchedNames[0];
-                },
-                cacheLength: 10,
-                minChars: 3,
-                scroll: false,
-                max: 10,
-                selectFirst: false
-            });
         });
+
+//            jQuery("form#search-form-2011 input#search-2011").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
+//                extraParams: {limit: 100},
+//                dataType: 'jsonp',
+//                parse: function(data) {
+//                    var rows = new Array();
+//                    data = data.autoCompleteList;
+//                    for(var i=0; i<data.length; i++){
+//                        rows[i] = {
+//                            data:data[i],
+//                            value: data[i].matchedNames[0],
+//                            result: data[i].matchedNames[0]
+//                        };
+//                    }
+//                    return rows;
+//                },
+//                matchSubset: false,
+//                formatItem: function(row, i, n) {
+//                    return row.matchedNames[0];
+//                },
+//                cacheLength: 10,
+//                minChars: 3,
+//                scroll: false,
+//                max: 10,
+//                selectFirst: false
+//            });
+//        });
 
         $(document).ready(function() {
             $("button[href]").click(function(e) {
@@ -144,15 +142,8 @@
 <body class="${pageProperty(name:'body.class')} getinvolved">
   <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/public/logout" logoutReturnToUrl="${ConfigurationHolder.config.grails.serverURL}"/>
 
-  %{--<hf:menu/>--}%
-
   <g:layoutBody/>
 
-  %{--<div id="content" style="">--}%
-      %{--<div class="section">--}%
-          %{----}%
-      %{--</div>--}%
-  %{--</div>--}%
   <hf:footer/>
 
   <script type="text/javascript">

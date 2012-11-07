@@ -8,15 +8,14 @@
       <g:javascript library="jquery.tools.min"/>
       <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
       <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
+      <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
 
       <style type="text/css">
-        .buttonBar {
-          margin-bottom: 10px;
-        }
 
-        .value textarea {
-          width: 400px
-        }
+      #title {
+        width: 400px;
+      }
+
       </style>
 
   </head>
@@ -42,69 +41,36 @@
             <li class="last"><g:message code="forum.newprojecttopic.label" default="New topic" /></li>
           </ol>
         </nav>
-        <h1>Project Forum - ${projectInstance.featuredLabel}</h1>
+        <h1><g:message code="forum.newProjectTopicHeading.label" default="{0} Forum - New Topic" args="${[projectInstance.featuredLabel]}" /></h1>
       </div>
     </header>
     <div>
       <div class="inner">
-        <h2>Add new project topic</h2>
-        <g:form controller="forum" action="saveNewProjectTopic" params="${[projectId: projectInstance.id]}" >
-          <table style="width:100%" >
-            <tbody>
-              %{--<tr class="prop">--}%
-                  %{--<td valign="top" class="name">--}%
-                    %{--<label for="name"><g:message code="forum.project.label" default="Project" /></label>--}%
-                  %{--</td>--}%
-                  %{--<td valign="top" class="value">--}%
-                      %{--<g:textField name="name" maxlength="200" value="${projectInstance?.featuredLabel}" disabled="true" />--}%
-                  %{--</td>--}%
-              %{--</tr>--}%
-              <tr class="prop">
-                  <td valign="top" class="name">
-                    <label for="title"><g:message code="forum.title.label" default="Title" /></label>
-                  </td>
-                  <td valign="top" class="value">
-                      <g:textField name="title" maxlength="200" value="${params.title}" />
-                  </td>
-              </tr>
-              <tr class="prop">
-                  <td valign="top" class="name">
-                    <label for="text"><g:message code="forum.message.label" default="Message" /></label>
-                  </td>
-                  <td valign="top" class="value">
-                      <g:textArea name="text" rows="6" cols="80" value="${params.text}" />
-                  </td>
-              </tr>
-              <vpf:ifModerator>
-                <tr>
-                  <td valign="top" class="name">
-                    <label for="sticky"><g:message code="forum.sticky.label" default="Sticky" /></label>
-                  </td>
-                  <td valign="top" class="value">
-                      <g:checkBox name="sticky" checked="${params.sticky}"/>
-                  </td>
-                </tr>
-                <tr>
-                  <td valign="top" class="name">
-                    <label for="locked"><g:message code="forum.locked.label" default="Locked" /></label>
-                  </td>
-                  <td valign="top" class="value">
-                      <g:checkBox name="locked" checked="${params.locked}"/>
-                  </td>
-                </tr>
-                <tr>
-                  <td valign="top" class="name">
-                    <label for="priority"><g:message code="forum.priority.label" default="Priority" /></label>
-                  </td>
-                  <td valign="top" class="value">
-                      <g:select from="${au.org.ala.volunteer.ForumTopicPriority.values()}" name="priority" />
-                  </td>
-                </tr>
+        <g:form controller="forum" action="insertProjectTopic" params="${[projectId: projectInstance.id]}" >
+          <div class="newTopicFields">
+            <h2><g:message code="forum.newProjectTopicTitle.label" default="New topic title" /></h2>
+            <g:textField id="title" name="title" maxlength="200" value="${params.title}" />
+            <h2><g:message code="forum.newProjectTopicMessage.label" default="New topic message" /></h2>
+            <g:textArea name="text" rows="6" cols="80" value="${params.text}" />
 
-              </vpf:ifModerator>
-            </tbody>
-          </table>
-          <button type="submit">Save</button>
+            <g:checkBox name="watchTopic" checked="checked"/>
+            <label for="watchTopic">Watch this topic</label>
+
+            <vpf:ifModerator>
+              <div class="moderatorOptions">
+                <h2><g:message code="forum.moderatorOptions.label" default="Moderator Options" /></h2>
+                <label for="sticky"><g:message code="forum.sticky.label" default="Sticky" /></label>
+                <g:checkBox name="sticky" checked="${params.sticky}"/>
+                <br/>
+                <label for="locked"><g:message code="forum.locked.label" default="Locked" /></label>
+                <g:checkBox name="locked" checked="${params.locked}"/>
+                <br/>
+                <label for="priority"><g:message code="forum.priority.label" default="Priority" /></label>
+                <g:select from="${au.org.ala.volunteer.ForumTopicPriority.values()}" name="priority" />
+              </div>
+            </vpf:ifModerator>
+            <button type="submit">Save</button>
+          </div>
         </g:form>
       </div>
     </div>

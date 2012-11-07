@@ -9,6 +9,7 @@ class ForumTagLib {
     def authService
     def userService
     def forumService
+    def markdownService
 
     /**
      * @param project
@@ -31,23 +32,30 @@ class ForumTagLib {
             def replies = forumService.getTopicMessages(topic, params)
 
             def mb = new MarkupBuilder(out)
+            boolean striped = false
 
             mb.table(class:'forum-table') {
                 thead {
                     tr {
                         th { mkp.yield(topic.title) }
-                        th { mkp.yield("${replies.size()} replies") }
+                        th { mkp.yield("${replies.size() - 1} replies") }
                     }
                 }
                 tbody {
-                    tr {
-                        td {
-                            mkp.yield(topic.creator.displayName)
-                            br {}
-                            mkp.yield(formatDate(date: topic.dateCreated, format: 'dd MMM, yyyy HH:mm:ss'))
+                    replies.each { reply ->
+                        tr(class: striped ? 'striped' : '') {
+                            td(class:"forumNameColumn") {
+                                span(class:'forumUsername') {
+                                    mkp.yield(reply.user.displayName)
+                                }
+                                br {}
+                                span(class:'forumMessageDate') {
+                                    mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
+                                }
+                            }
+                            td { mkp.yieldUnescaped(markdownService.markdown(reply.text)) }
                         }
-
-                        td { mkp.yield(topic.text) }
+                        striped = !striped
                     }
                 }
             }

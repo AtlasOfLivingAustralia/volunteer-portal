@@ -15,19 +15,17 @@
 <title>${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
 <!--  <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core-pack.js')}"></script>
   <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>-->
-<script type="text/javascript" src="${resource(dir: 'js', file: 'mapbox.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>
-<link rel="stylesheet" href="${resource(dir: 'css/smoothness', file: 'ui.all.css')}"/>
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>--}%
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>--}%
+%{--<link rel="stylesheet" href="${resource(dir: 'css/smoothness', file: 'ui.all.css')}"/>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.8.23.custom.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-panZoom.js')}"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
@@ -58,7 +56,7 @@
       $(".pan-image img").panZoom({
         debug: false,
         pan_step: 20,
-        zoom_step: 20,
+        zoom_step: 5,
         min_width: 200,
         min_height: 200,
         mousewheel: true,
@@ -69,6 +67,21 @@
         'panDown'   :  $('#panup'),
         'panLeft'   :  $('#panright'),
         'panRight'  :  $('#panleft')
+      });
+
+      $("#pinImage").click(function(e) {
+        e.preventDefault();
+        if ($(".pan-image").css("position") == 'fixed') {
+          $(".pan-image").css({"position": "relative", top: 'inherit', left: 'inherit', 'border':'none' });
+          $(".new-window-control").css({'background-image': "url(${resource(dir:'images', file:'pin-image.png')})"});
+          $(".pan-image a").attr("title", "Fix the image in place in the browser window");
+        } else {
+          $(".pan-image").css({"position": "fixed", top: 10, left: 10, "z-index":600, 'border': '2px solid #535353' });
+          $(".new-window-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
+          $("#imageContainer").css("background", "darkgray");
+          $(".pan-image a").attr("title", "Return the image to its normal position");
+        }
+
       });
 
     });
@@ -100,7 +113,32 @@
     background-color: #808080;
     float: left;
     cursor: move;
-    margin: 10px auto;
+    /*margin: 10px auto;*/
+  }
+
+  .new-window-control {
+      position: absolute;
+      top: 370px;
+      right: 7px;
+      background: url(${resource(dir:'images', file:'pin-image.png')}) no-repeat;
+      height: 24px;
+      width: 24px;
+      opacity: 0.9;
+  }
+
+  .new-window-control a {
+      height: 24px;
+      width: 24px;
+      display: block;
+      text-indent: -999em;
+      position: absolute;
+      outline: none;
+  }
+
+  .new-window-control a:hover {
+      background: #535353;
+      opacity: 0.4;
+      filter: alpha(opacity=40);
   }
 
   </style>
@@ -149,15 +187,20 @@
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
                     <g:set var="imageInfo" value="${imageMetaData?.getAt(m.id) ?: [height: 0, width: 0, smallSizeHeight: 0]}" />
-                    <div class="pan-image">
-                        <img src="${imageUrl}" alt="Task Image" image-height="${imageInfo.height}" image-width="${imageInfo.width}" />
-                        <div class="map-control">
-                            <a id="panleft" href="#left" class="left">Left</a>
-                            <a id="panright" href="#right" class="right">Right</a>
-                            <a id="panup" href="#up" class="up">Up</a>
-                            <a id="pandown" href="#down" class="down">Down</a>
-                            <a id="zoomin" href="#zoom" class="zoom">Zoom</a>
-                            <a id="zoomout" href="#zoom_out" class="back">Back</a>
+                    <div id="imageContainer" style="float: left; width:600px; height: 400px">
+                        <div class="pan-image">
+                            <img src="${imageUrl}" alt="Task Image" image-height="${imageInfo.height}" image-width="${imageInfo.width}" />
+                            <div class="map-control">
+                                <a id="panleft" href="#left" class="left">Left</a>
+                                <a id="panright" href="#right" class="right">Right</a>
+                                <a id="panup" href="#up" class="up">Up</a>
+                                <a id="pandown" href="#down" class="down">Down</a>
+                                <a id="zoomin" href="#zoom" class="zoom">Zoom</a>
+                                <a id="zoomout" href="#zoom_out" class="back">Back</a>
+                            </div>
+                            <div class="new-window-control">
+                              <a id="pinImage" href="#" title="Fix the image in place in the browser window">Pin image in place</a>
+                            </div>
                         </div>
                     </div>
                 </g:each>

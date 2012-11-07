@@ -67,7 +67,8 @@
 
   var methods = {
     'init': function (options) {
-      $.extend(settings, $.fn.panZoom.defaults, options);
+
+      jQuery.extend(settings, $.fn.panZoom.defaults, options);
       setupCSS.apply(this);
       setupData.apply(this);
       setupBindings.apply(this);
@@ -513,8 +514,11 @@
     var data = this.data('panZoom');
     ret = {
       zoom: {
-        x: (settings.zoom_step/100 * data.viewport_dimensions.x),
-        y: (settings.zoom_step/100 * data.viewport_dimensions.y)
+//        x: (settings.zoom_step/100 * data.viewport_dimensions.x),
+//        y: (settings.zoom_step/100 * data.viewport_dimensions.y)
+          x: (settings.zoom_step/100 * data.target_dimensions.x),
+          y: (settings.zoom_step/100 * data.target_dimensions.y)
+
       },
       pan: {
         x: (settings.pan_step/100 * data.viewport_dimensions.x),
