@@ -5,7 +5,7 @@ class NewsItemController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def authService
-    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
+
 
     def index = {
         redirect(action: "list", params: params)
@@ -33,13 +33,13 @@ class NewsItemController {
 
     def create = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def newsItemInstance = new NewsItem()
             //def currentUser = authService.username()
             newsItemInstance.properties = params
             return [newsItemInstance: newsItemInstance, currentUser: currentUser]
         } else {
-            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
@@ -75,7 +75,7 @@ class NewsItemController {
 
     def edit = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def newsItemInstance = NewsItem.get(params.id)
             //def currentUser = authService.username()
             if (!newsItemInstance) {
@@ -86,14 +86,14 @@ class NewsItemController {
                 return [newsItemInstance: newsItemInstance, currentUser: currentUser]
             }
         } else {
-            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
     def update = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def newsItemInstance = NewsItem.get(params.id)
             if (newsItemInstance) {
                 if (params.version) {
@@ -119,7 +119,7 @@ class NewsItemController {
                 redirect(action: "list")
             }
         } else {
-            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }

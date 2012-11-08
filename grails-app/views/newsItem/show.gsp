@@ -1,8 +1,8 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.volunteer.NewsItem" %>
+<%@ page import="au.org.ala.volunteer.NewsItem" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'newsItem.label', default: 'NewsItem')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
     </head>
@@ -43,7 +43,7 @@
 
             </div>
 
-          <cl:ifGranted role="ROLE_VP_ADMIN">
+          <cl:ifAdmin>
             <div class="buttons">
                 <g:form>
                     <g:hiddenField name="id" value="${newsItemInstance?.id}" />
@@ -51,7 +51,7 @@
                     <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
                 </g:form>
             </div>
-          </cl:ifGranted>
+          </cl:ifAdmin>
 
         </div>
     </body>

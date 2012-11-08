@@ -1,6 +1,5 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import groovy.sql.Sql
 import java.nio.channels.CancelledKeyException
 
@@ -8,8 +7,8 @@ class StatsService {
 
     static transactional = true
 
+    def grailsApplication
     javax.sql.DataSource dataSource
-    def config = ConfigurationHolder.config
 
     def transcriptionsByMonth() {
         String select = """

@@ -8,10 +8,11 @@ class AchievementService {
 
     def taskService
     def logService
+    def grailsApplication
 
     def calculateAchievements(User user) {
 
-        def achievements = ConfigurationHolder.config.achievements;
+        def achievements = grailsApplication.config.achievements;
 
         if (!user) {
             return

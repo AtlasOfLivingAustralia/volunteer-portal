@@ -178,8 +178,9 @@ class BootStrap {
         // populate default set of TemplateFields
         //
         def numberRegex = Pattern.compile('^\\d+\$')
-        def fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/${resourceName}.csv").inputStream.text
+        String fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/${resourceName}.csv").inputStream.text
         int fileOrder = 0
+
         fields.eachCsvLine { fs ->
             if (fs.size() > 0) {
                 fileOrder++

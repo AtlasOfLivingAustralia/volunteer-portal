@@ -1,6 +1,5 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import com.thebuzzmedia.imgscalr.Scalr
@@ -10,11 +9,9 @@ import groovy.sql.Sql
 class TaskService {
 
     javax.sql.DataSource dataSource
-    def config = ConfigurationHolder.config
     def logService
+    def grailsApplication
     def fieldService
-
-    def LAST_VIEW_TIMEOUT_MINUTES = ConfigurationHolder.config.viewedTask.timeout
 
     static transactional = true
 
@@ -183,7 +180,7 @@ class TaskService {
             return null;
         }
 
-        def currentTime = System.currentTimeMillis() - LAST_VIEW_TIMEOUT_MINUTES
+        def currentTime = System.currentTimeMillis() - grailsApplication.config.viewedTask.timeout
         def tasks = Task.executeQuery(
             """select t from Task t
                left outer join t.viewedTasks viewedTasks
@@ -264,7 +261,7 @@ class TaskService {
      */
     Task getNextTaskForValidationForProject(String userId, Project project) {
         log.debug "getNextTaskForValidationForProject checking access..."
-        def currentTime = System.currentTimeMillis() - LAST_VIEW_TIMEOUT_MINUTES
+        def currentTime = System.currentTimeMillis() - grailsApplication.config.viewedTask.timeout
         def tasks = Task.executeQuery(
                 """select t from Task t
                left outer join t.viewedTasks viewedTasks
@@ -480,7 +477,7 @@ class TaskService {
         def conn = url.openConnection()
         def fileMap = [:]
 
-        String urlPrefix = ConfigurationHolder.config.images.urlPrefix
+        String urlPrefix = grailsApplication.config.images.urlPrefix
         if (!urlPrefix.endsWith('/')) {
             urlPrefix += '/'
         }
@@ -612,8 +609,8 @@ class TaskService {
 
         taskInstance.multimedia.each {
             def path = it.filePath
-            String urlPrefix = ConfigurationHolder.config.images.urlPrefix
-            String imagesHome = ConfigurationHolder.config.images.home
+            String urlPrefix = grailsApplication.config.images.urlPrefix
+            String imagesHome = grailsApplication.config.images.home
             path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
             CodeTimer t = new CodeTimer("Extracting meta data for ${path}")
             BufferedImage image = null

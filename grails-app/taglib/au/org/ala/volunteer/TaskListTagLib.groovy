@@ -1,9 +1,10 @@
 package au.org.ala.volunteer
 
 import groovy.time.TimeCategory
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class TaskListTagLib {
+
+  def grailsApplication
 
   def renderTaskList = { attrs, body ->
 
@@ -29,7 +30,7 @@ class TaskListTagLib {
           out << """<a href="${createLink(uri: '/transcribe/task/'+taskInstance.id)}">"""
         }
 
-        def imgUrl = ConfigurationHolder.config.server.url + taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()
+        def imgUrl = grailsApplication.config.server.url + taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()
         out << """<img src="${imgUrl}" class="taskListImg" />"""
 
         if(addLink){
@@ -58,32 +59,6 @@ class TaskListTagLib {
       out << """</tr>"""
       out << """</table>"""
     }
-
-//          <g:link controller="transcribe" action="task" id="${taskInstance.id}">
-//            <img src="${ConfigurationHolder.config.server.url}/${taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()}"
-//                 width="200px"/>
-//          </g:link>
-//          <p>ID: ${fieldValue(bean: taskInstance, field: "id")}
-//            <g:if test="${taskInstance.fullyTranscribedBy}">
-//              <br/><span>
-//              Transcriber: ${fieldValue(bean: taskInstance, field: "fullyTranscribedBy")}
-//            </span>
-//            </g:if>
-//            <g:if test="${taskInstance?.viewedTasks?.lastView?.sort().get(0)}">
-//                <br/>
-//                Last viewed: ${taskInstance?.viewedTasks?.lastUpdated?.sort().get(0)}
-//            </g:if>
-//            <g:else>
-//              <span style="padding: 0; margin: 0;">
-//                <g:link controller="transcribe" action="task" id="${taskInstance.id}">Transcribe</g:link>
-//              </span>
-//            </g:else>
-//            <g:if test="${taskInstance.fullyTranscribedBy != null && taskInstance.fullyValidatedBy == null}">
-//              <!--<span style="padding: 0; margin: 0;"><g:link controller="validate" action="validate"
-//                                                               id="${taskInstance.id}">Validate</g:link></span>-->
-//            </g:if>
-
-
 
   }
 }

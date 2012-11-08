@@ -29,7 +29,7 @@ class PicklistController {
         [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
     }
 
-    def writeItemsCsv(Writer writer, Picklist picklist) {
+    private writeItemsCsv(Writer writer, Picklist picklist) {
         if (picklist) {
             CSVWriter csvWriter = new CSVWriter(writer)
 

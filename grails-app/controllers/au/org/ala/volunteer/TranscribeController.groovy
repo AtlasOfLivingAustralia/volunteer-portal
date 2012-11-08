@@ -4,14 +4,13 @@ import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
 
+    def grailsApplication
     def fieldSyncService
     def auditService
     def taskService
     def authService
     def userService
     def logService
-    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
-    def LAST_VIEW_TIMEOUT_MINUTES = grailsApplication.config.viewedTask.timeout
 
     static allowedMethods = [saveTranscription: "POST"]
 
@@ -47,7 +46,7 @@ class TranscribeController {
             log.debug "userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
             def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
-            if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MINUTES) {
+            if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < grailsApplication.config.viewedTask.timeout) {
                 // task is already being viewed by another user (with timeout period)
                 log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
                 def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. " +
@@ -65,8 +64,8 @@ class TranscribeController {
             def isReadonly
 
             def isValidator = userService.isValidator(project)
-            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
-            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN))) {
+            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
+            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(CASRoles.ROLE_ADMIN))) {
                 isReadonly = "readonly"
             }
 

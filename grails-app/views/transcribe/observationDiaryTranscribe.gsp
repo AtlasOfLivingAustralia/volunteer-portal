@@ -4,14 +4,14 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+
 <%@ page contentType="text/html; UTF-8" %>
 
 <g:set var="viewParams" value="${taskInstance.project.template?.viewParams}" />
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+<meta name="layout" content="${grailsApplication.config.ala.skin}"/>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <title>Transcribe Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
@@ -26,7 +26,6 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
-<script src="http://cdn.jquerytools.org/1.2.6/all/jquery.tools.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 
 <script type="text/javascript">
@@ -392,7 +391,7 @@
     </div>
 
     <g:if test="${taskInstance}">
-        <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
+        <g:form class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
@@ -409,7 +408,7 @@
                 <g:set var="imageIndex" value="0"/>
                 <g:each in="${taskInstance.multimedia}" var="m" status="i">
                   <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-                    <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+                    <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
                     <div class="pageViewer" id="journalPageImg" style="width:972px;height:${defaultWidthPercent}%;">
                         <img id="image_${imageIndex++}" src="${imageUrl}" style="height:100%;"/>
                     </div>

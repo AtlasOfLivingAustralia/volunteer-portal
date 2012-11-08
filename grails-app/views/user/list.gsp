@@ -1,9 +1,9 @@
 <%@ page import="au.org.ala.volunteer.User" %>
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+
 <html>
   <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-      <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+      <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
       <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
 
       <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>

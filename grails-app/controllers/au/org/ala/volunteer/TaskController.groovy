@@ -2,8 +2,6 @@ package au.org.ala.volunteer
 
 import grails.converters.*
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-import javax.imageio.ImageIO
 
 class TaskController {
 
@@ -16,10 +14,7 @@ class TaskController {
     def taskLoadService
     def logService
     def userService
-
-    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
-    def LAST_VIEW_TIMEOUT_MILLIS = grailsApplication.config.viewedTask.timeout
-
+    def grailsApplication
 
     def load = {
         [projectList: Project.list()]
@@ -54,7 +49,7 @@ class TaskController {
 
     def extra_fields_FieldNoteBookDoublePage = []
 
-    def renderProjectListWithSearch(GrailsParameterMap params, String view) {
+    private def renderProjectListWithSearch(GrailsParameterMap params, String view) {
 
         def projectInstance = Project.get(params.id)
 
@@ -110,7 +105,7 @@ class TaskController {
         }
     }
 
-    def renderListWithSearch(GrailsParameterMap params, List fieldNames, String view) {
+    private def renderListWithSearch(GrailsParameterMap params, List fieldNames, String view) {
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
@@ -217,12 +212,12 @@ class TaskController {
 
     def create = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def taskInstance = new Task()
             taskInstance.properties = params
             return [taskInstance: taskInstance]
         } else {
-            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(view: '/index')
         }
     }
@@ -273,7 +268,7 @@ class TaskController {
                     log.debug "<task.show> userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
                     def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
-                    if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MILLIS) {
+                    if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < grailsApplication.config.viewedTask.timeout) {
                         // task is already being viewed by another user (with timeout period)
                         log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
                         msg = "This task is being viewed/edited by another user, and is currently read-only"
@@ -297,7 +292,7 @@ class TaskController {
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
                 def isValidator = userService.isValidator(project)
-                logService.log currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator
+                logService.log currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator
 
                 def imageMetaData = taskService.getImageMetaData(taskInstance)
 
@@ -310,7 +305,7 @@ class TaskController {
 
     def edit = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def taskInstance = Task.get(params.id)
             if (!taskInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
@@ -320,7 +315,7 @@ class TaskController {
                 return [taskInstance: taskInstance]
             }
         } else {
-            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(view: '/index')
         }
     }
@@ -422,8 +417,6 @@ class TaskController {
 
     def getUserId = {
         def userId = authService.username();
-        // overridden for testing --- please comment out!!!
-        // userId = 'Donald.Hobern@csiro.au'
         return userId;
     }
 

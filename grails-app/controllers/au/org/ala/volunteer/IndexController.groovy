@@ -1,11 +1,9 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-
 class IndexController {
 
-    def config = ConfigurationHolder.config
     def userService
+    def grailsApplication
 
     def index = {
         def frontPage = FrontPage.instance()
@@ -33,7 +31,7 @@ class IndexController {
         }
 
         def results = r.sort({it.score}).reverse()
-        int maxSize = config.leaderBoard.count
+        int maxSize = grailsApplication.config.leaderBoard.count
 
         if (results.size() > maxSize) {
             results = results.subList(0, maxSize)

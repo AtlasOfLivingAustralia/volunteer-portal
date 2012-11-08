@@ -1,6 +1,7 @@
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 eventWebXmlStart = {
+
     if (!ConfigurationHolder.config.security.cas.bypass) {
         def tmpWebXml = "${projectWorkDir}/web.xml.tmp"
         ant.replace(file: tmpWebXml, token: "@security.cas.casServerName@", value: ConfigurationHolder.config.security.cas.casServerName)

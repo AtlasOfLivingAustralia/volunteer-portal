@@ -1,9 +1,8 @@
 <%@ page import="au.org.ala.volunteer.Project" %>
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+  <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
   <title><g:message code="admin.label" default="Administration"/></title>
 </head>
 <body class="sublevel sub-site volunteerportal">

@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+
 
 <style type="text/css">
   .task_summary {
@@ -26,7 +26,7 @@
 <div style="overflow: auto; height: 250px">
   <div style="float:right;">
     <g:each in="${taskInstance.multimedia}" var="m">
-        <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+        <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
         <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" width="200" style="padding-right: 10px" />
     </g:each>
     <table>

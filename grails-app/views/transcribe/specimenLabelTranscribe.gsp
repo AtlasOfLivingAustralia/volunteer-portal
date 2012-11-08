@@ -6,11 +6,11 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+
 <%@ page contentType="text/html; UTF-8" %>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+<meta name="layout" content="${grailsApplication.config.ala.skin}"/>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <title>${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
@@ -504,7 +504,7 @@
 
     %{--<button id="showImageButton">Show image in seperate window</button>--}%
     <g:if test="${taskInstance}">
-        <g:form controller="${validator ? "transcribe" : "validate"}" class="transcribeForm">
+        <g:form class="transcribeForm">
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
 
@@ -513,7 +513,7 @@
 
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
-                    <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+                    <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
                     <g:set var="imageInfo" value="${imageMetaData?.getAt(m.id) ?: [height: 0, width: 0, smallSizeHeight: 0]}" />
                     <div id="imageContainer" style="float: left; width:600px; height: 400px">
                         <div class="pan-image" style="margin-top: 0px; padding-top: 0px">

@@ -1,43 +1,31 @@
-<%@ page contentType="text/html;charset=UTF-8" import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<%@ page contentType="text/html;charset=UTF-8"  %>
 <!DOCTYPE html>
 <html>
   <head>
       <title>Volunteer Portal - Atlas of Living Australia</title>
-      %{--<meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>--}%
-    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/bvp.css" type="text/css" media="screen" />
-    %{--<link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2010.css" type="text/css" media="screen" />--}%
-    %{--<link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style2011.css" type="text/css" media="screen" />--}%
-    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/wp-styles.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/buttons.css" type="text/css" media="screen" />
-    <link rel="icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
-    <link rel="shortcut icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/jquery.autocomplete.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/search.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/skin.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/sf-blue.css" />
+      <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/style.css" type="text/css" media="screen" />
+      <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/bvp.css" type="text/css" media="screen" />
+      <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/wp-styles.css" type="text/css" media="screen" />
+      <link rel="stylesheet" href="http://www.ala.org.au/wp-content/themes/ala2011/css/buttons.css" type="text/css" media="screen" />
+      <link rel="icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
+      <link rel="shortcut icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico" />
+      <link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/jquery.autocomplete.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/search.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/skin.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/sf-blue.css" />
 
 
-    <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
-    <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
+      <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
 
-    <g:javascript library="jquery" plugin="jquery"/>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
-    <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
-    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>--}%
-    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>--}%
-    %{--<link rel="stylesheet" href="${resource(dir: 'css/smoothness', file: 'ui.all.css')}"/>--}%
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
-    <script src="http://cdn.jquerytools.org/1.2.6/all/jquery.tools.min.js"></script>
+      <script type="text/javascript" src="${resource(dir: 'js/jquery-ui-1.9.1.custom/js', file: 'jquery-1.8.2.js')}"></script>
+      <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
+      <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
+      <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
+      <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
+      <g:javascript library="jquery.tools.min" />
 
-    <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
+      <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 
       <style type="text/css">
 
@@ -145,7 +133,7 @@
           <g:set var="imageIndex" value="0"/>
           <g:each in="${taskInstance.multimedia}" var="m" status="i">
             <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-              <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+              <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
 
                 <div class="pageViewer" id="journalPageImg">
                     <img id="image_${imageIndex++}" src="${imageUrl}" style="width:100%;"/>

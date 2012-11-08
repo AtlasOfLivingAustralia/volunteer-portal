@@ -1,5 +1,3 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
-
 <style type="text/css">
 
   #toolContentHeader, #currentTaskHeader {
@@ -63,7 +61,7 @@
     <div class="dialog" id="imagePane" >
       <g:each in="${taskInstance.multimedia}" var="m" status="i">
         <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-          <g:set var="imageUrl" value="${ConfigurationHolder.config.server.url}${m.filePath}"/>
+          <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
             <a href="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" class="image_viewer" title="">
                 <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" title="" style="height: 150px">
             </a>

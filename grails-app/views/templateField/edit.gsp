@@ -1,8 +1,8 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.volunteer.TemplateField" %>
+<%@ page import="au.org.ala.volunteer.TemplateField" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'templateField.label', default: 'TemplateField')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
     </head>

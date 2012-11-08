@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVWriter
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
@@ -62,7 +61,7 @@ class AjaxController {
 
         setNoCache()
 
-        if (!authService.userInRole("ROLE_VP_ADMIN")) {
+        if (!userService.isAdmin()) {
             render "Must be logged in as an administrator to use this service!"
             return;
         }
@@ -172,7 +171,7 @@ class AjaxController {
                     values.add(fieldValues.find { it.name == 'scientificName' } ?.value?:"")
                     values.add(fieldValues.find { it.name == 'decimalLatitude' } ?.value?:"")
                     values.add(fieldValues.find { it.name == 'decimalLongitude' } ?.value?:"")
-                    values.add("${ConfigurationHolder.config.server.url}${t.multimedia.toList()[0].filePath}")
+                    values.add("${grailsApplication.config.server.url}${t.multimedia.toList()[0].filePath}")
                     values.add(createLink(controller: 'task', action: 'show', id: t.id, absolute: true ))
                     writer.writeNext((String[]) values.toArray())
                 }

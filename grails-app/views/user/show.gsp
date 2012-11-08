@@ -1,15 +1,14 @@
 <%@ page import="au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.8.23.custom.min.js')}"></script>
     <style type="text/css">
       .ui-widget {
         font:1em Arial, Helvetica, sans-serif;
@@ -131,8 +130,7 @@
           <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;" class="avatar"/>
           <g:if test="${userInstance.userId == currentUser}">
           <p>
-            %{--<img src="http://www.gravatar.com/favicon.ico"/>&nbsp;--}%<a href="http://en.gravatar.com/" class="external" target="_blank"
-                id="gravitarLink" title="To customise this avatar, register your email address at gravatar.com...">Change avatar</a>
+            <a href="http://en.gravatar.com/" class="external" target="_blank" id="gravitarLink" title="To customise this avatar, register your email address at gravatar.com...">Change avatar</a>
           </p>
           </g:if>
         </td>
@@ -190,10 +188,10 @@
        </tr>
        <tr>
          <td colspan="3">
-           <cl:ifGranted role="ROLE_VP_ADMIN">
+           <cl:ifAdmin>
              <g:link controller="user" action="editRoles" id="${userInstance.id}">Manage user roles</g:link>
              &nbsp;Email:&nbsp;<a href="mailto:${userInstance.userId}">${userInstance.userId}</a>
-           </cl:ifGranted>
+           </cl:ifAdmin>
 
          </td>
        </tr>
@@ -201,12 +199,11 @@
   </div>
 
   <div id="taskTabs">
-
       <ul>
           <li><a href="#tabs-1">Transcribed Tasks</a></li>
-          <li><a href="#tabs-2">Saved Tasks</a></li>
+          <li><a href="#tabs-1">Saved Tasks</a></li>
           <cl:ifValidator>
-            <li><a href="#tabs-3">Validated Tasks</a></li>
+            <li><a href="#tabs-1">Validated Tasks</a></li>
           </cl:ifValidator>
       </ul>
       <g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}" />
@@ -214,30 +211,14 @@
         <g:if test="${selectedTab == 0}">
           <g:include action="taskListFragment" params="${includeParams + [projectId:project?.id]}" />
         </g:if>
-        <g:else>
-          <span>Loading...</span>
-        </g:else>
-      </div>
-      <div id="tabs-2" class="tabContent">
-        <g:if test="${selectedTab == 1}">
+        <g:elseif test="${selectedTab == 1}">
           <g:include action="taskListFragment" params="${includeParams  + [projectId:project?.id]}" />
-        </g:if>
-        <g:else>
-          <span>Loading...</span>
-        </g:else>
+        </g:elseif>
+        <g:elseif test="${selectedTab == 2}">
+          <g:include action="taskListFragment" params="${includeParams  + [projectId:project?.id]}" />
+        </g:elseif>
       </div>
-      <cl:ifValidator>
-        <div id="tabs-3" class="tabContent">
-          <g:if test="${selectedTab == 2}">
-            <g:include action="taskListFragment" params="${includeParams  + [projectId:project?.id]}" />
-          </g:if>
-          <g:else>
-            <span>Loading...</span>
-          </g:else>
-        </div>
-      </cl:ifValidator>
   </div>
-
 
   </div>
     <script type="text/javascript">

@@ -1,12 +1,11 @@
-<%@ page contentType="text/html;charset=UTF-8" import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
   <head>
       <title>Volunteer Portal - Atlas of Living Australia</title>
-      <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+      <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
       <link rel="stylesheet" href="${resource(dir:'css',file:'forum.css')}" />
-      <g:javascript library="jquery.tools.min"/>
       <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
       <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
@@ -30,7 +29,7 @@
           window.location = "${createLink(controller: 'forum', action:'addProjectTopic', params:[projectId: projectInstance.id])}";
         });
 
-        $("#deleteTopicLink").click(function(e) {
+        $(".deleteTopicLink").click(function(e) {
 
           var topicId = $(this).parents("tr[topicId]").attr("topicId");
 
@@ -103,7 +102,7 @@
                     <a class="button" href="${createLink(controller:'forum', action:'postProjectMessage', params:[topicId: topic.id])}">Reply</a>
                     <vpf:ifModerator project="${projectInstance}">
                       <a class="button" href="${createLink(controller:'forum', action:'editProjectTopic', params:[topicId: topic.id])}">Edit</a>
-                      <a class="button" href="#" id="deleteTopicLink">Delete</a>
+                      <a class="button deleteTopicLink" href="#">Delete</a>
                     </vpf:ifModerator>
                   </td>
                 </tr>

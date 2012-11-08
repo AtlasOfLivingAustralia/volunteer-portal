@@ -81,10 +81,6 @@ class CollectionEventController {
         [collectors:collectors, eventDate: eventDate, collectionEvents: events, searchWidened: loopcount > 1, taskInstance: taskInstance]
     }
 
-    boolean collectorNameHasSpace(List<String> names) {
-
-    }
-
     def load = {
         def collectionCodes = collectionEventService.getCollectionCodes()?.join(", ");
 

@@ -1,13 +1,12 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.apache.commons.io.FileUtils
 
 class AdminController {
 
     def authService
     def taskService
-    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
+    def grailsApplication
 
     def index = {
         checkAdmin()
@@ -25,7 +24,7 @@ class AdminController {
         def ct = new CodeTimer("Filesystem Restructure")
         def results = []
         if (checkAdmin()) {
-            def imagesHome = ConfigurationHolder.config.images.home as String;
+            def imagesHome = grailsApplication.config.images.home as String;
             def rootDir = new File(imagesHome)
             if (rootDir && rootDir.exists()) {
 
@@ -109,11 +108,11 @@ class AdminController {
             throw new RuntimeException("Failed to create/location target path. Probably because there are no inodes left.")
         }
 
-        String urlPrefix = ConfigurationHolder.config.images.urlPrefix
+        String urlPrefix = grailsApplication.config.images.urlPrefix
         if (!urlPrefix.endsWith('/')) {
             urlPrefix += '/'
         }
-        String imagesHome = ConfigurationHolder.config.images.home
+        String imagesHome = grailsApplication.config.images.home
 
         // confirm/update multimedia records...
         task.multimedia.each { mm ->
@@ -159,11 +158,11 @@ class AdminController {
 
     boolean checkAdmin() {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             return true;
         }
 
-        flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+        flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
         redirect(uri:"/")
     }
 
@@ -172,8 +171,8 @@ class AdminController {
         def results = []
         def taskCount = 0
         def errorCount = 0
-        String urlPrefix = ConfigurationHolder.config.images.urlPrefix
-        String imagesHome = ConfigurationHolder.config.images.home
+        String urlPrefix = grailsApplication.config.images.urlPrefix
+        String imagesHome = grailsApplication.config.images.home
 
         Task.list().each { task ->
             taskCount++

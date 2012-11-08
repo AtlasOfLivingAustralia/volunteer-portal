@@ -8,8 +8,7 @@ class ValidateController {
     def authService
     def userService
     def logService
-    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
-    def LAST_VIEW_TIMEOUT_MINUTES = grailsApplication.config.viewedTask.timeout
+    def grailsApplication
 
     def index = {
         redirect(action: "showNextTaskForValidation")
@@ -39,7 +38,7 @@ class ValidateController {
             log.debug "userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
             def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
-            if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < LAST_VIEW_TIMEOUT_MINUTES) {
+            if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < grailsApplication.config.viewedTask.timeout) {
                 // task is already being viewed by another user (with timeout period)
                 log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago."
                 def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited/validated by another user. "
@@ -61,14 +60,14 @@ class ValidateController {
             def template = Template.findById(project.template.id)
 
             def isValidator = userService.isValidator(project)
-            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
+            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
 
-            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(ROLE_ADMIN) || isValidator)) {
+            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(CASRoles.ROLE_ADMIN) || isValidator)) {
                 isReadonly = "readonly"
             } else {
                 // check that the validator is not the transcriber...Admins can, though!
                 if ((currentUser == taskInstance.fullyTranscribedBy)) {
-                    if (authService.userInRole(ROLE_ADMIN)) {
+                    if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
                         flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
                     } else {
                         flash.message = "This task is read-only. You cannot validate your own tasks!"

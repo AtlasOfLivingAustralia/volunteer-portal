@@ -1,4 +1,4 @@
-
+import au.org.ala.volunteer.CASRoles
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
@@ -59,9 +59,6 @@ if (!security.cas.bypass) {
 
 // server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
-
-auth.admin_role = "ROLE_VP_ADMIN"
-auth.validator_role = "ROLE_VP_VALIDATOR"
 
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 

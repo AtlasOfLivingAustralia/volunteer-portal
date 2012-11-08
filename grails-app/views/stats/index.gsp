@@ -1,12 +1,10 @@
-<<%@ page contentType="text/html;charset=UTF-8" import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<<%@ page contentType="text/html;charset=UTF-8"  %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
   <head>
       <title>Volunteer Portal - Atlas of Living Australia</title>
-      <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+      <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
-      <g:javascript library="jquery.tools.min"/>
-
       <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
       <script type="text/javascript">

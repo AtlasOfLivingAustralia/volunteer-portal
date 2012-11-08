@@ -1,19 +1,13 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import javax.sql.DataSource
 import groovy.sql.Sql
 
 class UserService {
 
-    def ROLE_ADMIN = "ROLE_VP_ADMIN"
-    def ROLE_VALIDATOR = "ROLE_VP_VALIDATOR"
-
     def authService
     def logService
-
     DataSource dataSource
-    def config = ConfigurationHolder.config
 
     static transactional = true
 
@@ -35,8 +29,7 @@ class UserService {
     */
     def updateUserValidatedCount(String userId){
       def validatedCount = Task.countByFullyTranscribedByAndFullyValidatedByIsNotNull(userId)
-      User.executeUpdate("""update User u set u.validatedCount = :validatedCount where u.userId = :userId """,
-        [validatedCount:validatedCount, userId:userId])
+      User.executeUpdate("""update User u set u.validatedCount = :validatedCount where u.userId = :userId """, [validatedCount:(int) validatedCount, userId:userId])
     }
 
    /**
@@ -223,7 +216,7 @@ class UserService {
         }
 
         // If there the user has been granted the ALA-AUTH roles then these override everything
-        if (authService.userInRole(ROLE_ADMIN) || authService.userInRole(ROLE_VALIDATOR)) {
+        if (authService.userInRole(CASRoles.ROLE_ADMIN) || authService.userInRole(CASRoles.ROLE_VALIDATOR)) {
             return true
         }
 
@@ -264,7 +257,7 @@ class UserService {
             return false
         }
 
-        if (authService.userInRole(ROLE_ADMIN)) {
+        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
             return true
         }
 

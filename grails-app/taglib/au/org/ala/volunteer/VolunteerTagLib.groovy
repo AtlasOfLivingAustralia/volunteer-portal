@@ -5,7 +5,6 @@ import java.text.NumberFormat
 import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 import grails.converters.JSON
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import grails.util.Environment
@@ -18,6 +17,7 @@ class VolunteerTagLib {
 
     def authService
     def userService
+    def grailsApplication
 
     def loggedInName = {
         def userName = authService.username()
@@ -36,11 +36,11 @@ class VolunteerTagLib {
     def loginoutLink = {
 
         def userName = authService.username()
-        def serverName = ConfigurationHolder.config.security.cas.appServerName
+        def serverName = grailsApplication.config.security.cas.appServerName
         def requestUri = serverName + request.forwardURI
         if (userName) {
             // currently logged in
-            out << "<a id='${userName}' href='${resource(file:'logout', dir:'user')}?casUrl=${ConfigurationHolder.config.security.cas.logoutUrl}&appUrl=${requestUri}'><span>Log out</span></a>"
+            out << "<a id='${userName}' href='${resource(file:'logout', dir:'user')}?casUrl=${grailsApplication.config.security.cas.logoutUrl}&appUrl=${requestUri}'><span>Log out</span></a>"
         } else {
             // currently logged out
             out << "<a href='https://auth.ala.org.au/cas/login?service=${requestUri}'><span>Log in</span></a>"
@@ -72,7 +72,7 @@ class VolunteerTagLib {
      */
     def ifAllGranted = { attrs, body ->
         def granted = true
-        if (ConfigurationHolder.config.security.cas.bypass) {
+        if (grailsApplication.config.security.cas.bypass) {
             granted = true
         } else {
             def roles = attrs.role.toString().tokenize(',')
@@ -93,7 +93,7 @@ class VolunteerTagLib {
      * </g:ifGranted>
      */
     def ifGranted = { attrs, body ->
-        if (ConfigurationHolder.config.security.cas.bypass || request.isUserInRole(attrs.role)) {
+        if (grailsApplication.config.security.cas.bypass || request.isUserInRole(attrs.role)) {
             out << body()
         }
     }
@@ -104,7 +104,7 @@ class VolunteerTagLib {
      * </g:ifNotGranted>
      */
     def ifNotGranted = { attrs, body ->
-        if (!ConfigurationHolder.config.security.cas.bypass && !request.isUserInRole(attrs.role)) {
+        if (!grailsApplication.config.security.cas.bypass && !request.isUserInRole(attrs.role)) {
             out << body()
         }
     }
@@ -146,7 +146,7 @@ class VolunteerTagLib {
     }
 
     def loggedInUsername = { attrs ->
-        if (ConfigurationHolder.config.security.cas.bypass) {
+        if (grailsApplication.config.security.cas.bypass) {
             out << 'cas bypassed'
         } else if (request.getUserPrincipal()) {
         	out << request.getUserPrincipal().name
@@ -154,7 +154,7 @@ class VolunteerTagLib {
     }
 
     private boolean isAdmin() {
-        return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole("ROLE_VP_ADMIN")
+        return grailsApplication.config.security.cas.bypass || request?.isUserInRole(CASRoles.ROLE_ADMIN)
     }
 
     def ifTest = { attrs, body ->
@@ -860,7 +860,7 @@ class VolunteerTagLib {
             default: context = '/public/show/'; break
         }
         if (context) {
-            def url = ConfigurationHolder.config.grails.serverURL + context + attrs.id
+            def url = grailsApplication.config.grails.serverURL + context + attrs.id
             out << "<a href='${url}'>"
             out << ((body() != "") ? body() : context + attrs.id)
             out << "</a>"
@@ -885,7 +885,7 @@ class VolunteerTagLib {
         if (codes) {
             // replace first & with ?
             codes = "?" + codes.substring(1)
-            def baseUrl = ConfigurationHolder.config.spatial.baseURL
+            def baseUrl = grailsApplication.config.spatial.baseURL
             def url = baseUrl + "alaspatial/ws/density/map${codes}"
             out << "<div class='distributionImage'>${body()}<img src='${url}' width='350' /></div>"
         }
@@ -902,7 +902,7 @@ class VolunteerTagLib {
             " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
             " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
             "</div>" +
-            "<div class='learnMaps'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
+            "<div class='learnMaps'><span class='asterisk-container'><a href='${grailsApplication.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
 
         /*out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
                 "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
@@ -934,7 +934,7 @@ class VolunteerTagLib {
     def taxonChart = { attrs ->
         out <<
             "<div id='taxonRecordsLink' style='visibility:hidden;'>" +
-            " <span id='viewRecordsLink' class='taxonChartCaption'><a class='recordsLink' href='${ConfigurationHolder.config.biocache.baseURL + "occurrences/searchForUID?q=" + attrs.uid}'>View all records</a></span><br/>" +
+            " <span id='viewRecordsLink' class='taxonChartCaption'><a class='recordsLink' href='${grailsApplication.config.biocache.baseURL + "occurrences/searchForUID?q=" + attrs.uid}'>View all records</a></span><br/>" +
             "</div>" +
             "<div id='taxonChart'>" +
             " <img class='taxon-loading' alt='loading...' src='${resource(dir:'images/ala',file:'ajax-loader.gif')}'/>" +
@@ -942,7 +942,7 @@ class VolunteerTagLib {
             "<div id='taxonChartCaption' style='visibility:hidden;'>" +
             " <span class='taxonChartCaption'>Click a slice or legend to drill into a group.</span><br/>" +
             " <span id='resetTaxonChart' onclick='resetTaxonChart()'></span>&nbsp;" +
-            " <div class='taxonCaveat'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/wrong-classification/'>Learn more about classification errors</a>&nbsp;</span></div>" +
+            " <div class='taxonCaveat'><span class='asterisk-container'><a href='${grailsApplication.config.ala.baseURL}/about/progress/wrong-classification/'>Learn more about classification errors</a>&nbsp;</span></div>" +
             "</div>"
 
         /*out << '<div id="taxonChart">\n' +
@@ -1223,8 +1223,8 @@ class VolunteerTagLib {
     }
 
     def breadcrumbTrail = {attrs ->
-        out << "<a href='${ConfigurationHolder.config.ala.baseURL}'>Home</a> " +
-                "<a href='${ConfigurationHolder.config.ala.baseURL}/explore/'>Explore</a> " +
+        out << "<a href='${grailsApplication.config.ala.baseURL}'>Home</a> " +
+                "<a href='${grailsApplication.config.ala.baseURL}/explore/'>Explore</a> " +
                 link(controller:'public', action:'map') {"Natural History Collections"}
     }
 
@@ -1405,7 +1405,7 @@ class VolunteerTagLib {
     }
 
     def jsonDataLink = { attrs, body ->
-        def uri = "${ConfigurationHolder.config.grails.serverURL}/ws/${ProviderGroup.urlFormFromUid(attrs.uid)}/${attrs.uid}.json"
+        def uri = "${grailsApplication.config.grails.serverURL}/ws/${ProviderGroup.urlFormFromUid(attrs.uid)}/${attrs.uid}.json"
         // have to use this method rather than 'link' so we can specify the accept format as json
         out << "<a class='json' href='${uri}'><img class='json' alt='json' src='${resource(dir:"images", file:"json.png")}'/>View raw data</a>"
     }
@@ -1671,8 +1671,8 @@ class VolunteerTagLib {
     }
 
     def loginLink = { attrs, body ->
-        def casLoginUrl = ConfigurationHolder.config.security.cas.loginUrl ?: "https://auth.ala.org.au/cas/login"
-        def requestUri = removeContext(ConfigurationHolder.config.grails.serverURL) + request.forwardURI
+        def casLoginUrl = grailsApplication.config.security.cas.loginUrl ?: "https://auth.ala.org.au/cas/login"
+        def requestUri = removeContext(grailsApplication.config.grails.serverURL) + request.forwardURI
         def loginReturnToUrl = attrs.loginReturnToUrl ?: requestUri
         def mb = new MarkupBuilder(out)
         mb.a(href: "${casLoginUrl}?service=${loginReturnToUrl}") {

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<%@ page contentType="text/html;charset=UTF-8"  %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title>Volunteer Portal - ${projectInstance.name?:'Atlas of Living Australia'}</title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir:'js', file:'markerclusterer.js')}" type="text/javascript"></script>
@@ -36,6 +36,13 @@
         var map, infowindow;
 
         function loadMap() {
+
+            var mapElement = $("#recordsMap");
+
+            if (!mapElement) {
+              return;
+            }
+
             var myOptions = {
                 scaleControl: true,
                 center: new google.maps.LatLng(-24.766785, 134.824219), // centre of Australia
@@ -102,22 +109,19 @@
         $(document).ready(function() {
             // load chart
             $("#recordsChartWidget").progressbar({ value: <g:formatNumber number="${percentComplete}" format="#"/> });
-            //load map
-            loadMap();
+            <g:if test="${projectInstance.showMap}">
+              //load map
+              loadMap();
+            </g:if>
 
             var opts = {
                 titleShow: false,
-                onComplete: initialize,
                 autoDimensions: false,
                 width: 500
             }
             $('button#show_icon_selector').fancybox(opts);
 
         });
-
-        function initialize() {
-
-        }
 
         showIconSelector = function() {
           $("#icon_selector").css("display", "block");
@@ -287,17 +291,17 @@
 
         <cl:ifValidator project="${projectInstance}">
           <section id="validator">
-            <button href="${createLink(controller: 'task', action:'projectAdmin', id:projectInstance.id)}">Validate tasks</button>
+            <button href="${createLink(controller: 'task', action:'projectAdmin', id:projectInstance.id)}">Validate tasks</button>                                                                recor
           </section>
         </cl:ifValidator>
 
       </section>
     </div>
     <cl:isLoggedIn>
-      <cl:ifGranted role="ROLE_VP_ADMIN">
+      <cl:ifAdmin>
         <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" style="color:#DDDDDD;">Admin</g:link>&nbsp;
         <g:link controller="project" action="edit" id="${projectInstance.id}" style="color:#DDDDDD;">Edit</g:link>
-      </cl:ifGranted>
+      </cl:ifAdmin>
     </cl:isLoggedIn>
 </div>
 </body>

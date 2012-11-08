@@ -1,8 +1,8 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.volunteer.NewsItem" %>
+<%@ page import="au.org.ala.volunteer.NewsItem" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'newsItem.label', default: 'NewsItem')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
     </head>
@@ -52,9 +52,9 @@
                             <td style="vertical-align: top">
                               <b><g:link controller="newsItem" action="show" id="${newsItemInstance.id}">${fieldValue(bean: newsItemInstance, field: "title")}</g:link></b>
 
-                              <cl:ifGranted role="ROLE_VP_ADMIN">
+                              <cl:ifAdmin>
                                   &nbsp;<g:link style="color: #d3d3d3;" controller="newsItem" action="edit" id="${newsItemInstance.id}">edit...</g:link>
-                              </cl:ifGranted>
+                              </cl:ifAdmin>
 
                             </td>
 

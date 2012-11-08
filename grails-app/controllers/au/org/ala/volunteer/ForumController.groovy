@@ -87,7 +87,6 @@ class ForumController {
             if (params.watchTopic == 'on') {
                 forumService.watchTopic(topic.creator, topic)
             }
-            g.render()
             redirect(action: 'projectForum', params: [projectId: projectInstance.id])
         }
 

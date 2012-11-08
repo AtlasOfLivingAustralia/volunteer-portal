@@ -10,13 +10,13 @@ class UserController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+    def grailsApplication
     def taskService
     def authService
     def userService
     def fieldSyncService
     def fieldService
     def dataSource
-    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
     def achievementService
     def logService
 
@@ -125,7 +125,7 @@ class UserController {
      * @param params
      * @return
      */
-    def createViewList(List<Task> tasks, GrailsParameterMap params) {
+    private createViewList(List<Task> tasks, GrailsParameterMap params) {
 
         if (!tasks) {
             return [totalMatchingTasks: 0, viewList: []]
@@ -314,7 +314,7 @@ class UserController {
     def edit = {
         def currentUser = authService.username()
         def userInstance = User.get(params.id)
-        if (currentUser != null && (authService.userInRole(ROLE_ADMIN) || currentUser == userInstance.userId)) {
+        if (currentUser != null && (authService.userInRole(CASRoles.ROLE_ADMIN) || currentUser == userInstance.userId)) {
             if (!userInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
                 redirect(action: "list")
@@ -331,7 +331,7 @@ class UserController {
     def update = {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
-        if (userInstance && currentUser && (authService.userInRole(ROLE_ADMIN) || currentUser == userInstance.userId)) {
+        if (userInstance && currentUser && (authService.userInRole(CASRoles.ROLE_ADMIN) || currentUser == userInstance.userId)) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (userInstance.version > version) {
@@ -359,7 +359,7 @@ class UserController {
     def delete = {
         def userInstance = User.get(params.id)
         def currentUser = authService.username()
-        if (userInstance && currentUser && authService.userInRole(ROLE_ADMIN)) {
+        if (userInstance && currentUser && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             try {
                 userInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
@@ -386,7 +386,7 @@ class UserController {
             return
         }
 
-        if (!authService.userInRole(ROLE_ADMIN)) {
+        if (!authService.userInRole(CASRoles.ROLE_ADMIN)) {
             flash.message = "You have insufficient priviliges to manage the roles for this user!"
             redirect(action: "show")
         }
@@ -403,7 +403,7 @@ class UserController {
             return
         }
 
-        if (!authService.userInRole(ROLE_ADMIN)) {
+        if (!authService.userInRole(CASRoles.ROLE_ADMIN)) {
             flash.message = "You have insufficient priviliges to manage the roles for this user!"
             redirect(action: "show")
             return

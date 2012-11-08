@@ -1,9 +1,9 @@
 <%@ page import="au.org.ala.volunteer.Project" %>
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+  <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
   <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
   <title><g:message code="default.list.label" args="[entityName]"/></title>
   <style type="text/css">
@@ -77,10 +77,10 @@
                 </h2>
             </th>
             <th align="center">
-              <cl:ifGranted role="ROLE_VP_ADMIN">
+              <cl:ifAdmin>
                 <g:link class="adminLink" controller="project" action="edit" id="${projectInstance['project'].id}">Edit</g:link>
                 <g:link class="adminLink" controller="task" action="projectAdmin" id="${projectInstance['project'].id}">Admin</g:link>
-              </cl:ifGranted>
+              </cl:ifAdmin>
             </th>
           </tr>
           <tr inactive="${projectInstance.project.inactive}">

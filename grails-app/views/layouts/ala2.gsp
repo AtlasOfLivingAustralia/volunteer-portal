@@ -1,4 +1,3 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,10 +28,12 @@
     <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>
 
     <g:javascript library="application" />
+    <g:javascript library="jquery.tools.min"/>
 
-    %{--<g:javascript library="jquery" plugin="jquery"/>--}%
     <tinyMce:resources />
+
     <script type="text/javascript">
+
         tinyMCE.init({
             mode: "textareas",
             theme: "advanced",
@@ -86,45 +87,18 @@
     <g:layoutHead />
 
     <script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala2011/scripts/html5.js"></script>
-    <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala2011/scripts/superfish/superfish.js"></script>
+    %{--<script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala2011/scripts/superfish/superfish.js"></script>--}%
     <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala2011/scripts/jquery.autocomplete.js"></script>
     <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala2011/scripts/uservoice.js"></script>
     <script type="text/javascript">
 
         // initialise plugins
 
-        jQuery(function(){
-            jQuery('ul.sf').superfish( {
-                delay:500,
-                autoArrows:false,
-                dropShadows:false
-            });
-        });
-
-//            jQuery("form#search-form-2011 input#search-2011").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-//                extraParams: {limit: 100},
-//                dataType: 'jsonp',
-//                parse: function(data) {
-//                    var rows = new Array();
-//                    data = data.autoCompleteList;
-//                    for(var i=0; i<data.length; i++){
-//                        rows[i] = {
-//                            data:data[i],
-//                            value: data[i].matchedNames[0],
-//                            result: data[i].matchedNames[0]
-//                        };
-//                    }
-//                    return rows;
-//                },
-//                matchSubset: false,
-//                formatItem: function(row, i, n) {
-//                    return row.matchedNames[0];
-//                },
-//                cacheLength: 10,
-//                minChars: 3,
-//                scroll: false,
-//                max: 10,
-//                selectFirst: false
+//        jQuery(function(){
+//            jQuery('ul.sf').superfish( {
+//                delay:500,
+//                autoArrows:false,
+//                dropShadows:false
 //            });
 //        });
 
@@ -140,7 +114,7 @@
     </script>
 </head>
 <body class="${pageProperty(name:'body.class')} getinvolved">
-  <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/public/logout" logoutReturnToUrl="${ConfigurationHolder.config.grails.serverURL}"/>
+  <hf:banner logoutUrl="${grailsApplication.config.grails.serverURL}/public/logout" logoutReturnToUrl="${grailsApplication.config.grails.serverURL}"/>
 
   <g:layoutBody/>
 

@@ -31,9 +31,9 @@
 
                   <g:sortableColumn style="text-align: left" property="id" title="${message(code: 'task.id.label', default: 'Id')}" params="${pageParams}" action="show" controller="user" />
 
-                  <g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${pageParams}" action="show" controller="user"}"/>
+                  <g:sortableColumn style="text-align: left" property="externalIdentifier" title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}" params="${pageParams}" action="show" controller="user" />
 
-                  <g:sortableColumn style="text-align: left" property="catalogNumber" title="${message(code: 'task.catalogNumber.label', default: 'Catalog&nbsp;Number')}" params="${pageParams}" action="show" controller="user"/>
+                  <g:sortableColumn style="text-align: left" property="catalogNumber" title="${message(code: 'task.catalogNumber.label', default: 'Catalog&nbsp;Number')}" params="${pageParams}" action="show" controller="user" />
 
                   <g:sortableColumn style="text-align: left" property="projectName" title="${message(code: 'task.project.name', default: 'Project')}" params="${pageParams}" action="show" controller="user"/>
 

@@ -1,7 +1,5 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-
 class Project {
 
     String name
@@ -19,6 +17,8 @@ class Project {
     Boolean inactive = false
     String collectionEventLookupCollectionCode
     String localityLookupCollectionCode
+
+    def grailsApplication
 
     static belongsTo = [template: Template]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem]
@@ -56,7 +56,7 @@ class Project {
     }
 
     public String getFeaturedImage() {
-        return "${ConfigurationHolder.config.server.url}/${ConfigurationHolder.config.images.urlPrefix}project/${id}/expedition-image.jpg"
+        return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-image.jpg"
     }
 
     public void setFeaturedImage(String image) {

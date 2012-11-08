@@ -1,11 +1,9 @@
-<%@ page contentType="text/html;charset=UTF-8" import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE html>
 <html>
   <head>
       <title>Volunteer Portal - Atlas of Living Australia</title>
-      <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+      <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
-      <g:javascript library="jquery.tools.min"/>
       <style type="text/css">
 
         div#wrapper > div#content {
@@ -54,14 +52,14 @@
       <div class="col-wide">
         <section>
           <h1 class="orange">Help us capture Australia's biodiversity</h1>
-          <p>Help capture the wealth of information hidden in our natural history collections, field notebooks and survey sheets. This information will be used for better understanding, managing and conserving our precious biodiversity. <a href="${createLink(uri: '/about.gsp')}" class="button">Learn more</a></p>
+          <p>Help capture the wealth of information hidden in our natural history collections, field notebooks and survey sheets. This information will be used for better understanding, managing and conserving our precious biodiversity. <a href="${createLink(controller: 'about', action:'index')}" class="button">Learn more</a></p>
 
           <h2 class="orange">Virtual expedition of the day</h2>
-          <div class="button-nav"><a href="${ConfigurationHolder.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay.id}" style="background-image:url(${frontPage.projectOfTheDay.featuredImage});"><h2>${frontPage.projectOfTheDay.featuredLabel}</h2></a></div>
+          <div class="button-nav"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay.id}" style="background-image:url(${frontPage.projectOfTheDay.featuredImage});"><h2>${frontPage.projectOfTheDay.featuredLabel}</h2></a></div>
           <div>
             <span class="eyebrow">${frontPage.projectOfTheDay.featuredOwner}</span>
-            <h2 class="grey"><a href="${ConfigurationHolder.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay.id}">${frontPage.projectOfTheDay.name}</a></h2>
-            <p>${frontPage.projectOfTheDay.shortDescription} <a href="${ConfigurationHolder.config.grails.serverURL}/transcribe/index/${frontPage.projectOfTheDay.id}" class="button">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe.png" width="37" height="18" alt=""></a></p>
+            <h2 class="grey"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay.id}">${frontPage.projectOfTheDay.name}</a></h2>
+            <p>${frontPage.projectOfTheDay.shortDescription} <a href="${grailsApplication.config.grails.serverURL}/transcribe/index/${frontPage.projectOfTheDay.id}" class="button">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe.png" width="37" height="18" alt=""></a></p>
           </div>
         </section>
         <section>
@@ -85,7 +83,7 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${1..ConfigurationHolder.config.leaderBoard.count}" var="i">
+              <g:each in="${1..grailsApplication.config.leaderBoard.count}" var="i">
                 <tr>
                   <td><img src="${resource(dir:'images', file:'spinner.gif')}"/></td>
                 </tr>

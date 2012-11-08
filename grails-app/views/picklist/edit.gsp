@@ -1,8 +1,8 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.volunteer.Picklist" %>
+<%@ page import="au.org.ala.volunteer.Picklist" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
     </head>

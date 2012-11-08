@@ -1,6 +1,5 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.*
 
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -13,6 +12,7 @@ class ProjectController {
 
     static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
 
+    def grailsApplication
     def taskService
     def fieldService
     def multimediaService
@@ -24,7 +24,7 @@ class ProjectController {
     def collectionEventService
     def localityService
     javax.sql.DataSource dataSource
-    def ROLE_ADMIN = grailsApplication.config.auth.admin_role
+
     /**
      * Project home page - shows stats, etc.
      */
@@ -43,7 +43,7 @@ class ProjectController {
             def taskCount = Task.countByProject(projectInstance)
             def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
             def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
-            def expedition = ConfigurationHolder.config.expedition
+            def expedition = grailsApplication.config.expedition
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"
             expedition.each {
@@ -95,13 +95,13 @@ class ProjectController {
         def taskListFields = []
 
         if (projectInstance) {
-            private long startQ  = System.currentTimeMillis();
+            long startQ  = System.currentTimeMillis();
             def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:999])
 
             if (taskList.size() > 0) {
                 def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
                 def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList, params))
-                private long endQ  = System.currentTimeMillis();
+                long endQ  = System.currentTimeMillis();
                 log.debug("DB query took " + (endQ - startQ) + " ms")
                 log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
                 taskList.eachWithIndex { tsk, i ->
@@ -115,7 +115,7 @@ class ProjectController {
                     }
                 }
 
-                private long endJ  = System.currentTimeMillis();
+                long endJ  = System.currentTimeMillis();
                 log.debug("JSON loop took " + (endJ - endQ) + " ms")
                 log.debug("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
             }
@@ -132,7 +132,7 @@ class ProjectController {
     def mailingList = {
         def projectInstance = Project.get(params.id)
 
-        if (projectInstance && authService.userInRole(ROLE_ADMIN)) {
+        if (projectInstance && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def userIds = taskService.getUserIdsForProject(projectInstance)
             log.debug("userIds = " + userIds)
             //render(userIds)
@@ -153,7 +153,7 @@ class ProjectController {
      * @param fieldList
      * @return
      */
-    Map fieldListToMap(List fieldList) {
+    private Map fieldListToMap(List fieldList) {
         Map fieldMap = [:]
         fieldList.each {
             if (it.value) {
@@ -170,7 +170,7 @@ class ProjectController {
      * @param fieldList
      * @return
      */
-    Map fieldListToMultiMap(List fieldList) {
+    private Map fieldListToMultiMap(List fieldList) {
         Map taskMap = [:]
 
         fieldList.each {
@@ -275,7 +275,7 @@ class ProjectController {
 
         def projectList
 
-        if (authService.userInRole(ROLE_ADMIN)) {
+        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
             projectList = Project.list()
         } else {
             projectList = Project.findAllByInactiveOrInactive(false, null)
@@ -368,12 +368,12 @@ class ProjectController {
 
     def create = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def projectInstance = new Project()
             projectInstance.properties = params
             return [projectInstance: projectInstance, templateList: Template.list()]
         } else {
-            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
@@ -404,7 +404,7 @@ class ProjectController {
             params.max = 1
             def task = Task.findByProject(projectInstance, params)
             if (task?.multimedia?.filePathToThumbnail) {
-                redirect(url: ConfigurationHolder.config.server.url + task?.multimedia?.filePathToThumbnail.get(0))
+                redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail.get(0))
             }
         }
     }
@@ -423,7 +423,7 @@ class ProjectController {
 
     def edit = {
         def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(ROLE_ADMIN)) {
+        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def projectInstance = Project.get(params.id)
             if (!projectInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -439,7 +439,7 @@ class ProjectController {
                 return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes ]
             }
         } else {
-            flash.message = "You do not have permission to view this page (${ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
@@ -505,7 +505,7 @@ class ProjectController {
                 }
 
                 try {
-                    def filePath = "${ConfigurationHolder.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+                    def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
                     def file = new File(filePath);
                     file.getParentFile().mkdirs();
                     f.transferTo(file);
@@ -525,7 +525,7 @@ class ProjectController {
             def project = Project.get(params.id)
             if (project) {
                 def iconIndex = params.int("iconIndex")?:0
-                def role = ConfigurationHolder.config.expedition[0]
+                def role = grailsApplication.config.expedition[0]
                 def icons = role.icons
                 if (iconIndex >= 0 && iconIndex < icons.size()) {
                     project.leaderIconIndex = iconIndex
