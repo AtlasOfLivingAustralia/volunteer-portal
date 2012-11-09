@@ -1,15 +1,14 @@
 package au.org.ala.volunteer
 
 import grails.orm.PagedResultList
-import org.codehaus.groovy.grails.plugins.web.taglib.RenderTagLib
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.annotation.Propagation
 
 class ForumService {
 
     static transactional = true
 
     def logService
+    def groovyPageRenderer
+    def emailService
 
     PagedResultList getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
         def c = ProjectForumTopic.createCriteria()
@@ -123,10 +122,18 @@ class ForumService {
             def userMap = messageList.groupBy { it.user }
             logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
             userMap.keySet().each { user ->
-                println user.displayName + " " + userMap[user].collect({it.topic.title}).join(", ");
+                def messages = userMap[user]?.sort { it.message.date }
+                def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
+                emailService.sendMail(user.userId, "BVP Forum notification", message)
+            }
+
+            // now clean up the notification list
+            messageList.each {
+                it.delete()
             }
         }
-
     }
+
+
 
 }
