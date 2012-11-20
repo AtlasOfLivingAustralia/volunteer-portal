@@ -388,7 +388,7 @@ class ProjectController {
 
             if (projectInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
-                redirect(action: "show", model: [id: projectInstance.id])
+                redirect(action: "index", id: projectInstance.id)
             } else {
                 render(view: "create", model: [projectInstance: projectInstance])
             }
@@ -459,7 +459,7 @@ class ProjectController {
             projectInstance.properties = params
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
-                redirect(action: "show", id: projectInstance.id)
+                redirect(action: "index", id: projectInstance.id)
             }
             else {
                 render(view: "edit", model: [projectInstance: projectInstance])

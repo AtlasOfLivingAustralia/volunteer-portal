@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
-        <title><g:message code="default.create.label" args="[entityName]" /></title>
+        <title>Create Expedition</title>
         <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
     </head>
     <body class="sublevel sub-site volunteerportal">
@@ -131,7 +131,16 @@
                                     <g:checkBox name="showMap" value="${projectInstance?.showMap}" />
                                 </td>
                             </tr>
-                        
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="inactive"><g:message code="project.inactive.label" default="Deactivate this project (will not appear in expedition list if ticked)" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'inactive', 'errors')}">
+                                    <g:checkBox name="inactive" value="${projectInstance?.inactive}" />
+                                </td>
+                            </tr>
+
                         </tbody>
                     </table>
                 </div>

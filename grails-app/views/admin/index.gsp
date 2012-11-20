@@ -37,8 +37,8 @@
             <td>Configure the appearance of the front page</td>
           </tr>
           <tr>
-            <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'project', action:'create')}'">Create project</button></td>
-            <td>Create a new volunteer project</td>
+            <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'project', action:'create')}'">Create Expedition</button></td>
+            <td>Create a new Volunteer Expedition</td>
           </tr>
           <tr>
             <td><button style="margin: 6px" onclick="location.href='${createLink(controller:'collectionEvent', action:'load')}'">Load collection events</button></td>
