@@ -11,10 +11,15 @@ class ForumController {
     def projectForum = {
 
         def projectId = params.int("projectId")
+
+        if (!params.max) {
+            params.max = 10
+        }
+
         if (projectId) {
             def projectInstance = Project.get(projectId)
             if (projectInstance) {
-                def topics = forumService.getProjectForumTopics(projectInstance, false)
+                def topics = forumService.getProjectForumTopics(projectInstance, false, params)
                 def topicCounts = [:]
                 topics.each { topic ->
                     def replyCount = ForumMessage.countByTopic(topic)
@@ -65,6 +70,7 @@ class ForumController {
             if (messages) {
                 flash.message = formatMessages(messages)
                 redirect(action: 'addProjectTopic', params: params)
+                return
             }
 
             def locked = false
@@ -134,9 +140,11 @@ class ForumController {
 
     def projectForumTopic = {
         def topic = ProjectForumTopic.get(params.id)
-        topic.lock()
-        topic.views++
-        topic.save()
+        if (topic) {
+            topic.lock()
+            topic.views++
+            topic.save()
+        }
         [topic: topic, userInstance: userService.currentUser, projectInstance: topic.project]
     }
 

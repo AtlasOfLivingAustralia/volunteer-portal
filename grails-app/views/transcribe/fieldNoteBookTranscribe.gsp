@@ -25,7 +25,6 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
-<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 
 <script type="text/javascript">
     // global Object 
@@ -163,9 +162,15 @@
             location.href = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
         });
 
-        $(":range").rangeinput({
-            onSlide: zoomJournalImage
-        }).change(zoomJournalImage);
+        $("#range").slider({
+            min: 50,
+            value: 100,
+            max: 200,
+            slide: function(e, ui) {
+                var value = $("#range").slider( "option", "value" );
+                $("#journalPageImg").css("width", value + "%");
+            }
+        });
 
         // display previous journal page in new window
         $("#showPreviousJournalPage").click(function(e) {
@@ -309,8 +314,8 @@
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
-            <g:set var="defaultWidthPercent" value="100" />
-            <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
+
+            <div id="range" style="display: inline-block; width:150px; margin-left: 10px; margin-right: 10px;"></div>
 
             <span id="journalPageButtons">
                 <button id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous journal page</button>

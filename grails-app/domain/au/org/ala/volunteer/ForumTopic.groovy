@@ -10,6 +10,7 @@ class ForumTopic {
     ForumTopicPriority priority = ForumTopicPriority.Normal
     Integer views = 0
     Boolean deleted
+    Date lastReplyDate
 
     static belongsTo = [creator: User]
 
@@ -24,6 +25,7 @@ class ForumTopic {
         priority nullable: true
         views nullable: true
         deleted nullable: true
+        lastReplyDate nullable: true
     }
 
     static mapping = {

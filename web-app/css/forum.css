@@ -78,9 +78,20 @@ blockquote p {
 }
 
 tr.Important td:nth-of-type(2) a {
+    color: #008000;
+    font-weight: bold;
+}
+
+tr.Warning td:nth-of-type(2) a {
+    color: #0000ff;
+    font-weight: bold;
+}
+
+tr.Critical td:nth-of-type(2) a {
     color: #ff4500;
     font-weight: bold;
 }
+
 
 .newTopicFields textarea {
   width: 100%;

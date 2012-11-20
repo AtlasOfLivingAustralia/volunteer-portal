@@ -25,9 +25,6 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
-%{--<link rel="stylesheet" type="text/css" href="http://static.flowplayer.org/tools/css/standalone.css"/>--}%
-<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
-%{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'ScottSisiters.js')}"></script>
 
 <script type="text/javascript">
@@ -100,9 +97,15 @@
             location.href = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
         });
 
-        $(":range").rangeinput({
-            onSlide: zoomJournalImage
-        }).change(zoomJournalImage);
+        $("#range").slider({
+            min: 50,
+            value: 100,
+            max: 200,
+            slide: function(e, ui) {
+                var value = $("#range").slider( "option", "value" );
+                $("#journalPageImg").css("width", value + "%");
+            }
+        });
 
         // Display painting for a given painting number
         $("#showPainting").click(function(e) {
@@ -205,8 +208,8 @@
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
-            <g:set var="defaultWidthPercent" value="100" />
-            <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
+
+            <div id="range" style="display: inline-block; width:150px; margin-left: 10px; margin-right: 10px;"></div>
 
             <span id="journalPageButtons">
                 <button id="showPreviousJournalPage" title="displays page in new window">&lt;&ndash; show previous page</button>
@@ -217,7 +220,7 @@
                 <g:set var="imageIndex" value="0"/>
                 <g:each in="${taskInstance.multimedia}" var="m" status="i">
                     <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
-                    <div class="pageViewer" id="journalPageImg" style="width:${defaultWidthPercent}%;height:300px;">
+                    <div class="pageViewer" id="journalPageImg" style="width:100%;height:300px;">
                         <div><img id="image_${imageIndex++}" src="${imageUrl}" style="width:100%;"/></div>
                     </div>
                 </g:each>

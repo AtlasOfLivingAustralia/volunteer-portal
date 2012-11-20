@@ -28,7 +28,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>
 
     <g:javascript library="application" />
-    <g:javascript library="jquery.tools.min"/>
+    %{--<g:javascript library="jquery.tools.min"/>--}%
 
     <tinyMce:resources />
 

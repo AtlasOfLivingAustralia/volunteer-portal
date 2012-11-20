@@ -97,7 +97,14 @@ function initialize() {
 
     var localityStr = $(':input.verbatimLocality').val();
     if (!$(':input#address').val()) {
-        $(':input#address').val($(':input.verbatimLocality').val());
+        var latLongRegex = /([-]{0,1}\d+)[^\d](\d+)[^\d](\d+).*?([-]{0,1}\d+)[^\d](\d+)[^\d](\d+)/;
+        var match = latLongRegex.exec(localityStr);
+        if (match) {
+            var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
+            $(':input#address').val(interpretedLatLong);
+        } else {
+            $(':input#address').val($(localityStr));
+        }
     }
     if (lat && lng) {
         geocodePosition(latLng);

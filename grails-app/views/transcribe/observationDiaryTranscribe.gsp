@@ -17,16 +17,12 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.datepicker.js')}"></script>--}%
-%{--<link rel="stylesheet" href="${resource(dir: 'css/smoothness', file: 'ui.all.css')}"/>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
-<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'rangeSlider.css')}"/>
 
 <script type="text/javascript">
     // global Object 
@@ -236,9 +232,15 @@
             location.href = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
         });
 
-        $(":range").rangeinput({
-            onSlide: zoomJournalImage
-        }).change(zoomJournalImage);
+        $("#range").slider({
+            min: 300,
+            value: 400,
+            max: 800,
+            slide: function(e, ui) {
+                var value = $("#range").slider( "option", "value" );
+                $("#journalPageImg").css("height", value + "%");
+            }
+        });
 
         $("#imagePane").scrollview({
             grab:"${resource(dir: 'images', file: 'openhand.cur')}",
@@ -395,8 +397,8 @@
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
-            <g:set var="defaultWidthPercent" value="400" />
-            <input type="range" name="width" min="200" max="600" value="${defaultWidthPercent}" />
+
+            <div id="range" style="display: inline-block; width:150px; margin-left: 10px; margin-right: 10px;"></div>
 
             <span id="journalPageButtons">
                 <button id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous journal page</button>
@@ -409,7 +411,7 @@
                 <g:each in="${taskInstance.multimedia}" var="m" status="i">
                   <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
                     <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
-                    <div class="pageViewer" id="journalPageImg" style="width:972px;height:${defaultWidthPercent}%;">
+                    <div class="pageViewer" id="journalPageImg" style="width:972px;height:400%;">
                         <img id="image_${imageIndex++}" src="${imageUrl}" style="height:100%;"/>
                     </div>
                   </g:if>

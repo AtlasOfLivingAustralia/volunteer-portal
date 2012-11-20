@@ -177,9 +177,15 @@
             location.href = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
         });
 
-        $(":range").rangeinput({
-            onSlide: zoomJournalImage
-        }).change(zoomJournalImage);
+        $("#range").slider({
+            min: 80,
+            value: 100,
+            max: 200,
+            slide: function(e, ui) {
+                var value = $("#range").slider( "option", "value" );
+                $("#journalPageImg").css("width", value + "%");
+            }
+        });
 
         $("#imagePane").scrollview({
             grab:"${resource(dir: 'images', file: 'openhand.cur')}",
@@ -296,9 +302,6 @@
       </nav>
       <hgroup>
         <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
-        %{--<g:if test="${sequenceNumber >= 0}">--}%
-          %{--<span>Image sequence number: ${sequenceNumber}</span>--}%
-        %{--</g:if>--}%
       </hgroup>
     </div>
   </header>
@@ -319,7 +322,8 @@
             <g:hiddenField name="redirect" value="${params.redirect}"/>
             <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
             <g:set var="defaultWidthPercent" value="100" />
-            <input type="range" name="width" min="50" max="150" value="${defaultWidthPercent}" />
+
+            <div id="range" style="display: inline-block; width:150px; margin-left: 10px; margin-right: 10px;"></div>
 
             <span id="journalPageButtons">
                 <button id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous journal page</button>

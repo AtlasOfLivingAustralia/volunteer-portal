@@ -20,4 +20,12 @@ class ForumMessage {
         replyTo nullable: true
     }
 
+    def beforeInsert() {
+
+        ForumTopic.withNewSession {
+            topic.lastReplyDate = date
+        }
+
+    }
+
 }

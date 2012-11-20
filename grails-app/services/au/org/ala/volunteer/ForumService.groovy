@@ -27,7 +27,7 @@ class ForumService {
             and {
                 order("sticky", "desc")
                 order("priority", "desc")
-                order("dateCreated", "desc")
+                order("lastReplyDate", "desc")
             }
             if (params?.max) {
                 maxResults(params.max as Integer)
