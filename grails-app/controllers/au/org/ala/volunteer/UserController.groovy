@@ -38,12 +38,14 @@ class UserController {
     }
 
     def list = {
+
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (!params.sort){
           // set default sort and order
           params.sort = params.sort ? params.sort : "transcribedCount"
           params.order = "desc"
         }
+
         def currentUser = authService.username()
         def results = userService.getUserList(params)
         //def results = userService.filteredUserList(params)

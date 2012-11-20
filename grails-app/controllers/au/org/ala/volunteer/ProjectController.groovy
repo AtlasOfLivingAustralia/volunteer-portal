@@ -318,6 +318,32 @@ class ProjectController {
 
         def renderList = projects.collect({ kvp -> kvp.value })
 
+        if (params.q) {
+            String query = params.q.toLowerCase()
+
+            renderList = renderList.findAll { kvp ->
+                def project = kvp.project as Project
+
+                if (project.featuredLabel?.toLowerCase()?.contains(query)) {
+                    return true
+                }
+
+                if (project.featuredOwner?.toLowerCase()?.contains(query)) {
+                    return true
+                }
+
+                if (project.description?.toLowerCase()?.contains(query)) {
+                    return true;
+                }
+
+                if (project.shortDescription?.toLowerCase()?.contains(query)) {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         renderList = renderList.sort { p ->
 
             if (params.sort == 'completed') {
@@ -360,8 +386,8 @@ class ProjectController {
         session.expeditionSort = params.sort;
 
         [
-            projects: renderList[startIndex .. endIndex],
-            projectInstanceTotal: Project.count(),
+            projects: renderList ? renderList[startIndex .. endIndex] : [],
+            projectInstanceTotal: renderList.size(),
             numberOfUncompletedProjects: numberOfUncompletedProjects
         ]
     }
