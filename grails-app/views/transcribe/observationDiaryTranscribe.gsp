@@ -300,7 +300,6 @@
 
     function zoomJournalImage(event, value) {
       $("#journalPageImg").css("height", value + "%");
-      console.log($("#journalPageImg").css("height"));
     }
 
 </script>
