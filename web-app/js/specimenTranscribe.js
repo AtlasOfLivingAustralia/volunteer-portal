@@ -103,7 +103,7 @@ function initialize() {
             var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
             $(':input#address').val(interpretedLatLong);
         } else {
-            $(':input#address').val($(localityStr));
+            $(':input#address').val(localityStr);
         }
     }
     if (lat && lng) {
