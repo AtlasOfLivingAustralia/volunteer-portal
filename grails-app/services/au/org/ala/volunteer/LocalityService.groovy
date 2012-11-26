@@ -127,12 +127,14 @@ class LocalityService {
         def results = c {
             and {
                 eq('institutionCode', institution)
-                and {
-                    or {
-                        ilike('locality', "${wildcardChar}${query}${wildcardChar}")
-                        ilike('township', "${wildcardChar}${query}${wildcardChar}")
-                    }
+                or {
+                    ilike('locality', "${wildcardChar}${query}${wildcardChar}")
+                    ilike('township', "${wildcardChar}${query}${wildcardChar}")
                 }
+                notEqual('latitude', (double) 0)
+                notEqual('longitude', (double) 0)
+                isNotNull('latitude')
+                isNotNull('longitude')
             }
             maxResults(maxRows)
         }
@@ -150,6 +152,10 @@ class LocalityService {
             and {
                 eq('institutionCode', institution)
                 and {
+                    notEqual('latitude', (double) 0)
+                    notEqual('longitude', (double) 0)
+                    isNotNull('latitude')
+                    isNotNull('longitude')
                     for (String bit : bits) {
                         or {
                             ilike('locality', "${wildcardChar}${bit}${wildcardChar}")
@@ -212,6 +218,10 @@ class LocalityService {
                         ilike('township', "${wildcardChar}${query}${wildcardChar}")
                     }
                     ilike('state', "${state}")
+                    notEqual('latitude', (double) 0)
+                    notEqual('longitude', (double) 0)
+                    isNotNull('latitude')
+                    isNotNull('longitude')
                 }
             }
             maxResults(maxRows)
@@ -247,6 +257,10 @@ class LocalityService {
                         }
                     }
                     ilike('state', "${state}")
+                    notEqual('latitude', (double) 0)
+                    notEqual('longitude', (double) 0)
+                    isNotNull('latitude')
+                    isNotNull('longitude')
                 }
             }
             maxResults(maxRows)

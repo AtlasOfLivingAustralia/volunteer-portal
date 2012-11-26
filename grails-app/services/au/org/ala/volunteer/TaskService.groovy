@@ -483,7 +483,7 @@ class TaskService {
         }
 
         try {
-            def dir = new File(config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
+            def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
             if (!dir.exists()) {
                 logService.log "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()

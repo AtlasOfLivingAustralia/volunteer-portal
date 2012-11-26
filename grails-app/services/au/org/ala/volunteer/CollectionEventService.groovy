@@ -25,6 +25,8 @@ class CollectionEventService {
                         like('collectorNormalised', '%' + normaliseCollector(collector) + '%')
                     }
                 }
+                notEqual('latitude', (double) 0)
+                notEqual('longitude', (double) 0)
                 isNotNull('latitude')
                 isNotNull('longitude')
                 if (locality) {
