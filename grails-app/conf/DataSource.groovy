@@ -38,7 +38,8 @@ environments {
         dataSource {
             dbCreate = "update"
             //url = "jdbc:postgresql:volunteers"
-            url = "jdbc:postgresql://ala-biocachedb1.vm.csiro.au/volunteers"
+            // url = "jdbc:postgresql://ala-biocachedb1.vm.csiro.au/volunteers"
+            url = "jdbc:postgresql://127.0.0.1/volunteers"
         }
     }
 }
