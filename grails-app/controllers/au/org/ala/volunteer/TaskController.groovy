@@ -173,7 +173,7 @@ class TaskController {
                 if (!success) {
                     flash.message = message + " - Try again when current load is complete."
                 }
-                redirect( uri: "/loadProgress.gsp")
+                redirect( controller:'loadProgress', action:'index')
             }
         }
     }
@@ -181,7 +181,7 @@ class TaskController {
     def cancelLoad = {
         taskLoadService.cancelLoad()
         flash.message = "Cancelled!"
-        redirect( uri: "/loadProgress.gsp")
+        redirect( controller:'loadProgress', action:'index')
     }
 
     def index = {
