@@ -31,12 +31,12 @@
                 <span class="numbered">1</span> <a href="https://auth.ala.org.au/emmet/selfRegister.html" class="button orange">Register</a> <p>Already registered with the Atlas?<br/><cl:loginLink /></p>
               </cl:isNotLoggedIn>
               <cl:isLoggedIn>
-                <span class="numbered">1</span> <h2>Hi !</h2><p>You're registered with the Atlas, so <a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay.id, action: 'index')}">start transcribing</a> or <a href="${createLink(controller: 'user', action:'myStats')}">view your tasks</a>.</p>
+                <span class="numbered">1</span> <h2>Hi !</h2><p>You're registered with the Atlas, so <a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay?.id, action: 'index')}">start transcribing</a> or <a href="${createLink(controller: 'user', action:'myStats')}">view your tasks</a>.</p>
               </cl:isLoggedIn>
             </li>
             <li class="double"><div style="float:left;postition:relative;">
               <span class="numbered">2</span> <a href="${createLink(controller: 'project', action: 'list')}" class="button orange">Join a virtual expedition</a> <p><a href="${createLink(controller: 'project', action: 'list')}">Find a virtual expedition</a> that suits you.</p></div><span class="grey" style="float:left;postition:relative;">or</span>
-              <div style="float:left;postition:relative;"><a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay.id, action: 'index')}" class="button orange">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a> <p>Join the <a href="${createLink(controller: 'project', id: frontPage.projectOfTheDay.id, action: 'index')}">virtual expedition of the day</a>.</p></div>
+              <div style="float:left;postition:relative;"><a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay?.id, action: 'index')}" class="button orange">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a> <p>Join the <a href="${createLink(controller: 'project', id: frontPage.projectOfTheDay?.id, action: 'index')}">virtual expedition of the day</a>.</p></div>
             </li>
 
             <li class="last">
@@ -55,20 +55,20 @@
           <p>Help capture the wealth of information hidden in our natural history collections, field notebooks and survey sheets. This information will be used for better understanding, managing and conserving our precious biodiversity. <a href="${createLink(controller: 'about', action:'index')}" class="button">Learn more</a></p>
 
           <h2 class="orange">Virtual expedition of the day</h2>
-          <div class="button-nav"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay.id}" style="background-image:url(${frontPage.projectOfTheDay.featuredImage});"><h2>${frontPage.projectOfTheDay.featuredLabel}</h2></a></div>
+          <div class="button-nav"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay?.id}" style="background-image:url(${frontPage.projectOfTheDay?.featuredImage});"><h2>${frontPage.projectOfTheDay?.featuredLabel}</h2></a></div>
           <div>
-            <span class="eyebrow">${frontPage.projectOfTheDay.featuredOwner}</span>
-            <h2 class="grey"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay.id}">${frontPage.projectOfTheDay.name}</a></h2>
-            <p>${frontPage.projectOfTheDay.shortDescription} <a href="${grailsApplication.config.grails.serverURL}/transcribe/index/${frontPage.projectOfTheDay.id}" class="button">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe.png" width="37" height="18" alt=""></a></p>
+            <span class="eyebrow">${frontPage.projectOfTheDay?.featuredOwner}</span>
+            <h2 class="grey"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.name}</a></h2>
+            <p>${frontPage.projectOfTheDay?.shortDescription} <a href="${grailsApplication.config.grails.serverURL}/transcribe/index/${frontPage.projectOfTheDay?.id}" class="button">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe.png" width="37" height="18" alt=""></a></p>
           </div>
         </section>
         <section>
           <hgroup><h2 class="alignleft">More expeditions</h2><a href="${createLink(controller: 'project', action: 'list')}" class="button alignright">View all</a></hgroup>
           <nav>
             <ol>
-              <li><a href="${createLink(controller: 'project', id: frontPage.featuredProject1.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject1.featuredImage});"><h2>${frontPage.featuredProject1.featuredLabel}</h2></a></li>
-              <li><a href="${createLink(controller: 'project', id: frontPage.featuredProject2.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject2.featuredImage});"><h2>${frontPage.featuredProject2.featuredLabel}</h2></a></li>
-              <li class="last"><a href="${createLink(controller: 'project', id: frontPage.featuredProject3.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject3.featuredImage});"><h2>${frontPage.featuredProject3.featuredLabel}</h2></a></li>
+              <li><a href="${createLink(controller: 'project', id: frontPage.featuredProject1?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject1?.featuredImage});"><h2>${frontPage.featuredProject1?.featuredLabel}</h2></a></li>
+              <li><a href="${createLink(controller: 'project', id: frontPage.featuredProject2?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject2?.featuredImage});"><h2>${frontPage.featuredProject2?.featuredLabel}</h2></a></li>
+              <li class="last"><a href="${createLink(controller: 'project', id: frontPage.featuredProject3?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject3?.featuredImage});"><h2>${frontPage.featuredProject3?.featuredLabel}</h2></a></li>
             </ol>
           </nav>
         </section>
@@ -105,16 +105,16 @@
               </g:if>
               <h3>
                 <g:if test="${frontPage.useGlobalNewsItem == false}">
-                  <g:link action="show" controller="newsItem" id="${newsItem.id}">${newsItem.title}</g:link>
+                  <g:link action="show" controller="newsItem" id="${newsItem?.id}">${newsItem.title}</g:link>
                 </g:if>
                 <g:else>
                   ${newsItem.title}
                 </g:else>
               </h3>
               <p>
-                ${newsItem.shortDescription}
+                ${newsItem?.shortDescription}
                 <g:if test="${frontPage.useGlobalNewsItem == false}">
-                  <g:link controller="newsItem" action="show" id="${newsItem.id}">Read more...</g:link>
+                  <g:link controller="newsItem" action="show" id="${newsItem?.id}">Read more...</g:link>
                 </g:if>
               </p>
             </article>

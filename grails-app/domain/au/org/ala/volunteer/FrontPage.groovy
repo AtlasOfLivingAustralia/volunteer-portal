@@ -26,6 +26,10 @@ class FrontPage {
         showAchievements nullable: true
         enableTaskComments nullable:  true
         enableForum nullable: true
+        projectOfTheDay nullable: true
+        featuredProject1 nullable: true
+        featuredProject2 nullable: true
+        featuredProject3 nullable: true
     }
 
     static FrontPage instance() {

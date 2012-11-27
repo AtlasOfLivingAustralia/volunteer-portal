@@ -30,7 +30,7 @@
                       <g:select name="projectOfTheDay" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"  />
                   </td>
                   <td>
-                    <g:link action="edit" controller="project" id="${frontPage.projectOfTheDay.id}">edit project...</g:link>
+                    <g:link action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">edit project...</g:link>
                   </td>
               </tr>
 
@@ -42,7 +42,7 @@
                       <g:select name="featuredProject1" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject1?.id}"  />
                   </td>
                   <td>
-                    <g:link action="edit" controller="project" id="${frontPage.featuredProject1.id}">edit project...</g:link>
+                    <g:link action="edit" controller="project" id="${frontPage.featuredProject1?.id}">edit project...</g:link>
                   </td>
               </tr>
 
@@ -54,7 +54,7 @@
                       <g:select name="featuredProject2" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject2?.id}"  />
                   </td>
                   <td>
-                    <g:link action="edit" controller="project" id="${frontPage.featuredProject2.id}">edit project...</g:link>
+                    <g:link action="edit" controller="project" id="${frontPage.featuredProject2?.id}">edit project...</g:link>
                   </td>
               </tr>
 
@@ -66,7 +66,7 @@
                       <g:select name="featuredProject3" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject3?.id}"  />
                   </td>
                   <td>
-                    <g:link action="edit" controller="project" id="${frontPage.featuredProject3.id}">edit project...</g:link>
+                    <g:link action="edit" controller="project" id="${frontPage.featuredProject3?.id}">edit project...</g:link>
                   </td>
               </tr>
 

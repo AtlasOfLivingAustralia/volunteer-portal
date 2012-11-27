@@ -37,7 +37,7 @@ class BootStrap {
           frontPage.featuredProject2 = projectList[2]
           frontPage.featuredProject3 = projectList[3]
 
-          frontPage.save()
+          frontPage.save(flush: true, failOnError: true)
       }
 
       FrontPage.metaClass.'static'.getFeaturedProject = { ->
