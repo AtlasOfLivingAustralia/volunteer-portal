@@ -6,6 +6,7 @@ import groovy.sql.Sql
 import javax.sql.DataSource
 import java.sql.ResultSet
 import org.grails.plugins.csv.CSVWriter
+import org.grails.plugins.csv.CSVWriterColumnsBuilder
 
 class AjaxController {
 
@@ -166,9 +167,6 @@ class AjaxController {
         response.addHeader("Content-type", "text/plain")
 
         if (params.id) {
-
-            def fieldNames = ['catalogNumber', 'institutionCode', 'scientificName', 'decimalLatitude', 'decimalLongitude']
-
             def projectInstance = Project.get(params.id)
             if (projectInstance) {
 
@@ -176,7 +174,7 @@ class AjaxController {
                     fieldValues.find { it.name == name } ?.value?:""
                 }
 
-                def writer = new CSVWriter(response.writer, {
+                def columns = {
                     'catalogNumber' { findValue(it.fieldValues, 'catalogNumber') }
                     'institutionCode' { findValue(it.fieldValues, 'institutionCode') }
                     'scientificName' { findValue(it.fieldValues, 'scientificName') }
@@ -185,10 +183,11 @@ class AjaxController {
                     'transcriber' { it.task.fullyTranscribedBy }
                     'eventDate' { findValue(it.fieldValues, 'eventDate') }
                     'associatedMedia' { "${grailsApplication.config.server.url}${it.task?.multimedia?.toList()[0]?.filePath}" }
-                    'occurrence_id' { createLink(controller: 'task', action: 'show', id: it?.task?.id, absolute: true ) }
+                    'occurrenceId' { createLink(controller: 'task', action: 'show', id: it?.task?.id, absolute: true ) }
+                }
 
-                })
-
+                def fieldNames = new CSVWriterColumnsBuilder(columns).columns.collect { it.key }
+                def writer = new CSVWriter(response.writer, columns)
                 def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
 
                 for (Task t : fields.keySet()) {
