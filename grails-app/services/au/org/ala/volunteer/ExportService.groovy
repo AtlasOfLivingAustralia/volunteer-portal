@@ -3,7 +3,6 @@ package au.org.ala.volunteer
 import au.com.bytecode.opencsv.CSVWriter
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 class ExportService {
 
@@ -81,7 +80,7 @@ class ExportService {
         // Prepare the response for a zip file - use the project name as a basis of the filename
         def filename = "Project-" + project.featuredLabel.replaceAll(" ","") + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
-        response.setContentType("application/zip, application/octet-stream");
+        response.setContentType("application/zip");
 
         // First up write out the main tasks file -all the remaining fields are single value only
         def zipStream = new ZipOutputStream(response.getOutputStream())

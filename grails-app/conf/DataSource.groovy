@@ -1,6 +1,5 @@
 dataSource {
     pooled = true
-    //driverClassName = "com.mysql.jdbc.Driver"
     driverClassName = "org.postgresql.Driver"
     username = "root"
     password = "password"
@@ -16,7 +15,6 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
-            //url = "jdbc:mysql://localhost/volunteers"
             username="postgres"
             password="password"
             url = "jdbc:postgresql://localhost/volunteers"
@@ -26,10 +24,8 @@ environments {
     test {
         dataSource {
             dbCreate = "update"
-            //url = "jdbc:mysql://localhost/volunteerstest"
             url = "jdbc:postgresql://localhost/volunteerstest"
             driverClassName = "org.postgresql.Driver"
-            //driverClassName = "com.mysql.jdbc.Driver"
             username = "postgres"
             password = "password"
         }
@@ -37,9 +33,7 @@ environments {
     production {
         dataSource {
             dbCreate = "update"
-            //url = "jdbc:postgresql:volunteers"
-            // url = "jdbc:postgresql://ala-biocachedb1.vm.csiro.au/volunteers"
-            url = "jdbc:postgresql://127.0.0.1/volunteers"
+            url = "jdbc:postgresql://ala-biocachedb1.vm.csiro.au/volunteers"
         }
     }
 }

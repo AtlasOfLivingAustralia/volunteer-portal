@@ -1,12 +1,11 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import au.com.bytecode.opencsv.CSVWriter
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 import javax.sql.DataSource
 import java.sql.ResultSet
-import javax.servlet.http.HttpServletRequest
+import org.grails.plugins.csv.CSVWriter
 
 class AjaxController {
 
@@ -86,12 +85,20 @@ class AjaxController {
 
         if (params.wt && params.wt == 'csv') {
 
-            def writer = new CSVWriter(response.writer, (char) '\t')
-            writer.writeNext("user_id", "display_name", "transcribed_count", "validated_count", "last_activity", "projects_count", "volunteer_since")
+            def writer = new CSVWriter((Writer) response.writer,  {
+                'user_id' { it[0] }
+                'display_name' { it[1] }
+                'transcribed_count' { it[2] }
+                'validated_count' { it[3] }
+                'last_activity' { it[4] ?: nodata }
+                'projects_count' { it[5] }
+                'volunteer_since' { it[6] }
+            })
+
             for (def row : report) {
-                writer.writeNext((String) row[0], (String) row[1], (String) row[2], (String) row[3], (String) row[4] ?: nodata, (String) row[5], (String) row[6] )
+                writer << row
             }
-            writer.flush()
+
         } else {
             render report as JSON
         }
@@ -106,17 +113,23 @@ class AjaxController {
         setNoCache()
         response.addHeader("Content-type", "text/plain")
 
-        def writer = new CSVWriter(response.writer, (char) '\t')
-        writer.writeNext("time", "project", "task id", "succeeded", "message", "image url")
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd")
+
+        def writer = new CSVWriter(response.writer,  {
+            'time' { sdf.format(it.time) }
+            'project' { it.taskDescriptor?.project?.name }
+            'task_id' { it.taskDescriptor?.externalIdentifier }
+            'succeeded' { it.succeeded }
+            'error_message' { it.message }
+            'image_url' { it.taskDescriptor?.imageUrl  }
+        })
 
         def errors = taskLoadService.lastReport
         if (errors && errors.size() > 0) {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd")
             for (def error : errors) {
-                writer.writeNext( sdf.format(error.time), error.taskDescriptor.project.name, (String) error.taskDescriptor.externalIdentifier, (String) error.succeeded, error.message, error.taskDescriptor.imageUrl );
+                writer << error
             }
         }
-        writer.flush()
     }
 
     def expeditionInfo = {
@@ -149,11 +162,8 @@ class AjaxController {
     }
 
     def expeditionBiocacheData = {
-
         setNoCache()
         response.addHeader("Content-type", "text/plain")
-        def writer = new CSVWriter(response.writer)
-        writer.writeNext("catalog_id", "institution_code", "scientific_name", "decimal_latitude","decimal_longitude","associated_media", "occurrence_id")
 
         if (params.id) {
 
@@ -161,24 +171,31 @@ class AjaxController {
 
             def projectInstance = Project.get(params.id)
             if (projectInstance) {
+
+                def findValue = { List<Field> fieldValues, String name ->
+                    fieldValues.find { it.name == name } ?.value?:""
+                }
+
+                def writer = new CSVWriter(response.writer, {
+                    'catalogNumber' { findValue(it.fieldValues, 'catalogNumber') }
+                    'institutionCode' { findValue(it.fieldValues, 'institutionCode') }
+                    'scientificName' { findValue(it.fieldValues, 'scientificName') }
+                    'decimalLatitude' { findValue(it.fieldValues, 'decimalLatitude') }
+                    'decimalLongitude' { findValue(it.fieldValues, 'decimalLongitude') }
+                    'transcriber' { it.task.fullyTranscribedBy }
+                    'eventDate' { findValue(it.fieldValues, 'eventDate') }
+                    'associatedMedia' { "${grailsApplication.config.server.url}${it.task?.multimedia?.toList()[0]?.filePath}" }
+                    'occurrence_id' { createLink(controller: 'task', action: 'show', id: it?.task?.id, absolute: true ) }
+
+                })
+
                 def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
 
                 for (Task t : fields.keySet()) {
-                    def fieldValues = fields[t]
-                    def values = []
-                    values.add(fieldValues.find { it.name == 'catalogNumber' } ?.value?:"")
-                    values.add(fieldValues.find { it.name == 'institutionCode' } ?.value?:"")
-                    values.add(fieldValues.find { it.name == 'scientificName' } ?.value?:"")
-                    values.add(fieldValues.find { it.name == 'decimalLatitude' } ?.value?:"")
-                    values.add(fieldValues.find { it.name == 'decimalLongitude' } ?.value?:"")
-                    values.add("${grailsApplication.config.server.url}${t.multimedia.toList()[0].filePath}")
-                    values.add(createLink(controller: 'task', action: 'show', id: t.id, absolute: true ))
-                    writer.writeNext((String[]) values.toArray())
+                    writer << [task: t, fieldValues: fields[t]]
                 }
             }
         }
-
-        writer.flush()
     }
 
     def keepSessionAlive = {
