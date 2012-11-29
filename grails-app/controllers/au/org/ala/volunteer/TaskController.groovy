@@ -2,6 +2,9 @@ package au.org.ala.volunteer
 
 import grails.converters.*
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.web.multipart.MultipartHttpServletRequest
+import org.springframework.web.multipart.MultipartFile
+import java.util.regex.Pattern
 
 class TaskController {
 
@@ -15,6 +18,7 @@ class TaskController {
     def logService
     def userService
     def grailsApplication
+    def stagingService
 
     def load = {
         [projectList: Project.list()]
@@ -515,4 +519,89 @@ class TaskController {
             render results as JSON
         }
     }
+
+    def staging() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (!projectInstance) {
+            redirect(controller: 'index')
+            return
+        }
+        def profile = ProjectStagingProfile.findByProject(projectInstance)
+        if (!profile) {
+            profile = new ProjectStagingProfile(project: projectInstance)
+            profile.save(flush: true, failOnError: true)
+            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
+        }
+
+        def images = stagingService.listStagedFiles(projectInstance)
+
+        images.each { image ->
+            image.valueMap = [:]
+            profile.fieldDefinitions.each { field ->
+                def value = ""
+                switch (field.fieldDefinitionType) {
+                    case FieldDefinitionType.NameRegex:
+                        def pattern = Pattern.compile(field.format)
+                        def matcher = pattern.matcher(image.name)
+                        if (matcher.matches()) {
+                            if (matcher.groupCount() >= 1) {
+                                value = matcher.group(1)
+                            }
+                        }
+                        break;
+                    case FieldDefinitionType.FixedValue:
+                        value = field.format
+                        break;
+                    default:
+                        value = "err"
+                        break;
+                }
+                image.valueMap[field.fieldName] = value
+            }
+        }
+
+        [projectInstance: projectInstance, images: images, profile:profile]
+    }
+
+    def stageImage() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            if(request instanceof MultipartHttpServletRequest) {
+                ((MultipartHttpServletRequest) request).getMultiFileMap().imageFile.each { f ->
+
+                    if (f != null) {
+                        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png']
+                        if (!allowedMimeTypes.contains(f.getContentType())) {
+                            flash.message = "The image file must be one of: ${allowedMimeTypes}"
+                            redirect(action:'staging', params:[projectId:projectInstance.id])
+                            return;
+                        }
+
+                        try {
+                            stagingService.stageImage(projectInstance, f)
+                        } catch (Exception ex) {
+                            flash.message = "Failed to upload image file: " + ex.message;
+                        }
+                    }
+
+                }
+            }
+
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
+    def unstageImage() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def imageName = params.imageName
+        if (projectInstance && imageName) {
+            try {
+                stagingService.unstageImage(projectInstance, imageName)
+            } catch (Exception ex) {
+                flash.message = "Failed to delete image: " + ex.message
+            }
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
 }

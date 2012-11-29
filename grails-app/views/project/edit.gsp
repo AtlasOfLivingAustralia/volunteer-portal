@@ -213,6 +213,7 @@
                                 <td valign="middle" class="value">
                                   <span style="padding-right: 10px"><a href="${createLink(controller: 'task', action:'list', id: projectInstance.id)}">${taskCount} tasks</a></span>
                                   <a class="button" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks...</a>
+                                  <a class="button" href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}">Task Image Upload (Staging)</a>
                                   <span style="padding-left:5px; padding-top: 7px; padding-right: 5px; padding-bottom: 8px; background-image: url(${resource(dir: '/images', file: 'warning-button.png')})">
                                       <span class="button"><g:actionSubmit style="width: 100px" class="delete" action="deleteTasks" value="Delete all tasks" onclick="return confirmDeleteAllTasks()" /></span>
                                   </span>
