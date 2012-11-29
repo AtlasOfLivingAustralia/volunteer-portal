@@ -44,7 +44,7 @@ class AdminController {
             if (f != null) {
                 def allowedMimeTypes = ['application/pdf']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
-                    flash.message = "Teh file must be one of: ${allowedMimeTypes}"
+                    flash.message = "The file must be one of: ${allowedMimeTypes}"
                     redirect(action:'tutorialManagement')
                     return;
                 }
@@ -64,9 +64,29 @@ class AdminController {
     def deleteTutorial() {
         def filename = params.tutorialFile
         if (filename) {
-            tutorialService.deleteTutorial(filename)
+            try {
+                tutorialService.deleteTutorial(filename)
+            } catch (Exception ex) {
+               flash.message ="Failed to delete tutorial file: " + ex.message
+            }
         }
         redirect(action:'tutorialManagement')
+    }
+
+    def renameTutorial() {
+        def filename = params.tutorialFile
+        def newName = params.newName
+
+        if (filename && newName) {
+            try {
+                tutorialService.renameTutorial(filename, newName)
+            } catch (Exception ex) {
+               flash.message ="Failed to rename tutorial file: " + ex.message
+            }
+        }
+
+        redirect(action:'tutorialManagement')
+
     }
 
 }

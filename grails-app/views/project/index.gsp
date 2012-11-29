@@ -175,7 +175,7 @@
       <section class="boxed attached">
         <section class="padding-bottom centertext">
           <a href="${createLink(controller: 'transcribe', action:'index', id: projectInstance.id)}" class="button orange fullwidth">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a><br>
-          <a href="${createLink(uri: '/tutorials.gsp')}" class="button">View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt=""></a>
+          <a href="${createLink(controller: 'tutorials', action:'index')}" class="button">View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt=""></a>
           <a href="${createLink(controller: 'user', action:'myStats', params: [projectId:projectInstance.id])}" class="button last">My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt=""></a><br>
           <g:if test="${au.org.ala.volunteer.FrontPage.instance().enableForum}">
             <a style="margin-top: 8px;" href="${createLink(controller: 'forum', action:'projectForum', params: [projectId:projectInstance.id])}" class="button">Visit the Project Forum&nbsp;<img src="${resource(dir:'images', file:'forum.png')}" width="18" height="18" alt="Forum"></a>

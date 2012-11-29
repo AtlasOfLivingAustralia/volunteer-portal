@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import org.springframework.web.multipart.MultipartFile
+import java.util.regex.Pattern
 
 class TutorialService {
 
@@ -45,6 +46,49 @@ class TutorialService {
         }
 
         return false
+    }
+
+    def renameTutorial(String oldname, String newname) {
+        def filePath = createFilePath(oldname)
+        def file = new File(filePath)
+        if (file.exists()) {
+            def newFile = new File(createFilePath(newname))
+            if (!newFile.exists()) {
+                file.renameTo(newFile)
+            }
+        }
+    }
+
+    def getTutorialGroups() {
+        def dir = new File(tutorialDirectory)
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        def files = dir.listFiles()
+        def tutorials = [:]
+
+        def regex = Pattern.compile("^(.*)_(.*)\$")
+        files.each {
+            def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "/tutorials/" + it.name
+            def group = "-" // no group
+            def title = it.name
+            def matcher = regex.matcher(it.name)
+            if (matcher.matches()) {
+                group = matcher.group(1)
+                title = matcher.group(2)
+            }
+
+            title = title.subSequence(0, title.lastIndexOf('.'))
+
+            if (!tutorials[group]) {
+                tutorials[group] = []
+            }
+
+            tutorials[group] << [file: it, name: it.name, url: url, title:title]
+        }
+
+        return tutorials
     }
 
 }

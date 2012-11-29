@@ -38,7 +38,7 @@
         <nav id="breadcrumb">
           <ol>
             <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-            <li><a href="${createLink(uri: '/tutorials.gsp')}"><g:message code="default.tutorials.label" default="Tutorials"/></a></li>
+            <li><a href="${createLink(controller: 'tutorials')}"><g:message code="default.tutorials.label" default="Tutorials"/></a></li>
             <li class="last"><g:message code="default.specimenlabelstutorial.label" default="Tutorials - Transcribing Specimen Labels" /></li>
           </ol>
         </nav>
