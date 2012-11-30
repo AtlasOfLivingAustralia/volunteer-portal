@@ -533,41 +533,7 @@ class TaskController {
             profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
         }
 
-        def images = stagingService.listStagedFiles(projectInstance)
-
-        int sequenceNo = 0
-        images.each { image ->
-            image.valueMap = [:]
-            sequenceNo++
-            profile.fieldDefinitions.each { field ->
-                def value = ""
-                switch (field.fieldDefinitionType) {
-                    case FieldDefinitionType.NameRegex:
-                        if (field.format) {
-                            def pattern = Pattern.compile(field.format)
-                            def matcher = pattern.matcher(image.name)
-                            if (matcher.matches()) {
-                                if (matcher.groupCount() >= 1) {
-                                    value = matcher.group(1)
-                                }
-                            }
-                        } else {
-                            value = image.name
-                        }
-                        break;
-                    case FieldDefinitionType.Literal:
-                        value = field.format
-                        break;
-                    case FieldDefinitionType.Sequence:
-                        value = "${sequenceNo}"
-                        break;
-                    default:
-                        value = "err"
-                        break;
-                }
-                image.valueMap[field.fieldName] = value
-            }
-        }
+        def images = stagingService.buildTaskMetaDataList(projectInstance)
 
         [projectInstance: projectInstance, images: images, profile:profile]
     }
@@ -577,13 +543,11 @@ class TaskController {
         if (projectInstance) {
             if(request instanceof MultipartHttpServletRequest) {
                 ((MultipartHttpServletRequest) request).getMultiFileMap().imageFile.each { f ->
-
                     if (f != null) {
                         def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png']
                         if (!allowedMimeTypes.contains(f.getContentType())) {
                             flash.message = "The image file must be one of: ${allowedMimeTypes}"
-                            redirect(action:'staging', params:[projectId:projectInstance.id])
-                            return;
+                            return
                         }
 
                         try {

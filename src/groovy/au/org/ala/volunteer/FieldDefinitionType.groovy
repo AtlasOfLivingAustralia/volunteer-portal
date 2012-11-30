@@ -5,5 +5,6 @@ import net.sf.cglib.proxy.FixedValue
 enum FieldDefinitionType {
     NameRegex,
     Literal,
-    Sequence
+    Sequence,
+    NamePattern
 }

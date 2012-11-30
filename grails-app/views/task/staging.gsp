@@ -90,13 +90,12 @@
 
         <div>
             <div class="inner">
-                <cl:messages/>
 
                 <div id="fieldDefinitionsSection" class="section">
                     <table style="width: 100%">
                         <tr>
                             <td>
-                                <h4>Imported Field Definitions</h4>
+                                <h4>Field Definitions</h4>
                             </td>
                             <td>
                                 <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>

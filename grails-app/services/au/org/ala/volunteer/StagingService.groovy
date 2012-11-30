@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import org.springframework.web.multipart.MultipartFile
+import java.util.regex.Pattern
 
 class StagingService {
 
@@ -34,7 +35,7 @@ class StagingService {
             images << [file: it, name: it.name, url: url]
         }
 
-        return images
+        return images.sort { it.name }
     }
 
     def unstageImage(Project project, String imageName) {
@@ -44,6 +45,71 @@ class StagingService {
             return true
         }
         return false
+    }
+
+    def buildTaskMetaDataList(Project project) {
+        def images = listStagedFiles(project)
+        def profile = ProjectStagingProfile.findByProject(project)
+        int sequenceNo = 0
+
+        def patternMap = [:]
+        profile.fieldDefinitions.each { field ->
+            Pattern pattern = null
+            switch (field.fieldDefinitionType) {
+                case FieldDefinitionType.NameRegex:
+                    try {
+                        pattern = Pattern.compile(field.format)
+                    } catch (Exception ex) {
+                        println ex.message
+                    }
+                    break
+                case FieldDefinitionType.NamePattern:
+                    try {
+                        pattern = SimplifiedPatternParser.compile(field.format)
+                    } catch (Exception ex) {
+                        println ex.message
+                    }
+                    break
+            }
+            if (pattern) {
+                patternMap[field] = pattern
+            }
+        }
+
+        images.each { image ->
+            image.valueMap = [:]
+            sequenceNo++
+            profile.fieldDefinitions.each { field ->
+                def value = ""
+                switch (field.fieldDefinitionType) {
+                    case FieldDefinitionType.NameRegex:
+                    case FieldDefinitionType.NamePattern:
+                        Pattern pattern = patternMap[field] as Pattern
+                        if (field.format && pattern) {
+                            def matcher = pattern.matcher(image.name)
+                            if (matcher.matches()) {
+                                if (matcher.groupCount() >= 1) {
+                                    value = matcher.group(1)
+                                }
+                            }
+                        } else {
+                            value = image.name
+                        }
+                        break;
+                    case FieldDefinitionType.Literal:
+                        value = field.format
+                        break;
+                    case FieldDefinitionType.Sequence:
+                        value = "${sequenceNo}"
+                        break;
+                    default:
+                        value = "err"
+                        break;
+                }
+                image.valueMap[field.fieldName] = value
+            }
+        }
+
     }
 
 }
