@@ -32,8 +32,35 @@
                 });
 
                 $("#btnAddFieldDefinition").click(function(e) {
-
+                    var fieldName = encodeURIComponent($("#fieldName").val());
+                    if (fieldName) {
+                        window.location = "${createLink(controller:'task', action:'addFieldDefinition', params:[projectId: projectInstance.id])}&fieldName=" + fieldName
+                    }
                 });
+
+                $(".fieldType").change(function(e) {
+                    var fieldId = $(this).parents("tr[fieldDefinitionId]").attr("fieldDefinitionId");
+                    var newFieldType = encodeURI($(this).val());
+                    if (fieldId && newFieldType) {
+                        window.location = "${createLink(controller:'task', action:'updateFieldDefinitionType', params:[projectId:projectInstance.id])}&fieldDefinitionId=" + fieldId + "&newFieldType=" + newFieldType;
+                    }
+                });
+
+                $(".fieldValue").change(function(e) {
+                    var fieldId = $(this).parents("tr[fieldDefinitionId]").attr("fieldDefinitionId");
+                    var newFieldValue = encodeURIComponent($(this).val());
+                    if (fieldId && newFieldValue) {
+                        window.location = "${createLink(controller:'task', action:'updateFieldDefinitionFormat', params:[projectId:projectInstance.id])}&fieldDefinitionId=" + fieldId + "&newFieldFormat=" + newFieldValue;
+                    }
+                });
+
+                $(".btnDeleteField").click(function(e) {
+                    var fieldId = $(this).parents("tr[fieldDefinitionId]").attr("fieldDefinitionId");
+                    if (fieldId) {
+                        window.location = "${createLink(controller:'task', action:'deleteFieldDefinition', params:[projectId:projectInstance.id])}&fieldDefinitionId=" + fieldId;
+                    }
+                });
+
 
             });
 
@@ -72,7 +99,7 @@
                                 <h4>Imported Field Definitions</h4>
                             </td>
                             <td>
-                                <g:select name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"/>
+                                <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>
                                 <button class="button" id="btnAddFieldDefinition">Add field</button>
                             </td>
                         </tr>
@@ -84,18 +111,20 @@
                                 <th style="text-align: left">Field</th>
                                 <th style="text-align: left">Field Type</th>
                                 <th style="text-align: left">Field Value definition</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <g:each in="${profile.fieldDefinitions}" var="field">
-                                <tr>
+                            <g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">
+                                <tr fieldDefinitionId="${field.id}">
                                     <td>${field.fieldName}</td>
-                                    <td><g:select name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"/></td>
+                                    <td><g:select class="fieldType" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}" value="${field.fieldDefinitionType}"/></td>
                                     <td>
-                                        <g:if test="${field.fieldDefinitionType != FieldDefinitionType.Literal}">
-                                            <g:textField name="fieldValue" value="${field.format}"/>
+                                        <g:if test="${field.fieldDefinitionType != FieldDefinitionType.Sequence}">
+                                            <g:textField class="fieldValue" name="fieldValue" value="${field.format}" size="40"/>
                                         </g:if>
                                     </td>
+                                    <td><button class="button btnDeleteField">Delete</button></td>
                                 </tr>
                             </g:each>
                         </tbody>
@@ -114,6 +143,10 @@
                     <div>
                     </div>
                 </div>
+                <div id="createTasksSection" class="section">
+                    <button>Create tasks from staged images</button>
+                    <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
+                </div>
 
                 <div id="imagesSection" class="section">
                     <h4>Staged images (${images.size()})</h4>
@@ -121,7 +154,7 @@
                         <thead>
                             <tr>
                                 <th style="text-align: left">Image file</th>
-                                <g:each in="${profile.fieldDefinitions}" var="field">
+                                <g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">
                                     <th style="text-align: left">${field.fieldName}</th>
                                 </g:each>
                                 <th></th>
@@ -131,7 +164,7 @@
                             <g:each in="${images}" var="image">
                                 <tr>
                                     <td><a href="${image.url}">${image.name}</a></td>
-                                    <g:each in="${profile.fieldDefinitions}" var="field">
+                                    <g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">
                                         <td>${image.valueMap[field.fieldName]}</td>
                                     </g:each>
                                     <td>

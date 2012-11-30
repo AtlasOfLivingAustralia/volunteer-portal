@@ -535,22 +535,31 @@ class TaskController {
 
         def images = stagingService.listStagedFiles(projectInstance)
 
+        int sequenceNo = 0
         images.each { image ->
             image.valueMap = [:]
+            sequenceNo++
             profile.fieldDefinitions.each { field ->
                 def value = ""
                 switch (field.fieldDefinitionType) {
                     case FieldDefinitionType.NameRegex:
-                        def pattern = Pattern.compile(field.format)
-                        def matcher = pattern.matcher(image.name)
-                        if (matcher.matches()) {
-                            if (matcher.groupCount() >= 1) {
-                                value = matcher.group(1)
+                        if (field.format) {
+                            def pattern = Pattern.compile(field.format)
+                            def matcher = pattern.matcher(image.name)
+                            if (matcher.matches()) {
+                                if (matcher.groupCount() >= 1) {
+                                    value = matcher.group(1)
+                                }
                             }
+                        } else {
+                            value = image.name
                         }
                         break;
-                    case FieldDefinitionType.FixedValue:
+                    case FieldDefinitionType.Literal:
                         value = field.format
+                        break;
+                    case FieldDefinitionType.Sequence:
+                        value = "${sequenceNo}"
                         break;
                     default:
                         value = "err"
@@ -600,6 +609,46 @@ class TaskController {
             } catch (Exception ex) {
                 flash.message = "Failed to delete image: " + ex.message
             }
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
+    def addFieldDefinition() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def fieldName = params.fieldName
+        if (projectInstance && fieldName) {
+            def profile = ProjectStagingProfile.findByProject(projectInstance)
+            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.Literal, format: "", fieldName: fieldName))
+        }
+
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
+    def updateFieldDefinitionType() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
+        String newFieldType = params.newFieldType
+        if (projectInstance && fieldDefinition && newFieldType) {
+            fieldDefinition.fieldDefinitionType = newFieldType
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
+    def updateFieldDefinitionFormat() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
+        String newFieldFormat = params.newFieldFormat
+        if (projectInstance && fieldDefinition && newFieldFormat) {
+            fieldDefinition.format = newFieldFormat
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
+    def deleteFieldDefinition() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
+        if (projectInstance && fieldDefinition) {
+            fieldDefinition.delete()
         }
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
