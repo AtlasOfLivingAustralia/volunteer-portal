@@ -396,7 +396,7 @@
                                     Verbatim Locality
                                 </td>
                                 <td style="padding-top:0px; margin-top: 0px; margin-bottom: 0px; padding-bottom: 0px">
-                                    <textarea name="recordValues.0.verbatimLocality" cols="38" rows="4" class="verbatimLocality noAutoComplete" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
+                                    <textarea name="recordValues.0.verbatimLocality" cols="38" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
                                     <a href='#' class='fieldHelp' title='Enter (or cut and paste from the box above) the locality information into this box'><span class='help-container'>&nbsp;</span></a>
                                 </td>
                                 <td colspan="2" style="padding: 0">
@@ -416,7 +416,7 @@
                                 </td>
                                 <td class="value" colspan="3" >
                                     <g:each in="${0..3}" var="idx">
-                                        <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" autocomplete="off" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />&nbsp;
+                                        <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />&nbsp;
                                         <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}" />
                                     </g:each>
                                 </td>

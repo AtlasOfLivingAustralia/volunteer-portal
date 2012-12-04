@@ -634,7 +634,7 @@
                           </td>
                           <td class="value" style="" colspan="3" >
                             <g:each in="${0..3}" var="idx">
-                              <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" autocomplete="off" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />&nbsp;
+                              <input style="width:170px" type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="recordedBy autocomplete ac_input" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}" />&nbsp;
                               <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}" />
                             </g:each>
                           </td>
