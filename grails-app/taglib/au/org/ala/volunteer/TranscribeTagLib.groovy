@@ -26,6 +26,10 @@ class TranscribeTagLib {
 
     private def renderWidgetTD(MarkupBuilder mb, TemplateField field, recordValues, recordIdx, attrs) {
 
+        if (!field) {
+            return
+        }
+
         def name = field.fieldType.name()
 
         def cssClass = name
@@ -110,12 +114,16 @@ class TranscribeTagLib {
 
     private def renderWidgetLabelTD(MarkupBuilder mb, TemplateField field) {
 
-        def name = field.fieldType.name()
+        if (!field) {
+            return
+        }
+
+        def name = field.fieldType?.name()
         def label
         if (field.label) {
             label = field.label
         } else {
-            label = field.fieldType.label
+            label = field.fieldType?.label
         }
 
         mb.td(class:'name') {
@@ -159,11 +167,16 @@ class TranscribeTagLib {
      */
     def fieldTDPair = { attrs, body ->
 
+        try {
         Task task = attrs.task;
         DarwinCoreField fieldType = attrs.fieldType;
         def template = task.project.template;
 
         TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
+        if (!field) {
+            // There was no field for this field type defined by this template: create a default one
+            field = new TemplateField(template: template, fieldType: fieldType, label: null, defaultValue: null, category: FieldCategory.miscellaneous)
+        }
 
         def recordValues = attrs.recordValues
         def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
@@ -173,6 +186,9 @@ class TranscribeTagLib {
 
         renderWidgetLabelTD(mb, field);
         renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
+        } catch (Exception ex) {
+            throw ex
+        }
 
     }
     /**

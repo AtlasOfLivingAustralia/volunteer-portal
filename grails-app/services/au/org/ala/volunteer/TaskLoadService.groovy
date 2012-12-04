@@ -17,13 +17,13 @@ class TaskLoadService {
     private static String _currentItemMessage = null;
     private static String _currentBatchInstigator = null;
     private static String _timeRemaining = ""
-    private static List<TaskLoadStatus> _report = new ArrayList<TaskLoadStatus>();
+    private final static List<TaskLoadStatus> _report = new ArrayList<TaskLoadStatus>();
     private static boolean _cancel = false;
 
     def taskService
     def authService
     def logService
-    def executorService
+    def stagingService
 
     static transactional = true
 
@@ -91,6 +91,32 @@ class TaskLoadService {
         backgroundProcessQueue(replaceDuplicates)
 
         return [true, ""]
+    }
+
+    def loadTasksFromStaging(Project project) {
+
+        if (_loadQueue.size() > 0) {
+            return [success: false, message: 'Load operation already in progress!']
+        }
+
+        def results = [message:'Tasks Queued for load.', success: false]
+        def imageData = stagingService.buildTaskMetaDataList(project)
+
+        imageData.each { imgData ->
+            def taskDesc = new TaskDescriptor(project: project, imageUrl: imgData.url, externalIdentifier: imgData.valueMap.externalIdentifier)
+            imgData.valueMap.each {
+                if (it.key != 'externalIdentifier') {
+                    taskDesc.fields.add([name: it.key, recordIdx: 0, transcribedByUserId: 'system', value: it.value])
+                    taskDesc.afterLoad = {
+                        imgData.file.delete()
+                    }
+                }
+            }
+            _loadQueue.put(taskDesc)
+        }
+        backgroundProcessQueue(true)
+        results.success = true
+        return results;
     }
 
     def default_csv_import = { TaskDescriptor taskDesc, String[] tokens, int linenumber ->
@@ -230,6 +256,59 @@ class TaskLoadService {
         }
     }
 
+    private Task createTaskFromTaskDescriptor(TaskDescriptor taskDesc) {
+        Task t = new Task()
+        t.project = taskDesc.project
+        t.externalIdentifier = taskDesc.externalIdentifier
+        t.save(flush: true)
+        for (Map fd : taskDesc.fields) {
+            fd.task = t;
+            new Field(fd).save(flush: true)
+        }
+
+        def multimedia = new Multimedia()
+        multimedia.task = t
+        multimedia.filePath = taskDesc.imageUrl
+        multimedia.save()
+        // GET the image via its URL and save various forms to local disk
+        def filePath = taskService.copyImageToStore(taskDesc.imageUrl, t.projectId, t.id, multimedia.id)
+        filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
+        multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+        multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
+        multimedia.mimeType = filePath.contentType
+        multimedia.save()
+
+
+        if (taskDesc.media) {
+            for (MediaLoadDescriptor md : taskDesc.media) {
+                multimedia = new Multimedia()
+                multimedia.task = t
+                multimedia.mimeType = md.mimeType
+                multimedia.save() // need to get an id...
+                // GET the image via its URL and save various forms to local disk
+                filePath = taskService.copyImageToStore(md.mediaUrl, t.projectId, t.id, multimedia.id)
+                multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+                multimedia.mimeType = filePath.contentType
+                multimedia.save()
+                if (md.afterDownload) {
+                    try {
+                        md.afterDownload(t, multimedia, filePath)
+                    } catch (Exception ex) {
+                        logService.log "Error calling after media download hook: ${ex.message}"
+                    }
+                }
+            }
+        }
+
+        if (t) {
+            if (taskDesc.afterLoad) {
+                taskDesc.afterLoad()
+            }
+        }
+
+        return t
+    }
+
     private def backgroundProcessQueue(boolean replaceDuplicates) {
 
         if (_loadQueue.size() > 0) {
@@ -264,48 +343,8 @@ class TaskLoadService {
                     Task.withTransaction { status ->
 
                         try {
-                            Task t = new Task()
-                            t.project = taskDesc.project
-                            t.externalIdentifier = taskDesc.externalIdentifier
-                            t.save(flush: true)
-                            for (Map fd : taskDesc.fields) {
-                                fd.task = t;
-                                new Field(fd).save(flush: true)
-                            }
 
-                            def multimedia = new Multimedia()
-                            multimedia.task = t
-                            multimedia.filePath = taskDesc.imageUrl
-                            multimedia.save()
-                            // GET the image via its URL and save various forms to local disk
-                            def filePath = taskService.copyImageToStore(taskDesc.imageUrl, t.projectId, t.id, multimedia.id)
-                            filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
-                            multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
-                            multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
-                            multimedia.mimeType = filePath.contentType
-                            multimedia.save()
-
-
-                            if (taskDesc.media) {
-                                for (MediaLoadDescriptor md : taskDesc.media) {
-                                    multimedia = new Multimedia()
-                                    multimedia.task = t
-                                    multimedia.mimeType = md.mimeType
-                                    multimedia.save() // need to get an id...
-                                    // GET the image via its URL and save various forms to local disk
-                                    filePath = taskService.copyImageToStore(md.mediaUrl, t.projectId, t.id, multimedia.id)
-                                    multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
-                                    multimedia.mimeType = filePath.contentType
-                                    multimedia.save()
-                                    if (md.afterDownload) {
-                                        try {
-                                            md.afterDownload(t, multimedia, filePath)
-                                        } catch (Exception ex) {
-                                            logService.log "Error calling after media download hook: ${ex.message}"
-                                        }
-                                    }
-                                }
-                            }
+                            def t = createTaskFromTaskDescriptor(taskDesc)
 
                             // Attempt to predict when the import will complete
                             def now = Calendar.instance.time;

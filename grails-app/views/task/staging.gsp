@@ -61,6 +61,11 @@
                     }
                 });
 
+                $("#btnLoadTasks").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'task', action:'loadStagedTasks', params:[projectId: projectInstance.id])}";
+                });
+
 
             });
 
@@ -77,6 +82,7 @@
                 <nav id="breadcrumb">
                     <ol>
                         <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                        <li><a class="home" href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a>
                         <li><a class="home" href="${createLink(controller: 'project', action: 'edit', id: projectInstance.id)}">Edit Project</a>
                         </li>
                         <li class="last">Task Load Staging</li>
@@ -142,12 +148,15 @@
                     <div>
                     </div>
                 </div>
-                <div id="createTasksSection" class="section">
-                    <button>Create tasks from staged images</button>
-                    <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
-                </div>
 
                 <div id="imagesSection" class="section">
+
+                    <div>
+                        <button id="btnLoadTasks">Create tasks from staged images</button>
+                        <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
+                    </div>
+                    <hr/>
+
                     <h4>Staged images (${images.size()})</h4>
                     <table class="bvp-expeditions">
                         <thead>

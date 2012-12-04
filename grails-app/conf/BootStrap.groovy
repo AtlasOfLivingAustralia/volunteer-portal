@@ -152,6 +152,14 @@ class BootStrap {
 
         populateTemplateFields(template, "finnishTestFields")
 
+        template = Template.findByName("GenericLabels")
+        if (!template) {
+            logService.log "creating new Template: GenericLabels"
+            template = new Template(name: "GenericLabels", viewName: "genericLabelsTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
+        }
+        template.save(flush: true, failOnError: true)
+
+        populateTemplateFields(template, "genericLabelFields")
 
         // add system user
         if (!User.findByUserId('system')) {

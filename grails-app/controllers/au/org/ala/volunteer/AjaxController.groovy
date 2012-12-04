@@ -180,6 +180,7 @@ class AjaxController {
                     'scientificName' { findValue(it.fieldValues, 'scientificName') }
                     'decimalLatitude' { findValue(it.fieldValues, 'decimalLatitude') }
                     'decimalLongitude' { findValue(it.fieldValues, 'decimalLongitude') }
+                    'locality' { findValue(it.fieldValues, 'locality')}
                     'transcriber' { it.task.fullyTranscribedBy }
                     'eventDate' { findValue(it.fieldValues, 'eventDate') }
                     'associatedMedia' { "${grailsApplication.config.server.url}${it.task?.multimedia?.toList()[0]?.filePath}" }

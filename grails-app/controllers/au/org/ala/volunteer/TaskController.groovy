@@ -617,4 +617,18 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
+    def loadStagedTasks() {
+
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            def results = taskLoadService.loadTasksFromStaging(projectInstance)
+            flash.message = results.message
+            if (results.success) {
+                redirect( controller:'loadProgress', action:'index')
+                return
+            }
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
 }

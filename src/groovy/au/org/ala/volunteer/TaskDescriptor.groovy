@@ -7,12 +7,13 @@ public class TaskDescriptor {
     String imageUrl
     ArrayList<Map> fields = new ArrayList<Map>()
     ArrayList<MediaLoadDescriptor> media = new ArrayList<MediaLoadDescriptor>();
+    Closure afterLoad
 
 }
 
 public class MediaLoadDescriptor {
-    String mediaUrl;
-    String mimeType;
+    String mediaUrl
+    String mimeType
     Closure afterDownload
 }
 
