@@ -6,6 +6,7 @@ import java.util.regex.Pattern
 class StagingService {
 
     def grailsApplication
+    def fieldService
 
     String getStagingDirectory(Project project) {
         return "${grailsApplication.config.images.home}/${project.id}/staging"
@@ -50,7 +51,8 @@ class StagingService {
     def buildTaskMetaDataList(Project project) {
         def images = listStagedFiles(project)
         def profile = ProjectStagingProfile.findByProject(project)
-        int sequenceNo = 0
+
+        int sequenceNo = fieldService.getLastSequenceNumberForProject(project)
 
         def patternMap = [:]
         profile.fieldDefinitions.each { field ->

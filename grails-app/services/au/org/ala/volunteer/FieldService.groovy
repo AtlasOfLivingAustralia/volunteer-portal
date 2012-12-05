@@ -66,4 +66,25 @@ class FieldService {
 
         fields?.get(0)
     }
+
+    int getLastSequenceNumberForProject(Project project) {
+        def taskList = Task.findAllByProject(project)
+        def c = Field.createCriteria()
+
+        if (taskList) {
+            def fields = c {
+                and {
+                    inList("task", taskList)
+                    eq('name', 'sequenceNumber')
+                }
+                projections {
+                    max('value')
+                }
+            }
+            return fields[0] as Integer ?: 0
+        }
+
+        return 0
+    }
+
 }

@@ -19,6 +19,12 @@
             margin-bottom: 5px;
         }
 
+        #btnLoadTasks {
+            background: orange;
+            background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#FFA500 ),color-stop(1, #FF8C00));
+        }
+
+
         </style>
         <script type='text/javascript'>
 
@@ -152,7 +158,7 @@
                 <div id="imagesSection" class="section">
 
                     <div>
-                        <button id="btnLoadTasks">Create tasks from staged images</button>
+                        <button id="btnLoadTasks" >Create tasks from staged images</button>
                         <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
                     </div>
                     <hr/>

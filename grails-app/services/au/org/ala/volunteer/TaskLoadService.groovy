@@ -104,9 +104,15 @@ class TaskLoadService {
 
         imageData.each { imgData ->
             def taskDesc = new TaskDescriptor(project: project, imageUrl: imgData.url, externalIdentifier: imgData.valueMap.externalIdentifier)
+            def recordIndexMap = [:]
             imgData.valueMap.each {
                 if (it.key != 'externalIdentifier') {
-                    taskDesc.fields.add([name: it.key, recordIdx: 0, transcribedByUserId: 'system', value: it.value])
+                    if (!recordIndexMap[it.key]) {
+                        recordIndexMap[it.key] = 0
+                    } else {
+                        recordIndexMap[it.key]++
+                    }
+                    taskDesc.fields.add([name: it.key, recordIdx: recordIndexMap[it.key], transcribedByUserId: 'system', value: it.value])
                     taskDesc.afterLoad = {
                         imgData.file.delete()
                     }
