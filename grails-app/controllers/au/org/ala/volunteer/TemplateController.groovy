@@ -97,4 +97,103 @@ class TemplateController {
             redirect(action: "list")
         }
     }
+
+    def manageFields() {
+        def templateInstance = Template.get(params.int("id"))
+        if (templateInstance) {
+            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+
+            [templateInstance: templateInstance, fields: fields]
+        }
+    }
+
+    def moveFieldUp() {
+        def field = TemplateField.get(params.int("fieldId"))
+        if (field) {
+            if (field.displayOrder > 1) {
+                def predecessor = TemplateField.findByTemplateAndDisplayOrder(field.template, field.displayOrder - 1)
+                if (predecessor) {
+                    // swap their positions
+                    predecessor.displayOrder++
+                    predecessor.save()
+                }
+                field.displayOrder--
+                field.save()
+            }
+        }
+
+        redirect(action:'manageFields', id: field?.template?.id)
+    }
+
+    def moveFieldDown() {
+        def field = TemplateField.get(params.int("fieldId"))
+        if (field) {
+            def max = getLastDisplayOrder(field.template)
+            if (field.displayOrder < max ) {
+                def successor = TemplateField.findByTemplateAndDisplayOrder(field.template, field.displayOrder + 1)
+                if (successor) {
+                    // swap their positions
+                    successor.displayOrder--
+                    successor.save()
+                }
+                field.displayOrder++
+                field.save()
+            }
+        }
+
+        redirect(action:'manageFields', id: field?.template?.id)
+    }
+
+    def cleanUpOrdering() {
+        def templateInstance = Template.get(params.int("id"))
+        if (templateInstance) {
+            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+            int i = 1
+            fields.each {
+                it.displayOrder = i++
+            }
+        }
+
+        redirect(action:'manageFields', id: templateInstance?.id)
+    }
+
+    def addField() {
+        def templateInstance = Template.get(params.int("id"))
+        def fieldType = params.fieldType
+
+        if (templateInstance && fieldType) {
+
+            def existing = TemplateField.findAllByTemplateAndFieldType(templateInstance, fieldType)
+            if (existing) {
+                flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
+            } else {
+                def displayOrder = getLastDisplayOrder(templateInstance) + 1
+                def field =new TemplateField(template: templateInstance, category: FieldCategory.none, fieldType: fieldType, displayOrder: displayOrder, defaultValue: '', type: FieldType.text)
+                field.save(failOnError: true)
+            }
+        }
+
+        redirect(action:'manageFields', id: templateInstance?.id)
+    }
+
+    private int getLastDisplayOrder(Template template) {
+        def c = TemplateField.createCriteria()
+        def max = c({
+            eq('template', template)
+            projections {
+                max('displayOrder')
+            }
+        })[0]
+        return max
+    }
+    
+    def deleteField() {
+        def templateInstance = Template.get(params.int("id"))
+        def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
+        if (field && templateInstance) {
+            field.delete()
+        }
+        redirect(action:'manageFields', id: templateInstance?.id)
+    }
+
 }

@@ -70,7 +70,6 @@ class TemplateFieldController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (templateFieldInstance.version > version) {
-                    
                     templateFieldInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'templateField.label', default: 'TemplateField')] as Object[], "Another user has updated this TemplateField while you were editing")
                     render(view: "edit", model: [templateFieldInstance: templateFieldInstance])
                     return
@@ -79,7 +78,7 @@ class TemplateFieldController {
             templateFieldInstance.properties = params
             if (!templateFieldInstance.hasErrors() && templateFieldInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'templateField.label', default: 'TemplateField'), templateFieldInstance.id])}"
-                redirect(action: "show", id: templateFieldInstance.id)
+                redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
             }
             else {
                 render(view: "edit", model: [templateFieldInstance: templateFieldInstance])
@@ -87,7 +86,7 @@ class TemplateFieldController {
         }
         else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
-            redirect(action: "list")
+            redirect(controller: 'template', action: "list")
         }
     }
 

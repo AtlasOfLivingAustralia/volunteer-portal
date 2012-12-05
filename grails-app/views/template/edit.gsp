@@ -53,19 +53,10 @@
                                     <g:textField name="viewName" value="${templateInstance?.viewName}" />
                                 </td>
                             </tr>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="fieldOrder"><g:message code="template.fieldOrder.label" default="Field Order" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'fieldOrder', 'errors')}">
-                                    <g:textField name="fieldOrder" value="${templateInstance?.fieldOrder}" />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                  <label for="project"><g:message code="template.project.label" default="Project" /></label>
+                                  <label for="project"><g:message code="template.project.label" default="Projects that use this template:" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'project', 'errors')}">
                                     
@@ -74,9 +65,12 @@
                                         <li><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
                                     </g:each>
                                     </ul>
-                                    <g:link controller="project" action="create" params="['template.id': templateInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'project.label', default: 'Project')])}</g:link>
-
                                 </td>
+                            </tr>
+
+                            <tr>
+                                <td></td>
+                                <td><a class="button" href="${createLink(controller: 'template',action:'manageFields', id:templateInstance.id)}">Edit Fields</a></td>
                             </tr>
                         
                         </tbody>

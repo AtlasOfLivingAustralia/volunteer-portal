@@ -6,15 +6,27 @@
         <g:set var="entityName" value="${message(code: 'templateField.label', default: 'TemplateField')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
     </head>
-    <body>
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-        </div>
+    <body class="sublevel sub-site volunteerportal">
+
+        <header id="page-header">
+            <div class="inner">
+                <cl:messages/>
+                <nav id="breadcrumb">
+                    <ol>
+                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                        <li><a class="home" href="${createLink(controller: 'template', action: 'list')}">Templates</a>
+                        <li><a class="home" href="${createLink(controller: 'template', action: 'edit', id: templateFieldInstance.template.id)}">Edit ${templateFieldInstance.template.name}</a></li>
+                        <li><a class="home" href="${createLink(controller: 'template', action: 'manageFields', id: templateFieldInstance.template.id)}">Manage Fields</a></li>
+                        <li class="last">Edit field</li>
+                    </ol>
+                </nav>
+                <hgroup>
+                    <h1>Edit Template Field - ${templateFieldInstance.fieldType}</h1>
+                </hgroup>
+            </div>
+        </header>
+
         <div class="inner">
-            <h1><g:message code="default.edit.label" args="[entityName]" /></h1>
-            <cl:messages />
             <g:hasErrors bean="${templateFieldInstance}">
             <div class="errors">
                 <g:renderErrors bean="${templateFieldInstance}" as="list" />

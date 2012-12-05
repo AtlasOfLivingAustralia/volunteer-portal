@@ -5,6 +5,9 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+        <script type="text/javascript">
+
+        </script>
     </head>
     <body>
         <div class="nav">
@@ -15,36 +18,29 @@
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
             <cl:messages />
             <div class="list">
-                <table>
+                <table class="bvp-expeditions">
                     <thead>
                         <tr>
-                        
-                            <g:sortableColumn property="id" title="${message(code: 'template.id.label', default: 'Id')}" />
-                        
-                            <g:sortableColumn property="author" title="${message(code: 'template.author.label', default: 'Author')}" />
-                        
+
                             <g:sortableColumn property="name" title="${message(code: 'template.name.label', default: 'Name')}" />
-                        
+                            <g:sortableColumn property="author" title="${message(code: 'template.author.label', default: 'Author')}" />
                             <g:sortableColumn property="viewName" title="${message(code: 'template.viewName.label', default: 'View Name')}" />
-                        
-                            <g:sortableColumn property="fieldOrder" title="${message(code: 'template.fieldOrder.label', default: 'Field Order')}" />
-                        
+
+                            <th></th>
+
                         </tr>
                     </thead>
                     <tbody>
                     <g:each in="${templateInstanceList}" status="i" var="templateInstance">
                         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                        
-                            <td><g:link action="show" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "id")}</g:link></td>
-                        
-                            <td>${fieldValue(bean: templateInstance, field: "author")}</td>
-                        
+
                             <td>${fieldValue(bean: templateInstance, field: "name")}</td>
-                        
+                            <td>${fieldValue(bean: templateInstance, field: "author")}</td>
                             <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
-                        
-                            <td>${fieldValue(bean: templateInstance, field: "fieldOrder")}</td>
-                        
+
+                            <td>
+                                <a class="button" href="${createLink(controller:'template', action:'edit', id:templateInstance.id)}">Edit</a>
+                            </td>
                         </tr>
                     </g:each>
                     </tbody>
