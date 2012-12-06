@@ -14,15 +14,25 @@
     </head>
 
     <body class="sublevel sub-site volunteerportal">
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-            </span>
-            <span class="menuButton">Admin</span>
-        </div>
+
+        <cl:navbar/>
+
+        <header id="page-header">
+            <div class="inner">
+                <cl:messages/>
+                <nav id="breadcrumb">
+                    <ol>
+                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                        <li class="last">Administration</li>
+                    </ol>
+                </nav>
+                <hgroup>
+                    <h1>Biodiversity Volunteer Portal Administration</h1>
+                </hgroup>
+            </div>
+        </header>
 
         <div>
-            <h2>Administration</h2>
-
             <div class="inner">
                 <table class="bvp-expeditions">
                     <thead>
@@ -66,6 +76,10 @@
                     <tr>
                         <td><button onclick="location.href = '${createLink(controller:'admin', action:'tutorialManagement')}'">Tutorial files</button></td>
                         <td>Manage tutorial files</td>
+                    </tr>
+                    <tr>
+                        <td><button onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button></td>
+                        <td>Manage project templates and their fields</td>
                     </tr>
                 </table>
 

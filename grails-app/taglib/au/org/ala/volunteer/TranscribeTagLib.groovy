@@ -31,9 +31,15 @@ class TranscribeTagLib {
         }
 
         def name = field.fieldType.name()
-
         def cssClass = name
         def tdcssClass = "td_" + name;
+
+        if (field.fieldType == DarwinCoreField.spacer) {
+            mb.td(class:"value ${tdcssClass}" ) {
+                mkp.yieldUnescaped("&nbsp;");
+            }
+            return
+        }
 
         if (name =~ /[Dd]ate/) {
             // so we can add a date widget with JQuery
@@ -127,7 +133,7 @@ class TranscribeTagLib {
         }
 
         mb.td(class:'name') {
-            if (field.type != FieldType.hidden) {
+            if (field.type != FieldType.hidden && field.fieldType != DarwinCoreField.spacer) {
                 mb.yield(g.message(code:'record.' + name +'.label', default:label))
             }
         }
@@ -141,6 +147,7 @@ class TranscribeTagLib {
      *  @attr templateField REQUIRED
      *  @attr recordValues REQUIRED
      *  @attr recordIdx
+     *  @attr rowClass
      */
     def fieldFromTemplateField = { attrs, body ->
         def field = attrs.templateField
@@ -150,6 +157,11 @@ class TranscribeTagLib {
         // Uses MarkupBuilder to create HTML
         def mb = new groovy.xml.MarkupBuilder(out)
         def trClass = (field.type == FieldType.hidden) ? 'hidden' : 'prop'
+
+        if (attrs.rowClass) {
+            trClass += " " + attrs.rowClass
+        }
+
         mb.tr(class:trClass) {
             renderWidgetLabelTD(delegate, field);
             renderWidgetTD(delegate, field, recordValues, recordIdx, attrs)
@@ -168,24 +180,24 @@ class TranscribeTagLib {
     def fieldTDPair = { attrs, body ->
 
         try {
-        Task task = attrs.task;
-        DarwinCoreField fieldType = attrs.fieldType;
-        def template = task.project.template;
+            Task task = attrs.task;
+            DarwinCoreField fieldType = attrs.fieldType;
+            def template = task.project.template;
 
-        TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
-        if (!field) {
-            // There was no field for this field type defined by this template: create a default one
-            field = new TemplateField(template: template, fieldType: fieldType, label: null, defaultValue: null, category: FieldCategory.miscellaneous)
-        }
+            TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
+            if (!field) {
+                // There was no field for this field type defined by this template: create a default one
+                field = new TemplateField(template: template, fieldType: fieldType, label: null, defaultValue: null, category: FieldCategory.miscellaneous)
+            }
 
-        def recordValues = attrs.recordValues
-        def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
+            def recordValues = attrs.recordValues
+            def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
 
-        // Uses MarkupBuilder to create HTML
-        def mb = new groovy.xml.MarkupBuilder(out)
+            // Uses MarkupBuilder to create HTML
+            def mb = new groovy.xml.MarkupBuilder(out)
 
-        renderWidgetLabelTD(mb, field);
-        renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
+            renderWidgetLabelTD(mb, field);
+            renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
         } catch (Exception ex) {
             throw ex
         }

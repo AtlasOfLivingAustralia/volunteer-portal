@@ -194,7 +194,8 @@ enum DarwinCoreField {
     transcriberNotes("Transcriber Notes"),
     validatorNotes("Validator Notes"),
     sequenceNumber("Sequence Number"),
-    sightingCount("Number of sightings")
+    sightingCount("Number of sightings"),
+    spacer("Empty field used for layout")
     
     def label
     DarwinCoreField(label) { this.label = label }

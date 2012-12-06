@@ -186,7 +186,7 @@
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
                     <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
-                    <g:set var="imageInfo" value="${imageMetaData?.getAt(m.id) ?: [height: 0, width: 0, smallSizeHeight: 0]}" />
+                    <g:set var="imageInfo" value="${imageMetaData?.getAt(m.id) ?: [height: 0, width: 0]}" />
                     <div id="imageContainer" style="float: left; width:600px; height: 400px">
                         <div class="pan-image">
                             <img src="${imageUrl}" alt="Task Image" image-height="${imageInfo.height}" image-width="${imageInfo.width}" />

@@ -621,13 +621,7 @@ class TaskService {
                 }
 
                 if (image) {
-                    def aspectRatio = image.height / image.width
-                    def smallSizeHeight = 400
-                    if (image.height > image.width) {
-                        def smallWidth = 600 / aspectRatio
-                        smallSizeHeight = smallWidth * aspectRatio
-                    }
-                    imageMetaData[it.id] = [width: image.width, height: image.height, aspectRatio: aspectRatio, smallSizeHeight: smallSizeHeight]
+                    imageMetaData[it.id] = [width: image.width, height: image.height]
                 } else {
                     logService.log("Could not read image file: ${path} - could not get image metadata")
                 }

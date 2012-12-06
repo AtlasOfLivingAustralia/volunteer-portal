@@ -5,6 +5,26 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
+
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+
+                $("#btnPreview").click(function(e) {
+                    e.preventDefault();
+                    alert("here")
+                    window.open("${createLink(controller:'template', action:'preview', id:templateInstance.id)}", "TemplatePreview");
+                });
+
+                $("#btnEditFields").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller: 'template',action:'manageFields', id:templateInstance.id)}";
+                });
+
+            });
+
+
+        </script>
     </head>
     <body>
         <div class="nav">
@@ -70,7 +90,10 @@
 
                             <tr>
                                 <td></td>
-                                <td><a class="button" href="${createLink(controller: 'template',action:'manageFields', id:templateInstance.id)}">Edit Fields</a></td>
+                                <td>
+                                    <button class="button" id="btnEditFields">Edit Fields</button>
+                                    <button class="button" id="btnPreview">Preview Template</button>
+                                </td>
                             </tr>
                         
                         </tbody>

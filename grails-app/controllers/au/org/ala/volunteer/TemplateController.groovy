@@ -144,6 +144,27 @@ class TemplateController {
         redirect(action:'manageFields', id: field?.template?.id)
     }
 
+    def moveFieldToPosition() {
+        def templateInstance = Template.get(params.int("id"))
+        def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
+        def newOrder = params.int("newOrder")
+        if (templateInstance && field && newOrder) {
+            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+            if (newOrder >= 0 && newOrder <= fields.size()) {
+                fields.each {
+                    if (it.displayOrder >= newOrder) {
+                        it.displayOrder++
+                    }
+                }
+                field.displayOrder = newOrder
+                redirect(action:'cleanUpOrdering', id:templateInstance.id)
+                return
+            }
+        }
+
+        redirect(action:'manageFields', id: field?.template?.id)
+    }
+
     def cleanUpOrdering() {
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
@@ -164,7 +185,7 @@ class TemplateController {
         if (templateInstance && fieldType) {
 
             def existing = TemplateField.findAllByTemplateAndFieldType(templateInstance, fieldType)
-            if (existing) {
+            if (existing && fieldType != DarwinCoreField.spacer.toString()) {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {
                 def displayOrder = getLastDisplayOrder(templateInstance) + 1
@@ -194,6 +215,50 @@ class TemplateController {
             field.delete()
         }
         redirect(action:'manageFields', id: templateInstance?.id)
+    }
+
+    def preview() {
+        def templateInstance = Template.get(params.int("id"))
+
+        def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "PreviewProject")
+        def taskInstance = new Task(project: projectInstance)
+        def multiMedia = new Multimedia(id: 0)
+        taskInstance.addToMultimedia(multiMedia)
+        def recordValues = [:]
+        def imageMetaData = [0: [width: 2048, height: 1433]]
+
+        render(view: '/transcribe/' + templateInstance.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData])
+    }
+
+    def exportFieldsAsCSV() {
+
+        def templateInstance = Template.get(params.int("id"))
+
+        if (templateInstance) {
+            response.addHeader("Content-type", "text/plain")
+
+            def writer = new BVPCSVWriter( (Writer) response.writer,  {
+                'darwinCore' { it.fieldType?.toString() }
+                'label' { it.label ?: '' }
+                'defaultValue' { it.defaultValue ?: '' }
+                'category' { it.category ?: '' }
+                'fieldType' { it.type?.toString() }
+                'mandatory' { it.mandatory ? "1" : "0" }
+                'multiValue' { it.multiValue ? "1" : "0" }
+                'helpText' { it.helpText ?: '' }
+                'validationRule' { it.validationRule ?: '' }
+                'order' { it.displayOrder ?: ''}
+            })
+
+            writer.writeHeadings = false
+
+            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+            for (def field : fields) {
+                writer << field
+            }
+            response.writer.flush()
+        }
+
     }
 
 }

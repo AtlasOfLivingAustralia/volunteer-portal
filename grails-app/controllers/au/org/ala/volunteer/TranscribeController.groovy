@@ -85,7 +85,7 @@ class TranscribeController {
 
             def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-            render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
+            render( view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
         }

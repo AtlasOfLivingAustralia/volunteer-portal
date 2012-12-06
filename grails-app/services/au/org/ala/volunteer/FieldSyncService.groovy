@@ -20,7 +20,6 @@ class FieldSyncService {
                 recordMap.put field.name, field.value
             }
         }
-        log.debug("record values: " + recordValues)
         recordValues
     }
 

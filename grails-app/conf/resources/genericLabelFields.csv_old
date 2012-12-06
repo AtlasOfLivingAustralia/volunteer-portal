@@ -1,0 +1,35 @@
+catalogNumber,,,none,hidden,1,0,"Please check this number against the typed number on the specimen label in the image to see that it matches. If it does not match then click the &quot;Report an issue&quot; link near the top of the page",,default
+institutionCode,,AM,none,hidden,1,0,,,default
+basisOfRecord,,PreservedSpecimen,none,hidden,1,0,,,default
+occurrenceRemarks,Verbatim Text,,none,textarea,1,0,"This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set",,default
+eventDate,,,collectionEvent,text,0,0,"Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD",,default
+recordedBy,Collector,,collectionEvent,text,0,0,"Enter the text here exactly as it appears in the label. A drop down list will provide you with matches to known collectors – where possible choose from the list. In some cases there may be multiple very similar options. Choose the one that most accurately matches the name on the label. If there is no exact match then please enter the name as a new name",,default
+samplingProtocol,Collection Method,,collectionEvent,text,0,0,"If the label contains information on the method of collection please enter it as it appears on the label. Examples include pitfall trap, UV Lamp, Malaise Trap",,default
+minimumDepthInMeters,Depth (from),,collectionEvent,text,0,0,"Minimum depth in water",,default
+maximumDepthInMeters,Depth (to),,collectionEvent,text,0,0,"Maximum depth in water",,default
+verbatimElevation,Verbatim Altitude,,collectionEvent,text,0,0,"If the label/s have an altitude or elevation, record it here as it appears",,default
+recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,default
+verbatimLocalityID,verbatim locality ID,,collectionEvent,hidden,0,0,,,default
+verbatimLocality,,,none,textarea,0,0,"Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label",,default
+locality,Google locality,,location,text,0,0,,,default
+stateProvince,State/Territory,,location,text,0,0,,,default
+decimalLatitude,,,location,text,0,0,,,default
+country,,,location,select,0,0,,,default
+decimalLongitude,,,location,text,0,0,,,default
+coordinateUncertaintyInMeters,,,location,select,0,0,"Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map",,default
+scientificName,Scientific Name,,none,text,0,0,"",,default
+originalNameUsage,Verbatim Name,,identification,text,0,0,"The scientific name exactly has it appears on the label",,default
+taxonConceptID,'',,none,hidden,0,0,"gets set by autocomplete on scientific name",,default
+taxonRank,'',,none,hidden,0,0,,,default
+scientificNameAuthorship,Authorship,,identification,text,0,0,"This may be recorded, along with a date, with the Scientific Name – in which case enter both the Author and the date in this field",,default
+identifiedBy,Determined/Identified by,,identification,text,0,0,"This is the identifier of the specimen. You may need to use a process of elimination to decide if a name is that of an identifier. If the name doesn’t appear to be a collector or a scientific name author then it may be the specimen identifier &ndash; in which case enter it here",,default
+typeStatus,,,identification,select,0,0,,,default
+dateIdentified,Date Identified,,identification,text,0,0,"May appear with the Identifier. Enter the date from the label using the format YYYY-MM-DD. If only a year and month appears enter YYYY-MM, if only a year then YYYY",,default
+transcriberNotes,,,none,textarea,0,0,,,default
+collectionCode,Collection,,miscellaneous,text,0,0,"Some labels will have a collection name on them. For example Waterhouse Collection",,default
+sex,Sex,,miscellaneous,text,0,0,"",,default
+habitat,Habitat,,miscellaneous,text,0,0,"",,default
+fieldNumber,Other numbers,,miscellaneous,text,0,0,"Other numbers including M numbers, private collection numbers, field station numbers etc",,default
+fieldNotes,Boat details,,miscellaneous,text,0,0,"Vessel name, vessel type, cruise number etc.",,default
+locationID,,,none,hidden,1,0,,,default
+eventID,,,none,hidden,1,0,,,default

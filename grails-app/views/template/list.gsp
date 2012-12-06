@@ -5,6 +5,13 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+        <style type="text/css">
+
+            table.bvp-expeditions thead th {
+                text-align: left;
+            }
+
+        </style>
         <script type="text/javascript">
 
         </script>
@@ -39,7 +46,8 @@
                             <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                             <td>
-                                <a class="button" href="${createLink(controller:'template', action:'edit', id:templateInstance.id)}">Edit</a>
+                                <a class="button" style="margin-top: 6px" href="${createLink(controller:'template', action:'edit', id:templateInstance.id)}">Edit</a>
+                                <a class="button" style="margin-top: 6px" href="${createLink(controller:'template', action:'preview', id:templateInstance.id)}">Preview</a>
                             </td>
                         </tr>
                     </g:each>
