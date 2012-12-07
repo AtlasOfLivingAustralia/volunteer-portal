@@ -23,7 +23,7 @@ class BVPCSVWriter {
 	public BVPCSVWriter(Writer writer, Closure definition) {
 		this.writer = writer
 
-		columns = CSVWriterColumnsBuilderX.build(definition)
+		columns = BVPCSVWriterColumnsBuilder.build(definition)
 
 		// do these once incase subclasses are reading from config etc.
 		cachedQuote = this.quote
@@ -41,12 +41,18 @@ class BVPCSVWriter {
 		this
 	}
 
-	def write(row) {
-		if (!this.@headingsWritten && this.@writeHeadings) {
-			writeHeadings()
-		}
+    def resetProducers() {
+        producers = columns.values().toList()
+        lastProducer = producers.last()
+    }
 
-		writer << this.@cachedRowSeperator
+	def write(row) {
+		if (!this.@headingsWritten) {
+			writeHeadings()
+		} else {
+            writer << this.@cachedRowSeperator
+        }
+
 		for (producer in this.@producers) {
 			writeValue(producer(row).toString())
 			if (!producer.is(this.@lastProducer)) {
@@ -65,12 +71,15 @@ class BVPCSVWriter {
 	}
 
 	protected writeHeadings() {
-		columns.eachWithIndex { column, i ->
-			writeValue(column.key)
-			if (i != (columns.size() - 1)) {
-				writer << this.@cachedValueSeperator
-			}
-		}
+        if (this.@writeHeadings) {
+            columns.eachWithIndex { column, i ->
+                writeValue(column.key)
+                if (i != (columns.size() - 1)) {
+                    writer << this.@cachedValueSeperator
+                }
+            }
+            writer << this.@cachedRowSeperator
+        }
 		headingsWritten = true
 	}
 

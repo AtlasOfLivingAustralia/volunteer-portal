@@ -72,6 +72,11 @@
                     window.location = "${createLink(controller:'task', action:'loadStagedTasks', params:[projectId: projectInstance.id])}";
                 });
 
+                $("#btnExportTasksCSV").click(function(e) {
+                    e.preventDefault();
+                    window.open("${createLink(controller:"task", action:'exportStagedTasksCSV', params:[projectId: projectInstance.id])}", "ExportCSV");
+                });
+
 
             });
 
@@ -158,6 +163,7 @@
                 <div id="imagesSection" class="section">
 
                     <div>
+                        <button id="btnExportTasksCSV">Export staged tasks as CSV</button>
                         <button id="btnLoadTasks" >Create tasks from staged images</button>
                         <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
                     </div>

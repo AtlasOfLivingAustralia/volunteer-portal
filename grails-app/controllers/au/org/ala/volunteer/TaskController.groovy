@@ -631,4 +631,38 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
+    def exportStagedTasksCSV() {
+        def projectInstance = Project.get(params.int("projectId"))
+
+        if (projectInstance) {
+
+            def profile = ProjectStagingProfile.findByProject(projectInstance)
+
+            response.addHeader("Content-type", "text/plain")
+            def writer = new BVPCSVWriter( (Writer) response.writer,  {
+                'imageName' { it.name }
+                'url' { it.url }
+            })
+
+            profile.fieldDefinitions.each { field ->
+                writer.columns[field.fieldName] =  {
+                    it.valueMap[field.fieldName] ?: ''
+                }
+            }
+            writer.resetProducers()
+
+            writer.writeHeadings = false
+
+            def images = stagingService.buildTaskMetaDataList(projectInstance)
+            println images
+
+            images.each {
+                writer << it
+            }
+
+            response.writer.flush()
+        }
+
+    }
+
 }
