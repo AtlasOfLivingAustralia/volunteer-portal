@@ -15,7 +15,6 @@
 <title>${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'ui.core.js')}"></script>--}%
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
@@ -26,8 +25,6 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-panZoom.js')}"></script>
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>--}%
 
 <script type="text/javascript">
 
@@ -249,13 +246,13 @@
       setFieldValue("coordinateUncertaintyInMeters", "");
     }
 
-    function bindToCollectionEvent(eventId) {
-      if (eventId == null) {
+    function bindToCollectionEvent(externalEventId) {
+      if (externalEventId == null) {
         setFieldValue('eventID', "");
         setFieldValue('locationID', "");
         updateEventBindStatus(null);
       } else {
-        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?collectionEventId=" + eventId;
+        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${taskInstance.project.featuredOwner}";
         $.ajax(url).done(function (collectionEvent) {
           clearLocalityFields();
           setFieldValue('eventID', collectionEvent.externalEventId);
@@ -347,7 +344,7 @@
       if($.isNumeric(externalEventId)) {
         // its an external event id
         // need to extract from server...
-        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId;
+        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${taskInstance.project.featuredOwner}";
         $.ajax(url).done(function (collectionEvent) {
           var eventDesc = '<span>' + renderLocalityDescription(collectionEvent) + '<br/>' + collectionEvent.collector + " (" + collectionEvent.eventDate + ")";
           var html = "This specimen is linked with an existing collection event: <br/>" + eventDesc + '</span><span style="float:right"><a href="#" id="unlinkCollectionEvent">Undo</a></span>'

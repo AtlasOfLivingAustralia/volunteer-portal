@@ -535,7 +535,26 @@ class TaskController {
 
         def images = stagingService.buildTaskMetaDataList(projectInstance)
 
-        [projectInstance: projectInstance, images: images, profile:profile]
+        [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+    }
+
+    def uploadStagingDataFile() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            if(request instanceof MultipartHttpServletRequest) {
+                MultipartFile f = ((MultipartHttpServletRequest) request).getFile('dataFile')
+                if (f != null) {
+                    def allowedMimeTypes = ['text/plain','text/csv']
+                    if (!allowedMimeTypes.contains(f.getContentType())) {
+                        flash.message = "The image file must be one of: ${allowedMimeTypes}"
+                        redirect(action:'staging', params:[projectId:projectInstance?.id])
+                        return
+                    }
+                    stagingService.uploadDataFile(projectInstance, f)
+                }
+            }
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
     def stageImage() {

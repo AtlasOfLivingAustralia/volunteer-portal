@@ -18,14 +18,13 @@
             ${event.country}
           </td>
           <td class="result-select-button">
-            <button class="select_event_button" eventId="${event.id}" title="Use all of the information from this collection event">Select&nbsp;event</button>
+            <button class="select_event_button" externalEventId="${event.externalEventId}" title="Use all of the information from this collection event">Select&nbsp;event</button>
           </td>
         </tr>
         <tr>
           <td colspan="2" class="event-locality">${event.locality}</td>
           <td class="event-latlong"><a href="#" class="find_on_map_link" title="Locate on map">[${event.latitude}, ${event.longitude}]</a></td>
           <td class="result-select-button">
-            %{--<button class="select_location_button" eventId="${event.id}" title="Use just the locality information from this collection event">Select&nbsp;location</button>--}%
           </td>
         </tr>
 
@@ -41,13 +40,13 @@
 
   $(".select_event_button").click(function(e) {
     e.preventDefault();
-    bindToCollectionEvent($(this).attr("eventId"))
+    bindToCollectionEvent($(this).attr("externalEventId"))
     $.fancybox.close();
   });
 
   $(".select_location_button").click(function(e) {
     e.preventDefault();
-    bindToCollectionEventLocality($(this).attr("eventId"))
+    bindToCollectionEventLocality($(this).attr("externalEventId"))
     $.fancybox.close();
   });
 

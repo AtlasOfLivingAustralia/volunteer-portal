@@ -103,8 +103,8 @@ class CollectionEventController {
         CollectionEvent event = null;
         if (params.collectionEventId) {
             event = CollectionEvent.get(params.long("collectionEventId"))
-        } else if (params.externalCollectionEventId) {
-            event = CollectionEvent.findByExternalEventId(params.long('externalCollectionEventId'));
+        } else if (params.externalCollectionEventId && params.institutionCode) {
+            event = CollectionEvent.findByExternalEventIdAndInstitutionCode(params.long('externalCollectionEventId'), params.institutionCode);
         }
 
         if (event) {

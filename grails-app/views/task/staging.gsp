@@ -148,6 +148,34 @@
 
                 </div>
 
+                <div id="dataFileSection" class="section">
+                    <h4>Upload a csv data file for field values</h4>
+                    <g:if test="${hasDataFile}">
+                        A data file has been uploaded for this project.
+                        <button class="button" id="btnClearDataFile">Clear data file</button>
+                        &nbsp;
+                        <a href="${dataFileUrl}">View data file</a>
+                    </g:if>
+                    <g:else>
+                        <g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data">
+                            <input type="file" name="dataFile" id="dataFile" />
+                            <g:hiddenField name="projectId" value="${projectInstance.id}"/>
+                            <g:submitButton name="Upload Data File"/>
+
+                        </g:form>
+                        <div>CSV data files should follow the following conventions:
+                            <ul>
+                                <li>First row should contain column headings (comma separated)</li>
+                                <li>Column headers should be darwin core field names, except for the first one, which should be <code>filename</code></li>
+                                <li>Subsequent rows should contain the image filename in the first column, and optionally values for each field for the rest of the columns.</li>
+                                <li>The image filename must match exactly a filename in the table, otherwise values will not be applied</li>
+                            </ul>
+                        </div>
+                    </g:else>
+
+                </div>
+
+
                 <div id="uploadImagesSection" class="section">
                     <h4>Upload task images to staging area</h4>
                     <g:form controller="task" action="stageImage" method="post" enctype="multipart/form-data">
@@ -156,14 +184,13 @@
                         <g:hiddenField name="projectId" value="${projectInstance.id}"/>
                         <g:submitButton name="Stage images"/>
                     </g:form>
-                    <div>
-                    </div>
                 </div>
 
                 <div id="imagesSection" class="section">
 
                     <div>
                         <button id="btnExportTasksCSV">Export staged tasks as CSV</button>
+                        <button id="btnClearStagingArea" style="color:red">Delete all images</button>
                         <button id="btnLoadTasks" >Create tasks from staged images</button>
                         <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
                     </div>
