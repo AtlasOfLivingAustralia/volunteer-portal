@@ -45,10 +45,13 @@
 
         <div>
             <div class="inner">
-                <g:each in="${tutorials.keySet()}" var="group">
+                <g:each in="${tutorials.keySet().sort()}" var="group">
                     <h3>${group == '-' ? 'Generic Tutorials' : group}</h3>
                     <ul>
                         <table class="bvp-expeditions">
+                            <g:if test="${group == '-'}">
+                                <li><a href="${createLink(controller:'tutorials', action:'transcribingSpecimenLabels')}">Transcribing Specimen Labels</a></li>
+                            </g:if>
                             <g:each in="${tutorials[group]?.sort({it.title})}" var="tute">
                                 <li><a href="${tute.url}">${tute.title}</a></li>
                             </g:each>

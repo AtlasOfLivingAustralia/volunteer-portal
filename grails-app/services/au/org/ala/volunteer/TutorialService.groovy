@@ -88,6 +88,11 @@ class TutorialService {
             tutorials[group] << [file: it, name: it.name, url: url, title:title]
         }
 
+        if (!tutorials.containsKey('-')) {
+            tutorials['-'] = []
+        }
+
+
         return tutorials
     }
 
