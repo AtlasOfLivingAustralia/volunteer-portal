@@ -557,6 +557,14 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
+    def clearStagedDataFile() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            stagingService.clearDataFile(projectInstance)
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
     def stageImage() {
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {

@@ -6,5 +6,6 @@ enum FieldDefinitionType {
     NameRegex,
     Literal,
     Sequence,
-    NamePattern
+    NamePattern,
+    DataFileColumn
 }

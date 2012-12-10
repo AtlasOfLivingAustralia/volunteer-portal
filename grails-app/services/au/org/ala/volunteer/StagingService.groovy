@@ -61,11 +61,34 @@ class StagingService {
 
         int sequenceNo = fieldService.getLastSequenceNumberForProject(project)
 
-        def columnNames = []
+        // The data file, if it exists
+        def dataFile = new File(createDataFilePath(project))
+        def dataFileMap = [:]
+        def dataFileColumns = []
+        if (dataFile.exists()) {
+
+            new CSVMapReader(new FileReader(dataFile)).each { Map map ->
+                if (map.filename) {
+                    if (!dataFileColumns) {
+                        map.each {
+                            if (it.key != 'filename') {
+                                dataFileColumns << it.key
+                            }
+                        }
+                    }
+
+                    def filename = map.remove('filename')
+
+                    if (filename) {
+                        dataFileMap[filename] = map
+                    }
+                }
+            }
+        }
 
         def patternMap = [:]
+
         profile.fieldDefinitions.each { field ->
-            columnNames << field.fieldName
             Pattern pattern = null
             switch (field.fieldDefinitionType) {
                 case FieldDefinitionType.NameRegex:
@@ -88,44 +111,18 @@ class StagingService {
             }
         }
 
-        // The data file, if it exists
-        def dataFile = new File(createDataFilePath(project))
-        def dataFileMap = [:]
-        def dataFileColumns = []
-        if (dataFile.exists()) {
-
-            new CSVMapReader(new FileReader(dataFile)).each { Map map ->
-                if (map.filename) {
-                    if (!dataFileColumns) {
-                        map.each {
-                            if (it.key != 'filename') {
-                                columnNames << it.key
-                                dataFileColumns << it.key
-                            }
-                        }
-                    }
-
-                    def filename = map.remove('filename')
-
-                    if (filename) {
-                        dataFileMap[filename] = map
-                    }
-                }
-            }
-        }
-
         images.each { image ->
             image.valueMap = [:]
 
-            // Data File fields, if there are any
-            if (dataFileColumns) {
-                def values = dataFileMap[image.name]
-                if (values) {
-                    dataFileColumns.each {
-                        image.valueMap[it] = values[it]
-                    }
-                }
-            }
+//            // Data File fields, if there are any
+//            if (dataFileColumns) {
+//                def values = dataFileMap[image.name]
+//                if (values) {
+//                    dataFileColumns.each {
+//                        image.valueMap[it] = values[it]
+//                    }
+//                }
+//            }
 
             sequenceNo++
             profile.fieldDefinitions.each { field ->
@@ -151,6 +148,12 @@ class StagingService {
                     case FieldDefinitionType.Sequence:
                         value = "${sequenceNo}"
                         break;
+                    case FieldDefinitionType.DataFileColumn:
+                        def values = dataFileMap[image.name]
+                        if (values) {
+                            value = values[field.fieldName]
+                        }
+                        break;
                     default:
                         value = "err"
                         break;
@@ -159,8 +162,6 @@ class StagingService {
             }
 
         }
-
-        println columnNames
 
         return images
     }

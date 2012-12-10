@@ -77,6 +77,11 @@
                     window.open("${createLink(controller:"task", action:'exportStagedTasksCSV', params:[projectId: projectInstance.id])}", "ExportCSV");
                 });
 
+                $("#btnClearDataFile").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'task', action:'clearStagedDataFile', params:[projectId: projectInstance.id])}";
+                })
+
 
             });
 
@@ -136,7 +141,7 @@
                                     <td>${field.fieldName}</td>
                                     <td><g:select class="fieldType" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}" value="${field.fieldDefinitionType}"/></td>
                                     <td>
-                                        <g:if test="${field.fieldDefinitionType != FieldDefinitionType.Sequence}">
+                                        <g:if test="${field.fieldDefinitionType != FieldDefinitionType.Sequence && field.fieldDefinitionType != au.org.ala.volunteer.FieldDefinitionType.DataFileColumn}">
                                             <g:textField class="fieldValue" name="fieldValue" value="${field.format}" size="40"/>
                                         </g:if>
                                     </td>
@@ -169,6 +174,7 @@
                                 <li>Column headers should be darwin core field names, except for the first one, which should be <code>filename</code></li>
                                 <li>Subsequent rows should contain the image filename in the first column, and optionally values for each field for the rest of the columns.</li>
                                 <li>The image filename must match exactly a filename in the table, otherwise values will not be applied</li>
+                                <li><strong>Important!</strong> There must be a field defined in the section above above for each desired column name with a field type of <code>DataFileColumn</code></li>
                             </ul>
                         </div>
                     </g:else>
