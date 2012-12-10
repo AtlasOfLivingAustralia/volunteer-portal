@@ -344,7 +344,7 @@
       if($.isNumeric(externalEventId)) {
         // its an external event id
         // need to extract from server...
-        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${taskInstance.project.featuredOwner}";
+        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${taskInstance.project.collectionEventLookupCollectionCode}";
         $.ajax(url).done(function (collectionEvent) {
           var eventDesc = '<span>' + renderLocalityDescription(collectionEvent) + '<br/>' + collectionEvent.collector + " (" + collectionEvent.eventDate + ")";
           var html = "This specimen is linked with an existing collection event: <br/>" + eventDesc + '</span><span style="float:right"><a href="#" id="unlinkCollectionEvent">Undo</a></span>'
