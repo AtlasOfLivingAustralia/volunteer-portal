@@ -78,7 +78,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="Volunteer-portal-grailsPlugins" />
-    <orderEntry type="library" name="grails-2.1.1" level="application" />
+    <orderEntry type="library" name="grails-2.1.2" level="application" />
   </component>
 </module>
 
