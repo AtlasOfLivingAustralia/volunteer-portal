@@ -12,7 +12,6 @@
 
                 $("#btnPreview").click(function(e) {
                     e.preventDefault();
-                    alert("here")
                     window.open("${createLink(controller:'template', action:'preview', id:templateInstance.id)}", "TemplatePreview");
                 });
 
