@@ -82,6 +82,12 @@
                     window.location = "${createLink(controller:'task', action:'clearStagedDataFile', params:[projectId: projectInstance.id])}";
                 })
 
+                $("#btnClearStagingArea").click(function(e) {
+                    e.preventDefault();
+                    if (confirm("Are you sure you wish to delete all images from the staging area?")) {
+                        window.location = "${createLink(controller:'task', action:'deleteAllStagedImages', params:[projectId: projectInstance.id])}";
+                    }
+                });
 
             });
 

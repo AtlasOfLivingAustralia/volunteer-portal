@@ -565,6 +565,14 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
+    def deleteAllStagedImages() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            stagingService.deleteStagedImages(projectInstance)
+        }
+        redirect(action:'staging', params:[projectId:projectInstance?.id])
+    }
+
     def stageImage() {
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {

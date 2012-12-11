@@ -55,6 +55,19 @@ class StagingService {
         return false
     }
 
+    def deleteStagedImages(Project project) {
+        if (!project) {
+            return
+        }
+
+        def stagedFiles = listStagedFiles(project)
+        stagedFiles.each {
+            if (it.file?.exists()) {
+                it.file.delete()
+            }
+        }
+    }
+
     def buildTaskMetaDataList(Project project) {
         def images = listStagedFiles(project)
         def profile = ProjectStagingProfile.findByProject(project)
@@ -113,17 +126,6 @@ class StagingService {
 
         images.each { image ->
             image.valueMap = [:]
-
-//            // Data File fields, if there are any
-//            if (dataFileColumns) {
-//                def values = dataFileMap[image.name]
-//                if (values) {
-//                    dataFileColumns.each {
-//                        image.valueMap[it] = values[it]
-//                    }
-//                }
-//            }
-
             sequenceNo++
             profile.fieldDefinitions.each { field ->
                 def value = ""
