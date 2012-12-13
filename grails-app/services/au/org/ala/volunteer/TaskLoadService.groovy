@@ -114,7 +114,11 @@ class TaskLoadService {
                     }
                     taskDesc.fields.add([name: it.key, recordIdx: recordIndexMap[it.key], transcribedByUserId: 'system', value: it.value])
                     taskDesc.afterLoad = {
-                        imgData.file.delete()
+                        try {
+                            imgData.file.delete()
+                        } catch (Exception ex) {
+                            println "Failed to delete staged image!"
+                        }
                     }
                 }
             }

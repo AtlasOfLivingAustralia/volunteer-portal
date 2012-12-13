@@ -18,7 +18,7 @@ class StagingService {
     }
 
     String createDataFilePath(Project project) {
-        return getStagingDirectory(project) + "/datafile/datafile.csv"
+        return getStagingDirectory(project) + "/datafile/datafile.txt"
     }
 
     def stageImage(Project project, MultipartFile file) {

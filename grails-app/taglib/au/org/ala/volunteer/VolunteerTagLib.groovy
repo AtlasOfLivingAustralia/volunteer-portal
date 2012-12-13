@@ -1440,6 +1440,9 @@ class VolunteerTagLib {
     }
 
     // Renders a nav bar as an unordered list
+    /**
+     *
+     */
     def navbar = { attrs, body ->
 
         def selected = null;
@@ -1448,27 +1451,32 @@ class VolunteerTagLib {
             selected = attrs.selected as String;
         }
 
-        def items = [
-                        bvp:[link: createLink(uri: '/'), title: 'Biodiversity Volunteer Portal'],
-                        expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions'],
-                        tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials'],
-                        submitexpedition: [link: createLink(controller: 'submitAnExpedition'), title: 'Submit an Expedition'],
-                        contact: [link: createLink(controller: 'contact'), title: 'Contact Us'],
-                        aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal'],
-                    ]
+        def items = [:]
 
-        out << '<nav id="nav-site">'
-        out << '<ul class="sf sf-js-enabled">'
-        for (def key : items.keySet()) {
-            def item = items[key]
-            out << '<li class="nav-' + key;
-            if (selected == key) {
-                out << ' selected'
-            }
-            out << '"><a href="' + item.link + '">' + item.title + '</a></li>'
+        items << [bvp:[link: createLink(uri: '/'), title: 'Biodiversity Volunteer Portal']]
+        items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
+        items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
+        items << [submitexpedition: [link: createLink(controller: 'submitAnExpedition'), title: 'Submit an Expedition']]
+        if (FrontPage.instance().enableForum) {
+            items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
-        out << '</ul>'
-        out << '</nav>'
+        items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
+        items << [aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal']]
+
+        def mb = new MarkupBuilder(out)
+
+        mb.nav(id:'nav-site') {
+            ul(class:'sf sf-js-enabled') {
+                for (def key : items.keySet()) {
+                    def item = items[key]
+                    mb.li(class:'nav-' + key + (selected == key ? ' selected' : '')) {
+                        a(href:item.link) {
+                            mkp.yield(item.title)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     def messages = { attrs, body ->

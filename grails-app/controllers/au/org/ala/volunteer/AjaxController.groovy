@@ -131,6 +131,7 @@ class AjaxController {
                 writer << error
             }
         }
+        response.writer.flush()
     }
 
     def expeditionInfo = {
