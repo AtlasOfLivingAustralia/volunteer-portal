@@ -215,4 +215,44 @@ class AjaxController {
         render results as JSON
     }
 
+    def taskInfo() {
+        def task = Task.get(params.int("taskId"))
+        if (task) {
+            def taskInfo = [:]
+            taskInfo.projectId = task.project.id
+            taskInfo.externalIdentifier = task.externalIdentifier
+            taskInfo.externalUrl = task.externalUrl
+            taskInfo.fullyTranscribedBy = task.fullyTranscribedBy
+            taskInfo.fullyValidatedBy = task.fullyValidatedBy
+            taskInfo.isValid = task.isValid
+            taskInfo.created = task.created?.format("yyyy-MM-dd HH:mm:ss")
+            taskInfo.fields = []
+            task.fields.each { field ->
+                def fieldInfo = [fieldId: field.id ]
+                fieldInfo.name = field.name
+                fieldInfo.value = field.value
+                fieldInfo.recordIdx = field.recordIdx
+                fieldInfo.transcribedByUserId = field.transcribedByUserId
+                fieldInfo.validatedByUserId = field.validatedByUserId
+                fieldInfo.superceded = field.superceded
+                fieldInfo.created = field.created?.format("yyyy-MM-dd HH:mm:ss")
+                fieldInfo.updated = field.updated?.format("yyyy-MM-dd HH:mm:ss")
+                taskInfo.fields << fieldInfo
+            }
+            taskInfo.multimedia = []
+            task.multimedia.each { mm ->
+                def mmInfo = [multimediaId: mm.id]
+                mmInfo.license = mm.licence
+                mmInfo.mimeType = mm.mimeType
+                mmInfo.created = mm.created?.format("yyyy-MM-dd HH:mm:ss")
+                mmInfo.creator = mm.creator
+                mmInfo.url = "${grailsApplication.config.server.url}${mm.filePath}"
+                taskInfo.multimedia << mmInfo
+            }
+            render(taskInfo as JSON)
+        } else {
+            render(['error':'Missing or invalid taskId!'] as JSON)
+        }
+    }
+
 }

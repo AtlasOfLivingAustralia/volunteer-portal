@@ -38,7 +38,7 @@ class StagingService {
         def images = []
         files.each {
             if (!it.isDirectory()) {
-                def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "/${project.id}/staging/" + it.name
+                def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(it.name, "UTF-8").replaceAll("\\+", "%20")
                 images << [file: it, name: it.name, url: url]
             }
         }
