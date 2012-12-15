@@ -242,7 +242,7 @@ class AjaxController {
             taskInfo.multimedia = []
             task.multimedia.each { mm ->
                 def mmInfo = [multimediaId: mm.id]
-                mmInfo.license = mm.licence
+                mmInfo.licence = mm.licence
                 mmInfo.mimeType = mm.mimeType
                 mmInfo.created = mm.created?.format("yyyy-MM-dd HH:mm:ss")
                 mmInfo.creator = mm.creator

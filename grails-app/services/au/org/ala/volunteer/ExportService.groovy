@@ -9,6 +9,7 @@ class ExportService {
     static transactional = true
 
     def fieldService
+    def grailsApplication
 
     // Simply dumps everything out flat. This is a problem for those templates that collect repeating groups (or multivalue fields)
     // such as journal templates, and the new specimen label templates, but this will do for older specimen label projects.
@@ -64,7 +65,7 @@ class ExportService {
                 def templateFields = TemplateField.findAllByTemplate(project.template)
                 def dataSetFields = templateFields.findAll { it.category == category }
                 def dataSetFieldNames = dataSetFields.collect { it.fieldType.toString() }
-                // These fields are in a repeating group, and will be exported in a seperated (normalized) file, so remove
+                // These fields are in a repeating group, and will be exported in a separate (normalized) file, so remove
                 // them from the list of columns to go in the main file...
                 fieldNames.removeAll { dataSetFieldNames.contains(it) }
                 datasetCategoryFields[category] = dataSetFieldNames
@@ -121,6 +122,14 @@ class ExportService {
             }
         }
 
+        // Export multimedia as 'associatedMedia'. There may be more than one piece of multimedia per task
+        // so we do it in a separate file...
+
+        zipStream.putNextEntry(new ZipEntry("associatedMedia.csv"))
+        exportMultimedia(taskList, writer);
+        writer.flush();
+        zipStream.closeEntry()
+
         // And finally the task comments, if any
         zipStream.putNextEntry(new ZipEntry("taskComments.csv"))
         exportTaskComments(taskList, writer);
@@ -132,9 +141,9 @@ class ExportService {
     }
 
     def exportTaskComments(List<Task> taskList, CSVWriter writer) {
-        def columnNames = ['taskID', 'externalIdentifier','userId', 'userDisplayName', 'date', 'comment']
+        String[] columnNames = ['taskID', 'externalIdentifier','userId', 'userDisplayName', 'date', 'comment']
 
-        writer.writeNext(columnNames.toArray(new String[0]))
+        writer.writeNext(columnNames)
         taskList.each { Task task ->
             def c = TaskComment.createCriteria();
             def comments = c {
@@ -142,12 +151,23 @@ class ExportService {
                 order('date', 'asc')
             }
             for (TaskComment comment : comments) {
-                List<String> outputValues = [task.id.toString(), task.externalIdentifier, comment.user.userId, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
-                writer.writeNext((String[]) outputValues.toArray(new String[0]))
+                String[] outputValues = [task.id.toString(), task.externalIdentifier, comment.user.userId, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
+                writer.writeNext(outputValues)
             }
         }
     }
 
+    def exportMultimedia(List<Task> taskList, CSVWriter writer) {
+        String[] columnNames = ['taskID', 'externalIdentifier','url', 'mimetype', 'licence']
+        writer.writeNext(columnNames)
+        taskList.each { Task task ->
+            task.multimedia.each { multimedia ->
+                def url = "${grailsApplication.config.server.url}${multimedia.filePath}"
+                String[] values = [task.id.toString(), task.externalIdentifier, url, multimedia.mimeType, multimedia.licence]
+                writer.writeNext(values)
+            }
+        }
+    }
 
     private void exportDataSet(List<Task> taskList, Map valueMap, CSVWriter writer, List dataSetFieldNames) {
 
