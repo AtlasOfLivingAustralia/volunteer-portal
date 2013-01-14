@@ -158,13 +158,15 @@ class ExportService {
     }
 
     def exportMultimedia(List<Task> taskList, CSVWriter writer) {
-        String[] columnNames = ['taskID', 'externalIdentifier','url', 'mimetype', 'licence']
+        String[] columnNames = ['taskID', 'externalIdentifier', 'recordIdx', 'associatedMedia', 'mimetype', 'licence']
         writer.writeNext(columnNames)
         taskList.each { Task task ->
+            int recordIdx = 0
             task.multimedia.each { multimedia ->
                 def url = "${grailsApplication.config.server.url}${multimedia.filePath}"
-                String[] values = [task.id.toString(), task.externalIdentifier, url, multimedia.mimeType, multimedia.licence]
+                String[] values = [task.id.toString(), task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
                 writer.writeNext(values)
+                recordIdx++
             }
         }
     }
