@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.DateConstants" %>
 
 
 <style type="text/css">
@@ -38,7 +39,7 @@
     </g:if>
       <tr>
         <td>Transcribed</td>
-        <td style="text-align: left"><b>${formatDate(date: dateTranscribed, format: "dd MMM yyyy HH:mm:ss")}</b></td>
+        <td style="text-align: left"><b>${formatDate(date: dateTranscribed, format: DateConstants.DATE_TIME_FORMAT)}</b></td>
       </tr>
     </table>
   </div>

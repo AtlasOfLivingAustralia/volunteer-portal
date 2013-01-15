@@ -39,6 +39,34 @@ class ForumService {
         return results as PagedResultList
     }
 
+    PagedResultList getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
+        def c = SiteForumTopic.createCriteria()
+        def results = c.list(max:params?.max, offset: params?.offset) {
+            and {
+                if (includeDeleted) {
+                    eq("deleted", true)
+                } else {
+                    or {
+                        isNull("deleted")
+                        eq("deleted", false)
+                    }
+                }
+            }
+            and {
+                order("sticky", "desc")
+                order("priority", "desc")
+                order("lastReplyDate", "desc")
+            }
+            if (params?.max) {
+                maxResults(params.max as Integer)
+            }
+            if (params?.offset) {
+                firstResult(params.offset as Integer)
+            }
+        }
+        return results as PagedResultList
+    }
+
     PagedResultList getTopicMessages(ForumTopic topic, Map params = null) {
         def c = ForumMessage.createCriteria()
         def results = c.list(max:params?.max, offset: params?.offset) {

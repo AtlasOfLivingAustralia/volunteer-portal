@@ -58,10 +58,12 @@
     <content url="file://$USER_HOME$/.grails/2.1.2/projects/volunteer-portal/plugins/tomcat-2.1.2" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.1.2" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.0" level="application" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (Volunteer-portal-grailsPlugins)">
         <CLASSES>
+          <root url="file://$USER_HOME$/.grails/2.1.2/projects/volunteer-portal/plugins/pretty-time-0.3/lib" />
+          <root url="file://$USER_HOME$/.grails/2.1.2/projects/volunteer-portal/plugins/markdown-1.0.0.RC1/lib" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.0.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jsoup/jsoup/jars/jsoup-1.6.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-1.8.4.jar!/" />
@@ -73,8 +75,6 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.parboiled/parboiled-java/jars/parboiled-java-1.0.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.parboiled/parboiled-core/jars/parboiled-core-1.0.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.pegdown/pegdown/jars/pegdown-1.1.0.jar!/" />
-          <root url="file://$USER_HOME$/.grails/2.1.2/projects/volunteer-portal/plugins/pretty-time-0.3/lib" />
-          <root url="file://$USER_HOME$/.grails/2.1.2/projects/volunteer-portal/plugins/markdown-1.0.0.RC1/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

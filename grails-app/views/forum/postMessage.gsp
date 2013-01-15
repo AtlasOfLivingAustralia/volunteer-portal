@@ -60,7 +60,7 @@
 
                 $("#btnCancel").click(function (e) {
                     e.preventDefault();
-                    window.location = "${createLink(controller:'forum', action:'projectForumTopic', id: topic.id)}";
+                    window.location = "${createLink(controller:'forum', action:'viewForumTopic', id: topic.id)}";
                 });
 
             });
@@ -72,19 +72,7 @@
         <header id="page-header">
             <div class="inner">
                 <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><a href="${createLink(controller: 'project', action: 'index', id: topic.project.id)}">${topic.project.featuredLabel}</a>
-                        </li>
-                        <li><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: topic.project.id])}"><g:message code="forum.project.forum" default="Project Forum"/></a>
-                        </li>
-                        <li><a href="${createLink(controller: 'forum', action: 'projectForumTopic', params: [topicId: topic.id])}">${topic.title}</a>
-                        </li>
-                        <li class="last"><g:message code="forum.project.newMessage" default="New Message"/></li>
-                    </ol>
-                </nav>
-
+                <vpf:forumNavItems topic="${topic}" lastLabel="${message(code:'forum.project.newMessage', default:'New Message')}" />
                 <h1>Post Message - ${topic.title}</h1>
             </div>
         </header>
@@ -110,8 +98,8 @@
                     <label for="watchTopic">Watch this topic</label>
 
                     <div>
-                        <g:actionSubmit class="button" value="Preview" action="previewProjectMessage"/>
-                        <g:actionSubmit class="button" value="Post message" action="saveNewProjectMessage"/>
+                        <g:actionSubmit class="button" value="Preview" action="previewMessage"/>
+                        <g:actionSubmit class="button" value="Post message" action="saveNewTopicMessage"/>
                         <button class="button" id="btnCancel">Cancel</button>
                     </div>
 

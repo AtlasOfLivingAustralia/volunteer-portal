@@ -11,9 +11,9 @@
 
         <style type="text/css">
 
-        .buttonBar {
-            margin-bottom: 10px;
-        }
+            .buttonBar {
+                margin-bottom: 10px;
+            }
 
         </style>
 
@@ -27,7 +27,7 @@
 
                 $("#btnNewProjectTopic").click(function (e) {
                     e.preventDefault();
-                    window.location = "${createLink(controller: 'forum', action:'addProjectTopic', params:[projectId: projectInstance.id])}";
+                    window.location = "${createLink(controller: 'forum', action:'addForumTopic', params:[projectId: projectInstance.id])}";
                 });
 
                 $(".deleteTopicLink").click(function (e) {
@@ -66,65 +66,29 @@
 
         <div>
             <div class="inner">
+                <div class="projectSummary">
+
+                    <table style="margin-bottom: 0px;">
+                        <tr>
+                            <td><img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124" /></td>
+                            <td>
+                                <h2>${projectInstance.featuredLabel}</h2>
+                                <h3>${projectInstance.featuredOwner}</h3>
+                                ${projectInstance.description}
+                            </td>
+                        </tr>
+                        <g:if test="${projectInstance.featuredImageCopyright}">
+                            <tr>
+                                <td><span class="copyright-label">${projectInstance.featuredImageCopyright}</span></td>
+                            </tr>
+                        </g:if>
+                    </table>
+                </div>
                 <div class="buttonBar">
                     <button id="btnNewProjectTopic" class="button">Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
                     </button>
                 </div>
-
-                <div class="topicTable">
-                    <table class="forum-table">
-                        <thead>
-                            <tr>
-                                <th colspan="2">Topic</th>
-                                <th>Replies</th>
-                                <th>Views</th>
-                                <th>Posted by</th>
-                                <th>Posted</th>
-                                <th>Last reply</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <g:if test="${topics?.size() == 0}">
-                                <tr>
-                                    <td colspan="7">
-                                        There are no topics in this forum yet.
-                                    </td>
-                                </tr>
-                            </g:if>
-                            <g:else>
-                                <g:each in="${topics}" var="topic">
-                                    <tr class="${topic.priority}${topic.sticky ? ' sticky' : ''}" topicId="${topic.id}">
-                                        <td style="width: 20px; padding: 0px">
-                                            <g:if test="${topic.sticky}">
-                                                <img src="${resource(dir: 'images', file: 'forum_sticky_topic.png')}"/>
-                                            </g:if>
-                                        </td>
-                                        <td><a href="${createLink(controller: 'forum', action: 'projectForumTopic', id: topic.id)}">${topic.title}</a>
-                                        </td>
-                                        <td>${topicCounts[topic] - 1}</td>
-                                        <td>${topic.views ?: 0}</td>
-                                        <td>${topic.creator.displayName}</td>
-                                        <td>${formatDate(date: topic.dateCreated, format: 'dd MMM yyyy HH:mm:ss')}</td>
-                                        <td>${formatDate(date: topic.lastReplyDate, format: 'dd MMM yyyy HH:mm:ss')}</td>
-                                        <td>
-                                            <a class="button" href="${createLink(controller: 'forum', action: 'postProjectMessage', params: [topicId: topic.id])}">Reply</a>
-                                            <vpf:ifModerator project="${projectInstance}">
-                                                <a class="button" href="${createLink(controller: 'forum', action: 'editProjectTopic', params: [topicId: topic.id])}">Edit</a>
-                                                <a class="button deleteTopicLink" href="#">Delete</a>
-                                            </vpf:ifModerator>
-                                        </td>
-                                    </tr>
-                                </g:each>
-                            </g:else>
-                        </tbody>
-                    </table>
-
-                    <div class="paginateButtons">
-                      <g:paginate total="${topics.totalCount}" params="${params}" action="projectForum" controller="forum"/>
-                    </div>
-
-                </div>
+                <vpf:topicTable topics="${topics}" />
             </div>
         </div>
     </body>

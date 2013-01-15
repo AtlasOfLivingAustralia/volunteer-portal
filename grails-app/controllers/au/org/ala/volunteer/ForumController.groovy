@@ -8,7 +8,7 @@ class ForumController {
 
     def index = { }
 
-    def projectForum = {
+    def projectForum() {
 
         def projectId = params.int("projectId")
 
@@ -20,12 +20,7 @@ class ForumController {
             def projectInstance = Project.get(projectId)
             if (projectInstance) {
                 def topics = forumService.getProjectForumTopics(projectInstance, false, params)
-                def topicCounts = [:]
-                topics.each { topic ->
-                    def replyCount = ForumMessage.countByTopic(topic)
-                    topicCounts[topic] = replyCount
-                }
-                return [projectInstance: projectInstance, topics: topics, topicCounts: topicCounts]
+                return [projectInstance: projectInstance, topics: topics]
             }
         }
 
@@ -33,13 +28,69 @@ class ForumController {
         redirect(controller: 'forum', action:'index')
     }
 
-    def addProjectTopic = {
-        def projectId = params.int("projectId")
-        def projectInstance = Project.get(projectId)
-        return [projectInstance: projectInstance]
+    def addForumTopic() {
+
+        // A new forum topic can belong to either a project, a task (and therefore by association, also a project),
+        // or neither, in which case it is a general discussion topic.
+        // The same view collects the new topic data regardless, and depending on if a task or project is submitted,
+        // the insertForumTopic action will decide to which 'forum' to attach the topic.
+
+        // so for this reason we inject either a task, a project, or neither into the view here...
+        def projectInstance = Project.get(params.int("projectId"))
+        def taskInstance = Task.get(params.int("taskId"))
+
+        return [projectInstance: projectInstance, taskInstance: taskInstance]
     }
 
-    def editProjectTopic = {
+    def editTopic() {
+        def topic = ForumTopic.get(params.int("topicId"))
+
+        if (topic == null) {
+            flash.message = "Topic id missing or topic not found!"
+            redirect(action:'index')
+            return
+        }
+
+        Project projectInstance = null
+        Task taskInstance = null
+        def allowed = false
+        if (topic.instanceOf(ProjectForumTopic)) {
+            projectInstance = (topic as ProjectForumTopic).project
+            allowed = userService.isForumModerator(projectInstance)
+        } else if (topic.instanceOf(TaskForumTopic)) {
+            taskInstance = (topic as TaskForumTopic).task
+            allowed = userService.isForumModerator(taskInstance.project)
+        } else {
+            allowed = userService.isForumModerator(null)
+        }
+
+        if (!allowed) {
+            flash.message = "You do not have sufficient privileges to edit this topic"
+            redirect(action: 'redirectTopicParent', id: topic.id)
+            return
+        }
+
+        [topic:topic, taskInstance: taskInstance, projectInstance: projectInstance]
+    }
+
+    def redirectTopicParent() {
+        def topic = ForumTopic.get(params.int("id"))
+        if (topic) {
+            if (topic.instanceOf(ProjectForumTopic)) {
+                def projectInstance = (topic as ProjectForumTopic).project
+                redirect(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])
+            } else if (topic.instanceOf(TaskForumTopic)) {
+                def taskInstance = (topic as TaskForumTopic).task
+                redirect(controller: 'forum', action: 'taskForum', params: [taskId: taskInstance.id])
+            } else {
+                redirect(controller: 'forum', action: 'generalDiscussion')
+            }
+        } else {
+            redirect(controller: 'forum', action: 'index')
+        }
+    }
+
+    def editProjectTopic() {
         def topic = ProjectForumTopic.get(params.int("topicId"))
         if (!topic || !userService.isForumModerator(topic.project)) {
             flash.message = "You do not have sufficient privileges to edit this topic"
@@ -49,68 +100,97 @@ class ForumController {
         [topic: topic, user: userService.currentUser]
     }
 
-    def insertProjectTopic = {
+    def insertForumTopic() {
 
-        def projectId = params.int("projectId")
-        if (projectId) {
-            def projectInstance = Project.get(projectId)
-            def title = params.title
-            def text = params.text
+        def title = params.title
+        def text = params.text
 
-            def messages = []
+        def messages = []
 
-            if (!title) {
-                messages << "You must enter a title for your forum topic"
+        if (!title) {
+            messages << "You must enter a title for your forum topic"
+        }
+
+        if (!text) {
+            messages << "You must enter a message for your forum topic"
+        }
+
+        if (messages) {
+            flash.message = formatMessages(messages)
+            redirect(action: 'addProjectTopic', params: params)
+            return
+        }
+
+        def locked = false
+        def sticky = false
+        def priority = ForumTopicPriority.Normal
+
+
+        ForumTopic topic = null
+        if (params.projectId) {
+            def projectInstance = Project.get(params.int("projectId"))
+            if (projectInstance) {
+                if (userService.isForumModerator(projectInstance)) {
+                    locked = params.locked == 'on'
+                    sticky = params.sticky == 'on'
+                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                }
             }
-
-            if (!text) {
-                messages << "You must enter a message for your forum topic"
+            topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
+        } else if (params.taskId) {
+            def taskInstance = Task.get(params.int("taskId"))
+            if (taskInstance) {
+                if (userService.isForumModerator(taskInstance.project)) {
+                    locked = params.locked == 'on'
+                    sticky = params.sticky == 'on'
+                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                }
             }
-
-            if (messages) {
-                flash.message = formatMessages(messages)
-                redirect(action: 'addProjectTopic', params: params)
-                return
-            }
-
-            def locked = false
-            def sticky = false
-            def priority = ForumTopicPriority.Normal
-
-            if (userService.isForumModerator(projectInstance)) {
+            topic = new TaskForumTopic(task: taskInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
+        } else {
+            // new general discussion topic
+            if (userService.isForumModerator(null)) {
                 locked = params.locked == 'on'
                 sticky = params.sticky == 'on'
                 priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
             }
-
-            def topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
-
-            topic.save(flush: true, failOnError: true)
-
-            def firstMessage = new ForumMessage(topic: topic, text: text, date: topic.dateCreated, sticky: false, user: topic.creator)
-            firstMessage.save(flush: true, failOnError: true)
-
-            if (params.watchTopic == 'on') {
-                forumService.watchTopic(topic.creator, topic)
-            }
-            redirect(action: 'projectForum', params: [projectId: projectInstance.id])
+            topic = new SiteForumTopic(title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
         }
 
+        topic.save(flush: true, failOnError: true)
+
+        def firstMessage = new ForumMessage(topic: topic, text: text, date: topic.dateCreated, user: topic.creator)
+        firstMessage.save(flush: true, failOnError: true)
+
+        if (params.watchTopic == 'on') {
+            forumService.watchTopic(topic.creator, topic)
+        }
+
+        redirect(action: 'redirectTopicParent', id: topic.id)
     }
 
-    private boolean checkModerator(Project project = null) {
+    private boolean checkModerator(ForumTopic topic = null) {
+
+        def project = null
+        if (topic?.instanceOf(ProjectForumTopic)) {
+            project = (topic as ProjectForumTopic)?.project
+        } else if (topic?.instanceOf(TaskForumTopic)) {
+            project = (topic as TaskForumTopic)?.task?.project
+        }
+
         if (!userService.isForumModerator(project)) {
             flash.message = "You do not have sufficient privileges to edit this topic"
             redirect controller:'forum', action: 'projectForum', params:[projectId: project?.id]
             return false
         }
+
         return true
     }
 
-    def updateProjectTopic = {
+    def updateProjectTopic() {
 
         def topic = ProjectForumTopic.get(params.int('topicId'))
-        if (!topic || !checkModerator(topic.project)) {
+        if (!topic || !checkModerator(topic)) {
             return
         }
 
@@ -138,34 +218,44 @@ class ForumController {
         return sb.toString()
     }
 
-    def projectForumTopic = {
-        def topic = ProjectForumTopic.get(params.id)
+    def viewForumTopic() {
+        def topic = ForumTopic.get(params.id)
         if (topic) {
             topic.lock()
             topic.views++
             topic.save()
         }
-        [topic: topic, userInstance: userService.currentUser, projectInstance: topic.project]
+
+        Project projectInstance = null
+        Task taskInstance = null
+        if (topic.instanceOf(ProjectForumTopic)) {
+            projectInstance = (topic as ProjectForumTopic).project
+        } else if (topic.instanceOf(TaskForumTopic)) {
+            taskInstance = (topic as TaskForumTopic).task
+        }
+
+        [topic: topic, userInstance: userService.currentUser, projectInstance: projectInstance, taskInstance: taskInstance]
     }
 
-    def postProjectMessage = {
-        def topic = ProjectForumTopic.get(params.topicId)
+    def postMessage() {
+        def topic = ForumTopic.get(params.int("topicId"))
         if (topic) {
-           ForumMessage replyTo = null
-           if (params.replyTo) {
+            ForumMessage replyTo = null
+            if (params.replyTo) {
                replyTo = ForumMessage.get(params.int("replyTo"))
-           } else {
+            } else {
                replyTo = forumService.getFirstMessageForTopic(topic)
-           }
+            }
 
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
 
-           [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched]
+            [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched]
         }
+
     }
 
-    def previewProjectMessage = {
-        def topic = ProjectForumTopic.get(params.topicId)
+    def previewMessage() {
+        def topic = ForumTopic.get(params.topicId)
         if (topic) {
             ForumMessage replyTo = null
             if (params.replyTo) {
@@ -174,12 +264,12 @@ class ForumController {
                 replyTo = forumService.getFirstMessageForTopic(topic)
             }
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-            render view:'postProjectMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched], params: [messageText: params.messageText]
+            render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched], params: [messageText: params.messageText]
         }
     }
 
-    def saveNewProjectMessage = {
-        def topic = ProjectForumTopic.get(params.topicId)
+    def saveNewTopicMessage() {
+        def topic = ForumTopic.get(params.topicId)
         def user = userService.currentUser
         ForumMessage replyTo = null
         if (params.replyTo) {
@@ -217,7 +307,7 @@ class ForumController {
 
                 forumService.scheduleTopicNotification(topic, message)
 
-                redirect(action: 'projectForumTopic', id: topic?.id)
+                redirect(action: 'redirectTopicParent', id: topic?.id)
                 return
             }
         } else {
@@ -225,19 +315,35 @@ class ForumController {
         }
 
         flash.message = formatMessages(errors)
-        render view:'postProjectMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser], params: [messageText: params.messageText]
+        render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser], params: [messageText: params.messageText]
     }
 
-    def deleteProjectTopic = {
-        def topic = ProjectForumTopic.get(params.int("topicId"))
-        if (!topic || !checkModerator(topic.project)) {
+    def deleteTopic() {
+        def topic = ForumTopic.get(params.int("topicId"))
+        if (!topic || !checkModerator(topic)) {
             return
         }
 
-        def project = topic.project
+        def action = "generalDiscussion"
+        Project project = null
+        Task task = null
+
+        if (topic.instanceOf(ProjectForumTopic)) {
+            action = "projectForum"
+            project = (topic as ProjectForumTopic).project
+        } else if (topic.instanceOf(TaskForumTopic)) {
+            action = "taskForum"
+            task = (topic as TaskForumTopic).task
+        }
+
         topic.delete(flush: true)
 
-        redirect(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
+        redirect(controller: 'forum', action: action, params: [projectId: project?.id, taskId: task?.id])
+    }
+
+    def generalDiscussion() {
+        def topics = forumService.getGeneralDiscussionTopics()
+        [topics:topics]
     }
 
 }

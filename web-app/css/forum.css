@@ -38,6 +38,10 @@ table.forum-table td.type img {
 	text-align:center;
 }
 
+table.forum-table td a.button {
+    margin-top: 5px;
+}
+
 .forumNameColumn {
     width: 200px;
     text-align: center;
