@@ -5,8 +5,17 @@ class ForumController {
     def forumService
     def userService
     def markdownService
+    def authService
+    def projectService
 
-    def index = { }
+    def index = {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.sort = params.sort ?: 'completed'
+
+        ProjectSummaryList projectSummaryList = projectService.getProjectSummaryList(params)
+
+        [projectSummaryList: projectSummaryList]
+    }
 
     def projectForum() {
 
@@ -187,9 +196,9 @@ class ForumController {
         return true
     }
 
-    def updateProjectTopic() {
+    def updateTopic() {
 
-        def topic = ProjectForumTopic.get(params.int('topicId'))
+        def topic = ForumTopic.get(params.int('topicId'))
         if (!topic || !checkModerator(topic)) {
             return
         }
@@ -205,8 +214,7 @@ class ForumController {
 
         topic.save(flush: true, failOnError: true)
 
-        redirect(action: 'projectForum', params: [projectId: topic?.project.id])
-
+        redirect(action: 'redirectTopicParent', id: topic?.id)
     }
 
     private String formatMessages(List messages, String title = "The following errors have occurred:") {
@@ -307,7 +315,7 @@ class ForumController {
 
                 forumService.scheduleTopicNotification(topic, message)
 
-                redirect(action: 'redirectTopicParent', id: topic?.id)
+                redirect(action: 'viewForumTopic', id: topic?.id)
                 return
             }
         } else {

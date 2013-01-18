@@ -14,7 +14,7 @@ class IndexController {
         if (frontPage.useGlobalNewsItem) {
             newsItem = new NewsItem(shortDescription: frontPage.newsBody, title: frontPage.newsTitle, created: frontPage.newsCreated);
         } else {
-            // We need to find the latest news item from all projects, but we only include news items from projects whose news items have not been disabled
+            // We need to find the latest news item from all projectRenderList, but we only include news items from projectRenderList whose news items have not been disabled
             newsItem = NewsItem.find("""from NewsItem n where n.project.disableNewsItems is null or project.disableNewsItems != true order by n.created desc""")
         }
 

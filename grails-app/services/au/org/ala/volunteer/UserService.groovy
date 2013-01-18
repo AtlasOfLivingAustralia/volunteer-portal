@@ -223,7 +223,7 @@ class UserService {
         // Otherwise check the intra app roles...
 
         // If project is null, return true if the user can validate in any project
-        // If project is not null, return true only if they are validator for that project, or if they have a null project in their validator role (meaning 'all projects')
+        // If project is not null, return true only if they are validator for that project, or if they have a null project in their validator role (meaning 'all projectRenderList')
 
         def user = User.findByUserId(userId)
         if (user) {

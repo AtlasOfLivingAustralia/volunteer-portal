@@ -34,13 +34,13 @@
             <div class="inner">
                 <cl:messages/>
                 <vpf:forumNavItems topic="${topic}" lastLabel="${message(code: 'forum.editTopic.label', default: "Edit Topic")}"/>
-                <h1><g:message code="forum.editProjectTopicHeading.label" default="{0} Forum - Edit Topic" args="${[topic.project.featuredLabel]}"/></h1>
+                %{--<h1><g:message code="forum.editProjectTopicHeading.label" default="{0} Forum - Edit Topic" args="${[topic.project.featuredLabel]}"/></h1>--}%
             </div>
         </header>
 
         <div>
             <div class="inner">
-                <g:form controller="forum" action="updateProjectTopic" params="${[topicId: topic.id]}">
+                <g:form controller="forum" action="updateTopic" params="${[topicId: topic.id]}">
                     <div class="newTopicFields">
                         <h2><g:message code="forum.projectTopicTitle.label" default="Topic title"/></h2>
                         <g:textField id="title" name="title" maxlength="200" value="${topic.title}"/>

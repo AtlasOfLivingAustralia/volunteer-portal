@@ -115,44 +115,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <g:each in="${projects}" status="i" var="projectInstance">
-                        <tr inactive="${projectInstance.project.inactive}">
+                    <g:each in="${projects}" status="i" var="projectSummary">
+                        <tr inactive="${projectSummary.project.inactive}">
                             <th colspan="4">
-                                <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance['project'].featuredLabel}</a>
-                                    <g:if test="${projectInstance.project.inactive}">
+                                <h2><a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">${projectSummary.project.featuredLabel}</a>
+                                    <g:if test="${projectSummary.project.inactive}">
                                         - Deactivated
                                     </g:if>
                                 </h2>
                             </th>
                             <th align="center">
                                 <cl:ifAdmin>
-                                    <g:link class="adminLink" controller="project" action="edit" id="${projectInstance['project'].id}">Edit</g:link>
-                                    <g:link class="adminLink" controller="task" action="projectAdmin" id="${projectInstance['project'].id}">Admin</g:link>
+                                    <g:link class="adminLink" controller="project" action="edit" id="${projectSummary.project.id}">Edit</g:link>
+                                    <g:link class="adminLink" controller="task" action="projectAdmin" id="${projectSummary.project.id}">Admin</g:link>
                                 </cl:ifAdmin>
                             </th>
                         </tr>
-                        <tr inactive="${projectInstance.project.inactive}">
+                        <tr inactive="${projectSummary.project.inactive}">
                             <%-- Project thumbnail --%>
-                            <td><a href="${createLink(controller: 'project', action: 'index', id: projectInstance['project'].id)}">
-                                <img src="${projectInstance['project'].featuredImage}" width="147" height="81"/>
+                            <td><a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
+                                <img src="${projectSummary.project.featuredImage}" width="147" height="81"/>
                             </a>
                             </td>
                             <%-- Progress bar --%>
                             <td>
                                 <div id="recordsChart">
-                                    <strong>${projectInstance['countComplete'] ? projectInstance['countComplete'] : 0}</strong> tasks completed (<strong>${projectInstance['percentComplete']}%</strong>)
+                                    <strong>${projectSummary.countComplete}</strong> tasks completed (<strong>${projectSummary.percentComplete}%</strong>)
                                 </div>
 
-                                <div id="recordsChartWidget${i}" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${projectInstance['percentComplete']}">
-                                    <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectInstance['percentComplete']}%; "></div>
+                                <div id="recordsChartWidget${i}" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${projectSummary.percentComplete}">
+                                    <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectSummary.percentComplete}%; "></div>
                                 </div>
                             </td>
                             <%-- Volunteer count --%>
-                            <td class="bold centertext">${projectInstance['volunteerCount']}</td>
+                            <td class="bold centertext">${projectSummary.volunteerCount}</td>
                             <%-- Institution --%>
-                            <td>${projectInstance['project'].featuredOwner}</td>
+                            <td>${projectSummary.project.featuredOwner}</td>
                             <%-- Project type --%>
-                            <td class="type"><img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectInstance['iconImage']}" width="40" height="36" alt="">${projectInstance['iconLabel']}
+                            <td class="type"><img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectSummary.iconImage}" width="40" height="36" alt="">${projectSummary.iconLabel}
                             </td>
 
                         </tr>

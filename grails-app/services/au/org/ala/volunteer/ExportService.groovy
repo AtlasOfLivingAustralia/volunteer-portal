@@ -12,7 +12,7 @@ class ExportService {
     def grailsApplication
 
     // Simply dumps everything out flat. This is a problem for those templates that collect repeating groups (or multivalue fields)
-    // such as journal templates, and the new specimen label templates, but this will do for older specimen label projects.
+    // such as journal templates, and the new specimen label templates, but this will do for older specimen label projectRenderList.
     def export_default = { Project project, taskList, taskMap, fieldNames, response ->
         def filename = "Project-" + project.id + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".txt");

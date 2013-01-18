@@ -37,15 +37,29 @@ class ForumTagLib {
             mb.table(class:'forum-table') {
                 thead {
                     tr {
-                        th { mkp.yield(topic.title) }
-                        th { mkp.yield("${replies.size() - 1} replies") }
+                        th(colspan:'2') {
+                            mkp.yield(topic.title)
+                        }
+                        th(style:'text-align: right; vertical-align: middle') {
+                            if (topic.locked) {
+                                mb.img(style:'vertical-align: middle', src:resource(dir:'/images', file:'lock.png'))
+                                mkp.yield("Topic is locked")
+                            }
+                        }
+                    }
+
+                    tr {
+                        th {  }
+                        th { mkp.yield("${replies.size() - 1} " + ( replies.size() == 2 ? 'reply' : "replies")) }
+                        th(style: 'text-align: right') {
+                        }
                     }
                 }
                 tbody {
                     replies.each { reply ->
                         tr(class: striped ? 'striped' : '') {
                             td(class:"forumNameColumn") {
-                                span(class:'forumUsername') {
+                                a(class:'forumUsername', href:createLink(controller: 'user', action:'show', id: reply.user.id)) {
                                     mkp.yield(reply.user.displayName)
                                 }
                                 br {}
@@ -53,7 +67,10 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            td { mkp.yieldUnescaped(markdownService.markdown(reply.text)) }
+                            td() { mkp.yieldUnescaped(markdownService.markdown(reply.text)) }
+                            td() {
+
+                            }
                         }
                         striped = !striped
                     }
@@ -129,12 +146,17 @@ class ForumTagLib {
                     } else {
                         for (ForumTopic topic : topics) {
                             tr(class:"${topic.priority}${topic.sticky ? ' sticky' : ''}", topicId:topic.id) {
-                                td(style:'width: 20px; padding: 0px') {
-                                    if (topic.sticky) {
-                                        img(src:resource(dir:'images', file:'forum_sticky_topic.png')) {}
+                                td(style: "width: 40px; padding: 0px") {
+                                    span(style:'color:green') {
+                                        if (topic.sticky) {
+                                            mb.img(src:resource(dir:'/images', file:'forum_sticky_topic.png'))
+                                        }
+                                        if (topic.locked) {
+                                            mb.img(src:resource(dir:'/images', file:'lock.png', height: '16px', width:'16px'))
+                                        }
                                     }
                                 }
-                                td{
+                                td {
                                     a(href:createLink(controller:'forum', action:'viewForumTopic', id:topic.id)) {
                                         mkp.yield(topic.title)
                                     }
@@ -155,7 +177,8 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: topic.lastReplyDate, format: DateConstants.DATE_TIME_FORMAT))
                                 }
                                 td {
-                                    a(class:'button', href:createLink(controller:'forum', action:'postMessage', params:[topicId: topic.id])) {
+                                    def replyLink = topic.locked ? "#" : createLink(controller:'forum', action:'postMessage', params:[topicId: topic.id])
+                                    a(class:'button', href:replyLink, disabled:topic.locked ? 'true' : 'false') {
                                         mkp.yield("Reply")
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
@@ -208,6 +231,11 @@ class ForumTagLib {
 
         mb.nav(id:'breadcrumb') {
             ol {
+                li {
+                    a(href:createLink(uri: '/')) {
+                        mkp.yield(message(code:'default.home.label'))
+                    }
+                }
                 if (projectInstance) {
                     li {
                         a(href:createLink(controller: 'project', action: 'index', id: projectInstance.id)) {

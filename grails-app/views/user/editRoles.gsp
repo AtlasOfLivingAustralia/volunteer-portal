@@ -72,7 +72,7 @@
           <tr>
 
             <td><g:select name="userRole_${userRole.id}_role" from="${roles}" optionKey="id" optionValue="name" value="${userRole.role?.id}"></g:select> </td>
-            <td><g:select name="userRole_${userRole.id}_project" from="${projects}" optionKey="id" optionValue="featuredLabel" value="${userRole.project?.id}" noSelection="${[null:'<All projects>']}"></g:select> </td>
+            <td><g:select name="userRole_${userRole.id}_project" from="${projects}" optionKey="id" optionValue="featuredLabel" value="${userRole.project?.id}" noSelection="${[null:'<All projectRenderList>']}"></g:select> </td>
             <td><button class="deleteRole" userRoleId="${userRole.id}">Delete</button></td>
 
           </tr>

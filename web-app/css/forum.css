@@ -17,7 +17,7 @@ table.forum-table thead th {
 
 table.forum-table td {
 	padding:0 6px 6px 6px;
-	vertical-align:top;
+	vertical-align:middle;
 }
 table.forum-table td img {
 	/*margin-top:6px;*/
@@ -40,6 +40,12 @@ table.forum-table td.type img {
 
 table.forum-table td a.button {
     margin-top: 5px;
+}
+
+table.forum-table td a.button[disabled=true], table.forum-table td a:hover.button[disabled=true]  {
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+    cursor: default;
 }
 
 .forumNameColumn {

@@ -17,13 +17,11 @@ class ProjectController {
     def fieldService
     def multimediaService
     def logService
-    def auditService
-    def fieldSyncService
     def authService
     def exportService
     def collectionEventService
     def localityService
-    javax.sql.DataSource dataSource
+    def projectService
 
     /**
      * Project home page - shows stats, etc.
@@ -271,123 +269,17 @@ class ProjectController {
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        params.sort = params.sort ? params.sort : session.expeditionSort ? session.expeditionSort : 'completed'
+        params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
 
-        def projectList
+        def projectSummaryList = projectService.getProjectSummaryList(params)
 
-        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
-            projectList = Project.list()
-        } else {
-            projectList = Project.findAllByInactiveOrInactive(false, null)
-        }
-
-        def taskCounts = taskService.getProjectTaskCounts()
-        def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
-
-        def projects = [:]
-        def incompleteCount = 0;
-        for (Project project : projectList) {
-
-            def percent = 0;
-            if (taskCounts[project.id] && fullyTranscribedCounts[project.id]) {
-                percent = ((fullyTranscribedCounts[project.id] / taskCounts[project.id]) * 100)
-                if (percent > 99 && taskCounts[project.id] != fullyTranscribedCounts[project.id]) {
-                    // Avoid reported 100% unless the transcribed count actually equals the task count
-                    percent = 99;
-                }
-            }
-            if (percent < 100 && !project.inactive) {
-                incompleteCount++;
-            }
-
-            def iconImage = 'icon_specimens.png'
-            def iconLabel = 'Specimens'
-
-            if (project.template.name.equalsIgnoreCase('Journal') || project.template?.name?.toLowerCase().startsWith("fieldnotebook")) {
-                iconImage = 'icon_fieldnotes.png'
-                iconLabel = 'Field notes'
-            }
-
-            def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")
-
-            projects[project.id] = [id: project.id, project: project, iconLabel: iconLabel, iconImage: iconImage, volunteerCount: volunteer.size(), countComplete: fullyTranscribedCounts[project.id] , percentComplete: percent ? Math.round(percent) : 0 ]
-
-        }
-
-        def numberOfUncompletedProjects = incompleteCount < numbers.size() ? numbers[incompleteCount] : "" + incompleteCount;
-
-        def renderList = projects.collect({ kvp -> kvp.value })
-
-        if (params.q) {
-            String query = params.q.toLowerCase()
-
-            renderList = renderList.findAll { kvp ->
-                def project = kvp.project as Project
-
-                if (project.featuredLabel?.toLowerCase()?.contains(query)) {
-                    return true
-                }
-
-                if (project.featuredOwner?.toLowerCase()?.contains(query)) {
-                    return true
-                }
-
-                if (project.description?.toLowerCase()?.contains(query)) {
-                    return true;
-                }
-
-                if (project.shortDescription?.toLowerCase()?.contains(query)) {
-                    return true;
-                }
-
-                return false;
-            }
-        }
-
-        renderList = renderList.sort { p ->
-
-            if (params.sort == 'completed') {
-                return p.percentComplete
-            }
-
-            if (params.sort == 'volunteers') {
-                return p.volunteerCount;
-            }
-
-            if (params.sort == 'institution') {
-                return p.project.featuredOwner;
-            }
-
-            if (params.sort == 'type') {
-                return p.iconLabel;
-            }
-
-            p.project.featuredLabel
-        }
-
-        int startIndex = params.offset ? params.int('offset') : 0;
-        if (startIndex >= renderList.size()) {
-            startIndex = renderList.size() - params.int('max');
-            if (startIndex < 0) {
-                startIndex = 0;
-            }
-        }
-
-        int endIndex = startIndex + params.int('max') - 1;
-        if (endIndex >= renderList.size()) {
-            endIndex = renderList.size() - 1;
-        }
-
-        if (params.order == 'desc') {
-            renderList = renderList.reverse()
-        }
-
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
 
         session.expeditionSort = params.sort;
 
         [
-            projects: renderList ? renderList[startIndex .. endIndex] : [],
-            projectInstanceTotal: renderList.size(),
+            projects: projectSummaryList.projectRenderList,
+            projectInstanceTotal: projectSummaryList.totalProjectCount,
             numberOfUncompletedProjects: numberOfUncompletedProjects
         ]
     }
