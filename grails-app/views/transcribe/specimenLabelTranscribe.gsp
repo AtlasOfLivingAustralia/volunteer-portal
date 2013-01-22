@@ -7,6 +7,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
 
+
 <%@ page contentType="text/html; UTF-8" %>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -480,6 +481,7 @@
       </nav>
       <hgroup>
         <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
+        <vpf:taskTopicButton task="${taskInstance}" />
       </hgroup>
     </div>
   </header>

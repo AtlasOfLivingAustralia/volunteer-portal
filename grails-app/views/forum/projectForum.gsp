@@ -42,6 +42,25 @@
                     }
                 });
 
+                var tabOptions = {
+                    selected: ${params.selectedTab ?: 0},
+                    show: function (e) {
+                        var $tabs = $('#projectForumTabs').tabs();
+                        var newIndex = $tabs.tabs('option', 'selected');
+                        if (newIndex != ${params.selectedTab ?: 0}) {
+                            $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
+                            $.ajax("${createLink(controller: 'forum',action:'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}").done(function(content) {
+                                $("#tabTaskTopics").html(content);
+                            });
+                        }
+                    },
+                    beforeActivate: function (e) {
+                    }
+                };
+
+                $("#projectForumTabs").tabs(tabOptions);
+                $("#projectForumTabs").css("display", "block");
+
             });
 
         </script>
@@ -67,15 +86,15 @@
         <div>
             <div class="inner">
                 <div class="projectSummary">
-
-                    <table style="margin-bottom: 0px;">
+                    <table style="margin-bottom: 0px; width: 100%">
                         <tr>
-                            <td><img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124" /></td>
-                            <td>
-                                <h2>${projectInstance.featuredLabel}</h2>
+                            <td style="width:210px"><img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124" /></td>
+                            <td style="text-align: left">
+                                <h2><a href="${createLink(controller:'project', action:'index', id:projectInstance.id)}">${projectInstance.featuredLabel}</a></h2>
                                 <h3>${projectInstance.featuredOwner}</h3>
                                 ${projectInstance.description}
                             </td>
+                            <td style="text-align: right"></td>
                         </tr>
                         <g:if test="${projectInstance.featuredImageCopyright}">
                             <tr>
@@ -84,11 +103,23 @@
                         </g:if>
                     </table>
                 </div>
-                <div class="buttonBar">
-                    <button id="btnNewProjectTopic" class="button">Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
-                    </button>
+                <div id="projectForumTabs" style="display:none">
+                    <ul>
+                        <li><a href="#tabProjectTopics">Project Topics</a></li>
+                        <li><a href="#tabTaskTopics">Task Topics</a></li>
+                    </ul>
+                    <div id="tabProjectTopics" class="tabContent" style="display:none">
+                        <div class="buttonBar">
+                            <button id="btnNewProjectTopic" class="button">Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
+                            </button>
+                        </div>
+                        <small>
+                            <vpf:topicTable topics="${topics}" />
+                        </small>
+                    </div>
+                    <div id="tabTaskTopics" style="display:none">
+                    </div>
                 </div>
-                <vpf:topicTable topics="${topics}" />
             </div>
         </div>
     </body>

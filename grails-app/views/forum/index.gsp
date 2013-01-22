@@ -72,7 +72,7 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <td colspan="3">
+                        <td colspan="2">
                             <g:if test="${params.q}">
                                 <h4>
                                     <g:if test="${projectSummaryList.matchingProjectCount}">
@@ -94,15 +94,16 @@
                         </td>
                     </tr>
                     <tr>
-                        <th><a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a>
+                        <th>
+                            <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a>
                         </th>
-                        <th><a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a>
+                        <th>
+                            <a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a>
                         </th>
-                        <th><a href="?sort=volunteers&order=${params.sort == 'volunteers' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'volunteers' ? 'current' : ''}">Volunteers</a>
+                        <th>
+                            <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a>
                         </th>
-                        <th><a href="?sort=institution&order=${params.sort == 'institution' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'institution' ? 'current' : ''}">Sponsoring Institution</a>
-                        </th>
-                        <th><a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a>
+                        <th>
                         </th>
                     </tr>
                 </thead>
@@ -110,13 +111,13 @@
                     <g:each in="${projectSummaryList.projectRenderList}" status="i" var="projectSummary">
                         <tr inactive="${projectSummary.project.inactive}">
                             <%-- Project thumbnail --%>
-                            <td><a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
+                            <td><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">
                                 <img src="${projectSummary.project.featuredImage}" width="147" height="81" style="padding-top: 5px"/>
                             </a>
                             </td>
                             <%-- Progress bar --%>
                             <td>
-                                <h3>${projectSummary.project.featuredLabel}</h3>
+                                <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.featuredLabel}</a></h3>
                                 <div id="recordsChart">
                                     <strong>${projectSummary.countComplete}</strong> tasks completed (<strong>${projectSummary.percentComplete}%</strong>)
                                 </div>
@@ -124,15 +125,14 @@
                                     <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectSummary.percentComplete}%; "></div>
                                 </div>
                             </td>
-                            <%-- Volunteer count --%>
-                            <td class="bold centertext">${projectSummary.volunteerCount}</td>
-                            <%-- Institution --%>
-                            <td>${projectSummary.project.featuredOwner}</td>
                             <%-- Project type --%>
                             <td class="type">
                                 <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectSummary.iconImage}" width="40" height="36" alt="">
                             </td>
-
+                            <td style="text-align: right">
+                                <a class="button" href="${createLink(controller:"project", action:"index", id:projectSummary.project.id)}">Visit Project</a>
+                                <a class="button" href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}">Visit Project Forum</a>
+                            </td>
                         </tr>
                     </g:each>
                 </tbody>

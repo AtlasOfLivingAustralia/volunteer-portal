@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
+import grails.gorm.DetachedCriteria
 import grails.orm.PagedResultList
+import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate
 
 class ForumService {
 
@@ -9,6 +11,8 @@ class ForumService {
     def logService
     def groovyPageRenderer
     def emailService
+    def sessionFactory
+    def grailsApplication
 
     PagedResultList getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
         def c = ProjectForumTopic.createCriteria()
@@ -67,7 +71,29 @@ class ForumService {
         return results as PagedResultList
     }
 
+    PagedResultList getTaskTopicsForProject(Project projectInstance, Map params = null) {
+
+//        def c = TaskForumTopic.where {
+//            task.project == projectInstance
+//        }
+//
+//        def results = c.list(max: params?.max ?: 10, offset: params?.offset ?: 0)
+
+        // This is not the best - because of a bug in Grails (2.2.0) using a criteria builder that queries an associated property
+        // (i.e. Task.Project == projectInstance), the results are not being returned in a PageResultList, which is what we need
+        // So instead we have to return the list of tasks (which could be huge!), and use that list in a query
+        // Hopefully this will be corrected soon!
+        def tasks = Task.findAllByProject(projectInstance)
+        def c = TaskForumTopic.createCriteria()
+
+        def results = c.list(max: params?.max ?: 10, offset: params?.offset ?: 0 ) {
+            inList('task', tasks)
+        }
+        return results
+    }
+
     PagedResultList getTopicMessages(ForumTopic topic, Map params = null) {
+
         def c = ForumMessage.createCriteria()
         def results = c.list(max:params?.max, offset: params?.offset) {
             eq("topic", topic)

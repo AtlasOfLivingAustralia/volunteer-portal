@@ -126,7 +126,7 @@ class ForumController {
 
         if (messages) {
             flash.message = formatMessages(messages)
-            redirect(action: 'addProjectTopic', params: params)
+            redirect(action: 'addForumTopic', params: params)
             return
         }
 
@@ -136,17 +136,7 @@ class ForumController {
 
 
         ForumTopic topic = null
-        if (params.projectId) {
-            def projectInstance = Project.get(params.int("projectId"))
-            if (projectInstance) {
-                if (userService.isForumModerator(projectInstance)) {
-                    locked = params.locked == 'on'
-                    sticky = params.sticky == 'on'
-                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-                }
-            }
-            topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
-        } else if (params.taskId) {
+        if (params.taskId) {
             def taskInstance = Task.get(params.int("taskId"))
             if (taskInstance) {
                 if (userService.isForumModerator(taskInstance.project)) {
@@ -156,6 +146,16 @@ class ForumController {
                 }
             }
             topic = new TaskForumTopic(task: taskInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
+        } else if (params.projectId) {
+            def projectInstance = Project.get(params.int("projectId"))
+            if (projectInstance) {
+                if (userService.isForumModerator(projectInstance)) {
+                    locked = params.locked == 'on'
+                    sticky = params.sticky == 'on'
+                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                }
+            }
+            topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
         } else {
             // new general discussion topic
             if (userService.isForumModerator(null)) {
@@ -352,6 +352,28 @@ class ForumController {
     def generalDiscussion() {
         def topics = forumService.getGeneralDiscussionTopics()
         [topics:topics]
+    }
+
+    def taskTopic() {
+        def task = Task.get(params.int("taskId"))
+
+        if (!task) {
+            flash.message = "No task found with matching id, or task id missing from request!"
+            redirect(controller: 'forum', action:'index')
+        }
+
+        def topic = TaskForumTopic.findByTask(task)
+        if (topic) {
+            redirect(controller: 'forum', action: 'viewForumTopic', id: topic.id)
+            return
+        }
+        // task topic does not exist - redirect to new topic...
+        redirect(controller:'forum', action: 'addForumTopic', params: [taskId: task.id])
+    }
+
+    def ajaxProjectTaskTopicList() {
+        def projectInstance = Project.get(params.int("projectId"))
+        [projectInstance: projectInstance]
     }
 
 }

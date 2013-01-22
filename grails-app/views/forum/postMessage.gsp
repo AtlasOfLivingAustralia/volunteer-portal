@@ -73,7 +73,6 @@
             <div class="inner">
                 <cl:messages/>
                 <vpf:forumNavItems topic="${topic}" lastLabel="${message(code:'forum.project.newMessage', default:'New Message')}" />
-                <h1>Post Message - ${topic.title}</h1>
             </div>
         </header>
 

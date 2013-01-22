@@ -21,4 +21,5 @@ class User {
     validatedCount nullable: true
     userId maxSize: 200
   }
+
 }

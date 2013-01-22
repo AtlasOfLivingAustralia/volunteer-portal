@@ -10,6 +10,7 @@ class ForumTagLib {
     def userService
     def forumService
     def markdownService
+    def taskService
 
     /**
      * @param project
@@ -248,6 +249,20 @@ class ForumTagLib {
                         }
                     }
                 }
+                if (taskInstance) {
+                    li {
+                        a(href:createLink(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id])) {
+                            mkp.yield(message(code:'forum.project.forum', default:'Project Forum'))
+                        }
+                    }
+
+                    li {
+                        a(href:createLink(controller: 'task', action: 'show', id: taskInstance.id)) {
+                            mkp.yield("task " + taskInstance.externalIdentifier)
+                        }
+                    }
+
+                }
                 if (!projectInstance && !taskInstance) {
                     li {
                         a(href:createLink(controller: 'forum', action:'index')) {
@@ -295,6 +310,99 @@ class ForumTagLib {
             }
         }
 
+    }
+
+    /**
+     * @attr task
+     */
+    def taskTopicButton = { attrs, body ->
+        if (FrontPage.instance().enableForum) {
+            def task = attrs.task as Task
+            if (task) {
+                def mb = new MarkupBuilder(out)
+                mb.a(href:createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class:'button', target:'forumWindow') {
+                    mkp.yield("Create Forum Topic")
+                }
+            }
+        }
+    }
+
+    /**
+     * @attrs project
+     */
+    def taskTopicsTable = { attrs, body ->
+        def projectInstance = attrs.project as Project
+
+        if (projectInstance) {
+            def topics = forumService.getTaskTopicsForProject(projectInstance)
+            out << topicTable([topics: topics], body)
+        }
+    }
+
+    /**
+     * @attr task
+     */
+    def taskSummary = { attrs, body ->
+        def task = attrs.task as Task
+        if (task) {
+            def multimedia = task.multimedia.size() > 0 ? task.multimedia.first() : null
+            if (multimedia) {
+                def imageMetaData = taskService.getImageMetaData(task)
+                def imageSize = imageMetaData[multimedia.id]
+                def mb = new MarkupBuilder(out)
+                def fields = Field.findAllByTask(task)
+                mb.table(style:'width:100%') {
+                    tr {
+                        td {
+                            if (multimedia) {
+                                def url = grailsApplication.config.server.url + multimedia.filePath
+                                div(class:'imageContainer', style:'float: left; width: 600px; height: 400px') {
+                                    div(class:'pan-image', style:'margin-top: 0px; padding-top: 0px') {
+                                        mb.img(src:url, alt:'Task image', "image-height":imageSize.height, "image-width": imageSize.width) {
+                                            div(class:'map-control') {
+                                                a(id:'panleft', href:'#left', class:'left') { mkp.yield("Left") }
+                                                a(id:'panright', href:'#right', class:'right') { mkp.yield("Right") }
+                                                a(id:'panup', href:'#up', class:'up') { mkp.yield("Up") }
+                                                a(id:'pandown', href:'#down', class:'down') { mkp.yield("Down") }
+                                                a(id:'zoomin', href:'#zoom', class:'zoom') { mkp.yield("Zoom") }
+                                                a(id:'zoomout', href:'#zoom_out', class:'back') { mkp.yield("Back") }
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        td {
+                            div(style:'height: 400px; overflow-y: scroll') {
+                                table(style: 'width: 100%') {
+                                    thead {
+                                        tr {
+                                            th { mkp.yield("Field Name")}
+                                            th { mkp.yield("Field Value")}
+                                        }
+                                    }
+                                    tbody {
+                                        for (Field field : fields) {
+                                            if (!field.superceded && field.value) {
+                                                tr {
+                                                    td {
+                                                        mkp.yield(field.name)
+                                                    }
+                                                    td {
+                                                        mkp.yield(field.value)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

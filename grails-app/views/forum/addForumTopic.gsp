@@ -39,10 +39,20 @@
         <div>
             <div class="inner">
                 <g:form controller="forum" action="insertForumTopic" params="${[projectId: projectInstance?.id]}">
+                    <g:hiddenField name="taskId" value="${taskInstance?.id}" />
+                    <g:hiddenField name="projectId" value="${projectInstance?.id}" />
                     <div class="newTopicFields">
-                        <h2><g:message code="forum.newProjectTopicTitle.label" default="New topic title"/></h2>
-                        <g:textField id="title" name="title" maxlength="200" value="${params.title}"/>
-                        <h2><g:message code="forum.newProjectTopicMessage.label" default="New topic message"/></h2>
+
+                        <g:if test="${taskInstance}">
+                            <h2>Enter a message to create a forum topic for task ${taskInstance.externalIdentifier}</h2>
+                            <g:hiddenField name="title" value="${taskInstance.externalIdentifier}" />
+                        </g:if>
+                        <g:else>
+                            <h2><g:message code="forum.newProjectTopicTitle.label" default="New topic title"/></h2>
+                            <g:textField id="title" name="title" maxlength="200" value="${params.title}" />
+                            <h2><g:message code="forum.newProjectTopicMessage.label" default="New topic message"/></h2>
+                        </g:else>
+
                         <g:textArea name="text" rows="6" cols="80" value="${params.text}"/>
 
                         <g:checkBox name="watchTopic" checked="checked"/>

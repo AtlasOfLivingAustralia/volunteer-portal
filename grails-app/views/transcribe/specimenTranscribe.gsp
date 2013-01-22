@@ -161,6 +161,7 @@
       </nav>
       <hgroup>
         <h1>${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})</h1>
+          <vpf:taskTopicButton task="${taskInstance}" />
       </hgroup>
     </div>
   </header>
