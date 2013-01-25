@@ -184,25 +184,6 @@ class UserService {
         }[0]
     }
 
-//    Map filteredUserList(Map params) {
-//        String query = '%'
-//        if (params.q) {
-//            query = "%" + (params.q?:"") + "%"
-//        }
-//
-//        query= query.toLowerCase()
-//
-//        def count = User.executeQuery("""select count(u) from User u
-//                                         where lower(u.displayName) like :query""",
-//                                        [query: query], [:])[0]
-//
-//
-//        def users = User.executeQuery("""select u from User u
-//                                         where lower(u.displayName) like :query order by $params.sort $params.order""",
-//                                        [query: query], params)
-//        return [count: count, list: users.toList()]
-//    }
-
     /**
      * returns true if the current user can validate tasks from the specified project
      * @param project
@@ -223,7 +204,7 @@ class UserService {
         // Otherwise check the intra app roles...
 
         // If project is null, return true if the user can validate in any project
-        // If project is not null, return true only if they are validator for that project, or if they have a null project in their validator role (meaning 'all projectRenderList')
+        // If project is not null, return true only if they are validator for that project, or if they have a null project in their validator role (meaning 'all projects')
 
         def user = User.findByUserId(userId)
         if (user) {
@@ -326,6 +307,46 @@ class UserService {
         })
 
         return [count: count, list: results]
+    }
+
+    /**
+     * Returns a list of users who have the specified role. <p>If a project is specified, the users must either have</p>
+     * <ul>
+     *     <li>A UserRole defined with both the rolename and the specified project</li>
+     *     <li>OR A UserRole defined with the rolename and a null project defined (meaning all projects)
+     * </ul>
+     *
+     * @param rolename
+     * @param projectInstance
+     * @return
+     */
+    List<User> getUsersWithRole(String rolename, Project projectInstance = null) {
+
+        def results = new ArrayList<User>()
+
+        def role = Role.findByName(rolename)
+        if (!role) {
+            throw new RuntimeException("No such role - " + rolename)
+        }
+
+        def c = UserRole.createCriteria()
+        def list = c {
+            and {
+                eq("role", role)
+                or {
+                    isNull("project")
+                    eq("project", projectInstance)
+                }
+            }
+        }
+
+        list.each {
+            if (!results.contains(it.user)) {
+                results << it.user
+            }
+        }
+
+        return results
     }
 }
 

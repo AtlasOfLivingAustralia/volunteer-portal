@@ -166,7 +166,11 @@ class BootStrap {
             User u = new User(userId: 'system', displayName: 'System User')
         }
 
-        ensureRoleExists("validator")
+        def internalRoles = ["validator", "forum_moderator"]
+
+        internalRoles.each { role ->
+            ensureRoleExists(role)
+        }
 
     }
 

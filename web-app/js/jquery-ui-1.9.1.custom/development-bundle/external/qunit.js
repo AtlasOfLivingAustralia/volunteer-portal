@@ -1828,7 +1828,7 @@ function inArray( elem, array ) {
  * Released under the MIT license.
  *
  * More Info:
- *  http://ejohn.org/projectRenderList/javascript-diff-algorithm/
+ *  http://ejohn.org/projects/javascript-diff-algorithm/
  *
  * Usage: QUnit.diff(expected, actual)
  *

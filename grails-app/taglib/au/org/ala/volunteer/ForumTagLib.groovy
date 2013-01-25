@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
 
 class ForumTagLib {
@@ -19,6 +20,90 @@ class ForumTagLib {
         if (userService.isForumModerator(attrs.project as Project) ) {
             out << body()
         }
+    }
+
+    /**
+     * @attrs searchResults
+     */
+    def searchResultsTable = { attrs, body ->
+        def results = attrs.searchResults as PagedResultList
+
+        def mb = new MarkupBuilder(out)
+        if (!results) {
+            mb.strong {
+                mkp.yield("No matching messages found!")
+            }
+            return
+        }
+
+        mb.table(class:'forum-table') {
+            thead {
+                tr {
+                    th { }
+                    th { mkp.yield("Message") }
+                    th { mkp.yield("Topic") }
+                }
+            }
+            tbody {
+                for (ForumMessage message : results) {
+                    tr {
+                        td(class:"forumNameColumn") {
+                            a(class:'forumUsername', href:createLink(controller: 'user', action:'show', id: message.user.id)) {
+                                mkp.yield(message.user.displayName)
+                            }
+                            br {}
+                            span(class:'forumMessageDate') {
+                                mkp.yield(formatDate(date: message.date, format: 'dd MMM, yyyy HH:mm:ss'))
+                            }
+                        }
+                        td() { mkp.yieldUnescaped(markdownService.markdown(message.text)) }
+                        td {
+                            Project projectInstance = null
+                            Task taskInstance = null
+                            if (message.topic.instanceOf(ProjectForumTopic)) {
+                                def projectTopic = message.topic as ProjectForumTopic
+                                projectInstance = projectTopic.project
+                            } else if (message.topic.instanceOf(TaskForumTopic)) {
+                                def taskTopic = message.topic as TaskForumTopic
+                                taskInstance = taskTopic.task
+                                projectInstance = taskTopic.task.project
+                            }
+                            small {
+                                strong {
+                                    if (projectInstance) {
+                                        mkp.yield("Project:")
+                                        a(href:createLink(controller:'project', action:'index', id: projectInstance.id)) {
+                                            mkp.yield(projectInstance.featuredLabel)
+                                        }
+                                        mkp.yieldUnescaped("&nbsp;[&nbsp;")
+                                        a(href:createLink(controller:'forum', action:'projectForum', projectId: projectInstance.id)) {
+                                            mkp.yield("Forum")
+                                        }
+                                        mkp.yieldUnescaped("&nbsp;]")
+                                    }
+                                    if (taskInstance) {
+                                        mkp.yieldUnescaped("&nbsp;Task:")
+                                        a(href:createLink(controller: 'task', action:'show', id:taskInstance.id)) {
+                                            mkp.yield(taskInstance.externalIdentifier)
+                                        }
+                                    }
+                                }
+                            }
+
+                            br {}
+                            a(href:createLink(controller:'forum', action:'viewForumTopic', id:message.topic.id)) {
+                                mkp.yield(message.topic.title)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mb.div(class:'paginateButtons') {
+            mkp.yieldUnescaped(paginate(total: results.totalCount, params: params))
+        }
+
+
     }
 
     /**

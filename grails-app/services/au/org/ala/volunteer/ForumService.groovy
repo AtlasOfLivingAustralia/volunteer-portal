@@ -13,6 +13,7 @@ class ForumService {
     def emailService
     def sessionFactory
     def grailsApplication
+    def userService
 
     PagedResultList getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
         def c = ProjectForumTopic.createCriteria()
@@ -160,14 +161,40 @@ class ForumService {
             }
         }
 
+        List<User> interestedUsers = []
+
         watchLists.each { watchList ->
-            println 'saving new notification message1'
-            def message = new ForumTopicNotificationMessage(user:  watchList.user, topic: topic, message: lastMessage)
-            if (!message.save(failOnError:  true)) {
-                println "failed"
+            if (!interestedUsers.contains(watchList.user)) {
+                def message = new ForumTopicNotificationMessage(user:  watchList.user, topic: topic, message: lastMessage)
+                if (!message.save(failOnError:  true)) {
+                    println "failed"
+                }
+                interestedUsers << watchList.user
             }
-            println 'saving new notification message2'
         }
+        // Now the forum moderators and admins...
+        def mods = getModeratorsForTopic(topic)
+        mods.each { mod ->
+            if (!interestedUsers.contains(mod)) {
+                def message = new ForumTopicNotificationMessage(user:  mod, topic: topic, message: lastMessage)
+                interestedUsers << mod
+            }
+        }
+
+    }
+
+    List<User> getModeratorsForTopic(ForumTopic topic) {
+        List<User> results = []
+
+        Project projectInstance = null
+
+        if (topic?.instanceOf(ProjectForumTopic)) {
+            projectInstance = (topic as ProjectForumTopic).project
+        } else if (topic?.instanceOf(TaskForumTopic)) {
+            projectInstance = (topic as TaskForumTopic).task?.project
+        }
+
+        return userService.getUsersWithRole("forum_moderator", projectInstance)
     }
 
     def processPendingNotifications() {
@@ -186,6 +213,19 @@ class ForumService {
                 it.delete()
             }
         }
+    }
+
+    PagedResultList searchForums(String query, boolean searchTitlesOnly, Map params = null) {
+
+        def c = ForumMessage.createCriteria()
+        def results = c.list(max:params?.max, offset: params?.offset) {
+            ilike("text", "%" + query + "%")
+            projection {
+                groupProperty("topic")
+            }
+        }
+
+        return results as PagedResultList
     }
 
 

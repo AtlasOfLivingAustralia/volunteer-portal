@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
+
 class ForumController {
 
     def forumService
@@ -242,7 +244,10 @@ class ForumController {
             taskInstance = (topic as TaskForumTopic).task
         }
 
-        [topic: topic, userInstance: userService.currentUser, projectInstance: projectInstance, taskInstance: taskInstance]
+        def userInstance = userService.currentUser
+        def isWatching = forumService.isUserWatchingTopic(userInstance, topic)
+
+        [topic: topic, userInstance: userInstance, projectInstance: projectInstance, taskInstance: taskInstance, isWatched: isWatching]
     }
 
     def postMessage() {
@@ -374,6 +379,38 @@ class ForumController {
     def ajaxProjectTaskTopicList() {
         def projectInstance = Project.get(params.int("projectId"))
         [projectInstance: projectInstance]
+    }
+
+    def searchForums() {
+        def query = params.query as String
+        if (!query) {
+            flash.message ="You must supply a search criteria"
+            redirect(controller: 'forum', action: 'index')
+            return
+        }
+
+        def searchParams = [offset: params.offset ?: 0, max: params.max ?: 10]
+
+        def results = forumService.searchForums(query, false, searchParams)
+
+        [query: query, results: results]
+    }
+
+    def ajaxWatchTopic() {
+        def topic = ForumTopic.get(params.int("topicId"))
+        def watch = params.boolean("watch")
+        def results =[success: 'false']
+        if (topic) {
+            def userInstance = userService.currentUser
+            if (watch) {
+                forumService.watchTopic(userInstance, topic)
+            } else {
+                forumService.unwatchTopic(userInstance, topic)
+            }
+            results.success = 'true'
+        }
+
+        render(results as JSON)
     }
 
 }

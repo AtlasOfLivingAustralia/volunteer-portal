@@ -51,14 +51,20 @@
                     window.location = "${createLink(controller:'forum', action:'redirectTopicParent', id: topic.id)}";
                 });
 
+                $("#chkWatchTopic").click(function(e) {
+                    e.preventDefault();
+                    var checked = $("#chkWatchTopic").is(':checked');
+                    $.ajax("${createLink(controller: 'forum', action:'ajaxWatchTopic', params:[topicId: topic.id])}&watch=" + checked).done(function(result) {
+                        $('#chkWatchTopic').prop('checked', checked);
+                    });
+                });
+
                 <g:if test="${taskInstance}">
 
                 $("#btnViewTask").click(function(e) {
                     e.preventDefault();
                     window.location = "${createLink(controller:'task', action:'show', id: taskInstance.id)}";
                 });
-
-                </g:if>
 
                 $(".pan-image img").panZoom({
                   pan_step: 10,
@@ -76,6 +82,8 @@
                 });
 
                 $(".pan-image img").panZoom('fit');
+
+                </g:if>
 
             });
 
@@ -106,6 +114,9 @@
                         <vpf:taskSummary task="${taskInstance}" />
                     </section>
                 </g:if>
+                <div>
+                    <g:checkBox id="chkWatchTopic" name="watchTopic" checked="${isWatched}" />&nbsp; Watch this topic?
+                </div>
                 <vpf:topicMessagesTable topic="${topic}"/>
             </div>
         </div>
