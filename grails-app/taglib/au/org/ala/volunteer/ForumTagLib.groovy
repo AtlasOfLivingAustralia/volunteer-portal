@@ -37,15 +37,60 @@ class ForumTagLib {
         }
 
         mb.table(class:'forum-table') {
-            thead {
-                tr {
-                    th { }
-                    th { mkp.yield("Message") }
-                    th { mkp.yield("Topic") }
-                }
-            }
+//            thead {
+//                tr {
+//                    th { }
+//                    th { mkp.yield("Message") }
+////                    th { mkp.yield("Topic") }
+//                }
+//            }
             tbody {
+                ForumTopic lastTopic = null
+
                 for (ForumMessage message : results) {
+
+                    Project projectInstance = null
+                    Task taskInstance = null
+                    if (message.topic.instanceOf(ProjectForumTopic)) {
+                        def projectTopic = message.topic as ProjectForumTopic
+                        projectInstance = projectTopic.project
+                    } else if (message.topic.instanceOf(TaskForumTopic)) {
+                        def taskTopic = message.topic as TaskForumTopic
+                        taskInstance = taskTopic.task
+                        projectInstance = taskTopic.task.project
+                    }
+
+                    if (lastTopic != message.topic) {
+                        lastTopic = message.topic
+                        tr(style:"background-color: #f0f0e8; color: black; height: 15px;") {
+                            th(colspan:'2') {
+                                h4 {
+                                    mkp.yield("Topic: ")
+                                    a(href:createLink(controller: 'forum', action:'viewForumTopic', id: lastTopic.id)) {
+                                        mkp.yield(lastTopic.title)
+                                    }
+                                }
+                                if (projectInstance) {
+                                    mkp.yield("Project:")
+                                    a(href:createLink(controller:'project', action:'index', id: projectInstance.id)) {
+                                        mkp.yield(projectInstance.featuredLabel)
+                                    }
+                                    mkp.yieldUnescaped("&nbsp;[&nbsp;")
+                                    a(href:createLink(controller:'forum', action:'projectForum', projectId: projectInstance.id)) {
+                                        mkp.yield("Forum")
+                                    }
+                                    mkp.yieldUnescaped("&nbsp;]")
+                                }
+
+                                if (taskInstance) {
+                                    mkp.yieldUnescaped("&nbsp;Task:")
+                                    a(href:createLink(controller: 'task', action:'show', id:taskInstance.id)) {
+                                        mkp.yield(taskInstance.externalIdentifier)
+                                    }
+                                }
+                            }
+                        }
+                    }
                     tr {
                         td(class:"forumNameColumn") {
                             a(class:'forumUsername', href:createLink(controller: 'user', action:'show', id: message.user.id)) {
@@ -57,44 +102,34 @@ class ForumTagLib {
                             }
                         }
                         td() { mkp.yieldUnescaped(markdownService.markdown(message.text)) }
-                        td {
-                            Project projectInstance = null
-                            Task taskInstance = null
-                            if (message.topic.instanceOf(ProjectForumTopic)) {
-                                def projectTopic = message.topic as ProjectForumTopic
-                                projectInstance = projectTopic.project
-                            } else if (message.topic.instanceOf(TaskForumTopic)) {
-                                def taskTopic = message.topic as TaskForumTopic
-                                taskInstance = taskTopic.task
-                                projectInstance = taskTopic.task.project
-                            }
-                            small {
-                                strong {
-                                    if (projectInstance) {
-                                        mkp.yield("Project:")
-                                        a(href:createLink(controller:'project', action:'index', id: projectInstance.id)) {
-                                            mkp.yield(projectInstance.featuredLabel)
-                                        }
-                                        mkp.yieldUnescaped("&nbsp;[&nbsp;")
-                                        a(href:createLink(controller:'forum', action:'projectForum', projectId: projectInstance.id)) {
-                                            mkp.yield("Forum")
-                                        }
-                                        mkp.yieldUnescaped("&nbsp;]")
-                                    }
-                                    if (taskInstance) {
-                                        mkp.yieldUnescaped("&nbsp;Task:")
-                                        a(href:createLink(controller: 'task', action:'show', id:taskInstance.id)) {
-                                            mkp.yield(taskInstance.externalIdentifier)
-                                        }
-                                    }
-                                }
-                            }
-
-                            br {}
-                            a(href:createLink(controller:'forum', action:'viewForumTopic', id:message.topic.id)) {
-                                mkp.yield(message.topic.title)
-                            }
-                        }
+//                        td {
+//                            small {
+//                                strong {
+//                                    if (projectInstance) {
+//                                        mkp.yield("Project:")
+//                                        a(href:createLink(controller:'project', action:'index', id: projectInstance.id)) {
+//                                            mkp.yield(projectInstance.featuredLabel)
+//                                        }
+//                                        mkp.yieldUnescaped("&nbsp;[&nbsp;")
+//                                        a(href:createLink(controller:'forum', action:'projectForum', projectId: projectInstance.id)) {
+//                                            mkp.yield("Forum")
+//                                        }
+//                                        mkp.yieldUnescaped("&nbsp;]")
+//                                    }
+//                                    if (taskInstance) {
+//                                        mkp.yieldUnescaped("&nbsp;Task:")
+//                                        a(href:createLink(controller: 'task', action:'show', id:taskInstance.id)) {
+//                                            mkp.yield(taskInstance.externalIdentifier)
+//                                        }
+//                                    }
+//                                }
+//                            }
+//
+//                            br {}
+//                            a(href:createLink(controller:'forum', action:'viewForumTopic', id:message.topic.id)) {
+//                                mkp.yield(message.topic.title)
+//                            }
+//                        }
                     }
                 }
             }

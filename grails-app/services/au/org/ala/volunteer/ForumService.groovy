@@ -220,9 +220,7 @@ class ForumService {
         def c = ForumMessage.createCriteria()
         def results = c.list(max:params?.max, offset: params?.offset) {
             ilike("text", "%" + query + "%")
-            projection {
-                groupProperty("topic")
-            }
+            order("topic", "date")
         }
 
         return results as PagedResultList
