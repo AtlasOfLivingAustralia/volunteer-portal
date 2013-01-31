@@ -102,34 +102,6 @@ class ForumTagLib {
                             }
                         }
                         td() { mkp.yieldUnescaped(markdownService.markdown(message.text)) }
-//                        td {
-//                            small {
-//                                strong {
-//                                    if (projectInstance) {
-//                                        mkp.yield("Project:")
-//                                        a(href:createLink(controller:'project', action:'index', id: projectInstance.id)) {
-//                                            mkp.yield(projectInstance.featuredLabel)
-//                                        }
-//                                        mkp.yieldUnescaped("&nbsp;[&nbsp;")
-//                                        a(href:createLink(controller:'forum', action:'projectForum', projectId: projectInstance.id)) {
-//                                            mkp.yield("Forum")
-//                                        }
-//                                        mkp.yieldUnescaped("&nbsp;]")
-//                                    }
-//                                    if (taskInstance) {
-//                                        mkp.yieldUnescaped("&nbsp;Task:")
-//                                        a(href:createLink(controller: 'task', action:'show', id:taskInstance.id)) {
-//                                            mkp.yield(taskInstance.externalIdentifier)
-//                                        }
-//                                    }
-//                                }
-//                            }
-//
-//                            br {}
-//                            a(href:createLink(controller:'forum', action:'viewForumTopic', id:message.topic.id)) {
-//                                mkp.yield(message.topic.title)
-//                            }
-//                        }
                     }
                 }
             }
@@ -202,6 +174,7 @@ class ForumTagLib {
 
     /**
      * @attr topics
+     * @attr
      */
     def topicTable = { attrs, body ->
         def topics = attrs.topics as List<ForumTopic>
@@ -260,7 +233,7 @@ class ForumTagLib {
                 tbody {
                     if (topics.size() == 0) {
                         tr {
-                            td(colspan:'7') {
+                            td(colspan:'8') {
                                 mkp.yield("There are no topics in this forum yet.")
                             }
                         }

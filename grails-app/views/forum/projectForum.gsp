@@ -113,9 +113,9 @@
                             <button id="btnNewProjectTopic" class="button">Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
                             </button>
                         </div>
-                        <small>
-                            <vpf:topicTable topics="${topics}" />
-                        </small>
+
+                        <vpf:topicTable topics="${topics}" />
+
                     </div>
                     <div id="tabTaskTopics" style="display:none">
                     </div>

@@ -222,6 +222,18 @@ environments {
     }
 }
 
+grails {
+    mail {
+        host = "localhost"
+        port = 25
+        username = ""
+        password = ""
+        props = [
+            "mail.smtp.auth":"false",
+        ]
+    }
+}
+
 //hibernate.SQL="trace,stdout"
 //hibernate.type="trace,stdout"
 

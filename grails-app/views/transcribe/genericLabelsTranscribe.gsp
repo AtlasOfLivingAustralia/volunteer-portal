@@ -526,7 +526,7 @@
                     <thead>
                         <tr style="width: 950px">
                             <th style="width:950px">
-                                <h3>3. Miscellaneous</h3> &ndash; This section is for a range of fields. Many labels will not contain information for any or all of this fields.
+                                <h3>4. Miscellaneous</h3> &ndash; This section is for a range of fields. Many labels will not contain information for any or all of this fields.
                                 <a style="float:right" class="closeSection" href="#">Shrink</a>
                             </th></tr>
                     </thead>
@@ -541,7 +541,7 @@
                     <thead>
                         <tr style="width:950px">
                             <th style="width:950px">
-                                <h3>4. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section
+                                <h3>5. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section
                                 <a style="float:right" class="closeSection" href="#">Shrink</a>
                             </th>
                         </tr>
@@ -556,7 +556,7 @@
                     <thead>
                         <tr style="width:950px">
                             <th style="width:950px">
-                                <h3>5. Notes</h3> &ndash; Record any comments here that may assist in validating this specimen
+                                <h3>6. Notes</h3> &ndash; Record any comments here that may assist in validating this specimen
                                 <a style="float:right" class="closeSection" href="#">Shrink</a>
                             </th>
                         </tr>

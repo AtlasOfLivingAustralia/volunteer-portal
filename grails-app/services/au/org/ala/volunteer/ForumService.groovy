@@ -117,7 +117,7 @@ class ForumService {
             eq('topic', topic)
             min('dateCreated')
         }
-        return result.first()
+        return result ? result.first() : null
     }
 
     public boolean isUserWatchingTopic(User user, ForumTopic topic) {
@@ -153,32 +153,38 @@ class ForumService {
 
     public void scheduleTopicNotification(ForumTopic topic, ForumMessage lastMessage) {
 
-        def c = UserForumWatchList.createCriteria()
+        // Only schedule notifications if the forum is enabled. This should be unnecessary as notifications
+        // won't be generated if the forum is deactivated
+        if (FrontPage.instance().enableForum) {
 
-        def watchLists = c {
-            topics {
-                eq('id', topic.id)
-            }
-        }
+            def c = UserForumWatchList.createCriteria()
 
-        List<User> interestedUsers = []
-
-        watchLists.each { watchList ->
-            if (!interestedUsers.contains(watchList.user)) {
-                def message = new ForumTopicNotificationMessage(user:  watchList.user, topic: topic, message: lastMessage)
-                if (!message.save(failOnError:  true)) {
-                    println "failed"
+            def watchLists = c {
+                topics {
+                    eq('id', topic.id)
                 }
-                interestedUsers << watchList.user
             }
-        }
-        // Now the forum moderators and admins...
-        def mods = getModeratorsForTopic(topic)
-        mods.each { mod ->
-            if (!interestedUsers.contains(mod)) {
-                def message = new ForumTopicNotificationMessage(user:  mod, topic: topic, message: lastMessage)
-                interestedUsers << mod
+
+            List<User> interestedUsers = []
+
+            watchLists.each { watchList ->
+                if (!interestedUsers.contains(watchList.user)) {
+                    def message = new ForumTopicNotificationMessage(user:  watchList.user, topic: topic, message: lastMessage)
+                    if (!message.save(failOnError:  true)) {
+                        println "failed"
+                    }
+                    interestedUsers << watchList.user
+                }
             }
+            // Now the forum moderators and admins...
+            def mods = getModeratorsForTopic(topic)
+            mods.each { mod ->
+                if (!interestedUsers.contains(mod)) {
+                    def message = new ForumTopicNotificationMessage(user:  mod, topic: topic, message: lastMessage)
+                    interestedUsers << mod
+                }
+            }
+
         }
 
     }
@@ -198,19 +204,24 @@ class ForumService {
     }
 
     def processPendingNotifications() {
-        def messageList = ForumTopicNotificationMessage.list()
-        if (messageList) {
-            def userMap = messageList.groupBy { it.user }
-            logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
-            userMap.keySet().each { user ->
-                def messages = userMap[user]?.sort { it.message.date }
-                def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
-                emailService.sendMail(user.userId, "BVP Forum notification", message)
-            }
+        // Only process notifications if the forum is enabled...
+        if (FrontPage.instance().enableForum) {
+            logService.log("Processing Forum Message Notifications")
+            def messageList = ForumTopicNotificationMessage.list()
+            if (messageList) {
+                def userMap = messageList.groupBy { it.user }
+                logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
+                userMap.keySet().each { user ->
+                    def messages = userMap[user]?.sort { it.message.date }
 
-            // now clean up the notification list
-            messageList.each {
-                it.delete()
+                    def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
+                    emailService.sendMail(user.userId, "BVP Forum notification", message)
+                }
+
+                // now clean up the notification list
+                messageList.each {
+                    it.delete()
+                }
             }
         }
     }

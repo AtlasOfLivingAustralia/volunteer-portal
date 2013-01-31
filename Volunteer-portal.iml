@@ -71,6 +71,9 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.parboiled/parboiled-java/jars/parboiled-java-1.0.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.parboiled/parboiled-core/jars/parboiled-core-1.0.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.pegdown/pegdown/jars/pegdown-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-test/jars/spring-test-3.1.0.RELEASE.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.activation/activation/jars/activation-1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

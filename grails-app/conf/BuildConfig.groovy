@@ -25,6 +25,7 @@ grails.project.dependency.resolution = {
     }
     plugins {
         build ":tomcat:$grailsVersion"
+        runtime ":mail:1.0.1"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.

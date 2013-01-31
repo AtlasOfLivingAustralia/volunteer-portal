@@ -107,7 +107,7 @@ class ProjectService {
                 return projectSummary.iconLabel;
             }
 
-            projectSummary.project.featuredLabel
+            projectSummary.project.featuredLabel?.toLowerCase()
         }
 
         int startIndex = params.offset ? params.int('offset') : 0;

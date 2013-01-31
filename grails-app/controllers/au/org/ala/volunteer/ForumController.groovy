@@ -11,12 +11,6 @@ class ForumController {
     def projectService
 
     def index = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        params.sort = params.sort ?: 'completed'
-
-        ProjectSummaryList projectSummaryList = projectService.getProjectSummaryList(params)
-
-        [projectSummaryList: projectSummaryList]
     }
 
     def projectForum() {
@@ -411,6 +405,21 @@ class ForumController {
         }
 
         render(results as JSON)
+    }
+
+    def ajaxProjectForumsList() {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.sort = params.sort ?: 'completed'
+
+        ProjectSummaryList projectSummaryList = projectService.getProjectSummaryList(params)
+
+        [projectSummaryList: projectSummaryList]
+    }
+
+    def ajaxWatchedTopicsList() {
+        def user = userService.currentUser
+        UserForumWatchList watchList = UserForumWatchList.findByUser(user)
+        [watchList: watchList]
     }
 
 }

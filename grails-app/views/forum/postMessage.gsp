@@ -48,7 +48,7 @@
                     if (selection && selection.length > 0) {
                         var message = "\n";
                         if ($("#insertTagLine").is(":checked")) {
-                            message += "> *${replyTo.user.displayName} wrote:*  \n";
+                            message += "> *${replyTo?.user?.displayName} wrote:*  \n";
                         }
                         message += "> " + selection + "  ";
 
@@ -78,8 +78,8 @@
 
         <div>
             <div class="inner">
-                <h3>Replying to ${replyTo.user.displayName}, who wrote on ${formatDate(date: replyTo.date, format: 'dd MMM yyyy')}:</h3>
-                <blockquote><markdown:renderHtml>${replyTo.text}</markdown:renderHtml></blockquote>
+                <h3>Replying to ${replyTo?.user?.displayName}, who wrote on ${formatDate(date: replyTo?.date, format: 'dd MMM yyyy')}:</h3>
+                <blockquote><markdown:renderHtml>${replyTo?.text}</markdown:renderHtml></blockquote>
 
                 <div class="originalMessageButtons">
                     <button id="btnInsertQuote" class="button">Insert quote</button>
