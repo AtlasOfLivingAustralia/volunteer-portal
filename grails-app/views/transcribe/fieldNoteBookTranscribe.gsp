@@ -294,7 +294,7 @@
         <g:if test="${sequenceNumber >= 0}">
           <span>Image sequence number: ${sequenceNumber}</span>
         </g:if>
-
+        <vpf:taskTopicButton task="${taskInstance}" />
       </hgroup>
     </div>
   </header>

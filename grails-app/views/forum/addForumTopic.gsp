@@ -7,12 +7,26 @@
         <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
         <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+        <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
+        <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-panZoom.js')}"></script>
+        <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
 
         <style type="text/css">
 
         #title {
             width: 400px;
         }
+
+        .pan-image {
+          height: 400px;
+          width: 600px;
+          overflow: hidden;
+          background-color: #808080;
+          float: left;
+          cursor: move;
+          /* margin: 10px auto;*/
+        }
+
 
         </style>
 
@@ -23,6 +37,33 @@
         <script type="text/javascript">
 
             $(document).ready(function () {
+
+                <g:if test="${taskInstance}">
+
+                $("#btnViewTask").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller:'task', action:'show', id: taskInstance.id)}";
+                });
+
+                $(".pan-image img").panZoom({
+                  pan_step: 10,
+                  zoom_step: 5,
+                  min_width: 200,
+                  min_height: 200,
+                  mousewheel:true,
+                  mousewheel_delta: 2,
+                  'zoomIn'    :  $('#zoomin'),
+                  'zoomOut'   :  $('#zoomout'),
+                  'panUp'     :  $('#pandown'),
+                  'panDown'   :  $('#panup'),
+                  'panLeft'   :  $('#panright'),
+                  'panRight'  :  $('#panleft')
+                });
+
+                $(".pan-image img").panZoom('fit');
+
+                </g:if>
+
             });
 
         </script>
@@ -38,14 +79,18 @@
 
         <div>
             <div class="inner">
-                <g:form controller="forum" action="insertForumTopic" params="${[projectId: projectInstance?.id]}">
+                <g:form controller="forum" action="insertForumTopic">
                     <g:hiddenField name="taskId" value="${taskInstance?.id}" />
                     <g:hiddenField name="projectId" value="${projectInstance?.id}" />
                     <div class="newTopicFields">
 
                         <g:if test="${taskInstance}">
-                            <h2>Enter a message to create a forum topic for task ${taskInstance.externalIdentifier}</h2>
+                            <h1>New forum topic for task ${taskInstance.externalIdentifier}</h1>
                             <g:hiddenField name="title" value="${taskInstance.externalIdentifier}" />
+                            <section class="taskSummary">
+                                <vpf:taskSummary task="${taskInstance}" />
+                            </section>
+                            <h2>Message:</h2>
                         </g:if>
                         <g:else>
                             <h2><g:message code="forum.newProjectTopicTitle.label" default="New topic title"/></h2>

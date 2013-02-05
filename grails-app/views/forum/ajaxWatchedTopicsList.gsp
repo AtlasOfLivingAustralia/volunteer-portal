@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.ProjectForumTopic" %>
 <div>
     <table class="bvp-expeditions">
         <thead>
@@ -21,6 +22,16 @@
                                 Posted by: ${topic.creator.displayName}
                                 <br/>
                                 On: <g:formatDate date="${topic.dateCreated}" format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}" />
+                                <br/>
+                                <g:if test="${topic.instanceOf(au.org.ala.volunteer.ProjectForumTopic)}">
+                                    Project: <strong>${topic.project?.featuredLabel}</strong>
+                                </g:if>
+                                <g:if test="${topic.instanceOf(au.org.ala.volunteer.TaskForumTopic)}">
+                                    Project: <strong>${topic.task?.project?.featuredLabel}</strong>
+                                    <br/>
+                                    Task: <strong>${topic.task?.externalIdentifier}</strong>
+                                </g:if>
+
                             </small>
                         </div>
                     </td>

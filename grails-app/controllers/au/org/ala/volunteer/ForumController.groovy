@@ -78,15 +78,17 @@ class ForumController {
         [topic:topic, taskInstance: taskInstance, projectInstance: projectInstance]
     }
 
-    def redirectTopicParent() {
+    public redirectTopicParent() {
+
         def topic = ForumTopic.get(params.int("id"))
+
         if (topic) {
             if (topic.instanceOf(ProjectForumTopic)) {
                 def projectInstance = (topic as ProjectForumTopic).project
                 redirect(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])
             } else if (topic.instanceOf(TaskForumTopic)) {
                 def taskInstance = (topic as TaskForumTopic).task
-                redirect(controller: 'forum', action: 'taskForum', params: [taskId: taskInstance.id])
+                redirect(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id])
             } else {
                 redirect(controller: 'forum', action: 'generalDiscussion')
             }
@@ -161,6 +163,9 @@ class ForumController {
             }
             topic = new SiteForumTopic(title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
         }
+
+        // SO that it gets sorted correctly!
+        topic.lastReplyDate = topic.dateCreated
 
         topic.save(flush: true, failOnError: true)
 
@@ -330,22 +335,8 @@ class ForumController {
         if (!topic || !checkModerator(topic)) {
             return
         }
-
-        def action = "generalDiscussion"
-        Project project = null
-        Task task = null
-
-        if (topic.instanceOf(ProjectForumTopic)) {
-            action = "projectForum"
-            project = (topic as ProjectForumTopic).project
-        } else if (topic.instanceOf(TaskForumTopic)) {
-            action = "taskForum"
-            task = (topic as TaskForumTopic).task
-        }
-
         topic.delete(flush: true)
-
-        redirect(controller: 'forum', action: action, params: [projectId: project?.id, taskId: task?.id])
+        redirect(action: 'redirectTopicParent', id: topic.id)
     }
 
     def generalDiscussion() {

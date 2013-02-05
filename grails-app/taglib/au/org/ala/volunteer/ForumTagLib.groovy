@@ -160,7 +160,7 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            td() { mkp.yieldUnescaped(markdownService.markdown(reply.text)) }
+                            td() { mkp.yieldUnescaped(markdownService.markdown(reply.text ?: "")) }
                             td() {
 
                             }
@@ -203,8 +203,8 @@ class ForumTagLib {
         def mb = new MarkupBuilder(out)
         boolean striped = false
 
-        mb.div(class: 'topicTable') {
-            table(class: "forum-table") {
+        mb.div(class: 'topicTable', style: 'margin-bottom: 15px') {
+            table(class: "forum-table", style:"margin-bottom: 5px") {
                 thead {
                     tr {
                         th(colspan:'2') {
@@ -268,7 +268,9 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: topic.dateCreated, format: DateConstants.DATE_TIME_FORMAT))
                                 }
                                 td {
-                                    mkp.yield(formatDate(date: topic.lastReplyDate, format: DateConstants.DATE_TIME_FORMAT))
+                                    if (topic.lastReplyDate != topic.dateCreated) {
+                                        mkp.yield(formatDate(date: topic.lastReplyDate, format: DateConstants.DATE_TIME_FORMAT))
+                                    }
                                 }
                                 td {
                                     def replyLink = topic.locked ? "#" : createLink(controller:'forum', action:'postMessage', params:[topicId: topic.id])
@@ -451,7 +453,7 @@ class ForumTagLib {
                                 def url = grailsApplication.config.server.url + multimedia.filePath
                                 div(class:'imageContainer', style:'float: left; width: 600px; height: 400px') {
                                     div(class:'pan-image', style:'margin-top: 0px; padding-top: 0px') {
-                                        mb.img(src:url, alt:'Task image', "image-height":imageSize.height, "image-width": imageSize.width) {
+                                        mb.img(src:url, alt:'Task image', "image-height":imageSize?.height, "image-width": imageSize?.width) {
                                             div(class:'map-control') {
                                                 a(id:'panleft', href:'#left', class:'left') { mkp.yield("Left") }
                                                 a(id:'panright', href:'#right', class:'right') { mkp.yield("Right") }
