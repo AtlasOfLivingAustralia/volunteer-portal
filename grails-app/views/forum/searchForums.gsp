@@ -40,7 +40,8 @@
                 <strong>${results.totalCount} message(s) found.</strong>
             </p>
             <section id="searchResults">
-                <vpf:searchResultsTable searchResults="${results}"/>
+                <vpf:messagesTable messages="${results}" />
+                %{--<vpf:searchResultsTable searchResults="${results}"/>--}%
             </section>
         </div>
 

@@ -85,8 +85,10 @@
                     <div class="newTopicFields">
 
                         <g:if test="${taskInstance}">
-                            <h1>New forum topic for task ${taskInstance.externalIdentifier}</h1>
-                            <g:hiddenField name="title" value="${taskInstance.externalIdentifier}" />
+                            <g:set var="topicTitle" value="${taskInstance.externalIdentifier ?: (catalogNumber ?: taskInstance.id) }" />
+
+                            <h1>New forum topic for task ${topicTitle}</h1>
+                            <g:hiddenField name="title" value="${topicTitle}" />
                             <section class="taskSummary">
                                 <vpf:taskSummary task="${taskInstance}" />
                             </section>

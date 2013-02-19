@@ -10,6 +10,11 @@
     <title><g:message code="default.show.label" args="[entityName]"/></title>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
     <style type="text/css">
+
+    .ui-widget-content a {
+        color: #3a5c83;
+    }
+
     .ui-widget {
         font: 1em Arial, Helvetica, sans-serif;
         line-height: 1.2em;
@@ -36,6 +41,7 @@
     }
 
     </style>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -218,6 +224,7 @@
                 <cl:ifValidator>
                     <li><a href="#tabs-1">Validated Tasks</a></li>
                 </cl:ifValidator>
+                <li><a href="#tabs-1">Forum messages</a></li>
             </ul>
             <g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}"/>
             <div id="tabs-1" class="tabContent">
@@ -230,12 +237,15 @@
                 <g:elseif test="${selectedTab == 2}">
                     <g:include action="taskListFragment" params="${includeParams + [projectId: project?.id]}"/>
                 </g:elseif>
+                <g:elseif test="${selectedTab == 3}">
+                    <g:include controller="forum" action="userCommentsFragment" params="${includeParams + [projectId: project?.id, userId: params.id]}"/>
+                </g:elseif>
             </div>
         </div>
 
     </div>
     <script type="text/javascript">
-        $("th > a").addClass("button")
+//        $("th > a").addClass("button")
         $("th.sorted > a").addClass("current")
     </script>
 </body>

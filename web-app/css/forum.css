@@ -73,6 +73,10 @@ blockquote p {
     padding: 0;
 }
 
+td p {
+    padding-bottom: 0px;
+}
+
 .originalMessageButtons {
     margin-top: 10px;
 }

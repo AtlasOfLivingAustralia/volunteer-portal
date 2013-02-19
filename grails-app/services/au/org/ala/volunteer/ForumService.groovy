@@ -237,6 +237,16 @@ class ForumService {
         return results as PagedResultList
     }
 
+    PagedResultList getMessagesForUser(User user, Map params = null) {
+        def c = ForumMessage.createCriteria()
+        def results = c.list(max:params?.max, offset: params?.offset) {
+            eq("user", user)
+            order("topic", "date")
+        }
+
+        return results as PagedResultList
+    }
+
 
 
 }

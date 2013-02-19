@@ -9,6 +9,7 @@ class ForumController {
     def markdownService
     def authService
     def projectService
+    def fieldService
 
     def index = {
     }
@@ -44,7 +45,13 @@ class ForumController {
         def projectInstance = Project.get(params.int("projectId"))
         def taskInstance = Task.get(params.int("taskId"))
 
-        return [projectInstance: projectInstance, taskInstance: taskInstance]
+        // if there is a task id, we may also need it's catalog number
+        def catalogNumber = ''
+        if (taskInstance) {
+            catalogNumber = fieldService.getFieldForTask(taskInstance, "catalogNumber")?.value
+        }
+
+        return [projectInstance: projectInstance, taskInstance: taskInstance, catalogNumber: catalogNumber]
     }
 
     def editTopic() {
@@ -335,6 +342,21 @@ class ForumController {
         if (!topic || !checkModerator(topic)) {
             return
         }
+        def topicSet = new HashSet<ForumTopic>()
+        topicSet.add(topic)
+        def c = UserForumWatchList.createCriteria()
+
+        def watchLists = c.list {
+            topics {
+                eq('id', topic.id)
+            }
+        }
+
+        watchLists?.each {
+            it.removeFromTopics(topic)
+            it.save(flush: true)
+        }
+
         topic.delete(flush: true)
         redirect(action: 'redirectTopicParent', id: topic.id)
     }
@@ -411,6 +433,13 @@ class ForumController {
         def user = userService.currentUser
         UserForumWatchList watchList = UserForumWatchList.findByUser(user)
         [watchList: watchList]
+    }
+
+    def userCommentsFragment() {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        def userInstance = User.get(params.int("userId"))
+        def messages = forumService.getMessagesForUser(userInstance, params)
+        [userInstance: userInstance, messages: messages]
     }
 
 }
