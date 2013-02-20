@@ -5,31 +5,15 @@
             <col style="width:165px"/>
         </colgroup>
         <thead>
-            %{--<tr>--}%
-                %{--<td colspan="2">--}%
-                    %{--<g:if test="${params.q}">--}%
-                        %{--<h4>--}%
-                            %{--<g:if test="${projectSummaryList.matchingProjectCount}">--}%
-                                %{--${projectSummaryList.matchingProjectCount} matching projects--}%
-                            %{--</g:if>--}%
-                            %{--<g:else>--}%
-                                %{--No matching projects--}%
-                            %{--</g:else>--}%
-                        %{--</h4>--}%
-                    %{--</g:if>--}%
-                %{--</td>--}%
-                %{--<td colspan="2" style="text-align: right">--}%
-                %{--</td>--}%
-            %{--</tr>--}%
             <tr>
                 <th>
-                    <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=1" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a>
+                    <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=2" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a>
                 </th>
                 <th>
-                    <a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=1" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a>
+                    <a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=2" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a>
                 </th>
                 <th>
-                    <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=1" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a>
+                    <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=2" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a>
                 </th>
                 <th style="text-align: right">
                     <span>
@@ -65,14 +49,14 @@
                     </td>
                     <td style="text-align: right">
                         <a class="button" href="${createLink(controller:"project", action:"index", id:projectSummary.project.id)}">Visit Project</a>
-                        <a class="button" href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}">Visit Project Forum</a>
+                        <a class="button orange" style="font-size: 1.1em" href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}">Visit Forum</a>
                     </td>
                 </tr>
             </g:each>
         </tbody>
     </table>
     <div class="paginateButtons">
-        <g:paginate controller="forum" action="index" total="${projectSummaryList.matchingProjectCount}" prev="" next="" params="${[q: params.q, selectedTab: 1]}"/>
+        <g:paginate controller="forum" action="index" total="${projectSummaryList.matchingProjectCount}" prev="" next="" params="${[q: params.q, selectedTab: 2]}"/>
     </div>
 </div>
 
@@ -91,7 +75,7 @@
 
     function doSearch() {
         var q = $("#searchbox").val();
-        var url = "${createLink(controller: 'forum', action:'index')}?selectedTab=1&q=" + encodeURIComponent(q);
+        var url = "${createLink(controller: 'forum', action:'index')}?selectedTab=2&q=" + encodeURIComponent(q);
         window.location = url;
     }
 

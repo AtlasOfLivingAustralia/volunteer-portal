@@ -83,11 +83,13 @@ class ForumTagLib {
 
     /**
      * @attr topics
-     * @attr
+     * @attr paginateAction
+     * @attr hidePageButtons
      */
     def topicTable = { attrs, body ->
         def topics = attrs.topics as List<ForumTopic>
         def paginateAction = "generalDiscussion"
+        def hidePageButtons = attrs.hidePageButtons
 
         Project projectInstance = null
         if (topics.size() > 0) {
@@ -163,6 +165,12 @@ class ForumTagLib {
                                     a(href: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id)) {
                                         mkp.yield(topic.title)
                                     }
+                                    if (topic.featured) {
+                                        sup {
+                                            mkp.yield("Featured Topic")
+                                        }
+                                    }
+
                                 }
                                 td {
                                     mkp.yield(topicCounts[topic] - 1)
@@ -202,8 +210,10 @@ class ForumTagLib {
                     }
                 }
             }
-            div(class: 'paginateButtons') {
-                mkp.yieldUnescaped(paginate(total: topics.totalCount, action: paginateAction, params: params))
+            if (!hidePageButtons) {
+                div(class: 'paginateButtons') {
+                    mkp.yieldUnescaped(paginate(total: topics.totalCount, action: paginateAction, params: params))
+                }
             }
         }
 

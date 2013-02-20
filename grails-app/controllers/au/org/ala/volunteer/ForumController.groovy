@@ -11,7 +11,12 @@ class ForumController {
     def projectService
     def fieldService
 
-    def index = {
+    def index() {
+    }
+
+    def ajaxRecentTopicsList() {
+        def featuredTopics = forumService.getFeaturedTopics(params)
+        [featuredTopics: featuredTopics]
     }
 
     def projectForum() {
@@ -138,6 +143,7 @@ class ForumController {
         def locked = false
         def sticky = false
         def priority = ForumTopicPriority.Normal
+        def featured = false
 
 
         ForumTopic topic = null
@@ -148,6 +154,7 @@ class ForumController {
                     locked = params.locked == 'on'
                     sticky = params.sticky == 'on'
                     priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    featured = params.featured == 'on'
                 }
             }
             topic = new TaskForumTopic(task: taskInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
@@ -158,6 +165,7 @@ class ForumController {
                     locked = params.locked == 'on'
                     sticky = params.sticky == 'on'
                     priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    featured = params.featured == 'on'
                 }
             }
             topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
@@ -167,8 +175,9 @@ class ForumController {
                 locked = params.locked == 'on'
                 sticky = params.sticky == 'on'
                 priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                featured = params.featured == 'on'
             }
-            topic = new SiteForumTopic(title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
+            topic = new SiteForumTopic(title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
         }
 
         // SO that it gets sorted correctly!
@@ -214,11 +223,13 @@ class ForumController {
         def locked = params.locked == 'on'
         def sticky = params.sticky == 'on'
         def priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+        def featured = params.featured == 'on'
 
         topic.title = params.title
         topic.sticky = sticky
         topic.locked = locked
         topic.priority = priority
+        topic.featured = featured
 
         topic.save(flush: true, failOnError: true)
 
@@ -430,9 +441,35 @@ class ForumController {
     }
 
     def ajaxWatchedTopicsList() {
+
         def user = userService.currentUser
         UserForumWatchList watchList = UserForumWatchList.findByUser(user)
-        [watchList: watchList]
+        def idList = watchList?.topics?.collect { it.id }
+
+        def sort = params.sort
+
+        if (sort && !ForumTopic.declaredFields.contains(sort)) {
+            sort = 'title'
+        }
+
+        def c = ForumTopic.createCriteria()
+        def topics = c.list(sort: sort, order: params.order) {
+            inList('id', idList)
+        }
+
+        if (params.sort == 'id') {
+            // we are actually supposed to sort by number of replies. Number of replies is actually a calculated field (the number
+            // of messages - 1, so can't sort in the criteria, so do it manually...
+            topics.sort { topic ->
+                 topic.messages?.size()
+            }
+
+            if (params.order == 'desc') {
+                topics = topics.reverse()
+            }
+        }
+
+        [topics: topics]
     }
 
     def userCommentsFragment() {

@@ -11,6 +11,7 @@ class ForumTopic {
     Integer views = 0
     Boolean deleted
     Date lastReplyDate
+    Boolean featured
 
     static belongsTo = [creator: User]
 
@@ -26,6 +27,7 @@ class ForumTopic {
         views nullable: true
         deleted nullable: true
         lastReplyDate nullable: true
+        featured nullable: true
     }
 
     static mapping = {

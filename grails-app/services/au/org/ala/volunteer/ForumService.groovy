@@ -247,6 +247,16 @@ class ForumService {
         return results as PagedResultList
     }
 
+    PagedResultList getFeaturedTopics(Map params = null) {
+        int number = params.max ?: 10
+        def c = ForumTopic.createCriteria()
+        def results = c.list(max: number, offset: params?.offset) {
+            isNotNull('lastReplyDate')
+            order("featured", "asc")
+            order("lastReplyDate", "desc")
+        }
+        return results
+    }
 
 
 }

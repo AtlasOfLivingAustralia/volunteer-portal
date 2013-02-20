@@ -65,21 +65,28 @@
                     show: function (e) {
                         var $tabs = $('#tabControl').tabs();
                         var newIndex = $tabs.tabs('option', 'selected');
-                        if (newIndex == 1) {
+                        if (newIndex == 0) {
+                            $("#tabRecentTopics").html('<div>Retrieving list of featured and recently modified topics... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
+                            $.ajax("${createLink(controller: 'forum',action:'ajaxRecentTopicsList', params: params)}").done(function(content) {
+                                $("#tabRecentTopics").html(content);
+                            });
+                        } else if (newIndex == 2) {
                             $("#tabProjectForums").html('<div>Retrieving list of project forums... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
                             $.ajax("${createLink(controller: 'forum',action:'ajaxProjectForumsList', params: params)}").done(function(content) {
                                 $("#tabProjectForums").html(content);
                             });
-
-                        } else if (newIndex == 2) {
+                        } else if (newIndex == 3) {
                             $("#tabWatchedTopics").html('<div>Searching for the topics that you are currently watching... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
-                            $.ajax("${createLink(controller: 'forum',action:'ajaxWatchedTopicsList')}").done(function(content) {
+                            $.ajax("${createLink(controller: 'forum',action:'ajaxWatchedTopicsList', params:params)}").done(function(content) {
                                 $("#tabWatchedTopics").html(content);
                             });
                         }
+                        return 0;
                     },
                     beforeActivate: function (e) {
-                    }
+                    },
+                    hide: false
+
                 };
 
                 $("#tabControl").tabs(tabOptions);
@@ -108,17 +115,22 @@
         <div class="inner">
 
             <section class="forumSection" id="generalDiscussion">
-                <h3><a href="${createLink(controller: 'forum', action: 'generalDiscussion')}">General Discussion Topics</a>
-                </h3>
-                This section is for general comments and queries about the Biodiversity Volunteer Portal in general
+                <small><a href="${createLink(action:'generalDiscussion')}" class="button orange">Browse General Discussion Topics</a></small>
+                <br/>
+                This section is for comments and queries about the Biodiversity Volunteer Portal in general
             </section>
 
             <div id="tabControl" style="display:none">
                 <ul>
+                    <li><a href="#tabRecentTopics">Featured and recent topics</a></li>
                     <li><a href="#tabForumTopics">Find Forum Topics</a></li>
                     <li><a href="#tabProjectForums">Project Forums</a></li>
                     <li><a href="#tabWatchedTopics">Your watched topics</a></li>
                 </ul>
+
+                <div id="tabRecentTopics" class="tabContent" style="display:none">
+                    <g:include action="ajaxRecentTopicsList" />
+                </div>
 
                 <div id="tabForumTopics" class="tabContent" style="display:none">
 
@@ -130,8 +142,8 @@
 
                 </div>
 
-                <div id="tabProjectForums"></div>
-                <div id="tabWatchedTopics" style="display:none"></div>
+                <div id="tabProjectForums" class="tabContent" style="display:none"></div>
+                <div id="tabWatchedTopics" class="tabContent" style="display:none"></div>
         </div>
     </body>
 </html>
