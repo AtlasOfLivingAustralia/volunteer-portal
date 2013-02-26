@@ -161,6 +161,16 @@ class BootStrap {
 
         populateTemplateFields(template, "genericLabelFields")
 
+        template = Template.findByName("SmithsonianPlants")
+        if (!template) {
+            logService.log "creating new Template: SmithsonianPlants"
+            template = new Template(name: "SmithsonianPlants", viewName: "smithsonianPlantsTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
+        }
+        template.save(flush: true, failOnError: true)
+
+        populateTemplateFields(template, "smithsonianPlantsFields")
+
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', displayName: 'System User')

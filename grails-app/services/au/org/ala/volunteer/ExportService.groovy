@@ -51,11 +51,13 @@ class ExportService {
         zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['recordedBy'])
     }
 
+    def export_GenericLabels = export_SpecimenLabel
+
+    def export_SmithsonianPlants = export_SpecimenLabel
+
     def export_FieldNoteBookDoublePage = export_FieldNoteBook
 
     def export_Journal = export_FieldNoteBook
-
-
 
     private void zipExport(Project project, taskList, valueMap, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
         def datasetCategoryFields = [:]

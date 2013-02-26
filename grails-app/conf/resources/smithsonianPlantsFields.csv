@@ -1,0 +1,29 @@
+basisOfRecord,,PreservedSpecimen,none,hidden,1,0,,,1
+catalogNumber,,,none,hidden,1,0,Please check this number against the typed number on the specimen label in the image to see that it matches. If it does not match then click the &quot;Report an issue&quot; link near the top of the page,,2
+institutionCode,,AM,none,hidden,1,0,,,3
+occurrenceRemarks,Verbatim Text,,none,textarea,1,0,This section is to record exactly what appears in the label so that we have a searchable reference for the complete label set,,4
+scientificName,Scientific Name,,none,text,0,0,,,5
+transcriberNotes,,,none,textarea,0,0,,,6
+verbatimLocality,,,none,textarea,0,0,Start typing the locality description. Any matches in the existing list will be selectable from a dropdown list. Choose the appropriate entry. If no existing entry exists then please enter the locality description as it appears in the label,,7
+recordedBy,Collector,,none,text,0,0,Enter the text here exactly as it appears in the label. A drop down list will provide you with matches to known collectors â?? where possible choose from the list. In some cases there may be multiple very similar options. Choose the one that most accurately matches the name on the label. If there is no exact match then please enter the name as a new name,,8
+eventDate,,,collectionEvent,text,0,0,Date of the collection event. Enter the date in the format: YYYY-MM-DD or if only the year and month are listed: YYYY-MM. A date range can be entered as YYYY-MM-DD/YYYY-MM-DD,,9
+verbatimLatitude,,,collectionEvent,text,0,0,,,10
+verbatimElevation,Verbatim Altitude,,collectionEvent,text,0,0,"If the label/s have an altitude or elevation, record it here as it appears",,11
+verbatimLongitude,,,collectionEvent,text,0,0,,,12
+samplingProtocol,Collection Method,,collectionEvent,text,0,0,"If the label contains information on the method of collection please enter it as it appears on the label. Examples include pitfall trap, UV Lamp, Malaise Trap",,13
+minimumDepthInMeters,Depth (from),,collectionEvent,text,0,0,Minimum depth in water,,14
+fieldNumber,Collector Number,,collectionEvent,text,0,0,,,15
+recordedByID,Collector ID,,collectionEvent,hidden,0,0,,,16
+verbatimLocalityID,verbatim locality ID,,collectionEvent,hidden,0,0,,,17
+maximumDepthInMeters,Depth (to),,collectionEvent,text,0,0,Maximum depth in water,,18
+fieldNotes,USNM Number,,collectionEvent,text,0,0,,,19
+locality,Google locality,,location,text,0,0,,,20
+stateProvince,State/Territory,,location,text,0,0,,,21
+decimalLatitude,,,location,text,0,0,,,22
+country,,,location,select,0,0,,,23
+decimalLongitude,,,location,text,0,0,,,24
+coordinateUncertaintyInMeters,,,location,select,0,0,Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map,,25
+taxonConceptID,'',,none,hidden,0,0,gets set by autocomplete on scientific name,,26
+taxonRank,'',,none,hidden,0,0,,,27
+eventID,,,none,hidden,1,0,,,28
+locationID,,,none,hidden,1,0,,,29
