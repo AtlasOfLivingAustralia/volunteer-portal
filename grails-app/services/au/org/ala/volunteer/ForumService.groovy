@@ -44,32 +44,51 @@ class ForumService {
         return results as PagedResultList
     }
 
-    PagedResultList getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
-        def c = SiteForumTopic.createCriteria()
-        def results = c.list(max:params?.max, offset: params?.offset) {
-            and {
-                if (includeDeleted) {
-                    eq("deleted", true)
-                } else {
-                    or {
-                        isNull("deleted")
-                        eq("deleted", false)
+    def getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
+
+        def max = params?.max ?: 10
+        def offset = params?.offset ?: 0
+        def sort = params?.sort ?: "lastReplyDate"
+        def leOrder = params?.order ?: "desc"
+
+        if (sort == 'replies') {
+
+            def hql = """
+                SELECT topic
+                FROM ForumTopic topic
+                ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
+            """
+            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
+
+
+            return [topics: topics, totalCount: ForumTopic.count() ]
+        } else {
+            def c = SiteForumTopic.createCriteria()
+            def results = c.list(max:max, offset: offset) {
+                and {
+                    if (includeDeleted) {
+                        eq("deleted", true)
+                    } else {
+                        or {
+                            isNull("deleted")
+                            eq("deleted", false)
+                        }
                     }
                 }
+                and {
+                    order("sticky", "desc")
+                    order("priority", "desc")
+                    order(sort, leOrder)
+                }
+                if (params?.max) {
+                    maxResults(params.max as Integer)
+                }
+                if (params?.offset) {
+                    firstResult(params.offset as Integer)
+                }
             }
-            and {
-                order("sticky", "desc")
-                order("priority", "desc")
-                order("lastReplyDate", "desc")
-            }
-            if (params?.max) {
-                maxResults(params.max as Integer)
-            }
-            if (params?.offset) {
-                firstResult(params.offset as Integer)
-            }
+            return [topics: results, totalCount: results.totalCount ]
         }
-        return results as PagedResultList
     }
 
     PagedResultList getTaskTopicsForProject(Project projectInstance, Map params = null) {
@@ -247,15 +266,30 @@ class ForumService {
         return results as PagedResultList
     }
 
-    PagedResultList getFeaturedTopics(Map params = null) {
-        int number = params.max ?: 10
-        def c = ForumTopic.createCriteria()
-        def results = c.list(max: number, offset: params?.offset) {
-            isNotNull('lastReplyDate')
-            order("featured", "asc")
-            order("lastReplyDate", "desc")
+    def getFeaturedTopics(Map params = null) {
+
+        int max = params?.max as Integer ?: 10
+        int offset = params?.offset as Integer ?: 0
+        String sort = params?.sort ?: 'lastReplyDate'
+        String leOrder = params?.order ?: 'desc'
+
+        if (sort == 'replies') {
+            def hql = """
+                SELECT topic
+                FROM ForumTopic topic
+                ORDER BY featured asc, size(topic.messages) ${leOrder}
+            """
+            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
+            return [topics: topics, totalCount: topics.size()]
+        } else {
+            def c = ForumTopic.createCriteria()
+            def results = c.list(max: max, offset: offset) {
+                isNotNull('lastReplyDate')
+                order("featured", "asc")
+                order(sort, leOrder)
+            }
+            return [topics: results, totalCount: results.totalCount]
         }
-        return results
     }
 
 

@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.orm.PagedResultList
+import grails.gorm.PagedResultList
 import groovy.xml.MarkupBuilder
 
 class ForumTagLib {
@@ -83,16 +83,22 @@ class ForumTagLib {
 
     /**
      * @attr topics
+     * @attr totalCount
      * @attr paginateAction
      * @attr hidePageButtons
      */
     def topicTable = { attrs, body ->
         def topics = attrs.topics as List<ForumTopic>
-        def paginateAction = "generalDiscussion"
+        def paginateAction = attrs.paginateAction ?: "index"
         def hidePageButtons = attrs.hidePageButtons
 
+        def totalCount = attrs.totalCount
+        if (!totalCount && (topics instanceof PagedResultList)) {
+            totalCount = topics.totalCount
+        }
+
         Project projectInstance = null
-        if (topics.size() > 0) {
+        if (topics.size() > 0 && !paginateAction) {
             def first = topics[0] as ForumTopic
             if (first) {
                 if (first.instanceOf(ProjectForumTopic)) {
@@ -100,7 +106,7 @@ class ForumTagLib {
                     paginateAction = 'projectForum'
                 } else if (first.instanceOf(TaskForumTopic)) {
                     projectInstance = (first as TaskForumTopic).task?.project
-                    paginateAction = 'taskForum'
+                    paginateAction = 'projectForum'
                 }
             }
         }
@@ -118,24 +124,12 @@ class ForumTagLib {
             table(class: "forum-table", style: "margin-bottom: 5px") {
                 thead {
                     tr {
-                        th(colspan: '2') {
-                            mkp.yield("Topic")
-                        }
-                        th {
-                            mkp.yield("Replies")
-                        }
-                        th {
-                            mkp.yield("Views")
-                        }
-                        th {
-                            mkp.yield("Posted by")
-                        }
-                        th {
-                            mkp.yield("Posted")
-                        }
-                        th {
-                            mkp.yield("Last reply")
-                        }
+                        mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"title", title: "Topic", action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"replies", title: "Replies", action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"views", title: "Views", action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"creator", title: "Posted&nbsp;by", action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"dateCreated", title: "Posted", action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"lastReplyDate", title: "Last reply", action:paginateAction, params:params))
                         th {
                             mkp.yield("")
                         }
@@ -212,7 +206,7 @@ class ForumTagLib {
             }
             if (!hidePageButtons) {
                 div(class: 'paginateButtons') {
-                    mkp.yieldUnescaped(paginate(total: topics.totalCount, action: paginateAction, params: params))
+                    mkp.yieldUnescaped(paginate(total: totalCount, action: paginateAction, params: params))
                 }
             }
         }
@@ -284,7 +278,7 @@ class ForumTagLib {
                         }
                     }
                     li {
-                        a(href: createLink(controller: 'forum', action: 'generalDiscussion')) {
+                        a(href: createLink(controller: 'forum', action: 'ajaxGeneralTopicsList')) {
                             mkp.yield(message(code: "default.generaldiscussion.label", default: "General Discussion"))
                         }
                     }
@@ -461,13 +455,7 @@ class ForumTagLib {
                                             a(href: createLink(controller: 'project', action: 'index', id: projectInstance.id)) {
                                                 mkp.yield(projectInstance.featuredLabel)
                                             }
-//                                            mkp.yieldUnescaped("&nbsp;[&nbsp;")
-//                                            a(href: createLink(controller: 'forum', action: 'projectForum', params:[projectId: projectInstance.id])) {
-//                                                mkp.yield("Forum")
-//                                            }
-//                                            mkp.yieldUnescaped("&nbsp;]")
                                         }
-
                                         if (taskInstance) {
                                             mkp.yieldUnescaped("&nbsp;Task:")
                                             a(href: createLink(controller: 'task', action: 'show', id: taskInstance.id)) {

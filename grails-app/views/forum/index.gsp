@@ -57,41 +57,64 @@
 
         <script type="text/javascript">
 
+            function renderTab(tabIndex, q, offset, max, sort, order) {
+                var $tabs = $('#tabControl').tabs();
+                var selector = ""
+                var baseUrl = ""
+                if (tabIndex == 0) {
+                    selector = "#tabRecentTopics";
+                    baseUrl = "${createLink(action:'ajaxRecentTopicsList')}";
+                } else if (tabIndex == 1) {
+                    selector = "#tabGeneralTopics";
+                    baseUrl = "${createLink(action:'ajaxGeneralTopicsList')}";
+                } else if (tabIndex == 2) {
+                    selector = "#tabProjectForums";
+                    baseUrl = "${createLink(action:'ajaxProjectForumsList')}";
+                } else if (tabIndex == 3) {
+                    selector = "#tabWatchedTopics";
+                    baseUrl = "${createLink(action:'ajaxWatchedTopicsList')}";
+                }
+
+                if (baseUrl && selector) {
+                    $(selector).html('<div>Retrieving list of topics... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
+                    baseUrl += "?selectedTab=" + tabIndex;
+                    if (q) {
+                        baseUrl += "&q=" + q;
+                    }
+                    if (offset) {
+                        baseUrl += "&offset=" + offset;
+                    }
+                    if (max) {
+                        baseUrl += "&max=" + max;
+                    }
+                    if (sort) {
+                        baseUrl += "&sort=" + sort;
+                    }
+                    if (order) {
+                        baseUrl += "&order=" + order;
+                    }
+
+                    $.ajax(baseUrl).done(function(content) {
+                        $(selector).html(content);
+                        $("th > a").addClass("button")
+                        $("th.sorted > a").addClass("current")
+                    });
+                }
+
+            }
+
             $(document).ready(function() {
-
-
                 var tabOptions = {
                     selected: ${params.selectedTab ?: 0},
-                    show: function (e) {
-                        var $tabs = $('#tabControl').tabs();
-                        var newIndex = $tabs.tabs('option', 'selected');
-                        if (newIndex == 0) {
-                            $("#tabRecentTopics").html('<div>Retrieving list of featured and recently modified topics... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
-                            $.ajax("${createLink(controller: 'forum',action:'ajaxRecentTopicsList', params: params)}").done(function(content) {
-                                $("#tabRecentTopics").html(content);
-                            });
-                        } else if (newIndex == 2) {
-                            $("#tabProjectForums").html('<div>Retrieving list of project forums... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
-                            $.ajax("${createLink(controller: 'forum',action:'ajaxProjectForumsList', params: params)}").done(function(content) {
-                                $("#tabProjectForums").html(content);
-                            });
-                        } else if (newIndex == 3) {
-                            $("#tabWatchedTopics").html('<div>Searching for the topics that you are currently watching... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
-                            $.ajax("${createLink(controller: 'forum',action:'ajaxWatchedTopicsList', params:params)}").done(function(content) {
-                                $("#tabWatchedTopics").html(content);
-                            });
-                        }
-                        return 0;
-                    },
-                    beforeActivate: function (e) {
+                    activate: function (e, ui) {
+                        renderTab(ui.newTab.index());
                     },
                     hide: false
 
                 };
-
                 $("#tabControl").tabs(tabOptions);
                 $("#tabControl").css("display", "block");
-
+                renderTab(${params.selectedTab ?: 0}, ${params.q ? '"' + params.q + '"': 'null'}, ${params.offset ?: "null"}, ${params.max ?: "null"}, ${params.sort ? '"' + params.sort + '"': "null"}, ${params.order ? '"' + params.order + '"' : "null"});
             });
 
         </script>
@@ -115,15 +138,17 @@
         <div class="inner">
 
             <section class="forumSection" id="generalDiscussion">
-                <small><a href="${createLink(action:'generalDiscussion')}" class="button orange">Browse General Discussion Topics</a></small>
-                <br/>
-                This section is for comments and queries about the Biodiversity Volunteer Portal in general
+                <h3>Find forum topics</h3>
+                <g:form controller="forum" action="searchForums">
+                    <g:textField id="search-input" class="filled" placeholder="Search the forums..." name="query"/>
+                    <button class="button orange" style="font-size:1.3em" type="submit">Search</button>
+                </g:form>
             </section>
 
             <div id="tabControl" style="display:none">
                 <ul>
                     <li><a href="#tabRecentTopics">Featured and recent topics</a></li>
-                    <li><a href="#tabForumTopics">Find Forum Topics</a></li>
+                    <li><a href="#tabGeneralTopics">Browse General Discussion Topics</a></li>
                     <li><a href="#tabProjectForums">Project Forums</a></li>
                     <li><a href="#tabWatchedTopics">Your watched topics</a></li>
                 </ul>
@@ -132,16 +157,7 @@
                     <g:include action="ajaxRecentTopicsList" />
                 </div>
 
-                <div id="tabForumTopics" class="tabContent" style="display:none">
-
-                        <h3>Find forum topics</h3>
-                        <g:form controller="forum" action="searchForums">
-                            <g:textField id="search-input" class="filled" placeholder="Search the forums..." name="query"/>
-                            <button class="button" type="submit">Search</button>
-                        </g:form>
-
-                </div>
-
+                <div id="tabGeneralTopics" class="tabContent" style="display:none"></div>
                 <div id="tabProjectForums" class="tabContent" style="display:none"></div>
                 <div id="tabWatchedTopics" class="tabContent" style="display:none"></div>
         </div>

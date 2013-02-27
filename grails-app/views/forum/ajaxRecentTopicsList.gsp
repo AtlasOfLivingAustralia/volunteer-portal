@@ -1,3 +1,3 @@
 <div>
-    <vpf:topicTable topics="${featuredTopics}" hidePageButtons="true" />
+    <vpf:topicTable topics="${featuredTopics}" totalCount="${totalCount}" hidePageButtons="true" />
 </div>

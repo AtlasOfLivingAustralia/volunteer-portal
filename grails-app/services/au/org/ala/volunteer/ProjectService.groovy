@@ -110,7 +110,7 @@ class ProjectService {
             projectSummary.project.featuredLabel?.toLowerCase()
         }
 
-        int startIndex = params.offset ? params.int('offset') : 0;
+        Integer startIndex = params.int('offset') ?: 0;
         if (startIndex >= renderList.size()) {
             startIndex = renderList.size() - params.int('max');
             if (startIndex < 0) {
@@ -118,7 +118,7 @@ class ProjectService {
             }
         }
 
-        int endIndex = startIndex + params.int('max') - 1;
+        int endIndex = startIndex + (params.int('max') ?: 0) - 1;
         if (endIndex >= renderList.size()) {
             endIndex = renderList.size() - 1;
         }

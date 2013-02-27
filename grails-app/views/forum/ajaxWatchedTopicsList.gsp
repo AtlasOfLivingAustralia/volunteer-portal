@@ -3,10 +3,10 @@
     <table class="bvp-expeditions">
         <thead>
             <tr>
-                <g:sortableColumn class="button" property="title" title="Topic" action="index" params="${params + [selectedTab: 3]}" />
-                <g:sortableColumn class="button" property="views" title="Views" action="index" params="${params + [selectedTab: 3]}" />
-                <g:sortableColumn class="button" property="id" title="Replies" action="index" params="${params + [selectedTab: 3]}" />
-                <g:sortableColumn class="button" property="lastReplyDate" title="Last Reply" action="index" params="${params + [selectedTab: 3]}" />
+                <g:sortableColumn class="button" property="title" title="Topic" action="index" params="${params}" />
+                <g:sortableColumn class="button" property="views" title="Views" action="index" params="${params}" />
+                <g:sortableColumn class="button" property="id" title="Replies" action="index" params="${params}" />
+                <g:sortableColumn class="button" property="lastReplyDate" title="Last Reply" action="index" params="${params}" />
                 <th></th>
             </tr>
         </thead>
@@ -63,12 +63,9 @@
         var topicId = $(this).parents("tr[topicId]").attr("topicId");
         if (topicId) {
             $.ajax("${createLink(controller: 'forum', action:'ajaxWatchTopic', params:[watch:'false'])}&topicId=" + topicId).done(function(results) {
-                location = "${createLink(controller: "forum", action:"index", params:[selectedTab: 3 ])}";
+                location = "${createLink(controller: "forum", action:"index", params:params)}";
             });
         }
     });
-
-    $("th > a").addClass("button")
-    $("th.sorted > a").addClass("current")
 
 </script>

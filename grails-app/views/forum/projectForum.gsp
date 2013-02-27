@@ -114,7 +114,7 @@
                             </button>
                         </div>
 
-                        <vpf:topicTable topics="${topics}" />
+                        <vpf:topicTable topics="${topics}" totalCount="${topics.totalCount}"/>
 
                     </div>
                     <div id="tabTaskTopics" style="display:none">

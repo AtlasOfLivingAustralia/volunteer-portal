@@ -15,8 +15,8 @@ class ForumController {
     }
 
     def ajaxRecentTopicsList() {
-        def featuredTopics = forumService.getFeaturedTopics(params)
-        [featuredTopics: featuredTopics]
+        def results = forumService.getFeaturedTopics(params)
+        [featuredTopics: results.topics, totalCount: results.totalCount]
     }
 
     def projectForum() {
@@ -102,7 +102,7 @@ class ForumController {
                 def taskInstance = (topic as TaskForumTopic).task
                 redirect(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id])
             } else {
-                redirect(controller: 'forum', action: 'generalDiscussion')
+                redirect(controller: 'forum', action: 'index', params:[selectedTab: 1])
             }
         } else {
             redirect(controller: 'forum', action: 'index')
@@ -372,9 +372,9 @@ class ForumController {
         redirect(action: 'redirectTopicParent', id: topic.id)
     }
 
-    def generalDiscussion() {
-        def topics = forumService.getGeneralDiscussionTopics()
-        [topics:topics]
+    def ajaxGeneralTopicsList() {
+        def results = forumService.getGeneralDiscussionTopics(false, params)
+        [topics:results.topics, totalCount: results.totalCount]
     }
 
     def taskTopic() {
@@ -448,7 +448,7 @@ class ForumController {
 
         def sort = params.sort
 
-        if (sort && !ForumTopic.declaredFields.contains(sort)) {
+        if (sort && !ForumTopic.declaredFields.find { it.name == sort }) {
             sort = 'title'
         }
 

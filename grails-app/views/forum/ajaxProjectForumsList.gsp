@@ -7,13 +7,13 @@
         <thead>
             <tr>
                 <th>
-                    <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=2" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a>
+                    <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a>
                 </th>
                 <th>
-                    <a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=2" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a>
+                    <a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a>
                 </th>
                 <th>
-                    <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=2" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a>
+                    <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a>
                 </th>
                 <th style="text-align: right">
                     <span>
@@ -56,7 +56,7 @@
         </tbody>
     </table>
     <div class="paginateButtons">
-        <g:paginate controller="forum" action="index" total="${projectSummaryList.matchingProjectCount}" prev="" next="" params="${[q: params.q, selectedTab: 2]}"/>
+        <g:paginate controller="forum" action="index" total="${projectSummaryList.matchingProjectCount}" prev="" next="" params="${params}"/>
     </div>
 </div>
 
@@ -75,7 +75,7 @@
 
     function doSearch() {
         var q = $("#searchbox").val();
-        var url = "${createLink(controller: 'forum', action:'index')}?selectedTab=2&q=" + encodeURIComponent(q);
+        var url = "${createLink(controller: 'forum', action:'index')}?q=" + encodeURIComponent(q);
         window.location = url;
     }
 

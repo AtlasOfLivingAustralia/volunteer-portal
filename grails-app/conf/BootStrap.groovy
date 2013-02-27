@@ -10,6 +10,8 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 import au.org.ala.volunteer.FrontPage
 import au.org.ala.volunteer.Project
 import org.apache.commons.lang.StringUtils
+
+import java.text.ParseException
 import java.util.regex.Pattern
 import au.org.ala.volunteer.Role
 
@@ -20,14 +22,31 @@ class BootStrap {
 
     def init = { servletContext ->
 
-      //add a utility method for creating a map from a arraylist
-      java.util.ArrayList.metaClass.toMap = { ->
-        def myMap = [:]
-        delegate.each { keyCount ->
-          myMap.put keyCount[0], keyCount[1]
+        //add a utility method for creating a map from a arraylist
+        java.util.ArrayList.metaClass.toMap = { ->
+            def myMap = [:]
+            delegate.each { keyCount ->
+                myMap.put keyCount[0], keyCount[1]
+            }
+            myMap
         }
-        myMap
-      }
+
+        Map.metaClass.int = { String key ->
+            def o = delegate[key]
+            if (o instanceof Number) {
+                return ((Number)o).intValue();
+            }
+            if (o != null) {
+                try {
+                    String string = o.toString();
+                    if (string != null) {
+                        return Integer.parseInt(string);
+                    }
+                }
+                catch (NumberFormatException e) {}
+            }
+            return null;
+        }
         
       if (FrontPage.list()[0] == null) {
           def frontPage = new FrontPage()
