@@ -53,13 +53,15 @@ class ForumTagLib {
                     tr {
                         th {}
                         th { mkp.yield("${replies.size() - 1} " + (replies.size() == 2 ? 'reply' : "replies")) }
-                        th(style: 'text-align: right') {
+                        th(style: 'text-align: right; width: 150px') {
                         }
                     }
                 }
                 tbody {
                     replies.each { reply ->
-                        tr(class: striped ? 'striped' : '') {
+                        // work out if this topic is editable...
+                        def canEdit = forumService.isMessageEditable(reply, userService.currentUser)
+                        tr(class: striped ? 'striped' : '', messageId: reply.id) {
                             td(class: "forumNameColumn") {
                                 a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: reply.user.id), name:'message_' + reply.id) {
                                     mkp.yield(reply.user.displayName)
@@ -70,8 +72,15 @@ class ForumTagLib {
                                 }
                             }
                             td() { mkp.yieldUnescaped(markdownService.markdown(reply.text ?: "")) }
-                            td() {
-
+                            td(style:'text-align: right') {
+                                if (canEdit) {
+                                    button(class:'btn editMessageButton') {
+                                        mkp.yield("Edit")
+                                    }
+                                    button(class:'btn deleteMessageButton') {
+                                        mkp.yield("Delete")
+                                    }
+                                }
                             }
                         }
                         striped = !striped
@@ -94,10 +103,18 @@ class ForumTagLib {
 
         def totalCount = attrs.totalCount
         if (!totalCount && (topics instanceof PagedResultList)) {
-            totalCount = topics.totalCount
+            totalCount = topics?.totalCount
         }
 
+        def mb = new MarkupBuilder(out)
         Project projectInstance = null
+        if (!topics) {
+            mb.div {
+                mkp.yield("No topics found")
+            }
+            return
+        }
+
         if (topics.size() > 0 && !paginateAction) {
             def first = topics[0] as ForumTopic
             if (first) {
@@ -116,9 +133,6 @@ class ForumTagLib {
             def replyCount = ForumMessage.countByTopic(topic)
             topicCounts[topic] = replyCount
         }
-
-        def mb = new MarkupBuilder(out)
-        boolean striped = false
 
         mb.div(class: 'topicTable', style: 'margin-bottom: 15px') {
             table(class: "forum-table", style: "margin-bottom: 5px") {
@@ -343,7 +357,7 @@ class ForumTagLib {
 
         if (projectInstance) {
             def topics = forumService.getTaskTopicsForProject(projectInstance)
-            out << topicTable([topics: topics], body)
+            out << topicTable([topics: topics, totalCount: topics?.totalCount], body)
         }
     }
 

@@ -59,6 +59,22 @@
                     });
                 });
 
+                $(".editMessageButton").click(function(e) {
+                    var messageId = $(this).parents("tr[messageId]").attr("messageId");
+                    if (messageId) {
+                        window.location = "${createLink(action:'editMessage')}?messageId=" + messageId;
+                    }
+                });
+
+                $(".deleteMessageButton").click(function(e) {
+                    var messageId = $(this).parents("tr[messageId]").attr("messageId");
+                    if (messageId) {
+                        if (confirm("Are you sure you wish to permanently delete this message?")) {
+                            window.location = "${createLink(action:'deleteTopicMessage')}?messageId=" + messageId;
+                        }
+                    }
+                });
+
                 <g:if test="${taskInstance}">
 
                 $("#btnViewTask").click(function(e) {

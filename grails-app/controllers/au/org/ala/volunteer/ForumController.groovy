@@ -284,6 +284,13 @@ class ForumController {
 
     }
 
+    def editMessage() {
+        def message = ForumMessage.get(params.int("messageId"))
+        def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
+
+        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText ?: message.text]
+    }
+
     def previewMessage() {
         def topic = ForumTopic.get(params.topicId)
         if (topic) {
@@ -296,6 +303,42 @@ class ForumController {
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
             render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched], params: [messageText: params.messageText]
         }
+    }
+
+    def previewMessageEdit() {
+        def message = ForumMessage.get(params.int("messageId"))
+        def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
+        render view:'editMessage', model: [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText]
+    }
+
+    def updateTopicMessage() {
+
+        def message = ForumMessage.get(params.int("messageId"))
+        def currentUser = userService.currentUser
+        if (message && currentUser) {
+            if (!forumService.isMessageEditable(message, currentUser)) {
+                throw new RuntimeException("You do not have sufficient privileges to edit this message!")
+            }
+            message.text = params.messageText
+            if (params.watchTopic == 'on') {
+                forumService.watchTopic(currentUser, message.topic)
+            } else {
+                forumService.unwatchTopic(currentUser, message.topic)
+            }
+        }
+        redirect(action:'viewForumTopic', id: message?.topic?.id)
+    }
+
+    def deleteTopicMessage() {
+        def message = ForumMessage.get(params.int("messageId"))
+        def currentUser = userService.currentUser
+        if (message && currentUser) {
+            if (!forumService.isMessageEditable(message, currentUser)) {
+                throw new RuntimeException("You do not have sufficient privileges to edit this message!")
+            }
+            message.delete()
+        }
+        redirect(action:'viewForumTopic', id: message?.topic?.id)
     }
 
     def saveNewTopicMessage() {

@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.org.ala.cas.util.AuthenticationCookieUtils
 import grails.gorm.DetachedCriteria
 import grails.orm.PagedResultList
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate
@@ -14,6 +15,7 @@ class ForumService {
     def sessionFactory
     def grailsApplication
     def userService
+    def settingsService
 
     PagedResultList getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
         def c = ProjectForumTopic.createCriteria()
@@ -106,10 +108,14 @@ class ForumService {
         def tasks = Task.findAllByProject(projectInstance)
         def c = TaskForumTopic.createCriteria()
 
-        def results = c.list(max: params?.max ?: 10, offset: params?.offset ?: 0 ) {
-            inList('task', tasks)
+
+        if (tasks) {
+            def results = c.list(max: params?.max ?: 10, offset: params?.offset ?: 0 ) {
+                inList('task', tasks)
+            }
+            return results
         }
-        return results
+        return null
     }
 
     PagedResultList getTopicMessages(ForumTopic topic, Map params = null) {
@@ -247,9 +253,18 @@ class ForumService {
 
     PagedResultList searchForums(String query, boolean searchTitlesOnly, Map params = null) {
 
+        def q = "%" + query + "%"
         def c = ForumMessage.createCriteria()
         def results = c.list(max:params?.max, offset: params?.offset) {
-            ilike("text", "%" + query + "%")
+            or {
+                ilike("text", q)
+                and {
+                    topic {
+                        ilike("title", q)
+                    }
+                    isNull("replyTo")
+                }
+            }
             order("topic", "date")
         }
 
@@ -292,5 +307,37 @@ class ForumService {
         }
     }
 
+    def isMessageEditable(ForumMessage message, User user) {
+
+        if (!message || !user) {
+            return false
+        }
+
+        def projectInstance = null
+        if (message.topic.instanceOf(ProjectForumTopic)) {
+            def projectTopic = message.topic as ProjectForumTopic
+            projectInstance = projectTopic.project
+        } else if (message.topic.instanceOf(TaskForumTopic)) {
+            def taskTopic = message.topic as TaskForumTopic
+            projectInstance = taskTopic.task.project
+        }
+
+        if (userService.isForumModerator(projectInstance)) {
+            return true
+        }
+
+        if (message.user.userId == user.userId) {
+            // This is the author of the message. The author has a limited window to edit/delete their messages
+
+            int timeout = settingsService.getSetting("forum.messageEditWindowSeconds", 15 * 60 ) // default to 15 minutes
+            use (groovy.time.TimeCategory) {
+                if (message.date >= timeout.minutes.ago) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
 
 }
