@@ -58,7 +58,7 @@ class ForumTagLib {
                     }
                 }
                 tbody {
-                    replies.each { reply ->
+                    replies.each { ForumMessage reply ->
                         // work out if this topic is editable...
                         def canEdit = forumService.isMessageEditable(reply, userService.currentUser)
                         tr(class: striped ? 'striped' : '', messageId: reply.id) {
@@ -77,8 +77,13 @@ class ForumTagLib {
                                     button(class:'btn editMessageButton') {
                                         mkp.yield("Edit")
                                     }
-                                    button(class:'btn deleteMessageButton') {
-                                        mkp.yield("Delete")
+
+                                    // if this is the first message in the topic, you can't delete it
+                                    // Only the first message as a null replyTo
+                                    if (reply.replyTo != null) {
+                                        button(class:'btn deleteMessageButton') {
+                                            mkp.yield("Delete")
+                                        }
                                     }
                                 }
                             }

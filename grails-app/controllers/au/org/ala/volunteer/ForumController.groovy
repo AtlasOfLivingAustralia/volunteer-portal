@@ -336,7 +336,7 @@ class ForumController {
             if (!forumService.isMessageEditable(message, currentUser)) {
                 throw new RuntimeException("You do not have sufficient privileges to edit this message!")
             }
-            message.delete()
+            forumService.deleteMessage(message)
         }
         redirect(action:'viewForumTopic', id: message?.topic?.id)
     }
@@ -396,22 +396,8 @@ class ForumController {
         if (!topic || !checkModerator(topic)) {
             return
         }
-        def topicSet = new HashSet<ForumTopic>()
-        topicSet.add(topic)
-        def c = UserForumWatchList.createCriteria()
 
-        def watchLists = c.list {
-            topics {
-                eq('id', topic.id)
-            }
-        }
-
-        watchLists?.each {
-            it.removeFromTopics(topic)
-            it.save(flush: true)
-        }
-
-        topic.delete(flush: true)
+        forumService.deleteTopic(topic)
         redirect(action: 'redirectTopicParent', id: topic.id)
     }
 

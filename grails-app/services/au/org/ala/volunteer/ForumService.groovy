@@ -340,4 +340,45 @@ class ForumService {
         return false
     }
 
+    def deleteTopic(ForumTopic topic) {
+        if (!topic) {
+            return false
+        }
+
+        // Clear this topic out of any watch lists...
+        def topicSet = new HashSet<ForumTopic>()
+        topicSet.add(topic)
+        def c = UserForumWatchList.createCriteria()
+
+        def watchLists = c.list {
+            topics {
+                eq('id', topic.id)
+            }
+        }
+
+        watchLists?.each {
+            it.removeFromTopics(topic)
+            it.save(flush: true)
+        }
+
+        // Also clear any pending notification messages that may reference this topic
+        def notifications = ForumTopicNotificationMessage.findAllByTopic(topic)
+        notifications.each {
+            it.delete(flush: true)
+        }
+
+        // finally delete the topic
+        topic.delete(flush: true)
+    }
+
+    def deleteMessage(ForumMessage message) {
+        // Clear any pending notification messages that may reference this message
+        def notifications = ForumTopicNotificationMessage.findAllByMessage(message)
+        notifications.each {
+            it.delete(flush: true)
+        }
+
+        message.delete(flush: true)
+    }
+
 }
