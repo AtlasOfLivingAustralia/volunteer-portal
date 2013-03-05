@@ -81,6 +81,11 @@
                         <td><button onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button></td>
                         <td>Manage project templates and their fields</td>
                     </tr>
+                    <tr>
+                        <td><button onclick="location.href = '${createLink(controller:'setting', action:'index')}'">Advanced Settings</button></td>
+                        <td>Advanced Settings</td>
+                    </tr>
+
                 </table>
 
             </div>

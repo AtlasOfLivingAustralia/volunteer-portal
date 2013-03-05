@@ -2,6 +2,10 @@ package au.org.ala.volunteer
 
 class SettingsService {
 
+    def <T> T getSetting(SettingDefinition<T> setting) {
+        return (T) getSetting(setting.key, (T) setting.defaultValue)
+    }
+
     def getSetting(String key, String defaultValue = null) {
         return get(key, defaultValue)
     }
@@ -11,6 +15,10 @@ class SettingsService {
     }
 
     def getSetting(String key, double defaultValue) {
+        return get(key, defaultValue)
+    }
+
+    def getSetting(String key, boolean defaultValue) {
         return get(key, defaultValue)
     }
 
@@ -26,10 +34,17 @@ class SettingsService {
         set(key, value)
     }
 
+    def setSetting(String key, boolean value) {
+        set(key, value)
+    }
+
     private <T> T get(String key, T defaultValue = null) {
         def setting = Setting.findByKey(key)
         if (setting) {
-            return setting as T
+            if (Boolean.class.isAssignableFrom(defaultValue.class)) {
+                return (T) Boolean.parseBoolean(setting.value)
+            }
+            return setting.value as T
         }
         return defaultValue
     }

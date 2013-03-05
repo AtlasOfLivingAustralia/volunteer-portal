@@ -217,6 +217,14 @@ class ExportService {
         List fieldValues = []
         def taskId = task.id
 
+        def userDisplayName = { userId ->
+            def user = User.findByUserId(userId)
+            if (user) {
+                return user.displayName
+            }
+            return userId
+        }
+
         if (taskMap.containsKey(taskId)) {
             Map fieldMap = taskMap.get(taskId)
             fields.eachWithIndex { fieldName, fieldIndex ->
@@ -225,10 +233,10 @@ class ExportService {
                     fieldValues.add(taskId.toString())
                 }
                 else if (fieldIndex == 1) {
-                    fieldValues.add(task.fullyTranscribedBy)
+                    fieldValues.add(userDisplayName(task.fullyTranscribedBy))
                 }
                 else if (fieldIndex == 2) {
-                    fieldValues.add(task.fullyValidatedBy)
+                    fieldValues.add(userDisplayName(task.fullyValidatedBy))
                 }
                 else if (fieldIndex == 3) {
                     fieldValues.add(task.externalIdentifier)
@@ -236,7 +244,7 @@ class ExportService {
                 else if (fieldIndex == 4) {
                     def sb = new StringBuilder()
                     if (task.fullyTranscribedBy) {
-                        sb.append("Fully transcribed by ${task.fullyTranscribedBy}. ")
+                        sb.append("Fully transcribed by ${userDisplayName(task.fullyTranscribedBy)}. ")
                     }
                     def date = new Date().format("dd-MMM-yyyy")
                     sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")

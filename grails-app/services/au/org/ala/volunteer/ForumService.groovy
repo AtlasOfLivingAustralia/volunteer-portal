@@ -230,7 +230,7 @@ class ForumService {
 
     def processPendingNotifications() {
         // Only process notifications if the forum is enabled...
-        if (FrontPage.instance().enableForum) {
+        if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
             logService.log("Processing Forum Message Notifications")
             def messageList = ForumTopicNotificationMessage.list()
             if (messageList) {
@@ -329,7 +329,7 @@ class ForumService {
         if (message.user.userId == user.userId) {
             // This is the author of the message. The author has a limited window to edit/delete their messages
 
-            int timeout = settingsService.getSetting("forum.messageEditWindowSeconds", 15 * 60 ) // default to 15 minutes
+            int timeout = settingsService.getSetting(SettingDefinition.ForumMessageEditWindow)
             use (groovy.time.TimeCategory) {
                 if (message.date >= timeout.minutes.ago) {
                     return true

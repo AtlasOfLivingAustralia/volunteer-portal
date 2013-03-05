@@ -16,8 +16,8 @@ class ForumWatchNotifierJob {
 
 
     static triggers = {
-      simple repeatInterval: 30 * SECONDS
-      //simple repeatInterval: 2 * HOURS
+      // simple repeatInterval: 30 * SECONDS
+      simple repeatInterval: 2 * HOURS
     }
 
     def execute() {

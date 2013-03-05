@@ -65,7 +65,6 @@
 
         <header id="page-header">
             <div class="inner">
-                <cl:messages/>
                 <nav id="breadcrumb">
                     <ol>
                         <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
