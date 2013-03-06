@@ -10,12 +10,14 @@
         <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
         <style type="text/css">
+
             .forumSection {
                 border: 1px solid #a9a9a9;
                 margin-top: 5px;
                 margin-bottom: 5px;
                 padding: 10px;
             }
+
             #search-input {
                 width: 200px;
                 height: 27px;
@@ -47,6 +49,21 @@
 
             h3 {
                 background-color: #FFFEF7 !important;
+            }
+
+            [inactive=true] {
+                background-color: #d3d3d3;
+                opacity: 0.5;
+            }
+
+            tr[inactive=true] h3 {
+                background-color: #d3d3d3 !important;
+            }
+
+
+            tr[inactive=true] .adminLink {
+                color: black;
+                opacity: 1;
             }
 
         </style>
@@ -153,13 +170,11 @@
                     <li><a href="#tabWatchedTopics">Your watched topics</a></li>
                 </ul>
 
-                <div id="tabRecentTopics" class="tabContent" style="display:none">
-                    <g:include action="ajaxRecentTopicsList" />
-                </div>
-
+                <div id="tabRecentTopics" class="tabContent" style="display:none"></div>
                 <div id="tabGeneralTopics" class="tabContent" style="display:none"></div>
                 <div id="tabProjectForums" class="tabContent" style="display:none"></div>
                 <div id="tabWatchedTopics" class="tabContent" style="display:none"></div>
+            </div>
         </div>
     </body>
 </html>
