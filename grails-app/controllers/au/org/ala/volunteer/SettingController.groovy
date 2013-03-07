@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier
 class SettingController {
 
     def settingsService
+    def emailService
 
     def index() {
 
@@ -75,5 +76,15 @@ class SettingController {
             }
         }
         return null
+    }
+
+    def sendTestEmail() {
+        def to = params.to
+
+        if (to) {
+            emailService.sendMail(to,"Test message from the BVP", "This is a test message form the ALA Biodiversity Volunteer Portal.")
+            flash.message = "Sent a test message to '${to}'"
+        }
+        redirect(action:'index')
     }
 }

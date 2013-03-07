@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import grails.gorm.DetachedCriteria
 import grails.orm.PagedResultList
+import groovy.time.TimeDuration
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate
 
 class ForumService {
@@ -313,6 +314,7 @@ class ForumService {
             return false
         }
 
+        def result = false
         def projectInstance = null
         if (message.topic.instanceOf(ProjectForumTopic)) {
             def projectTopic = message.topic as ProjectForumTopic
@@ -331,13 +333,34 @@ class ForumService {
 
             int timeout = settingsService.getSetting(SettingDefinition.ForumMessageEditWindow)
             use (groovy.time.TimeCategory) {
-                if (message.date >= timeout.minutes.ago) {
-                    return true
+                if (message.date >= timeout.seconds.ago) {
+                    result = true
                 }
             }
         }
 
-        return false
+        return result
+    }
+
+    def messageEditTimeLeft(ForumMessage message, User user) {
+
+        if (!message || !user) {
+            return null
+        }
+
+        TimeDuration result = null
+        if (message.user.userId == user.userId) {
+            int timeout = settingsService.getSetting(SettingDefinition.ForumMessageEditWindow)
+            use (groovy.time.TimeCategory) {
+                if (message.date >= timeout.seconds.ago) {
+                    def now = new Date()
+                    def expireTime = message.date + timeout.seconds
+                    result = expireTime - now
+                }
+            }
+        }
+        return result
+
     }
 
     def deleteTopic(ForumTopic topic) {

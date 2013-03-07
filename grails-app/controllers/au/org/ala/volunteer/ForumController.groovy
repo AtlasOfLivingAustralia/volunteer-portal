@@ -508,4 +508,30 @@ class ForumController {
         [userInstance: userInstance, messages: messages]
     }
 
+    def markdownHelp() {
+
+        def items = []
+        items << [effect: 'Italics/Emphasis', description:'Surround text with either _ or *', code:'_text to italicise__ or *text to italicise*']
+        items << [effect: 'Bold/Heavy Emphasis', description:'Surround text with either __ or **', code:'__text to embolden__ or **text to embolden**']
+        items << [effect: 'Headings', description:'HTML heading levels can be produced by prepending a number of "#" characters', code:'### Heading 3\n#### Heading 4']
+        items << [effect: 'Headings (alternate)', description:'H1 and H2 headings can also by produced by underlining text with either "=" or "-" characters', code:'Heading 1\n=========\nHeading 2\n---------']
+        items << [effect: 'Line break or empty line', description:'End a line with two spaces', code:'line1\n  \nline2']
+        items << [effect: 'Links/External URLS', description:'Links to other documents can be included using the following syntax<br/>[link text here](link address here)', code:'[Google!](http://google.com)']
+        items << [effect: 'Horizontal rules', description:'Horizontal rules are created by placing three or more hyphens, asterisks, or underscores on a line by themselves', code:'***']
+        def listDemo = """
+&nbsp;&nbsp;* Item 1
+&nbsp;&nbsp;* Item 2
+&nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.1
+&nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.2
+        """
+        items << [effect: 'Lists', description:'Lists can be formed with two leading spaces and an "*". Subitems are indented from the parents by an additional two spaces.', code:listDemo]
+        def blockQuoteDemo = """
+> this is some quoted text
+> > this has been quoted twice
+"""
+        items << [effect: 'Block quotes', description:'Block quotes are produced when lines and paragraphs are preceded by "&gt;"', code:blockQuoteDemo]
+
+        [items: items]
+    }
+
 }

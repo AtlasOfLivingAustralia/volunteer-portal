@@ -74,6 +74,15 @@ class ForumTagLib {
                             td() { mkp.yieldUnescaped(markdownService.markdown(reply.text ?: "")) }
                             td(style:'text-align: right') {
                                 if (canEdit) {
+
+                                    def timeLeft = forumService.messageEditTimeLeft(reply, userService.currentUser)
+                                    if (timeLeft) {
+                                        small(style:'color: orange') {
+                                            mkp.yield("You have ${timeLeft.minutes} minutes to change or delete this message")
+                                        }
+                                        br {}
+                                    }
+
                                     button(class:'btn editMessageButton') {
                                         mkp.yield("Edit")
                                     }

@@ -258,10 +258,10 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate',
            'grails.app'
-
     warn   'org.mortbay.log',
            'grails.app'
     info   'grails.app'
+    trace  'grails.plugin.mail'
 
 //    debug   'au.org.ala.cas.client'
 }

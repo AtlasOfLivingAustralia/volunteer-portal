@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 class SettingsService {
 
     def <T> T getSetting(SettingDefinition<T> setting) {
-        return (T) getSetting(setting.key, (T) setting.defaultValue)
+        return getSetting(setting.key, setting.defaultValue as T) as T
     }
 
     def getSetting(String key, String defaultValue = null) {
@@ -11,15 +11,15 @@ class SettingsService {
     }
 
     def getSetting(String key, int defaultValue) {
-        return get(key, defaultValue)
+        return get(key, defaultValue)?.toInteger()
     }
 
     def getSetting(String key, double defaultValue) {
-        return get(key, defaultValue)
+        return get(key, defaultValue)?.toDouble()
     }
 
     def getSetting(String key, boolean defaultValue) {
-        return get(key, defaultValue)
+        return get(key, defaultValue)?.toBoolean()
     }
 
     def setSetting(String key, String value) {

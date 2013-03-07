@@ -76,6 +76,12 @@
                     </g:each>
                 </table>
             </div>
+            <div class="inner">
+                <g:form action="sendTestEmail">
+                    To: <g:textField name="to"/>
+                    <button class="btn" type="submit">Send test email</button>
+                </g:form>
+            </div>
         </div>
     </body>
 </html>
