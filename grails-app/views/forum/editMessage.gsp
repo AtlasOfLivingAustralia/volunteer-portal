@@ -51,6 +51,7 @@
             <div class="inner">
 
                 <h2>Your message:</h2>
+                <small>* Note: To see help on how to format your messages, including bold and italics, see <a href="${createLink(action:'markdownHelp')}" target="popup">here</a></small>
                 <g:form id="messageForm" controller="forum">
                     <g:hiddenField name="messageId" value="${forumMessage?.id}" />
                     <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${messageText}"/>
