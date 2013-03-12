@@ -207,6 +207,7 @@ class ForumService {
             mods.each { mod ->
                 if (!interestedUsers.contains(mod)) {
                     def message = new ForumTopicNotificationMessage(user:  mod, topic: topic, message: lastMessage)
+                    message.save(failOnError: true)
                     interestedUsers << mod
                 }
             }
@@ -239,7 +240,6 @@ class ForumService {
                 logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
                 userMap.keySet().each { user ->
                     def messages = userMap[user]?.sort { it.message.date }
-
                     def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
                     emailService.sendMail(user.userId, "BVP Forum notification", message)
                 }

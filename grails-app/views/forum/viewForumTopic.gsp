@@ -118,9 +118,9 @@
             <div class="inner">
                 <div class="buttonBar">
                     <button id="btnReturnToForum" class="button"><img src="${resource(dir: 'images', file: 'left_arrow.png')}"/>&nbsp;Return to forum</button>
-                    <g:if test="${!topic.locked}">
-                        <button id="btnReply" class="button"><img src="${resource(dir: 'images', file: 'reply.png')}"/>&nbsp;Post Reply</button>
-                    </g:if>
+                    %{--<g:if test="${!topic.locked}">--}%
+                        %{--<button id="btnReply" class="button"><img src="${resource(dir: 'images', file: 'reply.png')}"/>&nbsp;Post Reply</button>--}%
+                    %{--</g:if>--}%
                     <g:if test="${taskInstance}">
                         <button id="btnViewTask" class="button">View Task</button>
                     </g:if>

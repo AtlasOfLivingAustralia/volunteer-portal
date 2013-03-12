@@ -40,12 +40,18 @@ class ForumTagLib {
                 thead {
                     tr {
                         th(colspan: '2') {
-                            mkp.yield(topic.title)
+                            mkp.yield(topic.title?.encodeAsHTML())
                         }
-                        th(style: 'text-align: right; vertical-align: middle') {
+                        th(style: 'text-align: right; vertical-align: middle; width: 150px') {
                             if (topic.locked) {
                                 mb.img(style: 'vertical-align: middle', src: resource(dir: '/images', file: 'lock.png'))
                                 mkp.yield("Topic is locked")
+                            } else {
+                                mb.button(id:'btnReply', class:'button') {
+                                    mb.img(src:resource(dir:'images', file:'reply.png')) {
+                                        mkp.yieldUnescaped("&nbsp;Post Reply")
+                                    }
+                                }
                             }
                         }
                     }
@@ -53,7 +59,7 @@ class ForumTagLib {
                     tr {
                         th {}
                         th { mkp.yield("${replies.size() - 1} " + (replies.size() == 2 ? 'reply' : "replies")) }
-                        th(style: 'text-align: right; width: 150px') {
+                        th(style: 'text-align: right') {
                         }
                     }
                 }
@@ -64,14 +70,14 @@ class ForumTagLib {
                         tr(class: striped ? 'striped' : '', messageId: reply.id) {
                             td(class: "forumNameColumn") {
                                 a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: reply.user.id), name:'message_' + reply.id) {
-                                    mkp.yield(reply.user.displayName)
+                                    mkp.yield(reply.user.displayName?.encodeAsHTML())
                                 }
                                 br {}
                                 span(class: 'forumMessageDate') {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            td() { mkp.yieldUnescaped(markdownService.markdown(reply.text ?: "")) }
+                            td() { mkp.yieldUnescaped(markdownService.markdown((reply.text ?: "").encodeAsHTML())) }
                             td(style:'text-align: right') {
                                 if (canEdit) {
 
@@ -185,7 +191,7 @@ class ForumTagLib {
                                 }
                                 td {
                                     a(href: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id)) {
-                                        mkp.yield(topic.title)
+                                        mkp.yield(topic.title?.encodeAsHTML())
                                     }
                                     if (topic.featured) {
                                         sup {
@@ -276,7 +282,7 @@ class ForumTagLib {
                 if (projectInstance) {
                     li {
                         a(href: createLink(controller: 'project', action: 'index', id: projectInstance.id)) {
-                            mkp.yield(projectInstance.featuredLabel)
+                            mkp.yield(projectInstance.featuredLabel?.encodeAsHTML())
                         }
                     }
                     li {
@@ -294,7 +300,7 @@ class ForumTagLib {
 
                     li {
                         a(href: createLink(controller: 'task', action: 'show', id: taskInstance.id)) {
-                            mkp.yield("task " + taskInstance.externalIdentifier)
+                            mkp.yield("task " + taskInstance.externalIdentifier?.encodeAsHTML())
                         }
                     }
 
@@ -315,7 +321,7 @@ class ForumTagLib {
                     if (topic) {
                         li {
                             a(href: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id)) {
-                                mkp.yield(topic.title)
+                                mkp.yield(topic.title?.encodeAsHTML())
                             }
                         }
                     }
@@ -324,7 +330,7 @@ class ForumTagLib {
                     }
                 } else {
                     if (topic) {
-                        mkp.yield(topic.title)
+                        mkp.yield(topic.title?.encodeAsHTML())
                     }
                 }
 
@@ -335,13 +341,13 @@ class ForumTagLib {
         if (topic) {
             mb.h1() {
                 if (taskInstance) {
-                    mkp.yield(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier]))
+                    mkp.yield(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier?.encodeAsHTML()]))
                 }
                 if (projectInstance) {
-                    mkp.yield(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel, topic.title]))
+                    mkp.yield(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel?.encodeAsHTML(), topic.title?.encodeAsHTML()]))
                 }
                 if (!projectInstance && !taskInstance) {
-                    mkp.yield(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title]))
+                    mkp.yield(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title?.encodeAsHTML()]))
                 }
             }
         }
@@ -506,7 +512,7 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: message.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.markdown(message.text)) }
+                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.markdown(message.text?.encodeAsHTML())) }
                         }
                     }
                 }
