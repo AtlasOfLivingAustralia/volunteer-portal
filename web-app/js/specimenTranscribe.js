@@ -52,7 +52,10 @@ function initialize() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
-    map = new google.maps.Map(document.getElementById("mapCanvas"), myOptions);
+    var mapCanvas = document.getElementById("mapCanvas");
+    if (mapCanvas) {
+        map = new google.maps.Map(document.getElementById("mapCanvas"), myOptions);
+    }
 
     marker = new google.maps.Marker({
                 position: latLng,

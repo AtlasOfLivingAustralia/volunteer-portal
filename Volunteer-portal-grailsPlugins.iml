@@ -14,6 +14,7 @@
           <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/tiny-mce-3.4.9/web-app" relative="/" />
           <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/markdown-1.0.0.RC1/web-app" relative="/" />
           <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/csv-0.3.1/web-app" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC5/web-app" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -54,10 +55,11 @@
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/pretty-time-0.3/grails-app/i18n" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/pretty-time-0.3/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC2">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC2/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC2/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC2/grails-app/services" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC5">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC5/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC5/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC5/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/quartz-1.0-RC5/grails-app/services" isTestSource="false" />
     </content>
     <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/tiny-mce-3.4.9">
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/tiny-mce-3.4.9/grails-app/taglib" isTestSource="false" />
@@ -69,9 +71,10 @@
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (Volunteer-portal-grailsPlugins)">
         <CLASSES>
+          <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/markdown-1.0.0.RC1/lib" />
+          <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/pretty-time-0.3/lib" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.0.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jsoup/jsoup/jars/jsoup-1.6.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-1.8.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.opencsv/opencsv/jars/opencsv-2.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/asm/asm-analysis/jars/asm-analysis-3.3.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/asm/asm-tree/jars/asm-tree-3.3.1.jar!/" />
@@ -83,8 +86,8 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-test/jars/spring-test-3.1.0.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.activation/activation/jars/activation-1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
-          <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/markdown-1.0.0.RC1/lib" />
-          <root url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/pretty-time-0.3/lib" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/c3p0/c3p0/jars/c3p0-0.9.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-2.1.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

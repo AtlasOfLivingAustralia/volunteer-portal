@@ -17,6 +17,8 @@
 <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
@@ -89,26 +91,26 @@
 
       var task_selector_opts = {
           titleShow: false,
-          onComplete: initialize,
+          onComplete: function() {},
           autoDimensions: false,
           scrolling: 'no',
           onStart: function() {
-            $.fancybox.showActivity();
-            $.ajax({url:"${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}", success: function(data) {
-              $("#task_selector_content").html(data);
-              $.fancybox.hideActivity();
-            }})
-
+              $.fancybox.showActivity();
+            $.ajax({url:"${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}", success: function(html) {
+                var dest = $("#task_selector_content");
+                dest.html(html);
+                $.fancybox.hideActivity();
+            }});
           },
           width: 640,
           height: 500
       }
 
-      $('button#show_task_selector').fancybox(task_selector_opts);
+      $('#show_task_selector').fancybox(task_selector_opts);
 
       var collection_event_selector_opts = {
           titleShow: false,
-          onComplete: initialize,
+          onComplete: function() { },
           autoDimensions: false,
           scrolling: 'no',
           onStart: function() {
@@ -123,7 +125,7 @@
             $.ajax({url:"${createLink(controller: 'collectionEvent', action:'searchFragment', params: [taskId: taskInstance.id])}" + queryParams, success: function(data) {
               $("#collection_event_selector_content").html(data);
               $.fancybox.hideActivity();
-            }})
+            }});
 
           },
           width: 800,
@@ -839,10 +841,11 @@
                     <cl:validationStatus task="${taskInstance}" />
                 </g:if>
                 <g:else>
-                    <span class="button"><g:actionSubmit class="save" action="save"
-                             value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/></span>
-                    <span class="button"><g:actionSubmit class="savePartial" action="savePartial"
-                             value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
+                    <span class="button">
+                        <g:actionSubmit class="save" action="save" value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/>
+                    </span>
+                    <span class="button">
+                        <g:actionSubmit class="savePartial button" action="savePartial" value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/></span>
                     <cl:isLoggedIn>
                         <span class="button"><button id="showNextFromProject" class="skip">Skip</button></span>
                     </cl:isLoggedIn>

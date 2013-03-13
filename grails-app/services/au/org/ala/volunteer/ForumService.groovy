@@ -239,12 +239,18 @@ class ForumService {
                 def userMap = messageList.groupBy { it.user }
                 logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
                 userMap.keySet().each { user ->
-                    def messages = userMap[user]?.sort { it.message.date }
-                    def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
-                    emailService.sendMail(user.userId, "BVP Forum notification", message)
+                    logService.log("Processing messages for ${user.userId}...")
+                    try {
+                        def messages = userMap[user]?.sort { it.message.date }
+                        def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
+                        emailService.sendMail(user.userId, "BVP Forum notification", message)
+                    } catch (Exception ex) {
+                        logService.log("Failed to send email to ${user.userId}: " + ex.message)
+                    }
                 }
 
                 // now clean up the notification list
+                logService.log("Purging notification list")
                 messageList.each {
                     it.delete()
                 }
