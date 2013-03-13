@@ -5,6 +5,7 @@ import grails.converters.JSON
 class ForumController {
 
     def forumService
+    def forumNotifierService
     def userService
     def markdownService
     def authService
@@ -378,7 +379,8 @@ class ForumController {
                     forumService.unwatchTopic(currentUser, topic)
                 }
 
-                forumService.scheduleTopicNotification(topic, message)
+                // forumService.scheduleTopicNotification(topic, message)
+                forumNotifierService.notifyInterestedUsersImmediately(topic, message)
 
                 redirect(action: 'viewForumTopic', id: topic?.id)
                 return

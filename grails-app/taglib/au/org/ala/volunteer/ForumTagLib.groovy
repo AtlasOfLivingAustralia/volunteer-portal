@@ -77,7 +77,8 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            td() { mkp.yieldUnescaped(markdownService.markdown((reply.text ?: "").encodeAsHTML())) }
+                            def message = markdownService.sanitize(reply.text ?: "")
+                            td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
                             td(style:'text-align: right') {
                                 if (canEdit) {
 
@@ -512,7 +513,8 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: message.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.markdown(message.text?.encodeAsHTML())) }
+                            def messageText = markdownService.sanitize(message.text ?: "")
+                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.markdown(messageText)) }
                         }
                     }
                 }

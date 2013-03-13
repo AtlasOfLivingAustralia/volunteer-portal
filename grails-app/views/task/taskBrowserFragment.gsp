@@ -76,6 +76,14 @@
 
 <script type="text/javascript">
 
+    /*
+    The line below (taskSelector_oldDragHandler) is here because when the jqzoom library is activated it replaces the drag event handler on the root document
+    with one that returns false (meaning that drag is disabled).
+    This plays havoc with the panZoom image (and in fact anything that uses jQuery-ui draggable), so when this fragment is
+    loaded, we store the existing handler (most likely null) and when the fancybox is closed, we reinstate it
+     */
+    var taskSelector_oldDragHandler = document.body.ondragstart;
+
     function updateLocation() {
         var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
         var taskListSize = parseInt($("#task_list").attr("taskCount"));
@@ -112,11 +120,13 @@
         var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
         var taskId = $("#task_" + currentTaskIndex).attr("task_id")
         copyDataFromTask(taskId)
+        document.body.ondragstart = taskSelector_oldDragHandler;
         $.fancybox.close();
     });
 
 
     $("#cancel_button").click(function (e) {
+        document.body.ondragstart = taskSelector_oldDragHandler;
         $.fancybox.close();
     });
 
@@ -223,6 +233,8 @@
         zoomHeight: 150,
         lens: true
     }
+
+
     $('.image_viewer').jqzoom(zopts);
 
 </script>

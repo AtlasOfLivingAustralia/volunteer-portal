@@ -11,7 +11,7 @@ class ForumWatchNotifierJob {
     private static int HOURS = 60 * MINUTES
 
     def logService
-    def forumService
+    def forumNotifierService
 
 
 
@@ -21,6 +21,6 @@ class ForumWatchNotifierJob {
     }
 
     def execute() {
-        forumService.processPendingNotifications()
+        // forumNotifierService.processPendingNotifications()
     }
 }

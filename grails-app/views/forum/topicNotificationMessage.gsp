@@ -1,13 +1,14 @@
 <%@ page import="au.org.ala.volunteer.DateConstants" %>
-The following messages have been posted on the Atlas of Living Australia Biodivirsity Volunteer Portal forum:
+Someone has replied to one or more of the forum topics that you are interested in:
 
 <g:each in="${messages}" var="message" status="messageNo">
   ----------------------
   Message: ${messageNo+1}
-  Topic: ${message.message.topic.title}
-  On ${formatDate(date: message.message.date, format: DateConstants.DATE_TIME_FORMAT)}, ${message.message.user.displayName} wrote:
-  ${message.message.text}
+  Topic: ${message.topic.title} [ ${createLink(controller:'forum', action:'viewForumTopic', id:message.topic.id)} ]
+  On ${formatDate(date: message.date, format: DateConstants.DATE_TIME_FORMAT)}, ${message.user.displayName} wrote:
+  <markdown:renderHtml text="${message.text}" />
+  s
 </g:each>
 
-You have received this message because you are subscribed to updates to forum topics on the Biodivirsity Volunteer Portal forum.
-If you would like to unsubcribe please visit http://volunteer.ala.org.au/
+
+

@@ -70,26 +70,31 @@
 
                 });
 
-                $(".pan-image img").panZoom({
-                    pan_step:10,
-                    zoom_step:5,
-                    min_width:200,
-                    min_height:200,
-                    mousewheel:true,
-                    mousewheel_delta:2,
-                    'zoomIn':$('#zoomin'),
-                    'zoomOut':$('#zoomout'),
-                    'panUp':$('#pandown'),
-                    'panDown':$('#panup'),
-                    'panLeft':$('#panright'),
-                    'panRight':$('#panleft')
-                });
+                function initializeImageViewer() {
 
-                $(".pan-image img").panZoom('fit');
+                    $(".pan-image img").panZoom({
+                        pan_step:10,
+                        zoom_step:5,
+                        min_width:200,
+                        min_height:200,
+                        mousewheel:true,
+                        mousewheel_delta:2,
+                        'zoomIn':$('#zoomin'),
+                        'zoomOut':$('#zoomout'),
+                        'panUp':$('#pandown'),
+                        'panDown':$('#panup'),
+                        'panLeft':$('#panright'),
+                        'panRight':$('#panleft')
+                    });
+
+                    $(".pan-image img").panZoom('fit');
+
+                }
+
+                initializeImageViewer();
 
                 var task_selector_opts = {
                     titleShow:false,
-                    onComplete:initialize,
                     autoDimensions:false,
                     scrolling:'no',
                     onStart:function () {
@@ -104,7 +109,7 @@
                     height:500
                 };
 
-                $('button#show_task_selector').fancybox(task_selector_opts);
+                $('#show_task_selector').fancybox(task_selector_opts);
 
                 $(".insert-symbol-button").each(function (index) {
                     $(this).html($(this).attr("symbol"));
