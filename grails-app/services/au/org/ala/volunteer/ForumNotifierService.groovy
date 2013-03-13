@@ -9,8 +9,9 @@ class ForumNotifierService {
     def logService
     def userService
     def settingsService
-    def groovyPageRenderer
+    au.org.ala.volunteer.CustomPageRenderer customPageRenderer
     def emailService
+    def markdownService
 
     List<User> getModeratorsForTopic(ForumTopic topic) {
         List<User> results = []
@@ -58,7 +59,8 @@ class ForumNotifierService {
             if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
                 def interestedUsers = getUsersInterestedInTopic(topic)
                 logService.log("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { it.userId })
-                def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: lastMessage])
+                def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: lastMessage])
+                logService.log(message)
                 interestedUsers.each { user ->
                     logService.log("Sending notification email to ${user.userId} for topic ${topic.id}")
                     emailService.sendMail(user.userId, "BVP Forum notification", message)
@@ -81,7 +83,7 @@ class ForumNotifierService {
                     logService.log("Processing messages for ${user.userId}...")
                     try {
                         def messages = userMap[user]?.sort { it.message.date }
-                        def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
+                        def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
                         emailService.sendMail(user.userId, "BVP Forum notification", message)
                     } catch (Exception ex) {
                         logService.log("Failed to send email to ${user.userId}: " + ex.message)

@@ -12,8 +12,6 @@ class ForumService {
     static transactional = true
 
     def logService
-    def groovyPageRenderer
-    def emailService
     def grailsApplication
     def userService
     def settingsService
