@@ -60,9 +60,7 @@ class ForumNotifierService {
                 def interestedUsers = getUsersInterestedInTopic(topic)
                 logService.log("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { it.userId })
                 def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: lastMessage])
-                logService.log(message)
                 interestedUsers.each { user ->
-                    logService.log("Sending notification email to ${user.userId} for topic ${topic.id}")
                     emailService.sendMail(user.userId, "BVP Forum notification", message)
                 }
             }

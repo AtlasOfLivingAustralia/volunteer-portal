@@ -313,7 +313,7 @@ class ForumTagLib {
                         }
                     }
                     li {
-                        a(href: createLink(controller: 'forum', action: 'ajaxGeneralTopicsList')) {
+                        a(href: createLink(controller: 'forum', action: 'index',params:[selectedTab: 1])) {
                             mkp.yield(message(code: "default.generaldiscussion.label", default: "General Discussion"))
                         }
                     }

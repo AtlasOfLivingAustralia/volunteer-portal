@@ -32,8 +32,13 @@ import org.springframework.web.context.request.RequestContextHolder
  *
  * @author Graeme Rocher
  * @since 2.0
+ *
+ * Comments by David Baird (ALA)
+ *
+ * This is required in the BVP because the built in groovyPageRenderer that comes with Grails 2.x has a dependency
+ * on Servlet spec 3.0, and thus will not work under Tomcat 6.
  */
-class CustomPageRenderer implements ApplicationContextAware, ServletContextAware{
+class CustomPageRenderer implements ApplicationContextAware, ServletContextAware {
 
     private GroovyPagesTemplateEngine templateEngine
     GrailsConventionGroovyPageLocator groovyPageLocator
