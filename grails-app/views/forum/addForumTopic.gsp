@@ -116,6 +116,7 @@
                                 <br/>
                                 <label for="priority"><g:message code="forum.priority.label" default="Priority"/></label>
                                 <g:select from="${au.org.ala.volunteer.ForumTopicPriority.values()}" name="priority"/>
+                                <br/>
                                 <label for="featured"><g:message code="forum.featured.label" default="Featured topic"/></label>
                                 <g:checkBox name="featured" checked="${params.featured}"/>
                                 <span>Will be displayed on the Forum entry page if ticked</span>

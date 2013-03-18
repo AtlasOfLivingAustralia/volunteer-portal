@@ -17,9 +17,32 @@ class ForumService {
     def settingsService
     def forumNotifierService
 
-    PagedResultList getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
+    def getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
+
+
+        def max = params.max ?: 10
+        def offset = params.offset ?: 0
+        def sort = params.sort ?: "lastReplyDate"
+        def leOrder = params.order ?: "desc"
+
+        if (sort == "replies") {
+            def hql = """
+                SELECT topic
+                FROM ProjectForumTopic topic
+                WHERE project_id = ${project.id}
+                ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
+            """
+            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
+
+
+            return [topics: topics, totalCount: ForumTopic.count() ]
+
+
+        }
+
+        // All other sort types (other than replies)
         def c = ProjectForumTopic.createCriteria()
-        def results = c.list(max:params?.max, offset: params?.offset) {
+        def results = c.list(max:max, offset: offset) {
             and {
                 eq("project", project)
                 if (includeDeleted) {
@@ -34,16 +57,10 @@ class ForumService {
             and {
                 order("sticky", "desc")
                 order("priority", "desc")
-                order("lastReplyDate", "desc")
-            }
-            if (params?.max) {
-                maxResults(params.max as Integer)
-            }
-            if (params?.offset) {
-                firstResult(params.offset as Integer)
+                order(sort, leOrder)
             }
         }
-        return results as PagedResultList
+        return [topics: results, totalCount: results.totalCount ]
     }
 
     def getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
@@ -181,11 +198,36 @@ class ForumService {
         // Only schedule notifications if the forum is enabled. This should be unnecessary as notifications
         // won't be generated if the forum is deactivated
         if (FrontPage.instance().enableForum) {
-            def interestedUsers = forumNotifierService.getUsersInterestedInTopic(topic)
-            logService.log("Interested users in topic ${topic.id}: " + interestedUsers.collect { it.userId })
-            interestedUsers.each { user ->
-                def message = new ForumTopicNotificationMessage(user:  user, topic: topic, message: lastMessage)
-                message.save(failOnError: true)
+            if (settingsService.getSetting(SettingDefinition.BatchForumNotificationMessages)) {
+                // Do the notifications asynchronously
+                def interestedUsers = forumNotifierService.getUsersInterestedInTopic(topic)
+                logService.log("Interested users in topic ${topic.id}: " + interestedUsers.collect { it.userId })
+                interestedUsers.each { user ->
+                    def message = new ForumTopicNotificationMessage(user:  user, topic: topic, message: lastMessage)
+                    message.save(failOnError: true)
+                }
+            } else {
+                // Send the notifications right now!
+                forumNotifierService.notifyInterestedUsersImmediately(topic, lastMessage)
+            }
+        }
+    }
+
+    public void scheduleNewTopicNotification(ForumTopic topic, ForumMessage firstMessage) {
+        // Only schedule notifications if the forum is enabled. This should be unnecessary as notifications
+        // won't be generated if the forum is deactivated
+        if (FrontPage.instance().enableForum) {
+            if (settingsService.getSetting(SettingDefinition.BatchForumNotificationMessages)) {
+                // Do the notifications asynchronously
+                def interestedUsers = forumNotifierService.getModeratorsForTopic(topic)
+                logService.log("Interested users in topic ${topic.id}: " + interestedUsers.collect { it.userId })
+                interestedUsers.each { user ->
+                    def message = new ForumTopicNotificationMessage(user:  user, topic: topic, message: firstMessage)
+                    message.save(failOnError: true)
+                }
+            } else {
+                // Send the notifications right now!
+                forumNotifierService.notifyNewTopicImmediately(topic, firstMessage)
             }
         }
     }

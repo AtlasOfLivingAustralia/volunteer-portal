@@ -69,6 +69,21 @@ class ForumNotifierService {
         }
     }
 
+    def notifyNewTopicImmediately(ForumTopic topic, ForumMessage firstMessage) {
+        try {
+            if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
+                def interestedUsers = getModeratorsForTopic(topic)
+                logService.log("Sending notifications to moderators for new topic ${topic.id}: " + interestedUsers.collect { it.userId })
+                def message = customPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage])
+                interestedUsers.each { user ->
+                    emailService.sendMail(user.userId, "BVP Forum new topic notification", message)
+                }
+            }
+        } catch (Throwable ex) {
+            logService?.log("Exception occurred sending notifications: " + ex.message)
+        }
+    }
+
     def processPendingNotifications() {
         // Only process notifications if the forum is enabled...
         if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {

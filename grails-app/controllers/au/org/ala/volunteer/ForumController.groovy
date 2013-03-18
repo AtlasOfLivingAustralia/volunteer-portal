@@ -5,7 +5,6 @@ import grails.converters.JSON
 class ForumController {
 
     def forumService
-    def forumNotifierService
     def userService
     def markdownService
     def authService
@@ -158,7 +157,7 @@ class ForumController {
                     featured = params.featured == 'on'
                 }
             }
-            topic = new TaskForumTopic(task: taskInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
+            topic = new TaskForumTopic(task: taskInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
         } else if (params.projectId) {
             def projectInstance = Project.get(params.int("projectId"))
             if (projectInstance) {
@@ -169,7 +168,7 @@ class ForumController {
                     featured = params.featured == 'on'
                 }
             }
-            topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky)
+            topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
         } else {
             // new general discussion topic
             if (userService.isForumModerator(null)) {
@@ -188,6 +187,8 @@ class ForumController {
 
         def firstMessage = new ForumMessage(topic: topic, text: text, date: topic.dateCreated, user: topic.creator)
         firstMessage.save(flush: true, failOnError: true)
+
+        forumService.scheduleNewTopicNotification(topic, firstMessage)
 
         if (params.watchTopic == 'on') {
             forumService.watchTopic(topic.creator, topic)
@@ -379,8 +380,7 @@ class ForumController {
                     forumService.unwatchTopic(currentUser, topic)
                 }
 
-                // forumService.scheduleTopicNotification(topic, message)
-                forumNotifierService.notifyInterestedUsersImmediately(topic, message)
+                forumService.scheduleTopicNotification(topic, message)
 
                 redirect(action: 'viewForumTopic', id: topic?.id)
                 return

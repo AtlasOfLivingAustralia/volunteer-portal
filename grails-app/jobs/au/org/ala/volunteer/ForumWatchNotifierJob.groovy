@@ -1,9 +1,5 @@
 package au.org.ala.volunteer
 
-import groovy.time.TimeCategory
-
-
-
 class ForumWatchNotifierJob {
 
     private static int SECONDS = 1000
@@ -17,10 +13,10 @@ class ForumWatchNotifierJob {
 
     static triggers = {
       // simple repeatInterval: 30 * SECONDS
-      simple repeatInterval: 2 * HOURS
+      simple repeatInterval: 1 * HOURS
     }
 
     def execute() {
-        // forumNotifierService.processPendingNotifications()
+        forumNotifierService.processPendingNotifications()
     }
 }

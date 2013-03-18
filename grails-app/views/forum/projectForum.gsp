@@ -51,6 +51,8 @@
                             $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
                             $.ajax("${createLink(controller: 'forum',action:'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}").done(function(content) {
                                 $("#tabTaskTopics").html(content);
+                                $("th > a").addClass("button")
+                                $("th.sorted > a").addClass("current")
                             });
                         }
                     },
@@ -60,6 +62,9 @@
 
                 $("#projectForumTabs").tabs(tabOptions);
                 $("#projectForumTabs").css("display", "block");
+
+                $("th > a").addClass("button")
+                $("th.sorted > a").addClass("current")
 
             });
 
@@ -114,7 +119,7 @@
                             </button>
                         </div>
 
-                        <vpf:topicTable topics="${topics}" totalCount="${topics.totalCount}"/>
+                        <vpf:topicTable topics="${topics.topics}" totalCount="${topics.totalCount}" paginateAction="projectForum"/>
 
                     </div>
                     <div id="tabTaskTopics" style="display:none">

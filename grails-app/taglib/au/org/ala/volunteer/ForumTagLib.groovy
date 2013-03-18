@@ -40,7 +40,7 @@ class ForumTagLib {
                 thead {
                     tr {
                         th(colspan: '2') {
-                            mkp.yield(topic.title?.encodeAsHTML())
+                            mkp.yield(topic.title)
                         }
                         th(style: 'text-align: right; vertical-align: middle; width: 150px') {
                             if (topic.locked) {
@@ -70,7 +70,7 @@ class ForumTagLib {
                         tr(class: striped ? 'striped' : '', messageId: reply.id) {
                             td(class: "forumNameColumn") {
                                 a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: reply.user.id), name:'message_' + reply.id) {
-                                    mkp.yield(reply.user.displayName?.encodeAsHTML())
+                                    mkp.yield(reply.user.displayName)
                                 }
                                 br {}
                                 span(class: 'forumMessageDate') {
@@ -192,7 +192,7 @@ class ForumTagLib {
                                 }
                                 td {
                                     a(href: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id)) {
-                                        mkp.yield(topic.title?.encodeAsHTML())
+                                        mkp.yield(topic.title)
                                     }
                                     if (topic.featured) {
                                         sup {
@@ -283,7 +283,7 @@ class ForumTagLib {
                 if (projectInstance) {
                     li {
                         a(href: createLink(controller: 'project', action: 'index', id: projectInstance.id)) {
-                            mkp.yield(projectInstance.featuredLabel?.encodeAsHTML())
+                            mkp.yield(projectInstance.featuredLabel)
                         }
                     }
                     li {
@@ -301,7 +301,7 @@ class ForumTagLib {
 
                     li {
                         a(href: createLink(controller: 'task', action: 'show', id: taskInstance.id)) {
-                            mkp.yield("task " + taskInstance.externalIdentifier?.encodeAsHTML())
+                            mkp.yield("task " + taskInstance.externalIdentifier)
                         }
                     }
 
@@ -322,7 +322,7 @@ class ForumTagLib {
                     if (topic) {
                         li {
                             a(href: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id)) {
-                                mkp.yield(topic.title?.encodeAsHTML())
+                                mkp.yield(topic.title)
                             }
                         }
                     }
@@ -331,7 +331,7 @@ class ForumTagLib {
                     }
                 } else {
                     if (topic) {
-                        mkp.yield(topic.title?.encodeAsHTML())
+                        mkp.yield(topic.title)
                     }
                 }
 
@@ -342,13 +342,13 @@ class ForumTagLib {
         if (topic) {
             mb.h1() {
                 if (taskInstance) {
-                    mkp.yield(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier?.encodeAsHTML()]))
+                    mkp.yield(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier]))
                 }
                 if (projectInstance) {
-                    mkp.yield(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel?.encodeAsHTML(), topic.title?.encodeAsHTML()]))
+                    mkp.yield(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel, topic.title]))
                 }
                 if (!projectInstance && !taskInstance) {
-                    mkp.yield(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title?.encodeAsHTML()]))
+                    mkp.yield(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title]))
                 }
             }
         }
