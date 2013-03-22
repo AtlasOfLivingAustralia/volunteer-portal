@@ -557,6 +557,33 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
+    def uploadTaskDataFile() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            if(request instanceof MultipartHttpServletRequest) {
+                MultipartFile f = ((MultipartHttpServletRequest) request).getFile('dataFile')
+                if (f != null) {
+                    def allowedMimeTypes = ['text/plain','text/csv']
+                    if (!allowedMimeTypes.contains(f.getContentType())) {
+                        flash.message = "The image file must be one of: ${allowedMimeTypes}"
+                        redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
+                        return
+                    }
+                    stagingService.uploadDataFile(projectInstance, f)
+                }
+            }
+        }
+        redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
+    }
+
+    def clearTaskDataFile() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            stagingService.clearDataFile(projectInstance)
+        }
+        redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
+    }
+
     def clearStagedDataFile() {
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
@@ -698,6 +725,39 @@ class TaskController {
             response.writer.flush()
         }
 
+    }
+
+    def loadTaskData() {
+
+        def projectInstance = Project.get(params.int("projectId"))
+        if (!projectInstance) {
+            flash.errorMessage = "No project/invalid project id!"
+            redirect(controller:'admin', action:'index')
+            return
+        }
+
+        def hasDataFile = stagingService.projectHasDataFile(projectInstance)
+        def fieldValues = [:]
+        def columnNames = []
+        if (hasDataFile) {
+            fieldValues = stagingService.buildTaskFieldValuesFromDataFile(projectInstance)
+            if (fieldValues.size() > 0) {
+                columnNames = fieldValues[fieldValues.keySet().first()].keySet().collect()
+            }
+        }
+
+        [projectInstance: projectInstance, hasDataFile: hasDataFile, dataFileUrl:stagingService.dataFileUrl(projectInstance), fieldValues: fieldValues, columnNames: columnNames]
+    }
+
+    def processTaskDataLoad() {
+
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            def results = stagingService.loadTaskDataFromFile(projectInstance)
+            flash.message = results?.message
+        }
+
+        redirect(action:'loadTaskData', params:[projectId: projectInstance?.id])
     }
 
 }

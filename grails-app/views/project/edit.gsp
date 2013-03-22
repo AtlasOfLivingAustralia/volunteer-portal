@@ -209,21 +209,33 @@
                             <tr class="prop">
                                 <td valign="middle" class="name">
                                     <label><g:message code="project.tasks.label" default="Tasks" /></label>
+                                    <span>&nbsp;(<a href="${createLink(controller: 'task', action:'list', id: projectInstance.id)}">${taskCount} tasks</a>)</span>
                                 </td>
                                 <td valign="middle" class="value">
-                                  <span style="padding-right: 10px"><a href="${createLink(controller: 'task', action:'list', id: projectInstance.id)}">${taskCount} tasks</a></span>
                                   <a class="button" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks (CSV File)...</a>
                                   <a class="button" href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}">Load Tasks (Image Staging)</a>
-                                  <span style="padding-left:5px; padding-top: 7px; padding-right: 5px; padding-bottom: 8px; background-image: url(${resource(dir: '/images', file: 'warning-button.png')})">
-                                      <span class="button"><g:actionSubmit style="width: 100px" class="delete" action="deleteTasks" value="Delete all tasks" onclick="return confirmDeleteAllTasks()" /></span>
-                                  </span>
-                                  <span>
-                                    &nbsp;Delete task images&nbsp;<g:checkBox style="width:20px" name="deleteImages" value="true"></g:checkBox>
-                                  </span>
-
-                                  
                                 </td>
                             </tr>
+
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <a class="button" href="${createLink(controller:'task', action:'loadTaskData', params:[projectId: projectInstance.id])}">Load Task Data</a>
+                                    Load field values for existing tasks
+                                </td>
+                            </tr>
+
+                        <tr>
+                            <td></td>
+                            <td>
+                                <span>
+                                    <span style="padding-left:5px; padding-top: 7px; padding-right: 5px; padding-bottom: 8px; background-image: url(${resource(dir: '/images', file: 'warning-button.png')})">
+                                        <span class="button"><g:actionSubmit style="width: 100px" class="delete" action="deleteTasks" value="Delete all tasks" onclick="return confirmDeleteAllTasks()" /></span>
+                                    </span>
+                                  &nbsp;Delete task images&nbsp;<g:checkBox style="width:20px" name="deleteImages" value="true"></g:checkBox>
+                                </span>
+                            </td>
+                        </tr>
 
                         </tbody>
                     </table>

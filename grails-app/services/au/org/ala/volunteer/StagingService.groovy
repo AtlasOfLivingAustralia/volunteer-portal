@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartFile
 import java.util.regex.Pattern
 import org.grails.plugins.csv.CSVMapReader
@@ -8,6 +9,7 @@ class StagingService {
 
     def grailsApplication
     def fieldService
+    def fieldSyncService
 
     String getStagingDirectory(Project project) {
         return "${grailsApplication.config.images.home}/${project.id}/staging"
@@ -18,7 +20,7 @@ class StagingService {
     }
 
     String createDataFilePath(Project project) {
-        return getStagingDirectory(project) + "/datafile/datafile.txt"
+        return getStagingDirectory(project) + "/datafile/datafile.csv"
     }
 
     def stageImage(Project project, MultipartFile file) {
@@ -66,6 +68,51 @@ class StagingService {
                 it.file.delete()
             }
         }
+    }
+
+    def buildTaskFieldValuesFromDataFile(Project project) {
+        def dataFile = new File(createDataFilePath(project))
+        def dataFileMap = [:]
+        def dataFileColumns = []
+        if (dataFile.exists()) {
+
+            new CSVMapReader(new FileReader(dataFile)).each { Map map ->
+                if (map.externalId) {
+                    if (!dataFileColumns) {
+                        map.each {
+                            if (it.key != 'externalId') {
+                                dataFileColumns << it.key
+                            }
+                        }
+                    }
+                    dataFileMap[map.remove('externalId')] = map
+                }
+            }
+        }
+        return dataFileMap
+
+    }
+
+    def loadTaskDataFromFile(Project project) {
+
+        if (!project) {
+            return [success:false, message:'Project instance not specified for task data load!']
+        }
+
+        def fieldValueMap = buildTaskFieldValuesFromDataFile(project)
+        def totalRows = 0
+        def taskCount = 0
+        fieldValueMap.keySet().each { externalId ->
+            def task = Task.findByExternalIdentifierAndProject(externalId, project)
+            if (task) {
+                def taskValueMap = fieldValueMap[externalId]
+                // fieldSyncService.syncFields(task, taskValueMap, "system", null, null, null)
+                taskCount++
+            }
+            totalRows++
+        }
+
+        return [success: true, message:"Total rows processed: ${totalRows}, tasks modified: ${taskCount}"]
     }
 
     def buildTaskMetaDataList(Project project) {
