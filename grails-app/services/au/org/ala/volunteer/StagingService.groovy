@@ -100,13 +100,23 @@ class StagingService {
         }
 
         def fieldValueMap = buildTaskFieldValuesFromDataFile(project)
+
         def totalRows = 0
         def taskCount = 0
+
         fieldValueMap.keySet().each { externalId ->
             def task = Task.findByExternalIdentifierAndProject(externalId, project)
             if (task) {
-                def taskValueMap = fieldValueMap[externalId]
-                // fieldSyncService.syncFields(task, taskValueMap, "system", null, null, null)
+                // The value maps for the tasks built from the file needs to placed in a nested map, keyed by record
+                // index as a string, so that it can be passed the the syncFields method of the fieldSyncService
+                // The alternative is to duplicate the fieldSync function, but that seems to be a worse solution
+
+                // if multiple record indexes are every required from the functionality this will need to be modified
+                // to reflect that
+
+                def taskValueMap = ["0": fieldValueMap[externalId] ]
+
+                fieldSyncService.syncFields(task, taskValueMap, "system", null, null, null)
                 taskCount++
             }
             totalRows++
