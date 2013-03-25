@@ -468,7 +468,17 @@ class ForumController {
 
         ProjectSummaryList projectSummaryList = projectService.getProjectSummaryList(params)
 
-        [projectSummaryList: projectSummaryList]
+        def forumStats = [:]
+
+        projectSummaryList.projectRenderList.each {
+            def stat = [:]
+            stat.projectTopicCount = ProjectForumTopic.countByProject(it.project)
+            stat.taskTopicCount = forumService.countTaskTopics(it.project)
+
+            forumStats[it.project] = stat
+        }
+
+        [projectSummaryList: projectSummaryList, forumStats: forumStats]
     }
 
     def ajaxWatchedTopicsList() {

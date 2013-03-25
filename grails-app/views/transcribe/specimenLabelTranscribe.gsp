@@ -7,6 +7,8 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
 
+<g:set var="collectionEventInsitutionCode" value="${taskInstance?.project?.collectionEventLookupCollectionCode ?: taskInstance?.project.featuredOwner}" />
+
 
 <%@ page contentType="text/html; UTF-8" %>
 <head>
@@ -255,7 +257,7 @@
         setFieldValue('locationID', "");
         updateEventBindStatus(null);
       } else {
-        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${taskInstance.project.featuredOwner}";
+        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${collectionEventInsitutionCode}";
         $.ajax(url).done(function (collectionEvent) {
           clearLocalityFields();
           setFieldValue('eventID', collectionEvent.externalEventId);
@@ -347,7 +349,7 @@
       if($.isNumeric(externalEventId)) {
         // its an external event id
         // need to extract from server...
-        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${taskInstance.project.collectionEventLookupCollectionCode}";
+        var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${collectionEventInsitutionCode}";
         $.ajax(url).done(function (collectionEvent) {
           var eventDesc = '<span>' + renderLocalityDescription(collectionEvent) + '<br/>' + collectionEvent.collector + " (" + collectionEvent.eventDate + ")";
           var html = "This specimen is linked with an existing collection event: <br/>" + eventDesc + '</span><span style="float:right"><a href="#" id="unlinkCollectionEvent">Undo</a></span>'

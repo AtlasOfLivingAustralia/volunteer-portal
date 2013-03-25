@@ -80,11 +80,11 @@
                         <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
                         <li><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a>
                         </li>
-                        <li class="last"><g:message code="default.projectforum.label" default="Project Forum"/></li>
+                        <li class="last"><g:message code="default.projectforum.label" default="Expedition Forum"/></li>
                     </ol>
                 </nav>
 
-                <h1>Project Forum - ${projectInstance.featuredLabel}</h1>
+                <h1>Expedition Forum - ${projectInstance.featuredLabel}</h1>
             </div>
         </header>
 
@@ -110,8 +110,8 @@
                 </div>
                 <div id="projectForumTabs" style="display:none">
                     <ul>
-                        <li><a href="#tabProjectTopics">Project Topics</a></li>
-                        <li><a href="#tabTaskTopics">Task Topics</a></li>
+                        <li><a href="#tabProjectTopics" class="forum-tab-title">Expedition Topics</a></li>
+                        <li><a href="#tabTaskTopics" class="forum-tab-title">Task Topics</a></li>
                     </ul>
                     <div id="tabProjectTopics" class="tabContent" style="display:none">
                         <div class="buttonBar">

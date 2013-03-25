@@ -164,10 +164,10 @@
 
             <div id="tabControl" style="display:none">
                 <ul>
-                    <li><a href="#tabRecentTopics">Featured and recent topics</a></li>
-                    <li><a href="#tabGeneralTopics">Browse General Discussion Topics</a></li>
-                    <li><a href="#tabProjectForums">Project Forums</a></li>
-                    <li><a href="#tabWatchedTopics">Your watched topics</a></li>
+                    <li><a href="#tabRecentTopics" class="forum-tab-title">Featured and recent topics</a></li>
+                    <li><a href="#tabGeneralTopics" class="forum-tab-title">Browse General Discussion Topics</a></li>
+                    <li><a href="#tabProjectForums" class="forum-tab-title">Expedition Forums</a></li>
+                    <li><a href="#tabWatchedTopics" class="forum-tab-title">Your watched topics</a></li>
                 </ul>
 
                 <div id="tabRecentTopics" class="tabContent" style="display:none"></div>

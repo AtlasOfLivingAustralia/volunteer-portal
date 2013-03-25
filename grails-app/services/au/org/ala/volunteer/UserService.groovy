@@ -246,7 +246,17 @@ class UserService {
     }
 
     def isForumModerator(Project project = null) {
-        return isAdmin()
+
+        if (isAdmin()) {
+            return true
+        }
+
+        return isUserForumModerator(currentUser, project)
+    }
+
+    def isUserForumModerator(User user, Project projectInstance) {
+        def moderators = getUsersWithRole("forum_moderator", projectInstance)
+        return moderators.find { it.userId == user.userId }
     }
 
     def getValidatedCounts(Collection<String> usernames) {

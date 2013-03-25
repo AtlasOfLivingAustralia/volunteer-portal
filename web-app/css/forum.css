@@ -150,3 +150,17 @@ h3 {
     background-color: #FFFEF7 !important;
 }
 
+.moderator-label {
+    color: royalblue;
+    font-size: smaller;
+}
+
+.author-is-moderator-row {
+    background-color:beige;
+}
+
+.forum-tab-title {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+

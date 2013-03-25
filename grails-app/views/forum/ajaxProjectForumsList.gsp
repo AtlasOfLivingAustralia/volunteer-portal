@@ -36,20 +36,14 @@
                     <%-- Progress bar --%>
                     <td>
                         <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.featuredLabel}</a></h3>
-                        <div id="recordsChart">
-                            <strong>${projectSummary.countComplete}</strong> tasks completed (<strong>${projectSummary.percentComplete}%</strong>)
-                        </div>
-                        <div style="height: 5px" id="recordsChartWidget${i}" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${projectSummary.percentComplete}">
-                            <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectSummary.percentComplete}%; "></div>
-                        </div>
                     </td>
                     <%-- Project type --%>
                     <td class="type">
                         <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectSummary.iconImage}" width="40" height="36" alt="">
                     </td>
                     <td style="text-align: right">
-                        <a class="button" href="${createLink(controller:"project", action:"index", id:projectSummary.project.id)}">Visit Project</a>
-                        <a class="button orange" style="font-size: 1.1em" href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}">Visit Forum</a>
+                        <a href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> Expedition Topics and <b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> Task Topics</a>
+                        %{--<a class="button orange" style="font-size: 1.1em" href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}">Visit Forum</a>--}%
                     </td>
                 </tr>
             </g:each>

@@ -31,6 +31,15 @@ class ForumTagLib {
 
         if (topic) {
 
+            Project projectInstance = null
+            if (topic.instanceOf(ProjectForumTopic)) {
+                def projectTopic = topic as ProjectForumTopic
+                projectInstance = projectTopic.project
+            } else if (topic.instanceOf(TaskForumTopic)) {
+                def taskTopic = topic as TaskForumTopic
+                projectInstance = taskTopic.task.project
+            }
+
             def replies = forumService.getTopicMessages(topic, params)
 
             def mb = new MarkupBuilder(out)
@@ -67,7 +76,17 @@ class ForumTagLib {
                     replies.each { ForumMessage reply ->
                         // work out if this topic is editable...
                         def canEdit = forumService.isMessageEditable(reply, userService.currentUser)
-                        tr(class: striped ? 'striped' : '', messageId: reply.id) {
+                        def authorIsModerator = userService.isUserForumModerator(reply.user, projectInstance)
+
+                        def rowClasses= []
+                        if (striped) {
+                            rowClasses << 'striped'
+                        }
+                        if (authorIsModerator) {
+                            rowClasses << 'author-is-moderator-row'
+                        }
+
+                        tr(class: rowClasses.join(" "), messageId: reply.id) {
                             td(class: "forumNameColumn") {
                                 a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: reply.user.id), name:'message_' + reply.id) {
                                     mkp.yield(reply.user.displayName)
@@ -76,6 +95,13 @@ class ForumTagLib {
                                 span(class: 'forumMessageDate') {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
+                                if (authorIsModerator) {
+                                    br {}
+                                    span(class: 'moderator-label') {
+                                        mkp.yield("Moderator")
+                                    }
+                                }
+
                             }
                             def message = markdownService.sanitize(reply.text ?: "")
                             td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
@@ -179,7 +205,18 @@ class ForumTagLib {
                         }
                     } else {
                         for (ForumTopic topic : topics) {
-                            tr(class: "${topic.priority}${topic.sticky ? ' sticky' : ''}", topicId: topic.id) {
+
+                            def authorIsModerator = userService.isUserForumModerator(topic.creator, projectInstance)
+                            def rowClasses= []
+                            rowClasses << topic.priority
+                            if (topic.sticky) {
+                                rowClasses << "sticky"
+                            }
+                            if (authorIsModerator) {
+                                rowClasses << "author-is-moderator-row"
+                            }
+
+                            tr(class: rowClasses.join(" "), topicId: topic.id) {
                                 td(style: "width: 40px; padding: 0px") {
                                     span(style: 'color:green') {
                                         if (topic.sticky) {
@@ -208,7 +245,16 @@ class ForumTagLib {
                                     mkp.yield(topic.views ?: 0)
                                 }
                                 td {
-                                    mkp.yield(topic.creator?.displayName)
+                                    span() {
+                                        mkp.yield(topic.creator?.displayName)
+                                    }
+
+                                    if (authorIsModerator) {
+                                        br {}
+                                        span(class:'moderator-label') {
+                                            mkp.yield("Moderator")
+                                        }
+                                    }
                                 }
                                 td {
                                     mkp.yield(formatDate(date: topic.dateCreated, format: DateConstants.DATE_TIME_FORMAT))
@@ -387,6 +433,8 @@ class ForumTagLib {
      */
     def taskSummary = { attrs, body ->
         def task = attrs.task as Task
+        def templateFields = TemplateField.findAllByTemplate(task.project.template)?.collectEntries { [it.fieldType.toString(), it] }
+
         if (task) {
             def multimedia = task.multimedia.size() > 0 ? task.multimedia.first() : null
             if (multimedia) {
@@ -430,7 +478,8 @@ class ForumTagLib {
                                             if (!field.superceded && field.value) {
                                                 tr {
                                                     td {
-                                                        mkp.yield(field.name)
+                                                        def name = templateFields[field.name]?.label ?: field.name
+                                                        mkp.yield(name)
                                                     }
                                                     td {
                                                         mkp.yield(field.value)
@@ -476,6 +525,13 @@ class ForumTagLib {
                             projectInstance = taskTopic.task.project
                         }
 
+                        def authorIsModerator = userService.isUserForumModerator(message.user, projectInstance)
+
+                        def rowClasses = []
+                        if (authorIsModerator) {
+                            rowClasses << "author-is-moderator-row"
+                        }
+
                         if (lastTopic != message.topic) {
                             lastTopic = message.topic
                             tr(style: "background-color: #f0f0e8; color: black; height: 15px;") {
@@ -501,7 +557,7 @@ class ForumTagLib {
                                 }
                             }
                         }
-                        tr {
+                        tr(class: rowClasses.join(" ")) {
                             td(class: "forumNameColumn") {
                                 if (!attrs.hideUsername) {
                                     a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: message.user.id)) {
@@ -511,6 +567,12 @@ class ForumTagLib {
                                 br {}
                                 span(class: 'forumMessageDate') {
                                     mkp.yield(formatDate(date: message.date, format: 'dd MMM, yyyy HH:mm:ss'))
+                                }
+                                if (authorIsModerator) {
+                                    br {}
+                                    span(class: 'moderator-label') {
+                                        mkp.yield("Moderator")
+                                    }
                                 }
                             }
                             def messageText = markdownService.sanitize(message.text ?: "")

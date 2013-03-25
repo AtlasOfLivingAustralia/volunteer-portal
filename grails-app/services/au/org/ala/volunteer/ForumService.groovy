@@ -384,4 +384,20 @@ class ForumService {
         message.delete(flush: true)
     }
 
+    def countTaskTopics(Project projectInstance) {
+        def tasks = Task.findAllByProject(projectInstance)
+        def c = TaskForumTopic.createCriteria()
+
+        if (tasks) {
+            def results = c.get {
+                projections {
+                    count("id")
+                }
+                inList('task', tasks)
+            }
+            return results
+        }
+        return null
+    }
+
 }
