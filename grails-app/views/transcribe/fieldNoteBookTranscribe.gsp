@@ -339,7 +339,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <g:if test="${taskInstance.project.template?.viewParams.doublePage}">
+                            <g:if test="${taskInstance.project.template?.viewParams?.doublePage == 'true'}">
                               <th>
                                 <h3>1. Transcribe all text from the left hand page into this box as it appears</h3>
                               </th>
@@ -349,10 +349,13 @@
                               </th>
                             </g:if>
                             <g:else>
+                              <g:set var="occurrenceRemarksField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
                               <th>
-                                <h3>1. Transcribe all text from the page above into this box as it appears</h3>
+                                <h3 style="display: inline-block">1. ${occurrenceRemarksField?.label ?: "Transcribe all text from the page above into this box as it appears"}</h3>
+                                <g:if test="${occurrenceRemarksField?.helpText}">
+                                    <a style="float:right" href='#' class='fieldHelp' title='${occurrenceRemarksField?.helpText}'><span class='help-container'>&nbsp;</span></a>
+                                </g:if>
                               </th>
-
                             </g:else>
                         </tr>
                     </thead>
@@ -361,7 +364,7 @@
                             <td>
                                 <g:textArea name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="transcribeAllText1" rows="12" cols="30" style="width:98%;height:300px;"/>
                             </td>
-                            <g:if test="${taskInstance.project.template?.viewParams.doublePage}">
+                            <g:if test="${taskInstance.project.template?.viewParams?.doublePage == 'true'}">
                                 <td>
                                     <g:textArea name="recordValues.1.occurrenceRemarks" value="${recordValues?.get(1)?.occurrenceRemarks}" id="transcribeAllText2" rows="12" cols="30" style="width:98%;height:300px;"/>
                                 </td>
@@ -371,21 +374,22 @@
                 </table>
             </div>
 
-            <div class="fields" id="journal2Fields">
-                <table>
-                    <thead>
-                        <tr>
-                            <th colspan="2">
-                                <h3>3. Where a species or common name appears in the text please enter any relevant information into the fields below</h3>
-                                <button id="addRowButton">Add row</button>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="identification_fields">
-                    </tbody>
-                </table>
-
-            </div>
+            <g:if test="${taskInstance.project.template?.viewParams?.hideNames != 'true'}">
+                <div class="fields" id="journal2Fields">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    <h3>2. Where a species or common name appears in the text please enter any relevant information into the fields below</h3>
+                                    <button id="addRowButton">Add row</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="identification_fields">
+                        </tbody>
+                    </table>
+                </div>
+            </g:if>
 
             <div class="fields" id="journalNotes" style="width:${(validator) ? '100%' : '50%'}">
                 <table style="width: 100%">

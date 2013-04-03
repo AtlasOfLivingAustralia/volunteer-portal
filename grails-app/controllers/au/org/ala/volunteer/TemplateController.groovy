@@ -1,8 +1,12 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
+
 class TemplateController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST"]
+
+    def userService
 
     def index = {
         redirect(action: "list", params: params)
@@ -65,15 +69,24 @@ class TemplateController {
                 }
             }
             templateInstance.properties = params
+
+            def viewParams = JSON.parse(params.viewParamsJSON) as Map
+
+            def newViewParams = new HashMap<String, String>()
+            if (viewParams) {
+                viewParams.keySet().each {
+                    newViewParams[it.toString()] = viewParams[it]?.toString()
+                }
+            }
+            templateInstance.viewParams = newViewParams
+
             if (!templateInstance.hasErrors() && templateInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'template.label', default: 'Template'), templateInstance.id])}"
                 redirect(action: "show", id: templateInstance.id)
-            }
-            else {
+            } else {
                 render(view: "edit", model: [templateInstance: templateInstance])
             }
-        }
-        else {
+        } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
             redirect(action: "list")
         }
@@ -83,7 +96,14 @@ class TemplateController {
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             try {
+                // First got to delete all the template_fields...
+                def fields = TemplateField.findAllByTemplate(templateInstance)
+                if (fields) {
+                    fields.each { it.delete(flush: true) }
+                }
+                // Now can delete template proper
                 templateInstance.delete(flush: true)
+
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 redirect(action: "list")
             }
@@ -259,6 +279,41 @@ class TemplateController {
             response.writer.flush()
         }
 
+    }
+
+    def cloneTemplate() {
+        def template = Template.get(params.int("templateId"))
+        def newName = params.newName
+
+        if (newName) {
+            def existing = Template.findByName(newName)
+            if (existing) {
+                flash.message = "Failed to clone template - a template with the name " + newName + " already exists!"
+                redirect(action:'list')
+                return
+            }
+        }
+
+        if (template && newName) {
+
+            def newTemplate = new Template(name: newName, viewName: template.viewName, fieldOrder: template.fieldOrder, author: userService.currentUser.userId)
+
+            newTemplate.viewParams = [:]
+            template.viewParams.keySet().each { key ->
+                newTemplate.viewParams[key] = template.viewParams[key]
+            }
+
+            newTemplate.save(flush: true, failOnError: true)
+            // Now we need to copy over the template fields
+            def fields = TemplateField.findAllByTemplate(template)
+            fields.each { f ->
+                def newField = new TemplateField(f.properties)
+                newField.template = newTemplate
+                newField.save()
+            }
+        }
+
+        redirect(action:'list')
     }
 
 }

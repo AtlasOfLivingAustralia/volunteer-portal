@@ -14,6 +14,54 @@
         </style>
         <script type="text/javascript">
 
+            $(function() {
+
+                $(".btnDeleteTemplate").click(function(e) {
+                    e.preventDefault();
+                    var templateId = $(this).parents("[templateId]").attr("templateId");
+                    var templateName = $(this).parents("[templateName]").attr("templateName");
+                    if (templateId && templateName) {
+                        if (confirm("Are you sure you wish to delete template " + templateName + "?")) {
+                            window.location = "${createLink(controller:'template', action:'delete')}/" + templateId;
+                        }
+                    }
+                });
+
+                $(".btnCloneTemplate").click(function(e) {
+                    e.preventDefault();
+                    var oldTemplateId = $(this).parents("[templateId]").attr("templateId");
+                    var oldTemplateName = $(this).parents("[templateName]").attr("templateName");
+
+                    if (oldTemplateId && oldTemplateName) {
+                        $("#selectedTemplateId").val(oldTemplateId);
+                        $("#oldTemplateName").html("<b>" + oldTemplateName + "</b>");
+                        $("#dialog").dialog( "open" );
+                        $("#newTemplateName").val("CopyOf" + oldTemplateName);
+                        $("#newTemplateName").select();
+                    }
+                });
+
+                $("#btnCancelCopy").click(function() {
+                    $("#dialog").dialog("close");
+                });
+
+                $("#btnApplyCopy").click(function() {
+                    var newName = $("#newTemplateName").val();
+                    var existingTemplateId = $("#selectedTemplateId").val();
+                    if (newName && existingTemplateId) {
+                        window.location = "${createLink(controller:'template', action:'cloneTemplate')}?templateId=" + existingTemplateId + "&newName=" + newName
+                    }
+                });
+
+                $( "#dialog" ).dialog({
+                    minHeight: 200,
+                    minWidth: 400,
+                    resizable: false,
+                    autoOpen: false
+                });
+
+            });
+
         </script>
     </head>
     <body>
@@ -39,15 +87,18 @@
                     </thead>
                     <tbody>
                     <g:each in="${templateInstanceList}" status="i" var="templateInstance">
-                        <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                        <tr class="${(i % 2) == 0 ? 'odd' : 'even'}" templateId="${templateInstance.id}" templateName="${templateInstance.name}" >
 
                             <td>${fieldValue(bean: templateInstance, field: "name")}</td>
                             <td>${fieldValue(bean: templateInstance, field: "author")}</td>
                             <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                             <td>
+                                <a class="button btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
                                 <a class="button" style="margin-top: 6px" href="${createLink(controller:'template', action:'edit', id:templateInstance.id)}">Edit</a>
                                 <a class="button" style="margin-top: 6px" href="${createLink(controller:'template', action:'preview', id:templateInstance.id)}">Preview</a>
+                                <a class="button btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
+
                             </td>
                         </tr>
                     </g:each>
@@ -57,6 +108,21 @@
             <div class="paginateButtons">
                 <g:paginate total="${templateInstanceTotal}" />
             </div>
+        </div>
+
+        <div id="dialog" title="Clone template" style="display: none">
+            Create a copy of the <span id="oldTemplateName"></span> template with a new name:
+            <table style="width: 100%">
+                <tr>
+                    <td><strong>Template Name:</strong></td>
+                    <td><g:textField name="newTemplateName" id="newTemplateName" size="20"/></td>
+                </tr>
+            </table>
+            <div>
+                <button class="button" id="btnCancelCopy">Cancel</button>
+                <button class="button" id="btnApplyCopy">Clone Template</button>
+            </div>
+            <g:hiddenField name="selectedTemplateId" id="selectedTemplateId"/>
         </div>
     </body>
 </html>

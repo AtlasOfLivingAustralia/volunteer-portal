@@ -348,9 +348,11 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
                         <tr>
                             <td style="padding-bottom:0px; margin-bottom:0px; margin-top: 0px; padding-top:0px">
-                                All text <a href='#' class='fieldHelp' title='Transcribe all text as it appears in the labels'><span class='help-container'>&nbsp;</span>
+                                ${allTextField?.label ?: "All text"}
+                                <a href='#' class='fieldHelp' title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><span class='help-container'>&nbsp;</span>
                             </a>
                             </td>
                             <td style="padding-top: 0px; text-align: right">
@@ -385,12 +387,13 @@
                     </thead>
                     <tbody>
                         <tr class="prop">
+                            <g:set var="localityField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.verbatimLocality)}" />
                             <td class="name" style="padding-bottom:0px; margin-bottom:0px; padding-top:0px;">
-                                Verbatim Locality
+                                 ${localityField?.label ?: "Verbatim Locality"}
                             </td>
                             <td style="padding-top:0px; margin-top: 0px; margin-bottom: 0px; padding-bottom: 0px">
                                 <textarea name="recordValues.0.verbatimLocality" cols="38" rows="4" class="verbatimLocality" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
-                                <a href='#' class='fieldHelp' title='Enter (or cut and paste from the box above) the locality information into this box'><span class='help-container'>&nbsp;</span>
+                                <a href='#' class='fieldHelp' title='${localityField?.helpText ?: "Enter (or cut and paste from the box above) the locality information into this box"}'><span class='help-container'>&nbsp;</span>
                                 </a>
                             </td>
                             <td colspan="2" style="padding: 0">
@@ -406,7 +409,7 @@
                         </tr>
                         <tr class="prop">
                             <td class="name">
-                                Collector(s)
+                                ${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: "Collector(s)"}
                             </td>
                             <td class="value" colspan="3">
                                 <g:each in="${0..3}" var="idx">
@@ -424,27 +427,6 @@
                         </g:each>
                     </tbody>
                 </table>
-
-                        %{--<tr>--}%
-                        %{--<g:fieldTDPair fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" />--}%
-                        %{--<g:fieldTDPair fieldType="${DarwinCoreField.verbatimLatitude}" recordValues="${recordValues}" task="${taskInstance}" />--}%
-                        %{--</tr>--}%
-                        %{--<tr>--}%
-                        %{--<g:fieldTDPair fieldType="${DarwinCoreField.verbatimElevation}" recordValues="${recordValues}" task="${taskInstance}" />--}%
-                        %{--<g:fieldTDPair fieldType="${DarwinCoreField.verbatimLongitude}" recordValues="${recordValues}" task="${taskInstance}" />--}%
-                        %{--</tr>--}%
-                        %{--<tr>--}%
-                        %{--<g:fieldTDPair fieldType="${DarwinCoreField.samplingProtocol}" recordValues="${recordValues}" task="${taskInstance}" />--}%
-                        %{--<g:fieldTDPair fieldType="${DarwinCoreField.minimumDepthInMeters}" recordValues="${recordValues}" task="${taskInstance}" />--}%
-                        %{--</tr>--}%
-                        %{--<tr>--}%
-                        %{--<td></td>--}%
-                        %{--<td></td>--}%
-                        %{--<g:fieldTDPair fieldType="${DarwinCoreField.maximumDepthInMeters}" recordValues="${recordValues}" task="${taskInstance}" />--}%
-                        %{--</tr>--}%
-
-                    %{--</tbody>--}%
-                %{--</table>--}%
 
                 <table style="width: 100%;">
                     <thead>

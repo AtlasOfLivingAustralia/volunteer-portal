@@ -75,10 +75,20 @@
 
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                  <label for="project"><g:message code="template.viewparams.label" default="Template View Parameters:" /></label>
+                                </td>
+                                <td valign="top" class="value">
+                                    <g:textArea name="viewParamsJSON" rows="4" cols="40" value="${templateInstance.viewParams as grails.converters.JSON}">
+                                    </g:textArea>
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="project"><g:message code="template.project.label" default="Projects that use this template:" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'project', 'errors')}">
-                                    
+
                                     <ul>
                                     <g:each in="${templateInstance?.project?}" var="p">
                                         <li><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
