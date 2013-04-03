@@ -65,6 +65,9 @@
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/tiny-mce-3.4.9/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/tomcat-2.2.1" />
+    <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/webxml-1.4.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.2.1" level="application" />
