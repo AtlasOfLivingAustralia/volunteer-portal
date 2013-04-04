@@ -26,8 +26,17 @@ grails.project.dependency.resolution = {
     plugins {
         build ":tomcat:$grailsVersion"
         runtime ":mail:1.0.1"
+        runtime ":csv:0.3.1"
+        runtime ":executor:0.3"
+        runtime ":jquery:1.7.1"
+        runtime ":markdown:1.0.0.RC1"
+        runtime ":pretty-time:0.3"
+        runtime ":quartz:1.0-RC5"
+        runtime ":tiny-mce:3.4.9"
+        runtime ":webxml:1.4.1"
     }
+
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
+
     }
 }
