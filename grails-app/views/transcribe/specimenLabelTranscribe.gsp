@@ -511,8 +511,8 @@
             <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
             <g:hiddenField name="redirect" value="${params.redirect}"/>
 
-            <g:hiddenField name="recordValues.0.eventID" class="eventID" id="recordValues.0.eventID" value="${recordValues?.get(0)?.eventID?:TemplateField.findByFieldType(DarwinCoreField.eventID)?.defaultValue}"/>
-            <g:hiddenField name="recordValues.0.locationID" class="locationID" id="recordValues.0.locationID" value="${recordValues?.get(0)?.locationID?:TemplateField.findByFieldType(DarwinCoreField.locationID)?.defaultValue}"/>
+            <g:hiddenField name="recordValues.0.eventID" class="eventID" id="recordValues.0.eventID" value="${recordValues?.get(0)?.eventID?:TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.eventID, template)?.defaultValue}"/>
+            <g:hiddenField name="recordValues.0.locationID" class="locationID" id="recordValues.0.locationID" value="${recordValues?.get(0)?.locationID?:TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.locationID, template)?.defaultValue}"/>
 
             <div class="dialog" style="clear: both">
                 <g:each in="${taskInstance.multimedia}" var="m">
@@ -546,7 +546,7 @@
                         <li><div>Catalogue No.:</div> ${recordValues?.get(0)?.catalogNumber}</li>
                         <li><div>Taxa:</div> ${recordValues?.get(0)?.scientificName}</li>
                         <g:hiddenField name="recordValues.0.basisOfRecord" class="basisOfRecord" id="recordValues.0.basisOfRecord"
-                                       value="${recordValues?.get(0)?.basisOfRecord?:TemplateField.findByFieldType(DarwinCoreField.basisOfRecord)?.defaultValue}"/>
+                                       value="${recordValues?.get(0)?.basisOfRecord?:TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.basisOfRecord, template)?.defaultValue}"/>
                     </ul>
 
                     <span style="">
@@ -643,7 +643,7 @@
                           </td>
                         </tr>
 
-                        <g:fieldFromTemplateField templateField="${TemplateField.findByFieldType(DarwinCoreField.eventDate)}" recordValues="${recordValues}" />
+                        <g:fieldFromTemplateField templateField="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.eventDate, template)}" recordValues="${recordValues}" />
 
                         <tr>
                           <td style="padding-top: 0px; padding-bottom: 0px; font-size: 1.2em; vertical-align: top;">
