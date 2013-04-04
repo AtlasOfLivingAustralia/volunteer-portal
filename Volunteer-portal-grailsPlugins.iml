@@ -29,9 +29,6 @@
     <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/executor-0.3">
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/executor-0.3/src/groovy" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/hibernate-2.2.1">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/hibernate-2.2.1/grails-app/i18n" isTestSource="false" />
-    </content>
     <content url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/jquery-1.7.1">
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/jquery-1.7.1/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/volunteer-portal/plugins/jquery-1.7.1/grails-app/i18n" isTestSource="false" />
@@ -91,6 +88,7 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/c3p0/c3p0/jars/c3p0-0.9.1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-2.1.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/antlr/antlr/jars/antlr-2.7.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
