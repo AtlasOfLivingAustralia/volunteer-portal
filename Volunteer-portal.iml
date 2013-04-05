@@ -75,7 +75,6 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/c3p0/c3p0/jars/c3p0-0.9.1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-2.1.5.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/antlr/antlr/jars/antlr-2.7.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
