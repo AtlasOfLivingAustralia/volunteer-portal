@@ -219,12 +219,13 @@ class TemplateController {
 
     private int getLastDisplayOrder(Template template) {
         def c = TemplateField.createCriteria()
-        def max = c({
+        def results = c({
             eq('template', template)
             projections {
                 max('displayOrder')
             }
-        })[0]
+        })
+        def max = results?.getAt(0) ?: 0
         return max
     }
     
