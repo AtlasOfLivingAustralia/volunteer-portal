@@ -22,6 +22,7 @@ grails.project.dependency.resolution = {
         mavenRepo "http://repository.codehaus.org"
         mavenRepo "http://download.java.net/maven/2/"
         mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "http://maven.ala.org.au/repository/"
     }
     plugins {
         build ":tomcat:$grailsVersion"
@@ -35,6 +36,7 @@ grails.project.dependency.resolution = {
         runtime ":quartz:1.0-RC5"
         runtime ":tiny-mce:3.4.9"
         runtime ":webxml:1.4.1"
+        runtime ":ala-web-theme:0.1.7"
     }
 
     dependencies {

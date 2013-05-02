@@ -61,22 +61,16 @@
 
     <body class="sublevel sub-site volunteerportal">
 
-        <cl:navbar selected="expeditions"/>
-
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li class="last">Expeditions</li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Volunteer for a virtual expedition</h1>
-                </hgroup>
-            </div><!--inner-->
-        </header>
+        <sitemesh:parameter name="selectedNavItem" value="expeditions" />
+        <content tag="page-header">
+            <nav id="breadcrumb">
+                <ol>
+                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                    <li class="last">Expeditions</li>
+                </ol>
+            </nav>
+            <h1>Volunteer for a virtual expedition</h1>
+        </content>
 
         <div class="inner">
             <h2>${numberOfUncompletedProjects} expeditions need your help. Join now!</h2>

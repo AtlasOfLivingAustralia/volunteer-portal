@@ -21,42 +21,59 @@
 
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
-        <cl:navbar selected="tutorials"/>
+        <sitemesh:parameter name="selectedNavItem" value="tutorials" />
+        <content tag="page-header">
+            <nav id="breadcrumb">
+                <ol>
+                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                    <li class="last"><g:message code="default.tutorials.label" default="Tutorials"/></li>
+                </ol>
+            </nav>
+            <h1>Tutorials</h1>
+            <cl:ifAdmin>
+                <a class="btn" href="${createLink(controller:'admin', action:'tutorialManagement')}">Manage</a>
+            </cl:ifAdmin>
+        </content>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li class="last"><g:message code="default.tutorials.label" default="Tutorials"/></li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Tutorials</h1>
-                    <cl:ifAdmin>
-                        <button class="button" onclick="location.href = '${createLink(controller:'admin', action:'tutorialManagement')}'">Manage</button>
-                    </cl:ifAdmin>
-                </hgroup>
-            </div>
-        </header>
+
+    %{----}%
+
+        %{--<cl:navbar selected="tutorials"/>--}%
+
+        %{--<header id="page-header">--}%
+            %{--<div class="inner">--}%
+                %{--<cl:messages/>--}%
+                %{--<hgroup>--}%
+                    %{--<h1>Tutorials</h1>--}%
+                    %{--<cl:ifAdmin>--}%
+                        %{--<button class="button" onclick="location.href = '${createLink(controller:'admin', action:'tutorialManagement')}'">Manage</button>--}%
+                    %{--</cl:ifAdmin>--}%
+                %{--</hgroup>--}%
+            %{--</div>--}%
+        %{--</header>--}%
 
         <div>
             <div class="inner">
                 <g:each in="${tutorials.keySet().sort()}" var="group">
                     <h3>${group == '-' ? 'Generic Tutorials' : group}</h3>
-                    <ul>
-                        <table class="bvp-expeditions">
+                        <table class="table">
                             <g:if test="${group == '-'}">
-                                <li><a href="${createLink(controller:'tutorials', action:'transcribingSpecimenLabels')}">Transcribing Specimen Labels</a></li>
+                                <tr>
+                                    <td>
+                                        <a href="${createLink(controller:'tutorials', action:'transcribingSpecimenLabels')}">Transcribing Specimen Labels</a>
+                                    </td>
+                                </tr>
                             </g:if>
                             <g:each in="${tutorials[group]?.sort({it.title})}" var="tute">
-                                <li><a href="${tute.url}">${tute.title}</a></li>
+                                <tr>
+                                    <td>
+                                        <a href="${tute.url}">${tute.title}</a>
+                                    </td>
+                                </tr>
                             </g:each>
                         </table>
-                    </ul>
                 </g:each>
             </div>
 

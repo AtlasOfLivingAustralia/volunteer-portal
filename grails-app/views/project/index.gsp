@@ -151,8 +151,6 @@
 
 <body class="sublevel sub-site volunteerportal">
 
-  <cl:navbar selected="expeditions" />
-
   <header id="page-header">
     <div class="inner">
       <cl:messages />

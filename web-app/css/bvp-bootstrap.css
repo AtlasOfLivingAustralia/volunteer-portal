@@ -1,0 +1,89 @@
+#nav-site .navbar-inner {
+    z-index: 100;
+    background-color: blue;
+    -moz-border-radius: 0 0 3px 3px;
+    -webkit-border-radius: 0 0 3px 3px;
+    -o-border-radius: 0 0 3px 3px;
+    -icab-border-radius: 0 0 3px 3px;
+    -khtml-border-radius: 0 0 3px 3px;
+    border-radius: 0 0 3px 3px;
+    border: 1px solid #21446c;
+    border-top: none;
+    background-color: #3a5c83;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#3a5c83), to(#21446c));
+    background-image: -webkit-linear-gradient(top, #3a5c83, #21446c);
+    background-image: -moz-linear-gradient(top, #3a5c83, #21446c);
+    background-image: -ms-linear-gradient(top, #3a5c83, #21446c);
+    background-image: -o-linear-gradient(top, #3a5c83, #21446c);
+    background-image: linear-gradient(top, #3a5c83, #21446c);
+
+    margin-bottom: 0;
+}
+
+#nav-site .navbar-inner .nav > li > a {
+    background-color: #3a5c83;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#3a5c83), to(#21446c));
+    background-image: -webkit-linear-gradient(top, #3a5c83, #21446c);
+    background-image: -moz-linear-gradient(top, #3a5c83, #21446c);
+    background-image: -ms-linear-gradient(top, #3a5c83, #21446c);
+    background-image: -o-linear-gradient(top, #3a5c83, #21446c);
+    background-image: linear-gradient(top, #3a5c83, #21446c);
+
+    border-width: 0;
+    border-left-color: #21446c;
+    border-right-color: #21446c;
+}
+
+#nav-site .navbar-inner .nav .active > a {
+    background-image: none;
+    background-color: #3d464c;
+    border-width: 0;
+    /*border-left-color: #3d464c;*/
+    /*border-right-color: #3d464c;*/
+}
+
+#nav-site .navbar-inner .nav a:hover {
+    background-image: none;
+    background-color: #3d464c;
+    border-width: 0;
+}
+
+#page-header {
+    background: #f0f0e8 url('../images/vp/bg_volunteerportal-sub.jpg') center top no-repeat;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #d1d1d1;
+    /*padding-top: 38px;*/
+    /*position: relative;*/
+    /*top: -38px;*/
+    /*margin-bottom: -38px;*/
+    /*z-index: 2;*/
+}
+
+nav#breadcrumb {
+    margin-top: 10px;
+}
+
+nav#breadcrumb ul,ol {
+    margin: 0;
+}
+
+
+nav#breadcrumb li {
+    display:inline;
+}
+nav#breadcrumb li:after {
+    content:" » ";
+}
+nav#breadcrumb li.last:after {
+    content:"";
+}
+
+#page-header #breadcrumb a:link, #page-header #breadcrumb a:visited {
+    color:#3a5c83;/*blue*/
+    text-decoration: underline;
+    outline:none;
+}
+
+#expedition-stats h3 {
+    background: url(../images/vp/compassrose.png) 75% top no-repeat;
+}

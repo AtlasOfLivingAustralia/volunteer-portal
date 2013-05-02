@@ -37,6 +37,12 @@ class IndexController {
             results = results.subList(0, maxSize)
         }
 
+        if (results.size() < maxSize) {
+            for (int i = results.size(); i < maxSize; ++i) {
+                results << new UserScore(username:'', score:0)
+            }
+        }
+
         t.stop(true)
 
         [results: results]

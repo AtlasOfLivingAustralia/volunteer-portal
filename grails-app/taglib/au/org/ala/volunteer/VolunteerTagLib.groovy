@@ -1464,29 +1464,36 @@ class VolunteerTagLib {
         items << [aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal']]
 
         def mb = new MarkupBuilder(out)
-
-        mb.nav(id:'nav-site') {
-            ul(class:'sf sf-js-enabled') {
-                for (def key : items.keySet()) {
-                    def item = items[key]
-                    mb.li(class:'nav-' + key + (selected == key ? ' selected' : '')) {
-                        a(href:item.link) {
-                            mkp.yield(item.title)
+        mb.div(class:'navbar navbar-static-top', id:"nav-site") {
+            div(class:'navbar-inner') {
+                div(class:'container') {
+                    div(class:'nav-collapse collapse') {
+                        ul(class:'nav') {
+                            for (def key : items.keySet()) {
+                                def item = items[key]
+                                mb.li(class:'nav-' + key + (selected == key ? ' active' : '')) {
+                                    a(href:item.link) {
+                                        mkp.yield(item.title)
+                                    }
+                                }
+                            }
                         }
+
                     }
                 }
             }
         }
+
     }
 
     def messages = { attrs, body ->
 
         if (flash.message) {
-            out << '<div class="message">' + flash.message + '</div>'
+            out << '<div class="alert alert-info">' + flash.message + '</div>'
         }
 
         if (flash.systemMessage) {
-            out << '<div class="systemMessage">' + flash.systemMessage + '</div>'
+            out << '<div class="alert alert-error">' + flash.systemMessage + '</div>'
         }
     }
 
