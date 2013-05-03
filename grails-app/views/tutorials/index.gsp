@@ -4,21 +4,6 @@
     <head>
         <title>Volunteer Portal - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>
-        <style type="text/css">
-
-        div#wrapper > div#content {
-            background-color: transparent !important;
-        }
-
-        .volunteerportal #page-header {
-            background: #f0f0e8 url(${resource(dir:'images/vp',file:'bg_volunteerportal.jpg')}) center top no-repeat;
-            padding-bottom: 12px;
-            border: 1px solid #d1d1d1;
-        }
-
-        </style>
-
     </head>
 
     <body>
@@ -37,43 +22,22 @@
             </cl:ifAdmin>
         </content>
 
-
-    %{----}%
-
-        %{--<cl:navbar selected="tutorials"/>--}%
-
-        %{--<header id="page-header">--}%
-            %{--<div class="inner">--}%
-                %{--<cl:messages/>--}%
-                %{--<hgroup>--}%
-                    %{--<h1>Tutorials</h1>--}%
-                    %{--<cl:ifAdmin>--}%
-                        %{--<button class="button" onclick="location.href = '${createLink(controller:'admin', action:'tutorialManagement')}'">Manage</button>--}%
-                    %{--</cl:ifAdmin>--}%
-                %{--</hgroup>--}%
-            %{--</div>--}%
-        %{--</header>--}%
-
-        <div>
-            <div class="inner">
+        <div class="row">
+            <div class="span12">
                 <g:each in="${tutorials.keySet().sort()}" var="group">
                     <h3>${group == '-' ? 'Generic Tutorials' : group}</h3>
-                        <table class="table">
-                            <g:if test="${group == '-'}">
-                                <tr>
-                                    <td>
-                                        <a href="${createLink(controller:'tutorials', action:'transcribingSpecimenLabels')}">Transcribing Specimen Labels</a>
-                                    </td>
-                                </tr>
-                            </g:if>
-                            <g:each in="${tutorials[group]?.sort({it.title})}" var="tute">
-                                <tr>
-                                    <td>
-                                        <a href="${tute.url}">${tute.title}</a>
-                                    </td>
-                                </tr>
-                            </g:each>
-                        </table>
+                    <ul>
+                        <g:if test="${group == '-'}">
+                            <li>
+                                <a href="${createLink(controller:'tutorials', action:'transcribingSpecimenLabels')}">Transcribing Specimen Labels</a>
+                            </li>
+                        </g:if>
+                        <g:each in="${tutorials[group]?.sort({it.title})}" var="tute">
+                            <li>
+                                <a href="${tute.url}">${tute.title}</a>
+                            </li>
+                        </g:each>
+                    </ul>
                 </g:each>
             </div>
 

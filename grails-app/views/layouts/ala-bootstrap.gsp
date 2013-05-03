@@ -20,9 +20,11 @@
         <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'css', file: 'bvp-bootstrap.css')}">
 
         <script type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/html5.js"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        %{--<script src="http://code.jquery.com/jquery-latest.js"></script>
-        <script src="${resource(dir: 'js', file: 'jquery.tools.min.js', plugin:'ala-web-theme')}"></script>--}%
+
+        <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-1.8.2.js')}"></script>
+        <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-ui-1.9.1.custom.min.js')}"></script>
+        <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>
+
         <script src="${resource(dir: 'js', file: 'bootstrap.js', plugin:'ala-web-theme')}"></script>
 
         <g:layoutHead />

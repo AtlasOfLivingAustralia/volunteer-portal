@@ -1,45 +1,41 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
-  <head>
-      <title>Volunteer Portal - Atlas of Living Australia</title>
-      <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-      <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
-      <style type="text/css">
+    <head>
+        <title>Volunteer Portal - Atlas of Living Australia</title>
+        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    </head>
 
-      </style>
+    <body>
 
-  </head>
-  <body class="sublevel sub-site volunteerportal">
+        <sitemesh:parameter name="selectedNavItem" value="contact"/>
+        <content tag="page-header">
+            <nav id="breadcrumb">
+                <ol>
+                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                    <li class="last"><g:message code="default.contact.label" default="Contact Us"/></li>
+                </ol>
+            </nav>
 
-    <cl:navbar selected="contact" />
+            <h1>Contact Us</h1>
+        </content>
 
-    <header id="page-header">      
-      <div class="inner">
-        <cl:messages />
-        <nav id="breadcrumb">
-          <ol>
-            <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-            <li class="last"><g:message code="default.contact.label" default="Contact Us" /></li>
-          </ol>
-        </nav>
-        <h1>Contact Us</h1>
-      </div>
-    </header>
-    <div>
-      <div class="inner">
-        <h2>Help in using the BVP and reporting issues</h2>
-        <b>E</b> paul.flemons at austmus.gov.au<br/>
-        <b>T</b> (02) 9320 6343<br/>
-        Australian Museum<br/>
-        Sydney NSW 2010
-        <p/>
-        <h2>Help in using the Atlas</h2>
-        <b>E</b> <a href="mailto:support@ala.org.au">support@ala.org.au</a><br/>
-        <b>T</b> (02) 6246 4108<br/>
-        GPO Box 1700<br/>
-        Canberra ACT 2601
-      </div>
-    </div>
-  </body>
+
+        <div class="row">
+            <div class="span12">
+                <h2>Help in using the BVP and reporting issues</h2>
+                <b>E</b> paul.flemons at austmus.gov.au<br/>
+                <b>T</b> (02) 9320 6343<br/>
+                Australian Museum<br/>
+                Sydney NSW 2010
+                <p/>
+
+                <h2>Help in using the Atlas</h2>
+                <b>E</b> <a href="mailto:support@ala.org.au">support@ala.org.au</a><br/>
+                <b>T</b> (02) 6246 4108<br/>
+                GPO Box 1700<br/>
+                Canberra ACT 2601
+            </div>
+        </div>
+    </body>
 </html>

@@ -2,6 +2,25 @@ h1, h2, h3, h4 {
     font-family: "Arial", arial, sans-serif;
 }
 
+ul {
+    list-style: square;
+}
+
+a {
+    color:#3a5c83;
+    text-decoration: underline;
+}
+
+a.btn {
+    color: inherit;
+    text-decoration: none;
+}
+
+a.external {
+    background: url('../images/vp/external.png') right center no-repeat;
+    padding-right: 15px;
+}
+
 #nav-site .navbar-inner {
     z-index: 100;
     background-color: blue;
@@ -42,8 +61,6 @@ h1, h2, h3, h4 {
     background-image: none;
     background-color: #3d464c;
     border-width: 0;
-    /*border-left-color: #3d464c;*/
-    /*border-right-color: #3d464c;*/
 }
 
 #nav-site .navbar-inner .nav a:hover {
@@ -56,11 +73,7 @@ h1, h2, h3, h4 {
     background: #f0f0e8 url('../images/vp/bg_volunteerportal-sub.jpg') center top no-repeat;
     padding-bottom: 12px;
     border-bottom: 1px solid #d1d1d1;
-    /*padding-top: 38px;*/
-    /*position: relative;*/
-    /*top: -38px;*/
-    /*margin-bottom: -38px;*/
-    /*z-index: 2;*/
+    margin-bottom: 12px;
 }
 
 nav#breadcrumb {
@@ -83,7 +96,7 @@ nav#breadcrumb li.last:after {
 }
 
 #page-header #breadcrumb a:link, #page-header #breadcrumb a:visited {
-    color:#3a5c83;/*blue*/
+    color:#3a5c83;
     text-decoration: underline;
     outline:none;
 }
@@ -94,4 +107,8 @@ nav#breadcrumb li.last:after {
 
 .orange {
     color: #ff4500;
+}
+
+thead, thead th {
+    background-color: #f0f0e8;
 }

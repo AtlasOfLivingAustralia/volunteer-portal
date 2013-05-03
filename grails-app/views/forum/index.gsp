@@ -4,10 +4,7 @@
     <head>
         <title>Volunteer Portal - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-        <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
-        <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
         <style type="text/css">
 
@@ -70,7 +67,7 @@
 
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
         <script type="text/javascript">
 
@@ -136,44 +133,40 @@
 
         </script>
 
-        <cl:navbar selected="forum"/>
+        <sitemesh:parameter name="selectedNavItem" value="forum"/>
+        <content tag="page-header">
+            <nav id="breadcrumb">
+                <ol>
+                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                    <li class="last"><g:message code="default.forum.label" default="Forum"/></li>
+                </ol>
+            </nav>
+            <h1><g:message code="default.forum.label" default="Biodiversity Volunteer Portal Forum"/></h1>
+        </content>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li class="last"><g:message code="default.forum.label" default="Forum"/></li>
-                    </ol>
-                </nav>
+        <div class="row">
+            <div class="span12">
+                <section class="forumSection" id="generalDiscussion">
+                    <h3>Find forum topics</h3>
+                    <g:form controller="forum" action="searchForums">
+                        <g:textField id="search-input" class="filled" placeholder="Search the forums..." name="query"/>
+                        <button class="button orange" style="font-size:1.3em" type="submit">Search</button>
+                    </g:form>
+                </section>
 
-                <h1><g:message code="default.forum.label" default="Biodiversity Volunteer Portal Forum"/></h1>
-            </div>
-        </header>
+                <div id="tabControl" style="display:none">
+                    <ul>
+                        <li><a href="#tabRecentTopics" class="forum-tab-title">Featured and recent topics</a></li>
+                        <li><a href="#tabGeneralTopics" class="forum-tab-title">Browse General Discussion Topics</a></li>
+                        <li><a href="#tabProjectForums" class="forum-tab-title">Expedition Forums</a></li>
+                        <li><a href="#tabWatchedTopics" class="forum-tab-title">Your watched topics</a></li>
+                    </ul>
 
-        <div class="inner">
-
-            <section class="forumSection" id="generalDiscussion">
-                <h3>Find forum topics</h3>
-                <g:form controller="forum" action="searchForums">
-                    <g:textField id="search-input" class="filled" placeholder="Search the forums..." name="query"/>
-                    <button class="button orange" style="font-size:1.3em" type="submit">Search</button>
-                </g:form>
-            </section>
-
-            <div id="tabControl" style="display:none">
-                <ul>
-                    <li><a href="#tabRecentTopics" class="forum-tab-title">Featured and recent topics</a></li>
-                    <li><a href="#tabGeneralTopics" class="forum-tab-title">Browse General Discussion Topics</a></li>
-                    <li><a href="#tabProjectForums" class="forum-tab-title">Expedition Forums</a></li>
-                    <li><a href="#tabWatchedTopics" class="forum-tab-title">Your watched topics</a></li>
-                </ul>
-
-                <div id="tabRecentTopics" class="tabContent" style="display:none"></div>
-                <div id="tabGeneralTopics" class="tabContent" style="display:none"></div>
-                <div id="tabProjectForums" class="tabContent" style="display:none"></div>
-                <div id="tabWatchedTopics" class="tabContent" style="display:none"></div>
+                    <div id="tabRecentTopics" class="tabContent" style="display:none"></div>
+                    <div id="tabGeneralTopics" class="tabContent" style="display:none"></div>
+                    <div id="tabProjectForums" class="tabContent" style="display:none"></div>
+                    <div id="tabWatchedTopics" class="tabContent" style="display:none"></div>
+                </div>
             </div>
         </div>
     </body>
