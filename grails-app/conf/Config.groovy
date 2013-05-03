@@ -27,36 +27,6 @@ if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
 }
 
-/******************************************************************************\
- *  SECURITY
-\******************************************************************************/
-if (!security.cas.urlPattern) {
-    security.cas.urlPattern = "/validate/save.*," +
-            "/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!show).)*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*" +
-            "/locality/.*,/collectionEvent/.*,/ajax/keepSessionAlive.*,/forum/.*,/template/.*"
-}
-if (!security.cas.urlExclusionPattern) {
-    security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
-}
-if (!security.cas.authenticateOnlyIfLoggedInPattern) {
-    security.cas.authenticateOnlyIfLoggedInPattern = "/,/project/index/.*,/task/show/.*,/tutorials/.*"
-}
-if (!security.cas.casServerName) {
-    security.cas.casServerName = "https://auth.ala.org.au"
-}
-if (!security.cas.loginUrl) {
-    security.cas.loginUrl = "${security.cas.casServerName}/cas/login"
-}
-if (!security.cas.logoutUrl) {
-    security.cas.logoutUrl = "${security.cas.casServerName}/cas/logout"
-}
-if (!security.cas.contextPath) {
-    //security.cas.contextPath = "/workforce" //"""${appName}"
-}
-if (!security.cas.bypass) {
-    security.cas.bypass = false
-}
-
 // server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
 
@@ -261,7 +231,7 @@ log4j = {
     warn   'org.mortbay.log',
            'grails.app'
     info   'grails.app'
-    trace  'grails.plugin.mail'
+    warn  'grails.plugin.mail'
 
-//    debug   'au.org.ala.cas.client'
+    trace   'au.org.ala.cas.client'
 }

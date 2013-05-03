@@ -1,3 +1,7 @@
+h1, h2, h3, h4 {
+    font-family: "Arial", arial, sans-serif;
+}
+
 #nav-site .navbar-inner {
     z-index: 100;
     background-color: blue;
@@ -86,4 +90,8 @@ nav#breadcrumb li.last:after {
 
 #expedition-stats h3 {
     background: url(../images/vp/compassrose.png) 75% top no-repeat;
+}
+
+.orange {
+    color: #ff4500;
 }

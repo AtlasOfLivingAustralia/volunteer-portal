@@ -26,7 +26,7 @@ grails.project.dependency.resolution = {
     }
     plugins {
         build ":tomcat:$grailsVersion"
-        runtime ":hibernate:2.2.1"
+        runtime ":hibernate:2.2.2"
         runtime ":mail:1.0.1"
         runtime ":csv:0.3.1"
         runtime ":executor:0.3"
