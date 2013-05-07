@@ -5,27 +5,32 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title>Create Expedition</title>
-        <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
     </head>
-    <body class="sublevel sub-site volunteerportal">
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:message code="default.create.label" args="[entityName]" /></span>
-        </div>
-        <div>
-            <h2><g:message code="default.create.label" args="[entityName]" /></h2>
-            <cl:messages />
-            <g:hasErrors bean="${projectInstance}">
-              <div class="errors">
-                <g:renderErrors bean="${projectInstance}" as="list" />
-              </div>
-            </g:hasErrors>
-            <g:form action="save" >
-                <div class="inner">
+
+    <body>
+
+        <content tag="page-header">
+            <nav id="breadcrumb">
+                <ol>
+                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                    <li><a href="${createLink(controller:'admin', action:'index')}"><g:message code="default.admin.label" default="Admin"/></a></li>
+                    <li class="last"><g:message code="default.create.label" args="[entityName]" /></li>
+                </ol>
+            </nav>
+            <h1><g:message code="default.create.label" args="[entityName]" /></h1>
+        </content>
+
+        <div class="row">
+            <div class="span12">
+                <g:hasErrors bean="${projectInstance}">
+                  <div class="errors">
+                    <g:renderErrors bean="${projectInstance}" as="list" />
+                  </div>
+                </g:hasErrors>
+                <g:form action="save" >
                     <table>
                         <tbody>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="name"><g:message code="project.name.label" default="Name" /></label>
@@ -34,7 +39,7 @@
                                     <g:textField name="name" maxlength="200" value="${projectInstance?.name}" />
                                 </td>
                             </tr>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="description"><g:message code="project.description.label" default="Description" /></label>
@@ -58,7 +63,7 @@
                                     </tinyMce:renderEditor>
                                 </td>
                             </tr>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="template"><g:message code="project.template.label" default="Template" /></label>
@@ -113,7 +118,7 @@
                                     <g:datePicker name="created" precision="day" value="${projectInstance?.created}" noSelection="['': '']" />
                                 </td>
                             </tr>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="bannerImage"><g:message code="project.bannerImage.label" default="Banner Image" /></label>
@@ -143,11 +148,11 @@
 
                         </tbody>
                     </table>
-                </div>
-                <div class="buttons">
-                    <span class="button"><g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" /></span>
-                </div>
-            </g:form>
+                    <div class="buttons">
+                        <g:submitButton class="btn btn-primary save" name="create" value="${message(code: 'default.button.create.label', default: 'Create')}" />
+                    </div>
+                </g:form>
+            </div>
         </div>
     </body>
 </html>

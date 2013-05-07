@@ -11,10 +11,6 @@
     <title>Volunteer Portal - ${projectInstance.name?:'Atlas of Living Australia'}</title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir:'js', file:'markerclusterer.js')}" type="text/javascript"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
-    <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
     <script type='text/javascript'>
         google.load('visualization', '1', {packages:['gauge']});
@@ -149,27 +145,21 @@
     </style>
 </head>
 
-<body class="sublevel sub-site volunteerportal">
+<body>
 
-  <header id="page-header">
-    <div class="inner">
-      <cl:messages />
-      <nav id="breadcrumb">
-        <ol>
-          <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-          <li><a href="${createLink(controller: 'project', action:'list')}"><g:message code="default.projects.label"/></a></li>
-          <li class="last">${projectInstance.featuredLabel?:'Volunteer Portal'}</li>
-        </ol>
-      </nav>
-      <hgroup>
+    <content tag="page-header">
+        <nav id="breadcrumb">
+            <ol>
+                <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                <li><a href="${createLink(controller: 'project', action:'list')}"><g:message code="default.projects.label"/></a></li>
+                <li class="last">${projectInstance.featuredLabel?:'Volunteer Portal'}</li>
+            </ol>
+        </nav>
         <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
-      </hgroup>
-    </div>
-  </header>
+    </content>
 
-
-  <div class="inner">
-    <div class="col-narrow margin-bottom-0">
+  <div class="row">
+    <div class="span12">
       <section class="boxed attached">
         <section class="padding-bottom centertext">
           <a href="${createLink(controller: 'transcribe', action:'index', id: projectInstance.id)}" class="button orange fullwidth">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a><br>
