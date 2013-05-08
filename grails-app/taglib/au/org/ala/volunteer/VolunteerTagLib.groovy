@@ -1739,5 +1739,65 @@ class VolunteerTagLib {
         }
     }
 
+    def headerContent = { attrs, body ->
 
+        def mb = new MarkupBuilder(out)
+        def bodyContent = body.call()
+
+        if (attrs.selectedNavItem) {
+            sitemesh.parameter(name: 'selectedNavItem', value: attrs.selectedNavItem)
+        }
+
+        sitemesh.captureContent(tag:'page-header') {
+
+            def crumbList = []
+            def keyIndex = 1
+
+            if (pageScope.crumbs) {
+                crumbList = pageScope.crumbs
+            } else {
+                Map crumb
+                while (crumb = attrs.getAt("breadcrumb${keyIndex++}")) {
+                    crumbList << crumb
+                }
+            }
+
+            mb.nav(id:'breadcrumb') {
+                ol {
+                    li {
+                        a(href:createLink(uri:'/')) {
+                            mkp.yield(message(code:'default.home.label'))
+                        }
+                    }
+                    if (crumbList) {
+                        for (int i = 0; i < crumbList?.size(); i++) {
+                            def item = crumbList[i]
+                            li {
+                                a(href: item.link) {
+                                    mkp.yield(item.label)
+                                }
+                            }
+                        }
+                    }
+                    li(class:'last') {
+                        span {
+                            mkp.yield(attrs.title)
+                        }
+                    }
+                }
+            }
+
+            mb.h1 {
+                mkp.yield(attrs.title)
+            }
+
+            if (bodyContent) {
+                mb.div {
+                    mb.mkp.yieldUnescaped(bodyContent)
+                }
+            }
+
+        }
+
+    }
 }

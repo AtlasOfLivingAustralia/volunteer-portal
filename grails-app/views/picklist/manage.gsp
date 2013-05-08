@@ -10,16 +10,13 @@
 
     <body>
 
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li><a href="${createLink(controller:'admin', action:'index')}"><g:message code="default.admin.label" default="Admin"/></a></li>
-                    <li class="last">Picklists</li>
-                </ol>
-            </nav>
-            <h1><g:message code="manage.list.label" args="[entityName]" default="Manage picklists"/></h1>
-        </content>
+        <cl:headerContent title="${message(code:'default.picklists.label', default:'Manage Picklists')}">
+            <%
+                pageScope.crumbs = [
+                    [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
+                ]
+            %>
+        </cl:headerContent>
 
         <div class="row">
             <div class="span12">

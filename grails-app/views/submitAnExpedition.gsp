@@ -7,18 +7,7 @@
     </head>
 
     <body>
-        <sitemesh:parameter name="selectedNavItem" value="submitexpedition"/>
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li class="last"><g:message code="default.submit.label" default="Submit an Expedition"/></li>
-                </ol>
-            </nav>
-
-            <h1>Submit an Expedition</h1>
-        </content>
-
+        <cl:headerContent title="${message(code:'default.submit.label', default:'Submit an Expedition')}" selectedNavItem="submitexpedition" />
         <div class="row">
             <div class="span12">
                 <p style="font-size: 1.2em">

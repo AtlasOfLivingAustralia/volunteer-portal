@@ -57,18 +57,13 @@
 
     <body>
 
-        <sitemesh:parameter name="selectedNavItem" value="tutorials"/>
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li><a class="home" href="${createLink(controller: 'admin', action: 'index')}"><g:message code="default.admin.label" default="Admin"/></a></li>
-                    <li class="last"><g:message code="default.tutorials.label" default="Tutorial Management"/></li>
-                </ol>
-            </nav>
-            <h1>Tutorial Management</h1>
-        </content>
-
+        <cl:headerContent title="${message(code:'default.tutorialmanagement.label', default:'Tutorial Management')}">
+            <%
+                pageScope.crumbs = [
+                    [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
+                ]
+            %>
+        </cl:headerContent>
 
         <div class="row">
             <div class="span12">

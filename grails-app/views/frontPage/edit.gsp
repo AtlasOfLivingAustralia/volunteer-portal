@@ -7,16 +7,13 @@
 
     <body>
 
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li><a href="${createLink(controller: 'admin', action: 'index')}"><g:message code="default.admin.label" default="Admin"/></a></li>
-                    <li class="last">Front Page Options</li>
-                </ol>
-            </nav>
-            <h1><g:message code="manage.frontpage.label" default="Front Page Options"/></h1>
-        </content>
+        <cl:headerContent title="${message(code:'default.frontpageoptions.label', default:'Front Page Options')}">
+            <%
+                pageScope.crumbs = [
+                    [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
+                ]
+            %>
+        </cl:headerContent>
 
         <div class="row">
             <div class="span12">

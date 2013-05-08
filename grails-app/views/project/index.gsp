@@ -147,16 +147,13 @@
 
 <body>
 
-    <content tag="page-header">
-        <nav id="breadcrumb">
-            <ol>
-                <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                <li><a href="${createLink(controller: 'project', action:'list')}"><g:message code="default.projects.label"/></a></li>
-                <li class="last">${projectInstance.featuredLabel?:'Volunteer Portal'}</li>
-            </ol>
-        </nav>
-        <h1>Welcome to the ${projectInstance.name?:'Volunteer Portal'}</h1>
-    </content>
+    <cl:headerContent title="Welcome to the ${projectInstance.name?:'Volunteer Portal'}">
+        <%
+            pageScope.crumbs = [
+                [link:createLink(controller:'admin'),label:message(code:'default.projects.label')]
+            ]
+        %>
+    </cl:headerContent>
 
   <div class="row">
     <div class="span12">

@@ -133,16 +133,7 @@
 
         </script>
 
-        <sitemesh:parameter name="selectedNavItem" value="forum"/>
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li class="last"><g:message code="default.forum.label" default="Forum"/></li>
-                </ol>
-            </nav>
-            <h1><g:message code="default.forum.label" default="Biodiversity Volunteer Portal Forum"/></h1>
-        </content>
+        <cl:headerContent title="${message(code:'default.forum.label', default:'Biodiversity Volunteer Portal Forum')}" selectedNavItem="forum"/>
 
         <div class="row">
             <div class="span12">

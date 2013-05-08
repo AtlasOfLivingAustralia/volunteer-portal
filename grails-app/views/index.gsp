@@ -7,12 +7,9 @@
     </head>
 
     <body>
-        <sitemesh:parameter name="selectedNavItem" value="bvp"/>
-        <content tag="page-header">
-            <h1>Biodiversity Volunteer Portal</h1>
 
-            <p style="font-size: 1.2em">Helping to understand, manage and conserve Australia's biodiversity<br>through community based capture of biodiversity data</p>
-
+        <cl:headerContent title="${message(code:'default.frontpageheading.label', default:'Biodiversity Volunteer Portal')}" selectedNavItem="bvp">
+            <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based capture of biodiversity data</p>
             %{--<header id="page-header">--}%
                 %{--<nav id="nav-1-2-3">--}%
                     %{--<ol>--}%
@@ -42,9 +39,7 @@
                     %{--</ol>--}%
                 %{--</nav>--}%
             %{--</header>--}%
-
-        </content>
-
+        </cl:headerContent>
 
         <div class="row">
             <div class="span9">

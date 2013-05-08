@@ -61,16 +61,7 @@
 
     <body>
 
-        <sitemesh:parameter name="selectedNavItem" value="expeditions" />
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li class="last">Expeditions</li>
-                </ol>
-            </nav>
-            <h1>Volunteer for a virtual expedition</h1>
-        </content>
+        <cl:headerContent title="${message(code:'default.projectlist.label', default: "Volunteer for a virtual expedition")}" selectedNavItem="expeditions"/>
 
         <div class="row">
             <div class="span12">

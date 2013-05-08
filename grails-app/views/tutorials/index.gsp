@@ -8,19 +8,11 @@
 
     <body>
 
-        <sitemesh:parameter name="selectedNavItem" value="tutorials" />
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li class="last"><g:message code="default.tutorials.label" default="Tutorials"/></li>
-                </ol>
-            </nav>
-            <h1>Tutorials</h1>
+        <cl:headerContent title="${message(code:'default.tutorials.label', default:'Tutorials')}" selectedNavItem="tutorials">
             <cl:ifAdmin>
                 <a class="btn" href="${createLink(controller:'admin', action:'tutorialManagement')}">Manage</a>
             </cl:ifAdmin>
-        </content>
+        </cl:headerContent>
 
         <div class="row">
             <div class="span12">

@@ -8,15 +8,7 @@
 
     <body>
 
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li class="last">Administration</li>
-                </ol>
-            </nav>
-            <h1>Biodiversity Volunteer Portal Administration</h1>
-        </content>
+        <cl:headerContent title="${message(code:'default.admin.label', default:'Admin')}" />
 
         <div class="row">
             <div class="span12">

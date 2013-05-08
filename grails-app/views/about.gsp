@@ -8,17 +8,7 @@
 
     <body>
 
-        <sitemesh:parameter name="selectedNavItem" value="aboutbvp"/>
-        <content tag="page-header">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li class="last"><g:message code="default.about.label" default="About the Volunteer Portal"/></li>
-                </ol>
-            </nav>
-
-            <h1>About the Volunteer Portal</h1>
-        </content>
+        <cl:headerContent title="${message(code:'default.about.label', default:'About the Volunteer Portal')}" selectedNavItem="aboutbvp" />
 
         <div class="row">
             <div class="span12">
