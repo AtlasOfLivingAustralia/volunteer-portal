@@ -130,7 +130,7 @@
                         </g:if>
                     </table>
                     <div class="notifyMe">
-                        <g:checkBox name="watchProject" id="watchProjectCheckbox" checked="${isWatching}" />&nbsp;Notify me when messages are posted to this project
+                        <g:checkBox name="watchProject" id="watchProjectCheckbox" checked="${isWatching}" />&nbsp;Email me when messages are posted to this project
                         <span id="watchUpdateMessage"></span>
                     </div>
                 </div>

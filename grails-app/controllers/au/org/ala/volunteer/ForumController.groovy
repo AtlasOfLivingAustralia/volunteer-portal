@@ -574,12 +574,12 @@ class ForumController {
                 if (!watchList.containsUser(user)) {
                     watchList.addToUsers(user)
                 }
-                results.message = "You will now be notified when messages are posted to this project"
+                results.message = "You will be sent a notification email when messages are posted to this project"
             } else {
                 if (watchList.containsUser(user)) {
                     watchList.removeFromUsers(user)
                 }
-                results.message = "You will no longer be notified when messages are posted to this project"
+                results.message = "You will no longer be sent notification emails when messages are posted to this project"
             }
 
             watchList.save()
