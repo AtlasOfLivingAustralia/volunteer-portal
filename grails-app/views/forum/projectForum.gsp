@@ -15,6 +15,18 @@
                 margin-bottom: 10px;
             }
 
+            .notifyMe {
+                margin: 10px;
+            }
+
+            #watchUpdateMessage {
+                display: none;
+                background-color: lightblue;
+                color: black;
+                padding:5px;
+                font-weight: bold;
+            }
+
         </style>
 
     </head>
@@ -66,6 +78,16 @@
                 $("th > a").addClass("button")
                 $("th.sorted > a").addClass("current")
 
+                $("#watchProjectCheckbox").change(function(e) {
+                    e.preventDefault();
+                    var watchThisProject = $(this).is(":checked");
+                    $.ajax("${createLink(controller:'forum', action:'ajaxWatchProject', params:[projectId: projectInstance.id])}&watch=" + watchThisProject).done(function(data) {
+                        if (data.success) {
+                            $("#watchUpdateMessage").css("display", "block").html(data.message);
+                        }
+                    });
+                })
+
             });
 
         </script>
@@ -107,6 +129,10 @@
                             </tr>
                         </g:if>
                     </table>
+                    <div class="notifyMe">
+                        <g:checkBox name="watchProject" id="watchProjectCheckbox" checked="${isWatching}" />&nbsp;Notify me when messages are posted to this project
+                        <span id="watchUpdateMessage"></span>
+                    </div>
                 </div>
                 <div id="projectForumTabs" style="display:none">
                     <ul>

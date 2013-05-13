@@ -31,7 +31,16 @@ class ForumController {
             def projectInstance = Project.get(projectId)
             if (projectInstance) {
                 def topics = forumService.getProjectForumTopics(projectInstance, false, params)
-                return [projectInstance: projectInstance, topics: topics]
+
+                def userInstance = userService.currentUser
+                def isWatching = false
+
+                def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
+                if (projectWatchList) {
+                    isWatching = projectWatchList.users.find { it.id == userInstance.id }
+                }
+
+                return [projectInstance: projectInstance, topics: topics, isWatching: isWatching]
             }
         }
 
@@ -544,6 +553,40 @@ class ForumController {
         items << [effect: 'Block quotes', description:'Block quotes are produced when lines and paragraphs are preceded by "&gt;"', code:blockQuoteDemo]
 
         [items: items]
+    }
+
+    def ajaxWatchProject() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def results = [success: false, message:'']
+
+        def user = userService.currentUser
+        
+        if (user && projectInstance && params.containsKey("watch")) {
+            def watch = params.boolean("watch")
+            
+            def watchList = ProjectForumWatchList.findByProject(projectInstance)
+            if (!watchList) {
+                watchList = new ProjectForumWatchList(project: projectInstance)
+                watchList.save(failOnError: true)
+            }
+
+            if (watch) {
+                if (!watchList.containsUser(user)) {
+                    watchList.addToUsers(user)
+                }
+                results.message = "You will now be notified when messages are posted to this project"
+            } else {
+                if (watchList.containsUser(user)) {
+                    watchList.removeFromUsers(user)
+                }
+                results.message = "You will no longer be notified when messages are posted to this project"
+            }
+
+            watchList.save()
+            results.success = true;
+        }
+        
+        render(results as JSON)
     }
 
 }
