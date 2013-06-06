@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import org.apache.commons.io.ByteOrderMark
+import org.apache.commons.io.input.BOMInputStream
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartFile
 import java.util.regex.Pattern
@@ -75,17 +77,29 @@ class StagingService {
         def dataFileMap = [:]
         def dataFileColumns = []
         if (dataFile.exists()) {
-
-            new CSVMapReader(new FileReader(dataFile)).each { Map map ->
-                if (map.externalId) {
-                    if (!dataFileColumns) {
-                        map.each {
-                            if (it.key != 'externalId') {
-                                dataFileColumns << it.key
+            FileInputStream fis = new FileInputStream(dataFile)
+            BOMInputStream bomInputStream = new BOMInputStream(fis, ByteOrderMark.UTF_8) // Ignore any UTF-8 Byte Order Marks, as they will stuff up the mapping!
+            try {
+                new CSVMapReader(new InputStreamReader(bomInputStream)).each { Map map ->
+                    if (map.externalId) {
+                        if (!dataFileColumns) {
+                            map.each {
+                                if (it.key != 'externalId') {
+                                    dataFileColumns << it.key
+                                }
                             }
                         }
+                        dataFileMap[map.remove('externalId')] = map
                     }
-                    dataFileMap[map.remove('externalId')] = map
+                }
+            } finally {
+
+                if (bomInputStream) {
+                    bomInputStream.close()
+                }
+
+                if (fis) {
+                    fis.close()
                 }
             }
         }
@@ -136,22 +150,33 @@ class StagingService {
         def dataFileMap = [:]
         def dataFileColumns = []
         if (dataFile.exists()) {
-
-            new CSVMapReader(new FileReader(dataFile)).each { Map map ->
-                if (map.filename) {
-                    if (!dataFileColumns) {
-                        map.each {
-                            if (it.key != 'filename') {
-                                dataFileColumns << it.key
+            FileInputStream fis = new FileInputStream(dataFile)
+            BOMInputStream bomInputStream = new BOMInputStream(fis, ByteOrderMark.UTF_8) // Ignore any UTF-8 Byte Order Marks, as they will stuff up the mapping!
+            try {
+                new CSVMapReader(new InputStreamReader(bomInputStream)).each { Map map ->
+                    if (map.filename) {
+                        if (!dataFileColumns) {
+                            map.each {
+                                if (it.key != 'filename') {
+                                    dataFileColumns << it.key
+                                }
                             }
                         }
-                    }
 
-                    def filename = map.remove('filename')
+                        def filename = map.remove('filename')
 
-                    if (filename) {
-                        dataFileMap[filename] = map
+                        if (filename) {
+                            dataFileMap[filename] = map
+                        }
                     }
+                }
+            } finally {
+                if (bomInputStream) {
+                    bomInputStream.close()
+                }
+
+                if (fis) {
+                    fis.close()
                 }
             }
         }
