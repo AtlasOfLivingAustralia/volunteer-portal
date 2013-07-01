@@ -2,7 +2,7 @@
 //grails.project.test.class.dir = "target/test-classes"
 //grails.project.test.reports.dir = "target/test-reports"
 grails.project.work.dir = "target"
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/${appName}.war"
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -26,11 +26,12 @@ grails.project.dependency.resolution = {
     }
     plugins {
         build ":tomcat:$grailsVersion"
-        runtime ":hibernate:2.2.1"
+        runtime ":hibernate:$grailsVersion"
+        runtime ":jquery:1.8.3"
+        runtime ":resources:1.2.RC2"
         runtime ":mail:1.0.1"
         runtime ":csv:0.3.1"
         runtime ":executor:0.3"
-        runtime ":jquery:1.7.1"
         runtime ":markdown:1.0.0.RC1"
         runtime ":pretty-time:0.3"
         runtime ":quartz:1.0-RC5"

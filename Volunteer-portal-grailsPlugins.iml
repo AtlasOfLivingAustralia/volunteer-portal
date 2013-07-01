@@ -4,12 +4,12 @@
     <facet type="web" name="GrailsWeb">
       <configuration>
         <webroots>
-          <root url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/markdown-1.0.0.RC1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/quartz-1.0-RC5/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/csv-0.3.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/mail-1.0.1/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/web-app" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -29,14 +29,14 @@
     <content url="file://$MODULE_DIR$/target/plugins/executor-0.3">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/executor-0.3/src/groovy" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.1">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.1/grails-app/i18n" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.3">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.3/grails-app/i18n" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/grails-app/taglib" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/plugins/mail-1.0.1">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/mail-1.0.1/src/groovy" isTestSource="false" />
@@ -61,19 +61,27 @@
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/quartz-1.0-RC5/grails-app/i18n" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/quartz-1.0-RC5/grails-app/services" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/resources-1.2.RC2/grails-app/taglib" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/tomcat-2.2.1" />
+    <content url="file://$MODULE_DIR$/target/plugins/tomcat-2.2.3" />
     <content url="file://$MODULE_DIR$/target/plugins/webxml-1.4.1">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.1" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.3" level="application" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (Volunteer-portal-grailsPlugins)">
         <CLASSES>
+          <root url="file://$MODULE_DIR$/target/plugins/pretty-time-0.3/lib" />
+          <root url="file://$MODULE_DIR$/target/plugins/markdown-1.0.0.RC1/lib" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/c3p0/c3p0/jars/c3p0-0.9.1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.quartz-scheduler/quartz/jars/quartz-2.1.5.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/asm/asm-analysis/jars/asm-analysis-3.3.1.jar!/" />
@@ -89,8 +97,6 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-test/jars/spring-test-3.1.0.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.activation/activation/jars/activation-1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
-          <root url="file://$MODULE_DIR$/target/plugins/pretty-time-0.3/lib" />
-          <root url="file://$MODULE_DIR$/target/plugins/markdown-1.0.0.RC1/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

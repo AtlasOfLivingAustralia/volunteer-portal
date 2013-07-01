@@ -102,8 +102,8 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="grails-2.2.1" level="application" />
     <orderEntry type="module" module-name="Volunteer-portal-grailsPlugins" />
+    <orderEntry type="library" name="grails-2.2.3" level="application" />
   </component>
 </module>
 
