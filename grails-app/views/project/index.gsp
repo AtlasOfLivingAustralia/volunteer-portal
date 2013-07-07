@@ -60,7 +60,7 @@
             map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
             infowindow = new google.maps.InfoWindow();
             // load markers via JSON web service
-            var tasksJsonUrl = "${resource(dir: "project/tasksToMap", file: params.id)}";
+            var tasksJsonUrl = "${createLink(controller: "project", action:'tasksToMap', id: params.id)}";
             $.get(tasksJsonUrl, {}, drawMarkers);
         }
 
@@ -91,10 +91,10 @@
 
         function load_content(marker, id){
             $.ajax({
-                url: "${resource(dir: "task/details", file: '/')}" + id + ".json",
+
+                url: "${createLink(controller: 'task', action:'details')}/" + id + ".json",
                 success: function(data){
-                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: "+data.cat
-                            +"<br/>Taxon: "+data.name+"<br/>Transcribed by: "+data.transcriber+"</div>";
+                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: "+data.name+"<br/>Transcribed by: "+data.transcriber+"</div>";
                     infowindow.close();
                     infowindow.setContent(content);
                     infowindow.open(map, marker);
@@ -110,12 +110,12 @@
               loadMap();
             </g:if>
 
-            var opts = {
-                titleShow: false,
-                autoDimensions: false,
-                width: 500
-            }
-            $('button#show_icon_selector').fancybox(opts);
+//            var opts = {
+//                titleShow: false,
+//                autoDimensions: false,
+//                width: 500
+//            }
+//            $('button#show_icon_selector').fancybox(opts);
 
         });
 
@@ -159,11 +159,11 @@
     <div class="span12">
       <section class="boxed attached">
         <section class="padding-bottom centertext">
-          <a href="${createLink(controller: 'transcribe', action:'index', id: projectInstance.id)}" class="button orange fullwidth">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a><br>
-          <a href="${createLink(controller: 'tutorials', action:'index')}" class="button">View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt=""></a>
-          <a href="${createLink(controller: 'user', action:'myStats', params: [projectId:projectInstance.id])}" class="button last">My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt=""></a><br>
+          <a href="${createLink(controller: 'transcribe', action:'index', id: projectInstance.id)}" class="btn btn-large btn-orange">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a><br>
+          <a href="${createLink(controller: 'tutorials', action:'index')}" class="btn">View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt=""></a>
+          <a href="${createLink(controller: 'user', action:'myStats', params: [projectId:projectInstance.id])}" class="btn">My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt=""></a><br>
           <g:if test="${au.org.ala.volunteer.FrontPage.instance().enableForum}">
-            <a style="margin-top: 8px;" href="${createLink(controller: 'forum', action:'projectForum', params: [projectId:projectInstance.id])}" class="button">Visit the Project Forum&nbsp;<img src="${resource(dir:'images', file:'forum.png')}" width="18" height="18" alt="Forum"></a>
+            <a style="margin-top: 8px;" href="${createLink(controller: 'forum', action:'projectForum', params: [projectId:projectInstance.id])}" class="btn">Visit the Project Forum&nbsp;<img src="${resource(dir:'images', file:'forum.png')}" width="18" height="18" alt="Forum"></a>
           </g:if>
         </section>
         <section class="padding-bottom">
