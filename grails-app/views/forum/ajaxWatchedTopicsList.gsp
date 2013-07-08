@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.ProjectForumTopic" %>
 <div>
-    <table class="bvp-expeditions">
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <g:sortableColumn class="button" property="title" title="Topic" action="index" params="${params}" />
@@ -40,8 +40,8 @@
                     <td>${topic.messages.size() - 1}</td>
                     <td><g:formatDate date="${topic.lastReplyDate}" format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/></td>
                     <td>
-                        <button class="btnViewTopic">View topic</button>
-                        <button class="btnUnwatchTopic">Stop watching topic</button>
+                        <button class="btn btn-small btnViewTopic">View topic</button>
+                        <button class="btn btn-small btnUnwatchTopic">Stop watching topic</button>
                     </td>
                 </tr>
             </g:each>

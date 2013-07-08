@@ -15,18 +15,6 @@
                 padding: 10px;
             }
 
-            #search-input {
-                width: 200px;
-                height: 27px;
-                position: relative;
-                outline: none;
-                font: normal 1.2em/27px Arial, Helvetica, sans-serif;
-                padding: 0 6px;
-                margin: 0 7px 6px 0!important;
-                border: 1px #a5acb2 solid;
-                color: #000;
-            }
-
             .ui-widget {
                 font-family: inherit !important;
                 font-size: inherit !important;
@@ -72,9 +60,9 @@
         <script type="text/javascript">
 
             function renderTab(tabIndex, q, offset, max, sort, order) {
-                var $tabs = $('#tabControl').tabs();
-                var selector = ""
-                var baseUrl = ""
+                // var $tabs = $('#tabControl').tabs();
+                var selector = "";
+                var baseUrl = "";
                 if (tabIndex == 0) {
                     selector = "#tabRecentTopics";
                     baseUrl = "${createLink(action:'ajaxRecentTopicsList')}";
@@ -118,16 +106,14 @@
             }
 
             $(document).ready(function() {
-                var tabOptions = {
-                    selected: ${params.selectedTab ?: 0},
-                    activate: function (e, ui) {
-                        renderTab(ui.newTab.index());
-                    },
-                    hide: false
 
-                };
-                $("#tabControl").tabs(tabOptions);
-                $("#tabControl").css("display", "block");
+                $('a[data-toggle="tab"]').on('click', function (e) {
+                    var tabIndex = $(this).attr("tabIndex");
+                    if (tabIndex) {
+                        renderTab(tabIndex);
+                    }
+                });
+
                 renderTab(${params.selectedTab ?: 0}, ${params.q ? '"' + params.q + '"': 'null'}, ${params.offset ?: "null"}, ${params.max ?: "null"}, ${params.sort ? '"' + params.sort + '"': "null"}, ${params.order ? '"' + params.order + '"' : "null"});
             });
 
@@ -135,28 +121,31 @@
 
         <cl:headerContent title="${message(code:'default.forum.label', default:'Biodiversity Volunteer Portal Forum')}" selectedNavItem="forum"/>
 
-        <div class="row">
+        <div class="row" id="content">
             <div class="span12">
-                <section class="forumSection" id="generalDiscussion">
+                <section class="forumSection">
                     <h3>Find forum topics</h3>
                     <g:form controller="forum" action="searchForums">
-                        <g:textField id="search-input" class="filled" placeholder="Search the forums..." name="query"/>
-                        <button class="button orange" style="font-size:1.3em" type="submit">Search</button>
+                        <g:textField style="margin-bottom: 0px" id="search-input" class="filled" placeholder="Search the forums..." name="query"/>
+                        <button class="btn" style="font-size:1.3em" type="submit">Search</button>
                     </g:form>
                 </section>
 
-                <div id="tabControl" style="display:none">
-                    <ul>
-                        <li><a href="#tabRecentTopics" class="forum-tab-title">Featured and recent topics</a></li>
-                        <li><a href="#tabGeneralTopics" class="forum-tab-title">Browse General Discussion Topics</a></li>
-                        <li><a href="#tabProjectForums" class="forum-tab-title">Expedition Forums</a></li>
-                        <li><a href="#tabWatchedTopics" class="forum-tab-title">Your watched topics</a></li>
+                <div id="tabControl" class="tabbable">
+                    <ul class="nav nav-tabs">
+                        <li class="${!params.selectedTab ? 'active' : ''}"><a href="#tabRecentTopics" class="forum-tab-title" data-toggle="tab" tabIndex="0">Featured and recent topics</a></li>
+                        <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabGeneralTopics" class="forum-tab-title" data-toggle="tab" tabIndex="1">Browse General Discussion Topics</a></li>
+                        <li class="${params.selectedTab == '2' ? 'active' : ''}"><a href="#tabProjectForums" class="forum-tab-title" data-toggle="tab" tabIndex="2">Expedition Forums</a></li>
+                        <li class="${params.selectedTab == '3' ? 'active' : ''}"><a href="#tabWatchedTopics" class="forum-tab-title" data-toggle="tab" tabIndex="3">Your watched topics</a></li>
                     </ul>
 
-                    <div id="tabRecentTopics" class="tabContent" style="display:none"></div>
-                    <div id="tabGeneralTopics" class="tabContent" style="display:none"></div>
-                    <div id="tabProjectForums" class="tabContent" style="display:none"></div>
-                    <div id="tabWatchedTopics" class="tabContent" style="display:none"></div>
+                    <div class="tab-content">
+                        <div id="tabRecentTopics" class="tab-pane ${!params.selectedTab ? 'active' : ''}"></div>
+                        <div id="tabGeneralTopics" class="tab-pane ${params.selectedTab == '1' ? 'active' : ''}"></div>
+                        <div id="tabProjectForums" class="tab-pane ${params.selectedTab == '2' ? 'active' : ''}"></div>
+                        <div id="tabWatchedTopics" class="tab-pane ${params.selectedTab == '3' ? 'active' : ''}"></div>
+                    </div>
+
                 </div>
             </div>
         </div>

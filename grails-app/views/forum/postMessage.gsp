@@ -4,10 +4,7 @@
     <head>
         <title>Volunteer Portal - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-        <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
-        <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
         <style type="text/css">
 
@@ -23,7 +20,7 @@
 
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
         <script type="text/javascript">
 
@@ -73,18 +70,12 @@
 
         </script>
 
-        <cl:navbar selected=""/>
+        <cl:headerContent title="" selectedNavItem="forum" hideTitle="${true}" hideCrumbs="${true}">
+            <vpf:forumNavItems topic="${topic}" lastLabel="${message(code:'forum.project.newMessage', default:'New Message')}" />
+        </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <vpf:forumNavItems topic="${topic}" lastLabel="${message(code:'forum.project.newMessage', default:'New Message')}" />
-            </div>
-        </header>
-
-        <div>
-            <div class="inner">
-
+        <div class="row">
+            <div class="span12">
                 <h3>Conversation history:</h3>
                 <div style="height: 300px; overflow-y: scroll; border: 1px solid #a9a9a9" >
                     <g:each in="${topic.messages?.sort { it.date } }" var="reply">
@@ -99,10 +90,12 @@
 
                 </div>
 
-                <div class="originalMessageButtons">
-                    <button id="btnInsertQuote" class="button">Insert quote</button>
-                    <label for="insertTagLine">Insert tag line</label>
-                    <g:checkBox name="insertTagline" id="insertTagLine" checked="true"/>
+                <div class="originalMessageButtons" class="form-inline">
+                    <button class="btn" id="btnInsertQuote" class="button">Insert quote</button>
+                    <label for="insertTagLine">
+                        <g:checkBox name="insertTagline" id="insertTagLine" checked="true"/>
+                        Insert tag line
+                    </label>
                 </div>
 
                 <h2>Your message:</h2>
@@ -112,13 +105,16 @@
                     <g:hiddenField name="topicId" value="${topic.id}"/>
                     <g:hiddenField name="replyTo" value="${replyTo?.id}"/>
                     <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${params.messageText}"/>
-                    <g:checkBox name="watchTopic" checked="${isWatched}"/>
-                    <label for="watchTopic">Watch this topic</label>
+
+                    <label for="watchTopic">
+                        <g:checkBox name="watchTopic" checked="${isWatched}"/>
+                        Watch this topic
+                    </label>
 
                     <div>
-                        <g:actionSubmit class="button" value="Preview" action="previewMessage"/>
-                        <g:actionSubmit class="button" value="Post message" action="saveNewTopicMessage"/>
-                        <button class="button" id="btnCancel">Cancel</button>
+                        <g:actionSubmit class="btn" value="Preview" action="previewMessage"/>
+                        <g:actionSubmit class="btn" value="Post message" action="saveNewTopicMessage"/>
+                        <button class="btn" id="btnCancel">Cancel</button>
                     </div>
 
                 </g:form>

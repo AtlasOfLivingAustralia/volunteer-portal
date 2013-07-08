@@ -1489,11 +1489,11 @@ class VolunteerTagLib {
     def messages = { attrs, body ->
 
         if (flash.message) {
-            out << '<div class="alert alert-info">' + flash.message + '</div>'
+            out << '<div class="alert alert-info" style="margin-top:10px">' + flash.message + '</div>'
         }
 
         if (flash.systemMessage) {
-            out << '<div class="alert alert-error">' + flash.systemMessage + '</div>'
+            out << '<div class="alert alert-error" style="margin-top:10px">' + flash.systemMessage + '</div>'
         }
     }
 
@@ -1743,6 +1743,8 @@ class VolunteerTagLib {
      * @attr title
      * @attr selectedNavItem
      * @attr crumbLabel
+     * @attr hideTitle
+     * @attr hideCrumbs
      */
     def headerContent = { attrs, body ->
 
@@ -1768,33 +1770,37 @@ class VolunteerTagLib {
                 }
             }
 
-            mb.nav(id:'breadcrumb') {
-                ol {
-                    li {
-                        a(href:createLink(uri:'/')) {
-                            mkp.yield(message(code:'default.home.label'))
+            if (!attrs.hideCrumbs) {
+                mb.nav(id:'breadcrumb') {
+                    ol {
+                        li {
+                            a(href:createLink(uri:'/')) {
+                                mkp.yield(message(code:'default.home.label'))
+                            }
                         }
-                    }
-                    if (crumbList) {
-                        for (int i = 0; i < crumbList?.size(); i++) {
-                            def item = crumbList[i]
-                            li {
-                                a(href: item.link) {
-                                    mkp.yield(item.label)
+                        if (crumbList) {
+                            for (int i = 0; i < crumbList?.size(); i++) {
+                                def item = crumbList[i]
+                                li {
+                                    a(href: item.link) {
+                                        mkp.yield(item.label)
+                                    }
                                 }
                             }
                         }
-                    }
-                    li(class:'last') {
-                        span {
-                            mkp.yield(crumbLabel)
+                        li(class:'last') {
+                            span {
+                                mkp.yield(crumbLabel)
+                            }
                         }
                     }
                 }
             }
 
-            mb.h1 {
-                mkp.yield(attrs.title)
+            if (!attrs.hideTitle) {
+                mb.h1 {
+                    mkp.yield(attrs.title)
+                }
             }
 
             if (bodyContent) {

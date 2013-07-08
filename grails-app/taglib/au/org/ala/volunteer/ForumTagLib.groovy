@@ -56,7 +56,7 @@ class ForumTagLib {
                                 mb.img(style: 'vertical-align: middle', src: resource(dir: '/images', file: 'lock.png'))
                                 mkp.yield("Topic is locked")
                             } else {
-                                mb.button(id:'btnReply', class:'button') {
+                                mb.button(id:'btnReply', class:'btn') {
                                     mb.img(src:resource(dir:'images', file:'reply.png')) {
                                         mkp.yieldUnescaped("&nbsp;Post Reply")
                                     }
@@ -286,7 +286,7 @@ class ForumTagLib {
                 }
             }
             if (!hidePageButtons) {
-                div(class: 'paginateButtons') {
+                div(class: 'pagination') {
                     mkp.yieldUnescaped(paginate(total: totalCount, action: paginateAction, params: params))
                 }
             }
