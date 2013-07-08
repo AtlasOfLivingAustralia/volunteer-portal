@@ -6,12 +6,12 @@
         <webroots>
           <root url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/mail-1.0.1/grails-app/views" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/quartz-1.0-RC5/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/csv-0.3.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/markdown-1.0.0.RC1/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.8/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.8/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.10/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.10/grails-app/views" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -24,11 +24,11 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.8">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.8/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.8/grails-app/controllers" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.8/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.8/grails-app/taglib" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.10">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.10/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.10/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.10/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.1.10/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/plugins/csv-0.3.1">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/csv-0.3.1/src/groovy" isTestSource="false" />
@@ -37,14 +37,14 @@
     <content url="file://$MODULE_DIR$/target/plugins/executor-0.3">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/executor-0.3/src/groovy" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.2">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.2/grails-app/i18n" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.3">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/hibernate-2.2.3/grails-app/i18n" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1">
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.7.1/grails-app/taglib" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3">
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/plugins/lesscss-resources-1.3.3" />
     <content url="file://$MODULE_DIR$/target/plugins/mail-1.0.1">
@@ -79,13 +79,14 @@
     <content url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/plugins/tomcat-2.2.1" />
+    <content url="file://$MODULE_DIR$/target/plugins/tomcat-2.2.3" />
     <content url="file://$MODULE_DIR$/target/plugins/webxml-1.4.1">
       <sourceFolder url="file://$MODULE_DIR$/target/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.1" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.3" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.3" level="application" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (TRY-DJB-volunteer-bootstrap-grailsPlugins)">
         <CLASSES>
@@ -106,6 +107,13 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.opencsv/opencsv/jars/opencsv-2.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.mozilla/rhino/jars/rhino-1.7R4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-io/commons-io/jars/commons-io-2.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.lesscss/lesscss/jars/lesscss-1.3.3.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.jasig.cas.client/cas-client-core/jars/cas-client-core-3.1.12.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-httpclient/commons-httpclient/jars/commons-httpclient-3.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/au.org.ala/ala-cas-client/jars/ala-cas-client-1.0-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
