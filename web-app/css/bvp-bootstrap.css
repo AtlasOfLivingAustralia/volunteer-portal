@@ -256,14 +256,14 @@ th h2, th h3 {
 }
 
 
-th h2 a, th h3 a {
+h2 a, h3 a, h4 a {
     color: black;
     text-decoration: none;
     padding: 0;
     margin: 0;
 }
 
-th h2 a:hover, th h3 a:hover {
+h2 a:hover, h3 a:hover, h4 a:hover {
     color: #df4a21;
     text-decoration: none;
     padding: 0;
@@ -298,10 +298,19 @@ a.fieldHelp {
     vertical-align: top;
 }
 
-h2, h3 {
+h2, h3, h4, h5 {
     font-weight: normal;
 }
 
 .pagination a {
     text-decoration: none;
+}
+
+#recordsMap {
+    width: 204px;
+    height: 204px;
+    max-height: 204px;
+    max-width: 204px;
+    margin: 0px 0;
+    /*float: right;*/
 }
