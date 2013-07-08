@@ -182,7 +182,7 @@
 
 <body>
 
-    <cl:headerContent title="Welcome to the ${projectInstance.name ?: 'Volunteer Portal'}">
+    <cl:headerContent title="Welcome to the ${projectInstance.name ?: 'Volunteer Portal'}" selectedNavItem="expeditions">
         <%
             pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
@@ -190,9 +190,8 @@
         %>
 
         <div>
-
             <cl:ifValidator project="${projectInstance}">
-                <button style="margin-right: 5px" class="btn pull-right" href="${createLink(controller: 'task', action: 'projectAdmin', id: projectInstance.id)}">Validate tasks</button>
+                <g:link style="margin-right: 5px" class="btn pull-right" controller="task" action="projectAdmin" id="${projectInstance.id}">Validate tasks</g:link>
             </cl:ifValidator>
             <cl:isLoggedIn>
                 <cl:ifAdmin>
