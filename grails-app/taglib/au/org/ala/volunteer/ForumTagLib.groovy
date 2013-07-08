@@ -509,7 +509,7 @@ class ForumTagLib {
         if (messages) {
             def mb = new MarkupBuilder(out)
 
-            mb.table(class: 'forum-table', style:'width: 100%') {
+            mb.table(class: 'forum-table table table-striped table-condensed table-bordered', style:'width: 100%') {
                 tbody {
                     ForumTopic lastTopic = null
 
@@ -581,7 +581,7 @@ class ForumTagLib {
                     }
                 }
             }
-            mb.div(class: 'paginateButtons') {
+            mb.div(class: 'pagination') {
                 mkp.yieldUnescaped(paginate(controller: attrs.paginateController, action: attrs.paginateAction, total: messages.totalCount, params: params))
             }
 
