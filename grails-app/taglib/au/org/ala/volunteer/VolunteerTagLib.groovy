@@ -1739,10 +1739,16 @@ class VolunteerTagLib {
         }
     }
 
+    /**
+     * @attr title
+     * @attr selectedNavItem
+     * @attr crumbLabel
+     */
     def headerContent = { attrs, body ->
 
         def mb = new MarkupBuilder(out)
         def bodyContent = body.call()
+        def crumbLabel = attrs.crumbLabel ?: attrs.title
 
         if (attrs.selectedNavItem) {
             sitemesh.parameter(name: 'selectedNavItem', value: attrs.selectedNavItem)
@@ -1781,7 +1787,7 @@ class VolunteerTagLib {
                     }
                     li(class:'last') {
                         span {
-                            mkp.yield(attrs.title)
+                            mkp.yield(crumbLabel)
                         }
                     }
                 }

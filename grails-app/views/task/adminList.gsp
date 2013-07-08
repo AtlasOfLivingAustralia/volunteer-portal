@@ -33,7 +33,7 @@
         </script>
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
         <cl:headerContent title="Project Admin - ${projectInstance ? projectInstance.featuredLabel : 'Tasks'}" selectedNavItem="expeditions">
             <%

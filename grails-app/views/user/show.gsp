@@ -8,40 +8,20 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
     <style type="text/css">
 
-    .ui-widget-content a {
-        color: #3a5c83;
-    }
+    /*#taskTabs .ui-state-active {*/
+        /*background: #FFFEF7;*/
+        /*font-weight: bold;*/
+    /*}*/
 
-    .ui-widget {
-        font: 1em Arial, Helvetica, sans-serif;
-        line-height: 1.2em;
-    }
-
-    .ui-widget button {
-        font: bold 1em Arial, Helvetica, sans-serif;
-        margin: 5px;
-    }
-
-    .ui-widget-content .listLink {
-        color: #3A5C83;
-        margin-top: 20px;
-    }
-
-    #taskTabs .ui-state-active {
-        background: #FFFEF7;
-        font-weight: bold;
-    }
-
-    .ui-tabs .ui-tabs-panel {
-        background-color: #FFFEF7;
-        padding-bottom: 25px;
-    }
+    /*.ui-tabs .ui-tabs-panel {*/
+        /*background-color: #FFFEF7;*/
+        /*padding-bottom: 25px;*/
+    /*}*/
 
     </style>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+    %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>--}%
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -98,51 +78,49 @@
                 return false;
             });
 
-            var tabOptions = {
-                selected: ${params.selectedTab ?: 0},
-                show: function (e) {
-                    var $tabs = $('#taskTabs').tabs();
-                    var newIndex = $tabs.tabs('option', 'selected');
-                    if (newIndex != ${params.selectedTab ?: 0}) {
-                        $("#tabs-1").html("Loading...");
-                        var url = "${createLink(action:'show', id:userInstance.id)}?selectedTab=" + newIndex + "&projectId=${project?.id ?: ''}";
-                        window.location.href = url;
-                    }
-                },
-                beforeActivate: function (e) {
-                    $("#tabs-1").html("Loading...");
+            $('a[data-toggle="tab"]').on('click', function (e) {
+                var tabIndex = $(this).attr('tabIndex');
+                if (tabIndex) {
+                    var url = "${createLink(action:'show', id:userInstance.id)}?selectedTab=" + tabIndex + "&projectId=${project?.id ?: ''}";
+                    window.location.href = url;
                 }
-            };
+            });
 
-            $("#taskTabs").tabs(tabOptions);
+            %{--var tabOptions = {--}%
+                %{--selected: ${params.selectedTab ?: 0},--}%
+                %{--show: function (e) {--}%
+                    %{--var $tabs = $('#taskTabs').tabs();--}%
+                    %{--var newIndex = $tabs.tabs('option', 'selected');--}%
+                    %{--if (newIndex != ${params.selectedTab ?: 0}) {--}%
+                        %{--$("#tabs-1").html("Loading...");--}%
+                        %{--var url = "${createLink(action:'show', id:userInstance.id)}?selectedTab=" + newIndex + "&projectId=${project?.id ?: ''}";--}%
+                        %{--window.location.href = url;--}%
+                    %{--}--}%
+                %{--},--}%
+                %{--beforeActivate: function (e) {--}%
+                    %{--$("#tabs-1").html("Loading...");--}%
+                %{--}--}%
+            %{--};--}%
+
+            %{--$("#taskTabs").tabs(tabOptions);--}%
 
         });
 
     </script>
 </head>
 
-<body class="sublevel sub-site volunteerportal">
-    <cl:navbar selected=""/>
-    <header id="page-header">
-        <div class="inner">
-            <nav id="breadcrumb">
-                <ol>
-                    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                    <li><a href="${createLink(controller: 'user', action: 'list')}">Volunteers</a></li>
-                    <li class="last">${fieldValue(bean: userInstance, field: "displayName")}</li>
-                </ol>
-            </nav>
+<body>
+    <cl:headerContent title="${fieldValue(bean: userInstance, field: "displayName")} ${userInstance.userId == currentUser ? "(that's you!)" : ''}" crumbLabel="${userInstance.displayName}">
+        <%
+            pageScope.crumbs = [
+                [link: createLink(controller: 'user', action: 'list'), label: 'Volunteers']
+            ]
+        %>
+    </cl:headerContent>
 
-            <h1>Volunteer: ${fieldValue(bean: userInstance, field: "displayName")} <g:if test="${userInstance.userId == currentUser}">(that's you!)</g:if></h1>
-        </div><!--inner-->
-    </header>
-
-    <div class="inner">
-
-        <cl:messages/>
-
-        <div class="list">
-            <table class="bvp-expeditions">
+    <div class="row" id="content">
+        <div class="span12">
+            <table class="table">
                 <tr>
                     <td style="padding-top:18px; width:150px;">
                         <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;" class="avatar"/>
@@ -208,41 +186,51 @@
                 <tr>
                     <td colspan="3">
                         <cl:ifAdmin>
-                            <g:link controller="user" action="editRoles" id="${userInstance.id}">Manage user roles</g:link>
+                            <div class="alert alert-info" style="margin-bottom: 0px">
+                            <g:link class="btn btn-small" controller="user" action="editRoles" id="${userInstance.id}">Manage user roles</g:link>
                             &nbsp;Email:&nbsp;<a href="mailto:${userInstance.userId}">${userInstance.userId}</a>
+                            </div>
                         </cl:ifAdmin>
-
                     </td>
                 </tr>
             </table>
         </div>
 
-        <div id="taskTabs">
-            <ul>
-                <li><a href="#tabs-1">Transcribed Tasks</a></li>
-                <li><a href="#tabs-1">Saved Tasks</a></li>
-                <cl:ifValidator>
-                    <li><a href="#tabs-1">Validated Tasks</a></li>
-                </cl:ifValidator>
-                <li><a href="#tabs-1">Forum messages</a></li>
-            </ul>
-            <g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}"/>
-            <div id="tabs-1" class="tabContent">
-                <g:if test="${selectedTab == 0}">
-                    <g:include action="taskListFragment" params="${includeParams + [projectId: project?.id]}"/>
-                </g:if>
-                <g:elseif test="${selectedTab == 1}">
-                    <g:include action="taskListFragment" params="${includeParams + [projectId: project?.id]}"/>
-                </g:elseif>
-                <g:elseif test="${selectedTab == 2}">
-                    <g:include action="taskListFragment" params="${includeParams + [projectId: project?.id]}"/>
-                </g:elseif>
-                <g:elseif test="${selectedTab == 3}">
-                    <g:include controller="forum" action="userCommentsFragment" params="${includeParams + [projectId: project?.id, userId: params.id]}"/>
-                </g:elseif>
+        <div class="span12">
+            <div class="tabbable">
+                <ul class="nav nav-tabs">
+                    <li class="${selectedTab == 0 ? 'active' : ''}"><a href="#tabs0" data-toggle="tab" tabIndex="0"><strong>Transcribed Tasks</strong></a></li>
+                    <li class="${selectedTab == 1 ? 'active' : ''}"><a href="#tabs1" data-toggle="tab" tabIndex="1"><strong>Saved Tasks</strong></a></li>
+                    <cl:ifValidator>
+                        <li class="${selectedTab == 2 ? 'active' : ''}"><a href="#tabs2" data-toggle="tab" tabIndex="2"><strong>Validated Tasks</strong></a></li>
+                    </cl:ifValidator>
+                    <li class="${selectedTab == 3 ? 'active' : ''}"><a href="#tabs3" data-toggle="tab" tabIndex="3"><strong>Forum messages</strong></a></li>
+                </ul>
+                <g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}"/>
+                <div class="tab-content">
+                    <div id="tabs0" class="tab-pane ${selectedTab == 0 ? 'active' : ''}">
+                        <g:if test="${selectedTab == 0}">
+                            <g:include action="taskListFragment" params="${includeParams + [projectId: project?.id]}"/>
+                        </g:if>
+                    </div>
+                    <div id="tabs1" class="tab-pane ${selectedTab == 1 ? 'active' : ''}">
+                        <g:if test="${selectedTab == 1}">
+                            <g:include action="taskListFragment" params="${includeParams + [projectId: project?.id]}"/>
+                        </g:if>
+                    </div>
+                    <div id="tabs2" class="tab-pane ${selectedTab == 2 ? 'active' : ''}">
+                        <g:if test="${selectedTab == 2}">
+                            <g:include action="taskListFragment" params="${includeParams + [projectId: project?.id]}"/>
+                        </g:if>
+                    </div>
+                    <div id="tabs3" class="tab-pane ${selectedTab == 3 ? 'active' : ''}">
+                        <g:if test="${selectedTab == 3}">
+                            <g:include controller="forum" action="userCommentsFragment" params="${includeParams + [projectId: project?.id, userId: params.id]}"/>
+                        </g:if>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
     <script type="text/javascript">
 //        $("th > a").addClass("button")

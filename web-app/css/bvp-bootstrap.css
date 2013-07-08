@@ -314,3 +314,19 @@ h2, h3, h4, h5 {
     margin: 0px 0;
     /*float: right;*/
 }
+
+.tab-content {
+    border-left: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
+    border-bottom: 1px solid #d3d3d3;
+    padding: 10px;
+    background-color: white;
+}
+
+.nav-tabs {
+    margin-bottom: 0px;
+}
+
+.nav-tabs a {
+    text-decoration: none;
+}
