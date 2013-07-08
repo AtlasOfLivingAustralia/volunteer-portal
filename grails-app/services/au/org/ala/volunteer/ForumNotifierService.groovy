@@ -11,7 +11,6 @@ class ForumNotifierService {
     def settingsService
     au.org.ala.volunteer.CustomPageRenderer customPageRenderer
     def emailService
-    def markdownService
 
     List<User> getModeratorsForTopic(ForumTopic topic) {
         List<User> results = []
@@ -23,8 +22,29 @@ class ForumNotifierService {
         } else if (topic?.instanceOf(TaskForumTopic)) {
             projectInstance = (topic as TaskForumTopic).task?.project
         }
+        results = userService.getUsersWithRole("forum_moderator", projectInstance)
 
-        return userService.getUsersWithRole("forum_moderator", projectInstance)
+        if (projectInstance) {
+            def watchList = getUsersInterestedInProject(projectInstance)
+            watchList?.each { user ->
+                if (!results.contains(user)) {
+                    results << user
+                }
+            }
+        }
+
+        return results
+    }
+
+    public List<User> getUsersInterestedInProject(Project projectInstance) {
+        def list = new ArrayList<User>()
+        ProjectForumWatchList watchList = ProjectForumWatchList.findByProject(projectInstance)
+        if (watchList) {
+            watchList.users?.each { user ->
+                list << user
+            }
+        }
+        return list
     }
 
     public getUsersInterestedInTopic(ForumTopic topic) {
@@ -49,6 +69,20 @@ class ForumNotifierService {
             if (!interestedUsers.contains(mod)) {
                 interestedUsers << mod
             }
+        }
+
+        if (topic.instanceOf(ProjectForumTopic)) {
+            ProjectForumTopic projectTopic = topic as ProjectForumTopic
+            def list = getUsersInterestedInProject(topic.project)
+
+            if (list) {
+                list.each { user ->
+                    if (!interestedUsers.contains(user)) {
+                        interestedUsers << user
+                    }
+                }
+            }
+
         }
 
         return interestedUsers

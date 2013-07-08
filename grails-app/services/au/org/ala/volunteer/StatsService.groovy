@@ -21,6 +21,19 @@ class StatsService {
             order by foo.updateDate
         """
 
+        /**
+         * alternate query that attempts to filter out changes to updateDate caused by validation
+         *
+         *
+         select distinct foo.updateDate as month, count(foo.task_id) as transcribedTasks from (
+         select task_id, to_char(max(updated), 'YYYY/MM') as updateDate from field f JOIN task t on f.task_id = t.id
+         where t.fully_transcribed_by is not null and f.transcribed_by_user_id = t.fully_transcribed_by
+         group by task_id
+         ) as foo
+         group by foo.updateDate
+         order by foo.updateDate
+         */
+
         def results = []
 
         def sql = new Sql(dataSource: dataSource)

@@ -64,7 +64,10 @@ class FieldService {
             }
         }
 
-        fields?.get(0)
+        if (fields && fields.size() > 0) {
+            return fields.get(0)
+        }
+        return null
     }
 
     int getLastSequenceNumberForProject(Project project) {

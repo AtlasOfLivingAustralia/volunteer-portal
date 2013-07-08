@@ -248,7 +248,7 @@ class ProjectController {
             def tasks = Task.findAllByProject(projectInstance)
             for (Task t : tasks) {
                 try {
-                    if (deleteImages == true) {
+                    if (deleteImages) {
                         t.multimedia.each { image ->
                             try {
                                 multimediaService.deleteMultimedia(image)

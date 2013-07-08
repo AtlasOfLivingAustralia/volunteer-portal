@@ -266,6 +266,11 @@ class TaskLoadService {
         }
     }
 
+    private static String replaceSpecialCharacters(String value) {
+        def newValue = value.replaceAll("\\\\n", "\n")
+        return newValue
+    }
+
     private Task createTaskFromTaskDescriptor(TaskDescriptor taskDesc) {
         Task t = new Task()
         t.project = taskDesc.project
@@ -273,6 +278,10 @@ class TaskLoadService {
         t.save(flush: true)
         for (Map fd : taskDesc.fields) {
             fd.task = t;
+
+            // Check value for special character replacements...
+            fd.value = replaceSpecialCharacters(fd.value)
+
             new Field(fd).save(flush: true)
         }
 
