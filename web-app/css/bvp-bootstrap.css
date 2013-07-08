@@ -250,20 +250,20 @@ border-radius: 0 5px 5px 0;
     overflow: hidden;
 }
 
-th h2 {
+th h2, th h3 {
     padding: 0;
     margin: 0;
 }
 
 
-th h2 a {
+th h2 a, th h3 a {
     color: black;
     text-decoration: none;
     padding: 0;
     margin: 0;
 }
 
-th h2 a:hover {
+th h2 a:hover, th h3 a:hover {
     color: #df4a21;
     text-decoration: none;
     padding: 0;
@@ -281,4 +281,27 @@ select {
 
 td.type {
     text-align: center;
+}
+
+span.help-container {
+    background: url(../images/help.png) right 0 no-repeat;
+    padding: 5px 20px 0 0;
+}
+
+span.help-container:hover {
+	background-position:right -81px;
+}
+
+a.fieldHelp {
+    text-decoration: none;
+    display: inline-block;
+    vertical-align: top;
+}
+
+h2, h3 {
+    font-weight: normal;
+}
+
+.pagination a {
+    text-decoration: none;
 }

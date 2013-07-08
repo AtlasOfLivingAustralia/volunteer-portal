@@ -41,12 +41,41 @@
                     if (e.keyCode ==13) {
                         doSearch();
                     }
-                })
+                });
 
                 $("#btnSearch").click(function(e) {
                     e.preventDefault();
                     doSearch();
-                })
+                });
+
+                $("a.fieldHelp").qtip({
+                    tip: true,
+                    position: {
+                        corner: {
+                            target: 'topMiddle',
+                            tooltip: 'bottomLeft'
+                        }
+                    },
+                    style: {
+                        width: 400,
+                        padding: 8,
+                        background: 'white', //'#f0f0f0',
+                        color: 'black',
+                        textAlign: 'left',
+                        border: {
+                            width: 4,
+                            radius: 5,
+                            color: '#E66542'// '#E66542' '#DD3102'
+                        },
+                        tip: 'bottomLeft',
+                        name: 'light' // Inherit the rest of the attributes from the preset light style
+                    }
+                }).bind('click', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+
+                $("#searchbox").focus();
 
             });
 
@@ -63,7 +92,9 @@
 
         <cl:headerContent title="${message(code:'default.projectlist.label', default: "Volunteer for a virtual expedition")}" selectedNavItem="expeditions"/>
 
-        <div class="row">
+        %{--<sitemesh:parameter name="useFluidLayout" value="${true}" />--}%
+
+        <div id="content" class="row-fluid">
             <div class="span12">
                 <h2>${numberOfUncompletedProjects} expeditions need your help. Join now!</h2>
                 <table class="table table-condensed" style="border: 1px solid gainsboro">
@@ -104,11 +135,11 @@
                         <g:each in="${projects}" status="i" var="projectSummary">
                             <tr inactive="${projectSummary.project.inactive}">
                                 <th colspan="4" style="border-bottom: none">
-                                    <h2><a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">${projectSummary.project.featuredLabel}</a>
+                                    <h3><a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">${projectSummary.project.featuredLabel}</a>
                                         <g:if test="${projectSummary.project.inactive}">
                                             - Deactivated
                                         </g:if>
-                                    </h2>
+                                    </h3>
                                 </th>
                                 <th align="center" style="border-bottom: none">
                                     <cl:ifAdmin>
@@ -149,7 +180,7 @@
                     </tbody>
                 </table>
 
-                <div class="paginateButtons">
+                <div class="pagination">
                     <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q]}" />
                 </div>
             </div>

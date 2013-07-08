@@ -20,7 +20,9 @@
         <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'css', file: 'bvp-bootstrap.css')}" de>
 
         <script type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/html5.js"></script>
+
         <r:require module="style" />
+        <r:require module="qtip" />
 
         <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-1.8.2.js')}"></script>
         <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-ui-1.9.1.custom.min.js')}"></script>
@@ -40,7 +42,7 @@
 
         <script type="text/javascript">
             // initialise plugins
-            jQuery(function(){
+            $(document).ready(function() {
                 // autocomplete on navbar search input
                 jQuery("form#search-form-2011 input#search-2011, form#search-inpage input#search").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
                     extraParams: {limit: 100},
@@ -67,6 +69,7 @@
                     max: 10,
                     selectFirst: false
                 });
+
             });
         </script>
     </head>
@@ -78,6 +81,11 @@
 
         %{--<hf:menu/>--}%
 
+        <g:set var="containerClass" value="container"/>
+        <g:if test="${pageProperty(name:'page.useFluidLayout')}">
+            <g:set var="containerClass" value="container-fluid"/>
+        </g:if>
+
         <header id="page-header">
             <div class="container">
                 <cl:messages />
@@ -87,7 +95,7 @@
             </div>
         </header>
 
-        <div class="container" id="main-content">
+        <div class="${containerClass}" id="main-content">
             <g:layoutBody />
         </div><!--/.container-->
 
