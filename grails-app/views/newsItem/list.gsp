@@ -70,9 +70,10 @@
                 </div>
             </div>
         </div>
+
         <script type="text/javascript">
-            $("th > a").addClass("button")
-            $("th.sorted > a").addClass("current")
+            $("th > a").addClass("btn")
+            $("th.sorted > a").addClass("active")
         </script>
 
     </body>

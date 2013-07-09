@@ -45,11 +45,15 @@
                 background-color: #d3d3d3 !important;
             }
 
-
             tr[inactive=true] .adminLink {
                 color: black;
                 opacity: 1;
             }
+
+            .btn.btn-danger {
+                color: white;
+            }
+
 
         </style>
 
@@ -63,7 +67,7 @@
                 // var $tabs = $('#tabControl').tabs();
                 var selector = "";
                 var baseUrl = "";
-                if (tabIndex == 0) {
+                if (tabIndex == 0 || !tabIndex) {
                     selector = "#tabRecentTopics";
                     baseUrl = "${createLink(action:'ajaxRecentTopicsList')}";
                 } else if (tabIndex == 1) {
@@ -98,8 +102,8 @@
 
                     $.ajax(baseUrl).done(function(content) {
                         $(selector).html(content);
-                        $("th > a").addClass("button")
-                        $("th.sorted > a").addClass("current")
+                        $("th > a").addClass("btn")
+                        $("th.sorted > a").addClass("active")
                     });
                 }
 
@@ -133,14 +137,14 @@
 
                 <div id="tabControl" class="tabbable">
                     <ul class="nav nav-tabs">
-                        <li class="${!params.selectedTab ? 'active' : ''}"><a href="#tabRecentTopics" class="forum-tab-title" data-toggle="tab" tabIndex="0">Featured and recent topics</a></li>
+                        <li class="${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"><a href="#tabRecentTopics" class="forum-tab-title" data-toggle="tab" tabIndex="0">Featured and recent topics</a></li>
                         <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabGeneralTopics" class="forum-tab-title" data-toggle="tab" tabIndex="1">Browse General Discussion Topics</a></li>
                         <li class="${params.selectedTab == '2' ? 'active' : ''}"><a href="#tabProjectForums" class="forum-tab-title" data-toggle="tab" tabIndex="2">Expedition Forums</a></li>
                         <li class="${params.selectedTab == '3' ? 'active' : ''}"><a href="#tabWatchedTopics" class="forum-tab-title" data-toggle="tab" tabIndex="3">Your watched topics</a></li>
                     </ul>
 
                     <div class="tab-content">
-                        <div id="tabRecentTopics" class="tab-pane ${!params.selectedTab ? 'active' : ''}"></div>
+                        <div id="tabRecentTopics" class="tab-pane ${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"></div>
                         <div id="tabGeneralTopics" class="tab-pane ${params.selectedTab == '1' ? 'active' : ''}"></div>
                         <div id="tabProjectForums" class="tab-pane ${params.selectedTab == '2' ? 'active' : ''}"></div>
                         <div id="tabWatchedTopics" class="tab-pane ${params.selectedTab == '3' ? 'active' : ''}"></div>

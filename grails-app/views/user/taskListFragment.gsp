@@ -99,8 +99,8 @@
 </div>
 
 <script type="text/javascript">
-    $("th > a").addClass("button")
-    $("th.sorted > a").addClass("current")
+    $("th > a").addClass("btn")
+    $("th.sorted > a").addClass("active")
 
     $('#searchbox').bind('keypress', function (e) {
         var code = (e.keyCode ? e.keyCode : e.which);

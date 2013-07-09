@@ -55,29 +55,24 @@
                     }
                 });
 
-                var tabOptions = {
-                    selected: ${params.selectedTab ?: 0},
-                    show: function (e) {
-                        var $tabs = $('#projectForumTabs').tabs();
-                        var newIndex = $tabs.tabs('option', 'selected');
-                        if (newIndex != ${params.selectedTab ?: 0}) {
+                $('a[data-toggle="tab"]').on('click', function (e) {
+                    var tabIndex = $(this).attr("tabIndex");
+                    if (tabIndex) {
+                        var tabIndex = $(this).attr("tabIndex");
+                        if (tabIndex) {
                             $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
                             $.ajax("${createLink(controller: 'forum',action:'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}").done(function(content) {
                                 $("#tabTaskTopics").html(content);
-                                $("th > a").addClass("button")
-                                $("th.sorted > a").addClass("current")
+                                $("th > a").addClass("btn btn-small")
+                                $("th.sorted > a").addClass("btn btn-small")
                             });
+
                         }
-                    },
-                    beforeActivate: function (e) {
                     }
-                };
+                });
 
-                $("#projectForumTabs").tabs(tabOptions);
-                $("#projectForumTabs").css("display", "block");
-
-                $("th > a").addClass("button")
-                $("th.sorted > a").addClass("current")
+                $("th > a").addClass("btn")
+                $("th.sorted > a").addClass("active")
 
                 $("#watchProjectCheckbox").change(function(e) {
                     e.preventDefault();
@@ -134,7 +129,8 @@
                     <div class="tab-content">
                         <div id="tabProjectTopics" class="tabContent tab-pane ${!params.selectedTab ? 'active' : ''}">
                             <div class="buttonBar">
-                                <button id="btnNewProjectTopic" class="btn">Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
+                                <button id="btnNewProjectTopic" class="btn">
+                                    Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
                                 </button>
                             </div>
 
