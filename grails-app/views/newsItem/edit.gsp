@@ -5,17 +5,42 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'newsItem.label', default: 'NewsItem')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
+
+        <tinyMce:resources/>
+
+        <script type="text/javascript">
+
+            tinyMCE.init({
+                mode: "textareas",
+                theme: "advanced",
+                editor_selector: "mceadvanced",
+                theme_advanced_toolbar_location: "top",
+                convert_urls: false
+            });
+
+        </script>
+
+        <style type="text/css">
+
+            .table tr td {
+                border: none;
+            }
+
+        </style>
+
     </head>
-    <body class="sublevel sub-site volunteerportal">
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-        </div>
-        <div>
-            <div class="inner">
-                <h1><g:message code="default.edit.label" args="[entityName]" /></h1>
-                <cl:messages />
+    <body>
+
+        <cl:headerContent title="${message(code: 'default.edit.label', args: [entityName])}">
+            <%
+                pageScope.crumbs = [
+                    [link: createLink(controller: 'newsItem', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+                ]
+            %>
+        </cl:headerContent>
+
+        <div class="row">
+            <div class="span12">
                 <g:hasErrors bean="${newsItemInstance}">
                 <div class="errors">
                     <g:renderErrors bean="${newsItemInstance}" as="list" />
@@ -25,14 +50,14 @@
                     <g:hiddenField name="id" value="${newsItemInstance?.id}" />
                     <g:hiddenField name="version" value="${newsItemInstance?.version}" />
                     <div class="dialog">
-                        <table>
+                        <table class="table">
                             <tbody>
                                 <tr class="prop">
                                     <td valign="top" class="name">
                                       <label for="title"><g:message code="newsItem.title.label" default="Title" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'title', 'errors')}">
-                                        <g:textField name="title" value="${newsItemInstance?.title}" />
+                                        <g:textField class="input-xxlarge" name="title" value="${newsItemInstance?.title}" />
                                     </td>
                                 </tr>
 
@@ -41,7 +66,7 @@
                                         <label for="shortDescription"><g:message code="newsItem.shortDescription.label" default="Short description" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'shortDescription', 'errors')}">
-                                        <g:textArea cols="50" rows="4" name="shortDescription" value="${newsItemInstance?.shortDescription}" />
+                                        <g:textArea class="input-xxlarge" cols="50" rows="4" name="shortDescription" value="${newsItemInstance?.shortDescription}" />
                                     </td>
                                 </tr>
 
@@ -87,9 +112,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="buttons">
-                        <span class="button"><g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" /></span>
-                        <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
+                    <div>
+                        <g:actionSubmit class="save btn btn-small" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+                        <g:actionSubmit class="delete btn btn-small btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                     </div>
                 </g:form>
             </div>
