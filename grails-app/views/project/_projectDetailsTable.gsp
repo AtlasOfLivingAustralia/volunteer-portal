@@ -53,15 +53,6 @@
 
         <tr class="prop">
             <td valign="top" class="name">
-                <label for="bannerImage"><g:message code="project.bannerImage.label" default="Banner Image"/></label>
-            </td>
-            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'bannerImage', 'errors')}">
-                <g:textField name="bannerImage" value="${projectInstance?.bannerImage}"/>
-            </td>
-        </tr>
-
-        <tr class="prop">
-            <td valign="top" class="name">
                 <label for="shortDescription"><g:message code="project.shortDescription.label" default="Short description"/></label>
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'shortDescription', 'errors')}">
@@ -74,7 +65,7 @@
                 <label for="featuredLabel"><g:message code="project.featuredLabel.label" default="Featured Label"/></label>
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredLabel', 'errors')}">
-                <g:textField name="featuredLabel" value="${projectInstance?.featuredLabel}"/>
+                <g:textField class="input-xxlarge" name="featuredLabel" value="${projectInstance?.featuredLabel}"/>
             </td>
         </tr>
 
@@ -84,6 +75,15 @@
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredOwner', 'errors')}">
                 <g:textField name="featuredOwner" value="${projectInstance?.featuredOwner}"/>
+            </td>
+        </tr>
+
+        <tr class="prop">
+            <td valign="top" class="name">
+                <label for="featuredImageCopyright"><g:message code="project.featuredImageCopyright.label" default="Featured Image Copyright (Optional)"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredImageCopyright', 'errors')}">
+                <g:textField class="input-xxlarge" name="featuredImageCopyright" value="${projectInstance?.featuredImageCopyright}"/>
             </td>
         </tr>
 
@@ -102,15 +102,6 @@
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'localityEventLookupInstitution', 'errors')}">
                 <g:select name="localityLookupCollectionCode" from="${localityCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}"/>
-            </td>
-        </tr>
-
-        <tr class="prop">
-            <td valign="top" class="name">
-                <label for="featuredImageCopyright"><g:message code="project.featuredImageCopyright.label" default="Featured Image Copyright (Optional)"/></label>
-            </td>
-            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredImageCopyright', 'errors')}">
-                <g:textField name="featuredImageCopyright" value="${projectInstance?.featuredImageCopyright}"/>
             </td>
         </tr>
 
@@ -139,26 +130,10 @@
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'newsItems', 'errors')}">
                 <ul>
                     <g:each in="${projectInstance?.newsItems ?}" var="n">
-                        <li><g:link controller="newsItem" action="show" id="${n.id}">${n?.encodeAsHTML()}</g:link></li>
+                        <li><g:link controller="newsItem" action="show" id="${n.id}">${n?.title?.encodeAsHTML()}</g:link></li>
                     </g:each>
                 </ul>
                 <g:link class="btn btn-small" controller="newsItem" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'newsItem.label', default: 'NewsItem')])}</g:link>
-            </td>
-        </tr>
-
-        <tr class="prop">
-            <td valign="top" class="name">
-                <label for="projectAssociations"><g:message code="project.projectAssociations.label" default="Project Associations"/></label>
-            </td>
-            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'projectAssociations', 'errors')}">
-
-                <ul>
-                    <g:each in="${projectInstance?.projectAssociations ?}" var="p">
-                        <li><g:link controller="projectAssociation" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
-                    </g:each>
-                </ul>
-                <g:link class="btn btn-small" controller="projectAssociation" action="create" params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation')])}</g:link>
-
             </td>
         </tr>
 

@@ -4,10 +4,7 @@
     <head>
         <title>Volunteer Portal - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-        <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
-        <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
         <style type="text/css">
 
@@ -27,11 +24,15 @@
                 font-weight: bold;
             }
 
+            .btn.btn-danger {
+                color: white;
+            }
+
         </style>
 
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
         <script type="text/javascript">
 
@@ -92,26 +93,16 @@
 
         </script>
 
-        <cl:navbar selected=""/>
+        <cl:headerContent title="Expedition Forum - ${projectInstance.featuredLabel}" selectedNavItem="forum">
+            <%
+                pageScope.crumbs = [
+                    [link:createLink(controller:'project', action:'index', id:projectInstance.id),label: projectInstance.featuredLabel]
+                ]
+            %>
+        </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a>
-                        </li>
-                        <li class="last"><g:message code="default.projectforum.label" default="Expedition Forum"/></li>
-                    </ol>
-                </nav>
-
-                <h1>Expedition Forum - ${projectInstance.featuredLabel}</h1>
-            </div>
-        </header>
-
-        <div>
-            <div class="inner">
+        <div id="content" class="row">
+            <div class="span12">
                 <div class="projectSummary">
                     <table style="margin-bottom: 0px; width: 100%">
                         <tr>
@@ -134,21 +125,24 @@
                         <span id="watchUpdateMessage"></span>
                     </div>
                 </div>
-                <div id="projectForumTabs" style="display:none">
-                    <ul>
-                        <li><a href="#tabProjectTopics" class="forum-tab-title">Expedition Topics</a></li>
-                        <li><a href="#tabTaskTopics" class="forum-tab-title">Task Topics</a></li>
+
+                <div id="projectForumTabs" class="tabbable">
+                    <ul class="nav nav-tabs">
+                        <li class="${!params.selectedTab ? 'active' : ''}"><a href="#tabProjectTopics" class="forum-tab-title" data-toggle="tab" tabIndex="0">Expedition Topics</a></li>
+                        <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabTaskTopics" class="forum-tab-title" data-toggle="tab" tabIndex="1">Task Topics</a></li>
                     </ul>
-                    <div id="tabProjectTopics" class="tabContent" style="display:none">
-                        <div class="buttonBar">
-                            <button id="btnNewProjectTopic" class="button">Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
-                            </button>
+                    <div class="tab-content">
+                        <div id="tabProjectTopics" class="tabContent tab-pane ${!params.selectedTab ? 'active' : ''}">
+                            <div class="buttonBar">
+                                <button id="btnNewProjectTopic" class="btn">Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
+                                </button>
+                            </div>
+
+                            <vpf:topicTable topics="${topics.topics}" totalCount="${topics.totalCount}" paginateAction="projectForum"/>
+
                         </div>
-
-                        <vpf:topicTable topics="${topics.topics}" totalCount="${topics.totalCount}" paginateAction="projectForum"/>
-
-                    </div>
-                    <div id="tabTaskTopics" style="display:none">
+                        <div id="tabTaskTopics" class="tab-pane ${params.selectedTab == '1' ? 'active' : ''}">
+                        </div>
                     </div>
                 </div>
             </div>

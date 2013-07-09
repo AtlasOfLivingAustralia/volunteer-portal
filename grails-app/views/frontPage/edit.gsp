@@ -34,7 +34,7 @@
                                         <g:select name="projectOfTheDay" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
                                     </td>
                                     <td>
-                                        <g:link action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -46,7 +46,7 @@
                                         <g:select name="featuredProject1" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject1?.id}"/>
                                     </td>
                                     <td>
-                                        <g:link action="edit" controller="project" id="${frontPage.featuredProject1?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.featuredProject1?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -58,7 +58,7 @@
                                         <g:select name="featuredProject2" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject2?.id}"/>
                                     </td>
                                     <td>
-                                        <g:link action="edit" controller="project" id="${frontPage.featuredProject2?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.featuredProject2?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -70,7 +70,7 @@
                                         <g:select name="featuredProject3" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject3?.id}"/>
                                     </td>
                                     <td>
-                                        <g:link action="edit" controller="project" id="${frontPage.featuredProject3?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.featuredProject3?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -89,7 +89,7 @@
                                         <label for="newsTitle"><g:message code="frontPage.newsTitle.label" default="News title"/></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'newsTitle', 'errors')}">
-                                        <g:textField name="newsTitle" value="${frontPage?.newsTitle}"/>
+                                        <g:textField class="input-xxlarge" name="newsTitle" value="${frontPage?.newsTitle}"/>
                                     </td>
                                 </tr>
 
@@ -98,7 +98,7 @@
                                         <label for="newsBody"><g:message code="frontPage.newsBody.label" default="News text"/></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'newsBody', 'errors')}">
-                                        <g:textArea cols="50" rows="4" name="newsBody" value="${frontPage?.newsBody}"/>
+                                        <g:textArea class="input-xxlarge" cols="50" rows="4" name="newsBody" value="${frontPage?.newsBody}"/>
                                     </td>
                                 </tr>
 
@@ -118,7 +118,7 @@
                                         <div style="color: #808080;">(Displayed on every page)</div>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'systemMessage', 'errors')}">
-                                        <g:textArea cols="50" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
+                                        <g:textArea class="input-xxlarge" cols="50" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
                                     </td>
                                 </tr>
 

@@ -5,6 +5,29 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title>Create Expedition</title>
+
+        <tinyMce:resources />
+
+        <script type="text/javascript">
+
+            tinyMCE.init({
+                mode: "textareas",
+                theme: "advanced",
+                editor_selector: "mceadvanced",
+                theme_advanced_toolbar_location : "top",
+                convert_urls : false
+            });
+
+        </script>
+
+        <style type="text/css">
+
+            .table tr td {
+                border: none;
+            }
+
+        </style>
+
     </head>
 
     <body>
@@ -25,9 +48,9 @@
                   </div>
                 </g:hasErrors>
                 <g:form action="save" >
-                    <table>
-                        <tbody>
+                    <table class="table">
 
+                        <tbody>
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="name"><g:message code="project.name.label" default="Name" /></label>
@@ -75,7 +98,7 @@
                                   <label for="shortDescription"><g:message code="project.shortDescription.label" default="Short description" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'shortDescription', 'errors')}">
-                                    <g:textArea name="shortDescription" value="${projectInstance?.shortDescription}" rows="5" cols="100" />
+                                    <g:textArea class="input-xxlarge" name="shortDescription" value="${projectInstance?.shortDescription}" rows="5" cols="100" />
                                 </td>
                             </tr>
 
@@ -84,7 +107,7 @@
                                   <label for="featuredLabel"><g:message code="project.featuredLabel.label" default="Featured Label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredLabel', 'errors')}">
-                                    <g:textField name="featuredLabel" value="${projectInstance?.featuredLabel}" />
+                                    <g:textField class="input-xxlarge" name="featuredLabel" value="${projectInstance?.featuredLabel}" />
                                 </td>
                             </tr>
 
@@ -93,7 +116,7 @@
                                   <label for="featuredImageCopyright"><g:message code="project.featuredImageCopyright.label" default="Featured Image Copyright (Optional)" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredImageCopyright', 'errors')}">
-                                    <g:textField name="featuredImageCopyright" value="${projectInstance?.featuredImageCopyright}" />
+                                    <g:textField class="input-xxlarge" name="featuredImageCopyright" value="${projectInstance?.featuredImageCopyright}" />
                                 </td>
                             </tr>
 
@@ -103,7 +126,7 @@
                                   <label for="featuredOwner"><g:message code="project.featuredOwner.label" default="Featured Owner" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredOwner', 'errors')}">
-                                    <g:textField name="featuredOwner" value="${projectInstance?.featuredOwner}" />
+                                    <g:textField class="input-xxlarge" name="featuredOwner" value="${projectInstance?.featuredOwner}" />
                                 </td>
                             </tr>
 
@@ -113,15 +136,6 @@
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'created', 'errors')}">
                                     <g:datePicker name="created" precision="day" value="${projectInstance?.created}" noSelection="['': '']" />
-                                </td>
-                            </tr>
-
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                    <label for="bannerImage"><g:message code="project.bannerImage.label" default="Banner Image" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'bannerImage', 'errors')}">
-                                    <g:textField name="bannerImage" value="${projectInstance?.bannerImage}" />
                                 </td>
                             </tr>
 

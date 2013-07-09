@@ -32,7 +32,7 @@
                     <p>
                         <g:message code="picklist.paste.here.label" default="Paste csv list here. Each line should take the format '&lt;value&gt;'[,&lt;optional key&gt;]"/>
                     </p>
-                    <g:textArea name="picklist" rows="25" cols="40" value="${picklistData}"/>
+                    <g:textArea class="input-xxlarge" name="picklist" rows="25" cols="40" value="${picklistData}"/>
                     <br>
                     <g:actionSubmit class="btn btn-primary" name="upload.picklist" value="${message(code: 'upload.picklist.label', default: 'Upload')}" action="uploadCsvData"/>
                 </g:form>

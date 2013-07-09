@@ -266,14 +266,18 @@ class ForumTagLib {
                                 }
                                 td {
                                     def replyLink = topic.locked ? "#" : createLink(controller: 'forum', action: 'postMessage', params: [topicId: topic.id])
-                                    a(class: 'button', href: replyLink, disabled: topic.locked ? 'true' : 'false') {
+                                    def attrMap = [class: 'btn btn-small', href: replyLink]
+                                    if (topic.locked) {
+                                        attrMap['disabled'] = 'true'
+                                    }
+                                    a(attrMap) {
                                         mkp.yield("Reply")
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
-                                        a(class: 'button', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
+                                        a(class: 'btn btn-small', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
                                             mkp.yield("Edit")
                                         }
-                                        a(class: 'button', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
+                                        a(class: 'btn btn-small btn-danger', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
                                             mkp.yield("Delete")
                                         }
 

@@ -10,35 +10,6 @@
 
         <cl:headerContent title="${message(code:'default.frontpageheading.label', default:'Biodiversity Volunteer Portal')}" selectedNavItem="bvp">
             <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based capture of biodiversity data</p>
-            %{--<header id="page-header">--}%
-                %{--<nav id="nav-1-2-3">--}%
-                    %{--<ol>--}%
-                        %{--<li>--}%
-                            %{--<cl:isNotLoggedIn>--}%
-                                %{--<span class="numbered">1</span> <a href="https://auth.ala.org.au/emmet/selfRegister.html" class="btn orange">Register</a> <p>Already registered with the Atlas?<br/><cl:loginLink /></p>--}%
-                            %{--</cl:isNotLoggedIn>--}%
-                            %{--<cl:isLoggedIn>--}%
-                                %{--<span class="numbered">1</span> <h2>Hi !</h2><p>You're registered with the Atlas, so <a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay?.id, action: 'index')}">start transcribing</a> or <a href="${createLink(controller: 'user', action:'myStats')}">view your tasks</a>.</p>--}%
-                            %{--</cl:isLoggedIn>--}%
-                        %{--</li>--}%
-                        %{--<li class="double">--}%
-                            %{--<div style="float:left;postition:relative;">--}%
-                                %{--<span class="numbered">2</span>--}%
-                                %{--<a href="${createLink(controller: 'project', action: 'list')}" class="btn orange">Join a virtual expedition</a>--}%
-                                %{--<p><a href="${createLink(controller: 'project', action: 'list')}">Find a virtual expedition</a> that suits you.</p>--}%
-                            %{--</div>--}%
-                            %{--<span class="grey" style="float:left;postition:relative;">or</span>--}%
-                            %{--<div style="float:left;postition:relative;">--}%
-                                %{--<a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay?.id, action: 'index')}" class="btn orange">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a>--}%
-                                %{--<p>Join the <a href="${createLink(controller: 'project', id: frontPage.projectOfTheDay?.id, action: 'index')}">virtual expedition of the day</a>.</p>--}%
-                            %{--</div>--}%
-                        %{--</li>--}%
-                        %{--<li class="last">--}%
-                            %{--<span class="numbered">3</span><a href="${createLink(controller: 'user', action:'list')}" class="button orange">Become a leader</a> <p>Are you ready to become an <a href="${createLink(controller: 'user', action:'list')}">expedition leader</a>?</p>--}%
-                        %{--</li>--}%
-                    %{--</ol>--}%
-                %{--</nav>--}%
-            %{--</header>--}%
         </cl:headerContent>
 
         <div class="row">
@@ -162,10 +133,6 @@
 
 
         <script type="text/javascript">
-
-            //        $(function() {
-            //          $("#rollovers").tabs("#description-panes > div", {event:'mouseover', effect: 'fade', fadeOutSpeed: 400});
-            //        });
 
             $('#description-panes img.active').click(function () {
                 document.location.href = $(this).next('a').attr('href');
