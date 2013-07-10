@@ -29,6 +29,7 @@ grails.project.dependency.resolution = {
         build ":tomcat:$grailsVersion"
         runtime ":hibernate:$grailsVersion"
         runtime ":jquery:1.8.3"
+        compile ":jquery-ui:1.8.24"
         runtime ":resources:1.2.RC2"
         runtime ":mail:1.0.1"
         runtime ":csv:0.3.1"

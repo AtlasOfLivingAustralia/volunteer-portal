@@ -21,7 +21,7 @@
 
         <script type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/html5.js"></script>
 
-        <r:require module="style" />
+        %{--<r:require module="style" />--}%
         <r:require module="qtip" />
 
         <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-1.8.2.js')}"></script>

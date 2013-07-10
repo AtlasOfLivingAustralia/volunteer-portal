@@ -61,7 +61,7 @@ class TranscribeController {
 
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
-            def isReadonly
+            def isReadonly = false
 
             def isValidator = userService.isValidator(project)
             logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
@@ -85,7 +85,7 @@ class TranscribeController {
 
             def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-            render( view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
+            render( view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
         }

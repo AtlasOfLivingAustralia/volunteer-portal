@@ -413,7 +413,7 @@ class ForumTagLib {
             def task = attrs.task as Task
             if (task) {
                 def mb = new MarkupBuilder(out)
-                mb.a(href: createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class: 'button', target: 'forumWindow') {
+                mb.a(href: createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class: 'btn', target: 'forumWindow') {
                     mkp.yield("Create Forum Topic")
                 }
             }

@@ -24,6 +24,8 @@ import groovy.xml.MarkupBuilder
  */
 class TranscribeTagLib {
 
+    def taskService
+
     private def renderWidgetTD(MarkupBuilder mb, TemplateField field, recordValues, recordIdx, attrs) {
 
         if (!field) {
@@ -223,7 +225,44 @@ class TranscribeTagLib {
         def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
 
         // Uses MarkupBuilder to create HTML
-        def mb = new groovy.xml.MarkupBuilder(out)
+        def mb = new MarkupBuilder(out)
         renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
     }
+
+    /**
+     * @attr multimedia
+     * @attr elementId
+     * @attr hideControls
+     */
+    def imageViewer = { attrs, body ->
+        def multimedia = attrs.multimedia as Multimedia
+        if (multimedia) {
+            def imageUrl = "${grailsApplication.config.server.url}${multimedia.filePath}"
+            def imageMetaData = taskService.getImageMetaData(multimedia)
+            def mb = new MarkupBuilder(out)
+            mb.div(id:attrs.elementId ?: 'image-container') {
+                mb.img(src:imageUrl, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
+                if (!attrs.hideControls) {
+                    div(class:'imageviewer-controls') {
+                        a(id:'panleft', href:"#", class:'left') {}
+                        a(id:'panright', href:"#", class:'right') {}
+                        a(id:'panup', href:"#", class:'up') {}
+                        a(id:'pandown', href:"#", class:'down') {}
+                        a(id:'zoomin', href:"#", class:'zoom') {}
+                        a(id:'zoomout', href:"#", class:'back') {}
+                    }
+
+                    div(class:'pin-image-control') {
+                        a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window') {
+                            mkp.yield('Pin image in place')
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
+
+
 }
