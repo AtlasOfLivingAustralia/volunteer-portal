@@ -50,11 +50,6 @@
                 opacity: 1;
             }
 
-            .btn.btn-danger {
-                color: white;
-            }
-
-
         </style>
 
     </head>

@@ -330,3 +330,7 @@ h2, h3, h4, h5 {
 .nav-tabs a {
     text-decoration: none;
 }
+
+.btn.btn-danger {
+    color: white;
+}

@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <title><g:message code="admin.label" default="Administration"/></title>
-        <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
+        <r:require module="jquery-ui" />
         <style type="text/css">
 
         .bvp-expeditions td button {
@@ -92,7 +92,7 @@
 
                 $( "#dialog" ).dialog({
                     minHeight: 200,
-                    minWidth: 300,
+                    minWidth: 400,
                     resizable: false,
                     autoOpen: false
                 });
@@ -161,38 +161,33 @@
         </script>
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
-        <cl:navbar/>
+        <cl:headerContent title="${message(code:'default.manageTemplateFields.label', default: 'Manage Template Fields')} - ${templateInstance.name}">
+           <%
+               pageScope.crumbs = [
+                   [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                   [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: ['Template'])],
+                   [link: createLink(controller: 'template', action: 'edit', id: templateInstance.id), label: message(code: 'default.edit.label', args: ['Template'])]
+               ]
+           %>
+        </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><a class="home" href="${createLink(controller: 'template', action: 'list')}">Templates</a>
-                        <li><a class="home" href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">Edit ${templateInstance.name}</a></li>
-                        <li class="last">Manage Template Fields</li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Template Fields - ${templateInstance.name}</h1>
-                </hgroup>
-            </div>
-        </header>
-
-        <div>
-            <div class="inner">
+        <div class="row">
+            <div class="span12">
                 <div id="buttonBar">
-                    <button class="button" id="btnCleanUpOrdering">Clean up ordering</button>
+                    <button class="btn" id="btnCleanUpOrdering">Clean up ordering</button>
                     Field Type:
                     <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>
-                    <button class="button" id="btnAddField">Add field</button>
-                    <button class="button" id="btnPreviewTemplate">Preview Template</button>
-                    <button class="button" id="btnExportAsCSV">Export as CSV</button>
+                    <button class="btn" id="btnAddField">Add field</button>
+                    <button class="btn" id="btnPreviewTemplate">Preview Template</button>
+                    <button class="btn" id="btnExportAsCSV">Export as CSV</button>
                 </div>
-                <table class="bvp-expeditions">
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>Order</th>
@@ -219,11 +214,11 @@
                                     </g:if>
                                 </td>
                                 <td style="padding:0; width:180px">
-                                    <button class="button btnMoveFieldDown imageButton"><img src="${resource(dir:'/images', file:'down_arrow.png')}" title="Move this field down"></button>
-                                    <button class="button btnMoveFieldUp imageButton"><img src="${resource(dir:'/images', file:'up_arrow.png')}" title="Move this field up"></button>
-                                    <button class="button btnMoveFieldAnywhere imageButton"><img src="${resource(dir:'/images', file:'left_arrow.png')}" title="Move this to an arbitrary position"></button>
-                                    <button class="button btnDeleteField imageButton"><img src="${resource(dir:'/images/skin', file:'database_delete.png')}" title="Delete this field"></button>
-                                    <button class="button btnEditField imageButton"><img src="${resource(dir:'/images/skin', file:'database_edit.png')}" title="Edit this field"></button>
+                                    <button class="btn btn-mini btnMoveFieldDown imageButton"><img src="${resource(dir:'/images', file:'down_arrow.png')}" title="Move this field down"></button>
+                                    <button class="btn btn-mini btnMoveFieldUp imageButton"><img src="${resource(dir:'/images', file:'up_arrow.png')}" title="Move this field up"></button>
+                                    <button class="btn btn-mini btnMoveFieldAnywhere imageButton"><img src="${resource(dir:'/images', file:'left_arrow.png')}" title="Move this to an arbitrary position"></button>
+                                    <button class="btn btn-mini btnDeleteField imageButton"><img src="${resource(dir:'/images/skin', file:'database_delete.png')}" title="Delete this field"></button>
+                                    <button class="btn btn-mini btnEditField imageButton"><img src="${resource(dir:'/images/skin', file:'database_edit.png')}" title="Edit this field"></button>
                                 </td>
                             </tr>
                         </g:each>
@@ -231,6 +226,7 @@
                 </table>
             </div>
         </div>
+
         <div id="dialog" title="Move field to position" style="display: none">
             <g:hiddenField name="dialogFieldId" id="dialogFieldId"/>
             <table style="width: 100%">
@@ -243,9 +239,9 @@
                     <td><g:textField name="newPosition" id="newPosition" size="10"/></td>
                 </tr>
             </table>
-            <div>
-                <button class="button" id="btnCancelMove">Cancel</button>
-                <button class="button" id="btnApplyMove">Move Field</button>
+            <div style="margin-top: 15px">
+                <button class="btn" id="btnCancelMove">Cancel</button>
+                <button class="btn" id="btnApplyMove">Move Field</button>
             </div>
         </div>
 
