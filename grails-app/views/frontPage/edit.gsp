@@ -154,7 +154,7 @@
                     </div>
 
                     <div class="buttons">
-                        <span class="button"><g:submitButton name="save" class="save" value="${message(code: 'default.button.save.label', default: 'Save')}"/></span>
+                        <g:submitButton name="save" class="save btn btn-primary" value="${message(code: 'default.button.save.label', default: 'Save')}"/>
                     </div>
 
                 </g:form>

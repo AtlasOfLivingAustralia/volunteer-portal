@@ -9,32 +9,29 @@ class PicklistItemController {
     def autocomplete = {
         def picklistName = params.picklist
 
-//        Uncomment this when collection_events have collector ids for the 'key' bit
-//
-//        def task = Task.get(params.int('taskId'))
-//        if (picklistName == 'recordedBy' && task) {
-//            // check to see if the project as collection events, and if so, use the collectors from that, rather than from
-//            // the mega picklist
-//            if (task.project.collectionEventLookupCollectionCode) {
-//                def c = CollectionEvent.createCriteria()
-//                def collectors = c {
-//                    eq("institutionCode", task.project.collectionEventLookupCollectionCode)
-//                    ilike("collector", "%${params.q}%")
-//                    projections {
-//                        distinct("collector")
-//                    }
-//                }
-//
-//                render(contentType:"application/json") {
-//                    autoCompleteList = array {
-//                        for (collector in collectors) {
-//                            picklistItem(name:collector, key:'')
-//                        }
-//                    }
-//                }
-//                return
-//            }
-//        }
+        def task = Task.get(params.int('taskId'))
+        if (picklistName == 'recordedBy' && task) {
+            // check to see if the project as collection events, and if so, use the collectors from that, rather than from the mega picklist
+            if (task.project.collectionEventLookupCollectionCode) {
+                def c = CollectionEvent.createCriteria()
+                def collectors = c {
+                    eq("institutionCode", task.project.collectionEventLookupCollectionCode)
+                    ilike("collector", "%${params.q}%")
+                    projections {
+                        distinct("collector")
+                    }
+                }
+
+                render(contentType:"application/json") {
+                    autoCompleteList = array {
+                        for (collector in collectors) {
+                            picklistItem(name:collector, key:collector)
+                        }
+                    }
+                }
+                return
+            }
+        }
 
         def query = params.q
         if (picklistName) {

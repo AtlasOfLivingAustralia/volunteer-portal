@@ -13,8 +13,6 @@
 <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <title>${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
-%{--<script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>--}%
-%{--<link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>--}%
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>--}%
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>--}%
@@ -25,8 +23,6 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
 <r:require module="bootstrap-js" />
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'specimenTranscribe.js')}"></script>--}%
-
 <r:require module="panZoom" />
 
 <script type="text/javascript">
@@ -105,7 +101,102 @@
             }
         });
 
+        bindAutocomplete();
+
+        bindTooltips();
+
     });
+
+    function bindTooltips() {
+        // Context sensitive help popups
+        $("a.fieldHelp").qtip({
+            tip: true,
+            position: {
+                corner: {
+                    target: 'topMiddle',
+                    tooltip: 'bottomRight'
+                }
+            },
+            style: {
+                width: 400,
+                padding: 8,
+                background: 'white', //'#f0f0f0',
+                color: 'black',
+                textAlign: 'left',
+                border: {
+                    width: 4,
+                    radius: 5,
+                    color: '#E66542'// '#E66542' '#DD3102'
+                },
+                tip: 'bottomRight',
+                name: 'light' // Inherit the rest of the attributes from the preset light style
+            }
+        }).bind('click', function(e){ e.preventDefault(); return false; });
+    }
+
+    function bindAutocomplete() {
+
+        $("input.recordedBy").not('.noAutoComplete').autocomplete({
+            disabled: false,
+            minLength: 2,
+            delay: 200,
+            select: function(event, ui) {
+                var item = ui.item.data;
+                // There can be multiple collector boxes on a transcribe form, so we need to update the correct collector id...
+                var matches = $(event.currentTarget).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                if (matches.length > 0) {
+                    var recordIdx = matches[1];
+                    var inputField = $('#recordValues\\.' + recordIdx + '\\.recordedByID');
+                    if (inputField) {
+                        inputField.val(item.key);
+                        // We store the collector name in the form attribute so we can compare it on a change event
+                        // to see if we need to wipe the collectorId out should the name in the inputfield change
+                        inputField.attr('collector_name', item.name);
+                    }
+                } else {
+                    $(':input.recordedByID').val(item.key);
+                }
+
+            },
+            source: function(request, response) {
+                $.ajax(VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=recordedBy&q=" + request.term).done(function(data) {
+                    var rows = new Array();
+                    if (data.autoCompleteList) {
+                        var list = data.autoCompleteList;
+                        for (var i = 0; i < list.length; i++) {
+                            rows[i] = {
+                                value: list[i].name,
+                                label: list[i].name,
+                                data: list[i]
+                            };
+                        }
+                    }
+
+                    if (response) {
+                        response(rows);
+                    }
+                });
+            }
+        });
+
+        $("input.recordedBy").change(function(e) {
+            // If the value of the recordedBy field does not match the name in the collector_name attribute
+            // of the recordedByID element it means that the collector name no longer matches the id, so the id
+            // must be cleared.
+            var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+            var value = $(this).val();
+            if (matches.length > 0) {
+                var recordIdx = matches[1]
+                var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
+                var collectorName = $(elemSelector).attr("collector_name");
+                if (value != collectorName) {
+                    $(elemSelector).val('');
+                    $(elemSelector).attr("collector_name", "");
+                }
+            }
+        });
+
+    }
 
     function disableSection(classSelector) {
         $(classSelector + " :input").attr("disabled", "true");
@@ -164,7 +255,6 @@
     function hideModal() {
         $("#modal_element_id").modal('hide');
     }
-
 
 </script>
 
@@ -301,52 +391,118 @@
 </style>
 </head>
 
-<body>
+    <body>
 
-    <cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})">
-        <%
-            pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')],
-                [link: createLink(controller: 'project', action: 'show'), label: taskInstance?.project.featuredLabel]
-            ]
-        %>
+        <cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})">
+            <%
+                pageScope.crumbs = [
+                    [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')],
+                    [link: createLink(controller: 'project', action: 'show'), label: taskInstance?.project.featuredLabel]
+                ]
+            %>
 
-        <div>
-            <vpf:taskTopicButton task="${taskInstance}"/>
-            <g:if test="${taskInstance?.project?.tutorialLinks}">
-                ${taskInstance.project.tutorialLinks}
-            </g:if>
-        </div>
-    </cl:headerContent>
+            <div>
+                <vpf:taskTopicButton task="${taskInstance}"/>
+                <g:if test="${taskInstance?.project?.tutorialLinks}">
+                    ${taskInstance.project.tutorialLinks}
+                </g:if>
+            </div>
+        </cl:headerContent>
 
-    <div class="row">
-        <div class="span12">
-            <g:hasErrors bean="${taskInstance}">
-                <div class="errors">
-                    There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list"/>
-                </div>
-            </g:hasErrors>
-        </div>
-    </div>
-    <g:if test="${taskInstance}">
-        <g:form class="transcribeForm">
-            <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
-            <g:hiddenField name="redirect" value="${params.redirect}"/>
-
-            <g:render template="/transcribe/${template.viewName}" model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}" />
-
-        </g:form>
-    </g:if>
-    <g:else>
         <div class="row">
             <div class="span12">
-                <div class="alert">
-                    No tasks loaded for this project !
-                </div>
+                <g:hasErrors bean="${taskInstance}">
+                    <div class="errors">
+                        There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list"/>
+                    </div>
+                </g:hasErrors>
             </div>
         </div>
-    </g:else>
-    <cl:timeoutPopup/>
-    <div id="floatingImage" style="display:none"></div>
-</body>
+        <g:if test="${taskInstance}">
+            <g:form class="transcribeForm">
+                <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
+                <g:hiddenField name="redirect" value="${params.redirect}"/>
+
+                <g:render template="/transcribe/${template.viewName}" model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}" />
+
+                <div class="container-fluid">
+                    <div class="well well-small transcribeSection">
+                        <div class="row-fluid transcribeSectionHeader">
+                            <div class="span12">
+                                <span class="transcribeSectionHeaderLabel">Notes</span> &nbsp; Record any comments here that may assist in validating this specimen
+                                <a style="float:right" class="closeSection" href="#">Shrink</a>
+                            </div>
+                        </div>
+
+                        <div class="transcribeSectionBody">
+                            <div class="row-fluid">
+
+                                <div class="span6">
+                                    <div class="row-fluid">
+                                        <div class="span4">
+                                            ${(validator) ? 'Transcriber' : 'Your'} Notes
+                                        </div>
+                                        <div class="span8">
+                                            <g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}" id="transcriberNotes" rows="5" cols="40" style="width: 100%" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="span6">
+                                    <g:if test="${validator}">
+                                        <div class="row-fluid">
+                                            <div class="span4">Validator Notes</div>
+                                            <div class="span8">
+                                                <g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}" id="transcriberNotes" rows="5" cols="40" style="width: 100%" />
+                                            </div>
+                                        </div>
+                                    </g:if>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <g:if test="${!isReadonly}">
+                    <div class="container-fluid">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <g:hiddenField name="id" value="${taskInstance?.id}"/>
+                                <g:if test="${validator}">
+                                    <g:actionSubmit class="validate btn btn-small" action="validate" value="${message(code: 'default.button.validate.label', default: 'Validate')}"/>
+                                    <g:actionSubmit class="dontValidate btn btn-small" action="dontValidate" value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/>
+                                    <button class="btn btn-small skip" id="showNextFromProject">Skip</button><cl:validationStatus task="${taskInstance}"/>
+                                </g:if>
+                                <g:else>
+                                    <g:actionSubmit class="save btn btn-small" action="save"
+                                                                         value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/>
+                                    <g:actionSubmit class="savePartial btn btn-small" action="savePartial"
+                                                                         value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/>
+                                    <cl:isLoggedIn>
+                                        <button id="showNextFromProject" class="skip btn btn-small">Skip</button>
+                                    </cl:isLoggedIn>
+                                </g:else>
+                            </div>
+                        </div>
+                    </div>
+                </g:if>
+
+                <cl:timeoutPopup/>
+
+            </g:form>
+        </g:if>
+        <g:else>
+            <div class="row">
+                <div class="span12">
+                    <div class="alert">
+                        No tasks loaded for this project !
+                    </div>
+                </div>
+            </div>
+        </g:else>
+        <cl:timeoutPopup/>
+        <div id="floatingImage" style="display:none"></div>
+
+    </body>
 </html>
