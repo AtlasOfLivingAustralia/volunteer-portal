@@ -18,8 +18,8 @@
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'gmaps.js')}"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'gmaps.js')}"></script>--}%
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
 <r:require module="bootstrap-js" />
@@ -110,12 +110,77 @@
         bindSymbolButtons();
         bindTooltips();
         bindShrinkExpandLinks();
-
+        setupPanZoom();
+        bindImagePinning();
     });
+
+    function showGeolocationTool() {
+        showModal({
+            url: "${createLink(controller: 'transcribe', action:'geolocationToolFragment')}",
+            width:978,
+            height:520,
+            hideHeader: true,
+            title: '',
+            onShown: function() {
+                initializeGeolocateTool();
+                google.maps.event.trigger(map, "resize");
+            }
+        });
+    }
+
+    function bindImagePinning() {
+
+        $("#pinImage").click(function (e) {
+            e.preventDefault();
+            if ($("#image-container").css("position") == 'fixed') {
+                $("#image-container").css({"position":"relative", top:'inherit', left:'inherit', 'border':'none' });
+                $(".pin-image-control").css({'background-image':"url(${resource(dir:'images', file:'pin-image.png')})"});
+                $(".pin-image-control a").attr("title", "Fix the image in place in the browser window");
+            } else {
+                $("#image-container").css({"position":"fixed", top:0, left:0, "z-index":600, 'border':'2px solid #535353', 'background':'darkgray' });
+                $(".pin-image-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
+                $(".pin-image-control a").attr("title", "Return the image to its normal position");
+            }
+        });
+
+    }
+
+    function setupPanZoom() {
+        var target = $("#image-container img");
+
+        target.panZoom({
+            pan_step:10,
+            zoom_step:10,
+            min_width:200,
+            min_height:200,
+            mousewheel:true,
+            mousewheel_delta:2,
+            'zoomIn':$('#zoomin'),
+            'zoomOut':$('#zoomout'),
+            'panUp':$('#pandown'),
+            'panDown':$('#panup'),
+            'panLeft':$('#panright'),
+            'panRight':$('#panleft')
+        });
+
+        target.panZoom('fit');
+    }
+
+    function showPreviousTaskBrowser() {
+
+        showModal({
+            url: "${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}",
+            width:700,
+            height:600,
+            hideHeader: false,
+            title: 'Previously transcribed tasks'
+        });
+
+    }
 
     function bindShrinkExpandLinks() {
 
-        $(".closeSection").click(function (e) {
+        $(".closeSectionLink").click(function (e) {
             e.preventDefault();
             var body = $(this).closest(".transcribeSection").find(".transcribeSectionBody");
             if (body) {
@@ -264,10 +329,11 @@
             width: options.width ? options.width : 600,
             title: options.title ? options.title : 'Modal Title',
             hideHeader: options.hideHeader ? options.hideHeader : false,
-            onClose: options.onClose ? options.onClose : null
+            onClose: options.onClose ? options.onClose : null,
+            onShown: options.onShown ? options.onShown : null
         }
 
-        var html = "<div id='" + opts.id + "' class='modal hide fade' role='dialog' aria-labelledby='modal_label_" + opts.id + "' aria-hidden='true' style='height: " + opts.height + "px;width: " + opts.width + "px; overflow: hidden'>";
+        var html = "<div id='" + opts.id + "' class='modal hide fade' role='dialog' aria-labelledby='modal_label_" + opts.id + "' aria-hidden='true' style='width: " + opts.width + "px; margin-left: -" + opts.width / 2 + "px;overflow: hidden'>";
         if (!opts.hideHeader) {
             html += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button><h3 id='modal_label_" + opts.id + "'>" + opts.title + "</h3></div>";
         }
@@ -281,6 +347,12 @@
             $(selector).remove();
             if (opts.onClose) {
                 opts.onClose();
+            }
+        });
+
+        $(selector).on("shown", function() {
+            if (opts.onShown) {
+                opts.onShown();
             }
         });
 
@@ -425,6 +497,71 @@
     font-weight: bold;
 }
 
+.transcribeSectionBody select {
+    margin-bottom: 10px;
+}
+
+.transcribeSectionBody {
+    border-top: 1px solid #d3d3d3;
+    padding-top: 10px;
+}
+
+.closeSectionLink {
+    float: right;
+}
+
+/* Mapping tool (popup) */
+
+div#mapWidgets {
+    width: 950px;
+    height: 500px;
+    overflow: hidden;
+}
+
+#mapWidgets img {
+    max-width: none !important;
+}
+
+#mapWidgets #mapWrapper {
+
+    width: 500px;
+    height: 500px;
+    float: left;
+    padding-right: 10px;
+}
+
+#mapWidgets #mapCanvas {
+    width: 500px;
+    height: 500px;
+    /*// height: 94%;*/
+    margin-bottom: 6px;
+}
+
+#mapWidgets #mapInfo {
+    float: left;
+    height: 100%;
+    width: 44%;
+    padding: 0 0 0 10px;
+    text-align: left;
+    border-left: 2px solid #cccccc;
+}
+
+#mapWidgets #sightingAddress {
+    margin-bottom: 4px;
+    line-height: 22px;
+}
+
+#mapWidgets .searchHint {
+    font-size: 12px;
+    padding: 4px 0;
+    line-height: 1.2em;
+    color: #666;
+}
+
+#mapWidgets #address {
+    width: 360px;
+}
+
 </style>
 </head>
 
@@ -467,7 +604,7 @@
                         <div class="row-fluid transcribeSectionHeader">
                             <div class="span12">
                                 <span class="transcribeSectionHeaderLabel">Notes</span> &nbsp; Record any comments here that may assist in validating this specimen
-                                <a style="float:right" class="closeSection" href="#">Shrink</a>
+                                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                             </div>
                         </div>
 

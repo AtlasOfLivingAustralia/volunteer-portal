@@ -32,8 +32,6 @@
 
         <g:layoutHead />
         <r:layoutResources/>
-        %{--<script language="JavaScript" type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/jquery.autocomplete.js"></script>--}%
-        %{--<script language="JavaScript" type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/uservoice.js"></script>--}%
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>

@@ -101,7 +101,7 @@ class TranscribeTagLib {
 
     }
 
-    private String getWidgetHtml(TemplateField field, recordValues, recordIdx, attrs, String cssClass) {
+    private String getWidgetHtml(TemplateField field, recordValues, recordIdx, attrs, String auxClass) {
 
         if (!field) {
             return ""
@@ -111,8 +111,21 @@ class TranscribeTagLib {
             return "&nbsp;"
         }
 
-        String w
         def name = field.fieldType.name()
+        def cssClass = name
+
+        if (name =~ /[Dd]ate/) {
+            // so we can add a date widget with JQuery
+            cssClass = cssClass + ' datePicker';
+        }
+        if (field.mandatory) {
+            cssClass = cssClass + " validate[required]"
+        }
+        if (auxClass) {
+            cssClass += " " + auxClass
+        }
+
+        String w
         def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
         switch (field.type) {
 
@@ -459,10 +472,13 @@ class TranscribeTagLib {
         Task task = attrs.task as Task
         String labelClass = attrs.labelClass ?: 'span4'
         String valueClass = attrs.valueClass ?: 'span8'
-
-        Template template = task?.project?.template
         def recordValues = attrs.recordValues
+        def mb = new MarkupBuilder(out)
+        renderFieldsForCategory(mb,category, task, labelClass, valueClass, recordValues, attrs)
+    }
 
+    private void renderFieldsForCategory(MarkupBuilder mb, FieldCategory category, Task task, String labelClass, String valueClass, recordValues, attrs) {
+        Template template = task?.project?.template
         if (category && template) {
             def fields = TemplateField.findAllByCategoryAndTemplate(category, template, [sort: 'displayOrder'])
 
@@ -470,7 +486,7 @@ class TranscribeTagLib {
 
             fields.removeAll { it.type == FieldType.hidden }
 
-            def mb = new MarkupBuilder(out)
+
             for (int i = 0; i < fields.size(); i += 2) {
                 def lhs = fields[i]
                 def rhs = (i+1 < fields.size() ? fields[i+1] : null)
@@ -496,5 +512,48 @@ class TranscribeTagLib {
         }
     }
 
+    /**
+     * @attr title
+     * @attr description
+     * @attr task
+     * @attr recordValues
+     * @attr category
+     */
+    def renderFieldCategorySection = { attrs, body ->
+        def task = attrs.task as Task
+        def recordValues = attrs.recordValues
+        FieldCategory category = attrs.category
+
+        def mb = new MarkupBuilder(out)
+
+        def bodyContent = body()
+
+        mb.div(class:'well well-small transcribeSection') {
+            div(class:'row-fluid transcribeSectionHeader') {
+                div(class:'span12') {
+                    span(class:'transcribeSectionHeaderLabel') {
+                        mkp.yield(attrs.title)
+                    }
+                    if (bodyContent) {
+                        span() {
+                            mkp.yieldUnescaped(bodyContent)
+                        }
+                    }
+                    span() {
+                        mkp.yieldUnescaped("&nbsp;&ndash;&nbsp;")
+                        mkp.yield(attrs.description)
+                    }
+                    a(class:'closeSectionLink', href:'#') {
+                        mkp.yield('Shrink');
+                    }
+                }
+
+            }
+            div(class:'transcribeSectionBody') {
+                renderFieldsForCategory(mb, category, task, "span4", "span8", recordValues, attrs)
+            }
+        }
+
+    }
 
 }

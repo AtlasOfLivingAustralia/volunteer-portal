@@ -119,41 +119,13 @@
         </div>
     </div>
 
-    <div class="well well-small transcribeSection">
-        <div class="row-fluid transcribeSectionHeader">
-            <div class="span12">
-                <span class="transcribeSectionHeaderLabel">3. Interpreted Location</span> &nbsp;<button class="btn btn-small btn-info" id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use mapping tool</button> &ndash; Use the mapping tool before attempting to enter values manually
-                <a style="float:right" class="closeSection" href="#">Shrink</a>
-            </div>
-        </div>
-        <div class="transcribeSectionBody">
-            <g:templateFieldsForCategory category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" labelClass="span4" valueClass="span8" />
-        </div>
-    </div>
+    <g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="3. Interpreted Location" description="Use the mapping tool before attempting to enter values manually">
+        <button class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
+    </g:renderFieldCategorySection>
 
-    <div class="well well-small transcribeSection">
-        <div class="row-fluid transcribeSectionHeader">
-            <div class="span12">
-                <span class="transcribeSectionHeaderLabel">4. Miscellaneous</span> &nbsp; This section is for a range of fields. Many labels will not contain information for any or all of this fields.
-                <a style="float:right" class="closeSection" href="#">Shrink</a>
-            </div>
-        </div>
-        <div class="transcribeSectionBody">
-            <g:templateFieldsForCategory category="${FieldCategory.miscellaneous}" task="${taskInstance}" recordValues="${recordValues}" labelClass="span4" valueClass="span8" />
-        </div>
-    </div>
+    <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}" recordValues="${recordValues}" title="4. Miscellaneous" description="This section is for a range of fields. Many labels will not contain information for any or all of this fields." />
 
-    <div class="well well-small transcribeSection">
-        <div class="row-fluid transcribeSectionHeader">
-            <div class="span12">
-                <span class="transcribeSectionHeaderLabel">5. Identification</span> &nbsp; If a label contains information on the name of the organism then record the name and associated information in this section.
-                <a style="float:right" class="closeSection" href="#">Shrink</a>
-            </div>
-        </div>
-        <div class="transcribeSectionBody">
-            <g:templateFieldsForCategory category="${FieldCategory.identification}" task="${taskInstance}" recordValues="${recordValues}" labelClass="span4" valueClass="span8" />
-        </div>
-    </div>
+    <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}" recordValues="${recordValues}" title="4. Miscellaneous" description="This section is for a range of fields. Many labels will not contain information for any or all of this fields." />
 
 </div>
 
@@ -162,52 +134,12 @@
 
     $("#show_task_selector").click(function(e) {
         e.preventDefault();
-        showModal({
-            url: "${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}",
-            width:700,
-            height:600,
-            hideHeader: false,
-            title: 'Previously transcribed tasks'
-
-        });
+        showPreviousTaskBrowser();
     });
 
-    function setupPanZoom() {
-        var target = $("#image-container img");
-
-        target.panZoom({
-            pan_step:10,
-            zoom_step:10,
-            min_width:200,
-            min_height:200,
-            mousewheel:true,
-            mousewheel_delta:2,
-            'zoomIn':$('#zoomin'),
-            'zoomOut':$('#zoomout'),
-            'panUp':$('#pandown'),
-            'panDown':$('#panup'),
-            'panLeft':$('#panright'),
-            'panRight':$('#panleft')
-        });
-
-        target.panZoom('fit');
-    }
-
-    setupPanZoom();
-
-    $("#pinImage").click(function (e) {
+    $("#btnGeolocate").click(function(e) {
         e.preventDefault();
-        if ($("#image-container").css("position") == 'fixed') {
-            $("#image-container").css({"position":"relative", top:'inherit', left:'inherit', 'border':'none' });
-            $(".pin-image-control").css({'background-image':"url(${resource(dir:'images', file:'pin-image.png')})"});
-            $(".pin-image-control a").attr("title", "Fix the image in place in the browser window");
-        } else {
-            $("#image-container").css({"position":"fixed", top:0, left:0, "z-index":600, 'border':'2px solid #535353', 'background':'darkgray' });
-            $(".pin-image-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
-            $(".pin-image-control a").attr("title", "Return the image to its normal position");
-        }
-
+        showGeolocationTool();
     });
-
 
 </r:script>

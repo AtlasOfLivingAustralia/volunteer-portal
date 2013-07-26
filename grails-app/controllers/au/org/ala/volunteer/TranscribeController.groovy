@@ -246,4 +246,8 @@ class TranscribeController {
             render(view: 'noTasks')
         }
     }
+
+    def geolocationToolFragment() {
+    }
+
 }
