@@ -617,7 +617,7 @@ div#mapWidgets {
                                             ${(validator) ? 'Transcriber' : 'Your'} Notes
                                         </div>
                                         <div class="span8">
-                                            <g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}" id="transcriberNotes" rows="5" cols="40" style="width: 100%" />
+                                            <g:textArea name="recordValues.0.transcriberNotes" value="${recordValues?.get(0)?.transcriberNotes}" id="transcriberNotes" rows="5" cols="40" class="span12" />
                                         </div>
                                     </div>
                                 </div>
@@ -627,7 +627,7 @@ div#mapWidgets {
                                         <div class="row-fluid">
                                             <div class="span4">Validator Notes</div>
                                             <div class="span8">
-                                                <g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}" id="transcriberNotes" rows="5" cols="40" style="width: 100%" />
+                                                <g:textArea name="recordValues.0.validatorNotes" value="${recordValues?.get(0)?.validatorNotes}" id="transcriberNotes" rows="5" cols="40" class="span12" />
                                             </div>
                                         </div>
                                     </g:if>
