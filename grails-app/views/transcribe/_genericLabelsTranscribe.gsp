@@ -122,7 +122,7 @@
     <div class="well well-small transcribeSection">
         <div class="row-fluid transcribeSectionHeader">
             <div class="span12">
-                <span class="transcribeSectionHeaderLabel">3. Interpreted Location</span> &nbsp;<button class="btn btn-small" id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use mapping tool</button> &ndash; Use the mapping tool before attempting to enter values manually
+                <span class="transcribeSectionHeaderLabel">3. Interpreted Location</span> &nbsp;<button class="btn btn-small btn-info" id="geolocate" href="#mapWidgets" title="Show geolocate tools popup">Use mapping tool</button> &ndash; Use the mapping tool before attempting to enter values manually
                 <a style="float:right" class="closeSection" href="#">Shrink</a>
             </div>
         </div>
@@ -202,7 +202,7 @@
             $(".pin-image-control").css({'background-image':"url(${resource(dir:'images', file:'pin-image.png')})"});
             $(".pin-image-control a").attr("title", "Fix the image in place in the browser window");
         } else {
-            $("#image-container").css({"position":"fixed", top:10, left:10, "z-index":600, 'border':'2px solid #535353' });
+            $("#image-container").css({"position":"fixed", top:0, left:0, "z-index":600, 'border':'2px solid #535353', 'background':'darkgray' });
             $(".pin-image-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
             $(".pin-image-control a").attr("title", "Return the image to its normal position");
         }

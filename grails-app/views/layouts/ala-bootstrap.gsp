@@ -74,6 +74,7 @@
                 $("th.sorted > a").addClass("active")
 
             });
+
         </script>
     </head>
     <body class="${pageProperty(name:'body.class')}" id="${pageProperty(name:'body.id')}" onload="${pageProperty(name:'body.onload')}">

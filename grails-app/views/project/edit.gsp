@@ -38,7 +38,7 @@
         <cl:headerContent title="${message(code: 'default.edit.label', args: [entityName])} - ${projectInstance.name}" selectedNavItem="expeditions">
             <%
                 pageScope.crumbs = [
-                    [link: createLink(controller: 'project', action: 'show'), label: projectInstance.featuredLabel]
+                    [link: createLink(controller: 'project', action: 'index', id:projectInstance.id), label: projectInstance.featuredLabel]
                 ]
             %>
         </cl:headerContent>

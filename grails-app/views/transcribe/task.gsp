@@ -39,6 +39,35 @@
 
     $(document).ready(function () {
 
+        jQuery.fn.extend({
+
+            insertAtCaret: function(myValue) {
+
+                return this.each(function(i) {
+                    if (document.selection) {
+                        //For browsers like Internet Explorer
+                        this.focus();
+                        var sel = document.selection.createRange();
+                        sel.text = myValue;
+                        this.focus();
+                    } else if (this.selectionStart || this.selectionStart == '0') {
+                        //For browsers like Firefox and Webkit based
+                        var startPos = this.selectionStart;
+                        var endPos = this.selectionEnd;
+                        var scrollTop = this.scrollTop;
+                        this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
+                        this.focus();
+                        this.selectionStart = startPos + myValue.length;
+                        this.selectionEnd = startPos + myValue.length;
+                        this.scrollTop = scrollTop;
+                    } else {
+                        this.value += myValue;
+                        this.focus();
+                    }
+                });
+            }
+        });
+
         $(window).scroll(function (e) {
             if ($("#floatingImage").is(":visible")) {
                 var parent = $("#floatingImage").parents('.ui-dialog');
@@ -67,17 +96,6 @@
 
         });
 
-        $(".insert-symbol-button").each(function (index) {
-            $(this).html($(this).attr("symbol"));
-        });
-
-        $(".insert-symbol-button").click(function (e) {
-            e.preventDefault();
-            var input = $("#recordValues\\.0\\.occurrenceRemarks");
-            $(input).insertAtCaret($(this).attr('symbol'));
-            $(input).focus();
-        });
-
         // display previous journal page in new window
         $("#showImageButton").click(function (e) {
             e.preventDefault();
@@ -88,24 +106,43 @@
             }
         });
 
+        bindAutocomplete();
+        bindSymbolButtons();
+        bindTooltips();
+        bindShrinkExpandLinks();
+
+    });
+
+    function bindShrinkExpandLinks() {
 
         $(".closeSection").click(function (e) {
             e.preventDefault();
-            var body = $(this).closest("table").find('tbody');
-            if (body.css('display') == 'none') {
-                body.css('display', 'block');
-                $(this).text("Shrink")
-            } else {
-                body.css('display', 'none');
-                $(this).text("Expand")
+            var body = $(this).closest(".transcribeSection").find(".transcribeSectionBody");
+            if (body) {
+                if (body.css('display') == 'none') {
+                    body.css('display', 'block');
+                    $(this).text("Shrink")
+                } else {
+                    body.css('display', 'none');
+                    $(this).text("Expand")
+                }
             }
         });
+    }
 
-        bindAutocomplete();
+    function bindSymbolButtons() {
 
-        bindTooltips();
+        $(".insert-symbol-button").each(function (index) {
+            $(this).html($(this).attr("symbol"));
+        });
 
-    });
+        $(".insert-symbol-button").click(function (e) {
+            e.preventDefault();
+            var input = $("#recordValues\\.0\\.occurrenceRemarks");
+            $(input).insertAtCaret($(this).attr('symbol'));
+            $(input).focus();
+        });
+    }
 
     function bindTooltips() {
         // Context sensitive help popups
