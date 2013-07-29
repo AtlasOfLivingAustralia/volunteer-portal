@@ -21,13 +21,8 @@
 
         <script type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/html5.js"></script>
 
-        %{--<r:require module="style" />--}%
         <r:require module="jquery-ui" />
         <r:require module="qtip" />
-
-        %{--<script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-1.8.2.js')}"></script>--}%
-        %{--<script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-ui-1.9.1.custom.min.js')}"></script>--}%
-
 
         <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>
         <link href="http://www.ala.org.au/wp-content/themes/ala2011/css/jquery.autocomplete.css" type="text/css" rel="stylesheet" media="screen, projection" />
@@ -77,33 +72,6 @@
                         });
                     }
                 });
-
-//                // autocomplete on navbar search input
-//                jQuery("").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-//                    extraParams: {limit: 100},
-//                    dataType: 'jsonp',
-//                    parse: function(data) {
-//                        var rows = new Array();
-//                        data = data.autoCompleteList;
-//                        for(var i=0; i<data.length; i++){
-//                            rows[i] = {
-//                                data:data[i],
-//                                value: data[i].matchedNames[0],
-//                                result: data[i].matchedNames[0]
-//                            };
-//                        }
-//                        return rows;
-//                    },
-//                    matchSubset: false,
-//                    formatItem: function(row, i, n) {
-//                        return row.matchedNames[0];
-//                    },
-//                    cacheLength: 10,
-//                    minChars: 3,
-//                    scroll: false,
-//                    max: 10,
-//                    selectFirst: false
-//                });
 
                 $("th.sortable > a").addClass("btn")
                 $("th.sorted > a").addClass("active")

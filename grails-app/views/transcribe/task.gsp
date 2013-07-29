@@ -8,571 +8,573 @@
 <%@ page contentType="text/html; UTF-8" %>
 
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-<title>${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
-<link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>--}%
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'gmaps.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>--}%
-%{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>--}%
-<r:require module="bootstrap-js" />
-<r:require module="panZoom" />
-<r:require module="jqZoom" />
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+        <title>${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
+        <r:require module="bootstrap-js" />
+        <r:require module="panZoom" />
+        <r:require module="jqZoom" />
 
-<r:script>
+        <r:script>
 
-    // global Object
-    var VP_CONF = {
-        taskId: "${taskInstance?.id}",
-        picklistAutocompleteUrl: "${createLink(action:'autocomplete', controller:'picklistItem')}",
-        updatePicklistUrl: "${createLink(controller:'picklistItem', action:'updateLocality')}",
-        nextTaskUrl: "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}",
-        isReadonly: "${isReadonly}",
-        isValid: ${(taskInstance?.isValid) ? "true" : "false"}
-    };
+            // global Object
+            var VP_CONF = {
+                taskId: "${taskInstance?.id}",
+                picklistAutocompleteUrl: "${createLink(action:'autocomplete', controller:'picklistItem')}",
+                updatePicklistUrl: "${createLink(controller:'picklistItem', action:'updateLocality')}",
+                nextTaskUrl: "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}",
+                isReadonly: "${isReadonly}",
+                isValid: ${(taskInstance?.isValid) ? "true" : "false"}
+            };
 
-    $(document).ready(function () {
+            $(document).ready(function () {
 
-        jQuery.fn.extend({
+                jQuery.fn.extend({
 
-            insertAtCaret: function(myValue) {
+                    insertAtCaret: function(myValue) {
 
-                return this.each(function(i) {
-                    if (document.selection) {
-                        //For browsers like Internet Explorer
-                        this.focus();
-                        var sel = document.selection.createRange();
-                        sel.text = myValue;
-                        this.focus();
-                    } else if (this.selectionStart || this.selectionStart == '0') {
-                        //For browsers like Firefox and Webkit based
-                        var startPos = this.selectionStart;
-                        var endPos = this.selectionEnd;
-                        var scrollTop = this.scrollTop;
-                        this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
-                        this.focus();
-                        this.selectionStart = startPos + myValue.length;
-                        this.selectionEnd = startPos + myValue.length;
-                        this.scrollTop = scrollTop;
-                    } else {
-                        this.value += myValue;
-                        this.focus();
+                        return this.each(function(i) {
+                            if (document.selection) {
+                                //For browsers like Internet Explorer
+                                this.focus();
+                                var sel = document.selection.createRange();
+                                sel.text = myValue;
+                                this.focus();
+                            } else if (this.selectionStart || this.selectionStart == '0') {
+                                //For browsers like Firefox and Webkit based
+                                var startPos = this.selectionStart;
+                                var endPos = this.selectionEnd;
+                                var scrollTop = this.scrollTop;
+                                this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
+                                this.focus();
+                                this.selectionStart = startPos + myValue.length;
+                                this.selectionEnd = startPos + myValue.length;
+                                this.scrollTop = scrollTop;
+                            } else {
+                                this.value += myValue;
+                                this.focus();
+                            }
+                        });
                     }
                 });
-            }
-        });
 
-        $(window).scroll(function (e) {
-            if ($("#floatingImage").is(":visible")) {
-                var parent = $("#floatingImage").parents('.ui-dialog');
-                var position = parent.position();
-                var top = position.top - $(window).scrollTop();
-                if (top < 0) {
-                    $("#floatingImage").dialog("option", "position", [position.left, 10]);
-                } else if (top + parent.height() > $(window).height()) {
-                    $("#floatingImage").dialog("option", "position", [position.left, $(window).scrollTop() + $(window).height() - (parent.height() + 20) ]);
-                }
-            }
-        });
-
-        $("#pinImage").click(function (e) {
-            e.preventDefault();
-            if ($(".pan-image").css("position") == 'fixed') {
-                $(".pan-image").css({"position": "relative", top: 'inherit', left: 'inherit', 'border': 'none' });
-                $(".new-window-control").css({'background-image': "url(${resource(dir:'images', file:'pin-image.png')})"});
-                $(".pan-image a").attr("title", "Fix the image in place in the browser window");
-            } else {
-                $(".pan-image").css({"position": "fixed", top: 10, left: 10, "z-index": 600, 'border': '2px solid #535353' });
-                $(".new-window-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
-                $("#imageContainer").css("background", "darkgray");
-                $(".pan-image a").attr("title", "Return the image to its normal position");
-            }
-
-        });
-
-        // display previous journal page in new window
-        $("#showImageButton").click(function (e) {
-            e.preventDefault();
-            var uri = "${createLink(controller: 'task', action:'showImage', id: taskInstance.id)}"
-            newwindow = window.open(uri, 'journalWindow', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
-            if (window.focus) {
-                newwindow.focus()
-            }
-        });
-
-        bindAutocomplete();
-        bindSymbolButtons();
-        bindTooltips();
-        bindShrinkExpandLinks();
-        setupPanZoom();
-        bindImagePinning();
-        applyReadOnlyIfRequired();
-    });
-
-    function applyReadOnlyIfRequired() {
-        <g:if test="${isReadonly}">
-        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
-        </g:if>
-    }
-
-    function showGeolocationTool() {
-        showModal({
-            url: "${createLink(controller: 'transcribe', action:'geolocationToolFragment')}",
-            width:978,
-            height:520,
-            hideHeader: true,
-            title: '',
-            onShown: function() {
-                initializeGeolocateTool();
-                google.maps.event.trigger(map, "resize");
-            }
-        });
-    }
-
-    function bindImagePinning() {
-
-        $("#pinImage").click(function (e) {
-            e.preventDefault();
-            if ($("#image-container").css("position") == 'fixed') {
-                $("#image-container").css({"position":"relative", top:'inherit', left:'inherit', 'border':'none' });
-                $(".pin-image-control").css({'background-image':"url(${resource(dir:'images', file:'pin-image.png')})"});
-                $(".pin-image-control a").attr("title", "Fix the image in place in the browser window");
-            } else {
-                $("#image-container").css({"position":"fixed", top:0, left:0, "z-index":600, 'border':'2px solid #535353', 'background':'darkgray' });
-                $(".pin-image-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
-                $(".pin-image-control a").attr("title", "Return the image to its normal position");
-            }
-        });
-
-    }
-
-    function setupPanZoom() {
-        var target = $("#image-container img");
-        if (target.length > 0) {
-            target.panZoom({
-                pan_step:10,
-                zoom_step:10,
-                min_width:200,
-                min_height:200,
-                mousewheel:true,
-                mousewheel_delta:2,
-                'zoomIn':$('#zoomin'),
-                'zoomOut':$('#zoomout'),
-                'panUp':$('#pandown'),
-                'panDown':$('#panup'),
-                'panLeft':$('#panright'),
-                'panRight':$('#panleft')
-            });
-
-            target.panZoom('fit');
-        }
-    }
-
-    function showPreviousTaskBrowser() {
-
-        showModal({
-            url: "${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}",
-            width:700,
-            height:600,
-            hideHeader: false,
-            title: 'Previously transcribed tasks'
-        });
-
-    }
-
-    function bindShrinkExpandLinks() {
-
-        $(".closeSectionLink").click(function (e) {
-            e.preventDefault();
-            var body = $(this).closest(".transcribeSection").find(".transcribeSectionBody");
-            if (body) {
-                if (body.css('display') == 'none') {
-                    body.css('display', 'block');
-                    $(this).text("Shrink")
-                } else {
-                    body.css('display', 'none');
-                    $(this).text("Expand")
-                }
-            }
-        });
-    }
-
-    function bindSymbolButtons() {
-
-        $(".insert-symbol-button").each(function (index) {
-            $(this).html($(this).attr("symbol"));
-        });
-
-        $(".insert-symbol-button").click(function (e) {
-            e.preventDefault();
-            var input = $("#recordValues\\.0\\.occurrenceRemarks");
-            $(input).insertAtCaret($(this).attr('symbol'));
-            $(input).focus();
-        });
-    }
-
-    function bindTooltips() {
-        // Context sensitive help popups
-        $("a.fieldHelp").qtip({
-            tip: true,
-            position: {
-                corner: {
-                    target: 'topMiddle',
-                    tooltip: 'bottomRight'
-                }
-            },
-            style: {
-                width: 400,
-                padding: 8,
-                background: 'white', //'#f0f0f0',
-                color: 'black',
-                textAlign: 'left',
-                border: {
-                    width: 4,
-                    radius: 5,
-                    color: '#E66542'// '#E66542' '#DD3102'
-                },
-                tip: 'bottomRight',
-                name: 'light' // Inherit the rest of the attributes from the preset light style
-            }
-        }).bind('click', function(e){ e.preventDefault(); return false; });
-    }
-
-    function bindAutocomplete() {
-
-        $("input.recordedBy").not('.noAutoComplete').autocomplete({
-            disabled: false,
-            minLength: 2,
-            delay: 200,
-            select: function(event, ui) {
-                var item = ui.item.data;
-                // There can be multiple collector boxes on a transcribe form, so we need to update the correct collector id...
-                var matches = $(event.currentTarget).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
-                if (matches.length > 0) {
-                    var recordIdx = matches[1];
-                    var inputField = $('#recordValues\\.' + recordIdx + '\\.recordedByID');
-                    if (inputField) {
-                        inputField.val(item.key);
-                        // We store the collector name in the form attribute so we can compare it on a change event
-                        // to see if we need to wipe the collectorId out should the name in the inputfield change
-                        inputField.attr('collector_name', item.name);
-                    }
-                } else {
-                    $(':input.recordedByID').val(item.key);
-                }
-
-            },
-            source: function(request, response) {
-                $.ajax(VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=recordedBy&q=" + request.term).done(function(data) {
-                    var rows = new Array();
-                    if (data.autoCompleteList) {
-                        var list = data.autoCompleteList;
-                        for (var i = 0; i < list.length; i++) {
-                            rows[i] = {
-                                value: list[i].name,
-                                label: list[i].name,
-                                data: list[i]
-                            };
+                $(window).scroll(function (e) {
+                    if ($("#floatingImage").is(":visible")) {
+                        var parent = $("#floatingImage").parents('.ui-dialog');
+                        var position = parent.position();
+                        var top = position.top - $(window).scrollTop();
+                        if (top < 0) {
+                            $("#floatingImage").dialog("option", "position", [position.left, 10]);
+                        } else if (top + parent.height() > $(window).height()) {
+                            $("#floatingImage").dialog("option", "position", [position.left, $(window).scrollTop() + $(window).height() - (parent.height() + 20) ]);
                         }
                     }
+                });
 
-                    if (response) {
-                        response(rows);
+                $("#pinImage").click(function (e) {
+                    e.preventDefault();
+                    if ($(".pan-image").css("position") == 'fixed') {
+                        $(".pan-image").css({"position": "relative", top: 'inherit', left: 'inherit', 'border': 'none' });
+                        $(".new-window-control").css({'background-image': "url(${resource(dir:'images', file:'pin-image.png')})"});
+                        $(".pan-image a").attr("title", "Fix the image in place in the browser window");
+                    } else {
+                        $(".pan-image").css({"position": "fixed", top: 10, left: 10, "z-index": 600, 'border': '2px solid #535353' });
+                        $(".new-window-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
+                        $("#imageContainer").css("background", "darkgray");
+                        $(".pan-image a").attr("title", "Return the image to its normal position");
+                    }
+
+                });
+
+                // display previous journal page in new window
+                $("#showImageButton").click(function (e) {
+                    e.preventDefault();
+                    var uri = "${createLink(controller: 'task', action:'showImage', id: taskInstance.id)}"
+                    newwindow = window.open(uri, 'journalWindow', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                    if (window.focus) {
+                        newwindow.focus()
+                    }
+                });
+
+                bindAutocomplete();
+                bindSymbolButtons();
+                bindTooltips();
+                bindShrinkExpandLinks();
+                setupPanZoom();
+                bindImagePinning();
+                applyReadOnlyIfRequired();
+            });
+
+            function applyReadOnlyIfRequired() {
+                <g:if test="${isReadonly}">
+                $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+                </g:if>
+            }
+
+            function showGeolocationTool() {
+                showModal({
+                    url: "${createLink(controller: 'transcribe', action:'geolocationToolFragment')}",
+                    width:978,
+                    height:520,
+                    hideHeader: true,
+                    title: '',
+                    onShown: function() {
+                        initializeGeolocateTool();
+                        google.maps.event.trigger(map, "resize");
                     }
                 });
             }
-        });
 
-        $("input.recordedBy").change(function(e) {
-            // If the value of the recordedBy field does not match the name in the collector_name attribute
-            // of the recordedByID element it means that the collector name no longer matches the id, so the id
-            // must be cleared.
-            var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
-            var value = $(this).val();
-            if (matches.length > 0) {
-                var recordIdx = matches[1]
-                var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
-                var collectorName = $(elemSelector).attr("collector_name");
-                if (value != collectorName) {
-                    $(elemSelector).val('');
-                    $(elemSelector).attr("collector_name", "");
+            function bindImagePinning() {
+
+                $("#pinImage").click(function (e) {
+                    e.preventDefault();
+                    if ($("#image-container").css("position") == 'fixed') {
+                        $("#image-container").css({"position":"relative", top:'inherit', left:'inherit', 'border':'none' });
+                        $(".pin-image-control").css({'background-image':"url(${resource(dir:'images', file:'pin-image.png')})"});
+                        $(".pin-image-control a").attr("title", "Fix the image in place in the browser window");
+                    } else {
+                        $("#image-container").css({"position":"fixed", top:0, left:0, "z-index":600, 'border':'2px solid #535353', 'background':'darkgray' });
+                        $(".pin-image-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
+                        $(".pin-image-control a").attr("title", "Return the image to its normal position");
+                    }
+                });
+
+            }
+
+            function setupPanZoom() {
+                var target = $("#image-container img");
+                if (target.length > 0) {
+                    target.panZoom({
+                        pan_step:10,
+                        zoom_step:10,
+                        min_width:200,
+                        min_height:200,
+                        mousewheel:true,
+                        mousewheel_delta:5,
+                        'zoomIn':$('#zoomin'),
+                        'zoomOut':$('#zoomout'),
+                        'panUp':$('#pandown'),
+                        'panDown':$('#panup'),
+                        'panLeft':$('#panright'),
+                        'panRight':$('#panleft')
+                    });
+
+                    target.panZoom('fit');
                 }
             }
-        });
 
-    }
+            function showPreviousTaskBrowser() {
 
-    function disableSection(classSelector) {
-        $(classSelector + " :input").attr("disabled", "true");
-        $(classSelector).css("opacity", "0.5");
-    }
+                showModal({
+                    url: "${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}",
+                    width:700,
+                    height:600,
+                    hideHeader: false,
+                    title: 'Previously transcribed tasks'
+                });
 
-    function enableSection(classSelector) {
-        $(classSelector + " :input").removeAttr("disabled");
-        $(classSelector).css("opacity", "1");
-    }
+            }
 
-    function setFieldValue(fieldName, value) {
-        var id = "recordValues\\.0\\." + fieldName;
-        $("#" + id).val(value);
-    }
+            function bindShrinkExpandLinks() {
 
-    function getFieldValue(fieldName) {
-        var id = "recordValues\\.0\\." + fieldName;
-        return $("#" + id).val();
-    }
+                $(".closeSectionLink").click(function (e) {
+                    e.preventDefault();
+                    var body = $(this).closest(".transcribeSection").find(".transcribeSectionBody");
+                    if (body) {
+                        if (body.css('display') == 'none') {
+                            body.css('display', 'block');
+                            $(this).text("Shrink")
+                        } else {
+                            body.css('display', 'none');
+                            $(this).text("Expand")
+                        }
+                    }
+                });
+            }
 
-    function showModal(options) {
+            function bindSymbolButtons() {
 
-        var opts = {
-            url: options.url ? options.url : false,
-            id: options.id ? options.id : 'modal_element_id',
-            height: options.height ? options.height : 500,
-            width: options.width ? options.width : 600,
-            title: options.title ? options.title : 'Modal Title',
-            hideHeader: options.hideHeader ? options.hideHeader : false,
-            onClose: options.onClose ? options.onClose : null,
-            onShown: options.onShown ? options.onShown : null
+                $(".insert-symbol-button").each(function (index) {
+                    $(this).html($(this).attr("symbol"));
+                });
+
+                $(".insert-symbol-button").click(function (e) {
+                    e.preventDefault();
+                    var input = $("#recordValues\\.0\\.occurrenceRemarks");
+                    $(input).insertAtCaret($(this).attr('symbol'));
+                    $(input).focus();
+                });
+            }
+
+            function bindTooltips() {
+                // Context sensitive help popups
+                $("a.fieldHelp").qtip({
+                    tip: true,
+                    position: {
+                        corner: {
+                            target: 'topMiddle',
+                            tooltip: 'bottomRight'
+                        }
+                    },
+                    style: {
+                        width: 400,
+                        padding: 8,
+                        background: 'white', //'#f0f0f0',
+                        color: 'black',
+                        textAlign: 'left',
+                        border: {
+                            width: 4,
+                            radius: 5,
+                            color: '#E66542'// '#E66542' '#DD3102'
+                        },
+                        tip: 'bottomRight',
+                        name: 'light' // Inherit the rest of the attributes from the preset light style
+                    }
+                }).bind('click', function(e){ e.preventDefault(); return false; });
+            }
+
+            function bindAutocomplete() {
+
+                $("input.recordedBy").not('.noAutoComplete').autocomplete({
+                    disabled: false,
+                    minLength: 2,
+                    delay: 200,
+                    select: function(event, ui) {
+                        var item = ui.item.data;
+                        // There can be multiple collector boxes on a transcribe form, so we need to update the correct collector id...
+                        var matches = $(event.currentTarget).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                        if (matches.length > 0) {
+                            var recordIdx = matches[1];
+                            var inputField = $('#recordValues\\.' + recordIdx + '\\.recordedByID');
+                            if (inputField) {
+                                inputField.val(item.key);
+                                // We store the collector name in the form attribute so we can compare it on a change event
+                                // to see if we need to wipe the collectorId out should the name in the inputfield change
+                                inputField.attr('collector_name', item.name);
+                            }
+                        } else {
+                            $(':input.recordedByID').val(item.key);
+                        }
+
+                    },
+                    source: function(request, response) {
+                        $.ajax(VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=recordedBy&q=" + request.term).done(function(data) {
+                            var rows = new Array();
+                            if (data.autoCompleteList) {
+                                var list = data.autoCompleteList;
+                                for (var i = 0; i < list.length; i++) {
+                                    rows[i] = {
+                                        value: list[i].name,
+                                        label: list[i].name,
+                                        data: list[i]
+                                    };
+                                }
+                            }
+
+                            if (response) {
+                                response(rows);
+                            }
+                        });
+                    }
+                });
+
+                $("input.recordedBy").change(function(e) {
+                    // If the value of the recordedBy field does not match the name in the collector_name attribute
+                    // of the recordedByID element it means that the collector name no longer matches the id, so the id
+                    // must be cleared.
+                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                    var value = $(this).val();
+                    if (matches.length > 0) {
+                        var recordIdx = matches[1]
+                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
+                        var collectorName = $(elemSelector).attr("collector_name");
+                        if (value != collectorName) {
+                            $(elemSelector).val('');
+                            $(elemSelector).attr("collector_name", "");
+                        }
+                    }
+                });
+
+            }
+
+            function disableSection(classSelector) {
+                $(classSelector + " :input").attr("disabled", "true");
+                $(classSelector).css("opacity", "0.5");
+            }
+
+            function enableSection(classSelector) {
+                $(classSelector + " :input").removeAttr("disabled");
+                $(classSelector).css("opacity", "1");
+            }
+
+            function setFieldValue(fieldName, value) {
+                var id = "recordValues\\.0\\." + fieldName;
+                $("#" + id).val(value);
+            }
+
+            function getFieldValue(fieldName) {
+                var id = "recordValues\\.0\\." + fieldName;
+                return $("#" + id).val();
+            }
+
+            function showModal(options) {
+
+                var opts = {
+                    url: options.url ? options.url : false,
+                    id: options.id ? options.id : 'modal_element_id',
+                    height: options.height ? options.height : 500,
+                    width: options.width ? options.width : 600,
+                    title: options.title ? options.title : 'Modal Title',
+                    hideHeader: options.hideHeader ? options.hideHeader : false,
+                    onClose: options.onClose ? options.onClose : null,
+                    onShown: options.onShown ? options.onShown : null
+                }
+
+                var html = "<div id='" + opts.id + "' class='modal hide fade' role='dialog' aria-labelledby='modal_label_" + opts.id + "' aria-hidden='true' style='width: " + opts.width + "px; margin-left: -" + opts.width / 2 + "px;overflow: hidden'>";
+                if (!opts.hideHeader) {
+                    html += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button><h3 id='modal_label_" + opts.id + "'>" + opts.title + "</h3></div>";
+                }
+                html += "<div class='modal-body' style='max-height: " + opts.height + "px'>Loading...</div></div>";
+
+                $("body").append(html);
+
+                var selector = "#" + opts.id;
+
+                $(selector).on("hidden", function() {
+                    $(selector).remove();
+                    if (opts.onClose) {
+                        opts.onClose();
+                    }
+                });
+
+                $(selector).on("shown", function() {
+                    if (opts.onShown) {
+                        opts.onShown();
+                    }
+                });
+
+                $(selector).modal({
+                    remote: opts.url
+                });
+            }
+
+            function hideModal() {
+                $("#modal_element_id").modal('hide');
+            }
+
+        </r:script>
+
+        <style type="text/css">
+
+        .insert-symbol-button {
+            font-family: courier;
+            color: #DDDDDD;
+            background: #4075C2;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -o-border-radius: 4px;
+            -icab-border-radius: 4px;
+            -khtml-border-radius: 4px;
+            border-radius: 4px;
         }
 
-        var html = "<div id='" + opts.id + "' class='modal hide fade' role='dialog' aria-labelledby='modal_label_" + opts.id + "' aria-hidden='true' style='width: " + opts.width + "px; margin-left: -" + opts.width / 2 + "px;overflow: hidden'>";
-        if (!opts.hideHeader) {
-            html += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button><h3 id='modal_label_" + opts.id + "'>" + opts.title + "</h3></div>";
+        .insert-symbol-button:hover {
+            background: #0046AD;
+            color: #DDDDDD;
         }
-        html += "<div class='modal-body' style='max-height: " + opts.height + "px'>Loading...</div></div>";
-
-        $("body").append(html);
-
-        var selector = "#" + opts.id;
-
-        $(selector).on("hidden", function() {
-            $(selector).remove();
-            if (opts.onClose) {
-                opts.onClose();
-            }
-        });
-
-        $(selector).on("shown", function() {
-            if (opts.onShown) {
-                opts.onShown();
-            }
-        });
-
-        $(selector).modal({
-            remote: opts.url
-        });
-    }
-
-    function hideModal() {
-        $("#modal_element_id").modal('hide');
-    }
-
-</r:script>
-
-<style type="text/css">
-
-.insert-symbol-button {
-    font-family: courier;
-    color: #DDDDDD;
-    background: #4075C2;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -o-border-radius: 4px;
-    -icab-border-radius: 4px;
-    -khtml-border-radius: 4px;
-    border-radius: 4px;
-}
-
-.insert-symbol-button:hover {
-    background: #0046AD;
-    color: #DDDDDD;
-}
 
 
-#collectionEventFields table tr.columnLayout {
-    width: 450px;
-    min-height: 34px;
-    float: left;
-}
+        #collectionEventFields table tr.columnLayout {
+            width: 450px;
+            min-height: 34px;
+            float: left;
+        }
 
-.imageviewer-controls {
-    position: absolute;
-    top: 330px;
-    left: 10px;
-    background: url(${resource(dir:'/images', file:'map-control.png')}) no-repeat;
-    height: 63px;
-    width: 100px;
-    opacity: 0.9;
-}
+        .imageviewer-controls {
+            position: absolute;
+            top: 330px;
+            left: 10px;
+            background: url(${resource(dir:'/images', file:'map-control.png')}) no-repeat;
+            height: 63px;
+            width: 100px;
+            opacity: 0.9;
+        }
 
-.imageviewer-controls a {
-    height: 18px;
-    width: 18px;
-    display: block;
-    text-indent: -999em;
-    position: absolute;
-    outline: none;
-}
+        .imageviewer-controls a {
+            height: 18px;
+            width: 18px;
+            display: block;
+            text-indent: -999em;
+            position: absolute;
+            outline: none;
+        }
 
-.imageviewer-controls a:hover {
-    background: #535353;
-    opacity: 0.4;
-    filter: alpha(opacity=40);
-}
+        .imageviewer-controls a:hover {
+            background: #535353;
+            opacity: 0.4;
+            filter: alpha(opacity=40);
+        }
 
-.imageviewer-controls a.left {
-    left: 39px;
-    top: 22px;
-}
+        .imageviewer-controls a.left {
+            left: 39px;
+            top: 22px;
+        }
 
-.imageviewer-controls a.right {
-    left: 79px;
-    top: 22px;
-}
+        .imageviewer-controls a.right {
+            left: 79px;
+            top: 22px;
+        }
 
-.imageviewer-controls a.up {
-    left: 59px;
-    top: 2px;
-}
+        .imageviewer-controls a.up {
+            left: 59px;
+            top: 2px;
+        }
 
-.imageviewer-controls a.down {
-    left: 59px;
-    top: 42px;
-}
+        .imageviewer-controls a.down {
+            left: 59px;
+            top: 42px;
+        }
 
-.imageviewer-controls a.zoom {
-    left: 2px;
-    top: 8px;
-    height: 21px;
-    width: 21px;
-}
+        .imageviewer-controls a.zoom {
+            left: 2px;
+            top: 8px;
+            height: 21px;
+            width: 21px;
+        }
 
-.imageviewer-controls a.back {
-    left: 2px;
-    top: 31px;
-    height: 21px;
-    width: 21px;
-}
+        .imageviewer-controls a.back {
+            left: 2px;
+            top: 31px;
+            height: 21px;
+            width: 21px;
+        }
 
-.pin-image-control {
-    position: absolute;
-    top: 370px;
-    right: 7px;
-    background: url(${resource(dir:'images', file:'pin-image.png')}) no-repeat;
-    height: 24px;
-    width: 24px;
-    opacity: 0.9;
-}
+        .pin-image-control {
+            position: absolute;
+            top: 370px;
+            right: 7px;
+            background: url(${resource(dir:'images', file:'pin-image.png')}) no-repeat;
+            height: 24px;
+            width: 24px;
+            opacity: 0.9;
+        }
 
-.pin-image-control a {
-    height: 24px;
-    width: 24px;
-    display: block;
-    text-indent: -999em;
-    position: absolute;
-    outline: none;
-}
+        .pin-image-control a {
+            height: 24px;
+            width: 24px;
+            display: block;
+            text-indent: -999em;
+            position: absolute;
+            outline: none;
+        }
 
-.pin-image-control a:hover {
-    background: #535353;
-    opacity: 0.4;
-    filter: alpha(opacity=40);
-}
+        .pin-image-control a:hover {
+            background: #535353;
+            opacity: 0.4;
+            filter: alpha(opacity=40);
+        }
 
-#taskMetadata h3 {
-    margin-bottom: 0;
-    margin-top: 0;
-}
+        #taskMetadata h3 {
+            margin-bottom: 0;
+            margin-top: 0;
+        }
 
-#taskMetadata ul {
-    margin:0;
-    padding:0;
-}
+        #taskMetadata ul {
+            margin:0;
+            padding:0;
+        }
 
-#taskMetadata ul li {
-    list-style: none;
-    margin:0;
-    padding:0;
-}
+        #taskMetadata ul li {
+            list-style: none;
+            margin:0;
+            padding:0;
+        }
 
-#taskMetadata .metaDataLabel {
-    font-weight: bold;
-}
+        #taskMetadata .metaDataLabel {
+            font-weight: bold;
+        }
 
-.transcribeSectionBody select {
-    margin-bottom: 10px;
-}
+        .transcribeSectionBody select {
+            margin-bottom: 10px;
+        }
 
-.transcribeSectionBody {
-    border-top: 1px solid #d3d3d3;
-    padding-top: 10px;
-}
+        .transcribeSectionBody {
+            border-top: 1px solid #d3d3d3;
+            padding-top: 10px;
+        }
 
-.closeSectionLink {
-    float: right;
-}
+        .closeSectionLink {
+            float: right;
+        }
 
-/* Mapping tool (popup) */
+        /* Mapping tool (popup) */
 
-div#mapWidgets {
-    width: 950px;
-    height: 500px;
-    overflow: hidden;
-}
+        div#mapWidgets {
+            width: 950px;
+            height: 500px;
+            overflow: hidden;
+        }
 
-#mapWidgets img {
-    max-width: none !important;
-}
+        #mapWidgets img {
+            max-width: none !important;
+        }
 
-#mapWidgets #mapWrapper {
+        #mapWidgets #mapWrapper {
 
-    width: 500px;
-    height: 500px;
-    float: left;
-    padding-right: 10px;
-}
+            width: 500px;
+            height: 500px;
+            float: left;
+            padding-right: 10px;
+        }
 
-#mapWidgets #mapCanvas {
-    width: 500px;
-    height: 500px;
-    /*// height: 94%;*/
-    margin-bottom: 6px;
-}
+        #mapWidgets #mapCanvas {
+            width: 500px;
+            height: 500px;
+            /*// height: 94%;*/
+            margin-bottom: 6px;
+        }
 
-#mapWidgets #mapInfo {
-    float: left;
-    height: 100%;
-    width: 44%;
-    padding: 0 0 0 10px;
-    text-align: left;
-    border-left: 2px solid #cccccc;
-}
+        #mapWidgets #mapInfo {
+            float: left;
+            height: 100%;
+            width: 44%;
+            padding: 0 0 0 10px;
+            text-align: left;
+            border-left: 2px solid #cccccc;
+        }
 
-#mapWidgets #sightingAddress {
-    margin-bottom: 4px;
-    line-height: 22px;
-}
+        #mapWidgets #sightingAddress {
+            margin-bottom: 4px;
+            line-height: 22px;
+        }
 
-#mapWidgets .searchHint {
-    font-size: 12px;
-    padding: 4px 0;
-    line-height: 1.2em;
-    color: #666;
-}
+        #mapWidgets .searchHint {
+            font-size: 12px;
+            padding: 4px 0;
+            line-height: 1.2em;
+            color: #666;
+        }
 
-#mapWidgets #address {
-    width: 360px;
-}
+        #mapWidgets #address {
+            width: 360px;
+        }
 
-</style>
-</head>
+        .rotate-image {
+            -moz-transform: rotate(180deg);
+            -webkit-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+            -ms-filter: flipv fliph; /*IE*/
+            filter: flipv fliph; /*IE*/
+        }
+
+        </style>
+
+    </head>
 
     <body>
 
@@ -589,7 +591,11 @@ div#mapWidgets {
                 <g:if test="${taskInstance?.project?.tutorialLinks}">
                     ${taskInstance.project.tutorialLinks}
                 </g:if>
+                <g:if test="${sequenceNumber >= 0}">
+                    <span>Image sequence number: ${sequenceNumber}</span>
+                </g:if>
             </div>
+
         </cl:headerContent>
 
         <div class="row">
