@@ -172,12 +172,11 @@
             var e = entries[entryIndex][fieldIndex];
             var name = "recordValues." + entryIndex + "." + e.name;
             htmlStr += '<td>';
-//            htmlStr += '<label for="' + name + '">' + e.label + "</label>";
             htmlStr += '<input class="span12" type="text" name="' + name + '" value="' + e.value + '" id="' + name + '">';
             htmlStr += '</td>';
           }
           if (entryIndex > 0) {
-            htmlStr += '<td><button class="btn btn-small btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;">Delete</button></td>';
+            htmlStr += '<td><button class="btn btn-small btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><i class="icon-remove icon-white"></i></button></td>';
           } else {
             htmlStr += '<td></td>';
           }
@@ -195,7 +194,7 @@
       for (entryIndex in entries) {
         for (fieldIndex in entries[entryIndex]) {
           var e = entries[entryIndex][fieldIndex];
-          e.value = $('#recordValues\\.' + entryIndex + '\\.' + e.name).val();
+          e.value = htmlEscape($('#recordValues\\.' + entryIndex + '\\.' + e.name).val());
         }
       }
     }
