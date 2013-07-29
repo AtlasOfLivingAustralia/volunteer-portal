@@ -8,7 +8,7 @@
         <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
         <title>Volunteers</title>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -55,10 +55,9 @@
                 var searchTerm = $('#searchbox').val()
                 var link = "${createLink(controller: 'user', action: 'list')}?q=" + searchTerm
                 window.location.href = link;
-            }
+            };
 
-
-        </script>
+        </r:script>
     </head>
 
     <body>
@@ -136,9 +135,9 @@
             </div>
         </div>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
             $("th > a").addClass("btn")
             $("th.sorted > a").addClass("active")
-        </script>
+        </r:script>
     </body>
 </html>

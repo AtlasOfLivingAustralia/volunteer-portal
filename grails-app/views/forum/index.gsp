@@ -56,7 +56,7 @@
 
     <body>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             function renderTab(tabIndex, q, offset, max, sort, order) {
                 // var $tabs = $('#tabControl').tabs();
@@ -116,7 +116,7 @@
                 renderTab(${params.selectedTab ?: 0}, ${params.q ? '"' + params.q + '"': 'null'}, ${params.offset ?: "null"}, ${params.max ?: "null"}, ${params.sort ? '"' + params.sort + '"': "null"}, ${params.order ? '"' + params.order + '"' : "null"});
             });
 
-        </script>
+        </r:script>
 
         <cl:headerContent title="${message(code:'default.forum.label', default:'Biodiversity Volunteer Portal Forum')}" selectedNavItem="forum"/>
 

@@ -5,7 +5,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             $(document).ready(function() {
 
@@ -29,7 +29,8 @@
                 $("#q").focus();
 
             }); // end .ready()
-        </script>
+        </r:script>
+
     </head>
     <body class="sublevel sub-site volunteerportal">
 

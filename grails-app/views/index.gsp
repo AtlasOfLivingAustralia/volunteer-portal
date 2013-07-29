@@ -132,16 +132,11 @@
         </cl:isLoggedIn>
 
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
-            $('#description-panes img.active').click(function () {
-                document.location.href = $(this).next('a').attr('href');
-            });
-            $('#rollovers img.active').css("cursor", "pointer").click(function () {
-                document.location.href = "${resource(dir:'project/index/')}" + $(this).attr('id');
-            });
 
             $(document).ready(function (e) {
+
                 $.ajax("${createLink(controller: 'index', action:'leaderBoardFragment')}").done(function (content) {
                     $("#leaderBoardSection").html(content);
                 });
@@ -150,9 +145,18 @@
                     $("#expedition-stats").html(content);
                 });
 
+                $('#description-panes img.active').click(function () {
+                    document.location.href = $(this).next('a').attr('href');
+                });
+
+                $('#rollovers img.active').css("cursor", "pointer").click(function () {
+                    document.location.href = "${resource(dir:'project/index/')}" + $(this).attr('id');
+                });
+
             });
 
 
-        </script>
+        </r:script>
+
     </body>
 </html>

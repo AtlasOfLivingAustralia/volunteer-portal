@@ -6,7 +6,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
         <title>Thank you - we are done for now!</title>
-        <script type="text/javascript">
+        <r:script type="text/javascript">
             $(document).ready(function () {
                 $("li#goBack a").click(function (e) {
                     e.preventDefault();
@@ -30,7 +30,7 @@
 
                 //$("#dateSaved").html(" at " + new Date());
             });
-        </script>
+        </r:script>
     </head>
 
     <body>

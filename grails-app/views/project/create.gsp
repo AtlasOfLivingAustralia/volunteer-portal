@@ -8,7 +8,7 @@
 
         <tinyMce:resources />
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             tinyMCE.init({
                 mode: "textareas",
@@ -18,7 +18,7 @@
                 convert_urls : false
             });
 
-        </script>
+        </r:script>
 
         <style type="text/css">
 

@@ -35,7 +35,7 @@
 
     <body>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -101,7 +101,7 @@
 
             });
 
-        </script>
+        </r:script>
 
         <cl:headerContent title="" selectedNavItem="forum" hideTitle="${true}" hideCrumbs="${true}">
             <vpf:forumNavItems topic="${topic}" />

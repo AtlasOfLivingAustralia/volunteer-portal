@@ -4,7 +4,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <title>Project Administration</title>
-        <script type="text/javascript">
+
+        <r:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -30,7 +31,7 @@
             function validateInSeparateWindow(taskId) {
                 window.open("${createLink(controller:'validate', action:'task')}/" + taskId, "bvp_validate_window");
             }
-        </script>
+        </r:script>
     </head>
 
     <body>

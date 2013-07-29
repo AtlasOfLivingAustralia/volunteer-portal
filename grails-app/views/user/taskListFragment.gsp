@@ -98,7 +98,8 @@
 
 </div>
 
-<script type="text/javascript">
+<r:script type="text/javascript">
+
     $("th > a").addClass("btn")
     $("th.sorted > a").addClass("active")
 
@@ -115,7 +116,4 @@
         window.location.href = link;
     }
 
-</script>
-
-
-
+</r:script>

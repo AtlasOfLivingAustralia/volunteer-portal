@@ -13,7 +13,7 @@
             }
 
         </style>
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             $(function() {
 
@@ -63,7 +63,7 @@
 
             });
 
-        </script>
+        </r:script>
     </head>
     <body>
 

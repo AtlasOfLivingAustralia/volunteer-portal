@@ -78,7 +78,7 @@
 
 </div>
 
-<script type="text/javascript">
+<r:script type="text/javascript">
 
     function updateLocation() {
         var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
@@ -229,4 +229,4 @@
     // target.panZoom('fit');
 
 
-</script>
+</r:script>

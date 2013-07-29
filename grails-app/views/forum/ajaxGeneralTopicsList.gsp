@@ -10,7 +10,7 @@
     </g:else>
 </div>
 
-<script type="text/javascript">
+<r:script type="text/javascript">
 
     $(document).ready(function() {
         $("#btnNewSiteTopic").click(function(e) {
@@ -19,4 +19,4 @@
         });
     });
 
-</script>
+</r:script>

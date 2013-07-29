@@ -8,21 +8,8 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <style type="text/css">
 
-    /*#taskTabs .ui-state-active {*/
-        /*background: #FFFEF7;*/
-        /*font-weight: bold;*/
-    /*}*/
-
-    /*.ui-tabs .ui-tabs-panel {*/
-        /*background-color: #FFFEF7;*/
-        /*padding-bottom: 25px;*/
-    /*}*/
-
-    </style>
-    %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>--}%
-    <script type="text/javascript">
+    <r:script>
 
         $(document).ready(function () {
             // Context sensitive help popups
@@ -86,27 +73,9 @@
                 }
             });
 
-            %{--var tabOptions = {--}%
-                %{--selected: ${params.selectedTab ?: 0},--}%
-                %{--show: function (e) {--}%
-                    %{--var $tabs = $('#taskTabs').tabs();--}%
-                    %{--var newIndex = $tabs.tabs('option', 'selected');--}%
-                    %{--if (newIndex != ${params.selectedTab ?: 0}) {--}%
-                        %{--$("#tabs-1").html("Loading...");--}%
-                        %{--var url = "${createLink(action:'show', id:userInstance.id)}?selectedTab=" + newIndex + "&projectId=${project?.id ?: ''}";--}%
-                        %{--window.location.href = url;--}%
-                    %{--}--}%
-                %{--},--}%
-                %{--beforeActivate: function (e) {--}%
-                    %{--$("#tabs-1").html("Loading...");--}%
-                %{--}--}%
-            %{--};--}%
-
-            %{--$("#taskTabs").tabs(tabOptions);--}%
-
         });
 
-    </script>
+    </r:script>
 </head>
 
 <body>
@@ -232,9 +201,9 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
+    <r:script type="text/javascript">
         $("th > a").addClass("btn")
         $("th.sorted > a").addClass("active")
-    </script>
+    </r:script>
 </body>
 </html>

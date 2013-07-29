@@ -33,7 +33,7 @@
 
         </style>
 
-        <script type="text/javascript">
+        <r:script>
 
             $(document).ready(function() {
 
@@ -85,7 +85,7 @@
                 window.location = url;
             }
 
-        </script>
+        </r:script>
     </head>
 
     <body>

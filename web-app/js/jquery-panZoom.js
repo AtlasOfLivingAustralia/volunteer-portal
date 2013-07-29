@@ -250,6 +250,10 @@
         eventData = { target: this }
         var data = this.data('panZoom');
 
+        if (!data) {
+            return;
+        }
+
         // bind up controls
         if (settings.zoomIn) {
             settings.zoomIn.bind('mousedown.panZoom', eventData, function(event) {

@@ -16,12 +16,12 @@
 
     <body class="sublevel sub-site volunteerportal">
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             $(document).ready(function() {
             });
 
-        </script>
+        </r:script>
 
         <cl:navbar selected="forum"/>
 

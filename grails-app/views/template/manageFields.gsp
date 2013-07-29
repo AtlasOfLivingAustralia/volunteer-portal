@@ -48,7 +48,7 @@
         }
 
         </style>
-        <script type='text/javascript'>
+        <r:script>
 
             $(document).ready(function() {
 
@@ -158,7 +158,7 @@
 
             });
 
-        </script>
+        </r:script>
     </head>
 
     <body>

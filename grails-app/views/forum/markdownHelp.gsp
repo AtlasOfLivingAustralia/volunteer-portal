@@ -22,10 +22,10 @@
 
         <style type="text/css">
         </style>
-        <script type="text/javascript">
+        <r:script type="text/javascript">
             $(document).ready(function () {
-            }
-        </script>
+            });
+        </r:script>
 
     </head>
     <body class="sublevel sub-site volunteerportal" style="overflow-x: hidden; overflow-y: scroll;">

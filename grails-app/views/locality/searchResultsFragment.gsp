@@ -1,35 +1,36 @@
 <g:if test="${localities}">
-  <div id="">
-    <g:each in="${localities}" var="locality" status="i">
-      <g:set var="rowclass" value="${i % 2 == 0 ? 'even' : 'odd'}"/>
-      <table class="${rowclass} localitySearchResult" localityId="${locality.id}" lat="${locality.latitude}" lng="${locality.longitude}" locality="${locality.locality}">
-        <tr>
-          <td colspan="2" class="locality">${locality.locality}</td>
-          <td class="buttonCell">
-            <button class="selectLocalityButton" localityId="${locality.id}" title="Use this locality">Select&nbsp;locality</button>
-          </td>
-        </tr>
-        <tr>
-          <td class="localityPoliticalRegion">
-            ${locality.township}
-            <g:if test="${locality.township}">
-              <span>, </span>
-            </g:if>
-            ${locality.state}
-            <g:if test="${locality.state && locality.country}">
-              <span>, </span>
-            </g:if>
-            ${locality.country}
-          </td>
-          <td class="localityLatlong"><a href="#" class="findOnMapLink" title="Locate on map">[${locality.latitude}, ${locality.longitude}]</a></td>
-          <td>
-          </td>
-        </tr>
-      </table>
-    </g:each>
-  </div>
+    <div id="">
+        <g:each in="${localities}" var="locality" status="i">
+            <g:set var="rowclass" value="${i % 2 == 0 ? 'even' : 'odd'}"/>
+            <table class="${rowclass} localitySearchResult" localityId="${locality.id}" lat="${locality.latitude}" lng="${locality.longitude}" locality="${locality.locality}">
+                <tr>
+                    <td colspan="2" class="locality">${locality.locality}</td>
+                    <td class="buttonCell">
+                        <button class="selectLocalityButton" localityId="${locality.id}" title="Use this locality">Select&nbsp;locality</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="localityPoliticalRegion">
+                        ${locality.township}
+                        <g:if test="${locality.township}">
+                            <span>,</span>
+                        </g:if>
+                        ${locality.state}
+                        <g:if test="${locality.state && locality.country}">
+                            <span>,</span>
+                        </g:if>
+                        ${locality.country}
+                    </td>
+                    <td class="localityLatlong"><a href="#" class="findOnMapLink" title="Locate on map">[${locality.latitude}, ${locality.longitude}]</a>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+        </g:each>
+    </div>
 
-  <script type="text/javascript">
+    <r:script type="text/javascript">
 
       $(".selectLocalityButton").click(function(e) {
           e.preventDefault();
@@ -135,24 +136,24 @@
         }
     }
 
-  </script>
+    </r:script>
 
-  <style type="text/css">
+    <style type="text/css">
 
     .localitySearchResult {
-      width: 100%;
+        width: 100%;
     }
 
     .selectLocalityButton {
-      width: 100%;
+        width: 100%;
     }
 
     .even {
-      background: #F0F0E8
+        background: #F0F0E8
     }
 
     .buttonCell {
-      width: 100px;
+        width: 100px;
     }
 
     .locality {
@@ -160,20 +161,20 @@
     }
 
     .localityLatlong {
-      text-align: right !important;
+        text-align: right !important;
     }
 
     #localitySearchResults td {
-      text-align: left;
-      padding: 5px;
+        text-align: left;
+        padding: 5px;
     }
 
     .localityPoliticalRegion {
-      text-align: left;
+        text-align: left;
     }
 
-  </style>
+    </style>
 </g:if>
 <g:else>
-  <span>There are no matching localities.</span>
+    <span>There are no matching localities.</span>
 </g:else>

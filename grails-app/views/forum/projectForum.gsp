@@ -34,7 +34,7 @@
 
     <body>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -86,7 +86,7 @@
 
             });
 
-        </script>
+        </r:script>
 
         <cl:headerContent title="Expedition Forum - ${projectInstance.featuredLabel}" selectedNavItem="forum">
             <%

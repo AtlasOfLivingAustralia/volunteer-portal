@@ -16,16 +16,17 @@
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'validationEngine.jquery.css')}"/>
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine.js')}"></script>--}%
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.validationEngine-en.js')}"></script>--}%
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>--}%
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.cookie.js')}"></script>--}%
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
 %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'gmaps.js')}"></script>--}%
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>
-<link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqzoom-core.js')}"></script>--}%
+%{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.jqzoom.css')}"/>--}%
 <r:require module="bootstrap-js" />
 <r:require module="panZoom" />
+<r:require module="jqZoom" />
 
-<script type="text/javascript">
+<r:script>
 
     // global Object
     var VP_CONF = {
@@ -112,7 +113,14 @@
         bindShrinkExpandLinks();
         setupPanZoom();
         bindImagePinning();
+        applyReadOnlyIfRequired();
     });
+
+    function applyReadOnlyIfRequired() {
+        <g:if test="${isReadonly}">
+        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+        </g:if>
+    }
 
     function showGeolocationTool() {
         showModal({
@@ -147,23 +155,24 @@
 
     function setupPanZoom() {
         var target = $("#image-container img");
+        if (target.length > 0) {
+            target.panZoom({
+                pan_step:10,
+                zoom_step:10,
+                min_width:200,
+                min_height:200,
+                mousewheel:true,
+                mousewheel_delta:2,
+                'zoomIn':$('#zoomin'),
+                'zoomOut':$('#zoomout'),
+                'panUp':$('#pandown'),
+                'panDown':$('#panup'),
+                'panLeft':$('#panright'),
+                'panRight':$('#panleft')
+            });
 
-        target.panZoom({
-            pan_step:10,
-            zoom_step:10,
-            min_width:200,
-            min_height:200,
-            mousewheel:true,
-            mousewheel_delta:2,
-            'zoomIn':$('#zoomin'),
-            'zoomOut':$('#zoomout'),
-            'panUp':$('#pandown'),
-            'panDown':$('#panup'),
-            'panLeft':$('#panright'),
-            'panRight':$('#panleft')
-        });
-
-        target.panZoom('fit');
+            target.panZoom('fit');
+        }
     }
 
     function showPreviousTaskBrowser() {
@@ -365,7 +374,7 @@
         $("#modal_element_id").modal('hide');
     }
 
-</script>
+</r:script>
 
 <style type="text/css">
 

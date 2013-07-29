@@ -6,7 +6,7 @@
         <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
 
-        <script type="text/javascript">
+        <r:script>
 
             $(document).ready(function() {
 
@@ -23,7 +23,8 @@
             });
 
 
-        </script>
+        </r:script>
+
     </head>
     <body>
 

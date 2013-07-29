@@ -9,7 +9,7 @@
 
         <tinyMce:resources />
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             tinyMCE.init({
                 mode: "textareas",
@@ -23,7 +23,7 @@
                 return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?");
             }
 
-        </script>
+        </r:script>
 
         <style type="text/css">
 

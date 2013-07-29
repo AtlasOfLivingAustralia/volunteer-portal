@@ -71,10 +71,10 @@
             </div>
         </div>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
             $("th > a").addClass("btn")
             $("th.sorted > a").addClass("active")
-        </script>
+        </r:script>
 
     </body>
 </html>

@@ -12,7 +12,7 @@
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
 
-    <script type='text/javascript'>
+    <r:script>
         google.load('visualization', '1', {packages: ['gauge']});
 
         function loadChart() {
@@ -130,7 +130,7 @@
             return true
         }
 
-    </script>
+    </r:script>
 
     <style type="text/css">
 

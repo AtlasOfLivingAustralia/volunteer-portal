@@ -6,7 +6,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
             // Load the Visualization API and the piechart package.
             google.load('visualization', '1.0', {'packages': ['corechart']});
 
@@ -39,7 +39,7 @@
                 });
             });
 
-        </script>
+        </r:script>
     </head>
 
     <body>

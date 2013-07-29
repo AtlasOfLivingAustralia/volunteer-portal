@@ -48,7 +48,7 @@
         </tbody>
     </table>
 </div>
-<script type="text/javascript">
+<r:script type="text/javascript">
 
     $(".btnViewTopic").click(function(e) {
         e.preventDefault();
@@ -68,4 +68,4 @@
         }
     });
 
-</script>
+</r:script>

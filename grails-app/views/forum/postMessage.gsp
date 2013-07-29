@@ -22,7 +22,7 @@
 
     <body>
 
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             var replyTo = "${replyTo?.user?.displayName}";
 
@@ -68,7 +68,7 @@
 
             });
 
-        </script>
+        </r:script>
 
         <cl:headerContent title="" selectedNavItem="forum" hideTitle="${true}" hideCrumbs="${true}">
             <vpf:forumNavItems topic="${topic}" lastLabel="${message(code:'forum.project.newMessage', default:'New Message')}" />

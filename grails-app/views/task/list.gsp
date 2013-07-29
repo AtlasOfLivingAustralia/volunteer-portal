@@ -5,7 +5,8 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
-        <script type="text/javascript">
+
+        <r:script type="text/javascript">
             $(document).ready(function() {
                 $("#searchButton").click(function(e) {
                     e.preventDefault();
@@ -13,8 +14,9 @@
                     location.href="?q=" + query;
                 });
 
-            }); // end .ready()
-        </script>
+            });
+        </r:script>
+
     </head>
     <body>
         <div class="nav">
