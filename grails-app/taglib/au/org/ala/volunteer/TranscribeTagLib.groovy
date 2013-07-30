@@ -474,18 +474,16 @@ class TranscribeTagLib {
         String valueClass = attrs.valueClass ?: 'span8'
         def recordValues = attrs.recordValues
         def mb = new MarkupBuilder(out)
-        renderFieldsForCategory(mb,category, task, labelClass, valueClass, recordValues, attrs)
+        def fields = TemplateField.findAllByCategoryAndTemplate(category, task?.project?.template, [sort: 'displayOrder'])
+        renderFields(mb, fields, task, labelClass, valueClass, recordValues, attrs)
     }
 
-    private void renderFieldsForCategory(MarkupBuilder mb, FieldCategory category, Task task, String labelClass, String valueClass, recordValues, attrs) {
-        Template template = task?.project?.template
-        if (category && template) {
-            def fields = TemplateField.findAllByCategoryAndTemplate(category, template, [sort: 'displayOrder'])
+    private void renderFields(MarkupBuilder mb, List<TemplateField> fields, Task task, String labelClass, String valueClass, recordValues, attrs) {
+        if (fields) {
 
             def hidden = fields.findAll { it.type == FieldType.hidden }
 
             fields.removeAll { it.type == FieldType.hidden }
-
 
             for (int i = 0; i < fields.size(); i += 2) {
                 def lhs = fields[i]
@@ -524,14 +522,29 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         FieldCategory category = attrs.category
 
+        Template template = task?.project?.template
+        if (!category || !template) {
+            return
+        }
+
+        def fields = TemplateField.findAllByCategoryAndTemplate(category, template)
+        if (!fields) {
+            return
+        }
+
         def mb = new MarkupBuilder(out)
 
         def bodyContent = body()
+
+        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
 
         mb.div(class:'well well-small transcribeSection') {
             div(class:'row-fluid transcribeSectionHeader') {
                 div(class:'span12') {
                     span(class:'transcribeSectionHeaderLabel') {
+                        if (nextSectionNumberClosure) {
+                            mkp.yield("${nextSectionNumberClosure()}. ")
+                        }
                         mkp.yield(attrs.title)
                     }
                     if (bodyContent) {
@@ -550,7 +563,8 @@ class TranscribeTagLib {
 
             }
             div(class:'transcribeSectionBody') {
-                renderFieldsForCategory(mb, category, task, "span4", "span8", recordValues, attrs)
+                renderFields(mb, fields, task, "span4", "span8", recordValues, attrs)
+                mkp.yieldUnescaped("&nbsp;")
             }
         }
 

@@ -35,4 +35,9 @@ modules = {
         resource url:'/css/jquery.jqzoom.css'
     }
 
+    'gmaps' {
+        dependsOn 'jquery'
+        resource url:'/js/gmaps.js'
+    }
+
 }

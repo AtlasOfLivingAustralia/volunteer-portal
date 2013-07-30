@@ -26,6 +26,11 @@
     color: white;
 }
 
+#taskBrowserImage {
+    height: 200px;
+    width: 670px;
+}
+
 #taskBrowserImage img {
     max-width: inherit !important;
 }
@@ -42,7 +47,7 @@
         <div class="dialog" id="imagePane">
             <g:set var="mm" value="${taskInstance.multimedia?.first()}" />
             <div id="imageViewer" style="height: 200px; overflow: hidden">
-                <g:imageViewer multimedia="${mm}" elementId="taskBrowserImage" />
+                <g:imageViewer multimedia="${mm}" elementId="taskBrowserImage" hideControls="${true}" />
             </div>
         </div>
 
@@ -78,7 +83,7 @@
 
 </div>
 
-<r:script type="text/javascript">
+<script type="text/javascript">
 
     function updateLocation() {
         var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
@@ -101,48 +106,6 @@
             $('#task_content').html("You have no matching previously transcribed tasks");
         }
     }
-
-    $("#show_next_task").click(function (e) {
-        e.preventDefault();
-        var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
-        var nextTaskIndex = parseInt(currentTaskIndex) + 1;
-        var taskListSize = parseInt($("#task_list").attr("taskCount"));
-        if (nextTaskIndex < taskListSize) {
-            loadTask(nextTaskIndex);
-        }
-    });
-
-    $("#copy_task_data").click(function (e) {
-        var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
-        var taskId = $("#task_" + currentTaskIndex).attr("task_id")
-        copyDataFromTask(taskId)
-        hideModal();
-    });
-
-
-    $("#cancel_button").click(function (e) {
-        hideModal();
-    });
-
-    $("#show_prev_task").click(function (e) {
-        e.preventDefault();
-        var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
-        var prevTaskIndex = parseInt(currentTaskIndex) - 1;
-        if (prevTaskIndex >= 0) {
-            loadTask(prevTaskIndex);
-        }
-    });
-
-    $("#search_button").click(function (e) {
-        e.preventDefault();
-        findTasks();
-    });
-
-    $("#search_text").keydown(function (e) {
-        if (e.keyCode == 13) {
-            findTasks();
-        }
-    });
 
     function loadTask(taskIndex) {
         $("#task_list").attr("currentTaskIndex", taskIndex)
@@ -213,6 +176,48 @@
 
     }
 
+    $("#show_next_task").click(function (e) {
+        e.preventDefault();
+        var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
+        var nextTaskIndex = parseInt(currentTaskIndex) + 1;
+        var taskListSize = parseInt($("#task_list").attr("taskCount"));
+        if (nextTaskIndex < taskListSize) {
+            loadTask(nextTaskIndex);
+        }
+    });
+
+    $("#copy_task_data").click(function (e) {
+        var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
+        var taskId = $("#task_" + currentTaskIndex).attr("task_id")
+        copyDataFromTask(taskId)
+        hideModal();
+    });
+
+
+    $("#cancel_button").click(function (e) {
+        hideModal();
+    });
+
+    $("#show_prev_task").click(function (e) {
+        e.preventDefault();
+        var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
+        var prevTaskIndex = parseInt(currentTaskIndex) - 1;
+        if (prevTaskIndex >= 0) {
+            loadTask(prevTaskIndex);
+        }
+    });
+
+    $("#search_button").click(function (e) {
+        e.preventDefault();
+        findTasks();
+    });
+
+    $("#search_text").keydown(function (e) {
+        if (e.keyCode == 13) {
+            findTasks();
+        }
+    });
+
     findTasks();
 
     var target = $("#taskBrowserImage img");
@@ -226,7 +231,4 @@
         mousewheel_delta:4
     });
 
-    // target.panZoom('fit');
-
-
-</r:script>
+</script>

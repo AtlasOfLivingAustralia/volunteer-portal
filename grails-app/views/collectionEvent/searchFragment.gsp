@@ -2,21 +2,18 @@
 
 #search_header, #current_task_header {
     background: #3D464C;
+    padding-left: 10px;
+    padding-right: 10px;
     color: white;
+}
+
+#search_header {
+    padding-top: 10px;
 }
 
 #search_header h3, #current_task_header h3 {
     color: white;
-    padding-bottom: 6px;
-}
-
-#search_header hr, #current_task_header hr {
-    clear: both;
-    height: 1px;
-    width: auto;
-    background-color: #D1D1D1;
-    margin-bottom: 6px;
-    border: none;
+    margin: 0;
 }
 
 #search_results {
@@ -50,100 +47,87 @@
     margin-right: 5px;
 }
 
+#taskImage {
+    height: 200px;
+    width: 670px;
+}
+
+#taskImage img {
+    max-width: inherit !important;
+}
+
+#event_map img {
+    max-width: none !important;
+}
+
 </style>
 
-<r:script type="text/javascript">
-
-    function doSearch() {
-
-        $('#search_results').html("<div>Searching...</div>")
-
-        var queryParams = ""
-        for (i = 0; i < 4; i++) {
-            queryParams += "&collector" + i + "=" + encodeURIComponent($('#search_collector_' + i).val())
-        }
-        queryParams += '&eventDate=' + encodeURIComponent($('#search_event_date').val());
-        queryParams += '&search_locality=' + encodeURIComponent($('#search_locality').val());
-        queryParams += '&expandedSearch=' + $('#expandedSearch').is(':checked');
-
-        var taskUrl = "${createLink(controller: 'collectionEvent', action: 'searchResultsFragment', params: [taskId: taskInstance.id])}" + queryParams;
-        $.ajax({url:taskUrl, success: function(data) {
-            $("#search_results").html(data);
-        }})
-
-    }
-
-    var event_map;
-
-    $(document).ready(function(e) {
-      event_map = new GMaps({
-        div: '#event_map',
-        lat: -34.397,
-        lng: 150.644,
-        zoom: 10
-      });
-    });
-
-</r:script>
-
 <div id="collection_search_content" class="collection_search_content">
+
     <g:if test="${taskInstance}">
-        <div id="current_task_header">
-            <h3>Image from current task</h3>
-            <hr/>
+        <div class="row-fluid">
+            <div class="span12" id="current_task_header">
+                <h3>Image from current task</h3>
+            </div>
         </div>
 
-        <div class="dialog" id="imagePane">
-            <g:each in="${taskInstance.multimedia}" var="m" status="i">
-                <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-                    <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
-                    <a href="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" class="image_viewer" title="">
-                        <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" title="" style="height: 150px">
-                    </a>
-                </g:if>
-            </g:each>
+        <div id="imagePane">
+            <g:set var="mm" value="${taskInstance.multimedia?.first()}" />
+            <div id="taskImageViewer" style="height: 200px; overflow: hidden">
+                <g:imageViewer multimedia="${mm}" elementId="taskImage" hideControls="${true}"/>
+            </div>
         </div>
 
-        <div style="height: 6px"></div>
     </g:if>
 
     <div id="search_header">
-        <table>
-            <tr>
-                <td><span>Collector(s)</span></td>
+        <div class="row-fluid">
+            <div class="span2">
+                Collector(s)
+            </div>
 
-                <g:each in="${collectors}" var="collector" status="i">
-                    <td>
-                      <input style="width:100%" id="search_collector_${i}" type="text" value="${collector}"></span>
-              </td>
-                </g:each>
-                <td style="vertical-align: middle; width: 150px; text-align: center"><button id="event_search_button">Search</button>&nbsp;<button id="close_event_popup_button">Cancel</button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Event date
-                </td>
-                <td>
-                    <input style="width:100%" type="text" id="search_event_date" value="${eventDate}"/>
-                </td>
-                <td style="text-align: right"><span>Locality</span></td>
-                <td colspan="2"><g:textField name="search_locality" id="search_locality" style="width:100%"/></td>
-                <td style="vertical-align: middle; width: 150px; text-align: center">
-                    <span id="search_results_status"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                </td>
-                <td colspan="3">
-                    <label for="expandedSearch">Use expanded search</label>
-                    <g:checkBox name="expandedSearch" checked="true" value="checked" id="expandedSearch"></g:checkBox>
-                </td>
-            </tr>
-        </table>
+            <g:each in="${collectors}" var="collector" status="i">
+                <div class="span2">
+                    <input class="span12" id="search_collector_${i}" type="text" value="${collector}">
+                </div>
+            </g:each>
 
-        <hr/>
+            <div class="span2">
+                <button class="btn btn-small btn-primary span12" id="event_search_button">Search</button>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">
+                Event date
+            </div>
+            <div class="span2">
+                <input class="span12" type="text" id="search_event_date" value="${eventDate}"/>
+            </div>
+            <div class="span2">
+                Locality
+            </div>
+            <div class="span3">
+                <g:textField class="span12" name="search_locality" id="search_locality" />
+            </div>
+            <div class="span3">
+                <label class="checkbox" for="expandedSearch">
+                    <g:checkBox name="expandedSearch" checked="true" value="checked" id="expandedSearch" />
+                    Use expanded search
+                </label>
+            </div>
+        </div>
+        %{--<div class="row-fluid">--}%
+            %{--<div class="span10 offset2" class="form-horizontal">--}%
+                %{--<div class="control-group">--}%
+                    %{--<div class="controls">--}%
+                        %{--<label class="checkbox" for="expandedSearch">--}%
+                            %{--<g:checkBox name="expandedSearch" checked="true" value="checked" id="expandedSearch" />--}%
+                            %{--Use expanded search--}%
+                        %{--</label>--}%
+                    %{--</div>--}%
+                %{--</div>--}%
+            %{--</div>--}%
+        %{--</div>--}%
     </div>
 
     <div id="event_map">
@@ -153,10 +137,10 @@
     <div id="search_results">
     </div>
 
-    <r:script type="text/javascript">
+    <script type="text/javascript">
 
         $("#close_event_popup_button").click(function (e) {
-            $.fancybox.close();
+            // $.fancybox.close();
         });
 
         $("#event_search_button").click(function (e) {
@@ -169,32 +153,45 @@
             }
         });
 
+        function doSearch() {
+
+            $('#search_results').html("<div>Searching...</div>")
+
+            var queryParams = ""
+            for (i = 0; i < 4; i++) {
+                queryParams += "&collector" + i + "=" + encodeURIComponent($('#search_collector_' + i).val())
+            }
+            queryParams += '&eventDate=' + encodeURIComponent($('#search_event_date').val());
+            queryParams += '&search_locality=' + encodeURIComponent($('#search_locality').val());
+            queryParams += '&expandedSearch=' + $('#expandedSearch').is(':checked');
+
+            var taskUrl = "${createLink(controller: 'collectionEvent', action: 'searchResultsFragment', params: [taskId: taskInstance.id])}" + queryParams;
+            $.ajax({url:taskUrl, success: function(data) {
+                $("#search_results").html(data);
+            }})
+
+        }
+
+        var event_map;
+        event_map = new GMaps({
+          div: '#event_map',
+          lat: -34.397,
+          lng: 150.644,
+          zoom: 10
+        });
+
         doSearch();
-        var zoom_options = {
-            zoomType: 'drag',
-            lens: true,
-            preloadImages: true,
-            alwaysOn: true,
-            zoomWidth: 300,
-            zoomHeight: 150,
-            xOffset: 90,
-            yOffset: 0,
-            position: 'left'
-        };
 
-        var imageWidth = $('.image_viewer').first().width();
-        var zoomWidth = 500;
-        if (imageWidth > 0) {
-            zoomWidth = 800 - imageWidth;
-        }
+        var target = $("#taskImage img");
 
-        var zopts = {
-            zoomType: 'drag',
-            zoomWidth: zoomWidth - 15,
-            zoomHeight: 150,
-            lens: true
-        }
-        $('.image_viewer').jqzoom(zopts);
+        target.panZoom({
+            pan_step:10,
+            zoom_step:10,
+            min_width:100,
+            min_height:100,
+            mousewheel:true,
+            mousewheel_delta:6
+        });
 
-    </r:script>
+    </script>
 </div>

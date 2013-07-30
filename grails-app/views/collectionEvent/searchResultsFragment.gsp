@@ -18,7 +18,7 @@
                         ${event.country}
                     </td>
                     <td class="result-select-button">
-                        <button class="select_event_button" externalEventId="${event.externalEventId}" title="Use all of the information from this collection event">Select&nbsp;event</button>
+                        <button class="btn btn-small select_event_button" externalEventId="${event.externalEventId}" title="Use all of the information from this collection event">Select&nbsp;event</button>
                     </td>
                 </tr>
                 <tr>
@@ -37,18 +37,18 @@
     <span>There are no matching collection events.</span>
 </g:else>
 
-<r:script type="text/javascript">
+<script type="text/javascript">
 
   $(".select_event_button").click(function(e) {
     e.preventDefault();
     bindToCollectionEvent($(this).attr("externalEventId"))
-    $.fancybox.close();
+    hideModal();
   });
 
   $(".select_location_button").click(function(e) {
     e.preventDefault();
     bindToCollectionEventLocality($(this).attr("externalEventId"))
-    $.fancybox.close();
+    hideModal();
   });
 
   event_map.removeMarkers();
@@ -148,7 +148,7 @@
       }
   }
 
-</r:script>
+</script>
 
 <style type="text/css">
 

@@ -119,10 +119,6 @@
         </div>
     </div>
 
-    <g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Interpreted Location" description="Use the mapping tool before attempting to enter values manually">
-        <button class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
-    </g:renderFieldCategorySection>
-
     <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}" recordValues="${recordValues}" title="Miscellaneous" description="This section is for a range of fields. Many labels will not contain information for any or all of these fields." />
 
     <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}" recordValues="${recordValues}" title="Identification" description="If a label contains information on the name of the organism then record the name and associated information in this section" />

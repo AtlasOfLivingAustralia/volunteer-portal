@@ -106,7 +106,32 @@
                 setupPanZoom();
                 bindImagePinning();
                 applyReadOnlyIfRequired();
+                insertCoordinateSymbolButtons();
             });
+
+            function insertCoordinateSymbolButtons() {
+                // Add clickable icons for deg, min sec in lat/lng inputs
+                var title = "Click to insert this symbol";
+                var icons = " symbols: <span class='coordsIcons'>" +
+                        "<a href='#' title='" + title + "' class='&deg;'>&deg;</a>&nbsp;" +
+                        "<a href='#' title='" + title + "' class='&#39;'>&#39;</a>&nbsp;" +
+                        "<a href='#' title='" + title + "' class='&quot;'>&quot;</a></span>";
+                $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
+                    $(this).css('width', '140px');
+                    $(this).after(icons);
+                });
+
+                // Bind an event handler to each button to insert the correct symbol
+                $(".coordsIcons a").click(function(e) {
+                    e.preventDefault();
+                    var input = $(this).parent().prev(':input');
+                    var text = $(input).val();
+                    var char = $(this).attr('class');
+                    $(input).val(text + char);
+                    $(input).focus();
+                });
+
+            }
 
             function applyReadOnlyIfRequired() {
                 <g:if test="${isReadonly}">
@@ -590,6 +615,31 @@
             filter: flipv fliph; /*IE*/
         }
 
+        span.coordsIcons {
+            height: 18px;
+        }
+        span.coordsIcons a {
+            display: inline-block;
+            width: 10px;
+            text-align: center;
+            font-size: 20px;
+            line-height: 13px;
+            text-decoration: none;
+            color: #DDDDDD;
+            background-color: #4075C2;
+            padding: 4px 2px 0 2px;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -o-border-radius: 4px;
+            -icab-border-radius: 4px;
+            -khtml-border-radius: 4px;
+            border-radius: 4px;
+        }
+
+        span.coordsIcons a:hover {
+            background-color: #0046AD;
+        }
+
         </style>
 
     </head>
@@ -630,13 +680,17 @@
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
 
+                <g:set var="sectionNumber" value="${1}" />
+
+                <g:set var="nextSectionNumber" value="${ { sectionNumber++ } }" />
+
                 <g:render template="/transcribe/${template.viewName}" model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}" />
 
                 <div class="container-fluid">
                     <div class="well well-small transcribeSection">
                         <div class="row-fluid transcribeSectionHeader">
                             <div class="span12">
-                                <span class="transcribeSectionHeaderLabel">Notes</span> &nbsp; Record any comments here that may assist in validating this specimen
+                                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Notes</span> &nbsp; Record any comments here that may assist in validating this specimen
                                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                             </div>
                         </div>

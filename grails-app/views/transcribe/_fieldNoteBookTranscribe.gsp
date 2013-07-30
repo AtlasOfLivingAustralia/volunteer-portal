@@ -52,7 +52,6 @@
     </div>
 
     <g:set var="numberOfTextRows" value="12" />
-    <g:set var="sectionNumber" value="${1}" />
 
     <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
     <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
@@ -62,7 +61,7 @@
             <div class="span6">
                 <div class="well well-small">
                     <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
-                    <span class="transcribeSectionHeaderLabel">${sectionNumber++}. Transcribe all text from the left hand page into this box as it appears</span>
+                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the left hand page into this box as it appears</span>
                     <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><span class="help-container">&nbsp;</span></a>
                     <g:textArea class="span12" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="${numberOfTextRows}" cols="42"/>
                 </div>
@@ -70,7 +69,7 @@
             <div class="span6">
                 <div class="well well-small">
                     <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
-                    <span class="transcribeSectionHeaderLabel">${sectionNumber++}. Transcribe all text from the right hand page into this box as it appears</span>
+                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the right hand page into this box as it appears</span>
                     <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><span class="help-container">&nbsp;</span></a>
                     <g:textArea class="span12" name="recordValues.1.occurrenceRemarks" value="${recordValues?.get(1)?.occurrenceRemarks}" id="recordValues.1.occurrenceRemarks" rows="${numberOfTextRows}" cols="42"/>
                 </div>
@@ -82,7 +81,7 @@
             <div class="span12">
                 <div class="well well-small">
                     <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
-                    <span class="transcribeSectionHeaderLabel">${sectionNumber++}. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
                     <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><span class="help-container">&nbsp;</span></a>
                     <g:textArea class="span12" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="${numberOfTextRows}" cols="42"/>
                 </div>
@@ -94,7 +93,7 @@
         <div class="fields row-fluid" id="journal2Fields">
             <div class="span12">
                 <div class="well">
-                    <span class="transcribeSectionHeaderLabel">${sectionNumber++}.  Where a species or common name appears in the text please enter any relevant information into the fields below</span>
+                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  Where a species or common name appears in the text please enter any relevant information into the fields below</span>
                     <button class="btn btn-small pull-right btn-info" id="addRowButton">Add row</button>
                     <table class="table">
                         <thead>

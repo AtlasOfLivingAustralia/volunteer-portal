@@ -1,7 +1,6 @@
 (function( $ ){
 
     $.fn.panZoom = function(method) {
-
         if ( methods[method] ) {
             return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
         } else if ( typeof method === 'object' || ! method ) {
@@ -49,7 +48,6 @@
 
     var methods = {
         'init': function (options) {
-
             jQuery.extend(settings, $.fn.panZoom.defaults, options);
             setupCSS.apply(this);
             setupData.apply(this);
@@ -124,10 +122,6 @@
             var data = this.data('panZoom');
             if (typeof(steps) == 'undefined') {
                 var steps = getStepDimensions.apply(this);
-            }
-
-            if (settings.debug) {
-                console.log("Zooming in: " + steps.zoom.x);
             }
 
             data.position.x1 = data.position.x1*1 - steps.zoom.x;
@@ -438,7 +432,7 @@
     }
 
     function setupData() {
-        this.data('panZoom', {
+        var data = {
             target_element: this,
             target_dimensions: { x: null, y: null },
             viewport_element: this.parent(),
@@ -449,9 +443,11 @@
             mousewheel_delta: 0,
             mousedown_interval: false,
             bound_elements: $()
-        });
+        };
 
-        var data = this.data('panZoom');
+        this.data('panZoom', data);
+
+        data = this.data('panZoom');
 
         $(window).resize(function(e) {
             // reset the parent dimensions
@@ -476,9 +472,7 @@
     }
 
     function validatePosition() {
-
         var data = this.data('panZoom');
-
         // if dimensions are too small...
         if ( data.position.x2 - data.position.x1 < settings.min_width/settings.factor || data.position.y2 - data.position.y1 < settings.min_height/settings.factor ) {
             // and second co-ords are zero (IE: no dims set), fit image
@@ -541,10 +535,10 @@
                 }
             }
         }
-
     }
 
     function applyPosition() {
+
         var data = this.data('panZoom');
 
         width = getWidth.apply(this);
@@ -565,13 +559,6 @@
             applyCSS.apply(this, [ properties ]);
         }
 
-        if (settings.debug) {
-            console.log('--');
-            console.log('width:' + width);
-            console.log('height:' + height);
-            console.log('left:' + left_offset);
-            console.log('top:' + top_offset);
-        }
     }
 
     function applyCSS() {
