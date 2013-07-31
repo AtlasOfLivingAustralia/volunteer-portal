@@ -194,6 +194,7 @@
                             <th>DwC Field</th>
                             <th>Form type</th>
                             <th>Label</th>
+                            <th>Layout Class</th>
                             <th>Category</th>
                             <th>Help text</th>
                             <th></th>
@@ -207,6 +208,7 @@
                                 <td><strong>${field.fieldType}</strong></td>
                                 <td>${field.type}</td>
                                 <td>${field.label}</td>
+                                <td>${field.layoutClass}</td>
                                 <td>${field.category}</td>
                                 <td>
                                     <g:if test="${field.helpText}">

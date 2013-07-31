@@ -132,6 +132,15 @@
                                 </td>
                             </tr>
 
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="type"><g:message code="templateField.type.layoutClass" default="Layout Class" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'layoutClass', 'errors')}">
+                                    <g:textField name="layoutClass" value="${fieldValue(bean: templateFieldInstance, field: 'layoutClass')}" />
+                                </td>
+                            </tr>
+
                         </tbody>
                     </table>
 

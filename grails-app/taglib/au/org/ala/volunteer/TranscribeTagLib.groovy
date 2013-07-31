@@ -73,6 +73,8 @@ class TranscribeTagLib {
             label = field.fieldType?.label
         }
 
+        def hideLabel = attrs.hideLabel as Boolean
+
 
         def widgetHtml = getWidgetHtml(field, recordValues,recordIdx, attrs, "span10")
 
@@ -80,12 +82,14 @@ class TranscribeTagLib {
             mb.mkp.yieldUnescaped(widgetHtml)
         } else {
             mb.div(class:'row-fluid') {
-                div(class:labelClass) {
-                    span(class:"fieldLabel") {
-                        if (field.fieldType != DarwinCoreField.spacer) {
-                            mkp.yield(g.message(code:'record.' + name +'.label', default:label))
-                        } else {
-                            mkp.yieldUnescaped("&nbsp;")
+                if (!hideLabel) {
+                    div(class:labelClass) {
+                        span(class:"fieldLabel") {
+                            if (field.fieldType != DarwinCoreField.spacer) {
+                                mkp.yield(g.message(code:'record.' + name +'.label', default:label))
+                            } else {
+                                mkp.yieldUnescaped("&nbsp;")
+                            }
                         }
                     }
                 }

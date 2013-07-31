@@ -550,6 +550,14 @@
             padding-top: 10px;
         }
 
+        .transcribeSectionHeaderLabel {
+            font-weight: bold;
+        }
+
+        .prop .name {
+            vertical-align: top;
+        }
+
         .closeSectionLink {
             float: right;
         }
@@ -690,7 +698,7 @@
                     <div class="well well-small transcribeSection">
                         <div class="row-fluid transcribeSectionHeader">
                             <div class="span12">
-                                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Notes</span> &nbsp; Record any comments here that may assist in validating this specimen
+                                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Notes</span> &nbsp; Record any comments here that may assist in validating this task
                                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                             </div>
                         </div>
