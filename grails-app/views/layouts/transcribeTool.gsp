@@ -1,110 +1,72 @@
 <style type="text/css">
 
-#toolContentHeader, #currentTaskHeader {
-    background: #3D464C;
-    color: white;
-}
-
-#toolContentHeader h3, #currentTaskHeader h3 {
-    color: white;
-    padding-bottom: 6px;
-}
-
-#toolContentHeader hr, #currentTaskHeader hr {
-    clear: both;
-    height: 1px;
-    width: auto;
-    background-color: #D1D1D1;
-    margin-bottom: 6px;
-    border: none;
-}
-
-#toolContentHeader td {
-    /*padding-top: 0px;*/
-    padding-bottom: 0px;
-}
-
-.toolContent table {
-    width: 100%;
-    margin-bottom: 0px;
-}
-
-.toolContent td {
-    text-align: left;
-    padding: 5px
-}
-
-.toolContent td[colspan="2"] {
-    border-bottom: none;
-}
-
-</style>
-
-<r:script type="text/javascript">
-
-    var toolOpts = {
-        doSearch: function (e) {
-            alert("Default search action!")
-        }
+    #toolContentHeader, #currentTaskHeader {
+        background: #3D464C;
+        padding-left: 10px;
+        padding-right: 10px;
+        color: white;
     }
 
+    #toolContentHeader {
+        padding-top: 10px;
+    }
 
-</r:script>
+    #currentTaskHeader h3 {
+        color: white;
+        margin: 0;
+    }
+
+    #toolContentHeader h3, #currentTaskHeader h3 {
+        color: white;
+        padding-bottom: 6px;
+    }
+
+    #taskImage {
+        height: 200px;
+        width: 670px;
+    }
+
+    #taskImage img {
+        max-width: inherit !important;
+    }
+
+</style>
 
 <div id="toolContent" class="toolContent">
 
     <g:if test="${taskInstance}">
-        <div id="currentTaskHeader">
-            <h3>Image from current task</h3>
-            <hr/>
+        <div class="row-fluid">
+            <div class="span12" id="currentTaskHeader">
+                <h3>Image from current task</h3>
+            </div>
         </div>
 
-        <div class="dialog" id="imagePane">
-            <g:each in="${taskInstance.multimedia}" var="m" status="i">
-                <g:if test="${!m.mimeType || m.mimeType.startsWith('image/')}">
-                    <g:set var="imageUrl" value="${grailsApplication.config.server.url}${m.filePath}"/>
-                    <a href="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_medium.$1')}" class="image_viewer" title="">
-                        <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" title="" style="height: 150px">
-                    </a>
-                </g:if>
-            </g:each>
+        <div id="imagePane">
+            <g:set var="mm" value="${taskInstance.multimedia?.first()}" />
+            <div id="taskImageViewer" style="height: 200px; overflow: hidden">
+                <g:imageViewer multimedia="${mm}" elementId="taskImage" hideControls="${true}"/>
+            </div>
         </div>
 
-        <div style="height: 6px"></div>
     </g:if>
 
     <div id="toolBody">
         <g:layoutBody/>
     </div>
 
-    <r:script type="text/javascript">
+    <script type="text/javascript">
 
-        var imageWidth = $('.image_viewer').first().width();
-        var zoomWidth = 500;
-        if (imageWidth > 0) {
-            zoomWidth = 800 - imageWidth;
-        }
+        var target = $("#taskImage img");
 
-        var zopts = {
-            zoomType: 'drag',
-            zoomWidth: zoomWidth - 15,
-            zoomHeight: 150,
-            lens: true
-        }
-        $('.image_viewer').jqzoom(zopts);
-
-        $('.closeFancyBoxButton').click(function (e) {
-            e.preventDefault();
-            $.fancybox.close();
+        target.panZoom({
+            pan_step:10,
+            zoom_step:10,
+            min_width:100,
+            min_height:100,
+            mousewheel:true,
+            mousewheel_delta:6
         });
 
-        $('.toolSearchButton').click(function (e) {
-            e.preventDefault();
-            if (toolOpts && toolOpts.doSearch) {
-                toolOpts.doSearch(e);
-            }
-        });
-
-    </r:script>
+    </script>
 
 </div>

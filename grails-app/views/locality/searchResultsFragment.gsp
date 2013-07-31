@@ -6,7 +6,7 @@
                 <tr>
                     <td colspan="2" class="locality">${locality.locality}</td>
                     <td class="buttonCell">
-                        <button class="selectLocalityButton" localityId="${locality.id}" title="Use this locality">Select&nbsp;locality</button>
+                        <button class="btn selectLocalityButton" localityId="${locality.id}" title="Use this locality">Select&nbsp;locality</button>
                     </td>
                 </tr>
                 <tr>
@@ -30,113 +30,111 @@
         </g:each>
     </div>
 
-    <r:script type="text/javascript">
+    <script type="text/javascript">
 
-      $(".selectLocalityButton").click(function(e) {
-          e.preventDefault();
-          bindToLocality($(this).attr("localityId"));
-          $.fancybox.close();
-      });
+        $(".selectLocalityButton").click(function(e) {
+            e.preventDefault();
+            bindToLocality($(this).attr("localityId"));
+            hideModal();
+        });
 
 
-      $('#searchResultsStatus').text('${localities.size()} matching ${localities.size() == 1 ? "locality" : "localities"}');
+        $('#searchResultsStatus').text('${localities.size()} matching ${localities.size() == 1 ? "locality" : "localities"}');
 
-      localityMap.removeMarkers();
+        localityMap.removeMarkers();
 
-      $(".localitySearchResult").each(function(e) {
+        $(".localitySearchResult").each(function(e) {
 
-        var elementId = $(this).attr('localityId');
+            var elementId = $(this).attr('localityId');
 
-         if (localityMap) {
-            try {
-                localityMap.addMarker({
-                  lat: $(this).attr('lat'),
-                  lng: $(this).attr('lng'),
-                  title: $(this).attr('locality'),
-                  localityId: $(this).attr('localityId'),
-                  animation: google.maps.Animation.DROP,
-                  mouseover: function(e, y) {
+            if (localityMap) {
+                try {
+                    localityMap.addMarker({
+                        lat: $(this).attr('lat'),
+                        lng: $(this).attr('lng'),
+                        title: $(this).attr('locality'),
+                        localityId: $(this).attr('localityId'),
+                        animation: google.maps.Animation.DROP,
+                        mouseover: function(e, y) {
+                            $('table[localityId="' + elementId + '"]').css("background", "orange");
 
-                    $('table[localityId="' + elementId + '"]').css("background", "orange");
+                            var container = $('#localitySearchResults');
+                            var scrollTo = $('table[localityId="' + elementId + '"]');
 
-                    var container = $('#localitySearchResults');
-                    var scrollTo = $('table[localityId="' + elementId + '"]');
+                            container.scrollTop(
+                                scrollTo.offset().top - container.offset().top + container.scrollTop() - 20
+                            );
+                        },
+                        mouseout: function(e, y) {
+                            $('table[localityId="' + elementId + '"]').css("background", "");
+                        }
+                    });
 
-                    container.scrollTop(
-                        scrollTo.offset().top - container.offset().top + container.scrollTop() - 20
-                    );
-
-                  },
-                  mouseout: function(e, y) {
-                    $('table[localityId="' + elementId + '"]').css("background", "");
-                  }
-                });
-
-                localityMap.fitZoom();
-                correctZoom(localityMap);
-            } catch (ex) {
+                    localityMap.fitZoom();
+                    correctZoom(localityMap);
+                } catch (ex) {
+                }
             }
-         }
-      });
+        });
 
-    $('.localitySearchResult').mouseenter(function(e) {
-      var localityId = $(this).attr('localityId');
-      if (localityId) {
-        $(this).css("background", "orange");
-        setMarkerAnimation(localityMap, localityId, google.maps.Animation.BOUNCE);
-      }
-    });
-
-    $('.localitySearchResult').mouseleave(function(e) {
-      var localityId = $(this).attr('localityId');
-      if (localityId) {
-        $(this).css('background', '');
-        setMarkerAnimation(localityMap, localityId, null);
-      }
-    });
-
-    $('.findOnMapLink').click(function(e) {
-        e.preventDefault();
-        var node = $(this).closest('.localitySearchResult')
-        if (node) {
-            var localityId = node.attr('localityId');
+        $('.localitySearchResult').mouseenter(function(e) {
+            var localityId = $(this).attr('localityId');
             if (localityId) {
-              zoomToLocalityMarker(localityId);
+                $(this).css("background", "orange");
+                setMarkerAnimation(localityMap, localityId, google.maps.Animation.BOUNCE);
+            }
+        });
+
+        $('.localitySearchResult').mouseleave(function(e) {
+            var localityId = $(this).attr('localityId');
+            if (localityId) {
+                $(this).css('background', '');
+                setMarkerAnimation(localityMap, localityId, null);
+            }
+        });
+
+        $('.findOnMapLink').click(function(e) {
+            e.preventDefault();
+            var node = $(this).closest('.localitySearchResult')
+            if (node) {
+                var localityId = node.attr('localityId');
+                if (localityId) {
+                    zoomToLocalityMarker(localityId);
+                }
+            }
+        });
+
+        function correctZoom(map) {
+            var zoom = map.map.getZoom();
+            if (zoom > 10) {
+                map.setZoom(10);
             }
         }
-    });
 
-    function correctZoom(map) {
-        var zoom = map.map.getZoom();
-        if (zoom > 10) {
-            map.setZoom(10);
-        }
-    }
-
-    function zoomToLocalityMarker(localityId) {
-        for (index in localityMap.markers) {
-            var marker = localityMap.markers[index];
-            if (marker.localityId == localityId) {
-                var latLngs = [marker.getPosition()];
-                localityMap.fitBounds(latLngs);
-                correctZoom(localityMap);
-                break;
+        function zoomToLocalityMarker(localityId) {
+            for (index in localityMap.markers) {
+                var marker = localityMap.markers[index];
+                if (marker.localityId == localityId) {
+                    var latLngs = [marker.getPosition()];
+                    localityMap.fitBounds(latLngs);
+                    correctZoom(localityMap);
+                    break;
+                }
             }
         }
-    }
 
-    function setMarkerAnimation(map, localityId, animation) {
-        // Find the marker...
-        for (index in map.markers) {
-          var marker = map.markers[index];
-          if (marker.localityId == localityId) {
-            marker.setAnimation(animation);
-            break;
-          }
+        function setMarkerAnimation(map, localityId, animation) {
+            // Find the marker...
+            for (index in map.markers) {
+                var marker = map.markers[index];
+                if (marker.localityId == localityId) {
+                    marker.setAnimation(animation);
+                    break;
+                }
+            }
         }
-    }
 
-    </r:script>
+    </script>
 
     <style type="text/css">
 
@@ -154,10 +152,6 @@
 
     .buttonCell {
         width: 100px;
-    }
-
-    .locality {
-
     }
 
     .localityLatlong {

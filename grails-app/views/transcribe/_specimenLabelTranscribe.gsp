@@ -51,7 +51,7 @@
                     </ul>
 
                     <span>
-                        <button class="btn btn-small" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
+                        <button class="btn" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
                         <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
                     </span>
 
@@ -140,7 +140,7 @@
                     <h4>EITHER</h4>
                 </div>
                 <div class="span6 collectionEventSection">
-                    <strong>a.</strong>&nbsp; <button class="btn btn-small" id="show_collection_event_selector">Find existing collection event</button>
+                    <strong>a.</strong>&nbsp; <button class="btn" id="show_collection_event_selector">Find existing collection event</button>
                 </div>
                 <div class="span4">
                     <div id="boundCollectionEvent" class="alert alert-success" style="display:none"></div>
@@ -158,7 +158,7 @@
 
                 <div class="row-fluid">
                     <div class="span6 offset2">
-                        <strong>i.</strong>&nbsp;<button class="btn btn-small" id="showLocalitySelector">Find existing locality</button>&nbsp;<strong>OR</strong>
+                        <strong>i.</strong>&nbsp;<button class="btn" id="showLocalitySelector">Find existing locality</button>&nbsp;<strong>OR</strong>
                     </div>
                     <div class="span4">
                         <div id="boundLocality" class="alert alert-success" style="display:none"></div>

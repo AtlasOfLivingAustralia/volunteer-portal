@@ -8,58 +8,49 @@
 
         <style type="text/css">
 
-        #localityMap {
-            float: left;
-            height: 250px;
-            width: 250px;
-            margin-right: 5px;
-        }
+            #localityMap {
+                float: left;
+                height: 250px;
+                width: 250px;
+                margin-right: 5px;
+            }
 
-        #localitySearchResults {
-            overflow-y: auto;
-            height: 250px
-        }
+            #localityMap img {
+                max-width: none !important;
+            }
+
+            #localitySearchResults {
+                overflow-y: auto;
+                height: 250px
+            }
 
         </style>
 
         <div id="toolContentHeader">
-            <table>
-                <tr>
-                    <td>
-                        Locality
-                    </td>
-                    <td>
-                        <input style="width:100%" type="text" id="localitySearch" value="${verbatimLocality}"/>
-                    </td>
-                    <td>
-                        <a href="#" class="fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality."><span class="help-container">&nbsp;</span>
-                        </a>
-                    </td>
-                    <td style="vertical-align: middle; width: 150px; text-align: center">
-                        <span id="searchResultsStatus"/>
-                    <td style="vertical-align: middle; width: 150px; text-align: center"><button class="toolSearchButton">Search</button>&nbsp;<button class="closeFancyBoxButton">Cancel</button>
-                    </td>
-                </td>
-                </tr>
-            </table>
-            <hr/>
+            <div class="row-fluid">
+                <div class="span2">
+                    Locality
+                </div>
+                <div class="span4">
+                    <input style="width:100%" type="text" id="localitySearch" value="${verbatimLocality}"/>
+                </div>
+                <div class="span1" style="vertical-align: middle">
+                    <a href="#" class="fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality."><span class="help-container">&nbsp;</span></a>
+                </div>
+                <div class="span5">
+                    <button class="btnSearch btn">Search</button>
+                    <button class="btnClose btn">Cancel</button>
+                </div>
+            </div>
         </div>
 
         <div id="localityMap">
-
         </div>
 
         <div id="localitySearchResults">
-
         </div>
 
-        <r:script type="text/javascript">
-
-            if (toolOpts) {
-                toolOpts.doSearch = function (e) {
-                    doLocalitySearch();
-                }
-            }
+        <script type="text/javascript">
 
             function doLocalitySearch() {
 
@@ -126,12 +117,22 @@
                         name: 'light' // Inherit the rest of the attributes from the preset light style
                     }
                 }).bind('click', function (e) {
-                        e.preventDefault();
-                        return false;
-                    });
+                    e.preventDefault();
+                    return false;
+                });
+
+                $(".btnClose").click(function(e) {
+                    e.preventDefault();
+                    hideModal();
+                });
+
+                $(".btnSearch").click(function(e) {
+                    e.preventDefault();
+                    doLocalitySearch();
+                });
 
             });
 
-        </r:script>
+        </script>
     </body>
 </html>
