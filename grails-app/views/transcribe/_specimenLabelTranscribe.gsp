@@ -237,15 +237,11 @@
         var verbatimLocality = $('#recordValues\\.0\\.verbatimLocality').val();
         verbatimLocality = verbatimLocality.replace(/(\r\n|\n|\r)/gm, ' ');
         var contentUrl = "${createLink(controller: 'locality', action:'searchFragment', params: [taskId: taskInstance.id])}&verbatimLocality=" + encodeURIComponent(verbatimLocality);
-
         showModal({
             url: contentUrl,
             width:800,
             height:650,
-            hideHeader: false,
-            title: 'Find Existing Collecting Event',
-            onShown: function() {
-            }
+            title: 'Find Existing Collecting Event'
         });
     }
 

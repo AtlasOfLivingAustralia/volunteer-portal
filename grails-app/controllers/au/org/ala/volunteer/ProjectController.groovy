@@ -332,10 +332,8 @@ class ProjectController {
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
-        }
-        else {
-            def taskCount = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId: projectInstance.id])
-            [projectInstance: projectInstance, taskCount: taskCount]
+        } else {
+            redirect(action:'index', id: projectInstance.id)
         }
     }
 
@@ -454,4 +452,13 @@ class ProjectController {
 
         redirect(action: "index", id: params.id)
     }
+
+    def projectLeaderIconSelectorFragment() {
+        def projectInstance = Project.get(params.getInt("id"))
+        def expeditionConfig = grailsApplication.config.expedition
+        // find the leader role from the config map
+        def role = expeditionConfig.find { it.name == "Expedition Leader"}
+        [projectInstance: projectInstance, role: role]
+    }
+
 }

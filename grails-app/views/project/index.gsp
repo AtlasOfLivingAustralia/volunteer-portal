@@ -123,11 +123,20 @@
                 resizeMap();
             });
 
+            $("#btnShowIconSelector").click(function(e) {
+                e.preventDefault();
+                showIconSelector();
+            });
+
         });
 
         function showIconSelector() {
-            $("#icon_selector").css("display", "block");
-            return true
+            showModal({
+                url: "${createLink(action:'projectLeaderIconSelectorFragment', id: projectInstance.id)}",
+                width:800,
+                height:500,
+                title: 'Select Expedition Leader Icon'
+            });
         }
 
     </r:script>
@@ -295,40 +304,12 @@
                                     <g:if test="${role?.name == 'Expedition Leader'}">
                                         <g:if test="${leader?.userId == currentUserId}">
                                             <span style="">
-                                                <button class="btn btn-small" id="show_icon_selector" href="#icon_selector" style="font-size: 0.8em; font-style: normal; font-weight: normal;">Change leader icon</button>
+                                                <button class="btn btn-small" id="btnShowIconSelector" href="#icon_selector" style="font-size: 0.8em; font-style: normal; font-weight: normal;">Change leader icon</button>
                                             </span>
-
-                                            <div style="display: none;">
-                                                <div id="icon_selector">
-                                                    <table>
-                                                        <thead>
-                                                            <tr>
-                                                                <th colspan="2">
-                                                                    <h3>As expedition leader you have the privilege of selecting the icon for the expedition leader of the project</h3>
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                        <g:each in="${role.icons}" var="icon" status="imgIndex">
-                                                            <tr>
-                                                                <td style="vertical-align: top;">
-                                                                    <a href="${createLink(controller: 'project', action: 'setLeaderIconIndex', id: projectInstance.id, params: [iconIndex: imgIndex])}">
-                                                                        <img src='<g:resource file="${icon.icon}"/>' width="100" height="99" alt="">
-                                                                    </a>
-                                                                </td>
-                                                                <td style="text-align: left">
-                                                                    <b><a href="${createLink(controller: 'project', action: 'setLeaderIconIndex', id: projectInstance.id, params: [iconIndex: imgIndex])}">${icon.name}</a>
-                                                                    </b><br/>
-                                                                    ${icon.bio}
-                                                                </td>
-                                                            </tr>
-                                                        </g:each>
-                                                    </table>
-                                                </div>
-                                            </div>
                                         </g:if>
                                         <g:else>
                                             <span style="">
-                                                <button class="btn btn-small" disabled="true" title="Only the expedition leader can choose the leader's icon" id="show_icon_selector" href="" style="color: #808080; font-size: 0.8em; font-style: normal; font-weight: normal;">Change leader icon</button>
+                                                <button class="btn btn-small" disabled="true" title="Only the expedition leader can choose the leader's icon" id="" href="" style="color: #808080; font-size: 0.8em; font-style: normal; font-weight: normal;">Change leader icon</button>
                                             </span>
                                         </g:else>
                                     </g:if>

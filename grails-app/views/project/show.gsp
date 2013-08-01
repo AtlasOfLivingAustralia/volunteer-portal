@@ -8,7 +8,7 @@
     </head>
     <body class="sublevel sub-site volunteerportal">
 
-        <cl:headerContent title="${message(code:'default.show.label', args: entityName)}" selectedNavItem="expeditions">
+        <cl:headerContent title="${message(code:'default.show.label', args: [entityName])}" selectedNavItem="expeditions">
             <%
                 pageScope.crumbs = [
                     [link:createLink(controller:'project', action:'list'),label:message(code:'default.expeditions.label', default:'Expeditions')]
