@@ -13,14 +13,6 @@
         max-width: inherit !important;
     }
 
-    .transcribeSectionHeaderLabel {
-        font-weight: bold;
-    }
-
-    .prop .name {
-        vertical-align: top;
-    }
-
 </style>
 
 <div class="container-fluid">
@@ -80,7 +72,7 @@
         <div class="row-fluid transcribeSectionHeader">
             <div class="span12">
                 <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
-                <a style="float:right" class="closeSection" href="#">Shrink</a>
+                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
             </div>
         </div>
         <div class="transcribeSectionBody">

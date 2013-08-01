@@ -5,7 +5,7 @@
 
     #image-container {
         width: 100%;
-        height: 100px;
+        height: 400px;
         overflow: hidden;
     }
 
@@ -39,43 +39,25 @@
         </div>
     </div>
 
-    <div class="well well-small transcribeSection">
-        <div class="flightDetails row-fluid" >
-            <div class="span2">
-                <strong>Date</strong>
-            </div>
-            <div class="span1"></div>
-            <div class="span2">
-                <strong>Aircraft</strong>
-            </div>
-            <div class="span7">
-                <strong>All text verbatim</strong>
-            </div>
-        </div>
-
-        <div class="flightDetails row-fluid" >
-            <div class="span2">
-                <g:renderFieldBootstrap fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" hideLabel="${true}" valueClass="span12" />
-            </div>
-            <div class="span1"></div>
-            <div class="span2">
-                <g:renderFieldBootstrap fieldType="${DarwinCoreField.fieldNumber}" recordValues="${recordValues}" task="${taskInstance}" hideLabel="${true}" valueClass="span12" />
-            </div>
-            <div class="span7">
-                <g:renderFieldBootstrap fieldType="${DarwinCoreField.occurrenceRemarks}" recordValues="${recordValues}" task="${taskInstance}" hideLabel="${true}" valueClass="span12" rows="2" />
-            </div>
-        </div>
-    </div>
-
     <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
     <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'displayOrder'])}" />
+
     <div class="well well-small transcribeSection">
-        <g:render template="dynamicDatasetRows" model="${[recordValues:recordValues, fieldList: fieldList, entriesField: entriesField]}" />
+        <div class="row-fluid transcribeSectionHeader">
+            <div class="span12">
+                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.
+                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+            </div>
+        </div>
+        <div class="transcribeSectionBody">
+            <g:render template="dynamicDatasetRows" model="${[recordValues:recordValues, fieldList: fieldList, entriesField: entriesField]}" />
+        </div>
     </div>
 
 </div>
 
 <r:script>
+
 
     $(document).ready(function() {
 

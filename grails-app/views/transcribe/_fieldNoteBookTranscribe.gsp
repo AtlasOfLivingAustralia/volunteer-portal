@@ -13,19 +13,7 @@
         max-width: inherit !important;
     }
 
-    .transcribeSectionHeaderLabel {
-        font-weight: bold;
-    }
-
-    .prop .name {
-        vertical-align: top;
-    }
-
 </style>
-
-<g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
-<g:set var="numItems" value="${(recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue).toInteger()}" />
-<g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'id'])}" />
 
 <div class="container-fluid">
 
@@ -52,9 +40,6 @@
     </div>
 
     <g:set var="numberOfTextRows" value="12" />
-
-    <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
-    <g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue}"/>
 
     <g:if test="${taskInstance.project.template?.viewParams?.doublePage == 'true'}">
         <div class="row-fluid">
@@ -90,24 +75,20 @@
     </g:else>
 
     <g:if test="${taskInstance.project.template?.viewParams?.hideNames != 'true'}">
-        <div class="fields row-fluid" id="journal2Fields">
+        <div class="fields row-fluid transcribeSection">
             <div class="span12">
                 <div class="well">
-                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  Where a species or common name appears in the text please enter any relevant information into the fields below</span>
-                    <button class="btn btn-small pull-right btn-info" id="addRowButton">Add row</button>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <g:each in="${fieldList}" var="field">
-                                    <th>${field.label}</th>
-                                </g:each>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="identification_fields">
-                        </tbody>
-                    </table>
+                    <div class="row-fluid transcribeSectionHeader">
+                        <div class="span12">
+                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  Where a species or common name appears in the text please enter any relevant information into the fields below</span>
+                            <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                        </div>
+                    </div>
+                    <div class="transcribeSectionBody">
+                        <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
+                        <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'displayOrder'])}" />
+                        <g:render template="dynamicDatasetRows" model="${[recordValues:recordValues, fieldList: fieldList, entriesField: entriesField]}" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -144,106 +125,6 @@
     $("#rotateImage").click(function(e) {
         e.preventDefault();
         $("#image-container img").toggleClass("rotate-image");
-    });
-
-    var entries = [
-
-    <g:each in="${0..numItems}" var="i" >
-        [
-        <g:each in="${fieldList}" var="field" status="fieldIndex">
-            <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
-            <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\n', '&#10;')?.replaceAll('\r','&#13;')}" />
-            {name:'${fieldName}', label:'${fieldLabel}', value: "${fieldValue}"}<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
-        </g:each>
-        ]<g:if test="${i < numItems}">,</g:if>
-    </g:each>
-    ];
-
-    function renderEntries() {
-      try {
-        var htmlStr ="";
-        var itemCount = 0; // Need to count the entries because IE8 will report an incorrect array size because of a trailing ',' in the original list render
-
-        for (entryIndex in entries) {
-          htmlStr += '<tr class="fieldNoteFields"><td><strong>' + (parseInt(entryIndex) + 1) + '.</strong></td>';
-          for (fieldIndex in entries[entryIndex]) {
-            var e = entries[entryIndex][fieldIndex];
-            var name = "recordValues." + entryIndex + "." + e.name;
-            htmlStr += '<td>';
-            htmlStr += '<input class="span12" type="text" name="' + name + '" value="' + e.value + '" id="' + name + '">';
-            htmlStr += '</td>';
-          }
-          if (entryIndex > 0) {
-            htmlStr += '<td><button class="btn btn-small btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><i class="icon-remove icon-white"></i></button></td>';
-          } else {
-            htmlStr += '<td></td>';
-          }
-          htmlStr += "</tr>";
-          itemCount++;
-        }
-        $("#identification_fields").html(htmlStr);
-        $("#noOfEntries").attr('value', itemCount - 1);
-      } catch (e) {
-        alert(e)
-      }
-    }
-
-    function syncEntries() {
-      for (entryIndex in entries) {
-        for (fieldIndex in entries[entryIndex]) {
-          var e = entries[entryIndex][fieldIndex];
-          e.value = htmlEscape($('#recordValues\\.' + entryIndex + '\\.' + e.name).val());
-        }
-      }
-    }
-
-    function addEntry(e) {
-      try {
-
-        // first we need to save any edits to the entry list
-        syncEntries();
-
-        var entry = [
-        <g:each in="${fieldList}" var="field" status="i">
-            <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
-            <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            {name:'${fieldName}', label:'${fieldLabel}', value: ''}<g:if test="${i < fieldList.size()-1}">,</g:if>
-        </g:each>
-        ];
-        entries.push(entry);
-        renderEntries();
-      } catch (e) {
-        alert(e)
-      }
-
-    }
-
-    function deleteEntry(index) {
-      syncEntries()
-      if (index > 0 && index <= entries.length) {
-        entries.splice(index, 1);
-        renderEntries();
-      }
-      return false;
-    }
-
-    $(document).ready(function() {
-
-        // prevent enter key submitting form
-        $(window).keydown(function(event) {
-            if (event.keyCode == 13 && event.target.nodeName != "TEXTAREA") {
-                event.preventDefault();
-                return false;
-            }
-        });
-
-        $("#addRowButton").click(function(e) {
-          e.preventDefault();
-          addEntry();
-        });
-
-        renderEntries();
     });
 
 </r:script>

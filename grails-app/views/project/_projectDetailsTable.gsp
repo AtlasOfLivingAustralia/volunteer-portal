@@ -39,6 +39,7 @@
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'template', 'errors')}">
                 <g:select name="template.id" from="${au.org.ala.volunteer.Template.list()}" optionKey="id" value="${projectInstance?.template?.id}" noSelection="['null': '']"/>
+                <a class="btn" href="${createLink(controller: 'template', action:'edit', id: projectInstance?.template?.id)}">Edit Template</a>
             </td>
         </tr>
 

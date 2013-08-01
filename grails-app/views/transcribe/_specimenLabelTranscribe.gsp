@@ -15,14 +15,6 @@
         max-width: inherit !important;
     }
 
-    .transcribeSectionHeaderLabel {
-        font-weight: bold;
-    }
-
-    .prop .name {
-        vertical-align: top;
-    }
-
 </style>
 
 <r:require module="gmaps" />
