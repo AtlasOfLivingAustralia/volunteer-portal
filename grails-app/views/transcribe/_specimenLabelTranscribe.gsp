@@ -3,20 +3,6 @@
 
 <g:set var="collectionEventInsitutionCode" value="${taskInstance?.project?.collectionEventLookupCollectionCode ?: taskInstance?.project.featuredOwner}" />
 
-<style type="text/css">
-
-    #image-container {
-        width: 100%;
-        height: 400px;
-        overflow: hidden;
-    }
-
-    #image-container img {
-        max-width: inherit !important;
-    }
-
-</style>
-
 <r:require module="gmaps" />
 
 <div class="container-fluid">
@@ -204,16 +190,6 @@
 
 
 <r:script>
-
-    $("#show_task_selector").click(function(e) {
-        e.preventDefault();
-        showPreviousTaskBrowser();
-    });
-
-    $("#btnGeolocate").click(function(e) {
-        e.preventDefault();
-        showGeolocationTool();
-    });
 
     $("#show_collection_event_selector").click(function(e) {
         e.preventDefault();

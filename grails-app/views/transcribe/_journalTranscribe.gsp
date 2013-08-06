@@ -1,6 +1,9 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 
+<style type="text/css">
+</style>
+
 <div class="container-fluid">
 
     <div class="row-fluid">
@@ -25,35 +28,33 @@
         </div>
     </div>
 
-    <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
+    <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
     <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'displayOrder'])}" />
     <g:set var="viewParams" value="${taskInstance.project.template?.viewParams}" />
+    <g:set var="numberOfTextRows" value="${12}" />
 
-    <g:if test="${viewParams?.showMonth}">
-        <div class="well well-small transcribeSection">
-            <div class="row-fluid transcribeSectionHeader">
-                <div class="span12">
-                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Enter the month from the top of the page</span>
-                    <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
-                </div>
-            </div>
-            <div class="transcribeSectionBody">
-                <div class="row-fluid">
-                    <div class="span1">
-                        Month
-                    </div>
-                    <div class="span1">
-                        <g:textField class="span12" id="recordValues.0.verbatimEventDate" name="recordValues.0.verbatimEventDate" value="${recordValues?.get(0)?.get('verbatimEventDate')}" />
-                    </div>
-                </div>
-            </div>
-      </div>
-    </g:if>
+
 
     <div class="well well-small transcribeSection">
         <div class="row-fluid transcribeSectionHeader">
             <div class="span12">
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.
+                <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
+                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><span class="help-container">&nbsp;</span></a>
+                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+            </div>
+        </div>
+        <div class="transcribeSectionBody">
+            <div class="row-fluid">
+                <g:textArea class="span12" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="${numberOfTextRows}" cols="42"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-small transcribeSection">
+        <div class="row-fluid transcribeSectionHeader">
+            <div class="span12">
+                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  For each entry on the field note, please transcribe information into the following fields.</span>
                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
             </div>
         </div>

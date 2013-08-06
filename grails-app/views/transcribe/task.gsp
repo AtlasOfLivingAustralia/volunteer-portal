@@ -100,6 +100,45 @@
                     }
                 });
 
+                // display previous journal page in new window
+                $("#showPreviousJournalPage").click(function(e) {
+                    e.preventDefault();
+                    <g:if test="${prevTask}">
+                        var uri = "${createLink(controller: 'task', action:'showImage', id: prevTask.id)}"
+                        newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        if (window.focus) {
+                            newwindow.focus()
+                        }
+                    </g:if>
+                });
+
+                // display next journal page in new window
+                $("#showNextJournalPage").click(function(e) {
+                    e.preventDefault();
+                    <g:if test="${nextTask}">
+                        var uri = "${createLink(controller: 'task', action:'showImage', id: nextTask.id)}"
+                        newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        if (window.focus) {
+                            newwindow.focus()
+                        }
+                    </g:if>
+                });
+
+                $("#rotateImage").click(function(e) {
+                    e.preventDefault();
+                    $("#image-container img").toggleClass("rotate-image");
+                });
+
+                $("#show_task_selector").click(function(e) {
+                    e.preventDefault();
+                    showPreviousTaskBrowser();
+                });
+
+                $("#btnGeolocate").click(function(e) {
+                    e.preventDefault();
+                    showGeolocationTool();
+                });
+
                 bindAutocomplete();
                 bindSymbolButtons();
                 bindTooltips();

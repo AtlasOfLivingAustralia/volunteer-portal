@@ -1,20 +1,6 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 
-<style type="text/css">
-
-    #image-container {
-        width: 100%;
-        height: 400px;
-        overflow: hidden;
-    }
-
-    #image-container img {
-        max-width: inherit !important;
-    }
-
-</style>
-
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span8">
@@ -120,18 +106,3 @@
     <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}" recordValues="${recordValues}" title="Identification" description="If a label contains information on the name of the organism then record the name and associated information in this section" />
 
 </div>
-
-
-<r:script>
-
-    $("#show_task_selector").click(function(e) {
-        e.preventDefault();
-        showPreviousTaskBrowser();
-    });
-
-    $("#btnGeolocate").click(function(e) {
-        e.preventDefault();
-        showGeolocationTool();
-    });
-
-</r:script>
