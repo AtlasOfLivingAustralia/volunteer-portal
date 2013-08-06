@@ -41,6 +41,28 @@
 
     <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
     <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'displayOrder'])}" />
+    <g:set var="viewParams" value="${taskInstance.project.template?.viewParams}" />
+
+    <g:if test="${viewParams?.showMonth}">
+        <div class="well well-small transcribeSection">
+            <div class="row-fluid transcribeSectionHeader">
+                <div class="span12">
+                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Enter the month from the top of the page
+                    <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                </div>
+            </div>
+            <div class="transcribeSectionBody">
+                <div class="row-fluid">
+                    <div class="span1">
+                        Month
+                    </div>
+                    <div class="span1">
+                        <g:textField class="span12" id="recordValues.0.verbatimEventDate" name="recordValues.0.verbatimEventDate" value="${recordValues?.get(0)?.get('verbatimEventDate')}" />
+                    </div>
+                </div>
+            </div>
+      </div>
+    </g:if>
 
     <div class="well well-small transcribeSection">
         <div class="row-fluid transcribeSectionHeader">
@@ -50,7 +72,7 @@
             </div>
         </div>
         <div class="transcribeSectionBody">
-            <g:render template="dynamicDatasetRows" model="${[recordValues:recordValues, fieldList: fieldList, entriesField: entriesField]}" />
+            <g:render template="/transcribe/dynamicDatasetRows" model="${[recordValues:recordValues, fieldList: fieldList, entriesField: entriesField]}" />
         </div>
     </div>
 
