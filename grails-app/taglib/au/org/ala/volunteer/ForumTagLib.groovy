@@ -91,17 +91,13 @@ class ForumTagLib {
                                 a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: reply.user.id), name:'message_' + reply.id) {
                                     mkp.yield(reply.user.displayName)
                                 }
+                                if (authorIsModerator) {
+                                    i(class:'icon-star-empty') { mkp.yieldUnescaped("&nbsp;") }
+                                }
                                 br {}
                                 span(class: 'forumMessageDate') {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
-                                if (authorIsModerator) {
-                                    br {}
-                                    span(class: 'moderator-label') {
-                                        mkp.yield("Moderator")
-                                    }
-                                }
-
                             }
                             def message = markdownService.sanitize(reply.text ?: "")
                             td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
@@ -219,11 +215,12 @@ class ForumTagLib {
                             tr(class: rowClasses.join(" "), topicId: topic.id) {
                                 td(style: "width: 40px; padding: 0px") {
                                     span(style: 'color:green') {
+                                        mkp.yieldUnescaped("&nbsp;")
                                         if (topic.sticky) {
-                                            mb.img(src: resource(dir: '/images', file: 'forum_sticky_topic.png'))
+                                            i(class:'icon-asterisk', title:'This topic is sticky') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                         if (topic.locked) {
-                                            mb.img(src: resource(dir: '/images', file: 'lock.png', height: '16px', width: '16px'))
+                                            i(class:'icon-lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                     }
                                 }
@@ -247,12 +244,8 @@ class ForumTagLib {
                                 td {
                                     span() {
                                         mkp.yield(topic.creator?.displayName)
-                                    }
-
-                                    if (authorIsModerator) {
-                                        br {}
-                                        span(class:'moderator-label') {
-                                            mkp.yield("Moderator")
+                                        if (authorIsModerator) {
+                                            i(class:'icon-star-empty') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                     }
                                 }
