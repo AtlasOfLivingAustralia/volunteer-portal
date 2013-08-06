@@ -8,7 +8,6 @@
         } else {
             $.error( 'Method ' +  method + ' does not exist' );
         }
-
     };
 
     $.fn.panZoom.defaults = {
@@ -236,6 +235,10 @@
                 y2: data.position.y2
             };
             return pos
+        },
+        'notifyResize': function() {
+            var data = this.data('panZoom');
+            data.viewport_dimensions = { x: data.target_element.parent().width(), y: data.target_element.parent().height() };
         }
     }; // Methods
 

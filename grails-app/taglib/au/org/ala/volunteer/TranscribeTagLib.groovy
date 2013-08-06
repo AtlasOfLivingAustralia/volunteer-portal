@@ -432,6 +432,7 @@ class TranscribeTagLib {
      * @attr multimedia
      * @attr elementId
      * @attr hideControls
+     * @attr hidePinImage
      */
     def imageViewer = { attrs, body ->
         def multimedia = attrs.multimedia as Multimedia
@@ -451,16 +452,16 @@ class TranscribeTagLib {
                         a(id:'zoomout', href:"#", class:'back') {}
                     }
 
-                    div(class:'pin-image-control') {
-                        a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window') {
-                            mkp.yield('Pin image in place')
+                    if (!attrs.hidePinImage) {
+                        div(class:'pin-image-control') {
+                            a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window') {
+                                mkp.yield('Pin image in place')
+                            }
                         }
                     }
                 }
-
             }
         }
-
     }
 
     /**

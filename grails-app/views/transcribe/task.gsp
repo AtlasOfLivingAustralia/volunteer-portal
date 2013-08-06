@@ -17,6 +17,7 @@
         <r:require module="bootstrap-js" />
         <r:require module="panZoom" />
         <r:require module="jqZoom" />
+        <r:require module="imageViewerCss" />
 
         <r:script>
 
@@ -367,95 +368,10 @@
             color: #DDDDDD;
         }
 
-
         #collectionEventFields table tr.columnLayout {
             width: 450px;
             min-height: 34px;
             float: left;
-        }
-
-        .imageviewer-controls {
-            position: absolute;
-            top: 330px;
-            left: 10px;
-            background: url(${resource(dir:'/images', file:'map-control.png')}) no-repeat;
-            height: 63px;
-            width: 100px;
-            opacity: 0.9;
-        }
-
-        .imageviewer-controls a {
-            height: 18px;
-            width: 18px;
-            display: block;
-            text-indent: -999em;
-            position: absolute;
-            outline: none;
-        }
-
-        .imageviewer-controls a:hover {
-            background: #535353;
-            opacity: 0.4;
-            filter: alpha(opacity=40);
-        }
-
-        .imageviewer-controls a.left {
-            left: 39px;
-            top: 22px;
-        }
-
-        .imageviewer-controls a.right {
-            left: 79px;
-            top: 22px;
-        }
-
-        .imageviewer-controls a.up {
-            left: 59px;
-            top: 2px;
-        }
-
-        .imageviewer-controls a.down {
-            left: 59px;
-            top: 42px;
-        }
-
-        .imageviewer-controls a.zoom {
-            left: 2px;
-            top: 8px;
-            height: 21px;
-            width: 21px;
-        }
-
-        .imageviewer-controls a.back {
-            left: 2px;
-            top: 31px;
-            height: 21px;
-            width: 21px;
-        }
-
-        .pin-image-control {
-            position: absolute;
-            top: 370px;
-            right: 7px;
-            background: url(${resource(dir:'images', file:'pin-image.png')}) no-repeat;
-            height: 24px;
-            width: 24px;
-            opacity: 0.9;
-        }
-
-        .pin-image-control a {
-            height: 24px;
-            width: 24px;
-            display: block;
-            text-indent: -999em;
-            position: absolute;
-            outline: none;
-        }
-
-        .pin-image-control a:hover {
-            background: #535353;
-            opacity: 0.4;
-            filter: alpha(opacity=40);
         }
 
         #taskMetadata h3 {
@@ -549,15 +465,6 @@
 
         #mapWidgets #address {
             width: 360px;
-        }
-
-        .rotate-image {
-            -moz-transform: rotate(180deg);
-            -webkit-transform: rotate(180deg);
-            -o-transform: rotate(180deg);
-            transform: rotate(180deg);
-            -ms-filter: flipv fliph; /*IE*/
-            filter: flipv fliph; /*IE*/
         }
 
         span.coordsIcons {

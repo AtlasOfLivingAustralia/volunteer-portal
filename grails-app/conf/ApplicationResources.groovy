@@ -40,4 +40,8 @@ modules = {
         resource url:'/js/gmaps.js'
     }
 
+    'imageViewerCss' {
+        resource url:'/css/imageViewer.css'
+    }
+
 }
