@@ -4,10 +4,8 @@
     <head>
         <title>Volunteer Portal - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>--}%
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-        <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
-        <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-panZoom.js')}"></script>
+        <r:require module="panZoom" />
 
         <style type="text/css">
 
@@ -17,16 +15,6 @@
 
         .button {
             height: 30px;
-        }
-
-        .pan-image {
-          height: 400px;
-          width: 600px;
-          overflow: hidden;
-          background-color: #808080;
-          float: left;
-          cursor: move;
-          /* margin: 10px auto;*/
         }
 
         </style>
@@ -80,23 +68,6 @@
                     window.location = "${createLink(controller:'task', action:'show', id: taskInstance.id)}";
                 });
 
-                $(".pan-image img").panZoom({
-                  pan_step: 10,
-                  zoom_step: 5,
-                  min_width: 200,
-                  min_height: 200,
-                  mousewheel:true,
-                  mousewheel_delta: 2,
-                  'zoomIn'    :  $('#zoomin'),
-                  'zoomOut'   :  $('#zoomout'),
-                  'panUp'     :  $('#pandown'),
-                  'panDown'   :  $('#panup'),
-                  'panLeft'   :  $('#panright'),
-                  'panRight'  :  $('#panleft')
-                });
-
-                $(".pan-image img").panZoom('fit');
-
                 </g:if>
 
             });
@@ -116,9 +87,7 @@
         <div class="row">
             <div class="span12">
                 <g:if test="${taskInstance}">
-                    <section class="taskSummary">
-                        <vpf:taskSummary task="${taskInstance}" />
-                    </section>
+                    <g:render template="taskSummary" model="${[taskInstance: taskInstance]}" />
                 </g:if>
                 <div style="margin:10px" class="alert alert-success" style="vertical-align: middle">
                     <g:checkBox id="chkWatchTopic" name="watchTopic" checked="${isWatched}" />&nbsp; Watch this topic?

@@ -53,7 +53,7 @@
     </div>
 </div>
 
-<r:script type="text/javascript">
+<script type="text/javascript">
 
     $("#searchbox").keydown(function(e) {
         if (e.keyCode == 13) {
@@ -72,4 +72,4 @@
         window.location = url;
     }
 
-</r:script>
+</script>
