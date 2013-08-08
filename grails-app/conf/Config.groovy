@@ -181,6 +181,14 @@ environments {
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
         images.home = '/data/volunteer'
     }
+    uat {
+        grails.serverURL = "http://115.146.92.143:8080/${appName}"
+        server.url = "http://115.146.92.143"
+        security.cas.appServerName = "http://115.146.92.143:8080"
+        security.cas.contextPath = "/${appName}"
+        images.home = '/data/volunteer'
+        //log4j.appender.'errors.File'="stacktrace.log"
+    }
     development {
         grails.serverURL = "http://baird.ala.org.au:8080/${appName}"
         server.url = "http://baird.ala.org.au"
