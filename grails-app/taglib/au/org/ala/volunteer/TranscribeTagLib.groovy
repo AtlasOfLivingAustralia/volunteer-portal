@@ -532,7 +532,7 @@ class TranscribeTagLib {
             return
         }
 
-        def fields = TemplateField.findAllByCategoryAndTemplate(category, template)
+        def fields = TemplateField.findAllByCategoryAndTemplate(category, template)?.sort { it.displayOrder }
         if (!fields) {
             return
         }

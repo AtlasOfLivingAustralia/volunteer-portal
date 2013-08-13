@@ -22,6 +22,7 @@ class ProjectController {
     def collectionEventService
     def localityService
     def projectService
+    def picklistService
 
     /**
      * Project home page - shows stats, etc.
@@ -289,7 +290,17 @@ class ProjectController {
         if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def projectInstance = new Project()
             projectInstance.properties = params
-            return [projectInstance: projectInstance, templateList: Template.list()]
+
+            def eventCollectionCodes = [""]
+            eventCollectionCodes.addAll(collectionEventService.getCollectionCodes())
+
+            def localityCollectionCodes = [""]
+            localityCollectionCodes.addAll(localityService.getCollectionCodes())
+
+            def picklistInstitutionCodes = [""]
+            picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+
+            return [projectInstance: projectInstance, templateList: Template.list(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes, picklistInstitutionCodes: picklistInstitutionCodes]
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
@@ -351,8 +362,11 @@ class ProjectController {
                 def localityCollectionCodes = [""]
                 localityCollectionCodes.addAll(localityService.getCollectionCodes())
 
+                def picklistInstitutionCodes = [""]
+                picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
 
-                return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes ]
+
+                return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes, picklistInstitutionCodes: picklistInstitutionCodes ]
             }
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"

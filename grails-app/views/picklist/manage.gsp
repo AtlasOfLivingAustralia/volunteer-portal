@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.Picklist" %>
+<%@ page import="au.org.ala.volunteer.Project; au.org.ala.volunteer.Picklist" %>
 
 <html>
     <head>
@@ -22,12 +22,25 @@
             <div class="span12">
                 <g:form controller="picklist" action="manage">
 
-                    <div style="vertical-align: bottom">
-                        <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${id}"/>
-                        <g:actionSubmit class="btn" name="download.picklist" value="${message(code: 'download.picklist.label', default: 'Download')}" action="download"/>
-                        <g:actionSubmit class="btn" name="load.textarea" value="${message(code: 'loadtextarea.label', default: 'Load items into text area')}" action="loadcsv"/>
+                    <div class="form-horizontal">
+                        <div class="control-group">
+                            <lable class="control-label" for="picklistId">Picklist</lable>
+                            <div class="controls">
+                                <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${id}"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="institutionCode">Institution Code:</label>
+                            <div class="controls">
+                                <g:textField name="institutionCode" id="institutionCode" value="${institutionCode}"/>
+                                <span>Can be left blank to use default values</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <g:actionSubmit class="btn" name="download.picklist" value="${message(code: 'download.picklist.label', default: 'Download')}" action="download"/>
+                            <g:actionSubmit class="btn" name="load.textarea" value="${message(code: 'loadtextarea.label', default: 'Load items into text area')}" action="loadcsv"/>
+                        </div>
                     </div>
-                    <br/>
 
                     <p>
                         <g:message code="picklist.paste.here.label" default="Paste csv list here. Each line should take the format '&lt;value&gt;'[,&lt;optional key&gt;]"/>

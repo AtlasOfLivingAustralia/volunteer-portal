@@ -32,17 +32,17 @@ class PicklistService {
         }
     }
 
-    def replaceItems(long picklistId, String csvdata) {
+    def replaceItems(long picklistId, String csvdata, String institutionCode) {
         def picklist = Picklist.get(picklistId)
         // First delete the existing items...
         if (picklist) {
             logService.log "Deleting existing items..."
             int itemsDeleted = 0;
-            PicklistItem.findAllByPicklist(picklist).each {
+            PicklistItem.findAllByPicklistAndInstitutionCode(picklist, institutionCode ?: null).each {
                 it.delete();
                 itemsDeleted++;
             }
-            logService.log "${itemsDeleted} existing items deleted from picklist '${picklist.name}'"
+            logService.log "${itemsDeleted} existing items deleted from picklist '${picklist.name}' and institutionCode '${institutionCode}'"
         }
 
         def pattern = ~/^(['"])(.*)(\1)$/
@@ -55,7 +55,7 @@ class PicklistService {
                 if (m.find()) {
                     value = m.group(2);
                 }
-                def picklistItem = new PicklistItem(picklist: picklist, value: value)
+                def picklistItem = new PicklistItem(picklist: picklist, value: value, institutionCode: institutionCode)
 
                 if (tokens.size() > 1) {
                     picklistItem.key = tokens[1] // optional second value as "key"
@@ -75,5 +75,16 @@ class PicklistService {
             sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
         }
 
+    }
+
+    def getInstitutionCodes() {
+        def c = PicklistItem.createCriteria();
+        def results = c {
+            isNotNull("institutionCode")
+            projections {
+                distinct("institutionCode")
+            }
+        }
+        return results;
     }
 }

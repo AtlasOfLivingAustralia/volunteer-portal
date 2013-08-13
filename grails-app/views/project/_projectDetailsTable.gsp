@@ -90,6 +90,17 @@
 
         <tr class="prop">
             <td valign="top" class="name">
+                <label for="picklistInstitutionCode"><g:message code="project.picklistInstitutionCode.label" default="Picklist Institution Code"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'picklistInstitutionCode', 'errors')}">
+                <g:select name="picklistInstitutionCode" from="${picklistInstitutionCodes}" value="${projectInstance?.picklistInstitutionCode}"/>
+                <span>A picklist with a specific Insititution Code must be loaded first</span>
+            </td>
+        </tr>
+
+
+        <tr class="prop">
+            <td valign="top" class="name">
                 <label for="collectionEventLookupCollectionCode"><g:message code="project.collectionEventLookupCollectionCode.label" default="Collection Event Lookup collection code"/></label>
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'collectionEventLookupInstitution', 'errors')}">

@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import au.com.bytecode.opencsv.CSVWriter
+import org.grails.plugins.csv.CSVWriter
 
 class PicklistController {
 
@@ -20,7 +20,7 @@ class PicklistController {
     }
     
     def uploadCsvData = {
-        picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist)
+        picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist, params.institutionCode)
         redirect(action: "manage")
     }
 
@@ -29,27 +29,30 @@ class PicklistController {
         [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
     }
 
-    private writeItemsCsv(Writer writer, Picklist picklist) {
+    private writeItemsCsv(Writer writer, Picklist picklist, String institutionCode) {
         if (picklist) {
-            CSVWriter csvWriter = new CSVWriter(writer)
 
-            def items = PicklistItem.findAllByPicklist(picklist)
-            
-            for (item in items) {
-                csvWriter.writeNext( [ (item.value ?: ""), (item.key ?: "") ] as String[] )
+            def delim = ','
+            def items = PicklistItem.findAllByPicklistAndInstitutionCode(picklist, institutionCode ?: null)
+            items?.each { item ->
+                writer.write(item.value ?: "")
+                writer.write(delim)
+                writer.write(item.key ?: "")
+                writer.write("\n")
             }
         }
     }
 
     def loadcsv = {
         def picklist = Picklist.get(params.picklistId)
+        def institutionCode = params.institutionCode
         def csvdata = ''
         if (picklist) {
             StringWriter sw = new StringWriter();
-            writeItemsCsv(sw, picklist)
+            writeItemsCsv(sw, picklist, institutionCode)
             csvdata = sw.toString();
         }
-        render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id])
+        render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id, institutionCode: params.institutionCode])
     }
     
     def download = {
@@ -58,7 +61,7 @@ class PicklistController {
             response.setHeader("Content-disposition", "attachment;filename=" + picklist.name + ".csv")
             response.contentType = "text/csv"
             OutputStreamWriter writer = new OutputStreamWriter(response.outputStream);
-            writeItemsCsv(writer, picklist)
+            writeItemsCsv(writer, picklist, params.institutionCode)
             writer.flush();
             writer.close();
         }

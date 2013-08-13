@@ -11,21 +11,14 @@ class PicklistItemController {
 
         def task = Task.get(params.int('taskId'))
         if (picklistName == 'recordedBy' && task) {
-            // check to see if the project as collection events, and if so, use the collectors from that, rather than from the mega picklist
-            if (task.project.collectionEventLookupCollectionCode) {
-                def c = CollectionEvent.createCriteria()
-                def collectors = c {
-                    eq("institutionCode", task.project.collectionEventLookupCollectionCode)
-                    ilike("collector", "%${params.q}%")
-                    projections {
-                        distinct("collector")
-                    }
-                }
-
+            def query = params.q
+            if (picklistName) {
+                def picklist = Picklist.findByName(picklistName)
+                def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%"+query+"%", picklist, task.project?.picklistInstitutionCode)
                 render(contentType:"application/json") {
                     autoCompleteList = array {
-                        for (collector in collectors) {
-                            picklistItem(name:collector, key:collector)
+                        for (pli in picklistItemInstance) {
+                            picklistItem(name:pli.value, key:pli.key)
                         }
                     }
                 }
@@ -33,20 +26,8 @@ class PicklistItemController {
             }
         }
 
-        def query = params.q
-        if (picklistName) {
-            def picklist = Picklist.findByName(picklistName)
-            def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklist("%"+query+"%", picklist)
-            render(contentType:"application/json") {
-                autoCompleteList = array {
-                    for (pli in picklistItemInstance) {
-                        picklistItem(name:pli.value, key:pli.key)
-                    }
-                }
-            }
-        } else {
-            render([] as JSON)
-        }
+        render([] as JSON)
+
     }
 
     def updateLocality = {

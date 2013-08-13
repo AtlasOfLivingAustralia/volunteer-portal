@@ -17,6 +17,7 @@ class Project {
     Boolean inactive = false
     String collectionEventLookupCollectionCode
     String localityLookupCollectionCode
+    String picklistInstitutionCode
 
     def grailsApplication
     def grailsLinkGenerator
@@ -51,6 +52,7 @@ class Project {
         inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
+        picklistInstitutionCode nullable: true
     }
 
     public String toString() {
