@@ -47,6 +47,9 @@
                 <div class="alert alert-info">
                     <input style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="40" />
                     <button class="btn btn-small" id="searchButton">search</button>
+                    <cl:ifAdmin>
+                        <a href="${createLink(controller:'picklist', action:'manage', id: picklistInstance.id)}" class="btn pull-right">Manage Picklist Items</a>
+                    </cl:ifAdmin>
                 </div>
                 <table class="table table-condensed table-bordered table-striped">
                     <thead>

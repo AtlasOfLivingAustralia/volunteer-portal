@@ -304,48 +304,91 @@
 
             function bindAutocomplete() {
 
-                $("input.recordedBy").not('.noAutoComplete').autocomplete({
-                    disabled: false,
-                    minLength: 2,
-                    delay: 200,
-                    select: function(event, ui) {
-                        var item = ui.item.data;
-                        // There can be multiple collector boxes on a transcribe form, so we need to update the correct collector id...
-                        var matches = $(event.currentTarget).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
-                        if (matches.length > 0) {
-                            var recordIdx = matches[1];
-                            var inputField = $('#recordValues\\.' + recordIdx + '\\.recordedByID');
-                            if (inputField) {
-                                inputField.val(item.key);
-                                // We store the collector name in the form attribute so we can compare it on a change event
-                                // to see if we need to wipe the collectorId out should the name in the inputfield change
-                                inputField.attr('collector_name', item.name);
-                            }
-                        } else {
-                            $(':input.recordedByID').val(item.key);
-                        }
+                $("input.autocomplete").not('.noAutoComplete').each(function(index) {
 
-                    },
-                    source: function(request, response) {
-                        $.ajax(VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=recordedBy&q=" + request.term).done(function(data) {
-                            var rows = new Array();
-                            if (data.autoCompleteList) {
-                                var list = data.autoCompleteList;
-                                for (var i = 0; i < list.length; i++) {
-                                    rows[i] = {
-                                        value: list[i].name,
-                                        label: list[i].name,
-                                        data: list[i]
-                                    };
+                    var inputElement = $(this);
+                    var matches = $(inputElement).attr("id").match(/^recordValues[.](\d+)[.](\w+)$/);
+                    if (matches.length > 1) {
+                        var fieldName = matches[2];
+                        var fieldIndex = matches[1];
+
+                        var autoCompleteOptions = {
+                            disabled: false,
+                            minLength: 2,
+                            delay: 200,
+                            select: function(event, ui) {
+                                var item = ui.item.data;
+                                inputElement.val(item.key);
+                                if (fieldName == 'recordedBy') {
+                                    inputElement.attr('collector_name', item.name);
                                 }
+                            },
+                            source: function(request, response) {
+                                var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=" + fieldName + "&q=" + request.term;
+                                $.ajax(url).done(function(data) {
+                                    var rows = new Array();
+                                    if (data.autoCompleteList) {
+                                        var list = data.autoCompleteList;
+                                        for (var i = 0; i < list.length; i++) {
+                                            rows[i] = {
+                                                value: list[i].name,
+                                                label: list[i].name,
+                                                data: list[i]
+                                            };
+                                        }
+                                    }
+                                    if (response) {
+                                        response(rows);
+                                    }
+                                });
                             }
-
-                            if (response) {
-                                response(rows);
-                            }
-                        });
+                        }
+                        inputElement.autocomplete(autoCompleteOptions);
                     }
                 });
+
+                %{--$("input.recordedBy").not('.noAutoComplete').autocomplete({--}%
+                    %{--disabled: false,--}%
+                    %{--minLength: 2,--}%
+                    %{--delay: 200,--}%
+                    %{--select: function(event, ui) {--}%
+                        %{--var item = ui.item.data;--}%
+                        %{--// There can be multiple collector boxes on a transcribe form, so we need to update the correct collector id...--}%
+                        %{--var matches = $(event.currentTarget).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);--}%
+                        %{--if (matches.length > 0) {--}%
+                            %{--var recordIdx = matches[1];--}%
+                            %{--var inputField = $('#recordValues\\.' + recordIdx + '\\.recordedByID');--}%
+                            %{--if (inputField) {--}%
+                                %{--inputField.val(item.key);--}%
+                                %{--// We store the collector name in the form attribute so we can compare it on a change event--}%
+                                %{--// to see if we need to wipe the collectorId out should the name in the inputfield change--}%
+                                %{--inputField.attr('collector_name', item.name);--}%
+                            %{--}--}%
+                        %{--} else {--}%
+                            %{--$(':input.recordedByID').val(item.key);--}%
+                        %{--}--}%
+
+                    %{--},--}%
+                    %{--source: function(request, response) {--}%
+                        %{--$.ajax(VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=recordedBy&q=" + request.term).done(function(data) {--}%
+                            %{--var rows = new Array();--}%
+                            %{--if (data.autoCompleteList) {--}%
+                                %{--var list = data.autoCompleteList;--}%
+                                %{--for (var i = 0; i < list.length; i++) {--}%
+                                    %{--rows[i] = {--}%
+                                        %{--value: list[i].name,--}%
+                                        %{--label: list[i].name,--}%
+                                        %{--data: list[i]--}%
+                                    %{--};--}%
+                                %{--}--}%
+                            %{--}--}%
+
+                            %{--if (response) {--}%
+                                %{--response(rows);--}%
+                            %{--}--}%
+                        %{--});--}%
+                    %{--}--}%
+                %{--});--}%
 
                 $("input.recordedBy").change(function(e) {
                     // If the value of the recordedBy field does not match the name in the collector_name attribute

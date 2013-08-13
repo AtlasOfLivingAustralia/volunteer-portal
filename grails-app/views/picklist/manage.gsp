@@ -21,12 +21,13 @@
         <div class="row">
             <div class="span12">
                 <g:form controller="picklist" action="manage">
+                    <g:hiddenField name="id" value="${params.id}" />
 
                     <div class="form-horizontal">
                         <div class="control-group">
                             <lable class="control-label" for="picklistId">Picklist</lable>
                             <div class="controls">
-                                <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${id}"/>
+                                <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${params.id}"/>
                             </div>
                         </div>
                         <div class="control-group">

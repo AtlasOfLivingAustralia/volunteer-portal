@@ -10,24 +10,21 @@ class PicklistItemController {
         def picklistName = params.picklist
 
         def task = Task.get(params.int('taskId'))
-        if (picklistName == 'recordedBy' && task) {
-            def query = params.q
-            if (picklistName) {
-                def picklist = Picklist.findByName(picklistName)
-                def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%"+query+"%", picklist, task.project?.picklistInstitutionCode)
-                render(contentType:"application/json") {
-                    autoCompleteList = array {
-                        for (pli in picklistItemInstance) {
-                            picklistItem(name:pli.value, key:pli.key)
-                        }
+        def query = params.q
+        if (picklistName) {
+            def picklist = Picklist.findByName(picklistName)
+            def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%"+query+"%", picklist, task.project?.picklistInstitutionCode)
+            render(contentType:"application/json") {
+                autoCompleteList = array {
+                    for (pli in picklistItemInstance) {
+                        picklistItem(name:pli.value, key:pli.key)
                     }
                 }
-                return
             }
+            return
         }
 
         render([] as JSON)
-
     }
 
     def updateLocality = {

@@ -167,11 +167,11 @@ class TranscribeTagLib {
                     )
                     break
                 }
+            case FieldType.autocomplete:
+                cssClass = cssClass + " autocomplete"
             case FieldType.radio: // fall through TODO
             case FieldType.checkbox: // fall through TODO
             case FieldType.text: // fall through
-            case FieldType.autocomplete:
-                cssClass = cssClass + " autocomplete"
             default:
 
                 if (noAutoCompleteList?.contains(name)) {
@@ -255,11 +255,11 @@ class TranscribeTagLib {
                         )
                         break
                     }
+                case FieldType.autocomplete:
+                    cssClass = cssClass + " autocomplete"
                 case FieldType.radio: // fall through TODO
                 case FieldType.checkbox: // fall through TODO
                 case FieldType.text: // fall through
-                case FieldType.autocomplete:
-                    cssClass = cssClass + " autocomplete"
                 default:
 
                     if (noAutoCompleteList?.contains(name)) {

@@ -13,6 +13,12 @@
         <cl:headerContent title="${message(code: "default.list.label", args: [entityName])}"/>
 
         <div id="content" class="row">
+            <div class="span12" style="margin-bottom: 10px">
+                <a href="${createLink(controller:'picklist', action: 'create')}" class="btn">Create a new Picklist</a>
+            </div>
+        </div>
+
+        <div id="content" class="row">
             <div class="span12">
                 <table class="table table-bordered table-striped">
                     <thead>

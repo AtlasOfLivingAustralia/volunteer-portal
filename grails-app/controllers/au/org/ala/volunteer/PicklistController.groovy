@@ -80,11 +80,18 @@ class PicklistController {
 
     def save = {
         def picklistInstance = new Picklist(params)
+
+        def existing = Picklist.findByName(params.name)
+        if (existing) {
+            flash.message = "A picklist already exists with the name ${params.name}"
+            render(view: "create", model: [picklistInstance: picklistInstance])
+            return
+        }
+
         if (picklistInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'picklist.label', default: 'Picklist'), picklistInstance.id])}"
             redirect(action: "show", id: picklistInstance.id)
-        }
-        else {
+        } else {
             render(view: "create", model: [picklistInstance: picklistInstance])
         }
     }
