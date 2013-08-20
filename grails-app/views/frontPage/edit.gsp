@@ -32,9 +32,7 @@
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'projectOfTheDay', 'errors')}">
                                         <g:select name="projectOfTheDay" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
-                                    </td>
-                                    <td>
-                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -44,9 +42,7 @@
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject1', 'errors')}">
                                         <g:select name="featuredProject1" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject1?.id}"/>
-                                    </td>
-                                    <td>
-                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.featuredProject1?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject1?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -56,9 +52,7 @@
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject2', 'errors')}">
                                         <g:select name="featuredProject2" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject2?.id}"/>
-                                    </td>
-                                    <td>
-                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.featuredProject2?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject2?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -68,9 +62,7 @@
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject3', 'errors')}">
                                         <g:select name="featuredProject3" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject3?.id}"/>
-                                    </td>
-                                    <td>
-                                        <g:link class="btn btn-small" action="edit" controller="project" id="${frontPage.featuredProject3?.id}">Edit&nbsp;project</g:link>
+                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject3?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
