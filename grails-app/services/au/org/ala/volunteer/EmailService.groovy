@@ -2,6 +2,8 @@ package au.org.ala.volunteer
 
 class EmailService {
 
+    static transactional = false
+
     def mailService
     def logService
 
