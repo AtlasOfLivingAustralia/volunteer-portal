@@ -62,6 +62,13 @@
                     }
                 });
 
+                $(".transcribeForm").submit(function() {
+                    if (transcribeBeforeSubmit) {
+                        return transcribeBeforeSubmit();
+                    }
+                    return true;
+                });
+
                 $(window).scroll(function (e) {
                     if ($("#floatingImage").is(":visible")) {
                         var parent = $("#floatingImage").parents('.ui-dialog');
@@ -347,49 +354,6 @@
                     }
                 });
 
-                %{--$("input.recordedBy").not('.noAutoComplete').autocomplete({--}%
-                    %{--disabled: false,--}%
-                    %{--minLength: 2,--}%
-                    %{--delay: 200,--}%
-                    %{--select: function(event, ui) {--}%
-                        %{--var item = ui.item.data;--}%
-                        %{--// There can be multiple collector boxes on a transcribe form, so we need to update the correct collector id...--}%
-                        %{--var matches = $(event.currentTarget).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);--}%
-                        %{--if (matches.length > 0) {--}%
-                            %{--var recordIdx = matches[1];--}%
-                            %{--var inputField = $('#recordValues\\.' + recordIdx + '\\.recordedByID');--}%
-                            %{--if (inputField) {--}%
-                                %{--inputField.val(item.key);--}%
-                                %{--// We store the collector name in the form attribute so we can compare it on a change event--}%
-                                %{--// to see if we need to wipe the collectorId out should the name in the inputfield change--}%
-                                %{--inputField.attr('collector_name', item.name);--}%
-                            %{--}--}%
-                        %{--} else {--}%
-                            %{--$(':input.recordedByID').val(item.key);--}%
-                        %{--}--}%
-
-                    %{--},--}%
-                    %{--source: function(request, response) {--}%
-                        %{--$.ajax(VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=recordedBy&q=" + request.term).done(function(data) {--}%
-                            %{--var rows = new Array();--}%
-                            %{--if (data.autoCompleteList) {--}%
-                                %{--var list = data.autoCompleteList;--}%
-                                %{--for (var i = 0; i < list.length; i++) {--}%
-                                    %{--rows[i] = {--}%
-                                        %{--value: list[i].name,--}%
-                                        %{--label: list[i].name,--}%
-                                        %{--data: list[i]--}%
-                                    %{--};--}%
-                                %{--}--}%
-                            %{--}--}%
-
-                            %{--if (response) {--}%
-                                %{--response(rows);--}%
-                            %{--}--}%
-                        %{--});--}%
-                    %{--}--}%
-                %{--});--}%
-
                 $("input.recordedBy").change(function(e) {
                     // If the value of the recordedBy field does not match the name in the collector_name attribute
                     // of the recordedByID element it means that the collector name no longer matches the id, so the id
@@ -572,6 +536,10 @@
 
         span.coordsIcons a:hover {
             background-color: #0046AD;
+        }
+
+        .row-fluid select {
+            margin-bottom: 6px;
         }
 
         </style>

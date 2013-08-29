@@ -132,7 +132,12 @@ class TranscribeTagLib {
         String w
         def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
         switch (field.type) {
-
+            case FieldType.latLong:
+                w = render(template: '/transcribe/latLongWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                break
+            case FieldType.date:
+                w = render(template: '/transcribe/dateWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                break
             case FieldType.textarea:
                 int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
                 if (attrs.rows) {
@@ -480,33 +485,55 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         def mb = new MarkupBuilder(out)
         def fields = TemplateField.findAllByCategoryAndTemplate(category, task?.project?.template, [sort: 'displayOrder'])
-        renderFields(mb, fields, task, labelClass, valueClass, recordValues, attrs)
+        renderFieldsInColumns(2, mb, fields, task, labelClass, valueClass, recordValues, attrs)
     }
 
-    private void renderFields(MarkupBuilder mb, List<TemplateField> fields, Task task, String labelClass, String valueClass, recordValues, attrs) {
+    private void renderFieldsInColumns(int numCols, MarkupBuilder mb, List<TemplateField> fields, Task task, String labelClass, String valueClass, recordValues, attrs) {
         if (fields) {
+
+            if (numCols > 12 || numCols < 0) {
+                throw new RuntimeException("Invalid number of columns!")
+            }
 
             def hidden = fields.findAll { it.type == FieldType.hidden }
 
+            def spanClass = String.format("span%d", (12 / numCols).toInteger());
+
             fields.removeAll { it.type == FieldType.hidden }
 
-            for (int i = 0; i < fields.size(); i += 2) {
-                def lhs = fields[i]
-                def rhs = (i+1 < fields.size() ? fields[i+1] : null)
-
+            def fieldIndex = 0;
+            while (fieldIndex < fields.size()) {
                 mb.div(class:'row-fluid') {
-                    mb.div(class:"span6") {
-                        renderFieldBootstrapImpl(mb, lhs, task, recordValues, 0, labelClass, valueClass, attrs)
-                    }
-                    mb.div(class:"span6") {
-                        if (rhs) {
-                            renderFieldBootstrapImpl(mb, rhs, task, recordValues, 0, labelClass, valueClass, attrs)
-                        } else {
-                            mkp.yieldUnescaped("&nbsp;")
+                    for (int colIndex = 0; colIndex < numCols; ++colIndex) {
+                        mb.div(class:spanClass) {
+                            if (fieldIndex < fields.size()) {
+                                def field = fields[fieldIndex++]
+                                renderFieldBootstrapImpl(mb, field, task, recordValues, 0, labelClass, valueClass, attrs)
+                            } else {
+                                mkp.yieldUnescaped("&nbsp;")
+                            }
                         }
                     }
                 }
             }
+
+//            for (int i = 0; i < fields.size(); i += 2) {
+//                def lhs = fields[i]
+//                def rhs = (i+1 < fields.size() ? fields[i+1] : null)
+//
+//                mb.div(class:'row-fluid') {
+//                    mb.div(class:"span6") {
+//                        renderFieldBootstrapImpl(mb, lhs, task, recordValues, 0, labelClass, valueClass, attrs)
+//                    }
+//                    mb.div(class:"span6") {
+//                        if (rhs) {
+//                            renderFieldBootstrapImpl(mb, rhs, task, recordValues, 0, labelClass, valueClass, attrs)
+//                        } else {
+//                            mkp.yieldUnescaped("&nbsp;")
+//                        }
+//                    }
+//                }
+//            }
 
             hidden?.each { field ->
                 renderFieldBootstrapImpl(mb, field, task, recordValues, 0, labelClass, valueClass, attrs)
@@ -568,10 +595,42 @@ class TranscribeTagLib {
 
             }
             div(class:'transcribeSectionBody') {
-                renderFields(mb, fields, task, "span4", "span8", recordValues, attrs)
+                renderFieldsInColumns(2, mb, fields, task, "span4", "span8", recordValues, attrs)
                 mkp.yieldUnescaped("&nbsp;")
             }
         }
+
+    }
+
+    /**
+     * @attr title
+     * @attr description
+     * @attr task
+     * @attr recordValues
+     * @attr category
+     */
+    def renderCategoryFieldsColumn = { attrs, body ->
+        def task = attrs.task as Task
+        def recordValues = attrs.recordValues
+        FieldCategory category = attrs.category
+
+        Template template = task?.project?.template
+        if (!category || !template) {
+            return
+        }
+
+        def fields = TemplateField.findAllByCategoryAndTemplate(category, template)?.sort { it.displayOrder }
+        if (!fields) {
+            return
+        }
+
+        def mb = new MarkupBuilder(out)
+
+        def bodyContent = body()
+
+        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
+
+        renderFieldsInColumns(1, mb, fields, task, "span4", "span8", recordValues, attrs)
 
     }
 

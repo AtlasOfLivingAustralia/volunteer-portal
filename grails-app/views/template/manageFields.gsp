@@ -205,7 +205,7 @@
                         <g:each in="${fields}" var="field">
                             <tr fieldId="${field.id}" fieldOrder="${field.displayOrder}">
                                 <td>${field.displayOrder}</td>
-                                <td><strong>${field.fieldType}</strong></td>
+                                <td><a href="${createLink(controller: 'templateField', action:'edit', id:field.id)}"><strong>${field.fieldType}</strong></a></td>
                                 <td>${field.type}</td>
                                 <td>${field.label}</td>
                                 <td>${field.layoutClass}</td>
@@ -216,11 +216,11 @@
                                     </g:if>
                                 </td>
                                 <td style="padding:0; width:180px">
-                                    <button class="btn btn-mini btnMoveFieldDown imageButton"><img src="${resource(dir:'/images', file:'down_arrow.png')}" title="Move this field down"></button>
-                                    <button class="btn btn-mini btnMoveFieldUp imageButton"><img src="${resource(dir:'/images', file:'up_arrow.png')}" title="Move this field up"></button>
-                                    <button class="btn btn-mini btnMoveFieldAnywhere imageButton"><img src="${resource(dir:'/images', file:'left_arrow.png')}" title="Move this to an arbitrary position"></button>
-                                    <button class="btn btn-mini btnDeleteField imageButton"><img src="${resource(dir:'/images/skin', file:'database_delete.png')}" title="Delete this field"></button>
-                                    <button class="btn btn-mini btnEditField imageButton"><img src="${resource(dir:'/images/skin', file:'database_edit.png')}" title="Edit this field"></button>
+                                    <button class="btn btn-mini btnMoveFieldDown"><i class="icon-arrow-down"></i></button>
+                                    <button class="btn btn-mini btnMoveFieldUp"><i class="icon-arrow-up"></i></button>
+                                    <button class="btn btn-mini btnMoveFieldAnywhere"><i class="icon-move"></i></button>
+                                    <button class="btn btn-mini btnDeleteField btn-danger"><i class="icon-remove icon-white"></i></button>
+                                    <button class="btn btn-mini btnEditField imageButton"><i class="icon-edit"></i></button>
                                 </td>
                             </tr>
                         </g:each>

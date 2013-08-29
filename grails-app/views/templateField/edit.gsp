@@ -38,7 +38,7 @@
                                   <label for="fieldType"><g:message code="templateField.fieldType.label" default="Field Type" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'fieldType', 'errors')}">
-                                    <g:select name="fieldType" from="${au.org.ala.volunteer.DarwinCoreField?.values()}" keys="${au.org.ala.volunteer.DarwinCoreField?.values()*.name()}" value="${templateFieldInstance?.fieldType?.name()}"  />
+                                    <g:select name="fieldType" from="${au.org.ala.volunteer.DarwinCoreField?.values()?.sort{it.name()}}" keys="${au.org.ala.volunteer.DarwinCoreField?.values()*.name()?.sort{ it }}" value="${templateFieldInstance?.fieldType?.name()}"  />
                                 </td>
                             </tr>
 

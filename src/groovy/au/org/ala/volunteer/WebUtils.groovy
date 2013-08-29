@@ -15,7 +15,20 @@
 
 package au.org.ala.volunteer
 
+import java.util.regex.Pattern
+
 class WebUtils {
+
+    public static DECIMAL_DEGREE_PATTERN = Pattern.compile("^\\d+[.]\\d+\$")
+    public static DEGREE_DECIMAL_MINUTES_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)[.](\\d+)\$")
+    public static DEGREE_PATTERN = Pattern.compile("^(\\d+)[°]\$")
+    public static DEGREE_MINUTES_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)[']\$")
+    public static DEGREE_MINUTES_SECONDS_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)['](\\d+)[\"]\$")
+
+    public static YEAR_PATTERN = Pattern.compile("^(\\d\\d\\d\\d)\$")
+    public static YEAR_MONTH_PATTERN = Pattern.compile("^(\\d\\d\\d\\d)-(\\d{1,2})\$")
+    public static YEAR_MONTH_DAY_PATTERN = Pattern.compile("^(\\d\\d\\d\\d)-(\\d{1,2})-(\\d{1,2})\$")
+
 
     /**
      * Remove strange chars from form fields (appear with ° symbols, etc)
@@ -55,5 +68,70 @@ class WebUtils {
 //            }
 //        }
     }
+
+    public static LatLongValues parseLatLong(String val) {
+        if (val) {
+            def matcher = DECIMAL_DEGREE_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new LatLongValues(decimalDegrees: val)
+            }
+
+            matcher = DEGREE_DECIMAL_MINUTES_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2))
+            }
+
+            matcher = DEGREE_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new LatLongValues(degrees: matcher.group(1))
+            }
+
+            matcher = DEGREE_MINUTES_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2))
+            }
+
+            matcher = DEGREE_MINUTES_SECONDS_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2), seconds: matcher.group(3))
+            }
+        }
+
+        return new LatLongValues(decimalDegrees: val)
+    }
+
+    public static DateComponents parseDate(String val) {
+        if (val) {
+            def matcher = YEAR_MONTH_DAY_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new DateComponents(year: matcher.group(1), month: matcher.group(2), day: matcher.group(3))
+            }
+            matcher = YEAR_MONTH_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new DateComponents(year: matcher.group(1), month: matcher.group(2))
+            }
+            matcher = YEAR_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new DateComponents(year: matcher.group(1))
+            }
+
+        }
+
+        return new DateComponents(year: val)
+    }
+
+}
+
+public class LatLongValues {
+    String degrees
+    String minutes
+    String seconds
+    String decimalDegrees
+}
+
+public class DateComponents {
+    String day
+    String month
+    String year
 }
 
