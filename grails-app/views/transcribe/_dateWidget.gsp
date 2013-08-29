@@ -35,10 +35,10 @@
         </g:elseif>
 
         <div class="${datePartSpan}">
-            <g:hiddenField name="${field.fieldType}.${datePart?.toLowerCase()}" placeholder="${datePart}" class="span12 ${datePart?.toLowerCase()}" value="${datePartValue}" />
+            <g:textField name="${field.fieldType}.${datePart?.toLowerCase()}" placeholder="${datePart}" class="span12 ${datePart?.toLowerCase()}" value="${datePartValue}" />
         </div>
 
     </g:each>
 
-    <g:textField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" />
+    <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" />
 </div>
