@@ -14,30 +14,22 @@
 
 %>
 <div class="row-fluid dateWidget" targetField="${field.fieldType}">
-
-    <g:set var="datePart" value="Year" />
-    <g:set var="datePartValue" value="" />
-    <g:set var="datePartSpan" value="span3" />
-
     <g:each var="letter" in="${dateLayout}">
         <g:if test="${letter == 'Y'}">
-            <g:set var="datePart" value="Year" />
-            <g:set var="datePartValue" value="${values.year}" />
-            <g:set var="datePartSpan" value="span4" />
+            <div class="span3">
+                <g:textField name="${field.fieldType}.Year" placeholder="Year" class="span12 year" value="${values.year}" />
+            </div>
         </g:if>
         <g:elseif test="${letter == 'M'}">
-            <g:set var="datePart" value="Month" />
-            <g:set var="datePartValue" value="${values.month}" />
+            <div class="span2">
+                <g:textField name="${field.fieldType}.Month" placeholder="M" class="span12 month" value="${values.month}" />
+            </div>
         </g:elseif>
         <g:elseif test="${letter == 'D'}">
-            <g:set var="datePart" value="Day" />
-            <g:set var="datePartValue" value="${values.day}" />
+            <div class="span2">
+                <g:textField name="${field.fieldType}.Day" placeholder="D" class="span12 day" value="${values.day}" />
+            </div>
         </g:elseif>
-
-        <div class="${datePartSpan}">
-            <g:textField name="${field.fieldType}.${datePart?.toLowerCase()}" placeholder="${datePart}" class="span12 ${datePart?.toLowerCase()}" value="${datePartValue}" />
-        </div>
-
     </g:each>
 
     <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" />

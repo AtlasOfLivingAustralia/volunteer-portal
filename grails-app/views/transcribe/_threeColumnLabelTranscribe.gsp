@@ -42,27 +42,32 @@
 
     </div>
 
-    <div class="row-fluid">
-        <div class="span3">
-            <div class="row-fluid">
-                <div class="span12">
-                    <g:textArea class="span12" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="6" cols="42"/>
+    <div class="well well-small transcribeSection">
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
+                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                        <g:textArea class="span12" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="6" cols="42"/>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="span9">
-            <div class="row-fluid">
-                <div class="span6">
-                    <g:renderCategoryFieldsColumn category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Collection Location" />
-                </div>
-                <div class="span6">
-                    <g:renderCategoryFieldsColumn category="${FieldCategory.miscellaneous}" task="${taskInstance}" recordValues="${recordValues}" title="Miscellaneous Event" />
+            <div class="span9">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection Location</span>
+                        <g:renderCategoryFieldsColumn category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Collection Location" />
+                    </div>
+                    <div class="span6">
+                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Miscellaneous</span>
+                        <g:renderCategoryFieldsColumn category="${FieldCategory.miscellaneous}" task="${taskInstance}" recordValues="${recordValues}" title="Miscellaneous Event" />
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 
 </div>
 

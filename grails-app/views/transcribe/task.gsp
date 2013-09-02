@@ -397,6 +397,10 @@
 
         <style type="text/css">
 
+        #image-container {
+            background-color: #a9a9a9;
+        }
+
         .insert-symbol-button {
             font-family: courier;
             color: #DDDDDD;

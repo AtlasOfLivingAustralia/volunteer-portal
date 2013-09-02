@@ -3,7 +3,7 @@
     def values = WebUtils.parseLatLong(value as String)
 %>
 <div class="row-fluid latLongWidget" targetField="${field.fieldType}">
-    <div class="span2">
+    <div class="span3">
         <g:textField name="${field.fieldType}.degrees" placeholder="D" class="span12 degrees" value="${values.degrees}" />
     </div>
     <div class="span2">
@@ -12,7 +12,7 @@
     <div class="span2">
         <g:textField name="${field.fieldType}.seconds" placeholder="S" class="span12 seconds" value="${values.seconds}"/>
     </div>
-    <div class="span2">
+    <div class="span1">
         (or)
     </div>
     <div class="span4">
