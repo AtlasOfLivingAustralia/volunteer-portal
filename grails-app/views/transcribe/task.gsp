@@ -18,6 +18,7 @@
         <r:require module="panZoom" />
         <r:require module="jqZoom" />
         <r:require module="imageViewerCss" />
+        <r:require module="transcribeWidgets" />
 
         <r:script>
 
@@ -62,10 +63,15 @@
                     }
                 });
 
-                $(".transcribeForm").submit(function() {
-                    if (transcribeBeforeSubmit) {
+                $(".transcribeForm").submit(function(eventObj) {
+
+                    if (typeof(transcribeBeforeSubmit) != "undefined") {
                         return transcribeBeforeSubmit();
                     }
+
+                    prepareLatLongWidgets();
+                    prepareDateWidgets();
+
                     return true;
                 });
 
@@ -633,25 +639,31 @@
 
                 <g:if test="${!isReadonly}">
                     <div class="container-fluid">
-                        <div class="row-fluid">
+                        <div class="row-fluid" id="validationMessagesContainer" style="display: none">
+                            <div class="alert">
+                                <strong>Warning!</strong> There may be some problems with fields indicated.
+                                If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
+                                <br/>
+                                <button id="btnValidateSubmitInvalid" class="btn btn-primary">It's ok, submit for validation anyway</button>
+                                <button id="btnValidateCancelSubmission" class="btn btn">Cancel submission, and let me fix the marked fields</button>
+                            </div>
+                        </div>
+                        <div id="submitButtons" class="row-fluid">
                             <div class="span12">
                                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                                 <g:if test="${validator}">
-                                    <g:actionSubmit class="validate btn btn-small" action="validate" value="${message(code: 'default.button.validate.label', default: 'Validate')}"/>
-                                    <g:actionSubmit class="dontValidate btn btn-small" action="dontValidate" value="${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}"/>
-                                    <button class="btn btn-small skip" id="showNextFromProject">Skip</button><cl:validationStatus task="${taskInstance}"/>
+                                    <button id="btnValidate" class="btn btn-primary">${message(code: 'default.button.validate.label', default: 'Validate')}</button>
+                                    <button id="btnDontValidate" class="btn">${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}</button>
+                                    <button class="btn" id="showNextFromProject">Skip</button><cl:validationStatus task="${taskInstance}"/>
                                 </g:if>
                                 <g:else>
-                                    <g:actionSubmit class="save btn btn-small" action="save"
-                                                                         value="${message(code: 'default.button.save.label', default: 'Submit for validation')}"/>
-                                    <g:actionSubmit class="savePartial btn btn-small" action="savePartial"
-                                                                         value="${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}"/>
-                                    <cl:isLoggedIn>
-                                        <button id="showNextFromProject" class="skip btn btn-small">Skip</button>
-                                    </cl:isLoggedIn>
+                                    <button id="btnSave" class="btn btn-primary">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
+                                    <button id="btnSavePartial" class="btn">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                                    <button class="btn" id="showNextFromProject">Skip</button>
                                 </g:else>
                             </div>
                         </div>
+
                     </div>
                 </g:if>
 
@@ -672,4 +684,62 @@
         <div id="floatingImage" style="display:none"></div>
 
     </body>
+    <r:script>
+
+        $(document).ready(function() {
+
+            $("#btnSave").click(function(e) {
+                e.preventDefault();
+                if (validateFields()) {
+                    submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
+                }
+            });
+
+            $("#btnSavePartial").click(function(e) {
+                e.preventDefault();
+                submitFormWithAction("${createLink(controller:'transcribe', action:'savePartial')}");
+            });
+
+            $("#btnValidate").click(function(e) {
+                e.preventDefault();
+                if (validateFields()) {
+                    submitFormWithAction("${createLink(controller:'validate', action:'validate')}");
+                }
+            });
+
+            $("#btnDontValidate").click(function(e) {
+                e.preventDefault();
+                submitFormWithAction("${createLink(controller:'validate', action:'dontValidate')}");
+            });
+
+            $("#btnValidateCancelSubmission").click(function(e) {
+                e.preventDefault();
+                $("#submitButtons").css("display", "block");
+                $('#validationMessagesContainer').css("display", "none");
+            });
+
+            $("#showNextFromProject").click(function(e) {
+                e.preventDefault();
+                window.location = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
+            });
+
+        });
+
+        function submitFormWithAction(action) {
+            var form = $(".transcribeForm");
+            form.get(0).setAttribute('action', action);
+            form.submit();
+        }
+
+        function validateFields() {
+            if (!confirm("Validate?")) {
+                $("#submitButtons").css("display", "none");
+                $('#validationMessagesContainer').css("display", "block");
+                return false;
+            }
+            return true;
+        }
+
+
+    </r:script>
 </html>

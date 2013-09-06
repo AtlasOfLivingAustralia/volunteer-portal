@@ -44,4 +44,8 @@ modules = {
         resource url:'/css/imageViewer.css'
     }
 
+    'transcribeWidgets' {
+        resource url: '/js/transcribeWidgets.js'
+    }
+
 }

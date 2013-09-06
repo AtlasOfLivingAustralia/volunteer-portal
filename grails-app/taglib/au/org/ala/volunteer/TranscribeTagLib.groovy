@@ -125,6 +125,10 @@ class TranscribeTagLib {
         if (field.mandatory) {
             cssClass = cssClass + " validate[required]"
         }
+        if (field.validationRule) {
+            cssClass = cssClass + " validate[${field.validationRule}]"
+        }
+
         if (auxClass) {
             cssClass += " " + auxClass
         }
