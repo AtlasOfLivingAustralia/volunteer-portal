@@ -13,7 +13,7 @@
     }
 
 %>
-<div class="row-fluid dateWidget" targetField="${field.fieldType}">
+<div class="row-fluid dateWidget control-group" targetField="${field.fieldType}">
     <g:each var="letter" in="${dateLayout}">
         <g:if test="${letter == 'Y'}">
             <div class="span3">

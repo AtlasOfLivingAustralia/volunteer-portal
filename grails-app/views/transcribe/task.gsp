@@ -787,12 +787,6 @@
             return messages.length == 0;
         }
 
-        function validationMessageContent(message) {
-            var buf = '<div class="row-fluid">';
-            buf += '<div class="span12 alert alert-warning validationMessage">' + message + '</div>';
-            return buf;
-        }
-
         function buildValidationRuleMap() {
             var rules = {};
             rules.mandatory = function(value, element, messages) {

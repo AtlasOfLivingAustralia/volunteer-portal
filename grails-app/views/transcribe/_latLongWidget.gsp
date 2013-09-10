@@ -2,7 +2,7 @@
 <%
     def values = WebUtils.parseLatLong(value as String)
 %>
-<div class="row-fluid latLongWidget" targetField="${field.fieldType}">
+<div class="row-fluid latLongWidget control-group" targetField="${field.fieldType}">
     <div class="span3">
         <g:textField name="${field.fieldType}.degrees" placeholder="D" class="span12 degrees" value="${values.degrees}" validationRule="${field.validationRule}" />
     </div>
