@@ -640,12 +640,15 @@
                 <g:if test="${!isReadonly}">
                     <div class="container-fluid">
                         <div class="row-fluid" id="validationMessagesContainer" style="display: none">
-                            <div class="alert">
+                            <div class="alert alert-error">
+                                <p class="lead">
                                 <strong>Warning!</strong> There may be some problems with fields indicated.
                                 If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
-                                <br/>
-                                <button id="btnValidateSubmitInvalid" class="btn btn-primary">It's ok, submit for validation anyway</button>
-                                <button id="btnValidateCancelSubmission" class="btn btn">Cancel submission, and let me fix the marked fields</button>
+                                </p>
+                                <div>
+                                    <button id="btnValidateSubmitInvalid" class="btn">It's ok, submit for validation anyway</button>
+                                    <button id="btnValidateCancelSubmission" class="btn btn-primary">Cancel submission, and let me fix the marked fields</button>
+                                </div>
                             </div>
                         </div>
                         <div id="submitButtons" class="row-fluid">
@@ -690,7 +693,7 @@
 
             $("#btnSave").click(function(e) {
                 e.preventDefault();
-                if (validateFields()) {
+                if (checkValidation()) {
                     submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
                 }
             });
@@ -718,6 +721,11 @@
                 $('#validationMessagesContainer').css("display", "none");
             });
 
+            $("#btnValidateSubmitInvalid").click(function(e) {
+                e.preventDefault();
+                submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
+            });
+
             $("#showNextFromProject").click(function(e) {
                 e.preventDefault();
                 window.location = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
@@ -731,8 +739,8 @@
             form.submit();
         }
 
-        function validateFields() {
-            if (!confirm("Validate?")) {
+        function checkValidation() {
+            if (!validateFields()) {
                 $("#submitButtons").css("display", "none");
                 $('#validationMessagesContainer').css("display", "block");
                 return false;
@@ -740,6 +748,62 @@
             return true;
         }
 
+        function validateFields() {
+            // first clear any error visualisations...
+            $(".warning").each(function(index, element) {
+                $(element).removeClass("warning");
+            });
+
+            $(".validationMessage").each(function(index, element) {
+                $(element).remove();
+            });
+
+            // get the validation rules...
+            var rules = buildValidationRuleMap();
+            var messages = [];
+            // test each input element that has a validation rule attached to it...
+            $("[validationRule]").each(function(index, element) {
+                var rule = $(element).attr("validationRule");
+                if (rule) {
+                    var validationFunction = rules[rule];
+                    if (validationFunction) {
+                        var value = $.trim($(element).val());
+                        var result = validationFunction(value, element, messages);
+                        if (result) {
+                            messages.push(result);
+                            var parent = $(element).closest(".control-group");
+                            parent.addClass("warning");
+                            parent.append(validationMessageContent(result));
+                        }
+                    }
+                }
+            });
+
+            // now validate special widgets
+            if (typeof(validateTranscribeWidgets) != "undefined") {
+                validateTranscribeWidgets(messages);
+            }
+
+            return messages.length == 0;
+        }
+
+        function validationMessageContent(message) {
+            var buf = '<div class="row-fluid">';
+            buf += '<div class="span12 alert alert-warning validationMessage">' + message + '</div>';
+            return buf;
+        }
+
+        function buildValidationRuleMap() {
+            var rules = {};
+            rules.mandatory = function(value, element, messages) {
+                if (!value) {
+                    return "This field is mandatory"
+                }
+                return null;
+            }
+
+            return rules;
+        }
 
     </r:script>
 </html>

@@ -17,17 +17,17 @@
     <g:each var="letter" in="${dateLayout}">
         <g:if test="${letter == 'Y'}">
             <div class="span3">
-                <g:textField name="${field.fieldType}.Year" placeholder="Year" class="span12 year" value="${values.year}" />
+                <g:textField name="${field.fieldType}.Year" placeholder="Year" class="span12 year" value="${values.year}" validationRule="${field.validationRule}" />
             </div>
         </g:if>
         <g:elseif test="${letter == 'M'}">
             <div class="span2">
-                <g:textField name="${field.fieldType}.Month" placeholder="M" class="span12 month" value="${values.month}" />
+                <g:textField name="${field.fieldType}.Month" placeholder="M" class="span12 month" value="${values.month}" validationRule="${field.validationRule}" />
             </div>
         </g:elseif>
         <g:elseif test="${letter == 'D'}">
             <div class="span2">
-                <g:textField name="${field.fieldType}.Day" placeholder="D" class="span12 day" value="${values.day}" />
+                <g:textField name="${field.fieldType}.Day" placeholder="D" class="span12 day" value="${values.day}" validationRule="${field.validationRule}" />
             </div>
         </g:elseif>
     </g:each>

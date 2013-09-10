@@ -125,9 +125,6 @@ class TranscribeTagLib {
         if (field.mandatory) {
             cssClass = cssClass + " validate[required]"
         }
-        if (field.validationRule) {
-            cssClass = cssClass + " validate[${field.validationRule}]"
-        }
 
         if (auxClass) {
             cssClass += " " + auxClass
@@ -151,7 +148,8 @@ class TranscribeTagLib {
                     name:"recordValues.${recordIdx}.${name}",
                     rows: rows,
                     value:recordValues?.get(0)?.get(name),
-                    'class':cssClass
+                    'class':cssClass,
+                    validationRule:field.validationRule
                 )
                 break
             case FieldType.hidden:
@@ -172,7 +170,8 @@ class TranscribeTagLib {
                         optionKey:'value',
                         value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
                         noSelection:['':''],
-                        'class':cssClass
+                        'class':cssClass,
+                        validationRule:field.validationRule
                     )
                     break
                 }
@@ -191,7 +190,8 @@ class TranscribeTagLib {
                     name:"recordValues.${recordIdx}.${name}",
                     maxLength:200,
                     value:recordValues?.get(0)?.get(name),
-                    'class':cssClass
+                    'class':cssClass,
+                    validationRule:field.validationRule
                 )
         }
 
@@ -509,35 +509,19 @@ class TranscribeTagLib {
             while (fieldIndex < fields.size()) {
                 mb.div(class:'row-fluid') {
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
-                        mb.div(class:spanClass) {
-                            if (fieldIndex < fields.size()) {
-                                def field = fields[fieldIndex++]
-                                renderFieldBootstrapImpl(mb, field, task, recordValues, 0, labelClass, valueClass, attrs)
-                            } else {
-                                mkp.yieldUnescaped("&nbsp;")
+                        mb.div(class:'control-group') {
+                            mb.div(class:spanClass) {
+                                if (fieldIndex < fields.size()) {
+                                    def field = fields[fieldIndex++]
+                                    renderFieldBootstrapImpl(mb, field, task, recordValues, 0, labelClass, valueClass, attrs)
+                                } else {
+                                    mkp.yieldUnescaped("&nbsp;")
+                                }
                             }
                         }
                     }
                 }
             }
-
-//            for (int i = 0; i < fields.size(); i += 2) {
-//                def lhs = fields[i]
-//                def rhs = (i+1 < fields.size() ? fields[i+1] : null)
-//
-//                mb.div(class:'row-fluid') {
-//                    mb.div(class:"span6") {
-//                        renderFieldBootstrapImpl(mb, lhs, task, recordValues, 0, labelClass, valueClass, attrs)
-//                    }
-//                    mb.div(class:"span6") {
-//                        if (rhs) {
-//                            renderFieldBootstrapImpl(mb, rhs, task, recordValues, 0, labelClass, valueClass, attrs)
-//                        } else {
-//                            mkp.yieldUnescaped("&nbsp;")
-//                        }
-//                    }
-//                }
-//            }
 
             hidden?.each { field ->
                 renderFieldBootstrapImpl(mb, field, task, recordValues, 0, labelClass, valueClass, attrs)
