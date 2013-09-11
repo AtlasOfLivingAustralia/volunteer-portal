@@ -740,7 +740,8 @@
         }
 
         function checkValidation() {
-            if (!validateFields()) {
+
+            if (!transcribeValidation.validateFields()) {
                 $("#submitButtons").css("display", "none");
                 $('#validationMessagesContainer').css("display", "block");
                 return false;
@@ -748,56 +749,6 @@
             return true;
         }
 
-        function validateFields() {
-            // first clear any error visualisations...
-            $(".warning").each(function(index, element) {
-                $(element).removeClass("warning");
-            });
-
-            $(".validationMessage").each(function(index, element) {
-                $(element).remove();
-            });
-
-            // get the validation rules...
-            var rules = buildValidationRuleMap();
-            var messages = [];
-            // test each input element that has a validation rule attached to it...
-            $("[validationRule]").each(function(index, element) {
-                var rule = $(element).attr("validationRule");
-                if (rule) {
-                    var validationFunction = rules[rule];
-                    if (validationFunction) {
-                        var value = $.trim($(element).val());
-                        var result = validationFunction(value, element, messages);
-                        if (result) {
-                            messages.push(result);
-                            var parent = $(element).closest(".control-group");
-                            parent.addClass("warning");
-                            parent.append(validationMessageContent(result));
-                        }
-                    }
-                }
-            });
-
-            // now validate special widgets
-            if (typeof(validateTranscribeWidgets) != "undefined") {
-                validateTranscribeWidgets(messages);
-            }
-
-            return messages.length == 0;
-        }
-
-        function buildValidationRuleMap() {
-            var rules = {};
-            rules.mandatory = function(value, element, messages) {
-                if (!value) {
-                    return "This field is mandatory"
-                }
-                return null;
-            }
-
-            return rules;
-        }
 
     </r:script>
 </html>

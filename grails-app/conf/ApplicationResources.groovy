@@ -46,6 +46,7 @@ modules = {
 
     'transcribeWidgets' {
         resource url: '/js/transcribeWidgets.js'
+        resource url: '/js/transcribeValidation.js'
     }
 
 }
