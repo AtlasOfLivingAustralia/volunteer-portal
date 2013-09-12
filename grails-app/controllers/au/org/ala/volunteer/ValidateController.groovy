@@ -80,7 +80,19 @@ class ValidateController {
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-            render(view: '../transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, validator: true, imageMetaData: imageMetaData])
+
+            Task prevTask = null;
+            Task nextTask = null;
+            Integer sequenceNumber = null
+
+            if (recordValues[0]?.sequenceNumber) {
+                sequenceNumber = Integer.parseInt(recordValues[0]?.sequenceNumber);
+                // prev task
+                prevTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber - 1).toString())
+                nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
+            }
+
+            render(view: '../transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, validator: true, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
         }
