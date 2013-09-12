@@ -61,6 +61,10 @@
                         <td>Manage project templates and their fields</td>
                     </tr>
                     <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'validationRule', action:'list')}'">Validation Rules</button></td>
+                        <td>Manage transcription validation rules</td>
+                    </tr>
+                    <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'setting', action:'index')}'">Advanced Settings</button></td>
                         <td>Advanced Settings</td>
                     </tr>

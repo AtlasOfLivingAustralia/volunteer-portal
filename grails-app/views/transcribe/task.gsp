@@ -731,6 +731,21 @@
                 window.location = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
             });
 
+            <g:each in="${au.org.ala.volunteer.ValidationRule.list()}" var="rule">
+                transcribeValidation.rules.${rule.name} = function(value, element) {
+                    <g:if test="${!rule.testEmptyValues}">
+                    if (value) {
+                    </g:if>
+                        var pattern = /${rule.regularExpression}/;
+                        return pattern.test(value);
+                    <g:if test="${!rule.testEmptyValues}">
+                    }
+                    return true;
+                    </g:if>
+                };
+                transcribeValidation.messages.${rule.name} = "${rule.message}";
+            </g:each>
+
         });
 
         function submitFormWithAction(action) {
