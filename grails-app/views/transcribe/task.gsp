@@ -331,9 +331,16 @@
                             delay: 200,
                             select: function(event, ui) {
                                 var item = ui.item.data;
-                                inputElement.val(item.key);
+
                                 if (fieldName == 'recordedBy') {
                                     inputElement.attr('collector_name', item.name);
+                                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                                    if (matches.length > 0) {
+                                        var recordIdx = matches[1]
+                                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
+                                        $(elemSelector).val(item.key);
+                                    }
+
                                 }
                             },
                             source: function(request, response) {

@@ -84,7 +84,7 @@
                     <div class="row-fluid">
                         <g:each in="${0..3}" var="idx">
                             <div class="span3">
-                                <input type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="span12 recordedBy" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}"/>&nbsp;
+                                <input type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="span12 recordedBy autocomplete" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}"/>&nbsp;
                                 <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}"/>
                             </div>
                         </g:each>

@@ -139,6 +139,9 @@ class TranscribeTagLib {
             case FieldType.date:
                 w = render(template: '/transcribe/dateWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
                 break
+            case FieldType.collectorColumns:
+                w = render(template: '/transcribe/collectorColumnWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                break
             case FieldType.textarea:
                 int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
                 if (attrs.rows) {

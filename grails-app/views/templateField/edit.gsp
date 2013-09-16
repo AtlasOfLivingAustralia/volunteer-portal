@@ -92,7 +92,8 @@
                                   <label for="validationRule"><g:message code="templateField.validationRule.label" default="Validation Rule" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'errors')}">
-                                    <g:textField name="validationRule" value="${templateFieldInstance?.validationRule}" />
+                                    <g:select name="validationRule" from="${validationRules}" value="${templateFieldInstance.validationRule}" />
+                                    %{--<g:textField name="validationRule" value="${templateFieldInstance?.validationRule}" />--}%
                                 </td>
                             </tr>
 

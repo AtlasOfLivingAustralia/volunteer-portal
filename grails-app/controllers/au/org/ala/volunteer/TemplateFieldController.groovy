@@ -60,7 +60,10 @@ class TemplateFieldController {
             redirect(action: "list")
         }
         else {
-            return [templateFieldInstance: templateFieldInstance]
+            def validationRules = [""]
+            validationRules.addAll(ValidationRule.list(order:'name')*.name)
+
+            return [templateFieldInstance: templateFieldInstance, validationRules: validationRules]
         }
     }
 

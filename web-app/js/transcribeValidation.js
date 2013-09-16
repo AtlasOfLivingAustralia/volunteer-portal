@@ -10,48 +10,10 @@ var transcribeValidation = {};
     };
 
     vlib.messages = {
-        generic: 'Invalid field value',
-        mandatory: 'This field is mandatory',
-        integer: 'This field must be an integer',
-        numeric: 'This field must be a number',
-        positiveInteger: 'This field must be a positive integer'
+        generic: 'Invalid field value'
     };
 
-    vlib.rules = {
-        // --- MANDATORY
-        mandatory: function(value, element) {
-            return value;
-        },
-
-        // --- INTEGER
-        integer: function(value, element) {
-            if (value) {
-                return vlib.isInt(value);
-            }
-            return true;
-        },
-
-        // --- NUMERIC
-        numeric: function(value, element) {
-            if (value) {
-                return $.isNumeric(value);
-            }
-            return true;
-        },
-        // --- POSITIVE INTEGER
-        positiveInteger: function(value, element) {
-            if (value) {
-                if (!vlib.isInt(value)) {
-                    return false;
-                }
-                var intVal = parseInt(value);
-                return intVal >= 0;
-            }
-
-            return true;
-        }
-
-    };
+    vlib.rules = { };
 
     vlib.clearMessages = function() {
         $("." + vlib.options.warningClass).each(function(index, element) {
