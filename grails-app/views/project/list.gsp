@@ -110,10 +110,10 @@
             </div>
 
             <g:if test="${params.mode == 'thumbs'}">
-                <g:render template="projectDetailsThumbnails" />
+                <g:render template="projectListThumbnailView" />
             </g:if>
             <g:else>
-                <g:render template="projectDetailsList" />
+                <g:render template="ProjectListDetailsView" />
             </g:else>
         </div>
 

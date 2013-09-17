@@ -268,7 +268,7 @@ class ProjectController {
     }
 
     def list = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.max = Math.min(params.max ? params.int('max') : 24, 1000)
 
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
 

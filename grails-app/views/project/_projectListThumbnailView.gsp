@@ -42,7 +42,7 @@
         <g:each in="${projects}" var="projectSummary">
 
             <li class="span3" inactive="${projectSummary.project.inactive}">
-                <div class="thumbnail" style="text-align: center">
+                <div class="thumbnail" style="text-align: center; background-color: white">
                     <div>
                         <strong>
                             ${projectSummary.project.featuredLabel}
@@ -66,4 +66,7 @@
             </li>
         </g:each>
     </ul>
+    <div class="pagination">
+        <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q, mode:'thumbs']}" />
+    </div>
 </div>
