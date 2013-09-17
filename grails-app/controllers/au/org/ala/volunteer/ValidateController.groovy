@@ -54,7 +54,7 @@ class ValidateController {
                 auditService.auditTaskViewing(taskInstance, currentUser)
             }
 
-            def isReadonly
+            def isReadonly = false
 
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
@@ -116,7 +116,7 @@ class ValidateController {
     }
 
     /**
-     * To do determin actions if the validator chooses not to validate
+     * To do determine actions if the validator chooses not to validate
      */
     def dontValidate = {
         def currentUser = authService.username()

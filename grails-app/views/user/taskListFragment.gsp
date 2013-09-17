@@ -38,7 +38,9 @@
 
                     <g:sortableColumn style="text-align: left" property="projectName" title="${message(code: 'task.project.name', default: 'Project')}" params="${pageParams}" action="show" controller="user"/>
 
-                    <g:sortableColumn property="lastEdit" title="${message(code: 'task.transcribed.label', default: 'Transcribed')}" params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
+                    <g:sortableColumn property="dateTranscribed" title="${message(code: 'task.transcribed.label', default: 'Transcribed')}" params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
+
+                    <g:sortableColumn property="dateValidated" title="${message(code: 'task.validated.label', default: 'Validated')}" params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
 
                     <g:sortableColumn property="status" title="${message(code: 'task.isValid.label', default: 'Status')}" params="${pageParams}" action="show" controller="user" style="text-align: center;"/>
 
@@ -59,8 +61,11 @@
                         <td><g:link class="listLink" controller="project" action="index" id="${taskInstance.projectId}">${taskInstance.project}</g:link></td>
 
                         <td>
-                            <g:formatDate date="${taskInstance.lastEdit}" format="dd MMM, yyyy HH:mm:ss"/>
+                            <g:formatDate date="${taskInstance.dateTranscribed}" format="dd MMM, yyyy HH:mm:ss"/>
+                        </td>
 
+                        <td>
+                            <g:formatDate date="${taskInstance.dateValidated}" format="dd MMM, yyyy HH:mm:ss"/>
                         </td>
 
                         <td style="text-align: center;">

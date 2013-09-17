@@ -12,6 +12,7 @@ class Task {
     Boolean isValid
     Integer viewed = -1
     Date created
+    Date dateLastUpdated
 
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
 
@@ -33,5 +34,7 @@ class Task {
         isValid nullable: true
         viewed nullable: true
         created nullable: true
+        dateLastUpdated nullable: true
     }
+
 }

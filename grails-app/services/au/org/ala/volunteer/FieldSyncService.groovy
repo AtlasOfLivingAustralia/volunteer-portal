@@ -114,6 +114,8 @@ class FieldSyncService {
             }
         }
 
+        def now = Calendar.instance.time;
+
         //set the transcribed by
         if (markAsFullyTranscribed) {
             // Only set it if it hasn't already been set. The rules are the first person to save gets the transcription
@@ -124,7 +126,7 @@ class FieldSyncService {
                 user.save(flush: true)
             }
             if (!task.dateFullyTranscribed) {
-                task.dateFullyTranscribed = new Date()
+                task.dateFullyTranscribed = now
             }
         }
 
@@ -137,7 +139,7 @@ class FieldSyncService {
                 user.save(flush: true)
             }
             if (!task.dateFullyValidated) {
-                task.dateFullyValidated = new Date()
+                task.dateFullyValidated = now
             }
 
         } else {
@@ -149,8 +151,10 @@ class FieldSyncService {
             task.isValid = isValid
         }
 
+        task.dateLastUpdated = now
         task.viewed++; // increment view count
 
         task.save(flush: true)
     }
+
 }

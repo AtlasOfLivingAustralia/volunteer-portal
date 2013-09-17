@@ -712,7 +712,7 @@
 
             $("#btnValidate").click(function(e) {
                 e.preventDefault();
-                if (validateFields()) {
+                if (checkValidation()) {
                     submitFormWithAction("${createLink(controller:'validate', action:'validate')}");
                 }
             });

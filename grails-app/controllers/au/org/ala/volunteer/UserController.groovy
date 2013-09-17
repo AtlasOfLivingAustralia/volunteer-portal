@@ -154,33 +154,28 @@ class UserController {
             }
         }
 
-        def cc = Field.createCriteria()
-        def dates = cc {
-            projections {
-                max("updated")
-                groupProperty("task")
-            }
-
-        }
+//        def cc = Field.createCriteria()
+//        def dates = cc {
+//            projections {
+//                max("updated")
+//                groupProperty("task")
+//            }
+//
+//        }
 
         def fieldsByTask = fields.groupBy { it[1] }
-        def datesByTask = dates.groupBy { it[1] }
+//        def datesByTask = dates.groupBy { it[1] }
 
         def viewList = []
-
-        def codeTimer = new CodeTimer("merging")
 
         def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
 
         for (Task t : tasks) {
-            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy, projectId: t.projectId, project: t.project, projectName: t.project.name]
+            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy, projectId: t.projectId, project: t.project, projectName: t.project.name, dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated, dateValidated: t.dateFullyValidated]
 
             List<Field> taskFields = fieldsByTask[t]
-
-            def lastEdit =  datesByTask.get(t)?.get(0)?.getAt(0)
             def catalogNumber = taskFields?.get(0)?.getAt(0)
 
-            taskRow.lastEdit = lastEdit
             taskRow.catalogNumber = catalogNumber
 
             def status = ""
@@ -198,7 +193,9 @@ class UserController {
 
             // This pseudo column concatenates all the searchable columns to make row filtering easier.
 
-            def dateStr = lastEdit ? sdf.format(lastEdit) : ""
+            def dateStr = (t.dateFullyTranscribed ? sdf.format(t.dateFullyTranscribed) : "")
+            dateStr += ";" + (t.dateFullyValidated ? sdf.format(t.dateFullyValidated) : "")
+            dateStr += ";" + (t.dateLastUpdated ? sdf.format(t.dateLastUpdated) : "")
 
             def sb = new StringBuilder(128)
             sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
@@ -207,8 +204,6 @@ class UserController {
 
             viewList.add(taskRow)
         }
-
-        codeTimer.stop(true)
 
         // Filtering...
         if (params.q) {

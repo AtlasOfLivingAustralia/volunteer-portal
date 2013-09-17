@@ -81,7 +81,7 @@
 
         <sitemesh:parameter name="useFluidLayout" value="${true}" />
 
-        <cl:headerContent title="Volunteer Portal Statistics">
+        <cl:headerContent title="Statistics">
             <%
                 pageScope.crumbs = [
                     [link: createLink(controller: 'admin', action: 'index'), label: "Administration"]
