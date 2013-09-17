@@ -1,9 +1,11 @@
 package au.org.ala.volunteer
 
+import org.apache.commons.lang.StringUtils
+import org.hibernate.FlushMode
+
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import com.thebuzzmedia.imgscalr.Scalr
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 
 class TaskService {
@@ -11,11 +13,9 @@ class TaskService {
     javax.sql.DataSource dataSource
     def logService
     def grailsApplication
-    def fieldService
+    def sessionFactory
 
     static transactional = true
-
-    def serviceMethod() {}
 
   /**
    * This could be a large result set for a system with many registered users.
@@ -635,6 +635,81 @@ class TaskService {
             }
         }
         return null
+    }
+
+    def calculateTaskDates() {
+        def taskList = Task.findAllByFullyTranscribedByIsNotNullAndDateFullyTranscribedIsNull()
+        println "Processing ${taskList.size()} tasks..."
+
+        int count = 0
+        sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
+        try {
+            taskList.each { task ->
+
+                // Find the most recent field whose transcribed by matches the tasks fully transcribed by...
+                def transcribedCriteria = Field.createCriteria()
+
+                def dateTranscribed = transcribedCriteria.list {
+                    eq("task", task)
+                    eq("transcribedByUserId", task.fullyTranscribedBy)
+
+                    projections {
+                        max("updated")
+                    }
+                }
+
+                if (dateTranscribed && dateTranscribed[0]) {
+                    task.dateFullyTranscribed = dateTranscribed[0]
+                } else {
+                    println "No transcription date ${task.id}. Using most recent created date"
+                    task.dateFullyTranscribed = findMostRecentDate("created", task)
+                }
+
+                if (StringUtils.isNotEmpty(task.fullyValidatedBy)) {
+
+                    def validatedCriteria = Field.createCriteria()
+                    def dateValidated = validatedCriteria.list {
+                        eq("task", task)
+                        eq("validatedByUserId", task.fullyValidatedBy)
+                        projections {
+                            max("updated")
+                        }
+                    }
+
+                    if (dateValidated && dateValidated[0]) {
+                        task.dateFullyValidated = dateValidated[0]
+                    } else {
+                        println "No validation date! ${task.id}. Using most recent updated date."
+                        task.dateFullyValidated = findMostRecentDate("updated", task)
+                    }
+                }
+
+                if (++count % 200 == 0) {
+                    println "${count} tasks processed."
+                }
+            }
+
+            println "Done."
+        } catch (Exception ex) {
+            ex.printStackTrace()
+
+        } finally {
+            sessionFactory.currentSession.flush();
+            sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
+        }
+    }
+
+
+    private Date findMostRecentDate(String dateField, Task task) {
+        def c = Field.createCriteria()
+        def list = c.list {
+            eq("task", task)
+            projections {
+                max(dateField)
+            }
+
+        }
+        return list?.get(0)
     }
 
 }

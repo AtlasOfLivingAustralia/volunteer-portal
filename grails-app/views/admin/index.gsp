@@ -68,6 +68,11 @@
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'setting', action:'index')}'">Advanced Settings</button></td>
                         <td>Advanced Settings</td>
                     </tr>
+                    <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'task', action:'calculateDates')}'">Calculate Task Dates (one off)</button></td>
+                        <td>Advanced Settings</td>
+                    </tr>
+
 
                 </table>
 

@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.*
+import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
@@ -758,6 +759,15 @@ class TaskController {
         }
 
         redirect(action:'loadTaskData', params:[projectId: projectInstance?.id])
+    }
+
+    // One of task to help transition to explicit date recording against tasks
+    def calculateDates() {
+
+        taskService.calculateTaskDates()
+
+        redirect(controller:'admin', action:'index')
+
     }
 
 }

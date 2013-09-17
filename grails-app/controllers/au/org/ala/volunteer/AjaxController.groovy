@@ -211,7 +211,11 @@ class AjaxController {
 
     def statsTranscriptionsByMonth = {
         def results = statsService.transcriptionsByMonth()
-        println results
+        render results as JSON
+    }
+
+    def statsValidationsByMonth = {
+        def results = statsService.validationsByMonth()
         render results as JSON
     }
 

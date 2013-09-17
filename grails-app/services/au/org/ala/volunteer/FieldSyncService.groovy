@@ -116,17 +116,30 @@ class FieldSyncService {
 
         //set the transcribed by
         if (markAsFullyTranscribed) {
-            task.fullyTranscribedBy = transcriberUserId
-            def user = User.findByUserId(transcriberUserId)
-            user.transcribedCount++
-            user.save(flush: true)
+            // Only set it if it hasn't already been set. The rules are the first person to save gets the transcription
+            if (!task.fullyTranscribedBy) {
+                task.fullyTranscribedBy = transcriberUserId
+                def user = User.findByUserId(transcriberUserId)
+                user.transcribedCount++
+                user.save(flush: true)
+            }
+            if (!task.dateFullyTranscribed) {
+                task.dateFullyTranscribed = new Date()
+            }
         }
 
         if (markAsFullyValidated) {
-            task.fullyValidatedBy = transcriberUserId
-            def user = User.findByUserId(transcriberUserId)
-            user.validatedCount++
-            user.save(flush: true)
+            // Again, only update the validated user and date if it hasn't already been set.
+            if (!task.fullyValidatedBy) {
+                task.fullyValidatedBy = transcriberUserId
+                def user = User.findByUserId(transcriberUserId)
+                user.validatedCount++
+                user.save(flush: true)
+            }
+            if (!task.dateFullyValidated) {
+                task.dateFullyValidated = new Date()
+            }
+
         } else {
             //reset the fully validated flag
             task.fullyValidatedBy = null

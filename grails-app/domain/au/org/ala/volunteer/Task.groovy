@@ -2,32 +2,36 @@ package au.org.ala.volunteer
 
 class Task {
 
-  Project project
-  String externalIdentifier
-  String externalUrl
-  String fullyTranscribedBy
-  String fullyValidatedBy
-  Boolean isValid
-  Integer viewed = -1
-  Date created
+    Project project
+    String externalIdentifier
+    String externalUrl
+    String fullyTranscribedBy
+    Date dateFullyTranscribed
+    String fullyValidatedBy
+    Date dateFullyValidated
+    Boolean isValid
+    Integer viewed = -1
+    Date created
 
-  static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
+    static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
 
-  static mapping = {
-    version false
-    multimedia cascade:'all,delete-orphan'
-    viewedTasks cascade: 'all,delete-orphan'
-    fields cascade: 'all,delete-orphan'
-    comments cascade: 'all,delete-orphan'
-  }
+    static mapping = {
+        version false
+        multimedia cascade: 'all,delete-orphan'
+        viewedTasks cascade: 'all,delete-orphan'
+        fields cascade: 'all,delete-orphan'
+        comments cascade: 'all,delete-orphan'
+    }
 
-  static constraints = {
-    externalIdentifier nullable: true
-    externalUrl nullable: true
-    fullyTranscribedBy nullable: true
-    fullyValidatedBy nullable: true
-    isValid nullable: true
-    viewed nullable: true
-    created nullable: true
-  }
+    static constraints = {
+        externalIdentifier nullable: true
+        externalUrl nullable: true
+        fullyTranscribedBy nullable: true
+        dateFullyTranscribed nullable: true
+        fullyValidatedBy nullable: true
+        dateFullyValidated nullable: true
+        isValid nullable: true
+        viewed nullable: true
+        created nullable: true
+    }
 }

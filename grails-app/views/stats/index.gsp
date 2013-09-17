@@ -16,6 +16,8 @@
                     var target = $(e.target).attr('href');
                     if (target == '#transcriptionsByMonth') {
                         transcriptionsByMonth();
+                    } else if (target == '#validationsByMonth') {
+                        validationsByMonth();
                     }
                 });
 
@@ -46,6 +48,31 @@
                 });
             }
 
+            function validationsByMonth() {
+                $.ajax("${createLink(controller:'ajax', action:'statsValidationsByMonth')}").done(function (data) {
+                    // Create the data table.
+                    var table = new google.visualization.DataTable();
+                    table.addColumn('string', 'Month');
+                    table.addColumn('number', 'Validations');
+                    for (key in data) {
+                        var value = data[key]
+                        table.addRow([value.month, value.count])
+                    }
+
+                    // Set chart options
+                    var options = {
+                        'title': 'Validations by month',
+                        backgroundColor: '#F5F2E3',
+                        vAxis: {title: "Validations"},
+                        hAxis: {title: "Month"}
+                    };
+
+                    // Instantiate and draw our chart, passing in some options.
+                    var chart = new google.visualization.ColumnChart(document.getElementById('validationsByMonth')).draw(table, options);
+                });
+            }
+
+
 
         </r:script>
     </head>
@@ -69,10 +96,16 @@
                         <li>
                             <a href="#transcriptionsByMonth" data-toggle="tab" >Transcriptions by month</a>
                         </li>
+                        <li>
+                            <a href="#validationsByMonth" data-toggle="tab" >Validations by month</a>
+                        </li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="transcriptionsByMonth" style="margin-right: 15px">
                         </div>
+                        <div class="tab-pane" id="validationsByMonth" style="margin-right: 15px">
+                        </div>
+
                     </div>
                 </div>
             </div>
