@@ -41,6 +41,23 @@
                     </li>
                 </ul>
 
+                <h2>Submit an expedition</h2>
+                <p style="font-size: 1.2em">
+                    The Biodiversity Volunteer Portal is open to any institution or individual who has suitable biodiversity
+                    information that needs transcribing, whether that be in the form of specimen labels, field notes, survey sheets
+                    or something similar.
+                </p>
+
+                <p>
+                    Any proposed expedition will need to conform to an existing transcription task template, be suitable for an
+                    existing template with some minor adjustment, or have sufficient funds to enable the development of a new
+                    transcription task template.
+                </p>
+                <p>
+                    So if you think you have some material that would be suitable for creating an expedition in the Biodiversity
+                    Volunteer Portal please get in touch with me: <strong>paul.flemons at austmus.gov.au</strong>
+                </p>
+
                 <H2>Some useful references:</H2>
                 <ul>
                     <li><a class="external" href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1693343/pdf/15253354.pdf">Biodiversity informatics: managing and applying primary biodiversity data</a>

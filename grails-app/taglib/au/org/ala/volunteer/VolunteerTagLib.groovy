@@ -1456,7 +1456,6 @@ class VolunteerTagLib {
         items << [bvp:[link: createLink(uri: '/'), title: 'Biodiversity Volunteer Portal']]
         items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
         items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
-        items << [submitexpedition: [link: createLink(controller: 'submitAnExpedition'), title: 'Submit an Expedition']]
         if (FrontPage.instance().enableForum) {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
