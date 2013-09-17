@@ -227,34 +227,43 @@ class ExportService {
 
         if (taskMap.containsKey(taskId)) {
             Map fieldMap = taskMap.get(taskId)
-            fields.eachWithIndex { fieldName, fieldIndex ->
+            fields.eachWithIndex { String fieldName, fieldIndex ->
 
-                if (fieldIndex == 0) {
-                    fieldValues.add(taskId.toString())
-                }
-                else if (fieldIndex == 1) {
-                    fieldValues.add(userDisplayName(task.fullyTranscribedBy))
-                }
-                else if (fieldIndex == 2) {
-                    fieldValues.add(userDisplayName(task.fullyValidatedBy))
-                }
-                else if (fieldIndex == 3) {
-                    fieldValues.add(task.externalIdentifier)
-                }
-                else if (fieldIndex == 4) {
-                    def sb = new StringBuilder()
-                    if (task.fullyTranscribedBy) {
-                        sb.append("Fully transcribed by ${userDisplayName(task.fullyTranscribedBy)}. ")
-                    }
-                    def date = new Date().format("dd-MMM-yyyy")
-                    sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
-                    fieldValues.add((String) sb.toString())
-                }
-                else if (fieldMap.containsKey(fieldName)) {
-                    fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
-                }
-                else {
-                    fieldValues.add("") // need to leave blank
+                switch (fieldName.toLowerCase()) {
+                    case "taskid":
+                        fieldValues.add(taskId.toString())
+                        break;
+                    case "transcriberid":
+                        fieldValues.add(userDisplayName(task.fullyTranscribedBy))
+                        break;
+                    case "validatorid":
+                        fieldValues.add(userDisplayName(task.fullyValidatedBy))
+                        break;
+                    case "externalidentifier":
+                        fieldValues.add(task.externalIdentifier)
+                        break;
+                    case "exportcomment":
+                        def sb = new StringBuilder()
+                        if (task.fullyTranscribedBy) {
+                            sb.append("Fully transcribed by ${userDisplayName(task.fullyTranscribedBy)}. ")
+                        }
+                        def date = new Date().format("dd-MMM-yyyy")
+                        sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
+                        fieldValues.add((String) sb.toString())
+                        break;
+                    case "datetranscribed":
+                        fieldValues.add(task.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        break;
+                    case "datevalidated":
+                        fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        break;
+                    default:
+                        if (fieldMap.containsKey(fieldName)) {
+                            fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
+                        } else {
+                            fieldValues.add("") // need to leave blank
+                        }
+                        break;
                 }
             }
         }

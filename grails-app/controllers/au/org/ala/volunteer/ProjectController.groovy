@@ -216,7 +216,7 @@ class ProjectController {
                 taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
             }
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
-            def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier", "exportComment"]
+            def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
             log.debug("Fields: "+ fieldNames);
 
