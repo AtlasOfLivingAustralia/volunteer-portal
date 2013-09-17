@@ -118,7 +118,7 @@
 
         </r:script>
 
-        <cl:headerContent title="${message(code:'default.forum.label', default:'Biodiversity Volunteer Portal Forum')}" selectedNavItem="forum"/>
+        <cl:headerContent title="${message(code:'default.forum.label', default:'Volunteer Portal Forum')}" selectedNavItem="forum"/>
 
         <div class="row" id="content">
             <div class="span12">

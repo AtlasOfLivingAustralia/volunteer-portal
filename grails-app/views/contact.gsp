@@ -12,7 +12,7 @@
 
         <div class="row">
             <div class="span12">
-                <h2>Help in using the BVP and reporting issues</h2>
+                <h2>Help in using the Volunteer Portal and reporting issues</h2>
                 <b>E</b> paul.flemons at austmus.gov.au<br/>
                 <b>T</b> (02) 9320 6343<br/>
                 Australian Museum<br/>
