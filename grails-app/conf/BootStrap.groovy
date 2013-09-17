@@ -36,7 +36,7 @@ class BootStrap {
 
     private void prepareValidationRules() {
 
-        checkOrCreateRule('mandatory', '^.+$', 'This field value is mandatory', "Mandatory fields must have a value supplied to them", true)
+        checkOrCreateRule('mandatory', '.+', 'This field value is mandatory', "Mandatory fields must have a value supplied to them", true)
         checkOrCreateRule('numeric', '^[-+]?[0-9]*\\.?[0-9]+$', 'This field must be a number', "Field values must be numeric (floating point or otherwise)", false)
         checkOrCreateRule('integer', '^[-+]?[0-9]+$', 'This field must be a integer', "Field values must be integers", false)
         checkOrCreateRule('positiveInteger', '^\\d+$', 'This field must be a positive integer', "Field values must be positive integers", false)
