@@ -596,6 +596,9 @@
         </div>
         <g:if test="${taskInstance}">
             <g:form class="transcribeForm">
+                <g:hiddenField name="recordValues.0.basisOfRecord" class="basisOfRecord" id="recordValues.0.basisOfRecord"
+                               value="${recordValues?.get(0)?.basisOfRecord ?: TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.basisOfRecord, template)?.defaultValue}"/>
+
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
 
