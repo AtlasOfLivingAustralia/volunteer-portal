@@ -19,9 +19,10 @@
       <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
 
       <script type="text/javascript" src="${resource(dir: 'js/jquery-ui-1.9.1.custom/js', file: 'jquery-1.8.2.js')}"></script>
-      <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
-      <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
-      <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
+      <script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-ui-1.9.1.custom.min.js')}"></script>
+      %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>--}%
+      %{--<script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>--}%
+      %{--<link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>--}%
       <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollview.js')}"></script>
       <g:javascript library="jquery.tools.min" />
 
@@ -59,9 +60,15 @@
 
       $(document).ready(function () {
 
-        $(":range").rangeinput({
-            onSlide: zoomJournalImage
-        }).change(zoomJournalImage);
+        $("#range").slider({
+            min: 50,
+            value: 100,
+            max: 200,
+            slide: function(e, ui) {
+                var value = $("#range").slider( "option", "value" );
+                $("#journalPageImg").css("width", value + "%");
+            }
+        });
 
         // display previous journal page in new window
         $("#showPreviousJournalPage").click(function(e) {
@@ -97,11 +104,11 @@
 
       });
 
-      function zoomJournalImage(event, value) {
-          console.info("value changed to", value);
-          $("#journalPageImg").css("width", value + "%");
-          $("#journalPageImg").css("height", value + "%");
-      }
+//      function zoomJournalImage(event, value) {
+//          console.info("value changed to", value);
+//          $("#journalPageImg").css("width", value + "%");
+//          $("#journalPageImg").css("height", value + "%");
+//      }
 
 
     </script>
@@ -120,7 +127,8 @@
       <div>
         <div style="float:left;margin-top:5px;">Zoom image:&nbsp;</div>
         <g:set var="defaultWidthPercent" value="100" />
-        <input type="range" name="width" min="50" max="150" value="100" />
+        <div id="range" style="display: inline-block; width:150px; margin-left: 10px; margin-right: 10px;"></div>
+        %{--<input type="range" name="width" min="50" max="150" value="100" />--}%
         <span id="journalPageButtons">
             <button id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous</button>
             <button id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
