@@ -1,7 +1,7 @@
-<%@ page import="au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.DateComponents" %>
+<%@ page import="au.org.ala.volunteer.DateRange; au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.DateComponents" %>
 <%
 
-    DateComponents values = WebUtils.parseDate(value)
+    DateRange dateRange = WebUtils.parseDateRange(value as String)
 
     def dateLayout = "YMD"
     if (field.layoutClass?.contains("DMY")) {
@@ -13,24 +13,51 @@
     }
 
 %>
-<div class="row-fluid dateWidget control-group" targetField="${field.fieldType}">
-    <g:each var="letter" in="${dateLayout}">
-        <g:if test="${letter == 'Y'}">
-            <div class="span3">
-                <g:textField name="${field.fieldType}.Year" placeholder="Year" class="span12 year" value="${values.year}" validationRule="${field.validationRule}" />
-            </div>
-        </g:if>
-        <g:elseif test="${letter == 'M'}">
-            <div class="span2">
-                <g:textField name="${field.fieldType}.Month" placeholder="M" class="span12 month" value="${values.month}" validationRule="${field.validationRule}" />
-            </div>
-        </g:elseif>
-        <g:elseif test="${letter == 'D'}">
-            <div class="span2">
-                <g:textField name="${field.fieldType}.Day" placeholder="D" class="span12 day" value="${values.day}" validationRule="${field.validationRule}" />
-            </div>
-        </g:elseif>
-    </g:each>
+<div class="dateWidget" targetField="${field.fieldType}" >
+    <div class="row-fluid control-group" >
+        <div class="span2">
+            from
+        </div>
+        <g:each var="letter" in="${dateLayout}">
+            <g:if test="${letter == 'Y'}">
+                <div class="span3">
+                    <g:textField name="${field.fieldType}.startYear" placeholder="Year" class="span12 startYear year" value="${dateRange.startDate?.year}" validationRule="${field.validationRule}" />
+                </div>
+            </g:if>
+            <g:elseif test="${letter == 'M'}">
+                <div class="span2">
+                    <g:textField name="${field.fieldType}.startMonth" placeholder="M" class="span12 startMonth month" value="${dateRange.startDate?.month}" validationRule="${field.validationRule}" />
+                </div>
+            </g:elseif>
+            <g:elseif test="${letter == 'D'}">
+                <div class="span2">
+                    <g:textField name="${field.fieldType}.startDay" placeholder="D" class="span12 startDay day" value="${dateRange.startDate?.day}" validationRule="${field.validationRule}" />
+                </div>
+            </g:elseif>
+        </g:each>
+    </div>
+    <div class="row-fluid control-group">
+        <div class="span2">
+            (to)
+        </div>
 
+        <g:each var="letter" in="${dateLayout}">
+            <g:if test="${letter == 'Y'}">
+                <div class="span3">
+                    <g:textField name="${field.fieldType}.endYear" placeholder="Year" class="span12 endYear year" value="${dateRange.endDate?.year}" validationRule="${field.validationRule}" />
+                </div>
+            </g:if>
+            <g:elseif test="${letter == 'M'}">
+                <div class="span2">
+                    <g:textField name="${field.fieldType}.endMonth" placeholder="M" class="span12 endMonth month" value="${dateRange.endDate?.month}" validationRule="${field.validationRule}" />
+                </div>
+            </g:elseif>
+            <g:elseif test="${letter == 'D'}">
+                <div class="span2">
+                    <g:textField name="${field.fieldType}.endDay" placeholder="D" class="span12 endDay day" value="${dateRange.endDate?.day}" validationRule="${field.validationRule}" />
+                </div>
+            </g:elseif>
+        </g:each>
+    </div>
     <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" />
 </div>

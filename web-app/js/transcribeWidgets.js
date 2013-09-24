@@ -11,9 +11,9 @@ function prepareDateWidgets() {
             return;
         }
 
-        var year = $(this).find(".year").val();
-        var month = $(this).find(".month").val();
-        var day = $(this).find(".day").val();
+        var year = $(this).find(".startYear").val();
+        var month = $(this).find(".startMonth").val();
+        var day = $(this).find(".startDay").val();
         var finalValue = "";
 
         if (year) {
@@ -26,9 +26,22 @@ function prepareDateWidgets() {
             }
         }
 
+        var endYear = $(this).find(".endYear").val();
+        var endMonth = $(this).find(".endMonth").val();
+        var endDay = $(this).find(".endDay").val();
+
+        if (endYear) {
+            finalValue += '/' + endYear;
+            if (endMonth) {
+                finalValue += "-" + endMonth;
+                if (endDay) {
+                    finalValue += '-' + endDay;
+                }
+            }
+        }
+
         var selector = "#recordValues\\.0\\." + targetField;
         $(selector).val(finalValue);
-
     });
 }
 

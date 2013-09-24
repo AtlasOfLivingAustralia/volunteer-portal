@@ -80,6 +80,8 @@ class TranscribeTagLib {
 
         if (field.type == FieldType.hidden) {
             mb.mkp.yieldUnescaped(widgetHtml)
+        } else if (field.fieldType == DarwinCoreField.widgetPlaceholder) {
+            mb.mkp.yieldUnescaped(widgetHtml)
         } else {
             mb.div(class:'row-fluid') {
                 if (!hideLabel) {
@@ -141,6 +143,9 @@ class TranscribeTagLib {
                 break
             case FieldType.collectorColumns:
                 w = render(template: '/transcribe/collectorColumnWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                break
+            case FieldType.mappingTool:
+                w = render(template: '/transcribe/mappingToolWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
                 break
             case FieldType.textarea:
                 int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
@@ -623,6 +628,18 @@ class TranscribeTagLib {
 
         renderFieldsInColumns(1, mb, fields, task, "span4", "span8", recordValues, attrs)
 
+    }
+
+    def fieldHelp = { attrs, body ->
+        def field = attrs.field as TemplateField
+        if (field && field.helpText) {
+            def mb = new MarkupBuilder(out)
+            mb.a(href:'#', class:'fieldHelp', title:field.helpText) {
+                span(class:'help-container') {
+                    mkp.yieldUnescaped('&nbsp;')
+                }
+            }
+        }
     }
 
 }

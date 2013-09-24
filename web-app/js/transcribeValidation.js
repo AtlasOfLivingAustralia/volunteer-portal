@@ -54,7 +54,6 @@ var transcribeValidation = {};
                             message = vlib.messages.generic;
                         }
 
-                        vlib.markFieldInvalid(element, message);
                         errorList.push({element: element, message: message});
                     }
                 }
@@ -63,6 +62,10 @@ var transcribeValidation = {};
 
         // now validate special widgets
         vlib.validateTranscribeWidgets(errorList);
+
+        $.each(errorList, function(index, error) {
+            vlib.markFieldInvalid(error.element, error.message);
+        });
 
         return errorList.length == 0;
     };
@@ -74,22 +77,58 @@ var transcribeValidation = {};
 
     vlib.validateDateWidgets = function(messages) {
         $(".dateWidget").each(function(index, element) {
-            var yearElement = $(element).find(":input.year");
-            var monthElement = $(element).find(":input.month");
-            var dayElement = $(element).find(":input.day");
-
-            if (!yearElement.val() && !monthElement.val() && !dayElement.val()) {
-                return true;
-            }
-
-            if (!vlib.validateIsInteger(yearElement) || !vlib.validateIsInteger(monthElement) || !vlib.validateIsInteger(dayElement)) {
-                messages.push({element: yearElement, message: "Date values must be integers"});
+            var yearElement = $(element).find(":input.startYear");
+            var monthElement = $(element).find(":input.startMonth");
+            var dayElement = $(element).find(":input.startDay");
+            if (vlib.validateDateElements(messages, yearElement, monthElement, dayElement)) {
+                yearElement = $(element).find(":input.endYear");
+                monthElement = $(element).find(":input.endMonth");
+                dayElement = $(element).find(":input.endDay");
+                return vlib.validateDateElements(messages, yearElement, monthElement, dayElement)
+            } else {
                 return false;
             }
-
         });
         return true;
     };
+
+    vlib.validateDateElements = function(messages, yearElement, monthElement, dayElement) {
+
+        var yearVal = yearElement.val();
+        var monthVal = monthElement.val();
+        var dayVal = dayElement.val();
+
+        if (!yearVal && !monthVal && !dayVal) {
+            return true;
+        }
+
+        if (!vlib.validateIsInteger(yearElement) || !vlib.validateIsInteger(monthElement) || !vlib.validateIsInteger(dayElement)) {
+            messages.push({element: yearElement, message: "Date components must be integers"});
+            return false;
+        }
+
+        if (!yearVal) {
+            messages.push({element: yearElement, message: "You must supply a year value"});
+            return false;
+        }
+
+        if (!monthVal && dayVal) {
+            messages.push({element: yearElement, message: "You must also supply a month if a day is supplied"});
+            return false;
+        }
+
+        if (monthVal && !vlib.validateInNumberRange(monthElement, 1, 12)) {
+            messages.push({element: monthElement, message: "Month values must be between 1 and 12"});
+            return false;
+        }
+
+        if (dayVal && !vlib.validateInNumberRange(dayElement, 1, 31)) {
+            messages.push({element: dayElement, message: "Day values must be between 1 and 31"});
+            return false;
+        }
+
+        return true;
+    }
 
     vlib.validateLatLongWidgets = function(messages) {
         $(".latLongWidget").each(function(index, element) {
@@ -149,7 +188,7 @@ var transcribeValidation = {};
         var value = element.val();
         if (value) {
             if (!vlib.isInt(value)) {
-                vlib.markFieldInvalid(element, "Value is not numeric");
+                // vlib.markFieldInvalid(element, "Value is not numeric");
                 return false;
             }
         }
@@ -164,12 +203,10 @@ var transcribeValidation = {};
         var val = element.val();
         if (val) {
             if (!$.isNumeric(val)) {
-                markFieldInvalid(element, "Value must be a number");
                 return false;
             }
             var fltValue = parseFloat(val);
             if (fltValue < min || fltValue > max) {
-                markFieldInvalid(element, "Value must be between " + min + " and " + max);
                 return false;
             }
         }

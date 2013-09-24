@@ -25,9 +25,9 @@ class WebUtils {
     public static DEGREE_MINUTES_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)[']\$")
     public static DEGREE_MINUTES_SECONDS_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)['](\\d+)[\"]\$")
 
-    public static YEAR_PATTERN = Pattern.compile("^(\\d\\d\\d\\d)\$")
-    public static YEAR_MONTH_PATTERN = Pattern.compile("^(\\d\\d\\d\\d)-(\\d{1,2})\$")
-    public static YEAR_MONTH_DAY_PATTERN = Pattern.compile("^(\\d\\d\\d\\d)-(\\d{1,2})-(\\d{1,2})\$")
+    public static YEAR_PATTERN = Pattern.compile("^(\\d{2,4})\$")
+    public static YEAR_MONTH_PATTERN = Pattern.compile("^(\\d{2,4})-(\\d{1,2})\$")
+    public static YEAR_MONTH_DAY_PATTERN = Pattern.compile("^(\\d{2,4})-(\\d{1,2})-(\\d{1,2})\$")
 
 
     /**
@@ -100,6 +100,20 @@ class WebUtils {
         return new LatLongValues(decimalDegrees: val)
     }
 
+    public static DateRange parseDateRange(String val) {
+        if (val) {
+            if (val.contains('/')) {
+                def bits = val.split('/')
+                def startDate = parseDate(bits[0])
+                def endDate = parseDate(bits[1])
+                return new DateRange(startDate: startDate, endDate: endDate)
+            } else {
+                return new DateRange(startDate: parseDate(val))
+            }
+        }
+        return new DateRange(startDate: parseDate(val))
+    }
+
     public static DateComponents parseDate(String val) {
         if (val) {
             def matcher = YEAR_MONTH_DAY_PATTERN.matcher(val)
@@ -114,7 +128,6 @@ class WebUtils {
             if (matcher.matches()) {
                 return new DateComponents(year: matcher.group(1))
             }
-
         }
 
         return new DateComponents(year: val)
@@ -127,6 +140,11 @@ public class LatLongValues {
     String minutes
     String seconds
     String decimalDegrees
+}
+
+public class DateRange {
+    DateComponents startDate
+    DateComponents endDate
 }
 
 public class DateComponents {

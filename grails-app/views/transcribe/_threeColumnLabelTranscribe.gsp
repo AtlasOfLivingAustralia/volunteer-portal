@@ -49,6 +49,9 @@
                     <div class="span12">
                         <div class="control-group">
                             <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
+                            <span class="pull-right">
+                                <g:fieldHelp field="${allTextField}" />
+                            </span>
                             <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
                             <g:textArea class="span12" validationRule="${allTextField?.validationRule}" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="6" cols="42"/>
                         </div>
@@ -62,6 +65,7 @@
                         <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection Location</span>
                         <g:renderCategoryFieldsColumn category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Collection Location" />
                     </div>
+
                     <div class="span6">
                         <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Miscellaneous</span>
                         <g:renderCategoryFieldsColumn category="${FieldCategory.miscellaneous}" task="${taskInstance}" recordValues="${recordValues}" title="Miscellaneous Event" />

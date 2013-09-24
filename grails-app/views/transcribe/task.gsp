@@ -295,11 +295,11 @@
                     position: {
                         corner: {
                             target: 'topMiddle',
-                            tooltip: 'bottomRight'
+                            tooltip: 'bottomMiddle'
                         }
                     },
                     style: {
-                        width: 400,
+                        width: 200,
                         padding: 8,
                         background: 'white', //'#f0f0f0',
                         color: 'black',
@@ -309,7 +309,7 @@
                             radius: 5,
                             color: '#E66542'// '#E66542' '#DD3102'
                         },
-                        tip: 'bottomRight',
+                        tip: 'bottomMiddle',
                         name: 'light' // Inherit the rest of the attributes from the preset light style
                     }
                 }).bind('click', function(e){ e.preventDefault(); return false; });
