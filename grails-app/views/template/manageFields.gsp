@@ -138,7 +138,14 @@
                     window.open("${createLink(controller:'template', action:'exportFieldsAsCSV', id:templateInstance.id)}", "CSVExport");
                 });
 
-                    // Context sensitive help popups
+                $("#btnImportFromCSV").click(function(e) {
+                    e.preventDefault();
+                    if (confirm("This will remove all existing fields, and replace them with the contents of the selected file. Are you sure?")) {
+                        $("form").submit();
+                    }
+                });
+
+                // Context sensitive help popups
                 $("a.fieldHelp").qtip({
                     tip: true,
                     position: {
@@ -176,12 +183,17 @@
         <div class="row">
             <div class="span12">
                 <div id="buttonBar">
-                    <button class="btn" id="btnCleanUpOrdering">Clean up ordering</button>
-                    Field Type:
-                    <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>
-                    <button class="btn" id="btnAddField">Add field</button>
-                    <button class="btn" id="btnPreviewTemplate">Preview Template</button>
-                    <button class="btn" id="btnExportAsCSV">Export as CSV</button>
+                    <g:uploadForm action="importFieldsFromCSV" controller="template">
+                        <g:hiddenField name="id" value="${templateInstance.id}" />
+                        <button class="btn" id="btnCleanUpOrdering">Clean up ordering</button>
+                        Field Type:
+                        <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>
+                        <button class="btn" id="btnAddField">Add field</button>
+                        <button class="btn" id="btnPreviewTemplate">Preview Template</button>
+                        <button class="btn" id="btnExportAsCSV">Export as CSV</button>
+                        <input type="file" name="uploadFile" />
+                        <button class="btn" id="btnImportFromCSV">Import from CSV</button>
+                    </g:uploadForm>
                 </div>
             </div>
         </div>

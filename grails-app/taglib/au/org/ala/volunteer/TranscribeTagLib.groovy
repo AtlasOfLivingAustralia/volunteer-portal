@@ -147,6 +147,12 @@ class TranscribeTagLib {
             case FieldType.mappingTool:
                 w = render(template: '/transcribe/mappingToolWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
                 break
+            case FieldType.elevationRange:
+                w = render(template: '/transcribe/elevationRangeWidget', model: [field:field, value: recordValues?.get(0)?.get(name), minFieldType: DarwinCoreField.minimumElevationInMeters, maxFieldType: DarwinCoreField.maximumElevationInMeters])
+                break
+            case FieldType.depthRange:
+                w = render(template: '/transcribe/elevationRangeWidget', model: [field:field, value: recordValues?.get(0)?.get(name), minFieldType: DarwinCoreField.minimumDepthInMeters, maxFieldType: DarwinCoreField.maximumDepthInMeters])
+                break
             case FieldType.textarea:
                 int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
                 if (attrs.rows) {
