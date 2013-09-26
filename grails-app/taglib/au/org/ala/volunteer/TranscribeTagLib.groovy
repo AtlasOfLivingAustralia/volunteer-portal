@@ -463,22 +463,24 @@ class TranscribeTagLib {
             def imageUrl = "${grailsApplication.config.server.url}${multimedia.filePath}"
             def imageMetaData = taskService.getImageMetaData(multimedia)
             def mb = new MarkupBuilder(out)
-            mb.div(id:attrs.elementId ?: 'image-container') {
-                mb.img(src:imageUrl, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
-                if (!attrs.hideControls) {
-                    div(class:'imageviewer-controls') {
-                        a(id:'panleft', href:"#", class:'left') {}
-                        a(id:'panright', href:"#", class:'right') {}
-                        a(id:'panup', href:"#", class:'up') {}
-                        a(id:'pandown', href:"#", class:'down') {}
-                        a(id:'zoomin', href:"#", class:'zoom') {}
-                        a(id:'zoomout', href:"#", class:'back') {}
-                    }
+            mb.div(id:'image-parent-container') {
+                mb.div(id:attrs.elementId ?: 'image-container') {
+                    mb.img(src:imageUrl, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
+                    if (!attrs.hideControls) {
+                        div(class:'imageviewer-controls') {
+                            a(id:'panleft', href:"#", class:'left') {}
+                            a(id:'panright', href:"#", class:'right') {}
+                            a(id:'panup', href:"#", class:'up') {}
+                            a(id:'pandown', href:"#", class:'down') {}
+                            a(id:'zoomin', href:"#", class:'zoom') {}
+                            a(id:'zoomout', href:"#", class:'back') {}
+                        }
 
-                    if (!attrs.hidePinImage) {
-                        div(class:'pin-image-control') {
-                            a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window') {
-                                mkp.yield('Pin image in place')
+                        if (!attrs.hidePinImage) {
+                            div(class:'pin-image-control') {
+                                a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window') {
+                                    mkp.yield('Pin image in place')
+                                }
                             }
                         }
                     }

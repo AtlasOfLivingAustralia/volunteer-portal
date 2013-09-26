@@ -97,7 +97,7 @@
                     } else {
                         $(".pan-image").css({"position": "fixed", top: 10, left: 10, "z-index": 600, 'border': '2px solid #535353' });
                         $(".new-window-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
-                        $("#imageContainer").css("background", "darkgray");
+                        $("#image-container").css("background", "darkgray");
                         $(".pan-image a").attr("title", "Return the image to its normal position");
                     }
 
@@ -410,7 +410,7 @@
 
         <style type="text/css">
 
-        #image-container {
+        #image-container, #image-parent-container {
             background-color: #a9a9a9;
         }
 
@@ -565,7 +565,7 @@
 
     <body>
 
-        <cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task: ${taskInstance?.project?.name} (ID: ${taskInstance?.externalIdentifier})">
+        <cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.externalIdentifier}">
             <%
                 pageScope.crumbs = [
                     [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')],
@@ -574,7 +574,6 @@
             %>
 
             <div>
-                <vpf:taskTopicButton task="${taskInstance}"/>
                 <g:if test="${taskInstance?.project?.tutorialLinks}">
                     ${taskInstance.project.tutorialLinks}
                 </g:if>
@@ -668,11 +667,13 @@
                                     <button id="btnValidate" class="btn btn-primary">${message(code: 'default.button.validate.label', default: 'Validate')}</button>
                                     <button id="btnDontValidate" class="btn">${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}</button>
                                     <button class="btn" id="showNextFromProject">Skip</button><cl:validationStatus task="${taskInstance}"/>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:if>
                                 <g:else>
                                     <button id="btnSave" class="btn btn-primary">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
                                     <button id="btnSavePartial" class="btn">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
                                     <button class="btn" id="showNextFromProject">Skip</button>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
                             </div>
                         </div>

@@ -36,8 +36,11 @@
             </table>
         </div>
         <div class="span3">
-            <button class="btn btn-small pull-right">Tutorial</button>
-            <vpf:taskTopicButton task="${taskInstance}" class="btn-small pull-right" style="margin-right: 6px" />
+            <g:if test="${taskInstance?.project?.tutorialLinks}">
+                <div class="tutorialLinks" style="text-align: right">
+                    ${taskInstance?.project?.tutorialLinks}
+                </div>
+            </g:if>
         </div>
 
     </div>
@@ -53,7 +56,7 @@
                                 <g:fieldHelp field="${allTextField}" />
                             </span>
                             <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
-                            <g:textArea class="span12" validationRule="${allTextField?.validationRule}" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="6" cols="42"/>
+                            <g:textArea class="span12" validationRule="${allTextField?.validationRule}" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="12" cols="42"/>
                         </div>
                     </div>
                 </div>
@@ -79,5 +82,11 @@
 
 
 <r:script>
+
+    $(document).ready(function() {
+        $(".tutorialLinks a").each(function(index, element) {
+            $(this).addClass("btn").attr("target", "tutorialWindow");
+        });
+    });
 
 </r:script>

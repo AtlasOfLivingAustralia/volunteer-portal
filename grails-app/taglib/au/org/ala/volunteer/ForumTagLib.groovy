@@ -406,9 +406,13 @@ class ForumTagLib {
      */
     def taskTopicButton = { attrs, body ->
         if (FrontPage.instance().enableForum) {
-            def label = attrs.label ?: 'Create Forum Topic'
+
             def task = attrs.task as Task
             if (task) {
+                // See if there is already a topic for this task, If there is, change the wording of the button
+                def topic = TaskForumTopic.findByTask(task)
+                def defaultLabel = topic ? 'View Forum Topic' : 'Create Forum Topic'
+                def label = attrs.label ?: defaultLabel
                 def mb = new MarkupBuilder(out)
                 mb.a(href: createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class: 'btn ' + attrs.class, style: attrs.style ?: '', target: 'forumWindow') {
                     mkp.yield(label)
