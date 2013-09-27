@@ -11,6 +11,7 @@ class TaskController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
     public static final String PROJECT_LIST_STATE_SESSION_KEY = "project.admin.list.state"
+    public static final String PROJECT_LIST_LAST_PROJECT_ID_KEY = "project.admin.list.lastProjectId"
 
     def taskService
     def fieldSyncService
@@ -75,25 +76,28 @@ class TaskController {
         }
 
         if (projectInstance) {
+            // The last time we were at this view, was it for the same project?
+            def lastProjectId = session[PROJECT_LIST_LAST_PROJECT_ID_KEY]
+            if (lastProjectId && lastProjectId != params.id) {
+                // if not, remove the state from the session
+                session.removeAttribute(PROJECT_LIST_STATE_SESSION_KEY)
+            }
 
-            def lastState = session[PROJECT_LIST_STATE_SESSION_KEY] ?: [
-                max: 20,
-                order: 'asc',
-                sort: 'id',
-                offset: 0
-            ]
+            def lastState = session[PROJECT_LIST_STATE_SESSION_KEY] ?: [ max: 20, order: 'asc', sort: 'id', offset: 0 ]
 
             params.max = Math.min(params.max ? params.int('max') : lastState.max, 50)
             params.order = params.order ?: lastState.order
             params.sort = params.sort ?: lastState.sort
             params.offset = params.offset ?: lastState.offset
 
+            // Save the current view state in the session, including the current project id
             session[PROJECT_LIST_STATE_SESSION_KEY] = [
                 max: params.max,
                 order: params.order,
                 sort: params.sort,
                 offset: params.offset
             ]
+            session[PROJECT_LIST_LAST_PROJECT_ID_KEY] = params.id
 
             def taskInstanceList
             def taskInstanceTotal

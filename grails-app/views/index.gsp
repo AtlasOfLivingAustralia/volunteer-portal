@@ -71,25 +71,6 @@
             <div class="span3">
                 <section id="leaderBoardSection">
 
-                    <div style="margin-top: 10px">
-                        <table class="table table-bordered table-condensed">
-                            <thead style="background-color: #f0f0e8">
-                                <tr>
-                                    <td colspan="2" style="vertical-align: middle">
-                                        <h3 style="margin: 0; display: inline-block">Leader board</h3>
-                                        <a class="btn btn-small pull-right" href="${createLink(controller: 'user', action: 'list')}">View all</a>
-                                    </td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <g:each in="${1..grailsApplication.config.leaderBoard.count}" var="i">
-                                    <tr>
-                                        <td><img src="${resource(dir: 'images', file: 'spinner.gif')}"/></td>
-                                    </tr>
-                                </g:each>
-                            </tbody>
-                        </table>
-                     </div>
                 </section>
 
                 <section id="expedition-stats">
@@ -137,7 +118,7 @@
 
             $(document).ready(function (e) {
 
-                $.ajax("${createLink(controller: 'index', action:'leaderBoardFragment')}").done(function (content) {
+                $.ajax("${createLink(controller: 'leaderBoard', action:'leaderBoardFragment')}").done(function (content) {
                     $("#leaderBoardSection").html(content);
                 });
 
