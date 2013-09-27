@@ -10,6 +10,7 @@ import java.util.regex.Pattern
 class TaskController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    public static final String PROJECT_LIST_STATE_SESSION_KEY = "project.admin.list.state"
 
     def taskService
     def fieldSyncService
@@ -74,9 +75,26 @@ class TaskController {
         }
 
         if (projectInstance) {
-            params.max = Math.min(params.max ? params.int('max') : 20, 50)
-            params.order = params.order ? params.order : "asc"
-            params.sort = params.sort ? params.sort : "id"
+
+            def lastState = session[PROJECT_LIST_STATE_SESSION_KEY] ?: [
+                max: 20,
+                order: 'asc',
+                sort: 'id',
+                offset: 0
+            ]
+
+            params.max = Math.min(params.max ? params.int('max') : lastState.max, 50)
+            params.order = params.order ?: lastState.order
+            params.sort = params.sort ?: lastState.sort
+            params.offset = params.offset ?: lastState.offset
+
+            session[PROJECT_LIST_STATE_SESSION_KEY] = [
+                max: params.max,
+                order: params.order,
+                sort: params.sort,
+                offset: params.offset
+            ]
+
             def taskInstanceList
             def taskInstanceTotal
             def extraFields = [:] // Map

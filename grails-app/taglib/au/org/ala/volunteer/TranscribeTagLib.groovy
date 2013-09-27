@@ -19,12 +19,90 @@ import groovy.xml.MarkupBuilder
 
 /**
  * Tag Lib for Transcribe page
- * 
- * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
+ *
  */
 class TranscribeTagLib {
 
     def taskService
+
+    /**
+    * @attr task
+    * @attr fieldType
+    * @attr recordValues
+    * @attr recordIdx
+    * @attr labelClass
+    * @attr widgetClass
+    */
+    def renderFieldLabelAndWidgetSpans = { attrs, body ->
+        Task task = attrs.task as Task
+        DarwinCoreField fieldType = attrs.fieldType
+        def recordValues = attrs.recordValues
+        def recordIdx = attrs.recordIdx ?: 0
+        def field = getTemplateFieldForTask(task, fieldType)
+        def fieldLabel = getFieldLabel(field)
+        def widgetHtml = getWidgetHtml(field, recordValues, recordIdx, attrs, 'span10')
+        def mb = new MarkupBuilder(out)
+        mb.div(class:attrs.labelClass ?: 'span2') {
+            if (field.fieldType != DarwinCoreField.spacer) {
+                mkp.yield(g.message(code:'record.' + field.fieldType.toString() +'.label', default:fieldLabel))
+            } else {
+                mkp.yieldUnescaped("&nbsp;")
+            }
+        }
+        mb.div(class:attrs.widgetClass ?: 'span10') {
+            mkp.yieldUnescaped(widgetHtml)
+            if (field.helpText) {
+                def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
+                mkp.yieldUnescaped(help)
+            }
+        }
+
+    }
+
+    /**
+     * @attr var
+     * @attr task
+     * @attr fieldType
+     */
+    def getTemplateField = { attrs, body ->
+        Task task = attrs.task as Task
+        DarwinCoreField fieldType = attrs.fieldType
+        def field = getTemplateFieldForTask(task, fieldType)
+        pageScope[attrs.var ?: 'field'] = field
+    }
+
+    private TemplateField getTemplateFieldForTask(Task task, DarwinCoreField fieldType) {
+        def template = task.project.template
+
+        TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
+        if (!field) {
+            // There was no field for this field type defined by this template: create a default one
+            field = new TemplateField(template: template, fieldType: fieldType, label: null, defaultValue: null, category: FieldCategory.miscellaneous)
+        }
+        return field
+    }
+
+    /**
+     * @attr field
+     */
+    def renderFieldLabel = { attrs, body ->
+        out << getFieldLabel(attrs.field)
+    }
+
+    /**
+     * @attr field
+     * @attr recordValues
+     * @attr recordIdx
+     * @attr widgetClass
+     */
+    def renderFieldWidget = { attrs, body ->
+
+        def recordValues = attrs.recordValues
+        def recordIdx = attrs.recordIdx ?: 0
+        def html = getWidgetHtml(attrs.field, recordValues, recordIdx, attrs, attrs.widgetClass)
+
+        out << html
+    }
 
     /**
      * @attr fieldType
@@ -41,41 +119,36 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         def labelClass = attrs.labelClass ?: "span2"
         def valueClass = attrs.valueClass ?: "span10"
+        def rowClass = attrs.rowClass ?: "row-fluid"
         def recordIdx = attrs.recordIdx ?: 0
 
         if (!task) {
             return
         }
 
-        def template = task.project.template
-
-        TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
-        if (!field) {
-            // There was no field for this field type defined by this template: create a default one
-            field = new TemplateField(template: template, fieldType: fieldType, label: null, defaultValue: null, category: FieldCategory.miscellaneous)
-        }
+        def field = getTemplateFieldForTask(task, fieldType)
 
         def mb = new MarkupBuilder(out)
-        renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs)
+        renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass)
     }
 
-    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs) {
+    private String getFieldLabel(TemplateField field) {
+        if (field.label) {
+            return field.label
+        } else {
+            return field.fieldType?.label ?: field.fieldType?.name()
+        }
+    }
+
+    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row-fluid") {
 
         if (!task || !field) {
             return
         }
 
         def name = field.fieldType?.name()
-        def label
-        if (field.label) {
-            label = field.label
-        } else {
-            label = field.fieldType?.label
-        }
-
+        def label = getFieldLabel(field)
         def hideLabel = attrs.hideLabel as Boolean
-
-
         def widgetHtml = getWidgetHtml(field, recordValues,recordIdx, attrs, "span10")
 
         if (field.type == FieldType.hidden) {
@@ -83,7 +156,7 @@ class TranscribeTagLib {
         } else if (field.fieldType == DarwinCoreField.widgetPlaceholder) {
             mb.mkp.yieldUnescaped(widgetHtml)
         } else {
-            mb.div(class:'row-fluid') {
+            mb.div(class:rowClass) {
                 if (!hideLabel) {
                     div(class:labelClass) {
                         span(class:"fieldLabel") {
@@ -120,10 +193,6 @@ class TranscribeTagLib {
         def name = field.fieldType.name()
         def cssClass = name
 
-        if (name =~ /[Dd]ate/) {
-            // so we can add a date widget with JQuery
-            cssClass = cssClass + ' datePicker';
-        }
         if (field.mandatory) {
             cssClass = cssClass + " validate[required]"
         }
@@ -134,24 +203,29 @@ class TranscribeTagLib {
 
         String w
         def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
+        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass]
         switch (field.type) {
             case FieldType.latLong:
-                w = render(template: '/transcribe/latLongWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                w = render(template: '/transcribe/latLongWidget', model: widgetModel)
                 break
             case FieldType.date:
-                w = render(template: '/transcribe/dateWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                w = render(template: '/transcribe/dateWidget', model: widgetModel)
                 break
             case FieldType.collectorColumns:
-                w = render(template: '/transcribe/collectorColumnWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                w = render(template: '/transcribe/collectorColumnWidget', widgetModel)
                 break
             case FieldType.mappingTool:
-                w = render(template: '/transcribe/mappingToolWidget', model: [field:field, value: recordValues?.get(0)?.get(name)])
+                w = render(template: '/transcribe/mappingToolWidget', model: widgetModel)
                 break
             case FieldType.elevationRange:
-                w = render(template: '/transcribe/elevationRangeWidget', model: [field:field, value: recordValues?.get(0)?.get(name), minFieldType: DarwinCoreField.minimumElevationInMeters, maxFieldType: DarwinCoreField.maximumElevationInMeters])
+                widgetModel.minFieldType = DarwinCoreField.minimumElevationInMeters
+                widgetModel.maxFieldType = DarwinCoreField.maximumElevationInMeters
+                w = render(template: '/transcribe/rangeWidget', model: widgetModel)
                 break
             case FieldType.depthRange:
-                w = render(template: '/transcribe/elevationRangeWidget', model: [field:field, value: recordValues?.get(0)?.get(name), minFieldType: DarwinCoreField.minimumDepthInMeters, maxFieldType: DarwinCoreField.maximumDepthInMeters])
+                widgetModel.minFieldType = DarwinCoreField.minimumDepthInMeters
+                widgetModel.maxFieldType = DarwinCoreField.maximumDepthInMeters
+                w = render(template: '/transcribe/rangeWidget', model: widgetModel)
                 break
             case FieldType.textarea:
                 int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
@@ -210,245 +284,6 @@ class TranscribeTagLib {
         }
 
         return w
-    }
-
-    private def renderWidgetTD(MarkupBuilder mb, TemplateField field, recordValues, recordIdx, attrs) {
-
-        if (!field) {
-            return
-        }
-
-        def name = field.fieldType.name()
-        def cssClass = name
-        def tdcssClass = "td_" + name;
-
-        if (field.fieldType == DarwinCoreField.spacer) {
-            mb.td(class:"value ${tdcssClass}" ) {
-                mkp.yieldUnescaped("&nbsp;");
-            }
-            return
-        }
-
-        if (name =~ /[Dd]ate/) {
-            // so we can add a date widget with JQuery
-            cssClass = cssClass + ' datePicker';
-        }
-        if (field.mandatory) {
-            cssClass = cssClass + " validate[required]"
-        }
-
-        def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
-
-        mb.td(class:"value ${tdcssClass}" ) {
-            def w // widget
-            switch (field.type) {
-                case FieldType.textarea:
-                    int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
-                    if (attrs.rows) {
-                        rows = Integer.parseInt(attrs.rows);
-                    }
-                    w = g.textArea(
-                        name:"recordValues.${recordIdx}.${name}",
-                        rows: rows,
-                        //style: 'width: 100%',
-                        value:recordValues?.get(0)?.get(name),
-                        'class':cssClass
-                    )
-                    break
-                case FieldType.hidden:
-                    w = g.hiddenField(
-                        name:"recordValues.${recordIdx}.${name}",
-                        value:recordValues?.get(0)?.get(name),
-                        'class':cssClass
-                    )
-                    break;
-                case FieldType.select:
-                    def pl = Picklist.findByName(name)
-                    if (pl) {
-                        def options = PicklistItem.findAllByPicklist(pl)
-                        w = g.select(
-                            name:"recordValues.${recordIdx}.${name}",
-                            from: options,
-                            optionValue:'value',
-                            optionKey:'value',
-                            value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
-                            noSelection:['':''],
-                            style: 'max-width: 295px;',
-                            'class':cssClass
-                        )
-                        break
-                    }
-                case FieldType.autocomplete:
-                    cssClass = cssClass + " autocomplete"
-                case FieldType.radio: // fall through TODO
-                case FieldType.checkbox: // fall through TODO
-                case FieldType.text: // fall through
-                default:
-
-                    if (noAutoCompleteList?.contains(name)) {
-                        cssClass += ' noAutoComplete'
-                    }
-
-                    w = g.textField(
-                        name:"recordValues.${recordIdx}.${name}",
-                        maxLength:200,
-                        value:recordValues?.get(0)?.get(name),
-                        'class':cssClass
-                    )
-            }
-            mkp.yieldUnescaped(w)
-
-            if (field.helpText) {
-                def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
-                mkp.yieldUnescaped(help)
-            }
-        }
-
-    }
-
-    private def renderWidgetLabelTD(MarkupBuilder mb, TemplateField field) {
-
-        if (!field) {
-            return
-        }
-
-        def name = field.fieldType?.name()
-        def label
-        if (field.label) {
-            label = field.label
-        } else {
-            label = field.fieldType?.label
-        }
-
-        mb.td(class:'name') {
-            if (field.type != FieldType.hidden && field.fieldType != DarwinCoreField.spacer) {
-                mb.yield(g.message(code:'record.' + name +'.label', default:label))
-            }
-        }
-
-    }
-
-    /**
-     *  Create the field label and form field for the requested
-     *  TemplateField type
-     *  
-     *  @attr templateField REQUIRED
-     *  @attr recordValues REQUIRED
-     *  @attr recordIdx
-     *  @attr rowClass
-     */
-    def fieldFromTemplateField = { attrs, body ->
-        def field = attrs.templateField
-        def recordValues = attrs.recordValues
-        def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
-
-        // Uses MarkupBuilder to create HTML
-        def mb = new groovy.xml.MarkupBuilder(out)
-        def trClass = (field.type == FieldType.hidden) ? 'hidden' : 'prop'
-
-        if (attrs.rowClass) {
-            trClass += " " + attrs.rowClass
-        }
-
-        mb.tr(class:trClass) {
-            renderWidgetLabelTD(delegate, field);
-            renderWidgetTD(delegate, field, recordValues, recordIdx, attrs)
-        }
-    }
-
-    /**
-     *  Create the field label and form field for the requested
-     *  TemplateField type
-     *
-     *  @attr task REQUIRED
-     *  @attr fieldType REQUIRED
-     *  @attr recordValues REQUIRED
-     *  @attr recordIdx
-     */
-    def fieldTDPair = { attrs, body ->
-
-        try {
-            Task task = attrs.task;
-            DarwinCoreField fieldType = attrs.fieldType;
-            def template = task.project.template;
-
-            TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
-            if (!field) {
-                // There was no field for this field type defined by this template: create a default one
-                field = new TemplateField(template: template, fieldType: fieldType, label: null, defaultValue: null, category: FieldCategory.miscellaneous)
-            }
-
-            def recordValues = attrs.recordValues
-            def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
-
-            // Uses MarkupBuilder to create HTML
-            def mb = new groovy.xml.MarkupBuilder(out)
-
-            renderWidgetLabelTD(mb, field);
-            renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
-        } catch (Exception ex) {
-            throw ex
-        }
-    }
-
-    /**
-     *  Create the field label and form field for the requested
-     *  TemplateField type
-     *
-     *  @attr task REQUIRED
-     *  @attr fieldType REQUIRED
-     *  @attr recordValues REQUIRED
-     *  @attr recordIdx
-     *  @attr labelClass
-     *  @attr inputClass
-     */
-    def fieldLabelPair = { attrs, body ->
-        try {
-            Task task = attrs.task;
-            DarwinCoreField fieldType = attrs.fieldType;
-            def template = task.project.template;
-
-            TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
-            if (!field) {
-                // There was no field for this field type defined by this template: create a default one
-                field = new TemplateField(template: template, fieldType: fieldType, label: null, defaultValue: null, category: FieldCategory.miscellaneous)
-            }
-
-            def recordValues = attrs.recordValues
-            def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
-
-            // Uses MarkupBuilder to create HTML
-            def mb = new MarkupBuilder(out)
-
-            renderWidgetLabelSpan(mb, field, attrs.labelClass ?: 'span2');
-            renderWidgetSpan(mb, field, recordValues, recordIdx, attrs, attrs.inputClass ?: 'span4')
-
-        } catch (Exception ex) {
-            throw ex
-        }
-    }
-    /**
-     *  Create the field label and form field for the requested
-     *  TemplateField type
-     *
-     *  @attr task REQUIRED
-     *  @attr fieldType REQUIRED
-     *  @attr recordValues REQUIRED
-     *  @attr recordIdx
-     */
-    def fieldWidget = { attrs, body ->
-        Task task = attrs.task;
-        DarwinCoreField fieldType = attrs.fieldType;
-        def template = task.project.template;
-
-        TemplateField field = TemplateField.findByTemplateAndFieldType(template, fieldType);
-
-        def recordValues = attrs.recordValues
-        def recordIdx = attrs.recordIdx ? Integer.parseInt(attrs.recordIdx) : (int) 0;
-
-        // Uses MarkupBuilder to create HTML
-        def mb = new MarkupBuilder(out)
-        renderWidgetTD(mb, field, recordValues, recordIdx, attrs)
     }
 
     /**

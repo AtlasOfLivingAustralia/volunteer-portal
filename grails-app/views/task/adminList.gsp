@@ -123,13 +123,13 @@
                                 <td style="text-align: center;">
                                     <g:if test="${taskInstance.fullyValidatedBy}">
                                         <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
-                                        <button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">
-                                        </button>
+                                        %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
+                                        %{--</button>--}%
                                     </g:if>
                                     <g:elseif test="${taskInstance.fullyTranscribedBy}">
                                         <button class="btn btn-small" onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
-                                        <button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">
-                                        </button>
+                                        %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
+                                        %{--</button>--}%
                                     </g:elseif>
                                     <g:else>
                                         <button class="btn btn-small" onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'">transcribe</button>

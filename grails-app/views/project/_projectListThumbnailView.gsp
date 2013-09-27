@@ -48,7 +48,7 @@
                             ${projectSummary.project.featuredLabel}
                         </strong>
                     </div>
-                    <a href="#">
+                    <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
                         <img src="${projectSummary.project.featuredImage}" width="147" height="81"/>
                     </a>
                     <div>

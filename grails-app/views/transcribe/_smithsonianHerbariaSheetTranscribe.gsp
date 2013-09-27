@@ -44,16 +44,19 @@
 
             <div class="row-fluid">
 
-                <div class="span6">
-                    <g:renderFieldBootstrap fieldType="${DarwinCoreField.verbatimLocality}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
-                </div>
+                <g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.verbatimLocality}" recordValues="${recordValues}" labelClass="span2" widgetClass="span4" />
 
                 <div class="span6">
-                    <g:renderFieldBootstrap fieldType="${DarwinCoreField.county}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
-                    <g:renderFieldBootstrap fieldType="${DarwinCoreField.stateProvince}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
-                    <g:renderFieldBootstrap fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
+                    <div class="row-fluid">
+                        <g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.county}" recordValues="${recordValues}" labelClass="span4" widgetClass="span8" />
+                    </div>
+                    <div class="row-fluid">
+                        <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.stateProvince}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" widgetClass="span8" />
+                    </div>
+                    <div class="row-fluid">
+                        <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" widgetClass="span8" />
+                    </div>
                 </div>
-
             </div>
 
             <div class="row-fluid">
@@ -61,40 +64,29 @@
                     ${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: "Collector(s)"}
                 </div>
                 <div class="span9">
-                    <div class="row-fluid">
-                        <g:each in="${0..3}" var="idx">
-                            <div class="span3">
-                                <input type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="span12 recordedBy autocomplete" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}"/>&nbsp;
-                                <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}"/>
-                            </div>
-                        </g:each>
-                    </div>
+                    <g:each in="${0..3}" var="idx">
+                        <div class="span3">
+                            <input type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="span12 recordedBy autocomplete" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}"/>&nbsp;
+                            <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}"/>
+                        </div>
+                    </g:each>
                 </div>
             </div>
 
             <div class="row-fluid">
-                <div class="span6">
-                    <g:renderFieldBootstrap fieldType="${DarwinCoreField.recordedByID}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
-                </div>
-
-                <div class="span6">
-                    <g:renderFieldBootstrap fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
-                </div>
+                <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.recordedByID}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span4" />
+                <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span4"  />
             </div>
 
             <div class="row-fluid">
-                <div class="span12">
-                    <g:renderFieldBootstrap fieldType="${DarwinCoreField.habitat}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" valueClass="span10" />
-                </div>
+                <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.habitat}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span10" />
             </div>
 
 
         </div>
     </div>
 
-    <g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Interpreted Location" description="Use the mapping tool before attempting to enter values manually">
-        <button class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
-    </g:renderFieldCategorySection>
+    <g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Interpreted Location" />
 
     <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}" recordValues="${recordValues}" title="Miscellaneous" description="This section is for a range of fields. Many labels will not contain information for any or all of these fields." />
 

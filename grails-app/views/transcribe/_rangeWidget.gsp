@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
-<div class="collectorColumnWidget control-group">
+<div class="collectorColumnWidget control-group ${cssClass}">
 
     <div class="row-fluid" style="vertical-align: bottom">
         <div class="span2">
