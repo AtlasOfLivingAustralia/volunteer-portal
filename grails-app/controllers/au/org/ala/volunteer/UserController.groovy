@@ -290,21 +290,25 @@ class UserController {
         }
     }
 
-    def edit = {
-        def currentUser = authService.username()
-        def userInstance = User.get(params.id)
-        if (currentUser != null && (authService.userInRole(CASRoles.ROLE_ADMIN) || currentUser == userInstance.userId)) {
-            if (!userInstance) {
-                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
-                redirect(action: "list")
-            }
-            else {
-                return [userInstance: userInstance]
-            }
-        } else {
-            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
+    def edit() {
+
+        def userInstance = User.get(params.int("id"))
+
+        if (!userInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         }
+
+
+        if (!userService.isAdmin()) {
+            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
+            redirect(action: "show", id: userInstance.id)
+
+        }
+        
+        def roles = UserRole.findAllByUser(userInstance)
+        
+        return [userInstance: userInstance, roles: roles]
     }
 
     def update = {

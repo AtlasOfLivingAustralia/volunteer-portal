@@ -157,6 +157,7 @@
                         <cl:ifAdmin>
                             <div class="alert alert-info" style="margin-bottom: 0px">
                             <g:link class="btn btn-small" controller="user" action="editRoles" id="${userInstance.id}">Manage user roles</g:link>
+                            <g:link class="btn btn-small" controller="user" action="edit" id="${userInstance.id}">Edit user details</g:link>
                             &nbsp;Email:&nbsp;<a href="mailto:${userInstance.userId}">${userInstance.userId}</a>
                             </div>
                         </cl:ifAdmin>
