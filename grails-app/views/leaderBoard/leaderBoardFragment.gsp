@@ -8,21 +8,18 @@
             </tr>
         </thead>
         <tbody>
-
             <g:each in="${leaderBoardSections}" var="section">
                 <tr>
                     <th colspan="2">
-                        ${section.key}
-                        <button class="btn btn-small pull-right">View All</button>
+                        ${section.label}
+                        <a class="btn btn-small pull-right" href="${createLink(controller:'leaderBoard', action:'topList', params:[category: section.category])}">View Top 20</a>
                     </th>
                 </tr>
-                <tr resultLink="${section.value}">
+                <tr resultLink="${createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:section.category])}">
                     <td><img src="${resource(dir: 'images', file: 'spinner.gif')}"/></td>
                     <td></td>
                 </tr>
-
             </g:each>
-
         </tbody>
     </table>
  </div>
@@ -33,7 +30,11 @@
         var target = $(this);
         if (link) {
             $.ajax(link).done(function(data) {
-                target.html("<td>" + data.name + "</td><td>" +  data.score + "</td>");
+                var label = data.score == 0 ? 'No activity recorded' : data.name;
+                var score = data.score == 0 ? '' : data.score;
+                var labelClass = data.score == 0 ? 'muted' : '';
+
+                target.html('<td><span class="' + labelClass + '">' + label + '</span></td><td>' + score + '</td>');
             });
         }
 

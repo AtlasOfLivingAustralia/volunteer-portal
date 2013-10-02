@@ -156,8 +156,10 @@ class BootStrap {
         }
 
         String.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate, len) ?: '' }
-
         GString.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate.toString(), len) }
+
+        String.metaClass.'toTitleCase' = { return WebUtils.makeTitleFromCamelCase(delegate.toString()) }
+        GString.metaClass.'toTitleCase' = { return WebUtils.makeTitleFromCamelCase(delegate.toString()) }
 
     }
 

@@ -14,7 +14,8 @@
 
 %>
 <div class="dateWidget" targetField="${field.fieldType}" >
-    <div class="row-fluid control-group ${cssClass}" >
+
+    <div class="row-fluid control-group" >
         <div class="span2">
             from
         </div>

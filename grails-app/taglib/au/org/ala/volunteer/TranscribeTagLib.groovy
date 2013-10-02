@@ -212,7 +212,7 @@ class TranscribeTagLib {
                 w = render(template: '/transcribe/dateWidget', model: widgetModel)
                 break
             case FieldType.collectorColumns:
-                w = render(template: '/transcribe/collectorColumnWidget', widgetModel)
+                w = render(template: '/transcribe/collectorColumnWidget', model: widgetModel)
                 break
             case FieldType.mappingTool:
                 w = render(template: '/transcribe/mappingToolWidget', model: widgetModel)

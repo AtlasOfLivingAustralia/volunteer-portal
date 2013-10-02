@@ -22,30 +22,7 @@ class IndexController {
     }
 
     def leaderBoardFragment = {
-
-        def t = new CodeTimer("Calculate user scores")
-        def r = userService.getAllUserScores()
-
-        r.removeAll {
-            it.username == null
-        }
-
-        def results = r.sort({it.score}).reverse()
-        int maxSize = grailsApplication.config.leaderBoard.count
-
-        if (results.size() > maxSize) {
-            results = results.subList(0, maxSize)
-        }
-
-        if (results.size() < maxSize) {
-            for (int i = results.size(); i < maxSize; ++i) {
-                results << new UserScore(username:'', score:0)
-            }
-        }
-
-        t.stop(true)
-
-        [results: results]
+        [:]
     }
 
     def statsFragment = {

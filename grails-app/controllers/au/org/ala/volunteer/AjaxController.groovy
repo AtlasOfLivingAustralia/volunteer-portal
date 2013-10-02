@@ -29,6 +29,7 @@ class AjaxController {
 
         stats.specimensTranscribed = taskService.countTranscribedByProjectType("default")
         stats.journalPagesTranscribed = taskService.countTranscribedByProjectType("Journal")
+
         def volunteerCounts = userService.getUserCounts()
         stats.volunteerCount = volunteerCounts?.size()
         if (volunteerCounts?.size() >= 10) {

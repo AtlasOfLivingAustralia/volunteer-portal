@@ -47,27 +47,9 @@ class UserController {
         }
 
         def currentUser = authService.username()
-        def results = userService.getUserList(params)
-        //def results = userService.filteredUserList(params)
-        def userList = results.list
+        def userList = User.list(params)
 
-        userList.each { user ->
-            def count = taskService.getCountsForUserId(user.userId)?.get(0)
-            if (user.transcribedCount != count) {
-                // Update incorrect transcribed count (from prev bug)
-                User domainUser = User.get(user.id)
-                domainUser.transcribedCount = count.toInteger()
-                if (!domainUser.hasErrors() && domainUser.save(flush:true)) {
-                    log.info("Updating counts for " + domainUser.displayName)
-                } else {
-                    log.error("Failed to update user: " + domainUser.userId + " - " + domainUser.hasErrors())
-                }
-            }
-        }
-//        def userIds = userList.collect() { User user -> user.userId }
-//        def validatedCounts = userService.getValidatedCounts(userIds)
-
-        [userInstanceList: userList, userInstanceTotal: results.count, currentUser: currentUser ]
+        [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
     }
 
     def project = {

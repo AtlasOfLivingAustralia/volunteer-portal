@@ -133,6 +133,83 @@ class WebUtils {
         return new DateComponents(year: val)
     }
 
+    /**
+     * Replaces consecutive runs on spaces with a single space within a string
+     *
+     * @param argStr
+     * @return
+     */
+
+    public static String collapseSpaces(String argStr) {
+        if (argStr == null || argStr.length() == 0) {
+            return argStr;
+        }
+
+        char last = argStr.charAt(0);
+        StringBuilder argBuf = new StringBuilder();
+
+        for (int cIdx = 0 ; cIdx < argStr.length(); cIdx++) {
+            char ch = argStr.charAt(cIdx);
+            if (ch != ' ' || last != ' ') {
+                argBuf.append(ch);
+                last = ch;
+            }
+        }
+
+        return argBuf.toString();
+    }
+
+    /**
+     * Returns the first floating point number is a string that starts with a numeric, but may possibly contain other non numeric characters
+     * @param str
+     * @return
+     */
+    public static String firstNumber(String str) {
+        if (str == null || str.length() == 0) {
+            return str
+        }
+
+        boolean seenDot = false;
+        def sb = new StringBuilder()
+        for (char ch : str) {
+            if (Character.isDigit(ch) || (!seenDot && ch == '.')) {
+                sb.append(ch)
+                if (ch == '.') {
+                    seenDot = true
+                }
+            } else {
+                break;
+            }
+
+        }
+        return sb.toString()
+    }
+
+    /**
+     * Turns camel case into space separated words. e.g. 'titleCase' => 'Title Case'
+     * i.e. Spaces are inserted before each change from lower case to upper case
+     *
+     * @param str
+     * @return
+     */
+    public static String makeTitleFromCamelCase(String str) {
+        if (!str) {
+            return str
+        }
+
+        StringBuilder b = new StringBuilder(str.charAt(0).toUpperCase().toString())
+        for (int i = 1; i < str.length(); ++i) {
+            char ch = str.charAt(i);
+            if (Character.isUpperCase(ch)) {
+                // insert a word breaking space
+                b << ' '
+            }
+            b << ch
+        }
+
+        return b.toString()
+    }
+
 }
 
 public class LatLongValues {
@@ -152,4 +229,5 @@ public class DateComponents {
     String month
     String year
 }
+
 
