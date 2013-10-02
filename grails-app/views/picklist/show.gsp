@@ -57,6 +57,7 @@
                             <g:sortableColumn property="id" title="${message(code: 'picklistItem.id.label', default: 'Id')}" />
                             <g:sortableColumn property="key" title="${message(code: 'picklistItem.key.label', default: 'Key')}" />
                             <g:sortableColumn property="value" title="${message(code: 'picklistItem.value.label', default: 'Value')}" />
+                            <g:sortableColumn property="institutionCode" title="${message(code: 'picklistItem.institutionCode.label', default: 'Institution Code')}" />
                         </tr>
                     </thead>
                     <tbody>
@@ -65,6 +66,7 @@
                             <td><g:link controller="picklistItem" action="show" id="${picklistItemInstance.id}">${fieldValue(bean: picklistItemInstance, field: "id")}</g:link></td>
                             <td>${fieldValue(bean: picklistItemInstance, field: "key")}</td>
                             <td>${fieldValue(bean: picklistItemInstance, field: "value")}</td>
+                            <td>${fieldValue(bean: picklistItemInstance, field: "institutionCode")}</td>
                         </tr>
                     </g:each>
                     </tbody>

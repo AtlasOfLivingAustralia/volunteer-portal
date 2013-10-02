@@ -17,7 +17,7 @@
 
     <div class="row-fluid control-group" >
         <div class="span2">
-            from
+            (from)
         </div>
         <g:each var="letter" in="${dateLayout}">
             <g:if test="${letter == 'Y'}">

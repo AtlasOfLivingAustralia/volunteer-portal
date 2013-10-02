@@ -1,4 +1,4 @@
-<table class="table">
+<table class="table table-striped">
     <tbody>
         <tr class="prop">
             <td valign="top" class="name">
@@ -165,25 +165,25 @@
                 </span>
             </td>
             <td valign="middle" class="value">
-                <a class="btn btn-small" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks (CSV File)...</a>
-                <a class="btn btn-small" href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}">Load Tasks (Image Staging)</a>
+                <a class="btn" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks (CSV File)...</a>
+                <a class="btn" href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}">Load Tasks (Image Staging)</a>
             </td>
         </tr>
 
         <tr>
             <td></td>
             <td>
-                <a class="btn btn-small" href="${createLink(controller: 'task', action: 'loadTaskData', params: [projectId: projectInstance.id])}">Load Task Data</a>
+                <a class="btn" href="${createLink(controller: 'task', action: 'loadTaskData', params: [projectId: projectInstance.id])}">Load Task Data</a>
                 Load field values for existing tasks
             </td>
         </tr>
 
-        <tr>
+        <tr class="alert">
             <td></td>
             <td>
                 <span>
                     <span style="padding-left:7px; padding-top: 8px; padding-right: 5px; padding-bottom: 11px; background-image: url(${resource(dir: '/images', file: 'warning-button.png')})">
-                        <g:actionSubmit style="width: 100px; margin-bottom: 5px; margin-top: 5px" class="delete btn btn-small btn-warning" action="deleteTasks" value="Delete all tasks" onclick="return confirmDeleteAllTasks()"/>
+                        <g:actionSubmit class="delete btn btn-danger" action="deleteTasks" value="Delete all tasks" onclick="return confirmDeleteAllTasks()"/>
                     </span>
                     &nbsp;Delete task images&nbsp;<g:checkBox style="width:20px" name="deleteImages" value="true"></g:checkBox>
                 </span>

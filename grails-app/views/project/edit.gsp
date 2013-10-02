@@ -56,8 +56,8 @@
 
                     <g:render template="projectDetailsTable" model="${[projectInstance: projectInstance]}" />
 
-                    <div>
-                        <g:actionSubmit class="save btn" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                    <div style="margin: 10px">
+                        <g:actionSubmit class="save btn btn-primary" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
                         <g:actionSubmit class="delete btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
                     </div>
                 </g:form>
@@ -65,7 +65,7 @@
         </div>
         <div class="row">
             <div class="span12">
-                <table align="center" border="1">
+                <table class="table">
                     <thead><tr><td colspan="3">Image Upload</td></tr></thead>
                     <tr>
                         <td style="vertical-align: middle;padding:20px">

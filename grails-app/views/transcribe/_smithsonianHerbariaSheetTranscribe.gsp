@@ -10,6 +10,7 @@
             </div>
         </div>
     </div>
+
     <div id="taskMetadata" class="row-fluid">
         <div class="span12">
             <div class="well well-small">
@@ -28,7 +29,6 @@
                     </div>
                 </div>
 
-                </div>
             </div>
         </div>
     </div>
@@ -43,44 +43,53 @@
         <div class="transcribeSectionBody">
 
             <div class="row-fluid">
-
-                <g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.verbatimLocality}" recordValues="${recordValues}" labelClass="span2" widgetClass="span4" />
-
-                <div class="span6">
-                    <div class="row-fluid">
-                        <g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.county}" recordValues="${recordValues}" labelClass="span4" widgetClass="span8" />
-                    </div>
-                    <div class="row-fluid">
-                        <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.stateProvince}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" widgetClass="span8" />
-                    </div>
-                    <div class="row-fluid">
-                        <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" widgetClass="span8" />
+                <div class="control-group">
+                    <div class="span6">
+                        <g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.verbatimLocality}" recordValues="${recordValues}" labelClass="span4" widgetClass="span8" />
                     </div>
                 </div>
-            </div>
 
-            <div class="row-fluid">
-                <div class="span2">
-                    ${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: "Collector(s)"}
-                </div>
-                <div class="span9">
-                    <g:each in="${0..3}" var="idx">
-                        <div class="span3">
-                            <input type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="span12 recordedBy autocomplete" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}"/>&nbsp;
-                            <g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}"/>
+                <div class="control-group">
+                    <div class="span6">
+
+                        <div class="row-fluid">
+                            <g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.county}" recordValues="${recordValues}" labelClass="span4" widgetClass="span8" />
                         </div>
-                    </g:each>
+                        <div class="row-fluid">
+                            <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.stateProvince}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" widgetClass="span8" />
+                        </div>
+                        <div class="row-fluid">
+                            <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.country}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" widgetClass="span8" />
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
-            <div class="row-fluid">
-                <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.recordedByID}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span4" />
-                <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span4"  />
-            </div>
+            <g:templateFieldsForCategory category="${FieldCategory.collectionEvent}" task="${taskInstance}" recordValues="${recordValues}" labelClass="span4" valueClass="span8" />
 
-            <div class="row-fluid">
-                <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.habitat}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span10" />
-            </div>
+            %{--<div class="row-fluid">--}%
+                %{--<div class="span2">--}%
+                    %{--${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: "Collector(s)"}--}%
+                %{--</div>--}%
+                %{--<div class="span9">--}%
+                    %{--<g:each in="${0..3}" var="idx">--}%
+                        %{--<div class="span3">--}%
+                            %{--<input type="text" name="recordValues.${idx}.recordedBy" maxlength="200" class="span12 recordedBy autocomplete" id="recordValues.${idx}.recordedBy" value="${recordValues[idx]?.recordedBy?.encodeAsHTML()}"/>&nbsp;--}%
+                            %{--<g:hiddenField name="recordValues.${idx}.recordedByID" class="recordedByID" id="recordValues.${idx}.recordedByID" value="${recordValues[idx]?.recordedByID?.encodeAsHTML()}"/>--}%
+                        %{--</div>--}%
+                    %{--</g:each>--}%
+                %{--</div>--}%
+            %{--</div>--}%
+
+            %{--<div class="row-fluid">--}%
+                %{--<g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.recordedByID}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span4" />--}%
+                %{--<g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span4"  />--}%
+            %{--</div>--}%
+
+            %{--<div class="row-fluid">--}%
+                %{--<g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.habitat}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span2" widgetClass="span10" />--}%
+            %{--</div>--}%
 
 
         </div>

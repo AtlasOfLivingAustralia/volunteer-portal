@@ -32,7 +32,6 @@ class FieldSyncService {
      * @return
      */
     void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid) {
-
         //sync
         def idx = 0
         def hasMore = true
@@ -48,6 +47,8 @@ class FieldSyncService {
                 oldFields.each { field -> oldFieldValues.put(field.name, field) }
 
                 fieldValuesForRecord.each { keyValue ->
+
+                    println idx + "." + keyValue
 
                     Field oldFieldValue = oldFieldValues.get(keyValue.key)
                     if (oldFieldValue != null) {

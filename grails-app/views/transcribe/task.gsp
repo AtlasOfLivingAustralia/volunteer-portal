@@ -339,14 +339,12 @@
                                 var item = ui.item.data;
 
                                 if (fieldName == 'recordedBy') {
-                                    inputElement.attr('collector_name', item.name);
                                     var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
                                     if (matches.length > 0) {
                                         var recordIdx = matches[1]
                                         var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
-                                        $(elemSelector).val(item.key);
+                                        $(elemSelector).val(item.key).attr('collector_name', item.name);;
                                     }
-
                                 }
                             },
                             source: function(request, response) {
@@ -373,7 +371,7 @@
                     }
                 });
 
-                $("input.recordedBy").change(function(e) {
+                $("input.recordedBy").blur(function(e) {
                     // If the value of the recordedBy field does not match the name in the collector_name attribute
                     // of the recordedByID element it means that the collector name no longer matches the id, so the id
                     // must be cleared.
@@ -482,6 +480,11 @@
 
         .closeSectionLink {
             float: right;
+        }
+
+        .radio-item input {
+            margin: 0;
+            /*vertical-align: middle;*/
         }
 
         /* Mapping tool (popup) */

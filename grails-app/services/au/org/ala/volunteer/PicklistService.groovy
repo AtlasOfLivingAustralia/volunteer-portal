@@ -87,4 +87,22 @@ class PicklistService {
         }
         return results;
     }
+    
+    public List getPicklistItemsForProject(DarwinCoreField picklistField, Project project) {
+        def results = []
+        if (picklistField) {        
+            def pl = Picklist.findByName(picklistField.toString())
+            if (pl) {
+                if (project) {
+                    results = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project.picklistInstitutionCode)
+                    if (!results) {
+                        results = PicklistItem.findAllByPicklist(pl)
+                    }
+                } else {
+                    results = PicklistItem.findAllByPicklist(pl)
+                }
+            }
+        }
+        return results
+    }
 }

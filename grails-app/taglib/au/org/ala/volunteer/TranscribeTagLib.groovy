@@ -24,6 +24,7 @@ import groovy.xml.MarkupBuilder
 class TranscribeTagLib {
 
     def taskService
+    def picklistService
 
     /**
     * @attr task
@@ -40,7 +41,7 @@ class TranscribeTagLib {
         def recordIdx = attrs.recordIdx ?: 0
         def field = getTemplateFieldForTask(task, fieldType)
         def fieldLabel = getFieldLabel(field)
-        def widgetHtml = getWidgetHtml(field, recordValues, recordIdx, attrs, 'span10')
+        def widgetHtml = getWidgetHtml(task, field, recordValues, recordIdx, attrs, 'span10')
         def mb = new MarkupBuilder(out)
         mb.div(class:attrs.labelClass ?: 'span2') {
             if (field.fieldType != DarwinCoreField.spacer) {
@@ -90,21 +91,6 @@ class TranscribeTagLib {
     }
 
     /**
-     * @attr field
-     * @attr recordValues
-     * @attr recordIdx
-     * @attr widgetClass
-     */
-    def renderFieldWidget = { attrs, body ->
-
-        def recordValues = attrs.recordValues
-        def recordIdx = attrs.recordIdx ?: 0
-        def html = getWidgetHtml(attrs.field, recordValues, recordIdx, attrs, attrs.widgetClass)
-
-        out << html
-    }
-
-    /**
      * @attr fieldType
      * @attr task
      * @attr recordValues
@@ -149,7 +135,7 @@ class TranscribeTagLib {
         def name = field.fieldType?.name()
         def label = getFieldLabel(field)
         def hideLabel = attrs.hideLabel as Boolean
-        def widgetHtml = getWidgetHtml(field, recordValues,recordIdx, attrs, "span10")
+        def widgetHtml = getWidgetHtml(task, field, recordValues,recordIdx, attrs, "span10")
 
         if (field.type == FieldType.hidden) {
             mb.mkp.yieldUnescaped(widgetHtml)
@@ -180,7 +166,7 @@ class TranscribeTagLib {
 
     }
 
-    private String getWidgetHtml(TemplateField field, recordValues, recordIdx, attrs, String auxClass) {
+    private String getWidgetHtml(Task taskInstance, TemplateField field, recordValues, recordIdx, attrs, String auxClass) {
 
         if (!field) {
             return ""
@@ -248,9 +234,8 @@ class TranscribeTagLib {
                 )
                 break;
             case FieldType.select:
-                def pl = Picklist.findByName(name)
-                if (pl) {
-                    def options = PicklistItem.findAllByPicklist(pl)
+                def options = picklistService.getPicklistItemsForProject(field.fieldType, taskInstance.project)
+                if (options) {
                     w = g.select(
                         name:"recordValues.${recordIdx}.${name}",
                         from: options,
@@ -263,10 +248,30 @@ class TranscribeTagLib {
                     )
                     break
                 }
+            case FieldType.radio:
+                def options = picklistService.getPicklistItemsForProject(field.fieldType, taskInstance.project)
+                def labels = options*.value
+                if (options) {
+                    w = g.radioGroup(
+                        name:"recordValues.${recordIdx}.${name}",
+                        value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                        // 'class':cssClass,
+                        validationRule:field.validationRule
+                    ) {
+                        out << "<span class=\"radio-item\">${it.radio}&nbsp;${it.label}</span>"
+                    }
+                    break
+                }
+            case FieldType.checkbox:
+                def checked = Boolean.parseBoolean(recordValues?.get(0)?.get(name)?:field?.defaultValue)
+                w = g.checkBox(
+                    name: "recordValues.${recordIdx}.${name}",
+                    value: checked,
+                    validationRule:field.validationRule
+                )
+                break;
             case FieldType.autocomplete:
                 cssClass = cssClass + " autocomplete"
-            case FieldType.radio: // fall through TODO
-            case FieldType.checkbox: // fall through TODO
             case FieldType.text: // fall through
             default:
 
@@ -330,17 +335,19 @@ class TranscribeTagLib {
      * @attr category
      * @attr labelClass
      * @attr valueClass
+     * @attr columns
      *
      */
     def templateFieldsForCategory = { attrs, body ->
         FieldCategory category = attrs.category
         Task task = attrs.task as Task
+        int columns = attrs.columns ?: 2
         String labelClass = attrs.labelClass ?: 'span4'
         String valueClass = attrs.valueClass ?: 'span8'
         def recordValues = attrs.recordValues
         def mb = new MarkupBuilder(out)
         def fields = TemplateField.findAllByCategoryAndTemplate(category, task?.project?.template, [sort: 'displayOrder'])
-        renderFieldsInColumns(2, mb, fields, task, labelClass, valueClass, recordValues, attrs)
+        renderFieldsInColumns(columns, mb, fields, task, labelClass, valueClass, recordValues, attrs)
     }
 
     private void renderFieldsInColumns(int numCols, MarkupBuilder mb, List<TemplateField> fields, Task task, String labelClass, String valueClass, recordValues, attrs) {
@@ -360,7 +367,7 @@ class TranscribeTagLib {
             while (fieldIndex < fields.size()) {
                 mb.div(class:'row-fluid') {
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
-                        mb.div(class:'control-group') {
+                        mb.div(class:'') {
                             mb.div(class:spanClass) {
                                 if (fieldIndex < fields.size()) {
                                     def field = fields[fieldIndex++]
