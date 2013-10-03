@@ -179,7 +179,8 @@ var transcribeValidation = {};
     };
 
     vlib.markFieldInvalid = function(element, message) {
-        var parent = $(element).closest(".control-group");
+        var parent = $(element).closest(".row-fluid");
+
         parent.addClass(vlib.options.warningClass);
         parent.append(validationMessageContent(message));
     };

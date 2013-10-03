@@ -6,8 +6,6 @@ class FieldSyncService {
 
     static transactional = true
 
-    def serviceMethod() {}
-
     Map retrieveFieldsForTask(Task taskInstance) {
         Map recordValues = new LinkedHashMap()
         taskInstance?.fields?.each { field ->
@@ -47,8 +45,6 @@ class FieldSyncService {
                 oldFields.each { field -> oldFieldValues.put(field.name, field) }
 
                 fieldValuesForRecord.each { keyValue ->
-
-                    println idx + "." + keyValue
 
                     Field oldFieldValue = oldFieldValues.get(keyValue.key)
                     if (oldFieldValue != null) {

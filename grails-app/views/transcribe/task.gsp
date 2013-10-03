@@ -69,8 +69,7 @@
                         return transcribeBeforeSubmit();
                     }
 
-                    prepareLatLongWidgets();
-                    prepareDateWidgets();
+                    prepareFieldWidgetsForSubmission();
 
                     return true;
                 });

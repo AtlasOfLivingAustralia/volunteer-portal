@@ -173,7 +173,7 @@ class TranscribeTagLib {
         }
 
         if (field.fieldType == DarwinCoreField.spacer) {
-            return "&nbsp;"
+            return '<span class="${auxClass}">&nbsp;</span>'
         }
 
         def name = field.fieldType.name()
@@ -212,6 +212,9 @@ class TranscribeTagLib {
                 widgetModel.minFieldType = DarwinCoreField.minimumDepthInMeters
                 widgetModel.maxFieldType = DarwinCoreField.maximumDepthInMeters
                 w = render(template: '/transcribe/rangeWidget', model: widgetModel)
+                break
+            case FieldType.sheetNumber:
+                w = render(template: '/transcribe/sheetNumberWidget', model: widgetModel)
                 break
             case FieldType.textarea:
                 int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
@@ -255,6 +258,8 @@ class TranscribeTagLib {
                     w = g.radioGroup(
                         name:"recordValues.${recordIdx}.${name}",
                         value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                        values: labels,
+                        labels: labels,
                         // 'class':cssClass,
                         validationRule:field.validationRule
                     ) {
@@ -431,8 +436,10 @@ class TranscribeTagLib {
                         }
                     }
                     span() {
-                        mkp.yieldUnescaped("&nbsp;&ndash;&nbsp;")
-                        mkp.yield(attrs.description)
+                        if (attrs.description) {
+                            mkp.yieldUnescaped("&nbsp;&ndash;&nbsp;")
+                            mkp.yield(attrs.description)
+                        }
                     }
                     a(class:'closeSectionLink', href:'#') {
                         mkp.yield('Shrink');

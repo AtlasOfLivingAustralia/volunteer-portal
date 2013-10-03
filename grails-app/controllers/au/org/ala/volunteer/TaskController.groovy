@@ -739,7 +739,6 @@ class TaskController {
             writer.writeHeadings = false
 
             def images = stagingService.buildTaskMetaDataList(projectInstance)
-            println images
 
             images.each {
                 writer << it

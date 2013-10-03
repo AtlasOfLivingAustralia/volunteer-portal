@@ -1,6 +1,29 @@
 function prepareFieldWidgetsForSubmission() {
     prepareDateWidgets();
     prepareLatLongWidgets();
+    prepareSheetNumberWidgets();
+}
+
+function prepareSheetNumberWidgets() {
+    $(".sheetNumberWidget").each(function() {
+
+        var targetField = $(this).attr("targetField");
+        if (!targetField) {
+            return;
+        }
+
+        var sheet = $(this).find(".sheetNumber").val();
+        var of = $(this).find(".sheetNumberOf").val();
+
+        var finalValue = sheet;
+        if (of) {
+            finalValue += '/' + of;
+        }
+
+        var selector = "#recordValues\\.0\\." + targetField;
+        $(selector).val(finalValue);
+
+    });
 }
 
 function prepareDateWidgets() {
