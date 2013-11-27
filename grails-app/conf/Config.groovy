@@ -196,18 +196,10 @@ grails.exceptionresolver.params.exclude = ['password']
 
 // set per-environment serverURL stem for creating absolute links
 environments {
-    production {
-        grails.serverURL = "http://volunteer.ala.org.au"
-        server.url = "http://volunteer.ala.org.au"
-        security.cas.appServerName = server.url
-        security.cas.contextPath = ""
-        log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
-        images.home = '/data/volunteer'
-    }
     development {
-        grails.serverURL = "http://baird.ala.org.au:8080/${appName}"
-        server.url = "http://baird.ala.org.au"
-        security.cas.appServerName = "http://baird.ala.org.au:8080"
+        grails.serverURL = "http://devt.ala.org.au:8080/${appName}"
+        server.url = "http://devt.ala.org.au"
+        security.cas.appServerName = "http://devt.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer'
         //log4j.appender.'errors.File'="stacktrace.log"
@@ -220,6 +212,15 @@ environments {
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
         images.home = '/data/volunteer/data/volunteer'
     }
+    production {
+        grails.serverURL = "http://volunteer.ala.org.au"
+        server.url = "http://volunteer.ala.org.au"
+        security.cas.appServerName = server.url
+        security.cas.contextPath = ""
+        log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
+        images.home = '/data/volunteer'
+    }
+
 }
 
 grails {

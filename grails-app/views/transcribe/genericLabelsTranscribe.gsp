@@ -506,42 +506,52 @@
                 </div>
             </div>
 
+            <g:set var="sectionNumber" value="4" />
+
             <div id="transcribeFields">
+                <g:set var="miscFields" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.miscellaneous, template, [sort: 'displayOrder'])}" />
+                <g:if test="${miscFields?.size() > 0}">
                 <table style="width: 100%">
                     <thead>
                         <tr style="width: 950px">
                             <th style="width:950px">
-                                <h3>4. Miscellaneous</h3> &ndash; This section is for a range of fields. Many labels will not contain information for any or all of this fields.
+                                <h3>${sectionNumber++}. Miscellaneous</h3> &ndash; This section is for a range of fields. Many labels will not contain information for any or all of this fields.
                                 <a style="float:right" class="closeSection" href="#">Shrink</a>
                             </th></tr>
                     </thead>
                     <tbody>
-                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.miscellaneous, template, [sort: 'displayOrder'])}" var="field">
+                        <g:each in="${miscFields}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                     </tbody>
                 </table>
+                </g:if>
 
+
+
+                <g:set var="idFields" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.identification, template, [sort: 'displayOrder'])}" />
+                <g:if test="${idFields.size() > 0}">
                 <table style="width: 100%">
                     <thead>
                         <tr style="width:950px">
                             <th style="width:950px">
-                                <h3>5. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section
+                                <h3>${sectionNumber++}. Identification</h3> &ndash; If a label contains information on the name of the organism then record the name and associated information in this section
                                 <a style="float:right" class="closeSection" href="#">Shrink</a>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <g:each in="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.identification, template, [sort: 'displayOrder'])}" var="field">
+                        <g:each in="${idFields}" var="field">
                             <g:fieldFromTemplateField templateField="${field}" recordValues="${recordValues}"/>
                         </g:each>
                     </tbody>
                 </table>
+                </g:if>
                 <table style="width: 100%">
                     <thead>
                         <tr style="width:950px">
                             <th style="width:950px">
-                                <h3>6. Notes</h3> &ndash; Record any comments here that may assist in validating this specimen
+                                <h3>${sectionNumber}. Notes</h3> &ndash; Record any comments here that may assist in validating this specimen
                                 <a style="float:right" class="closeSection" href="#">Shrink</a>
                             </th>
                         </tr>
