@@ -11,7 +11,7 @@
             }
 
         </style>
-        <script type='text/javascript'>
+        <r:script type='text/javascript'>
 
             $(document).ready(function() {
 
@@ -52,7 +52,7 @@
 
             });
 
-        </script>
+        </r:script>
     </head>
 
     <body>

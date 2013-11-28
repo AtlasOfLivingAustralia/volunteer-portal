@@ -15,7 +15,7 @@
             }
 
         </style>
-        <script type='text/javascript'>
+        <r:script type='text/javascript'>
 
             $(document).ready(function() {
                 $(".btnEditSetting").click(function(e) {
@@ -27,7 +27,7 @@
                 });
             });
 
-        </script>
+        </r:script>
     </head>
 
     <body>

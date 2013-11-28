@@ -24,38 +24,27 @@
         }
 
         </style>
-        <script type='text/javascript'>
+        <r:script type='text/javascript'>
 
             $(document).ready(function () {
             });
 
-        </script>
+        </r:script>
     </head>
 
     <body class="sublevel sub-site volunteerportal">
 
-        <cl:navbar/>
+        <cl:headerContent title="Load Task Data" selectedNavItem="expeditions">
+            <%
+                pageScope.crumbs = [
+                    [link: createLink(controller: 'project', action: 'index', id:projectInstance.id), label: projectInstance.featuredLabel],
+                    [link: createLink(controller: 'project', action: 'edit', id:projectInstance.id), label: "Edit"]
+                ]
+            %>
+        </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><a class="home" href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a>
-                        <li><a class="home" href="${createLink(controller: 'project', action: 'edit', id: projectInstance.id)}">Edit Project</a>
-                        </li>
-                        <li class="last">Load Task Data</li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Load Task Data</h1>
-                </hgroup>
-            </div>
-        </header>
-
-        <div>
-            <div class="inner">
+        <div class="row">
+            <div class="span12">
 
                 <div id="fieldDataSection" class="section">
                     <h4>Upload a csv data file for field values</h4>
@@ -69,7 +58,7 @@
                         <g:form controller="task" action="uploadTaskDataFile" method="post" enctype="multipart/form-data">
                             <input type="file" name="dataFile" id="dataFile" />
                             <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-                            <g:submitButton name="Upload Data File"/>
+                            <g:submitButton class="btn" name="Upload Data File"/>
                         </g:form>
                     </g:else>
                 </div>
@@ -77,13 +66,13 @@
                 <div id="fieldValuesSection" class="section">
 
                     <div>
-                        <small><a class="button orange" href="${createLink(action:'processTaskDataLoad',params:[projectId: projectInstance.id])}">Load Task Data</a></small>
+                        <small><a class="btn btn-primary" href="${createLink(action:'processTaskDataLoad',params:[projectId: projectInstance.id])}">Load Task Data</a></small>
                     </div>
 
                     <hr/>
 
                     <h4>Task Data to load preview</h4>
-                    <table class="bvp-expeditions">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th style="text-align: left">Task Id</th>
