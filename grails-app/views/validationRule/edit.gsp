@@ -51,6 +51,15 @@
 
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                    <label for="validationType"><g:message code="validationRule.validationType.label" default="Validation Type" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: rule, field: 'validationType', 'errors')}">
+                                    <g:select name="validationType" from="${au.org.ala.volunteer.ValidationType.values()}" value="${rule.validationType}" />
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                     <label for="regularExpression"><g:message code="validationRule.regularExpression.label" default="Pattern" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: rule, field: 'regularExpression', 'errors')}">

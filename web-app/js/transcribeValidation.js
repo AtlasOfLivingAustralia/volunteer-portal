@@ -3,17 +3,16 @@ var transcribeValidation = {};
 (function(vlib) {
 
     vlib.options = {
-        warningClass: 'error',
-        alertClass: 'alert-error',
+        errorClass: 'error',
+        warningClass: 'warning',
+        alertErrorClass: 'alert-error',
+        alertWarningClass: 'alert-warning',
         validationMessageClass: 'validationMessage',
-        ruleAttribute: 'validationRule'
+        ruleAttribute: 'validationRule',
+        defaultErrorMessage: 'Invalid field value'
     };
 
-    vlib.messages = {
-        generic: 'Invalid field value'
-    };
-
-    vlib.rules = { };
+    vlib.rules = { };  // will hold a bunch of rule objects, each with a 'test' closure, 'message' and 'type'
 
     vlib.clearMessages = function() {
         $("." + vlib.options.warningClass).each(function(index, element) {
@@ -32,16 +31,18 @@ var transcribeValidation = {};
 
         // The error list will hold a reference to each element in error, along with a message
         var errorList = [];
+        var hasErrors = false;
+        var hasWarnings = false;
         // test each input element that has a validation rule attached to it...
         $('[' + vlib.options.ruleAttribute + ']').each(function(index, element) {
             var ruleName = $(element).attr(vlib.options.ruleAttribute);
             if (ruleName) {
-                var ruleClosure = vlib.rules[ruleName];
-                if (ruleClosure) {
+                var ruleObject = vlib.rules[ruleName];
+                if (ruleObject) {
                     var value = $.trim($(element).val());
-                    if (!ruleClosure(value, element)) {
+                    if (!ruleObject.test(value, element)) {
                         var message;
-                        var messageSource = vlib.messages[ruleName];
+                        var messageSource = ruleObject.message;
                         if (messageSource) {
                             if (typeof(messageSource) === 'string') {
                                 message = messageSource;
@@ -51,10 +52,16 @@ var transcribeValidation = {};
                         }
 
                         if (!message) {
-                            message = vlib.messages.generic;
+                            message = vlib.defaultErrorMessage;
                         }
 
-                        errorList.push({element: element, message: message});
+                        if (ruleObject.type == 'Error') {
+                            hasErrors = true;
+                        } else {
+                            hasWarnings = true;
+                        }
+
+                        errorList.push({element: element, message: message, type: ruleObject.type});
                     }
                 }
             }
@@ -64,10 +71,10 @@ var transcribeValidation = {};
         vlib.validateTranscribeWidgets(errorList);
 
         $.each(errorList, function(index, error) {
-            vlib.markFieldInvalid(error.element, error.message);
+            vlib.markFieldInvalid(error.element, error.message, error.type);
         });
 
-        return errorList.length == 0;
+        return { hasWarnings : hasWarnings, hasErrors: hasErrors, errorList: errorList }
     };
 
     vlib.validateTranscribeWidgets = function(messages) {
@@ -178,18 +185,21 @@ var transcribeValidation = {};
         return true;
     };
 
-    vlib.markFieldInvalid = function(element, message) {
+    vlib.markFieldInvalid = function(element, message, type) {
         var parent = $(element).closest(".row-fluid");
+        var clazz = vlib.options.warningClass;
+        if (type == 'Error') {
+            clazz = vlib.options.errorClass;
+        }
 
-        parent.addClass(vlib.options.warningClass);
-        parent.append(validationMessageContent(message));
+        parent.addClass(clazz);
+        parent.append(validationMessageContent(message, type));
     };
 
     vlib.validateIsInteger = function(element) {
         var value = element.val();
         if (value) {
             if (!vlib.isInt(value)) {
-                // vlib.markFieldInvalid(element, "Value is not numeric");
                 return false;
             }
         }
@@ -215,9 +225,13 @@ var transcribeValidation = {};
     };
 
     /**********************************************************/
-    var validationMessageContent = function(message) {
+    var validationMessageContent = function(message, messageType) {
+        var alertClass = vlib.options.alertWarningClass;
+        if (messageType == 'Error') {
+            alertClass = vlib.options.alertErrorClass;
+        }
         var buf = '<div class="row-fluid">';
-        buf += '<div class="span12 alert ' + vlib.options.validationMessageClass + ' ' + vlib.options.alertClass + '">' + message + '</div>';
+        buf += '<div class="span12 alert ' + vlib.options.validationMessageClass + ' ' + alertClass + '">' + message + '</div>';
         return buf;
     };
 

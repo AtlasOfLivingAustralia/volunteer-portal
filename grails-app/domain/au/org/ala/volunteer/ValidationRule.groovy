@@ -7,6 +7,7 @@ class ValidationRule {
     String message
     String regularExpression
     Boolean testEmptyValues
+    ValidationType validationType = ValidationType.Warning
 
     static constraints = {
         name nullable: false, unique: true
@@ -14,6 +15,7 @@ class ValidationRule {
         message nullable: true
         regularExpression nullable: true
         testEmptyValues nullable: true
+        validationType nullable: true
     }
 
 }

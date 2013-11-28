@@ -190,6 +190,8 @@ class TranscribeTagLib {
         String w
         def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
         def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass]
+        def validationRuleName = field.validationRule?.replaceAll('\\s', '_')
+
         switch (field.type) {
             case FieldType.latLong:
                 w = render(template: '/transcribe/latLongWidget', model: widgetModel)
@@ -226,7 +228,7 @@ class TranscribeTagLib {
                     rows: rows,
                     value:recordValues?.get(0)?.get(name),
                     'class':cssClass,
-                    validationRule:field.validationRule
+                    validationRule: validationRuleName
                 )
                 break
             case FieldType.hidden:
@@ -247,7 +249,7 @@ class TranscribeTagLib {
                         value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
                         noSelection:['':''],
                         'class':cssClass,
-                        validationRule:field.validationRule
+                        validationRule: validationRuleName
                     )
                     break
                 }
@@ -261,7 +263,7 @@ class TranscribeTagLib {
                         values: labels,
                         labels: labels,
                         // 'class':cssClass,
-                        validationRule:field.validationRule
+                        validationRule:validationRuleName
                     ) {
                         out << "<span class=\"radio-item\">${it.radio}&nbsp;${it.label}</span>"
                     }
@@ -289,7 +291,7 @@ class TranscribeTagLib {
                     maxLength:200,
                     value:recordValues?.get(0)?.get(name),
                     'class':cssClass,
-                    validationRule:field.validationRule
+                    validationRule: validationRuleName
                 )
         }
 

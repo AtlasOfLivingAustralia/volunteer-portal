@@ -656,15 +656,26 @@
 
                 <g:if test="${!isReadonly}">
                     <div class="container-fluid">
-                        <div class="row-fluid" id="validationMessagesContainer" style="display: none">
+                        <div class="row-fluid" id="errorMessagesContainer" style="display: none">
                             <div class="alert alert-error">
                                 <p class="lead">
-                                <strong>Warning!</strong> There may be some problems with fields indicated.
+                                <strong>Warning!</strong>
+                                    There are problems with the field(s) indicated.
+                                    Please correct the fields marked in red before proceeding.
+                                    <br />
+                                    <button id="btnErrorCancelSubmission" class="btn btn-primary">Continue</button>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row-fluid" id="warningMessagesContainer" style="display: none">
+                            <div class="alert alert-warning">
+                                <p class="lead">
+                                <strong>Warning!</strong> There may be some problems with the fields indicated.
                                 If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
                                 </p>
                                 <div>
                                     <button id="btnValidateSubmitInvalid" class="btn">It's ok, submit for validation anyway</button>
-                                    <button id="btnValidateCancelSubmission" class="btn btn-primary">Cancel submission, and let me fix the marked fields</button>
+                                    <button id="btnWarningCancelSubmission" class="btn btn-primary">Cancel submission, and let me fix the marked fields</button>
                                 </div>
                             </div>
                         </div>
@@ -734,10 +745,18 @@
                 submitFormWithAction("${createLink(controller:'validate', action:'dontValidate')}");
             });
 
-            $("#btnValidateCancelSubmission").click(function(e) {
+            $("#btnWarningCancelSubmission").click(function(e) {
                 e.preventDefault();
                 $("#submitButtons").css("display", "block");
-                $('#validationMessagesContainer').css("display", "none");
+                $('#warningMessagesContainer').css("display", "none");
+                $('#errorMessagesContainer').css("display", "none");
+            });
+
+            $("#btnErrorCancelSubmission").click(function(e) {
+                e.preventDefault();
+                $("#submitButtons").css("display", "block");
+                $('#warningMessagesContainer').css("display", "none");
+                $('#errorMessagesContainer').css("display", "none");
             });
 
             $("#btnValidateSubmitInvalid").click(function(e) {
@@ -751,18 +770,23 @@
             });
 
             <g:each in="${au.org.ala.volunteer.ValidationRule.list()}" var="rule">
-                transcribeValidation.rules.${rule.name} = function(value, element) {
-                    <g:if test="${!rule.testEmptyValues}">
-                    if (value) {
-                    </g:if>
-                        var pattern = /${rule.regularExpression}/;
-                        return pattern.test(value);
-                    <g:if test="${!rule.testEmptyValues}">
-                    }
-                    return true;
-                    </g:if>
+
+                <g:set var="ruleName" value="${rule.name?.replaceAll('\\s', '_')}" />
+                transcribeValidation.rules.${ruleName} = {
+                    test: function(value, element) {
+                        <g:if test="${!rule.testEmptyValues}">
+                        if (value) {
+                        </g:if>
+                            var pattern = /${rule.regularExpression}/;
+                            return pattern.test(value);
+                        <g:if test="${!rule.testEmptyValues}">
+                        }
+                        return true;
+                        </g:if>
+                    },
+                    message: "${rule.message}",
+                    type: "${rule.validationType ?: au.org.ala.volunteer.ValidationType.Warning}"
                 };
-                transcribeValidation.messages.${rule.name} = "${rule.message}";
             </g:each>
 
         });
@@ -774,13 +798,19 @@
         }
 
         function checkValidation() {
+            prepareFieldWidgetsForSubmission();
+            var validationResults = transcribeValidation.validateFields()
 
-            if (!transcribeValidation.validateFields()) {
+            if (validationResults.hasErrors) {
                 $("#submitButtons").css("display", "none");
-                $('#validationMessagesContainer').css("display", "block");
-                return false;
+                $('#warningMessagesContainer').css("display", "none");
+                $('#errorMessagesContainer').css("display", "block");
+            } else if (validationResults.hasWarnings) {
+                $("#submitButtons").css("display", "none");
+                $('#warningMessagesContainer').css("display", "block");
+                $('#errorMessagesContainer').css("display", "none");
             }
-            return true;
+            return !validationResults.hasWarnings && !validationResults.hasErrors;
         }
 
 
