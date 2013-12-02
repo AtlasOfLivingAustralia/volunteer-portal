@@ -189,8 +189,12 @@ class TranscribeTagLib {
 
         String w
         def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
-        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass]
-        def validationRuleName = field.validationRule?.replaceAll('\\s', '_')
+        ValidationRule validationRule = null
+        if (field.validationRule) {
+            validationRule = ValidationRule.findByName(field.validationRule)
+        }
+
+        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass, validationRule: validationRule]
 
         switch (field.type) {
             case FieldType.latLong:
@@ -228,7 +232,7 @@ class TranscribeTagLib {
                     rows: rows,
                     value:recordValues?.get(0)?.get(name),
                     'class':cssClass,
-                    validationRule: validationRuleName
+                    validationRule: validationRule?.name
                 )
                 break
             case FieldType.hidden:
@@ -249,7 +253,7 @@ class TranscribeTagLib {
                         value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
                         noSelection:['':''],
                         'class':cssClass,
-                        validationRule: validationRuleName
+                        validationRule: validationRule?.name
                     )
                     break
                 }
@@ -263,7 +267,7 @@ class TranscribeTagLib {
                         values: labels,
                         labels: labels,
                         // 'class':cssClass,
-                        validationRule:validationRuleName
+                        validationRule:validationRule?.name
                     ) {
                         out << "<span class=\"radio-item\">${it.radio}&nbsp;${it.label}</span>"
                     }
@@ -274,7 +278,7 @@ class TranscribeTagLib {
                 w = g.checkBox(
                     name: "recordValues.${recordIdx}.${name}",
                     value: checked,
-                    validationRule:field.validationRule
+                    validationRule: validationRule?.name
                 )
                 break;
             case FieldType.autocomplete:
@@ -291,7 +295,7 @@ class TranscribeTagLib {
                     maxLength:200,
                     value:recordValues?.get(0)?.get(name),
                     'class':cssClass,
-                    validationRule: validationRuleName
+                    validationRule: validationRule?.name
                 )
         }
 

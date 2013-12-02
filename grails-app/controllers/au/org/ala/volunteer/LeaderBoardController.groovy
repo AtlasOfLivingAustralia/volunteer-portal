@@ -44,6 +44,7 @@ class LeaderBoardController {
                 if (userScores) {
                     result = [name: userScores[0][0], score: userScores[0][1]]
                 }
+                break;
             default:
                 break;
         }
@@ -55,7 +56,7 @@ class LeaderBoardController {
         def category = params.category as LeaderBoardCategory
         def today = new Date().clearTime()
         def headingPrefix = "Top 20 volunteers for "
-        def heading =  headingPrefix + category?.toString().toTitleCase()
+        def heading =  headingPrefix + category?.toString()?.toTitleCase()
         def maxRows = 20
         def results = []
         switch (category) {
@@ -88,6 +89,7 @@ class LeaderBoardController {
                     }
                     results << [name: userScores[i][0], score: userScores[i][1], userId: userScores[i][2]]
                 }
+                break;
             default:
                 break;
         }
@@ -158,10 +160,3 @@ class LeaderBoardController {
     }
 }
 
-enum ActivityType {
-    Transcribed, Validated
-}
-
-enum LeaderBoardCategory {
-    daily, weekly, monthly, alltime
-}

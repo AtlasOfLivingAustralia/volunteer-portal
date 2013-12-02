@@ -427,7 +427,7 @@ class ProjectController {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
             
             if (f != null) {
-                def allowedMimeTypes = ['image/jpeg']
+                def allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
                     render(view:'edit', model:[projectInstance:projectInstance])

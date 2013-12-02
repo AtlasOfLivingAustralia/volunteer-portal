@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
+<%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
@@ -769,10 +769,8 @@
                 window.location = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
             });
 
-            <g:each in="${au.org.ala.volunteer.ValidationRule.list()}" var="rule">
-
-                <g:set var="ruleName" value="${rule.name?.replaceAll('\\s', '_')}" />
-                transcribeValidation.rules.${ruleName} = {
+            <g:each in="${ValidationRule.list()}" var="rule">
+                transcribeValidation.rules.${rule.name} = {
                     test: function(value, element) {
                         <g:if test="${!rule.testEmptyValues}">
                         if (value) {
@@ -785,7 +783,7 @@
                         </g:if>
                     },
                     message: "${rule.message}",
-                    type: "${rule.validationType ?: au.org.ala.volunteer.ValidationType.Warning}"
+                    type: "${rule.validationType ?: ValidationType.Warning}"
                 };
             </g:each>
 
