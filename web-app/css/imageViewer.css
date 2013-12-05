@@ -92,6 +92,32 @@
     filter: alpha(opacity=40);
 }
 
+.show-image-control {
+    position: absolute;
+    top: 340px;
+    right: 7px;
+    background: url('/volunteer-portal/images/image-window.png') no-repeat;
+    height: 24px;
+    width: 24px;
+    opacity: 0.9;
+}
+
+.show-image-control a {
+    height: 24px;
+    width: 24px;
+    display: block;
+    text-indent: -999em;
+    position: absolute;
+    outline: none;
+}
+
+.show-image-control a:hover {
+    background: #535353;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+}
+
+
 .rotate-image {
     -moz-transform: rotate(180deg);
     -webkit-transform: rotate(180deg);

@@ -40,32 +40,34 @@
             <div id="imageViewerHeader">
                 <div class="row-fluid">
                     <div class="span12">
-                        <h2>Task image: ${taskInstance?.project?.featuredLabel} - ${taskInstance?.externalIdentifier}</h2>
+                        <h4>${taskInstance?.project?.featuredLabel} - ${taskInstance?.externalIdentifier}</h4>
                         <cl:messages/>
                     </div>
                 </div>
 
                 <div class="row-fluid" style="margin-bottom: 10px">
-                    <div class="span4">
-                        <g:if test="${sequenceNumber >= 0}">
-                            <span>Image sequence number: ${sequenceNumber}</span>
-                        </g:if>
-                    </div>
 
-                    <div class="span8" id="journalPageButtons">
-                        <button class="btn" id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
+                    <div class="span9" id="journalPageButtons">
+                        <button class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
                             <img src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous
                         </button>
-                        <button class="btn" id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
+                        <button class="btn btn-small" id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
                             show next <img src="${resource(dir: 'images', file: 'right_arrow.png')}">
                         </button>
-                        <button class="btn" id="rotateImage" title="Rotate the page 180 degrees">
+                        <button class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees">
                             Rotate&nbsp;<img src="${resource(dir: 'images', file: 'rotate.png')}">
                         </button>
-                        <button class="btn" id="closeWindow" title="Close this window">
+                        <button class="btn btn-small" id="closeWindow" title="Close this window">
                             Close
                         </button>
                     </div>
+
+                    <div class="span3">
+                        <g:if test="${sequenceNumber >= 0}">
+                            <span class="pull-right label label-info">Sequence number: ${sequenceNumber}</span>
+                        </g:if>
+                    </div>
+
                 </div>
             </div>
 
@@ -74,7 +76,7 @@
                     <div id="imageWell" class="well well-small">
                         <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                             <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
-                                <g:imageViewer multimedia="${multimedia}" hidePinImage="${true}" />
+                                <g:imageViewer multimedia="${multimedia}" hidePinImage="${true}" hideShowInOtherWindow="${true}" />
                             </g:if>
                         </g:each>
                     </div>
@@ -108,7 +110,7 @@
 
                 $("#rotateImage").click(function (e) {
                     e.preventDefault();
-                    $("#image-image-container img").toggleClass("rotate-image");
+                    $("#image-container img").toggleClass("rotate-image");
                 });
 
                 $(window).resize(function(e) {

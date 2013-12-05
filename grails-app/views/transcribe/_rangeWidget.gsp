@@ -2,7 +2,7 @@
 <div class="collectorColumnWidget control-group ${cssClass}">
 
     <div class="row-fluid" style="vertical-align: bottom">
-        <div class="span2">
+        <div class="span3">
             (from)
         </div>
         <div class="span3">

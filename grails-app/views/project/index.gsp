@@ -185,6 +185,12 @@
             color: white;
         }
 
+        .copyright-label {
+            font-style: italic;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
 
     </style>
 </head>
@@ -211,61 +217,65 @@
         </div>
     </cl:headerContent>
 
-    <div class="row">
+    <div class="row" style="margin-top: 10px">
+
         <div class="span4" id="sidebarDiv">
-            <section id="projectSideBar">
 
-                <section id="buttonSection">
-                    <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-large" id="transcribeButton">
-                        Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt="">
-                    </a>
-                    <br>
-                    <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-small">
-                        View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt="">
-                    </a>
-                    <a href="${createLink(controller: 'user', action: 'myStats', params: [projectId: projectInstance.id])}" class="btn btn-small">
-                        My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt="">
-                    </a>
-                    <br>
-                    <g:if test="${au.org.ala.volunteer.FrontPage.instance().enableForum}">
-                        <a style="margin-top: 8px;" href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="btn btn-small">
-                            Visit the Project Forum&nbsp;<img src="${resource(dir: 'images', file: 'forum.png')}" width="18" height="18" alt="Forum">
+            <div class="well well-small">
+                <section id="projectSideBarxxx">
+
+                    <section id="buttonSection">
+                        <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-large" id="transcribeButton">
+                            Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt="">
                         </a>
+                        <br>
+                        <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-small">
+                            View tutorials <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_viewtutorials.png" width="18" height="18" alt="">
+                        </a>
+                        <a href="${createLink(controller: 'user', action: 'myStats', params: [projectId: projectInstance.id])}" class="btn btn-small">
+                            My tasks <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_mytasks.png" width="12" height="18" alt="">
+                        </a>
+                        <br>
+                        <g:if test="${au.org.ala.volunteer.FrontPage.instance().enableForum}">
+                            <a style="margin-top: 8px;" href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="btn btn-small">
+                                Visit the Project Forum&nbsp;<img src="${resource(dir: 'images', file: 'forum.png')}" width="18" height="18" alt="Forum">
+                            </a>
+                        </g:if>
+                    </section>
+
+                    <section class="padding-bottom">
+                        <h4>${projectInstance.featuredLabel} progress</h4>
+
+                        <div id="recordsChart">
+                            <strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${percentComplete}" format="#"/>%</strong>)
+                        </div>
+
+                        <div id="recordsChartWidget1" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="41">
+                            <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: ${formatNumber(format: "#", number: percentComplete)}%; "></div>
+                        </div>
+                    </section>
+
+                    <g:if test="${projectInstance.showMap}">
+                        <h3>Transcribed records</h3>
+                        <div id="recordsMap" style="margin-bottom: 12px"></div>
                     </g:if>
+
                 </section>
-
-                <section class="padding-bottom">
-                    <h4>${projectInstance.featuredLabel} progress</h4>
-
-                    <div id="recordsChart">
-                        <strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${percentComplete}" format="#"/>%</strong>)
-                    </div>
-
-                    <div id="recordsChartWidget1" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="41">
-                        <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: ${formatNumber(format: "#", number: percentComplete)}%; "></div>
-                    </div>
-                </section>
-
-                <g:if test="${projectInstance.showMap}">
-                    <h3>Transcribed records</h3>
-                    <div id="recordsMap" style="margin-bottom: 12px"></div>
-                </g:if>
-
-            </section>
+            </div>
         </div>
 
         <div class="span8">
             <section class="projectContent">
                 <section>
                     <h2>${projectInstance.featuredLabel} overview</h2>
-                    <div class="row">
-                        <div class="span2">
-                            <img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" width="200" height="124"/>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <img src="${projectInstance.featuredImage}" alt="" title="${projectInstance.name}" />
                             <g:if test="${projectInstance.featuredImageCopyright}">
                                 <div class="copyright-label">${projectInstance.featuredImageCopyright}</div>
                             </g:if>
                         </div>
-                        <div class="span7">
+                        <div class="span8">
                             ${projectInstance.description}
                         </div>
                     </div>

@@ -334,6 +334,14 @@ class TranscribeTagLib {
                                 }
                             }
                         }
+                        if (!attrs.hideShowInOtherWindow) {
+                            div(class:'show-image-control') {
+                                a(id:'showImageWindow', href:'#', title:'Show image in a separate window') {
+                                    mkp.yield('Show image in a separate window')
+                                }
+                            }
+
+                        }
                     }
                 }
             }

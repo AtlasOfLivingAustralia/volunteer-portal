@@ -99,17 +99,11 @@
                         $("#image-container").css("background", "darkgray");
                         $(".pan-image a").attr("title", "Return the image to its normal position");
                     }
-
                 });
 
-                // display previous journal page in new window
-                $("#showImageButton").click(function (e) {
+                $("#showImageWindow").click(function(e) {
                     e.preventDefault();
-                    var uri = "${createLink(controller: 'task', action:'showImage', id: taskInstance.id)}"
-                    newwindow = window.open(uri, 'journalWindow', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
-                    if (window.focus) {
-                        newwindow.focus()
-                    }
+                    window.open("${createLink(controller:'task', action:"showImage", id:taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
                 });
 
                 // display previous journal page in new window
@@ -573,7 +567,7 @@
 
     <body>
 
-        <cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.externalIdentifier}">
+        <cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.externalIdentifier}" hideTitle="${true}">
             <%
                 pageScope.crumbs = [
                     [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')],

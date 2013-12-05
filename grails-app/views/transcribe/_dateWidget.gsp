@@ -16,7 +16,7 @@
 <div class="dateWidget" targetField="${field.fieldType}" >
 
     <div class="row-fluid control-group" >
-        <div class="span2">
+        <div class="span3">
             (from)
         </div>
         <g:each var="letter" in="${dateLayout}">
@@ -38,7 +38,7 @@
         </g:each>
     </div>
     <div class="row-fluid control-group">
-        <div class="span2">
+        <div class="span3">
             (to)
         </div>
 
