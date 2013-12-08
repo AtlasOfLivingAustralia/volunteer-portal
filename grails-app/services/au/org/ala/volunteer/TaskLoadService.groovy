@@ -267,7 +267,7 @@ class TaskLoadService {
     }
 
     private static String replaceSpecialCharacters(String value) {
-        def newValue = value.replaceAll("\\\\n", "\n")
+        def newValue = value?.replaceAll("\\\\n", "\n")
         return newValue
     }
 
