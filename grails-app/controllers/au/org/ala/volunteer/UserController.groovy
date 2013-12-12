@@ -14,9 +14,6 @@ class UserController {
     def taskService
     def authService
     def userService
-    def fieldSyncService
-    def fieldService
-    def dataSource
     def achievementService
     def logService
 
@@ -46,9 +43,21 @@ class UserController {
           params.order = "desc"
         }
 
-        def currentUser = authService.username()
-        def userList = User.list(params)
+        def userList
 
+        if (params.q) {
+            def c = User.createCriteria()
+            userList = c.list(params) {
+                or {
+                    ilike("displayName", '%' + params.q + '%')
+                    ilike("userId", '%' + params.q + '%')
+                }
+            }
+        } else {
+            userList = User.list(params)
+        }
+
+        def currentUser = authService.username()
         [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
     }
 

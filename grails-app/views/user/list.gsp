@@ -62,12 +62,9 @@
 
     <body>
 
-        <cl:headerContent crumbLabel="Volunteers" title="Volunteer list ${projectInstance ? 'for ' + projectInstance.name : ''}">
+        <cl:headerContent crumbLabel="Volunteers" title="Volunteer transcribers">
             <%
                 pageScope.crumbs = []
-                if (projectInstance) {
-                    pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
-                }
             %>
         </cl:headerContent>
 
@@ -86,26 +83,16 @@
                             </th>
                         </tr>
                         <tr>
-                            <g:if test="${projectInstance}">
+                            <th></th>
+                            <g:sortableColumn style="text-align: left" property="displayName" title="${message(code: 'user.user.label', default: 'Name')}" params="${[q: params.q]}"/>
+                            <g:sortableColumn style="text-align: center" property="transcribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}" params="${[q: params.q]}"/>
+                            <cl:ifValidator project="${null}">
+                                <g:sortableColumn style="text-align: center" property="validatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}" params="${[q: params.q]}"/>
+                            </cl:ifValidator>
+                            <cl:ifNotValidator>
                                 <th></th>
-                                <th>Name</th>
-                                <th>Tasks completed</th>
-                                <th>Tasks validated</th>
-                                <th>A volunteer since</th>
-                            </g:if>
-                            <g:else>
-                                <th></th>
-                                <g:sortableColumn style="text-align: left" property="displayName" title="${message(code: 'user.user.label', default: 'Name')}" params="${[q: params.q]}"/>
-                                <g:sortableColumn property="transcribedCount" title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}" params="${[q: params.q]}"/>
-                                <cl:ifValidator project="${null}">
-                                    <g:sortableColumn property="validatedCount" title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}" params="${[q: params.q]}"/>
-                                </cl:ifValidator>
-                                <cl:ifNotValidator>
-                                    <th></th>
-                                </cl:ifNotValidator>
-                                <g:sortableColumn property="created" title="${message(code: 'user.created.label', default: 'A volunteer since')}" params="${[q: params.q]}"/>
-                            </g:else>
-
+                            </cl:ifNotValidator>
+                            <g:sortableColumn style="text-align: center" property="created" title="${message(code: 'user.created.label', default: 'A volunteer since')}" params="${[q: params.q]}"/>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,7 +118,7 @@
             </div>
 
             <div class="pagination">
-                <g:paginate total="${userInstanceTotal}" id="${params.id}"/>
+                <g:paginate total="${userInstanceTotal}" id="${params.id}" params="${[q:params.q]}"/>
             </div>
         </div>
 
