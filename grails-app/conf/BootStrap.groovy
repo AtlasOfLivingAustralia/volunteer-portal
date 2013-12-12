@@ -114,10 +114,28 @@ class BootStrap {
         if (FrontPage.list()[0] == null) {
             def frontPage = new FrontPage()
             def projectList = Project.list()
-            frontPage.projectOfTheDay = projectList[0]
-            frontPage.featuredProject1 = projectList[1]
-            frontPage.featuredProject2 = projectList[2]
-            frontPage.featuredProject3 = projectList[3]
+            if (projectList.size() > 0) {
+                frontPage.projectOfTheDay = projectList[0]
+            }
+
+            if (projectList.size() > 1) {
+                frontPage.featuredProject1 = projectList[1]
+            }
+            if (projectList.size() > 2) {
+                frontPage.featuredProject2 = projectList[2]
+            }
+            if (projectList.size() > 3) {
+                frontPage.featuredProject3 = projectList[3]
+            }
+            if (projectList.size() > 4) {
+                frontPage.featuredProject4 = projectList[4]
+            }
+            if (projectList.size() > 5) {
+                frontPage.featuredProject5 = projectList[5]
+            }
+            if (projectList.size() > 6) {
+                frontPage.featuredProject6 = projectList[6]
+            }
 
             frontPage.save(flush: true, failOnError: true)
         }
