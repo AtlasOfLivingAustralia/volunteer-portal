@@ -41,7 +41,7 @@ class TranscribeTagLib {
         def recordIdx = attrs.recordIdx ?: 0
         def field = getTemplateFieldForTask(task, fieldType)
         def fieldLabel = getFieldLabel(field)
-        def widgetHtml = getWidgetHtml(task, field, recordValues, recordIdx, attrs, 'span10')
+        def widgetHtml = getWidgetHtml(task, field, recordValues, recordIdx, attrs, 'span12')
         def mb = new MarkupBuilder(out)
         mb.div(class:attrs.labelClass ?: 'span2') {
             if (field.fieldType != DarwinCoreField.spacer) {
@@ -50,11 +50,17 @@ class TranscribeTagLib {
                 mkp.yieldUnescaped("&nbsp;")
             }
         }
-        mb.div(class:attrs.widgetClass ?: 'span10') {
-            mkp.yieldUnescaped(widgetHtml)
-            if (field.helpText) {
-                def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
-                mkp.yieldUnescaped(help)
+        mb.div(class:attrs.widgetClass ?: 'span12') {
+            div(class: 'span10') {
+                mkp.yieldUnescaped(widgetHtml)
+            }
+            div(class: 'span2') {
+                if (field.helpText) {
+                    def help = "<a href='#' class='fieldHelp' title='${field.helpText}' tabindex='-1'><span class='help-container'>&nbsp;</span></a>"
+                    mkp.yieldUnescaped(help)
+                } else {
+                    mkp.yieldUnescaped("&nbsp;")
+                }
             }
         }
 
@@ -104,7 +110,7 @@ class TranscribeTagLib {
         DarwinCoreField fieldType = attrs.fieldType
         def recordValues = attrs.recordValues
         def labelClass = attrs.labelClass ?: "span2"
-        def valueClass = attrs.valueClass ?: "span10"
+        def valueClass = attrs.valueClass ?: "span12"
         def rowClass = attrs.rowClass ?: "row-fluid"
         def recordIdx = attrs.recordIdx ?: 0
 
@@ -135,7 +141,7 @@ class TranscribeTagLib {
         def name = field.fieldType?.name()
         def label = getFieldLabel(field)
         def hideLabel = attrs.hideLabel as Boolean
-        def widgetHtml = getWidgetHtml(task, field, recordValues,recordIdx, attrs, "span10")
+        def widgetHtml = getWidgetHtml(task, field, recordValues,recordIdx, attrs, "span12")
 
         if (field.type == FieldType.hidden) {
             mb.mkp.yieldUnescaped(widgetHtml)
@@ -155,10 +161,16 @@ class TranscribeTagLib {
                     }
                 }
                 div(class:valueClass) {
-                    mkp.yieldUnescaped(widgetHtml)
-                    if (field.helpText) {
-                        def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
-                        mkp.yieldUnescaped(help)
+                    div(class:'span10') {
+                        mkp.yieldUnescaped(widgetHtml)
+                    }
+                    div(class:'span2') {
+                        if (field.helpText) {
+                            def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
+                            mkp.yieldUnescaped(help)
+                        } else {
+                            mkp.yieldUnescaped("&nbsp;")
+                        }
                     }
                 }
             }
@@ -505,7 +517,7 @@ class TranscribeTagLib {
         def field = attrs.field as TemplateField
         if (field && field.helpText) {
             def mb = new MarkupBuilder(out)
-            mb.a(href:'#', class:'fieldHelp', title:field.helpText) {
+            mb.a(href:'#', class:'fieldHelp', title:field.helpText, tabindex: "-1") {
                 span(class:'help-container') {
                     mkp.yieldUnescaped('&nbsp;')
                 }

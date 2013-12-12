@@ -85,6 +85,7 @@ function prepareLatLongWidgets() {
             var degrees = $(this).find(".degrees").val();
             var minutes = $(this).find(".minutes").val();
             var seconds = $(this).find(".seconds").val();
+            var direction = $(this).find(".direction").val();
             if (degrees) {
                 finalValue = degrees + "°";
                 if (minutes) {
@@ -92,6 +93,9 @@ function prepareLatLongWidgets() {
                     if (seconds) {
                         finalValue += seconds + '"';
                     }
+                }
+                if (direction) {
+                    finalValue += direction;
                 }
             }
         }

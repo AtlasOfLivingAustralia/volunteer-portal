@@ -1,4 +1,4 @@
-<div class="collectorColumnWidget control-group span10 ${cssClass}" fieldType="${field.fieldType}">
+<div class="collectorColumnWidget control-group span12 ${cssClass}" fieldType="${field.fieldType}">
 
     <div class="row-fluid">
         <div class="span12">

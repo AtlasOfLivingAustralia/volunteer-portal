@@ -20,10 +20,10 @@ import java.util.regex.Pattern
 class WebUtils {
 
     public static DECIMAL_DEGREE_PATTERN = Pattern.compile("^\\d+[.]\\d+\$")
-    public static DEGREE_DECIMAL_MINUTES_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)[.](\\d+)\$")
-    public static DEGREE_PATTERN = Pattern.compile("^(\\d+)[°]\$")
-    public static DEGREE_MINUTES_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)[']\$")
-    public static DEGREE_MINUTES_SECONDS_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)['](\\d+)[\"]\$")
+    public static DEGREE_DECIMAL_MINUTES_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)[.](\\d+)([NnEeWwSs]?)\$")
+    public static DEGREE_PATTERN = Pattern.compile("^(\\d+)[°]([NnEeWwSs]?)\$")
+    public static DEGREE_MINUTES_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)[']([NnEeWwSs]?)\$")
+    public static DEGREE_MINUTES_SECONDS_PATTERN = Pattern.compile("^(\\d+)[°](\\d+)['](\\d+)[\"]([NnEeWwSs]?)\$")
 
     public static YEAR_PATTERN = Pattern.compile("^(\\d{2,4})\$")
     public static YEAR_MONTH_PATTERN = Pattern.compile("^(\\d{2,4})-(\\d{1,2})\$")
@@ -83,22 +83,22 @@ class WebUtils {
 
             matcher = DEGREE_DECIMAL_MINUTES_PATTERN.matcher(val)
             if (matcher.matches()) {
-                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2))
+                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2), direction: matcher.group(3))
             }
 
             matcher = DEGREE_PATTERN.matcher(val)
             if (matcher.matches()) {
-                return new LatLongValues(degrees: matcher.group(1))
+                return new LatLongValues(degrees: matcher.group(1), direction: matcher.group(2))
             }
 
             matcher = DEGREE_MINUTES_PATTERN.matcher(val)
             if (matcher.matches()) {
-                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2))
+                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2), direction: matcher.group(3))
             }
 
             matcher = DEGREE_MINUTES_SECONDS_PATTERN.matcher(val)
             if (matcher.matches()) {
-                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2), seconds: matcher.group(3))
+                return new LatLongValues(degrees: matcher.group(1), minutes: matcher.group(2), seconds: matcher.group(3), direction: matcher.group(4))
             }
         }
 
@@ -222,6 +222,7 @@ public class LatLongValues {
     String minutes
     String seconds
     String decimalDegrees
+    String direction
 }
 
 public class DateRange {

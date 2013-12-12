@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.volunteer.PicklistItem; au.org.ala.volunteer.Picklist" %>
-<div>
+<div style="height: 600px">
     <div id="mapWidgets">
         <div id="mapWrapper">
             <div id="mapCanvas"></div>
@@ -8,8 +8,10 @@
         </div>
 
         <div id="mapInfo">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <div id="sightingAddress">
                 <h4>Locality Search</h4>
+
                 <textarea name="address" id="address" size="32" rows="2" value=""></textarea>
                 <button id="locationSearch" class="btn btn-small">Search</button>
                 <div class="searchHint">If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description. Choose a location, or move the pin to a location that you think represents the Verbatim Locality as sensibly as possible. Where the map tool cant find a location simply fill in the State/territory and Country fields</div>
@@ -48,6 +50,7 @@
 
             <div style="text-align: center">
                 <button id="setLocationFields" class="btn btn-primary">Copy values to main form</button>
+                <button id="btnClose" class="btn">Cancel</button>
             </div>
 
         </div>
@@ -128,6 +131,8 @@
                 });
 
         var localityStr = $(':input.verbatimLocality').val();
+
+
         if (!$(':input#address').val()) {
             var latLongRegex = /([-]{0,1}\d+)[^\d](\d+)[^\d](\d+).*?([-]{0,1}\d+)[^\d](\d+)[^\d](\d+)/;
             var match = latLongRegex.exec(localityStr);
@@ -135,6 +140,14 @@
                 var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
                 $(':input#address').val(interpretedLatLong);
             } else {
+                var country = $(":input.country").val();
+                if (country) {
+                    if (localityStr) {
+                        localityStr += ", " + country;
+                    } else {
+                        localityStr = country;
+                    }
+                }
                 $(':input#address').val(localityStr);
             }
         }
@@ -248,72 +261,80 @@
         }
     }
 
+
+    $(document).ready(function() {
+
+        $("#btnClose").click(function(e) {
+            e.preventDefault();
+            hideModal();
+        });
+
         // trigger Google geolocation search on search button
-    $('#locationSearch').click(function(e) {
-        e.preventDefault();
-        // ignore the href text - used for data
-        codeAddress();
-    });
-
-    $('input#address').keypress(function(e) {
-        //alert('form key event = ' + e.which);
-        if (e.which == 13) {
+        $('#locationSearch').click(function(e) {
+            e.preventDefault();
+            // ignore the href text - used for data
             codeAddress();
-        }
-    });
+        });
 
-    // Catch Coordinate Uncertainty select (mapping tool) change
-    $('.coordinatePrecision, #infoUncert').change(function(e) {
-        var rad = parseInt($(this).val());
-        circle.setRadius(rad);
-        updateMarkerPosition(marker.getPosition());
-    });
+        $('input#address').keypress(function(e) {
+            //alert('form key event = ' + e.which);
+            if (e.which == 13) {
+                codeAddress();
+            }
+        });
 
-    $('#setLocationFields').click(function(e) {
-        e.preventDefault();
-        if ($('#infoLat').html() && $('#infoLng').html()) {
-            // copy map fields into main form
-            $('.decimalLatitude').val($('#infoLat').html());
-            $('.decimalLongitude').val($('#infoLng').html());
-            $(':input.coordinateUncertaintyInMeters').val($('#infoUncert').val());
-            // locationObj is a global var set from geocoding lookup
-            for (var i = 0; i < locationObj.length; i++) {
-                var name = locationObj[i].long_name;
-                var type = locationObj[i].types[0];
-                var hasLocality = false;
-                // go through each avail option
-                if (type == 'country') {
-                    //$(':input.countryCode').val(name1);
-                    $(':input.country').val(name);
-                } else if (type == 'locality') {
-                    $(':input.locality').val(name);
-                    hasLocality = true;
-                } else if (type == 'administrative_area_level_1') {
-                    $(':input.stateProvince').val(name);
-                } else {
-                    //$(':input.locality').val(name);
+        // Catch Coordinate Uncertainty select (mapping tool) change
+        $('.coordinatePrecision, #infoUncert').change(function(e) {
+            var rad = parseInt($(this).val());
+            circle.setRadius(rad);
+            updateMarkerPosition(marker.getPosition());
+        });
+
+        $('#setLocationFields').click(function(e) {
+            e.preventDefault();
+            if ($('#infoLat').html() && $('#infoLng').html()) {
+                // copy map fields into main form
+                $('.decimalLatitude').val($('#infoLat').html());
+                $('.decimalLongitude').val($('#infoLng').html());
+                $(':input.coordinateUncertaintyInMeters').val($('#infoUncert').val());
+                // locationObj is a global var set from geocoding lookup
+                for (var i = 0; i < locationObj.length; i++) {
+                    var name = locationObj[i].long_name;
+                    var type = locationObj[i].types[0];
+                    var hasLocality = false;
+                    // go through each avail option
+                    if (type == 'country') {
+                        //$(':input.countryCode').val(name1);
+                        $(':input.country').val(name);
+                    } else if (type == 'locality') {
+                        $(':input.locality').val(name);
+                        hasLocality = true;
+                    } else if (type == 'administrative_area_level_1') {
+                        $(':input.stateProvince').val(name);
+                    } else {
+                        //$(':input.locality').val(name);
+                    }
                 }
+
+                // update the verbatimLocality picklist on the server
+                var url = VP_CONF.updatePicklistUrl;
+                var params = {
+                    name: $(":input.verbatimLocality").val(),
+                    lat: $(":input.decimalLatitude").val(),
+                    lng: $(":input.decimalLongitude").val(),
+                    cuim: $(':input.coordinateUncertaintyInMeters').val()
+                };
+                $.getJSON(url, params, function(data) {
+                    // only interested in return text for debugging problems
+                    //alert(url + " returned: " + data);
+                });
+
+                hideModal();
+            } else {
+                alert('Location data is empty. Use the search and/or drag the map icon to set the location first.');
             }
 
-            // update the verbatimLocality picklist on the server
-            var url = VP_CONF.updatePicklistUrl;
-            var params = {
-                name: $(":input.verbatimLocality").val(),
-                lat: $(":input.decimalLatitude").val(),
-                lng: $(":input.decimalLongitude").val(),
-                cuim: $(':input.coordinateUncertaintyInMeters').val()
-            };
-            $.getJSON(url, params, function(data) {
-                // only interested in return text for debugging problems
-                //alert(url + " returned: " + data);
-            });
-
-            hideModal();
-        } else {
-            alert('Location data is empty. Use the search and/or drag the map icon to set the location first.');
-        }
-
+        });
     });
-
 
 </script>

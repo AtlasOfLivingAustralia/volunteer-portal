@@ -1711,30 +1711,38 @@ class VolunteerTagLib {
         def taskInstance = attrs.task as Task
 
         if (taskInstance) {
-            User userInstance = null;
+            User validator = null;
+            User transcriber = null;
             if (taskInstance.fullyValidatedBy) {
-                userInstance = User.findByUserId(taskInstance?.fullyValidatedBy)
+                validator = User.findByUserId(taskInstance?.fullyValidatedBy)
+            }
+
+            if (taskInstance.fullyTranscribedBy) {
+                transcriber = User.findByUserId(taskInstance?.fullyTranscribedBy)
             }
             def mb = new MarkupBuilder(out)
 
-            // <span style="color:gray;">&nbsp;&nbsp;<g:link controller="task" action="projectAdmin" id="${taskInstance?.project?.id}">Validation List</g:link></span>
-            mb.span(style: "color:gray;") {
-                mkp.yieldUnescaped("&nbsp;&nbsp;")
-                a(href:createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone()), "Validation List")
-
-            }
-
-            mb.span(style: "color:gray;") {
-                mkp.yieldUnescaped("&nbsp;&nbsp;")
-                def status = "Not yet validated";
-                if (taskInstance.isValid == false) {
-                    status = "No"
-                } else if (taskInstance.isValid) {
-                    status = "Yes"
+            if (transcriber) {
+                mb.span(class:"label label-info") {
+                    mkp.yield("Transcribed by ${transcriber.displayName} on ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
                 }
-
-                mkp.yield("[Is valid: ${status} | validatedBy: ${userInstance?.displayName ?: ''}]")
             }
+
+            if (validator) {
+                def status = "Not yet validated"
+                def badgeClass = "label"
+                if (taskInstance.isValid == false) {
+                    status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    badgeClass = "label label-important"
+                } else if (taskInstance.isValid) {
+                    status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    badgeClass = "label label-success"
+                }
+                mb.span(class:badgeClass) {
+                    mkp.yield(status)
+                }
+            }
+
         }
     }
 

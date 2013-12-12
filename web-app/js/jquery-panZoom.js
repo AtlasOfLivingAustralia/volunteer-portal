@@ -483,10 +483,10 @@
                 methods.fit.apply(this);
             } else {
                 if (data.position.x2 - data.position.x1 < settings.min_width/settings.factor) {
-                    data.position.x2 = data.position.x1*1+settings.min_width/settings.factor;
+                    data.position.x2 = data.position.x1*1 + settings.min_width/settings.factor;
                 }
                 if (data.position.y2 - data.position.y1 < settings.min_height/settings.factor) {
-                    data.position.y2 = data.position.y1*1+settings.min_height/settings.factor;
+                    data.position.y2 = data.position.y1*1 + settings.min_height/settings.factor;
                 }
             }
         }
@@ -508,31 +508,33 @@
             }
 
             var width = data.position.x2 - data.position.x1;
+            var allowedX = data.viewport_dimensions.x * 0.9;
             if (width < data.viewport_dimensions.x) {
                 // center horizontally
                 var centerX = data.viewport_dimensions.x / 2;
                 data.position.x1 = centerX - (width/2);
                 data.position.x2 = centerX + (width/2);
             } else {
-                if (data.position.x2 < data.viewport_dimensions.x) {
+                if (data.position.x2 + allowedX < data.viewport_dimensions.x) {
                     data.position.x2 = data.viewport_dimensions.x;
                     data.position.x1 = data.viewport_dimensions.x - width;
-                } else if (data.position.x1 > 0) {
+                } else if (data.position.x1 > allowedX) {
                     data.position.x1 = 0;
                     data.position.x2 = width;
                 }
             }
 
             var height = data.position.y2 - data.position.y1;
+            var allowedY = data.viewport_dimensions.y * 0.9;
             if (height < data.viewport_dimensions.y) {
                 var centerY = data.viewport_dimensions.y / 2;
                 data.position.y1 = centerY - (height/2);
                 data.position.y2 = centerY + (height/2);
             } else {
-                if (data.position.y2 < data.viewport_dimensions.y) {
+                if (data.position.y2 + allowedY < data.viewport_dimensions.y) {
                     data.position.y2 = data.viewport_dimensions.y;
                     data.position.y1 = data.viewport_dimensions.y - height;
-                } else if (data.position.y1 > 0) {
+                } else if (data.position.y1 > allowedY) {
                     data.position.y1 = 0;
                     data.position.y2 = height;
                 }

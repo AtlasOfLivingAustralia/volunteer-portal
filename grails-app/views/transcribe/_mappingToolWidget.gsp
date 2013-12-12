@@ -1,6 +1,6 @@
 <div class="row-fluid" style="margin-bottom: 10px">
     <div class="span10">
-        If the Lat/Long do not appear on the label, find them using the mapping tool below
+        If the Latitude/Longitude do not appear on the label, find them using the mapping tool below
     </div>
 </div>
 <div class="row-fluid ${cssClass}" style="margin-bottom: 10px">

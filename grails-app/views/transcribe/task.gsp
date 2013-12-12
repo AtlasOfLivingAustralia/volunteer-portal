@@ -153,7 +153,20 @@
                 bindImagePinning();
                 applyReadOnlyIfRequired();
                 insertCoordinateSymbolButtons();
+                bindGlobalKeyHandlers();
             });
+
+            function bindGlobalKeyHandlers() {
+
+                $(document).keypress(function(event) {
+                    if ((event.which == 115 || event.which == 19) && event.ctrlKey && event.shiftKey) {
+                        submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
+                        e.preventDefault();
+                    }
+                    return true;
+                });
+
+            }
 
             function insertCoordinateSymbolButtons() {
                 // Add clickable icons for deg, min sec in lat/lng inputs
@@ -188,8 +201,8 @@
             function showGeolocationTool() {
                 showModal({
                     url: "${createLink(controller: 'transcribe', action:'geolocationToolFragment')}",
-                    width:978,
-                    height:520,
+                    width: 978,
+                    height: 740,
                     hideHeader: true,
                     title: '',
                     onShown: function() {
@@ -277,6 +290,7 @@
 
                 $(".insert-symbol-button").each(function (index) {
                     $(this).html($(this).attr("symbol"));
+                    $(this).attr("tabindex", "-1");
                 });
 
                 $(".insert-symbol-button").click(function (e) {
@@ -679,8 +693,11 @@
                                 <g:if test="${validator}">
                                     <button id="btnValidate" class="btn btn-primary">${message(code: 'default.button.validate.label', default: 'Validate')}</button>
                                     <button id="btnDontValidate" class="btn">${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}</button>
-                                    <button class="btn" id="showNextFromProject">Skip</button><cl:validationStatus task="${taskInstance}"/>
+                                    <button class="btn" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+                                    <g:if test="${validator}">
+                                        <a href="${createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone())}" />
+                                    </g:if>
                                 </g:if>
                                 <g:else>
                                     <button id="btnSave" class="btn btn-primary">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
@@ -688,11 +705,20 @@
                                     <button class="btn" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
+
                             </div>
                         </div>
 
                     </div>
                 </g:if>
+
+                <div class="container-fluid">
+                    <div class="row-fluid" style="margin-top:10px">
+                        <div class="span12">
+                            <cl:validationStatus task="${taskInstance}" />
+                        </div>
+                    </div>
+                </div>
 
                 <cl:timeoutPopup/>
 
@@ -755,7 +781,13 @@
 
             $("#btnValidateSubmitInvalid").click(function(e) {
                 e.preventDefault();
-                submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
+                <g:if test="${validator}">
+                    submitFormWithAction("${createLink(controller:'validate', action:'validate')}");
+                </g:if>
+                <g:else>
+                    submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
+                </g:else>
+
             });
 
             $("#showNextFromProject").click(function(e) {

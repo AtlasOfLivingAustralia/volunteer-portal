@@ -67,6 +67,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <button class="btn" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
+                        <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
+                    </div>
+                </div>
             </div>
 
             <div class="span9">
