@@ -334,3 +334,7 @@ h2, h3, h4, h5 {
 .btn.btn-danger {
     color: white;
 }
+
+.centertext, td.centertext {
+    text-align: center;
+}
