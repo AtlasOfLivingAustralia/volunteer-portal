@@ -61,7 +61,7 @@ class LeaderBoardController {
         def results = []
         switch (category) {
             case LeaderBoardCategory.daily:
-                heading = "${headingPrefix} ${today.format('d MMMM YYYY')}"
+                heading = "${headingPrefix} ${today.format('d MMMM yyyy')}"
                 results = getTopNForPeriod(today, today, maxRows)
                 break;
             case LeaderBoardCategory.weekly:
@@ -69,7 +69,7 @@ class LeaderBoardController {
                 while (startDate.getAt(Calendar.DAY_OF_WEEK) != 1) {
                     startDate--;
                 }
-                heading = "${headingPrefix} week starting ${startDate.format('dd MMMM YYY')}"
+                heading = "${headingPrefix} week starting ${startDate.format('dd MMMM yyy')}"
                 results = getTopNForPeriod(startDate, today, maxRows)
                 break;
             case LeaderBoardCategory.monthly:
@@ -77,7 +77,7 @@ class LeaderBoardController {
                 while (startDate.getAt(Calendar.DAY_OF_MONTH) != 1) {
                     startDate--;
                 }
-                heading = "${headingPrefix} ${startDate.format('MMMM YYY')}"
+                heading = "${headingPrefix} ${startDate.format('MMMM yyy')}"
                 results = getTopNForPeriod(startDate, today, maxRows)
                 break;
             case LeaderBoardCategory.alltime:
