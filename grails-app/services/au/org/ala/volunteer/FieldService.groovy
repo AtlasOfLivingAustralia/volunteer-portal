@@ -70,6 +70,29 @@ class FieldService {
         return null
     }
 
+    def getPointForTask(Task task) {
+        def c = Field.createCriteria()
+
+        def fields = c.list {
+            and {
+                eq("task", task)
+                eq("superceded", false)
+                or {
+                    eq("name", "decimalLatitude")
+                    eq("name", "decimalLongitude")
+                }
+            }
+        }
+
+        if (fields && fields.size() > 1) {
+            def results =[:]
+            results.lng = fields.find({ Field field -> field.name == 'decimalLongitude' })?.value
+            results.lat = fields.find({ Field field -> field.name == 'decimalLatitude' })?.value
+            return results
+        }
+        return null
+    }
+
     int getLastSequenceNumberForProject(Project project) {
         def taskList = Task.findAllByProject(project)
         def c = Field.createCriteria()

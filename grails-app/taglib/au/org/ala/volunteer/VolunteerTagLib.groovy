@@ -1459,6 +1459,10 @@ class VolunteerTagLib {
         if (FrontPage.instance().enableForum) {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
+        if (userService.currentUser) {
+            items << [userDashboard: [link: createLink(controller:'user', action:'dashboard', id: userService.currentUser.id), title:"My Field Book"]]
+        }
+
         items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
         items << [aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal']]
 
@@ -1818,5 +1822,9 @@ class VolunteerTagLib {
 
         }
 
+    }
+
+    def spinner = { attrs, body ->
+        out << "<image src=\"${resource(dir:'images', file:'spinner.gif')}\" />"
     }
 }

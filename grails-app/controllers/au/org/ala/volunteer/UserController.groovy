@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
 import groovy.sql.Sql
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import java.text.SimpleDateFormat
@@ -16,6 +17,7 @@ class UserController {
     def userService
     def achievementService
     def logService
+    def fieldService
 
     def index = {
         redirect(action: "list", params: params)
@@ -284,7 +286,11 @@ class UserController {
             totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
         }
 
-        def achievements = achievementService.calculateAchievements(userInstance)
+        def achievements = []
+        if (FrontPage.instance().showAchievements) {
+            achievements = achievementService.calculateAchievements(userInstance)
+        }
+
         def score = userService.getUserScore(userInstance)
 
         int selectedTab = params.int("selectedTab") ?: 0
@@ -440,5 +446,98 @@ class UserController {
 
         redirect(action: 'editRoles', id: userInstance?.id)
 
+    }
+
+    def dashboard() {
+        def userInstance = User.get(params.int("id"))
+
+        if (!userInstance) {
+            flash.message = "User not found!"
+            redirect(action: "list")
+            return
+        }
+
+        [userInstance: userInstance]
+    }
+
+    def ajaxGetPoints() {
+
+        def userInstance = User.get(params.int("id"))
+
+        CodeTimer t = new CodeTimer("Get points")
+
+        def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
+
+        def data = []
+        tasks.each { task ->
+            def point = fieldService.getPointForTask(task)
+            if (point) {
+                data << [lat:point.lat, lng:point.lng, taskId: task.id]
+            }
+        }
+
+        t.stop(true)
+
+        render(data as JSON)
+    }
+
+    def dashboardMainFragment() {
+        def userInstance = User.get(params.int("id"))
+        def c = Task.createCriteria()
+        def expeditions = c {
+            eq("fullyTranscribedBy", userInstance.userId)
+            projections {
+                countDistinct("project")
+            }
+        }
+
+        def score = userService.getUserScore(userInstance)
+
+        def achievements = achievementService.calculateAchievements(userInstance)
+        def userAchievements = Achievement.findAllByUser(userInstance, [sort:'dateAchieved', order:'desc'])
+
+        def recentAchievement
+        if (userAchievements) {
+            def top = userAchievements[0]
+
+            recentAchievement = achievements.find { it.name == top.name }
+            if (recentAchievement) {
+                recentAchievement.date = top.dateAchieved
+            }
+        }
+
+        def speciesCriteria = Field.createCriteria()
+        def species = speciesCriteria.list(max: 5) {
+            and {
+                eq("transcribedByUserId", userInstance.userId)
+                eq("superceded", false)
+                ilike("name", "scientificName")
+                isNotNull("value")
+                ne("value", "")
+            }
+            projections {
+                groupProperty("value")
+                count("value","count")
+                order("count", "desc")
+            }
+
+        }
+
+        [userInstance: userInstance, expeditionCount: expeditions ? expeditions[0] : 0, score: score, recentAchievement: recentAchievement, topSpecies: species ]
+    }
+
+    def badgesFragment() {
+        def userInstance = User.get(params.int("id"))
+        def achievements = achievementService.calculateAchievements(userInstance)
+        def score = userService.getUserScore(userInstance)
+
+        [userInstance: userInstance, achievements: achievements, score: score]
+    }
+
+    def recentTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+        def tasks = taskService.getRecentlyTranscribedTasks(userInstance?.userId, ['max' : 5, 'sort':'dateFullyTranscribed', order:'desc'])
+
+        [userInstance: userInstance, recentTasks: tasks]
     }
 }

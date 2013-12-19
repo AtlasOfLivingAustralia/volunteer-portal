@@ -95,7 +95,11 @@
 
                     </section>
 
-
+                    <cl:isLoggedIn>
+                        <scetion id="user-stats">
+                            <a class="btn btn-small" href="${createLink(controller:'user', action:'myStats')}">View my tasks</a>
+                        </scetion>
+                    </cl:isLoggedIn>
 
                     <section id="expedition-stats">
                         <table>

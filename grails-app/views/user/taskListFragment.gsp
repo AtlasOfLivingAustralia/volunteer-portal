@@ -17,7 +17,7 @@
                             </g:else>
                         </h2>
                     </th>
-                    <th colspan="3" style="text-align: right">
+                    <th colspan="4" style="text-align: right">
                         <span>
                             <a style="vertical-align: middle;" href="#" class="fieldHelp" title="Enter search text here to show only tasks matching values in the ImageID, CatalogNumber, Project and Transcribed columns"><span class="help-container">&nbsp;</span>
                             </a>

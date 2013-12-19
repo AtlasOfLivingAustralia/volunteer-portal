@@ -403,9 +403,12 @@ class TaskService {
    * @return list of tasks
    */
     List<Task> getRecentlyTranscribedTasks(String userId, Map params) {
-      Task.executeQuery("""select distinct t from Task t
-        inner join t.fields fields
-        where fields.transcribedByUserId = :userId""", [userId: userId], params)
+        def c = Task.createCriteria()
+
+        c.list(params) {
+            eq("fullyTranscribedBy", userId)
+            isNotNull("dateFullyTranscribed")
+        }
     }
 
   /**

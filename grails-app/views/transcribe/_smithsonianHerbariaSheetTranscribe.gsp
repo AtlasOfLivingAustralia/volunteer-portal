@@ -93,9 +93,9 @@
                         <div class="control-group">
                             <div class="span6">
 
-                                <div class="row-fluid">
-                                    <g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.county}" recordValues="${recordValues}" labelClass="span4" widgetClass="span8" />
-                                </div>
+                                %{--<div class="row-fluid">--}%
+                                    %{--<g:renderFieldLabelAndWidgetSpans task="${taskInstance}" fieldType="${DarwinCoreField.county}" recordValues="${recordValues}" labelClass="span4" widgetClass="span8" />--}%
+                                %{--</div>--}%
                                 <div class="row-fluid">
                                     <g:renderFieldLabelAndWidgetSpans fieldType="${DarwinCoreField.stateProvince}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" widgetClass="span8" />
                                 </div>

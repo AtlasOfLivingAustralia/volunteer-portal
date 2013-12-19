@@ -20,10 +20,6 @@ class AchievementService {
 
         def results = []
 
-        if (!FrontPage.instance().showAchievements) {
-            return results
-        }
-
         def existing = Achievement.findAllByUser(user)
         def tasks = taskService.transcribedDatesByUser(user.userId)
 
