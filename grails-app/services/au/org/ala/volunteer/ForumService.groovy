@@ -400,4 +400,19 @@ class ForumService {
         return null
     }
 
+    def getRecentPostsForUser(User user, int count = 5) {
+
+        def c = ForumMessage.createCriteria()
+
+        c.list(max: count) {
+            eq('user', user)
+            or {
+                isNull("deleted")
+                eq("deleted", false)
+            }
+            order("date", "desc")
+        }
+
+    }
+
 }

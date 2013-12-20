@@ -28,7 +28,7 @@
 </head>
 
 <body>
-    <cl:headerContent title="My Field Notebook" crumbLabel="${userInstance.displayName}" selectedNavItem="userDashboard">
+    <cl:headerContent title="My Dashboard" crumbLabel="${userInstance.displayName}" selectedNavItem="userDashboard">
         <%
             pageScope.crumbs = [
             ]
@@ -41,10 +41,11 @@
             <div class="tabbable">
 
                 <ul class="nav nav-tabs" style="margin-bottom: 0px">
-                    <li class="active"><a href="#mainTab" data-toggle="tab">Dashboard</a></li>
+                    <li class="active"><a href="#mainTab" data-toggle="tab">Stats</a></li>
                     <li><a href="#mapTab" data-toggle="tab">Maps</a></li>
                     <li><a href="#badgesTab" data-toggle="tab">Badges</a></li>
                     <li><a href="#socialTab" data-toggle="tab">Social</a></li>
+                    <li><a href="#transcribedTab" data-toggle="tab">Transcribed Tasks</a></li>
                 </ul>
 
                 <div class="tab-content">
@@ -56,6 +57,8 @@
                     <div class="tab-pane" id="badgesTab">
                     </div>
                     <div class="tab-pane" id="socialTab">
+                    </div>
+                    <div class="tab-pane" id="transcribedTab">
                     </div>
                 </div>
             </div>
@@ -70,7 +73,13 @@
     var map, infowindow;
     google.load("maps", "3.3", {other_params: "sensor=false"});
 
+       function getTimezoneName() {
+            var timezone = jstz.determine();
+            return timezone.name();
+        }
+
     $(document).ready(function () {
+
         $('a[data-toggle="tab"]').on('shown', function (e) {
             var tabHref = $(this).attr('href');
             if (tabHref == "#mainTab") {
@@ -82,6 +91,13 @@
                     $("#badgesTab").html(content);
                 });
             } else if (tabHref == "#socialTab") {
+                $.ajax("${createLink(controller:'user', action:'socialFragment', id: userInstance.id)}").done(function(content) {
+                    $("#socialTab").html(content);
+                });
+            } else if (tabHref == "#transcribedTab") {
+                $.ajax("${createLink(controller:'user', action:'transcribedTasksFragment', id: userInstance.id)}").done(function(content) {
+                    $("#transcribedTab").html(content);
+                });
             }
         });
 

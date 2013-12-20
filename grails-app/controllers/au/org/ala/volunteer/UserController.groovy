@@ -1,11 +1,8 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import groovy.sql.Sql
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import java.text.SimpleDateFormat
-import org.codehaus.groovy.util.StringUtil
-import org.apache.commons.lang.StringUtils
 
 class UserController {
 
@@ -18,6 +15,7 @@ class UserController {
     def achievementService
     def logService
     def fieldService
+    def forumService
 
     def index = {
         redirect(action: "list", params: params)
@@ -530,8 +528,9 @@ class UserController {
         def userInstance = User.get(params.int("id"))
         def achievements = achievementService.calculateAchievements(userInstance)
         def score = userService.getUserScore(userInstance)
+        def allAchievements = achievementService.getAllAchievements()
 
-        [userInstance: userInstance, achievements: achievements, score: score]
+        [userInstance: userInstance, achievements: achievements, score: score, allAchievements: allAchievements]
     }
 
     def recentTasksFragment() {
@@ -539,5 +538,27 @@ class UserController {
         def tasks = taskService.getRecentlyTranscribedTasks(userInstance?.userId, ['max' : 5, 'sort':'dateFullyTranscribed', order:'desc'])
 
         [userInstance: userInstance, recentTasks: tasks]
+    }
+
+    def socialFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        def recentPosts = forumService.getRecentPostsForUser(userInstance, 5)
+        def watchedTopics = UserForumWatchList.findByUser(userInstance)?.topics
+
+        def messages = ForumMessage.findAllByUser(userInstance)
+        def friends =  messages.unique({ it.topic.creator })*.topic.creator
+
+        if (friends.contains(userInstance)) {
+            friends.remove(userInstance)
+        }
+
+        [userInstance: userInstance, recentPosts: recentPosts, watchedTopics: watchedTopics, friends: friends]
+    }
+
+    def transcribedTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        [userInstance: userInstance]
     }
 }

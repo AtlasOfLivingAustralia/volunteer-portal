@@ -1,7 +1,5 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-
 class AchievementService {
 
     static transactional = true
@@ -10,9 +8,14 @@ class AchievementService {
     def logService
     def grailsApplication
 
+    def getAllAchievements() {
+        def achievements = grailsApplication.config.achievements;
+        return achievements
+    }
+
     def calculateAchievements(User user) {
 
-        def achievements = grailsApplication.config.achievements;
+        def achievements = getAllAchievements()
 
         if (!user) {
             return

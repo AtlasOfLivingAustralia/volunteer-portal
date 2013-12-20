@@ -49,4 +49,9 @@ modules = {
         resource url: '/js/transcribeValidation.js'
     }
 
+    'timezone' {
+        resource url: '/js/jstz-1.0.4.min.js'
+    }
+
+
 }

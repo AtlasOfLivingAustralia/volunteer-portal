@@ -1460,7 +1460,7 @@ class VolunteerTagLib {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
         if (userService.currentUser) {
-            items << [userDashboard: [link: createLink(controller:'user', action:'dashboard', id: userService.currentUser.id), title:"My Field Book"]]
+            items << [userDashboard: [link: createLink(controller:'user', action:'dashboard', id: userService.currentUser.id), title:"My Dashboard"]]
         }
 
         items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]

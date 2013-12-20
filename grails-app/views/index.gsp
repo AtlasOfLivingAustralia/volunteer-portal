@@ -9,7 +9,7 @@
     <body>
 
         <cl:headerContent title="${message(code:'default.frontpageheading.label', default:'Biodiversity Volunteer Portal')}" selectedNavItem="bvp">
-            <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based capture of archival and natural history collections</p>
+            <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based transcription of archival and natural history collections</p>
         </cl:headerContent>
 
         <div class="container-fluid">
