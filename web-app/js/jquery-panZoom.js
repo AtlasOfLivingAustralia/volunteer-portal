@@ -102,8 +102,8 @@
             methods.updatePosition.apply(this);
         },
 
-        'updatePosition': function() {
-            validatePosition.apply(this);
+        'updatePosition': function(centreIfSmall) {
+            validatePosition.apply(this, [centreIfSmall]);
             writePosition.apply(this);
             applyPosition.apply(this);
         },
@@ -139,7 +139,7 @@
             data.position.x2 = data.position.x2*1 - steps.zoom.x;
             data.position.y1 = data.position.y1*1 + steps.zoom.y;
             data.position.y2 = data.position.y2*1 - steps.zoom.y;
-            methods.updatePosition.apply(this);
+            methods.updatePosition.apply(this, [ true ]);
         },
 
         'panUp': function () {
@@ -474,7 +474,7 @@
         }
     }
 
-    function validatePosition() {
+    function validatePosition(centreIfSmall) {
         var data = this.data('panZoom');
         // if dimensions are too small...
         if ( data.position.x2 - data.position.x1 < settings.min_width/settings.factor || data.position.y2 - data.position.y1 < settings.min_height/settings.factor ) {
@@ -492,17 +492,17 @@
         }
 
         if (settings.aspect) {
-            target = data.target_dimensions.ratio;
+            var target = data.target_dimensions.ratio;
             current = getCurrentAspectRatio.apply(this)
 
             if (current > target) {
-                new_width = getHeight.apply(this) * target;
-                diff = getWidth.apply(this) - new_width;
+                var new_width = getHeight.apply(this) * target;
+                var diff = getWidth.apply(this) - new_width;
                 data.position.x1 = data.position.x1*1 + (diff/2);
                 data.position.x2 = data.position.x2*1 - (diff/2);
             } else if (current < target) {
-                new_height = getWidth.apply(this) / target;
-                diff = getHeight.apply(this) - new_height;
+                var new_height = getWidth.apply(this) / target;
+                var diff = getHeight.apply(this) - new_height;
                 data.position.y1 = data.position.y1*1 + (diff/2);
                 data.position.y2 = data.position.y2*1 - (diff/2);
             }
@@ -510,33 +510,37 @@
             var width = data.position.x2 - data.position.x1;
             var allowedX = data.viewport_dimensions.x * 0.9;
             if (width < data.viewport_dimensions.x) {
-                // center horizontally
-                var centerX = data.viewport_dimensions.x / 2;
-                data.position.x1 = centerX - (width/2);
-                data.position.x2 = centerX + (width/2);
+                if (centreIfSmall) {
+                    // center horizontally
+                    var centerX = data.viewport_dimensions.x / 2;
+                    data.position.x1 = centerX - (width/2);
+                    data.position.x2 = centerX + (width/2);
+                }
             } else {
                 if (data.position.x2 + allowedX < data.viewport_dimensions.x) {
-                    data.position.x2 = data.viewport_dimensions.x;
-                    data.position.x1 = data.viewport_dimensions.x - width;
+                    data.position.x2 = data.viewport_dimensions.x - allowedX;
+                    data.position.x1 = data.viewport_dimensions.x - width - allowedX;
                 } else if (data.position.x1 > allowedX) {
-                    data.position.x1 = 0;
-                    data.position.x2 = width;
+                    data.position.x1 = allowedX;
+                    data.position.x2 = width + allowedX;
                 }
             }
 
             var height = data.position.y2 - data.position.y1;
             var allowedY = data.viewport_dimensions.y * 0.9;
             if (height < data.viewport_dimensions.y) {
-                var centerY = data.viewport_dimensions.y / 2;
-                data.position.y1 = centerY - (height/2);
-                data.position.y2 = centerY + (height/2);
+                if (centreIfSmall) {
+                    var centerY = data.viewport_dimensions.y / 2;
+                    data.position.y1 = centerY - (height/2);
+                    data.position.y2 = centerY + (height/2);
+                }
             } else {
                 if (data.position.y2 + allowedY < data.viewport_dimensions.y) {
-                    data.position.y2 = data.viewport_dimensions.y;
-                    data.position.y1 = data.viewport_dimensions.y - height;
+                    data.position.y2 = data.viewport_dimensions.y - allowedY;
+                    data.position.y1 = data.viewport_dimensions.y - height - allowedY;
                 } else if (data.position.y1 > allowedY) {
-                    data.position.y1 = 0;
-                    data.position.y2 = height;
+                    data.position.y1 = allowedY;
+                    data.position.y2 = height + allowedY;
                 }
             }
         }
