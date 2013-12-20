@@ -31,8 +31,6 @@ var transcribeValidation = {};
 
         // The error list will hold a reference to each element in error, along with a message
         var errorList = [];
-        var hasErrors = false;
-        var hasWarnings = false;
         // test each input element that has a validation rule attached to it...
         $('[' + vlib.options.ruleAttribute + ']').each(function(index, element) {
             var ruleName = $(element).attr(vlib.options.ruleAttribute);
@@ -54,13 +52,6 @@ var transcribeValidation = {};
                         if (!message) {
                             message = vlib.defaultErrorMessage;
                         }
-
-                        if (ruleObject.type == 'Error') {
-                            hasErrors = true;
-                        } else {
-                            hasWarnings = true;
-                        }
-
                         errorList.push({element: element, message: message, type: ruleObject.type});
                     }
                 }
@@ -69,6 +60,16 @@ var transcribeValidation = {};
 
         // now validate special widgets
         vlib.validateTranscribeWidgets(errorList);
+        var hasErrors = false;
+        var hasWarnings = false;
+
+        $.each(errorList, function(index, error) {
+            if (error.type == 'Error') {
+                hasErrors = true;
+            } else {
+                hasWarnings = true;
+            }
+        });
 
         $.each(errorList, function(index, error) {
             vlib.markFieldInvalid(error.element, error.message, error.type);
@@ -80,7 +81,17 @@ var transcribeValidation = {};
     vlib.validateTranscribeWidgets = function(messages) {
         vlib.validateLatLongWidgets(messages);
         vlib.validateDateWidgets(messages);
+        vlib.validateUnitRangeWidgets(messages);
     };
+
+    vlib.validateUnitRangeWidgets = function(messages) {
+        $(".unitRangeWidget").each(function(index,element) {
+            var minElement = $(element).find(":input.rangeMinValue");
+            var maxElement = $(element).find(":input.rangeMaxValue");
+            var unitElement = $(element).find(".rangeUnits");
+            vlib.validateUnitRangeElements(messages, minElement, maxElement, unitElement);
+        });
+    }
 
     vlib.validateDateWidgets = function(messages) {
         $(".dateWidget").each(function(index, element) {
@@ -98,6 +109,18 @@ var transcribeValidation = {};
         });
         return true;
     };
+
+    vlib.validateUnitRangeElements = function(messages, minElement, maxElement, unitsElement) {
+        var minVal = minElement.val();
+        var maxVal = maxElement.val();
+        var units = unitsElement.val();
+        if (maxVal && !minVal) {
+            messages.push({element: maxElement, message: "You cannot enter a 'to' value without a 'from' value", type:'Error'});
+        }
+        if (!minVal && !maxVal && units) {
+            messages.push({element: maxElement, message: "You cannot specify units without a 'from' value", type:'Error'});
+        }
+    }
 
     vlib.validateDateElements = function(messages, yearElement, monthElement, dayElement) {
 

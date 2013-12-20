@@ -27,7 +27,7 @@
                         <div class="control-group">
                             <lable class="control-label" for="picklistId">Picklist</lable>
                             <div class="controls">
-                                <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${params.id}"/>
+                                <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${params.picklistId}"/>
                                 <a href="${createLink(controller:'picklist', action:'create')}">Create new picklist</a>
                             </div>
                         </div>

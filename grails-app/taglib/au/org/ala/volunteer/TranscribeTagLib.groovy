@@ -221,14 +221,7 @@ class TranscribeTagLib {
             case FieldType.mappingTool:
                 w = render(template: '/transcribe/mappingToolWidget', model: widgetModel)
                 break
-            case FieldType.elevationRange:
-                widgetModel.minFieldType = DarwinCoreField.minimumElevationInMeters
-                widgetModel.maxFieldType = DarwinCoreField.maximumElevationInMeters
-                w = render(template: '/transcribe/rangeWidget', model: widgetModel)
-                break
-            case FieldType.depthRange:
-                widgetModel.minFieldType = DarwinCoreField.minimumDepthInMeters
-                widgetModel.maxFieldType = DarwinCoreField.maximumDepthInMeters
+            case FieldType.unitRange:
                 w = render(template: '/transcribe/rangeWidget', model: widgetModel)
                 break
             case FieldType.sheetNumber:

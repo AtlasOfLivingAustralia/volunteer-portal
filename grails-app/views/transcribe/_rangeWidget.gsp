@@ -1,19 +1,28 @@
-<%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
-<div class="collectorColumnWidget control-group ${cssClass}">
+<%@ page import="au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.UnitRange; au.org.ala.volunteer.DarwinCoreField" %>
+<%
+    UnitRange dateRange = WebUtils.parseUnitRange(value as String)
+%>
+<div class="unitRangeWidget control-group ${cssClass}" targetField="${field.fieldType}">
 
     <div class="row-fluid" style="vertical-align: bottom">
-        <div class="span3">
+
+        <div class="span2">
             (from)
         </div>
         <div class="span3">
-            <g:textField name="recordValues.0.${minFieldType.toString()}" class="span12 ${minFieldType.toString()}" value="${recordValues.get(0)?.get(minFieldType.toString())}" />
+            <g:textField name="${field.fieldType}.minValue" class="span12 rangeMinValue" value="${dateRange.minValue}" />
         </div>
-        <div class="span2">
+        <div class="span1">
             (to)
         </div>
         <div class="span3">
-            <g:textField name="recordValues.0.${maxFieldType.toString()}" class="span12 ${maxFieldType.toString()}" value="${recordValues.get(0)?.get(maxFieldType.toString())}" />
+            <g:textField name="${field.fieldType}.maxValue" class="span12 rangeMaxValue" value="${dateRange.maxValue}" />
         </div>
+        <div class="span3">
+            <g:select class="span12 rangeUnits" name="${field.fieldType}.units" value="${dateRange.units}" from="${["", "Metres", "Feet"]}" />
+        </div>
+
     </div>
+    <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" validationRule="${field.validationRule}" />
 
 </div>

@@ -2,7 +2,39 @@ function prepareFieldWidgetsForSubmission() {
     prepareDateWidgets();
     prepareLatLongWidgets();
     prepareSheetNumberWidgets();
+    prepareUnitRangeWidgets();
 }
+
+function prepareUnitRangeWidgets() {
+
+    $(".unitRangeWidget").each(function() {
+        var targetField = $(this).attr("targetField");
+        if (!targetField) {
+            return;
+        }
+
+        var min = $.trim($(this).find(".rangeMinValue").val());
+        var max = $.trim($(this).find(".rangeMaxValue").val());
+        var units = $.trim($(this).find(".rangeUnits").val());
+
+        var finalValue = "";
+
+        if (min) {
+            finalValue = min;
+            if (max) {
+                finalValue += ":" + max;
+            }
+            if (units) {
+                finalValue += ' ' + units;
+            }
+
+        }
+
+        var selector = "#recordValues\\.0\\." + targetField;
+        $(selector).val(finalValue);
+    });
+}
+
 
 function prepareSheetNumberWidgets() {
     $(".sheetNumberWidget").each(function() {
