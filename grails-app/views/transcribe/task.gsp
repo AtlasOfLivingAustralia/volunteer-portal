@@ -87,20 +87,6 @@
                     }
                 });
 
-                $("#pinImage").click(function (e) {
-                    e.preventDefault();
-                    if ($(".pan-image").css("position") == 'fixed') {
-                        $(".pan-image").css({"position": "relative", top: 'inherit', left: 'inherit', 'border': 'none' });
-                        $(".new-window-control").css({'background-image': "url(${resource(dir:'images', file:'pin-image.png')})"});
-                        $(".pan-image a").attr("title", "Fix the image in place in the browser window");
-                    } else {
-                        $(".pan-image").css({"position": "fixed", top: 10, left: 10, "z-index": 600, 'border': '2px solid #535353' });
-                        $(".new-window-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
-                        $("#image-container").css("background", "darkgray");
-                        $(".pan-image a").attr("title", "Return the image to its normal position");
-                    }
-                });
-
                 $("#showImageWindow").click(function(e) {
                     e.preventDefault();
                     window.open("${createLink(controller:'task', action:"showImage", id:taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
@@ -222,14 +208,23 @@
                         imageContainer.css({"position":"relative", top:'inherit', left:'inherit', 'border':'none' });
                         $(".pin-image-control").css({'background-image':"url(${resource(dir:'images', file:'pin-image.png')})"});
                         $(".pin-image-control a").attr("title", "Fix the image in place in the browser window");
+                        imageContainer.css("width", "100%");
                     } else {
                         var pageHeader = $("#page-header");
                         var pageHeaderHeight = pageHeader.outerHeight() + pageHeader.position().top;
                         var diff = imageContainer.outerHeight() - pageHeaderHeight - 12;
+
+                        var currentWidth = imageContainer.width();
+
                         $("#image-parent-container").css("min-height", diff+"px");
                         imageContainer.css({"position":"fixed", top:0, left:0, "z-index":600, 'border':'2px solid #535353', 'background':'darkgray' });
                         $(".pin-image-control").css("background-image", "url(${resource(dir:'images', file:'unpin-image.png')})");
                         $(".pin-image-control a").attr("title", "Return the image to its normal position");
+
+                        if (imageContainer.attr("preserveWidthWhenPinned") == 'true') {
+                            imageContainer.css("width", "" + currentWidth + "px");
+                        }
+
                     }
                 });
 

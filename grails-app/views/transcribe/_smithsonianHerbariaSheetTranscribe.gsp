@@ -41,7 +41,7 @@
         <div class="span6">
             <div class="well well-small">
                 <g:set var="multimedia" value="${taskInstance.multimedia.first()}" />
-                <g:imageViewer multimedia="${multimedia}" />
+                <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" />
             </div>
         </div>
 

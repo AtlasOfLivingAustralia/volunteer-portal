@@ -319,6 +319,7 @@ class TranscribeTagLib {
      * @attr elementId
      * @attr hideControls
      * @attr hidePinImage
+     * @attr preserveWidthWhenPinned
      */
     def imageViewer = { attrs, body ->
         def multimedia = attrs.multimedia as Multimedia
@@ -327,7 +328,7 @@ class TranscribeTagLib {
             def imageMetaData = taskService.getImageMetaData(multimedia)
             def mb = new MarkupBuilder(out)
             mb.div(id:'image-parent-container') {
-                mb.div(id:attrs.elementId ?: 'image-container') {
+                mb.div(id:attrs.elementId ?: 'image-container', preserveWidthWhenPinned:attrs.preserveWidthWhenPinned) {
                     mb.img(src:imageUrl, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
                     if (!attrs.hideControls) {
                         div(class:'imageviewer-controls') {
