@@ -10,13 +10,13 @@
 <div class="sheetNumberWidget" targetField="${field.fieldType}" >
 
     <div class="control-group" >
-        <div class="span2">
+        <div class="span3">
             <g:textField name="${field.fieldType}.sheetNumber" class="span12 sheetNumber" value="${sheetNumberData.sheet}" validationRule="${field.validationRule}" />
         </div>
         <div class="span1">
             of
         </div>
-        <div class="span2">
+        <div class="span3">
             <g:textField name="${field.fieldType}.sheetNumberOf" class="span12 sheetNumberOf" value="${sheetNumberData.of}" validationRule="${field.validationRule}" />
         </div>
         <div class="span3">

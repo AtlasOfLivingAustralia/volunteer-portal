@@ -493,7 +493,7 @@
 
         if (settings.aspect) {
             var target = data.target_dimensions.ratio;
-            current = getCurrentAspectRatio.apply(this)
+            var current = getCurrentAspectRatio.apply(this)
 
             if (current > target) {
                 var new_width = getHeight.apply(this) * target;

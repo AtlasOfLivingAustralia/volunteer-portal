@@ -372,7 +372,7 @@ class TranscribeTagLib {
     def templateFieldsForCategory = { attrs, body ->
         FieldCategory category = attrs.category
         Task task = attrs.task as Task
-        int columns = attrs.columns ?: 2
+        int columns = 2
         String labelClass = attrs.labelClass ?: 'span4'
         String valueClass = attrs.valueClass ?: 'span8'
         def recordValues = attrs.recordValues
@@ -425,11 +425,17 @@ class TranscribeTagLib {
      * @attr task
      * @attr recordValues
      * @attr category
+     * @attr columns
      */
     def renderFieldCategorySection = { attrs, body ->
         def task = attrs.task as Task
         def recordValues = attrs.recordValues
         FieldCategory category = attrs.category
+
+        int columns = 2
+        if (attrs.columns) {
+            columns = Integer.parseInt(attrs.columns)
+        }
 
         Template template = task?.project?.template
         if (!category || !template) {
@@ -473,10 +479,12 @@ class TranscribeTagLib {
                 }
 
             }
+
             div(class:'transcribeSectionBody') {
-                renderFieldsInColumns(2, mb, fields, task, "span4", "span8", recordValues, attrs)
+                renderFieldsInColumns(columns, mb, fields, task, "span4", "span8", recordValues, attrs)
                 mkp.yieldUnescaped("&nbsp;")
             }
+
         }
 
     }
