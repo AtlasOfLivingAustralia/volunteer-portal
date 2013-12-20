@@ -132,7 +132,7 @@ var transcribeValidation = {};
             return true;
         }
 
-        if (!vlib.validateIsInteger(yearElement) || !vlib.validateIsInteger(monthElement) || !vlib.validateIsInteger(dayElement)) {
+        if (!vlib.validateIsInteger(yearElement) || !vlib.validateIsInteger(dayElement)) {
             messages.push({element: yearElement, message: "Date components must be integers"});
             return false;
         }
@@ -147,9 +147,11 @@ var transcribeValidation = {};
             return false;
         }
 
-        if (monthVal && !vlib.validateInNumberRange(monthElement, 1, 12)) {
-            messages.push({element: monthElement, message: "Month values must be between 1 and 12"});
-            return false;
+        if (monthVal && vlib.isInt(monthVal)) {
+            if (!vlib.validateInNumberRange(monthElement, 1, 12)) {
+                messages.push({element: monthElement, message: "Month values must be between 1 and 12"});
+                return false;
+            }
         }
 
         if (dayVal && !vlib.validateInNumberRange(dayElement, 1, 31)) {

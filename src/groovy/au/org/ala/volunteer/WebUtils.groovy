@@ -28,6 +28,8 @@ class WebUtils {
     public static YEAR_PATTERN = Pattern.compile("^(\\d{2,4})\$")
     public static YEAR_MONTH_PATTERN = Pattern.compile("^(\\d{2,4})-(\\d{1,2})\$")
     public static YEAR_MONTH_DAY_PATTERN = Pattern.compile("^(\\d{2,4})-(\\d{1,2})-(\\d{1,2})\$")
+    public static YEAR_MONTHNAME_PATTERN = Pattern.compile("^(\\d{2,4})-(\\w+)\$")
+    public static YEAR_MONTHNAME_DAY_PATTERN = Pattern.compile("^(\\d{2,4})-(\\w+)-(\\d{1,2})\$")
 
 
     /**
@@ -132,6 +134,14 @@ class WebUtils {
             matcher = YEAR_PATTERN.matcher(val)
             if (matcher.matches()) {
                 return new DateComponents(year: matcher.group(1))
+            }
+            matcher = YEAR_MONTHNAME_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new DateComponents(year: matcher.group(1), month: matcher.group(2))
+            }
+            matcher = YEAR_MONTHNAME_DAY_PATTERN.matcher(val)
+            if (matcher.matches()) {
+                return new DateComponents(year: matcher.group(1), month: matcher.group(2), day: matcher.group(3))
             }
         }
 

@@ -35,7 +35,7 @@ class PicklistController {
             def delim = ','
             def items = PicklistItem.findAllByPicklistAndInstitutionCode(picklist, institutionCode ?: null)
             items?.each { item ->
-                writer.write(item.value ?: "")
+                writer.write('"' + (item.value ?: '') + '"')
                 writer.write(delim)
                 writer.write(item.key ?: "")
                 writer.write("\n")
