@@ -45,7 +45,7 @@
                     <li><a href="#mapTab" data-toggle="tab">Maps</a></li>
                     <li><a href="#badgesTab" data-toggle="tab">Badges</a></li>
                     <li><a href="#socialTab" data-toggle="tab">Social</a></li>
-                    <li><a href="#transcribedTab" data-toggle="tab">Transcribed Tasks</a></li>
+                    <li><a href="#transcribedTab" data-toggle="tab">Tasks Transcribed</a></li>
                 </ul>
 
                 <div class="tab-content">
