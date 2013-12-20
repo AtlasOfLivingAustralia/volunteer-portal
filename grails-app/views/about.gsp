@@ -13,7 +13,7 @@
         <div class="row">
             <div class="span12">
 
-                <p style="font-size: 1.2em">
+                <p>
                     The <a href="http://www.ala.org.au">Atlas of Living Australia</a>, in collaboration with the <a class="external" href="http://www.australianmuseum.net.au">Australian Museum</a>, developed the Biodiversity Volunteer Portal to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked up in biodiversity collections, field notebooks and survey sheets.
                 </p>
 
@@ -42,7 +42,7 @@
                 </ul>
 
                 <h2>Submit an expedition</h2>
-                <p style="font-size: 1.2em">
+                <p>
                     The Biodiversity Volunteer Portal is open to any institution or individual who has suitable biodiversity
                     information that needs transcribing, whether that be in the form of specimen labels, field notes, survey sheets
                     or something similar.

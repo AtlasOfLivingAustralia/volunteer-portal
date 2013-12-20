@@ -73,8 +73,8 @@
                     }
                 });
 
-                $("th.sortable > a").addClass("btn")
-                $("th.sorted > a").addClass("active")
+                $("th.sortable > a").addClass("btn");
+                $("th.sorted > a").addClass("active");
 
             });
 
