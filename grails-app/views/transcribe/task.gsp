@@ -127,7 +127,8 @@
                 applyReadOnlyIfRequired();
                 insertCoordinateSymbolButtons();
                 bindGlobalKeyHandlers();
-            });
+                transcribeWidgets.initializeTranscribeWidgets();
+            }); // end Document.ready
 
             function bindGlobalKeyHandlers() {
 

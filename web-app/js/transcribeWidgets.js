@@ -1,11 +1,64 @@
+var transcribeWidgets = {};
+
+(function(lib) {
+
+    lib.initializeTranscribeWidgets = function() {
+        initLatLongWidgets();
+    }
+
+    var renderLatLongFormat = function(widget, format) {
+        var dd = $(widget).find(".latLongWidget_DD");
+        var dms = $(widget).find(".latLongWidget_DMS");
+
+        if (format == "DD") {
+            $(dd).css("display", "block");
+            $(dms).css("display", "none");
+        } else {
+            $(dd).css("display", "none");
+            $(dms).css("display", "block");
+        }
+    }
+
+    var switchLatLongFormat = function(format) {
+        $(".latLongWidget").each(function(index, widget) {
+            var selector = $(widget).find(".latLongFormatSelector");
+            $(selector).val(format);
+            renderLatLongFormat(widget, format);
+        });
+    }
+
+    var initLatLongWidgets = function () {
+
+        $(".latLongWidget").each(function(index, widget) {
+
+            var latLongFormat = $(this).attr("latLongFormat");
+
+            if (latLongFormat == 'DD') {
+                switchLatLongFormat("DD");
+            }
+
+            var selector = $(widget).find(".latLongFormatSelector").first();
+            if (selector) {
+                $(selector).change(function(e) {
+                    var newLatLongFormat = $(this).val();
+                    switchLatLongFormat(newLatLongFormat);
+                });
+            }
+
+        });
+
+    }
+
+})(transcribeWidgets);
+
 function prepareFieldWidgetsForSubmission() {
-    prepareDateWidgets();
-    prepareLatLongWidgets();
-    prepareSheetNumberWidgets();
-    prepareUnitRangeWidgets();
+    preSubmitDateWidgets();
+    preSubmitLatLongWidgets();
+    preSubmitSheetNumberWidgets();
+    preSubmitUnitRangeWidgets();
 }
 
-function prepareUnitRangeWidgets() {
+function preSubmitUnitRangeWidgets() {
 
     $(".unitRangeWidget").each(function() {
         var targetField = $(this).attr("targetField");
@@ -36,7 +89,7 @@ function prepareUnitRangeWidgets() {
 }
 
 
-function prepareSheetNumberWidgets() {
+function preSubmitSheetNumberWidgets() {
     $(".sheetNumberWidget").each(function() {
 
         var targetField = $(this).attr("targetField");
@@ -58,7 +111,7 @@ function prepareSheetNumberWidgets() {
     });
 }
 
-function prepareDateWidgets() {
+function preSubmitDateWidgets() {
 
     $(".dateWidget").each(function() {
         var targetField = $(this).attr("targetField");
@@ -100,7 +153,8 @@ function prepareDateWidgets() {
     });
 }
 
-function prepareLatLongWidgets() {
+function preSubmitLatLongWidgets() {
+
     $(".latLongWidget").each(function() {
 
         var targetField = $(this).attr("targetField");
@@ -109,9 +163,18 @@ function prepareLatLongWidgets() {
         }
 
         var finalValue = '';
+        var latLongFormat = $(this).find(".latLongFormatSelector").val();
         var decimalDegrees = $(this).find(".decimalDegrees").val();
 
-        if (decimalDegrees) {
+        if (!latLongFormat) {
+            if (decimalDegrees) {
+                latLongFormat = "DD";
+            } else {
+                latLongFormat = "DMS";
+            }
+        }
+
+        if (latLongFormat == "DD") {
             finalValue = decimalDegrees;
         } else {
             var degrees = $(this).find(".degrees").val();
