@@ -153,6 +153,7 @@
                 if (!skip) {
                     var selector = "#" + key;
                     $(selector).val(data[key])
+                    $(selector).change();
                 }
             }
         }});

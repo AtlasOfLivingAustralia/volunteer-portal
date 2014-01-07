@@ -41,11 +41,7 @@ var transcribeWidgets = {};
 
         $(".latLongWidget").each(function(index, widget) {
 
-            var latLongFormat = $(this).attr("latLongFormat");
-
-            if (latLongFormat == 'DD') {
-                switchLatLongFormat("DD");
-            }
+            renderTargetFieldValue(widget);
 
             var selector = $(widget).find(".latLongFormatSelector").first();
             if (selector) {
@@ -54,13 +50,73 @@ var transcribeWidgets = {};
                     switchLatLongFormat(newLatLongFormat);
                 });
             }
+            var targetField = $(this).attr("targetField");
+            if (targetField) {
+                var hiddenField = $("#recordValues\\.0\\." + targetField);
+                if (hiddenField) {
+                    hiddenField.change(function(e) {
+                        renderTargetFieldValue(widget);
+                    });
+                }
+            }
 
         });
 
     }
 
-    // private pre-submit methods ********************************
+    var DECIMAL_DEGREE_PATTERN = /^\d+[.]\d+$/;
+    var DEGREE_DECIMAL_MINUTES_PATTERN = /^(\d+)[°](\d+)[.](\d+)([NnEeWwSs]?)$/;
+    var DEGREE_PATTERN = /^(\d+)[°]([NnEeWwSs]?)$/
+    var DEGREE_MINUTES_PATTERN = /^(\d+)[°](\d+)[']([NnEeWwSs]?)$/;
+    var DEGREE_MINUTES_SECONDS_PATTERN = /^(\d+)[°](\d+)['](\d+)["]([NnEeWwSs]?)$/;
 
+
+    function renderTargetFieldValue(widget) {
+        var targetField = $(widget).attr("targetField");
+        var hiddenField = $("#recordValues\\.0\\." + targetField);
+        var values = parseLatLongString(hiddenField.val());
+        if (values) {
+            if (values.decimalDegrees) {
+                switchLatLongFormat("DD");
+                $(widget).find(".decimalDegrees").val(values.decimalDegrees);
+            } else {
+                switchLatLongFormat("DMS");
+                $(widget).find(".degrees").val(values.degrees);
+                $(widget).find(".minutes").val(values.minutes);
+                $(widget).find(".seconds").val(values.seconds);
+                $(widget).find(".direction").val(values.direction);
+            }
+        }
+    }
+
+    // Parse out a lat/long string value into component parts. Will detect decimal degrees, and variations of DMS.
+    function parseLatLongString(value) {
+
+        var results = DECIMAL_DEGREE_PATTERN.exec(value);
+        if (results) {
+            return { decimalDegrees: value };
+        }
+        results = DEGREE_DECIMAL_MINUTES_PATTERN.exec(value)
+        if (results) {
+            return { degrees: results[1], minutes: results[2], direction: results[3] };
+        }
+        results = DEGREE_MINUTES_SECONDS_PATTERN.exec(value);
+        if (results) {
+            return { degrees:results[1], minutes: results[2], seconds: results[3], direction: results[4], decimalDegrees: "" };
+        }
+        results = DEGREE_MINUTES_PATTERN.exec(value);
+        if (results) {
+            return { degrees:results[1], minutes: results[2], seconds: "", direction: results[3], decimalDegrees: "" };
+        }
+        results = DEGREE_PATTERN.exec(value);
+        if (results) {
+            return { degrees:results[1], minutes: "", seconds: "", direction: results[2], decimalDegrees: "" };
+        }
+
+        return { decimalDegrees: value };
+    }
+
+    // private pre-submit methods ********************************
     function preSubmitUnitRangeWidgets() {
 
         $(".unitRangeWidget").each(function() {
