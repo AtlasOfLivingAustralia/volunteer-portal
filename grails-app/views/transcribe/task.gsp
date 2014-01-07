@@ -372,159 +372,189 @@
 
         <style type="text/css">
 
-        #image-container, #image-parent-container {
-            background-color: #a9a9a9;
-        }
+            .row-fluid input[type="text"] {
+               height: 12px;
+               font-size: 12px;
+               line-height: 12px;
+               margin-bottom: 2px;
+               padding: 2px;
+               /*border-radius:2px;*/
+               min-height: 24px;
+            }
 
-        .insert-symbol-button {
-            font-family: courier;
-            color: #DDDDDD;
-            background: #4075C2;
-            -moz-border-radius: 4px;
-            -webkit-border-radius: 4px;
-            -o-border-radius: 4px;
-            -icab-border-radius: 4px;
-            -khtml-border-radius: 4px;
-            border-radius: 4px;
-        }
+            .row-fluid textarea {
+                font-size: 12px;
+                line-height: 12px;
+                margin-bottom: 2px;
+                padding: 2px;
+                /*border-radius:2px;*/
+                min-height: 24px;
+            }
 
-        .insert-symbol-button:hover {
-            background: #0046AD;
-            color: #DDDDDD;
-        }
+            .row-fluid select {
+                height: 24px;
+                font-size: 12px;
+                line-height: 12px;
+                margin-bottom: 2px;
+                padding: 2px;
+                /*border-radius:2px;*/
+                min-height: 24px;
+            }
 
-        #collectionEventFields table tr.columnLayout {
-            width: 450px;
-            min-height: 34px;
-            float: left;
-        }
 
-        #taskMetadata h3 {
-            margin-bottom: 0;
-            margin-top: 0;
-        }
+            #image-container, #image-parent-container {
+                background-color: #a9a9a9;
+            }
 
-        #taskMetadata ul {
-            margin:0;
-            padding:0;
-        }
+            .insert-symbol-button {
+                font-family: courier;
+                color: #DDDDDD;
+                background: #4075C2;
+                -moz-border-radius: 4px;
+                -webkit-border-radius: 4px;
+                -o-border-radius: 4px;
+                -icab-border-radius: 4px;
+                -khtml-border-radius: 4px;
+                border-radius: 4px;
+            }
 
-        #taskMetadata ul li {
-            list-style: none;
-            margin:0;
-            padding:0;
-        }
+            .insert-symbol-button:hover {
+                background: #0046AD;
+                color: #DDDDDD;
+            }
 
-        #taskMetadata .metaDataLabel {
-            font-weight: bold;
-        }
+            #collectionEventFields table tr.columnLayout {
+                width: 450px;
+                min-height: 34px;
+                float: left;
+            }
 
-        .transcribeSectionBody select {
-            margin-bottom: 10px;
-        }
+            #taskMetadata h3 {
+                margin-bottom: 0;
+                margin-top: 0;
+            }
 
-        .transcribeSectionBody {
-            border-top: 1px solid #d3d3d3;
-            padding-top: 10px;
-        }
+            #taskMetadata ul {
+                margin:0;
+                padding:0;
+            }
 
-        .transcribeSectionHeaderLabel {
-            font-weight: bold;
-        }
+            #taskMetadata ul li {
+                list-style: none;
+                margin:0;
+                padding:0;
+            }
 
-        .prop .name {
-            vertical-align: top;
-        }
+            #taskMetadata .metaDataLabel {
+                font-weight: bold;
+            }
 
-        .closeSectionLink {
-            float: right;
-        }
+            .transcribeSectionBody select {
+                margin-bottom: 10px;
+            }
 
-        .radio-item input {
-            margin: 0;
-            /*vertical-align: middle;*/
-        }
+            .transcribeSectionBody {
+                border-top: 1px solid #d3d3d3;
+                padding-top: 10px;
+            }
 
-        /* Mapping tool (popup) */
+            .transcribeSectionHeaderLabel {
+                font-weight: bold;
+            }
 
-        div#mapWidgets {
-            width: 950px;
-            height: 500px;
-            overflow: hidden;
-        }
+            .prop .name {
+                vertical-align: top;
+            }
 
-        #mapWidgets img {
-            max-width: none !important;
-        }
+            .closeSectionLink {
+                float: right;
+            }
 
-        #mapWidgets #mapWrapper {
+            .radio-item input {
+                margin: 0;
+                /*vertical-align: middle;*/
+            }
 
-            width: 500px;
-            height: 500px;
-            float: left;
-            padding-right: 10px;
-        }
+            /* Mapping tool (popup) */
 
-        #mapWidgets #mapCanvas {
-            width: 500px;
-            height: 500px;
-            /*// height: 94%;*/
-            margin-bottom: 6px;
-        }
+            div#mapWidgets {
+                width: 950px;
+                height: 500px;
+                overflow: hidden;
+            }
 
-        #mapWidgets #mapInfo {
-            float: left;
-            height: 100%;
-            width: 44%;
-            padding: 0 0 0 10px;
-            text-align: left;
-            border-left: 2px solid #cccccc;
-        }
+            #mapWidgets img {
+                max-width: none !important;
+            }
 
-        #mapWidgets #sightingAddress {
-            margin-bottom: 4px;
-            line-height: 22px;
-        }
+            #mapWidgets #mapWrapper {
 
-        #mapWidgets .searchHint {
-            font-size: 12px;
-            padding: 4px 0;
-            line-height: 1.2em;
-            color: #666;
-        }
+                width: 500px;
+                height: 500px;
+                float: left;
+                padding-right: 10px;
+            }
 
-        #mapWidgets #address {
-            width: 360px;
-        }
+            #mapWidgets #mapCanvas {
+                width: 500px;
+                height: 500px;
+                /*// height: 94%;*/
+                margin-bottom: 6px;
+            }
 
-        span.coordsIcons {
-            height: 18px;
-        }
-        span.coordsIcons a {
-            display: inline-block;
-            width: 10px;
-            text-align: center;
-            font-size: 20px;
-            line-height: 13px;
-            text-decoration: none;
-            color: #DDDDDD;
-            background-color: #4075C2;
-            padding: 4px 2px 0 2px;
-            -moz-border-radius: 4px;
-            -webkit-border-radius: 4px;
-            -o-border-radius: 4px;
-            -icab-border-radius: 4px;
-            -khtml-border-radius: 4px;
-            border-radius: 4px;
-        }
+            #mapWidgets #mapInfo {
+                float: left;
+                height: 100%;
+                width: 44%;
+                padding: 0 0 0 10px;
+                text-align: left;
+                border-left: 2px solid #cccccc;
+            }
 
-        span.coordsIcons a:hover {
-            background-color: #0046AD;
-        }
+            #mapWidgets #sightingAddress {
+                margin-bottom: 4px;
+                line-height: 22px;
+            }
 
-        .row-fluid select {
-            margin-bottom: 6px;
-        }
+            #mapWidgets .searchHint {
+                font-size: 12px;
+                padding: 4px 0;
+                line-height: 1.2em;
+                color: #666;
+            }
+
+            #mapWidgets #address {
+                width: 360px;
+            }
+
+            span.coordsIcons {
+                height: 18px;
+            }
+            span.coordsIcons a {
+                display: inline-block;
+                width: 10px;
+                text-align: center;
+                font-size: 20px;
+                line-height: 13px;
+                text-decoration: none;
+                color: #DDDDDD;
+                background-color: #4075C2;
+                padding: 4px 2px 0 2px;
+                -moz-border-radius: 4px;
+                -webkit-border-radius: 4px;
+                -o-border-radius: 4px;
+                -icab-border-radius: 4px;
+                -khtml-border-radius: 4px;
+                border-radius: 4px;
+            }
+
+            span.coordsIcons a:hover {
+                background-color: #0046AD;
+            }
+
+            .row-fluid select {
+                margin-bottom: 6px;
+            }
 
         </style>
 
