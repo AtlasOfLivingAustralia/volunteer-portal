@@ -6,6 +6,7 @@ var transcribeWidgets = {};
     lib.initializeTranscribeWidgets = function() {
         initLatLongWidgets();
         initUnitRangeWidgets();
+        initDateWidgets();
     };
 
     lib.prepareFieldWidgetsForSubmission = function() {
@@ -15,8 +16,69 @@ var transcribeWidgets = {};
         preSubmitUnitRangeWidgets();
     };
 
+    var YEAR_PATTERN = /^(\d{2,4})$/;
+    var YEAR_MONTH_PATTERN = /^(\d{2,4})-(\d{1,2})$/;
+    var YEAR_MONTH_DAY_PATTERN = /^(\d{2,4})-(\d{1,2})-(\d{1,2})$/
+    var YEAR_MONTHNAME_PATTERN = /^(\d{2,4})-(\w+)$/;
+    var YEAR_MONTHNAME_DAY_PATTERN = /^(\d{2,4})-(\w+)-(\d{1,2})$/;
 
     // private init methods ********************************
+
+    var initDateWidgets = function() {
+        $(".dateWidget").each(function(index, widget) {
+            var targetField = $(this).attr("targetField");
+            if (targetField) {
+                var hiddenField = $("#recordValues\\.0\\." + targetField);
+                if (hiddenField) {
+                    hiddenField.change(function(e) {
+                        renderDateWidgetFromTargetField(widget);
+                    });
+                }
+            }
+        });
+    };
+
+    function parseDateRangeString(value) {
+        if (value) {
+            if (value.indexOf('/') != -1) {
+                var bits = value.split('/')
+                var startDate = parseDate(bits[0]);
+                var endDate = parseDate(bits[1]);
+                return { startDate: startDate, endDate: endDate };
+            } else {
+                return { startDate: parseDate(value) };
+            }
+        }
+        return { startDate: parseDate(value) };
+    }
+
+    function parseDate(value) {
+
+        if (value) {
+            var results = YEAR_MONTH_DAY_PATTERN.exec(value);
+            if (results) {
+                return { year: results[1], month: results[2], day: results[3] };
+            }
+            results = YEAR_MONTH_PATTERN.exec(value);
+            if (results) {
+                return { year: results[1], month: results[2] };
+            }
+            results = YEAR_PATTERN.exec(value);
+            if (results) {
+                return { year: results[1] };
+            }
+            results = YEAR_MONTHNAME_PATTERN.exec(value);
+            if (results) {
+                return { year: results[1], month: results[2] };
+            }
+            results = YEAR_MONTHNAME_DAY_PATTERN.exec(value);
+            if (results) {
+                return { year: results[1], month: results[2], day: results[3] };
+            }
+        }
+
+        return { year: value };
+    }
 
     var initUnitRangeWidgets = function() {
         $(".unitRangeWidget").each(function(index, widget) {
@@ -34,6 +96,25 @@ var transcribeWidgets = {};
             }
         });
     };
+
+    var renderDateWidgetFromTargetField = function(widget) {
+        var targetField = $(widget).attr("targetField");
+        var hiddenField = $("#recordValues\\.0\\." + targetField);
+        var values = parseDateRangeString(hiddenField.val());
+        if (values) {
+            if (values.startDate) {
+                $(widget).find(".startYear").val(values.startDate.year);
+                $(widget).find(".startMonth").val(values.startDate.month);
+                $(widget).find(".startDay").val(values.startDate.day);
+            }
+
+            if (values.endDate) {
+                $(widget).find(".endYear").val(values.endDate.year);
+                $(widget).find(".endMonth").val(values.endDate.month);
+                $(widget).find(".endDay").val(values.endDate.day);
+            }
+        }
+    }
 
     var renderUnitRangeFromTargetField = function(widget) {
         var targetField = $(widget).attr("targetField");

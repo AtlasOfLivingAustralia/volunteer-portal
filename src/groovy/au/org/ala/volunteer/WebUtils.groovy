@@ -188,17 +188,6 @@ class WebUtils {
         return b.toString()
     }
 
-    public static UnitRange parseUnitRange(String range) {
-        if (range) {
-            def regex = Pattern.compile("^\\s*([^\\s:]+)(?::([^\\s]+))*(?:\\s+([^\\s]+))*\\s*\$")
-            def m = regex.matcher(range)
-            if (m.matches()) {
-                return new UnitRange(minValue: m.group(1), maxValue: m.group(2), units: m.group(3))
-            }
-        }
-        return new UnitRange(minValue: range)
-    }
-
 }
 
 public class DateRange {
@@ -210,12 +199,6 @@ public class DateComponents {
     String day
     String month
     String year
-}
-
-public class UnitRange {
-    String minValue
-    String maxValue
-    String units
 }
 
 
