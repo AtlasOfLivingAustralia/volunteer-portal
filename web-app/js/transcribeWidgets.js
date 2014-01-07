@@ -5,17 +5,47 @@ var transcribeWidgets = {};
     // Exports
     lib.initializeTranscribeWidgets = function() {
         initLatLongWidgets();
-    }
+        initUnitRangeWidgets();
+    };
 
     lib.prepareFieldWidgetsForSubmission = function() {
         preSubmitDateWidgets();
         preSubmitLatLongWidgets();
         preSubmitSheetNumberWidgets();
         preSubmitUnitRangeWidgets();
-    }
+    };
 
 
     // private init methods ********************************
+
+    var initUnitRangeWidgets = function() {
+        $(".unitRangeWidget").each(function(index, widget) {
+
+            renderUnitRangeFromTargetField(widget);
+
+            var targetField = $(this).attr("targetField");
+            if (targetField) {
+                var hiddenField = $("#recordValues\\.0\\." + targetField);
+                if (hiddenField) {
+                    hiddenField.change(function(e) {
+                        renderUnitRangeFromTargetField(widget);
+                    });
+                }
+            }
+        });
+    };
+
+    var renderUnitRangeFromTargetField = function(widget) {
+        var targetField = $(widget).attr("targetField");
+        var hiddenField = $("#recordValues\\.0\\." + targetField);
+        var values = parseUnitRangeString(hiddenField.val());
+        if (values) {
+            $(widget).find(".rangeMinValue").val(values.minValue);
+            $(widget).find(".rangeMaxValue").val(values.maxValue);
+            $(widget).find(".rangeUnits").val(values.units);
+        }
+    };
+
     var renderLatLongFormat = function(widget, format) {
         var dd = $(widget).find(".latLongWidget_DD");
         var dms = $(widget).find(".latLongWidget_DMS");
@@ -27,7 +57,7 @@ var transcribeWidgets = {};
             $(dd).css("display", "none");
             $(dms).css("display", "block");
         }
-    }
+    };
 
     var switchLatLongFormat = function(format) {
         $(".latLongWidget").each(function(index, widget) {
@@ -35,13 +65,13 @@ var transcribeWidgets = {};
             $(selector).val(format);
             renderLatLongFormat(widget, format);
         });
-    }
+    };
 
     var initLatLongWidgets = function () {
 
         $(".latLongWidget").each(function(index, widget) {
 
-            renderTargetFieldValue(widget);
+            renderLatLongFromTargetValue(widget);
 
             var selector = $(widget).find(".latLongFormatSelector").first();
             if (selector) {
@@ -55,14 +85,14 @@ var transcribeWidgets = {};
                 var hiddenField = $("#recordValues\\.0\\." + targetField);
                 if (hiddenField) {
                     hiddenField.change(function(e) {
-                        renderTargetFieldValue(widget);
+                        renderLatLongFromTargetValue(widget);
                     });
                 }
             }
 
         });
 
-    }
+    };
 
     var DECIMAL_DEGREE_PATTERN = /^\d+[.]\d+$/;
     var DEGREE_DECIMAL_MINUTES_PATTERN = /^(\d+)[°](\d+)[.](\d+)([NnEeWwSs]?)$/;
@@ -70,8 +100,10 @@ var transcribeWidgets = {};
     var DEGREE_MINUTES_PATTERN = /^(\d+)[°](\d+)[']([NnEeWwSs]?)$/;
     var DEGREE_MINUTES_SECONDS_PATTERN = /^(\d+)[°](\d+)['](\d+)["]([NnEeWwSs]?)$/;
 
+    var UNIT_RANGE_PATTERN = /^\s*([^\s:]+)(?::([^\s]+))*(?:\s+([^\s]+))*\s*$/;
 
-    function renderTargetFieldValue(widget) {
+
+    function renderLatLongFromTargetValue(widget) {
         var targetField = $(widget).attr("targetField");
         var hiddenField = $("#recordValues\\.0\\." + targetField);
         var values = parseLatLongString(hiddenField.val());
@@ -114,6 +146,15 @@ var transcribeWidgets = {};
         }
 
         return { decimalDegrees: value };
+    }
+
+    function parseUnitRangeString(value) {
+        var results = UNIT_RANGE_PATTERN.exec(value);
+        if (results) {
+            return { minValue: results[1], maxValue: results[2], units: results[3] };
+        }
+
+        return { minValue: value }
     }
 
     // private pre-submit methods ********************************

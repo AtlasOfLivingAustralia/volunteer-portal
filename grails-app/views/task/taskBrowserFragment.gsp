@@ -119,11 +119,22 @@
 
     function clearTaskData() {
 
-        $('[id*="recordValues\\."]').each(function (index) {
-            // Don't clear the hidden fields
-            if ($(this).attr('type') != 'hidden') {
-                $(this).val('')
+        $('[id*="recordValues\\."]').each(function (index, widget) {
+
+            // Don't clear the hidden fields, unless they are special transcribe widgets
+            var clear = true;
+            if ($(widget).attr('type') == 'hidden') {
+                // transcribe widgets have a targetField attribute, so search upwards from this field to see if any of its parents have
+                // a targetField
+                var target = $(widget).closest("div[targetField]");
+                clear = target.length > 0;
             }
+
+            if (clear) {
+                $(widget).val('')
+                $(widget).change();
+            }
+
         });
     }
 
