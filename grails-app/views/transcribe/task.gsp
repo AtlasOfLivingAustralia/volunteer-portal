@@ -69,7 +69,7 @@
                         return transcribeBeforeSubmit();
                     }
 
-                    prepareFieldWidgetsForSubmission();
+                    transcribeWidgets.prepareFieldWidgetsForSubmission();
 
                     return true;
                 });
@@ -771,7 +771,7 @@
         }
 
         function checkValidation() {
-            prepareFieldWidgetsForSubmission();
+            transcribeWidgets.prepareFieldWidgetsForSubmission();
             var validationResults = transcribeValidation.validateFields()
 
             if (validationResults.hasErrors) {
