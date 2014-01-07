@@ -15,16 +15,7 @@
 
 package au.org.ala.volunteer
 
-import java.util.regex.Pattern
-
 class WebUtils {
-
-    public static YEAR_PATTERN = Pattern.compile("^(\\d{2,4})\$")
-    public static YEAR_MONTH_PATTERN = Pattern.compile("^(\\d{2,4})-(\\d{1,2})\$")
-    public static YEAR_MONTH_DAY_PATTERN = Pattern.compile("^(\\d{2,4})-(\\d{1,2})-(\\d{1,2})\$")
-    public static YEAR_MONTHNAME_PATTERN = Pattern.compile("^(\\d{2,4})-(\\w+)\$")
-    public static YEAR_MONTHNAME_DAY_PATTERN = Pattern.compile("^(\\d{2,4})-(\\w+)-(\\d{1,2})\$")
-
 
     /**
      * Special case handling for checkboxes
@@ -70,54 +61,12 @@ class WebUtils {
 
    }
 
-    public static DateRange parseDateRange(String val) {
-        if (val) {
-            if (val.contains('/')) {
-                def bits = val.split('/')
-                def startDate = parseDate(bits[0])
-                def endDate = parseDate(bits[1])
-                return new DateRange(startDate: startDate, endDate: endDate)
-            } else {
-                return new DateRange(startDate: parseDate(val))
-            }
-        }
-        return new DateRange(startDate: parseDate(val))
-    }
-
-    public static DateComponents parseDate(String val) {
-        if (val) {
-            def matcher = YEAR_MONTH_DAY_PATTERN.matcher(val)
-            if (matcher.matches()) {
-                return new DateComponents(year: matcher.group(1), month: matcher.group(2), day: matcher.group(3))
-            }
-            matcher = YEAR_MONTH_PATTERN.matcher(val)
-            if (matcher.matches()) {
-                return new DateComponents(year: matcher.group(1), month: matcher.group(2))
-            }
-            matcher = YEAR_PATTERN.matcher(val)
-            if (matcher.matches()) {
-                return new DateComponents(year: matcher.group(1))
-            }
-            matcher = YEAR_MONTHNAME_PATTERN.matcher(val)
-            if (matcher.matches()) {
-                return new DateComponents(year: matcher.group(1), month: matcher.group(2))
-            }
-            matcher = YEAR_MONTHNAME_DAY_PATTERN.matcher(val)
-            if (matcher.matches()) {
-                return new DateComponents(year: matcher.group(1), month: matcher.group(2), day: matcher.group(3))
-            }
-        }
-
-        return new DateComponents(year: val)
-    }
-
     /**
      * Replaces consecutive runs on spaces with a single space within a string
      *
      * @param argStr
      * @return
      */
-
     public static String collapseSpaces(String argStr) {
         if (argStr == null || argStr.length() == 0) {
             return argStr;
@@ -189,16 +138,3 @@ class WebUtils {
     }
 
 }
-
-public class DateRange {
-    DateComponents startDate
-    DateComponents endDate
-}
-
-public class DateComponents {
-    String day
-    String month
-    String year
-}
-
-

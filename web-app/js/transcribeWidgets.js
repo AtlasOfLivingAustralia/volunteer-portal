@@ -26,6 +26,9 @@ var transcribeWidgets = {};
 
     var initDateWidgets = function() {
         $(".dateWidget").each(function(index, widget) {
+
+            renderDateWidgetFromTargetField(widget);
+
             var targetField = $(this).attr("targetField");
             if (targetField) {
                 var hiddenField = $("#recordValues\\.0\\." + targetField);
