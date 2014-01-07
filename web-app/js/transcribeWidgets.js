@@ -7,6 +7,7 @@ var transcribeWidgets = {};
         initLatLongWidgets();
         initUnitRangeWidgets();
         initDateWidgets();
+        initSheetNumberWidgets();
     };
 
     lib.prepareFieldWidgetsForSubmission = function() {
@@ -16,28 +17,66 @@ var transcribeWidgets = {};
         preSubmitUnitRangeWidgets();
     };
 
+    // REGEX patterns
     var YEAR_PATTERN = /^(\d{2,4})$/;
     var YEAR_MONTH_PATTERN = /^(\d{2,4})-(\d{1,2})$/;
     var YEAR_MONTH_DAY_PATTERN = /^(\d{2,4})-(\d{1,2})-(\d{1,2})$/
     var YEAR_MONTHNAME_PATTERN = /^(\d{2,4})-(\w+)$/;
     var YEAR_MONTHNAME_DAY_PATTERN = /^(\d{2,4})-(\w+)-(\d{1,2})$/;
 
+    var DECIMAL_DEGREE_PATTERN = /^\d+[.]\d+$/;
+    var DEGREE_DECIMAL_MINUTES_PATTERN = /^(\d+)[°](\d+)[.](\d+)([NnEeWwSs]?)$/;
+    var DEGREE_PATTERN = /^(\d+)[°]([NnEeWwSs]?)$/
+    var DEGREE_MINUTES_PATTERN = /^(\d+)[°](\d+)[']([NnEeWwSs]?)$/;
+    var DEGREE_MINUTES_SECONDS_PATTERN = /^(\d+)[°](\d+)['](\d+)["]([NnEeWwSs]?)$/;
+
+    var UNIT_RANGE_PATTERN = /^\s*([^\s:]+)(?::([^\s]+))*(?:\s+([^\s]+))*\s*$/;
+
+
     // private init methods ********************************
+    function hookTargetFieldChangeEvent(widget, callback) {
+
+        if (callback && widget) {
+            callback(widget);
+        }
+
+        var targetField = $(widget).attr("targetField");
+        if (targetField && callback) {
+            var hiddenField = $("#recordValues\\.0\\." + targetField);
+            if (hiddenField) {
+                hiddenField.change(function(e) {
+                    callback(widget);
+                });
+            }
+        }
+    }
+
+    var initSheetNumberWidgets = function() {
+        $(".sheetNumberWidget").each(function(index, widget) {
+            hookTargetFieldChangeEvent(widget, renderSheetNumberWidgetFromTargetField);
+        });
+    }
+
+    var renderSheetNumberWidgetFromTargetField = function(widget) {
+        var targetField = $(widget).attr("targetField");
+        var hiddenField = $("#recordValues\\.0\\." + targetField);
+        var value = hiddenField.val();
+        var sheet = '';
+        var of = '';
+        if (value.indexOf("/") != -1) {
+            var bits = value.split('/');
+            sheet = bits[0];
+            of = bits[1];
+        } else {
+            sheet = value;
+        }
+        $(widget).find(".sheetNumber").val(sheet);
+        $(widget).find(".sheetNumberOf").val(of);
+    };
 
     var initDateWidgets = function() {
         $(".dateWidget").each(function(index, widget) {
-
-            renderDateWidgetFromTargetField(widget);
-
-            var targetField = $(this).attr("targetField");
-            if (targetField) {
-                var hiddenField = $("#recordValues\\.0\\." + targetField);
-                if (hiddenField) {
-                    hiddenField.change(function(e) {
-                        renderDateWidgetFromTargetField(widget);
-                    });
-                }
-            }
+            hookTargetFieldChangeEvent(widget, renderDateWidgetFromTargetField);
         });
     };
 
@@ -85,18 +124,7 @@ var transcribeWidgets = {};
 
     var initUnitRangeWidgets = function() {
         $(".unitRangeWidget").each(function(index, widget) {
-
-            renderUnitRangeFromTargetField(widget);
-
-            var targetField = $(this).attr("targetField");
-            if (targetField) {
-                var hiddenField = $("#recordValues\\.0\\." + targetField);
-                if (hiddenField) {
-                    hiddenField.change(function(e) {
-                        renderUnitRangeFromTargetField(widget);
-                    });
-                }
-            }
+            hookTargetFieldChangeEvent(widget, renderUnitRangeFromTargetField);
         });
     };
 
@@ -154,9 +182,7 @@ var transcribeWidgets = {};
     var initLatLongWidgets = function () {
 
         $(".latLongWidget").each(function(index, widget) {
-
-            renderLatLongFromTargetValue(widget);
-
+            hookTargetFieldChangeEvent(widget, renderLatLongFromTargetValue);
             var selector = $(widget).find(".latLongFormatSelector").first();
             if (selector) {
                 $(selector).change(function(e) {
@@ -164,28 +190,9 @@ var transcribeWidgets = {};
                     switchLatLongFormat(newLatLongFormat);
                 });
             }
-            var targetField = $(this).attr("targetField");
-            if (targetField) {
-                var hiddenField = $("#recordValues\\.0\\." + targetField);
-                if (hiddenField) {
-                    hiddenField.change(function(e) {
-                        renderLatLongFromTargetValue(widget);
-                    });
-                }
-            }
-
         });
 
     };
-
-    var DECIMAL_DEGREE_PATTERN = /^\d+[.]\d+$/;
-    var DEGREE_DECIMAL_MINUTES_PATTERN = /^(\d+)[°](\d+)[.](\d+)([NnEeWwSs]?)$/;
-    var DEGREE_PATTERN = /^(\d+)[°]([NnEeWwSs]?)$/
-    var DEGREE_MINUTES_PATTERN = /^(\d+)[°](\d+)[']([NnEeWwSs]?)$/;
-    var DEGREE_MINUTES_SECONDS_PATTERN = /^(\d+)[°](\d+)['](\d+)["]([NnEeWwSs]?)$/;
-
-    var UNIT_RANGE_PATTERN = /^\s*([^\s:]+)(?::([^\s]+))*(?:\s+([^\s]+))*\s*$/;
-
 
     function renderLatLongFromTargetValue(widget) {
         var targetField = $(widget).attr("targetField");
@@ -206,7 +213,7 @@ var transcribeWidgets = {};
     }
 
     // Parse out a lat/long string value into component parts. Will detect decimal degrees, and variations of DMS.
-    function parseLatLongString(value) {
+    var parseLatLongString = function(value) {
 
         var results = DECIMAL_DEGREE_PATTERN.exec(value);
         if (results) {

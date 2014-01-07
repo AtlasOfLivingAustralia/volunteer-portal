@@ -120,19 +120,24 @@
     function clearTaskData() {
 
         $('[id*="recordValues\\."]').each(function (index, widget) {
-
-            // Don't clear the hidden fields, unless they are special transcribe widgets
             var clear = true;
-            if ($(widget).attr('type') == 'hidden') {
+            var jqWidget = $(widget);
+            var widgetType = jqWidget.attr('type');
+            // Don't clear the hidden fields, unless they are special transcribe widgets
+            if (widgetType == 'hidden') {
                 // transcribe widgets have a targetField attribute, so search upwards from this field to see if any of its parents have
                 // a targetField
-                var target = $(widget).closest("div[targetField]");
+                var target = jqWidget.closest("div[targetField]");
                 clear = target.length > 0;
             }
 
             if (clear) {
-                $(widget).val('')
-                $(widget).change();
+                if (widgetType == 'checkbox') {
+                    jqWidget.prop("check", false);
+                } else {
+                    jqWidget.val('')
+                }
+                jqWidget.change();
             }
 
         });
@@ -163,8 +168,13 @@
                 }
                 if (!skip) {
                     var selector = "#" + key;
-                    $(selector).val(data[key])
-                    $(selector).change();
+                    var jq = $(selector);
+                    if (jq.attr("type") == 'checkbox') {
+                        jq.prop('checked', data[key] == 'true');
+                    } else {
+                        jq.val(data[key]);
+                    }
+                    jq.change();
                 }
             }
         }});
