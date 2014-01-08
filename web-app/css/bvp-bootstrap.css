@@ -241,6 +241,12 @@ nav ol, nav ul, nav li {
     border-radius: 5px 0 0 5px;
 }
 
+.featuredExpeditions nav ol li a .label {
+    position: absolute;
+    background-color: #3d464c;
+    margin: 5px;
+}
+
 .alignleft, img.alignleft {
     display: inline;
     float: left;
