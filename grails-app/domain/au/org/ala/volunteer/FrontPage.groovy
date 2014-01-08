@@ -2,14 +2,7 @@ package au.org.ala.volunteer
 
 class FrontPage {
 
-    Project projectOfTheDay    
-    Project featuredProject1
-    Project featuredProject2
-    Project featuredProject3
-    Project featuredProject4
-    Project featuredProject5
-    Project featuredProject6
-
+    Project projectOfTheDay
     Boolean useGlobalNewsItem = false
     
     String newsTitle
@@ -30,13 +23,6 @@ class FrontPage {
         enableTaskComments nullable:  true
         enableForum nullable: true
         projectOfTheDay nullable: true
-        featuredProject1 nullable: true
-        featuredProject2 nullable: true
-        featuredProject3 nullable: true
-        featuredProject4 nullable: true
-        featuredProject5 nullable: true
-        featuredProject6 nullable: true
-
     }
 
     static FrontPage instance() {

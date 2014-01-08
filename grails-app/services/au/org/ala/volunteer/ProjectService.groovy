@@ -7,6 +7,55 @@ class ProjectService {
     def authService
     def taskService
 
+    public List<ProjectSummary> getFeaturedProjectList() {
+        CodeTimer t = new CodeTimer("getFeaturedProjectList")
+        def projectList = Project.list()
+        def taskCounts = taskService.getProjectTaskCounts()
+        def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+
+        List results = []
+        for (Project project : projectList) {
+            if (!project.inactive) {
+                def percent = 0
+                if (taskCounts[project.id] && fullyTranscribedCounts[project.id]) {
+                    percent = ((fullyTranscribedCounts[project.id] / taskCounts[project.id]) * 100)
+                    if (percent > 99 && taskCounts[project.id] != fullyTranscribedCounts[project.id]) {
+                        // Avoid reported 100% unless the transcribed count actually equals the task count
+                        percent = 99;
+                    }
+                }
+                if (percent < 100) {
+                    results << getProjectSummary(project, fullyTranscribedCounts, percent)
+                }
+            }
+        }
+
+        t.stop(true)
+
+        return results
+    }
+
+    private ProjectSummary getProjectSummary(Project project, Map fullyTranscribedCounts, double percent) {
+        def iconImage = 'icon_specimens.png'
+        def iconLabel = 'Specimens'
+
+        if (project.template.name.equalsIgnoreCase('Journal') || project.template.name.toLowerCase().startsWith("fieldnotebook")) {
+            iconImage = 'icon_fieldnotes.png'
+            iconLabel = 'Field notes'
+        }
+
+        def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")
+
+        def ps = new ProjectSummary(project: project)
+        ps.iconImage = iconImage
+        ps.iconLabel = iconLabel
+        ps.volunteerCount = volunteer.size()
+        ps.countComplete = (Integer) fullyTranscribedCounts[project.id] ?: 0
+        ps.percentComplete = (percent ? Math.round(percent) : 0)
+
+        return ps
+    }
+
     public ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
 
         def projectList
@@ -37,23 +86,7 @@ class ProjectService {
                 incompleteCount++;
             }
 
-            def iconImage = 'icon_specimens.png'
-            def iconLabel = 'Specimens'
-
-            if (project.template.name.equalsIgnoreCase('Journal') || project.template.name.toLowerCase().startsWith("fieldnotebook")) {
-                iconImage = 'icon_fieldnotes.png'
-                iconLabel = 'Field notes'
-            }
-
-            def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")
-
-            def ps = new ProjectSummary(project: project)
-            ps.iconImage = iconImage
-            ps.iconLabel = iconLabel
-            ps.volunteerCount = volunteer.size()
-            ps.countComplete = (Integer) fullyTranscribedCounts[project.id] ?: 0
-            ps.percentComplete = percent ? Math.round(percent) : 0
-
+            def ps = getProjectSummary(project, fullyTranscribedCounts, percent)
             projects[project.id] = ps
         }
 
@@ -128,7 +161,7 @@ class ProjectService {
         }
 
         summaryList.matchingProjectCount = renderList.size()
-        summaryList.projectRenderList = (renderList ? renderList[startIndex .. endIndex] : [])
+        summaryList.projectRenderList = (renderList ? renderList[startIndex..endIndex] : [])
 
         return summaryList
     }

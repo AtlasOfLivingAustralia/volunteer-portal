@@ -4,6 +4,7 @@ class IndexController {
 
     def userService
     def grailsApplication
+    def projectService
 
     def index = {
         def frontPage = FrontPage.instance()
@@ -18,7 +19,11 @@ class IndexController {
             newsItem = NewsItem.find("""from NewsItem n where n.project.disableNewsItems is null or project.disableNewsItems != true order by n.created desc""")
         }
 
-        render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': FrontPage.instance()] )
+        def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentComplete }
+
+        println featuredProjects
+
+        render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': FrontPage.instance(), featuredProjects: featuredProjects] )
     }
 
     def leaderBoardFragment = {

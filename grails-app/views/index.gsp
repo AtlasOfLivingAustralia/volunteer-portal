@@ -34,60 +34,34 @@
                         </div>
                     </section>
 
-                    <section class="featuredExpeditions">
-                        <div class="row-fluid">
-                            <div class="span12">
-                                <hgroup>
-                                    <h2 class="alignleft">More expeditions</h2>
-                                    <a href="${createLink(controller: 'project', action: 'list')}" class="btn btn-small pull-right">View all</a>
-                                </hgroup>
+                    <g:if test="${featuredProjects}">
+                        <section class="featuredExpeditions">
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <hgroup>
+                                        <h2 class="alignleft">More expeditions</h2>
+                                        <a href="${createLink(controller: 'project', action: 'list')}" class="btn btn-small pull-right">View all</a>
+                                    </hgroup>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row-fluid">
-                            <div class="span12">
-                                <nav>
-                                    <ol>
-                                        <li>
-                                            <a href="${createLink(controller: 'project', id: frontPage.featuredProject1?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject1?.featuredImage});">
-                                                <h2>${frontPage.featuredProject1?.featuredLabel}</h2>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="${createLink(controller: 'project', id: frontPage.featuredProject2?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject2?.featuredImage});">
-                                                <h2>${frontPage.featuredProject2?.featuredLabel}</h2>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="${createLink(controller: 'project', id: frontPage.featuredProject3?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject3?.featuredImage});">
-                                                <h2>${frontPage.featuredProject3?.featuredLabel}</h2>
-                                            </a>
-                                        </li>
-                                        <g:if test="${frontPage.featuredProject4}">
-                                            <li>
-                                                <a href="${createLink(controller: 'project', id: frontPage.featuredProject4?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject4?.featuredImage});">
-                                                    <h2>${frontPage.featuredProject4?.featuredLabel}</h2>
-                                                </a>
-                                            </li>
-                                        </g:if>
-                                        <g:if test="${frontPage.featuredProject5}">
-                                            <li>
-                                                <a href="${createLink(controller: 'project', id: frontPage.featuredProject5?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject5?.featuredImage});">
-                                                    <h2>${frontPage.featuredProject5?.featuredLabel}</h2>
-                                                </a>
-                                            </li>
-                                        </g:if>
-                                        <g:if test="${frontPage.featuredProject6}">
-                                            <li>
-                                                <a href="${createLink(controller: 'project', id: frontPage.featuredProject6?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject6?.featuredImage});">
-                                                    <h2>${frontPage.featuredProject6?.featuredLabel}</h2>
-                                                </a>
-                                            </li>
-                                        </g:if>
-                                    </ol>
-                                </nav>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <nav>
+                                        <ol>
+                                            <g:each in="${featuredProjects}" var="featuredProject">
+                                                <li>
+                                                    <a href="${createLink(controller: 'project', id: featuredProject.project?.id, action: 'index')}" style="background-image:url(${featuredProject.project?.featuredImage});">
+                                                        <h2>${featuredProject.project?.featuredLabel}</h2>
+                                                        <div class="label label-inverse">${featuredProject.percentComplete}%</div>
+                                                    </a>
+                                                </li>
+                                            </g:each>
+                                        </ol>
+                                    </nav>
+                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    </g:if>
                 </div> <!-- col-wide -->
 
                 <div class="span3">

@@ -38,65 +38,6 @@
 
                                 <tr class="prop">
                                     <td valign="top" class="name">
-                                        <label for="featuredProject1"><g:message code="frontPage.featuredProject1.label" default="Featured Project 1"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject1', 'errors')}">
-                                        <g:select name="featuredProject1" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject1?.id}"/>
-                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject1?.id}">Edit&nbsp;project</g:link>
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="featuredProject2"><g:message code="frontPage.featuredProject2.label" default="Featured Project 2"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject2', 'errors')}">
-                                        <g:select name="featuredProject2" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject2?.id}"/>
-                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject2?.id}">Edit&nbsp;project</g:link>
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="featuredProject3"><g:message code="frontPage.featuredProject3.label" default="Featured Project 3"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject3', 'errors')}">
-                                        <g:select name="featuredProject3" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject3?.id}"/>
-                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject3?.id}">Edit&nbsp;project</g:link>
-                                    </td>
-                                </tr>
-                                
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="featuredProject4"><g:message code="frontPage.featuredProject4.label" default="Featured Project 4"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject4', 'errors')}">
-                                        <g:select name="featuredProject4" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject4?.id}"/>
-                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject4?.id}">Edit&nbsp;project</g:link>
-                                    </td>
-                                </tr>
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="featuredProject5"><g:message code="frontPage.featuredProject5.label" default="Featured Project 5"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject5', 'errors')}">
-                                        <g:select name="featuredProject5" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject5?.id}"/>
-                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject5?.id}">Edit&nbsp;project</g:link>
-                                    </td>
-                                </tr>
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="featuredProject6"><g:message code="frontPage.featuredProject6.label" default="Featured Project 6"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'featuredProject6', 'errors')}">
-                                        <g:select name="featuredProject6" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.featuredProject6?.id}"/>
-                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.featuredProject6?.id}">Edit&nbsp;project</g:link>
-                                    </td>
-                                </tr>
-                                
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
                                         <label for="useGlobalNewsItem"><g:message code="frontPage.useGlobalNewsItem.label" default="Use global news item"/></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'useGlobalNewsItem', 'errors')}">
