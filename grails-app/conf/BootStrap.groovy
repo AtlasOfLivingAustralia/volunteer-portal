@@ -21,6 +21,8 @@ class BootStrap {
 
         prepareValidationRules();
 
+        prepareProjectTypes();
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', displayName: 'System User')
@@ -30,6 +32,17 @@ class BootStrap {
 
         internalRoles.each { role ->
             ensureRoleExists(role)
+        }
+
+    }
+
+    private void prepareProjectTypes() {
+        def builtIns = [[name:'specimens', label:'Specimens', icon:'/images/icon_specimens.png'], [name:'fieldnotes', label: 'Field notes', icon:'/images/icon_fieldnotes.png']]
+        builtIns.each {
+            def existing = ProjectType.findByName(it.name)
+            if (!existing) {
+
+            }
         }
 
     }

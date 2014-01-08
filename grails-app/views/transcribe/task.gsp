@@ -259,7 +259,7 @@
                     position: {
                         corner: {
                             target: 'topMiddle',
-                            tooltip: 'bottomMiddle'
+                            tooltip: 'bottomRight'
                         }
                     },
                     style: {
@@ -273,7 +273,7 @@
                             radius: 5,
                             color: '#E66542'// '#E66542' '#DD3102'
                         },
-                        tip: 'bottomMiddle',
+                        tip: 'bottomRight',
                         name: 'light' // Inherit the rest of the attributes from the preset light style
                     }
                 }).bind('click', function(e){ e.preventDefault(); return false; });

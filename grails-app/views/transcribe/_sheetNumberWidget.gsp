@@ -11,7 +11,7 @@
             <g:textField name="${field.fieldType}.sheetNumberOf" class="span12 sheetNumberOf" value="" validationRule="${field.validationRule}" />
         </div>
         <div class="span3">
-            (if noted)
+            (if&nbsp;noted)
         </div>
     </div>
     <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" />

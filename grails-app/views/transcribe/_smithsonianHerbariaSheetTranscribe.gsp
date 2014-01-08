@@ -4,14 +4,14 @@
 <div class="container-fluid">
 
     <div class="row-fluid">
-        <div class="span6">
+        <div class="span8">
             <div class="well well-small">
                 <g:set var="multimedia" value="${taskInstance.multimedia.first()}" />
                 <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" />
             </div>
         </div>
 
-        <div class="span6">
+        <div class="span4">
             <div class="row-fluid" id="taskMetadata">
                 <div class="span12">
                     <div class="well well-small">
@@ -23,11 +23,12 @@
                                     <span class="metaDataLabel">Taxa:</span> ${recordValues?.get(0)?.scientificName}
                                 </td>
                                 <td style="text-align: right">
-                                    <span>
+                                    <div class="span10">
                                         <button class="btn" id="show_task_selector" href="#task_selector" style="">Copy from previous task</button>
+                                    </div>
+                                    <div class="span2">
                                         <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
-                                    </span>
-
+                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -47,12 +48,16 @@
         </div>
     </div>
 
-    <div class="row-fluid">
-        <div class="span6">
-            <g:renderFieldCategorySection columns="1" category="${FieldCategory.collectionEvent}" task="${taskInstance}" recordValues="${recordValues}" title="Collection details" />
-        </div>
-        <div class="span6">
-            <g:renderFieldCategorySection columns="1" category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Location details" />
+    <div class="transcribeSection well well-small">
+        <div class="row-fluid">
+            <div class="span6">
+                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection details</span>
+                <g:renderCategoryFieldsColumn columns="1" category="${FieldCategory.collectionEvent}" task="${taskInstance}" recordValues="${recordValues}" title="Collection details" />
+            </div>
+            <div class="span6">
+                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Location details</span>
+                <g:renderCategoryFieldsColumn columns="1" category="${FieldCategory.location}" task="${taskInstance}" recordValues="${recordValues}" title="Location details" />
+            </div>
         </div>
     </div>
 

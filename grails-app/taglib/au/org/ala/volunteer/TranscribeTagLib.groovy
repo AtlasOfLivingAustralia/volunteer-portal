@@ -25,6 +25,7 @@ class TranscribeTagLib {
 
     def taskService
     def picklistService
+    def markdownService
 
     /**
     * @attr task
@@ -56,7 +57,8 @@ class TranscribeTagLib {
             }
             div(class: 'span2') {
                 if (field.helpText) {
-                    def help = "<a href='#' class='fieldHelp' title='${field.helpText}' tabindex='-1'><span class='help-container'>&nbsp;</span></a>"
+                    def helpText = markdownService.markdown(field.helpText)
+                    def help = "<a href='#' class='fieldHelp' title='${helpText}' tabindex='-1'><span class='help-container'>&nbsp;</span></a>"
                     mkp.yieldUnescaped(help)
                 } else {
                     mkp.yieldUnescaped("&nbsp;")
@@ -166,7 +168,8 @@ class TranscribeTagLib {
                     }
                     div(class:'span2') {
                         if (field.helpText) {
-                            def help = "<a href='#' class='fieldHelp' title='${field.helpText}'><span class='help-container'>&nbsp;</span></a>"
+                            def helpText = markdownService.markdown(field.helpText)
+                            def help = "<a href='#' class='fieldHelp' title='${helpText}'><span class='help-container'>&nbsp;</span></a>"
                             mkp.yieldUnescaped(help)
                         } else {
                             mkp.yieldUnescaped("&nbsp;")
@@ -519,7 +522,8 @@ class TranscribeTagLib {
         def field = attrs.field as TemplateField
         if (field && field.helpText) {
             def mb = new MarkupBuilder(out)
-            mb.a(href:'#', class:'fieldHelp', title:field.helpText, tabindex: "-1") {
+            def helpText = markdownService.markdown(field.helpText)
+            mb.a(href:'#', class:'fieldHelp', title:helpText, tabindex: "-1") {
                 span(class:'help-container') {
                     mkp.yieldUnescaped('&nbsp;')
                 }

@@ -21,8 +21,6 @@ class IndexController {
 
         def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentComplete }
 
-        println featuredProjects
-
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': FrontPage.instance(), featuredProjects: featuredProjects] )
     }
 

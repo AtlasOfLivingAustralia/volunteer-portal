@@ -34,7 +34,7 @@ grails.project.dependency.resolution = {
         runtime ":mail:1.0.1"
         runtime ":csv:0.3.1"
         runtime ":executor:0.3"
-        runtime ":markdown:1.0.0.RC1"
+        compile ":markdown:1.1.1"
         runtime ":pretty-time:0.3"
         runtime ":quartz:1.0-RC5"
         runtime ":tiny-mce:3.4.9"

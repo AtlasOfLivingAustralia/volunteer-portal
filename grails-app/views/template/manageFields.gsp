@@ -226,7 +226,7 @@
                                 <td>${field.category}</td>
                                 <td>
                                     <g:if test="${field.helpText}">
-                                        <a href="#" class="fieldHelp" title="${field.helpText}"><span class="help-container">&nbsp;</span></a>
+                                        <a href="#" class="fieldHelp" title="<markdown:renderHtml>${field.helpText}</markdown:renderHtml>"><span class="help-container">&nbsp;</span></a>
                                     </g:if>
                                 </td>
                                 <td style="padding:0; width:180px">

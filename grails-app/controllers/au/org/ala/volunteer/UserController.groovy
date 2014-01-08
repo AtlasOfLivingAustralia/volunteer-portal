@@ -461,9 +461,6 @@ class UserController {
     def ajaxGetPoints() {
 
         def userInstance = User.get(params.int("id"))
-
-        CodeTimer t = new CodeTimer("Get points")
-
         def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
 
         def data = []
@@ -473,8 +470,6 @@ class UserController {
                 data << [lat:point.lat, lng:point.lng, taskId: task.id]
             }
         }
-
-        t.stop(true)
 
         render(data as JSON)
     }

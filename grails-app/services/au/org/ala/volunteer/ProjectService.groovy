@@ -8,7 +8,7 @@ class ProjectService {
     def taskService
 
     public List<ProjectSummary> getFeaturedProjectList() {
-        CodeTimer t = new CodeTimer("getFeaturedProjectList")
+
         def projectList = Project.list()
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
@@ -29,8 +29,6 @@ class ProjectService {
                 }
             }
         }
-
-        t.stop(true)
 
         return results
     }

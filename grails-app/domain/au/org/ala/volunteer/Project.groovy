@@ -22,7 +22,7 @@ class Project {
     def grailsApplication
     def grailsLinkGenerator
 
-    static belongsTo = [template: Template]
+    static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem]
     static transients = ['featuredImage']
 
@@ -53,6 +53,7 @@ class Project {
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
         picklistInstitutionCode nullable: true
+        projectType nullable: true
     }
 
     public String toString() {

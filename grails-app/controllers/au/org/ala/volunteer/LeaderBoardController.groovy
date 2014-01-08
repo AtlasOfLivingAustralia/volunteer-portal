@@ -137,8 +137,6 @@ class LeaderBoardController {
     }
 
     private Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType) {
-        println "Getting counts of tasks ${activityType} between ${startDate} and ${endDate}"
-
         def c = Task.createCriteria()
 
         def results = c {
