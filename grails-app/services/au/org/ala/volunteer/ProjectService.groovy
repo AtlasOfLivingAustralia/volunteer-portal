@@ -6,6 +6,8 @@ class ProjectService {
 
     def authService
     def taskService
+    def grailsLinkGenerator
+    def projectTypeService
 
     public List<ProjectSummary> getFeaturedProjectList() {
 
@@ -33,13 +35,34 @@ class ProjectService {
         return results
     }
 
+    private static ProjectType guessProjectType(Project project) {
+
+        def viewName = project.template.viewName.toLowerCase()
+
+        if (viewName.contains("journal") || viewName.contains("fieldnotebook") || viewName.contains("observationDiary")) {
+            return ProjectType.findByName("fieldnotes")
+        }
+
+        return ProjectType.findByName("specimens")
+    }
+
     private ProjectSummary getProjectSummary(Project project, Map fullyTranscribedCounts, double percent) {
-        def iconImage = 'icon_specimens.png'
+
+        if (!project.projectType) {
+            def projectType = guessProjectType(project)
+            if (projectType) {
+                project.projectType = projectType
+                project.save()
+            }
+        }
+
+        // Default, if all else fails
+        def iconImage = grailsLinkGenerator.resource(dir:'/images', file:'icon_specimens.png')
         def iconLabel = 'Specimens'
 
-        if (project.template.name.equalsIgnoreCase('Journal') || project.template.name.toLowerCase().startsWith("fieldnotebook")) {
-            iconImage = 'icon_fieldnotes.png'
-            iconLabel = 'Field notes'
+        if (project.projectType) {
+            iconImage = projectTypeService.getIconURL(project.projectType)
+            iconLabel = project.projectType.label
         }
 
         def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")

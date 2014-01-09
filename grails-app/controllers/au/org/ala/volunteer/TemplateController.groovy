@@ -9,6 +9,7 @@ class TemplateController {
 
     def userService
     def templateFieldService
+    def templateService
 
     def index = {
         redirect(action: "list", params: params)
@@ -54,7 +55,8 @@ class TemplateController {
             redirect(action: "list")
         }
         else {
-            return [templateInstance: templateInstance]
+            def availableViews = templateService.getAvailableTemplateViews()
+            return [templateInstance: templateInstance, availableViews: availableViews]
         }
     }
 

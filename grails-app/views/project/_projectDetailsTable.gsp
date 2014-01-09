@@ -45,6 +45,15 @@
 
         <tr class="prop">
             <td valign="top" class="name">
+                <label for="projectType"><g:message code="project.projectType.label" default="Expedition type"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'projectType', 'errors')}">
+                <g:select name="projectType.id" from="${au.org.ala.volunteer.ProjectType.list()}" optionKey="id" value="${projectInstance?.projectType?.id}" noSelection="['null': '']"/>
+            </td>
+        </tr>
+
+        <tr class="prop">
+            <td valign="top" class="name">
                 <label for="created"><g:message code="project.created.label" default="Created"/></label>
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'created', 'errors')}">

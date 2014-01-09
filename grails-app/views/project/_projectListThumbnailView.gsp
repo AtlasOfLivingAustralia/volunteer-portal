@@ -54,7 +54,7 @@
                     <div>
                         <table style="width: 100%">
                             <tr>
-                                <td style="text-align: left"><img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectSummary.iconImage}" width="16" height="20" alt="${projectSummary.iconLabel}"></td>
+                                <td style="text-align: left"><img src="${projectSummary.iconImage}" width="16" height="20" alt="${projectSummary.iconLabel}"></td>
                                 <td>
                                     <small>${projectSummary.project.featuredOwner}</small>
                                 </td>

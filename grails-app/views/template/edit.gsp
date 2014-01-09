@@ -77,7 +77,12 @@
                                       <label for="viewName"><g:message code="template.viewName.label" default="View Name" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'viewName', 'errors')}">
-                                        <g:textField name="viewName" value="${templateInstance?.viewName}" />
+                                        <g:if test="${availableViews}">
+                                            <g:select from="${availableViews}" name="viewName" value="${templateInstance?.viewName}" />
+                                        </g:if>
+                                        <g:else>
+                                            <g:textField name="viewName" value="${templateInstance?.viewName}" />
+                                        </g:else>
                                     </td>
                                 </tr>
 

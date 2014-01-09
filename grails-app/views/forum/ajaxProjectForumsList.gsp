@@ -38,7 +38,7 @@
                     </td>
                     <%-- Project type --%>
                     <td class="type">
-                        <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectSummary.iconImage}" width="40" height="36" alt="">
+                        <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
                     </td>
                     <td style="text-align: right">
                         <a href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> Expedition Topics and <b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> Task Topics</a>

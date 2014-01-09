@@ -14,4 +14,8 @@ class ProjectType {
         description nullable: true
     }
 
+    public String toString() {
+        return name
+    }
+
 }

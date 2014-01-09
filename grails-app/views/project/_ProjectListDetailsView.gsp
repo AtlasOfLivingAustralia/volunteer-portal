@@ -74,7 +74,7 @@
                         <td style="border-top: none">${projectSummary.project.featuredOwner}</td>
                         <%-- Project type --%>
                         <td style="border-top: none" class="type">
-                            <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectSummary.iconImage}" width="40" height="36" alt="">
+                            <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
                             <br/>
                             ${projectSummary.iconLabel}
                         </td>

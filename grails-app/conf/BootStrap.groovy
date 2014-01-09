@@ -1,13 +1,16 @@
 import au.org.ala.volunteer.*
+import org.apache.commons.fileupload.disk.DiskFileItem
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.util.regex.Pattern
 
 class BootStrap {
 
-    javax.sql.DataSource dataSource
     def logService
+    def projectTypeService
+    def grailsApplication
 
     def init = { servletContext ->
 
@@ -37,18 +40,24 @@ class BootStrap {
     }
 
     private void prepareProjectTypes() {
+        logService.log("Checking project types...")
         def builtIns = [[name:'specimens', label:'Specimens', icon:'/images/icon_specimens.png'], [name:'fieldnotes', label: 'Field notes', icon:'/images/icon_fieldnotes.png']]
         builtIns.each {
             def existing = ProjectType.findByName(it.name)
             if (!existing) {
-
+                logService.log("Creating project type ${it.name}")
+                def projectType = new ProjectType(name: it.name, label: it.label)
+                projectType.save(failOnError: true, flush: true)
+                File iconFile = grailsApplication.mainContext.getResource(it.icon)?.file
+                if (iconFile) {
+                    projectTypeService.saveImageForProjectType(projectType, iconFile)
+                }
             }
         }
-
     }
 
     private void prepareValidationRules() {
-
+        logService.log("Initialising validation rules")
         checkOrCreateRule('mandatory', '.+', 'This field value is mandatory', "Mandatory fields must have a value supplied to them", true)
         checkOrCreateRule('numeric', '^[-+]?[0-9]*\\.?[0-9]+$', 'This field must be a number', "Field values must be numeric (floating point or otherwise)", false)
         checkOrCreateRule('integer', '^[-+]?[0-9]+$', 'This field must be a integer', "Field values must be integers", false)
