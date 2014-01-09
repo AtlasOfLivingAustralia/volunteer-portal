@@ -23,7 +23,7 @@ class TemplateController {
     def create = {
         def templateInstance = new Template()
         templateInstance.properties = params
-        return [templateInstance: templateInstance]
+        return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
     def save = {
