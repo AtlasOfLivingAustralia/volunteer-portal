@@ -260,6 +260,22 @@ class TaskController {
         }
     }
 
+    def showDetails = {
+        def taskInstance = Task.get(params.int('id'))
+
+        def c = Field.createCriteria()
+        def fields = c.list {
+            eq('task', taskInstance)
+            and {
+                order('name', 'asc')
+                order('created', 'asc')
+            }
+        }
+
+        // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
+        [taskInstance: taskInstance, fields: fields]
+    }
+
     def show = {
         def taskInstance = Task.get(params.id)
         if (!taskInstance) {

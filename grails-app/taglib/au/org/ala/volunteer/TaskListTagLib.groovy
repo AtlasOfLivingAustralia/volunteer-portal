@@ -16,6 +16,7 @@ class TaskListTagLib {
 
         Date lastUpdated = null
         if(taskInstance.viewedTasks){
+            // TODO: wtf?
           lastUpdated = taskInstance.viewedTasks?.lastUpdated?.sort().get(0)
         }
         boolean addLink = (taskInstance.fullyTranscribedBy==null && (lastUpdated==null || lastUpdated.before(30.minutes.from.now)))
