@@ -209,7 +209,7 @@ class TranscribeTagLib {
             validationRule = ValidationRule.findByName(field.validationRule)
         }
 
-        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass, validationRule: validationRule]
+        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance]
 
         switch (field.type) {
             case FieldType.latLong:
