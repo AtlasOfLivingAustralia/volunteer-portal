@@ -33,12 +33,15 @@ class WebUtils {
 
         while (hasMore) {
             Map fieldValuesForRecord = recordValues.get(idx.toString())
+            def purgeList = []
             if (fieldValuesForRecord) {
                 // cache the changes to avoid concurrent modification exceptions
                 def changeMap = [:]
                 fieldValuesForRecord.each { keyValue ->
                     String key = keyValue.key
                     if (key.startsWith("_")) {
+                        // Remember this key so we can remove it later (we only want to store the non-underscored fields)
+                        purgeList << key
                         // look for the matching presence of a non-underscore method
                         def checkBoxKey = key.substring(1, key.length());
                         if (fieldValuesForRecord.containsKey(checkBoxKey)) {
@@ -53,6 +56,14 @@ class WebUtils {
                         recordValues[idx.toString()][kvp.key] = kvp.value
                     }
                 }
+
+                // Go through the purge list and strip out any intermediate '_' prefixed fields (used by checkboxes)
+                if (purgeList) {
+                    purgeList.each {
+                        fieldValuesForRecord.remove(it)
+                    }
+                }
+
                 idx++
             } else {
                 hasMore = false
