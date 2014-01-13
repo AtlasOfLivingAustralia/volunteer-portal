@@ -72,6 +72,10 @@
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'task', action:'calculateDates')}'">Calculate Task Dates (one off)</button></td>
                         <td>Advanced Settings</td>
                     </tr>
+                    <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'fixRecordedByID')}'">Fixed garbled recordedByID fields</button></td>
+                        <td>Fixes garbled recordedByID fields caused by duplicate hidden fields for this field type</td>
+                    </tr>
 
 
                 </table>

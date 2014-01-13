@@ -88,7 +88,6 @@ class AdminController {
         }
 
         redirect(action:'tutorialManagement')
-
     }
 
     def fixCollectionEvents = {
@@ -153,6 +152,65 @@ class AdminController {
         }
 
         render([status:'ok'] as JSON)
+    }
+
+    /**
+     * Some template definitions include recordedByID as a hidden field which conflicts with an existing "hard-coded" version of the same field
+     * This results in the field values becoming an array, which ends up causing the value to lost completely as the array is 'toString'ed into the database
+     * This routine attempts to find all 'recorded by id' fields whose value contains 'String' and attempts to look up the real collector id from a relevant picklist.
+     * It is entirely possible that not collector id can be found, in which case the field value is cleared
+     */
+    def fixRecordedByID() {
+        if (!checkAdmin()) {
+             throw new RuntimeException("Not authorised!")
+        }
+
+        // First find the candidate fields
+        def fields = Field.findAllByNameAndValueLikeAndSuperceded('recordedByID', '%String%', false)
+        def count = 0
+        def collectorsFound = 0
+        def picklist = Picklist.findByName("recordedBy")
+        fields.each { field ->
+            // find the collector name
+            def collectorNameField = Field.findByTaskAndNameAndRecordIdxAndSuperceded(field.task, "recordedBy", field.recordIdx, false)
+            def collectorName = collectorNameField?.value
+            def newValue = ''
+
+
+            if (collectorName) {
+                def instCode = field.task.project.picklistInstitutionCode
+                if (instCode) {
+                    def items = PicklistItem.findAllByPicklistAndInstitutionCodeAndValue(picklist, instCode, collectorName)
+                    if (items) {
+                        if (items.size() == 1 && items[0].key) {
+                            newValue = items[0].key
+                            println "1st chance. Found one collector number for ${collectorName}: ${newValue}"
+                        }
+                    } else {
+                        items = PicklistItem.findAllByPicklistAndValue(picklist, collectorName)
+                        if (items) {
+
+                            if (items.size() == 1 && items[0].key) {
+                                // Only one candidate, so we'll use it
+                                newValue = items[0].key
+                                println "2nd chance. Found one collector number for ${collectorName}: ${newValue}"
+                            }
+                        }
+                    }
+                }
+            }
+
+            println "Updating field ${field.id} value from '${field.value}' to '${newValue}'."
+            if (newValue) {
+                collectorsFound++
+            }
+
+            count++
+        }
+
+        flash.message = "${count} fields updated, $collectorsFound of which were set to a collector number."
+
+        redirect(action:'index')
     }
 
 }
