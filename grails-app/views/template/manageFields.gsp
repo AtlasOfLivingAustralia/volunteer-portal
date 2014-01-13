@@ -104,10 +104,13 @@
 
                 $("#btnAddField").click(function(e) {
                     e.preventDefault();
-                    var fieldType = encodeURIComponent($("#fieldName").val());
-                    if (fieldType) {
-                        window.location = "${createLink(controller:'template', action:'addField', id:templateInstance.id)}?fieldType=" + fieldType;
-                    }
+                    var options = {
+                        title:"Add field to template",
+                        url:"${createLink(action:'addTemplateFieldFragment', id:templateInstance.id)}",
+                        onClose : function() { }
+                    };
+
+                    showModal(options);
                 });
 
                 $(".btnDeleteField").click(function(e) {
@@ -185,10 +188,8 @@
                 <div id="buttonBar">
                     <g:uploadForm action="importFieldsFromCSV" controller="template">
                         <g:hiddenField name="id" value="${templateInstance.id}" />
+                        <button class="btn btn-success" id="btnAddField"><i class="icon-plus icon-white"></i>&nbsp;Add field</button>
                         <button class="btn" id="btnCleanUpOrdering">Clean up ordering</button>
-                        Field Type:
-                        <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>
-                        <button class="btn" id="btnAddField">Add field</button>
                         <button class="btn" id="btnPreviewTemplate">Preview Template</button>
                         <button class="btn" id="btnExportAsCSV">Export as CSV</button>
                         <input type="file" name="uploadFile" />

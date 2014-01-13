@@ -131,6 +131,14 @@ class TemplateController {
         }
     }
 
+    def addTemplateFieldFragment() {
+        def templateInstance = Template.get(params.int("id"))
+        if (templateInstance) {
+            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+            [templateInstance: templateInstance, fields: fields]
+        }
+    }
+
     def moveFieldUp() {
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
@@ -213,7 +221,10 @@ class TemplateController {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {
                 def displayOrder = getLastDisplayOrder(templateInstance) + 1
-                def field =new TemplateField(template: templateInstance, category: FieldCategory.none, fieldType: fieldType, displayOrder: displayOrder, defaultValue: '', type: FieldType.text)
+                FieldCategory category = params.category ?: FieldCategory.none
+                FieldType type = params.type ?: FieldType.text
+                def label = params.label ?: ""
+                def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
                 field.save(failOnError: true)
             }
         }
