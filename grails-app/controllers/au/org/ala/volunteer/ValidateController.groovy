@@ -82,7 +82,7 @@ class ValidateController {
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-            if (recordValues[0]?.sequenceNumber) {
+            if (recordValues[0]?.sequenceNumber && recordValues[0]?.sequenceNumber?.isInteger()) {
                 sequenceNumber = Integer.parseInt(recordValues[0]?.sequenceNumber);
                 // prev task
                 prevTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber - 1).toString())

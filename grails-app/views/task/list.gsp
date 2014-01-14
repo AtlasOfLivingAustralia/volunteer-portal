@@ -8,45 +8,59 @@
 
         <r:script type="text/javascript">
             $(document).ready(function() {
+
                 $("#searchButton").click(function(e) {
                     e.preventDefault();
-                    var query = $("#q").val()
-                    location.href="?q=" + query;
+                    doSearch();
+                });
+
+                $("#q").keypress(function (e) {
+                    if (e.keyCode == 13) {
+                        e.preventDefault();
+                        doSearch();
+                    }
                 });
 
             });
+
+            function doSearch() {
+                var query = $("#q").val()
+                location.href="?q=" + query;
+            }
         </r:script>
 
     </head>
-    <body>
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link controller="project" action="list"> Projects </g:link></span>
-            <g:if test="${projectInstance}">
-                <span class="menuButton"><g:link controller="project" action="index" id="${projectInstance.id}">${projectInstance.name}</g:link></span>
-            </g:if>
-            <g:else>
-                <span class="menuButton">Tasks</span>
-            </g:else>
-        </div>
-        <div class="inner">
-            <h1><g:message code="default.list.label" args="[entityName]" />
-              <g:if test="${projectInstance}"> - ${projectInstance.featuredLabel}</g:if>
-              <g:else> - All expeditions</g:else>
-            </h1>
-            <div style="margin: 8px 0 6px 0; clear: both;">
-                Total Tasks: ${taskInstanceTotal},
-                <g:if test="${projectInstance}">
-                    Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
-                </g:if>
-                &nbsp;&nbsp;
-                <input type="text" name="q" id="q" value="${params.q}" size="40" />
-                <button id="searchButton">search</button>
+    <body id="content">
+
+        <cl:headerContent title="Task List - ${projectInstance ? projectInstance?.featuredLabel : ''}" selectedNavItem="expeditions">
+            <%
+                if (projectInstance) {
+                    pageScope.crumbs = [
+                        [link: createLink(controller: 'project', action: 'list'), label: 'Expeditions'],
+                        [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
+                    ]
+                }
+            %>
+        </cl:headerContent>
+
+        <div class="row">
+
+            <div class="span12">
+                <div class="alert alert-info">
+                    Total Tasks: ${taskInstanceTotal},
+                    <g:if test="${projectInstance}">
+                        Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
+                        Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                    </g:if>
+                    &nbsp;&nbsp;
+                    <input style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="40" />
+                    <button class="btn" id="searchButton">search</button>
+                </div>
             </div>
-            <cl:messages />
-            <div class="list">
-                <table style="border-top: 2px solid #D9D9D9; width: 100%;">
+        </div>
+        <div class="row">
+            <div class="span12">
+                <table class="table table-condensed table-striped table-bordered">
                     <thead>
                         <tr>
                         
@@ -92,10 +106,10 @@
 
                             <td style="text-align: center;">
                                 <g:if test="${taskInstance.fullyTranscribedBy}">
-                                    <g:link controller="transcribe" action="task" id="${taskInstance.id}">view</g:link>
+                                    <g:link class="btn btn-small btn-info" controller="task" action="show" id="${taskInstance.id}">view</g:link>
                                 </g:if>
                                 <g:else>
-                                    <button onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                                    <button class="btn btn-small" onclick="location.href='${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
                                 </g:else>
                             </td>
 
@@ -105,10 +119,15 @@
                     </g:each>
                     </tbody>
                 </table>
+                <div class="pagination">
+                    <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q: params.q]}"/>
+                </div>
+
             </div>
-            <div class="paginateButtons">
-                <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q:params?.q]}"/>
-            </div>
+
+            %{--<div class="paginateButtons">--}%
+                %{--<g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q:params?.q]}"/>--}%
+            %{--</div>--}%
         </div>
     </body>
 </html>

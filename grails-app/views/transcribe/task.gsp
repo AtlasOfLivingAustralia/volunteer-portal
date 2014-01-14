@@ -663,8 +663,14 @@
                                 If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
                                 </p>
                                 <div>
-                                    <button id="btnValidateSubmitInvalid" class="btn">It's ok, submit for validation anyway</button>
-                                    <button id="btnWarningCancelSubmission" class="btn btn-primary">Cancel submission, and let me fix the marked fields</button>
+                                    <g:set var="okCaption" value="It's ok, submit for validation anyway" />
+                                    <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields" />
+                                    <g:if test="${validator}">
+                                        <g:set var="okCaption" value="It's ok, mark as valid anyway" />
+                                        <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields" />
+                                    </g:if>
+                                    <button id="btnValidateSubmitInvalid" class="btn">${okCaption}</button>
+                                    <button id="btnWarningCancelSubmission" class="btn btn-primary">${cancelCaption}</button>
                                 </div>
                             </div>
                         </div>
@@ -672,8 +678,8 @@
                             <div class="span12">
                                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                                 <g:if test="${validator}">
-                                    <button id="btnValidate" class="btn btn-primary">${message(code: 'default.button.validate.label', default: 'Validate')}</button>
-                                    <button id="btnDontValidate" class="btn">${message(code: 'default.button.dont.validate.label', default: 'Dont validate')}</button>
+                                    <button id="btnValidate" class="btn btn-success"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                                    <button id="btnDontValidate" class="btn btn-danger"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
                                     <button class="btn" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
