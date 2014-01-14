@@ -377,7 +377,7 @@
                font-size: 12px;
                line-height: 12px;
                margin-bottom: 2px;
-               padding: 2px;
+               padding: 1px;
                /*border-radius:2px;*/
                min-height: 24px;
             }
@@ -396,7 +396,7 @@
                 font-size: 12px;
                 line-height: 12px;
                 margin-bottom: 2px;
-                padding: 2px;
+                padding: 1px;
                 /*border-radius:2px;*/
                 min-height: 24px;
             }

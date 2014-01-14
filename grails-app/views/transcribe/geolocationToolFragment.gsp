@@ -148,6 +148,16 @@
                         localityStr = country;
                     }
                 }
+
+                var state = $(":input.stateProvince").val();
+                if (state) {
+                    if (localityStr) {
+                        localityStr += ", " + state;
+                    } else {
+                        localityStr = state;
+                    }
+                }
+
                 $(':input#address').val(localityStr);
             }
         }

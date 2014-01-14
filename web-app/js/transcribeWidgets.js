@@ -25,7 +25,7 @@ var transcribeWidgets = {};
     var YEAR_MONTHNAME_DAY_PATTERN = /^(\d{2,4})-(\w+)-(\d{1,2})$/;
 
     var DECIMAL_DEGREE_PATTERN = /^\d+[.]\d+$/;
-    var DEGREE_DECIMAL_MINUTES_PATTERN = /^(\d+)[°](\d+)[.](\d+)([NnEeWwSs]?)$/;
+    var DEGREE_DECIMAL_MINUTES_PATTERN = /^(\d+)[°](\d+[.]\d+)[']{0,1}([NnEeWwSs]?)$/;
     var DEGREE_PATTERN = /^(\d+)[°]([NnEeWwSs]?)$/
     var DEGREE_MINUTES_PATTERN = /^(\d+)[°](\d+)[']([NnEeWwSs]?)$/;
     var DEGREE_MINUTES_SECONDS_PATTERN = /^(\d+)[°](\d+)['](\d+)["]([NnEeWwSs]?)$/;

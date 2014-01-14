@@ -2,13 +2,13 @@
     <div class="row-fluid control-group">
         <div class="span12">
             <div class="span4">
-                <g:select class="span12 latLongFormatSelector" optionKey="value" optionValue="label" name="${field.fieldType}.format" value="" from="${[[label:"D°M'S\"",value:"DMS"], [label:"Dec. Deg.", value:"DD"]]}" />
+                <g:select class="span12 latLongFormatSelector" optionKey="value" optionValue="label" name="${field.fieldType}.format" value="" from="${[[label:"D°M'S\"",value:"DMS"], [label:"Decimal", value:"DD"]]}" />
             </div>
             <div class="latLongWidget_DMS span8">
-                <div class="span4">
+                <div class="span3">
                     <g:textField name="${field.fieldType}.degrees" placeholder="D" class="span12 degrees" value="" validationRule="${field.validationRule}" />
                 </div>
-                <div class="span2">
+                <div class="span3">
                     <g:textField name="${field.fieldType}.minutes" placeholder="M" class="span12 minutes" value="" validationRule="${field.validationRule}" />
                 </div>
                 <div class="span2">
