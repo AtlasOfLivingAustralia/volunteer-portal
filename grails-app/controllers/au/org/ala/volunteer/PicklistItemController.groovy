@@ -13,10 +13,16 @@ class PicklistItemController {
         def query = params.q
         if (picklistName) {
             def picklist = Picklist.findByName(picklistName)
-            def picklistItemInstance = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%"+query+"%", picklist, task.project?.picklistInstitutionCode)
+            // First look for institution specific picklist items
+            def items = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%"+query+"%", picklist, task.project?.picklistInstitutionCode)
+            // If there aren't any, look for global items
+            if (!items) {
+                items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNullAndValueIlike(picklist, "%"+query+"%")
+            }
+
             render(contentType:"application/json") {
                 autoCompleteList = array {
-                    for (pli in picklistItemInstance) {
+                    for (pli in items) {
                         picklistItem(name:pli.value, key:pli.key)
                     }
                 }
