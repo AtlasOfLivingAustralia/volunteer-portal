@@ -199,7 +199,7 @@ class ProjectController {
     }
 
     /**
-     * Produce a DwC CSV file download for a project
+     * Produce an export file
      */
     def exportCSV = {
         def projectInstance = Project.get(params.id)
@@ -220,15 +220,18 @@ class ProjectController {
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
 
             Closure export_func = exportService.export_default
-            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
-            if (exporter_func_property) {
-                export_func = exporter_func_property.getProperty(exportService)
+            if (params.exportFormat == 'zip') {
+                export_func = exportService.export_zipFile
             }
+
+//            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
+//            if (exporter_func_property) {
+//                export_func = exporter_func_property.getProperty(exportService)
+//            }
 
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-
                 export_func(projectInstance, taskList, taskMap, fieldNames, response)
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")

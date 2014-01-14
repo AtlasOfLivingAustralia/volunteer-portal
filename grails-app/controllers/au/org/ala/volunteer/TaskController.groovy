@@ -807,4 +807,8 @@ class TaskController {
 
     }
 
+    def exportOptionsFragment() {
+        [exportCriteria: params.exportCriteria, projectId: params.projectId]
+    }
+
 }

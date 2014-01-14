@@ -21,6 +21,34 @@
                     }
                 });
 
+                $("#btnExportAll").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title:'Export all tasks',
+                        url:"${createLink(action:"exportOptionsFragment", params:[exportCriteria:'all', projectId: projectInstance.id])}"
+                    };
+                    showModal(options);
+                });
+
+                $("#btnExportTranscribed").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title:'Export transcribed tasks',
+                        url:"${createLink(action:"exportOptionsFragment", params:[exportCriteria:'transcribed', projectId: projectInstance.id])}"
+                    };
+                    showModal(options);
+
+                });
+
+                $("#btnExportValidated").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title:'Export validated tasks',
+                        url:"${createLink(action:"exportOptionsFragment", params:[exportCriteria:'validated', projectId: projectInstance.id])}"
+                    };
+                    showModal(options);
+                });
+
             }); // end .ready()
 
             function doSearch() {
@@ -62,9 +90,13 @@
                     Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                     Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
                     &nbsp;&nbsp;
-                    <button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id)}'">Export all</button>
-                    <button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[transcribed:true])}'">Export transcribed</button>
-                    <button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated</button>
+                    <button id="btnExportAll" class="btn btn-small">Export all</button>
+                    <button id="btnExportTranscribed" class="btn btn-small">Export transcribed</button>
+                    <button id="btnExportValidated" class="btn btn-small">Export validated</button>
+
+                    %{--<button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id)}'">Export all</button>--}%
+                    %{--<button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[transcribed:true])}'">Export transcribed</button>--}%
+                    %{--<button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated</button>--}%
                     <input class="input-small" style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="30"/>
                     <button class="btn btn-small btn-primary" id="searchButton">search</button>
                 </div>

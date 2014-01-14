@@ -55,6 +55,34 @@ class ExportService {
         return result
     }
 
+    def export_zipFile = { Project project, taskList, valueMap, fieldNames, response ->
+
+        def c = Field.createCriteria()
+        def databaseFieldNames = c {
+            task {
+                eq("project", project)
+            }
+            projections {
+                groupProperty("name")
+                max("recordIdx")
+            }
+        }
+
+        def fieldIndexMap = databaseFieldNames.collectEntries { [ it[0], it[1] ] }
+        def repeatingFields = []
+        fieldNames.each { fieldName ->
+            if (fieldIndexMap[fieldName] > 0) {
+                repeatingFields << fieldName
+            }
+        }
+        repeatingFields.each {
+            fieldNames.remove(it)
+        }
+
+        println repeatingFields
+
+        zipExport(project, taskList, valueMap, fieldNames, response, ["dataset"], repeatingFields)
+    }
 
     def export_default = { Project project, taskList, taskMap, fieldNames, response ->
 
@@ -70,14 +98,14 @@ class ExportService {
             }
         }
 
-        def m = databaseFieldNames.collectEntries { [ it[0], it[1] ] }
+        def fieldIndexMap = databaseFieldNames.collectEntries { [ it[0], it[1] ] }
 
         List<String> columnNames = []
 
         fieldNames.each {
-            if (m.containsKey(it)) {
-                if (m[it]) {
-                    for (int i = 0; i <= m[it]; ++i) {
+            if (fieldIndexMap.containsKey(it)) {
+                if (fieldIndexMap[it]) {
+                    for (int i = 0; i <= fieldIndexMap[it]; ++i) {
                         columnNames << "${it}_${i}"
                     }
                 } else {
@@ -112,7 +140,7 @@ class ExportService {
                 }
 
                 String value
-                if (m.containsKey(fieldName)) {
+                if (fieldIndexMap.containsKey(fieldName)) {
                     def valueMap = fieldMap[fieldName]
                     value = valueMap?.getAt(recordIndex) ?: ""
                 } else {
@@ -124,32 +152,6 @@ class ExportService {
         }
         writer.close()
     }
-
-    def export_AerialObservations = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset],[])
-    }
-
-    def export_ObservationDiary = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset],[])
-    }
-
-    def export_ObservationDiaryWithMonth = export_ObservationDiary
-
-    def export_FieldNoteBook = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['occurrenceRemarks'])
-    }
-
-    def export_SpecimenLabel = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['recordedBy'])
-    }
-
-    def export_GenericLabels = export_SpecimenLabel
-
-    def export_SmithsonianPlants = export_SpecimenLabel
-
-    def export_FieldNoteBookDoublePage = export_FieldNoteBook
-
-    def export_Journal = export_FieldNoteBook
 
     private void zipExport(Project project, taskList, valueMap, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
         def datasetCategoryFields = [:]
