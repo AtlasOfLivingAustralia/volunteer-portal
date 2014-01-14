@@ -57,7 +57,7 @@ class TranscribeTagLib {
             }
             div(class: 'span2') {
                 if (field.helpText) {
-                    def helpText = markdownService.markdown(field.helpText)
+                    def helpText = WebUtils.encodeHtmlEntities(markdownService.markdown(field.helpText))
                     def help = "<a href='#' class='fieldHelp' title='${helpText}' tabindex='-1'><span class='help-container'>&nbsp;</span></a>"
                     mkp.yieldUnescaped(help)
                 } else {
@@ -168,7 +168,7 @@ class TranscribeTagLib {
                     }
                     div(class:'span2') {
                         if (field.helpText) {
-                            def helpText = markdownService.markdown(field.helpText)
+                            def helpText = WebUtils.encodeHtmlEntities(markdownService.markdown(field.helpText))
                             def help = "<a href='#' class='fieldHelp' title='${helpText}'><span class='help-container'>&nbsp;</span></a>"
                             mkp.yieldUnescaped(help)
                         } else {
@@ -522,7 +522,8 @@ class TranscribeTagLib {
         def field = attrs.field as TemplateField
         if (field && field.helpText) {
             def mb = new MarkupBuilder(out)
-            def helpText = markdownService.markdown(field.helpText)
+
+            def helpText = WebUtils.encodeHtmlEntities(markdownService.markdown(field.helpText))
             mb.a(href:'#', class:'fieldHelp', title:helpText, tabindex: "-1") {
                 span(class:'help-container') {
                     mkp.yieldUnescaped('&nbsp;')

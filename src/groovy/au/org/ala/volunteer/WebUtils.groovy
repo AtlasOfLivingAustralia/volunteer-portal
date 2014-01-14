@@ -148,4 +148,20 @@ class WebUtils {
         return b.toString()
     }
 
+    public static String encodeHtmlEntities(String src) {
+        def sb = new StringBuilder()
+        for (char ch : src.getChars()) {
+            switch (ch) {
+                case '"': sb << "&quot;"; break;
+                case "'": sb << "&apos;"; break;
+                case "<": sb << "&lt;"; break;
+                case ">": sb << "&gt;"; break;
+                case "&": sb << "&amp;"; break;
+                default:
+                    sb << ch
+            }
+        }
+        return sb.toString()
+    }
+
 }

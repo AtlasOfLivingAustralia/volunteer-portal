@@ -263,7 +263,7 @@
                         }
                     },
                     style: {
-                        width: 200,
+                        width: 300,
                         padding: 8,
                         background: 'white', //'#f0f0f0',
                         color: 'black',
