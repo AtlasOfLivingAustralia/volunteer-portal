@@ -169,7 +169,7 @@ class ProjectController {
      * @param fieldList
      * @return
      */
-    private Map fieldListToMultiMap(List fieldList) {
+    private static Map fieldListToMultiMap(List fieldList) {
         Map taskMap = [:]
 
         fieldList.each {
@@ -218,7 +218,6 @@ class ProjectController {
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
             def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
-            log.debug("Fields: "+ fieldNames);
 
             Closure export_func = exportService.export_default
             def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
