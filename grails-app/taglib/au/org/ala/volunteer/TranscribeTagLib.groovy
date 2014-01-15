@@ -316,6 +316,7 @@ class TranscribeTagLib {
      * @attr hideControls
      * @attr hidePinImage
      * @attr preserveWidthWhenPinned
+     * @attr height The height of the image viewer in pixels
      */
     def imageViewer = { attrs, body ->
         def multimedia = attrs.multimedia as Multimedia
@@ -352,6 +353,11 @@ class TranscribeTagLib {
 
                         }
                     }
+                }
+            }
+            if (attrs.height) {
+                mb.script(type:"text/javascript") {
+                    mkp.yieldUnescaped("   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );")
                 }
             }
         }

@@ -7,7 +7,7 @@
         <div class="span8">
             <div class="well well-small">
                 <g:set var="multimedia" value="${taskInstance.multimedia.first()}" />
-                <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" />
+                <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" height="330"/>
             </div>
         </div>
 
@@ -64,17 +64,3 @@
     <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}" recordValues="${recordValues}" title="Identification" description="If a label contains information on the name of the organism then record the name and associated information in this section" />
 
 </div>
-
-<script>
-
-    function setImageHeight(height) {
-        $("#image-container").css("height", "" + height + "px");
-        $(".imageviewer-controls").css("top", "" + (height - 70) + "px");
-        $(".pin-image-control").css("top", "" + (height - 30) + "px");
-        $(".show-image-control").css("top", "" + (height - 60) + "px");
-    }
-
-    setImageHeight(265);
-
-
-</script>

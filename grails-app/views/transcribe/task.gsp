@@ -142,6 +142,14 @@
 
             }
 
+            function setImageViewerHeight(height) {
+                $("#image-container").css("height", "" + height + "px");
+                $(".imageviewer-controls").css("top", "" + (height - 70) + "px");
+                $(".pin-image-control").css("top", "" + (height - 30) + "px");
+                $(".show-image-control").css("top", "" + (height - 60) + "px");
+            }
+
+
             function insertCoordinateSymbolButtons() {
                 // Add clickable icons for deg, min sec in lat/lng inputs
                 var title = "Click to insert this symbol";
