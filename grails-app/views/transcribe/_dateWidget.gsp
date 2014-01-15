@@ -23,12 +23,12 @@
             </g:if>
             <g:elseif test="${letter == 'M'}">
                 <div class="span3">
-                    <g:textField name="${field.fieldType}.startMonth" placeholder="M" class="span12 startMonth month" value="" />
+                    <g:textField name="${field.fieldType}.startMonth" placeholder="MM" class="span12 startMonth month" value="" />
                 </div>
             </g:elseif>
             <g:elseif test="${letter == 'D'}">
                 <div class="span3">
-                    <g:textField name="${field.fieldType}.startDay" placeholder="D" class="span12 startDay day" value="" />
+                    <g:textField name="${field.fieldType}.startDay" placeholder="DD" class="span12 startDay day" value="" />
                 </div>
             </g:elseif>
         </g:each>
@@ -46,12 +46,12 @@
             </g:if>
             <g:elseif test="${letter == 'M'}">
                 <div class="span3">
-                    <g:textField name="${field.fieldType}.endMonth" placeholder="M" class="span12 endMonth month" value="" />
+                    <g:textField name="${field.fieldType}.endMonth" placeholder="MM" class="span12 endMonth month" value="" />
                 </div>
             </g:elseif>
             <g:elseif test="${letter == 'D'}">
                 <div class="span3">
-                    <g:textField name="${field.fieldType}.endDay" placeholder="D" class="span12 endDay day" value="" />
+                    <g:textField name="${field.fieldType}.endDay" placeholder="DD" class="span12 endDay day" value="" />
                 </div>
             </g:elseif>
         </g:each>
