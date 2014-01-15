@@ -19,6 +19,10 @@ var transcribeValidation = {};
             $(element).removeClass(vlib.options.warningClass);
         });
 
+        $("." + vlib.options.errorClass).each(function(index, element) {
+            $(element).removeClass(vlib.options.errorClass);
+        });
+
         $("." + vlib.options.validationMessageClass).each(function(index, element) {
             $(element).remove();
         });
@@ -164,44 +168,63 @@ var transcribeValidation = {};
 
     vlib.validateLatLongWidgets = function(messages) {
         $(".latLongWidget").each(function(index, element) {
+
+            var targetField = $(element).attr("targetField");
+
+            var isLatitude = false;
+            var typeLabel = "latitude/longitude";
+            if (targetField) {
+
+                if (targetField.toLowerCase().indexOf("lat") > 0) {
+                    isLatitude = true;
+                }
+            }
+
             var decimalDegreesElement = $(element).find(":input.decimalDegrees");
 
             if (decimalDegreesElement.val()) {
                 // Just let this through?
-                return true;
+                return;
             }
 
             var degreesElement = $(element).find(":input.degrees");
             var minutesElement = $(element).find(":input.minutes");
             var secondsElement = $(element).find(":input.seconds");
+            var directionElement = $(element).find(":input.direction");
 
-            if (!degreesElement.val() && !minutesElement.val() && !secondsElement.val()) {
-                return true;
+            if (!degreesElement.val() && !minutesElement.val() && !secondsElement.val() && !directionElement.val()) {
+                return;
             }
 
-            if (!degreesElement.val() && minutesElement.val() && secondsElement.val()) {
-                vlib.markFieldInvalid(minutesElement, "Degrees must be supplied if minutes or seconds are specified");
-                return false;
+            if (!degreesElement.val() && (minutesElement.val() || secondsElement.val() || directionElement.val())) {
+                messages.push({element:degreesElement, message: "Degrees must be supplied if minutes, seconds or a direction are specified", type:'Error'});
+                return;
             }
 
             if (!degreesElement.val() && !minutesElement.val() && secondsElement.val()) {
-                vlib.markFieldInvalid(minutesElement, "Degrees and minutes must be supplied if seconds are specified");
-                return false;
+                messages.push({element:degreesElement, message: "Degrees and minutes must be supplied if seconds are specified", type:'Error'});
+                return;
             }
 
-
-            if (!vlib.validateIsInteger(degreesElement) || !vlib.validateIsInteger(minutesElement) || !vlib.validateIsInteger(secondsElement)) {
-                messages.push("Invalid value");
-                return false;
+            if (!vlib.validateIsInteger(degreesElement) || !vlib.validateIsNumeric(minutesElement) || !vlib.validateIsInteger(secondsElement)) {
+                messages.push({element:degreesElement, message: "Degrees, Minutes and Seconds values must be numeric", type:'Warning'});
+                return;
             }
 
-            if (!vlib.validateInNumberRange(degreesElement, -360, 360)) {
-                messages.push("Invalid degrees value.")
+            var typeLabel = "longitude";
+            var maxMin = 180;
+            if (isLatitude) {
+                maxMin = 90;
+                typeLabel = "latitude";
+            }
+
+            if (!vlib.validateInNumberRange(degreesElement, -maxMin, maxMin)) {
+                messages.push({element:degreesElement, message: typeLabel + " degrees should be between " + -maxMin.toString() + " and " + maxMin.toString(), type:'Warning'});
                 return;
             }
 
             if (!vlib.validateInNumberRange(minutesElement, 0, 60) || !vlib.validateInNumberRange(secondsElement, 0, 60)) {
-                messages.push("Invalid value. Must be between 0 and 60")
+                messages.push({element:minutesElement, message: "Invalid value. Seconds and Minutes must be between 0 and 60", type:'Warning'});
                 return;
             }
 
@@ -220,6 +243,14 @@ var transcribeValidation = {};
         parent.addClass(clazz);
         parent.append(validationMessageContent(message, type));
     };
+
+    vlib.validateIsNumeric = function(element) {
+        var value = element.val();
+        if (value) {
+            return $.isNumeric(value);
+        }
+        return true;
+    }
 
     vlib.validateIsInteger = function(element) {
         var value = element.val();

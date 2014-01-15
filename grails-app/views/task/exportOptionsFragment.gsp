@@ -6,7 +6,7 @@
             <input type="radio" name="optionsExport" id="optionsExportCSV" value="csv" checked>
             <strong>Single de-normalised CSV file</strong>
             <br/>
-            Repeating fields will get get a column each with a record index suffix (e.g. recordedBy_0, recordedBy_1). This is probably the most appropriate choice for specimen label transcriptions.
+            Repeating fields will get a column each with a record index suffix (e.g. recordedBy_0, recordedBy_1). This is probably the most appropriate choice for specimen label transcriptions.
         </label>
         <label class="radio">
             <input type="radio" name="optionsExport" id="optionsExportZip" value="zip">

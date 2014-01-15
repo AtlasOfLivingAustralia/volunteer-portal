@@ -17,7 +17,7 @@
                     The <a href="http://www.ala.org.au">Atlas of Living Australia</a>, in collaboration with the <a class="external" href="http://www.australianmuseum.net.au">Australian Museum</a>, developed the Biodiversity Volunteer Portal to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked up in biodiversity collections, field notebooks and survey sheets.
                 </p>
 
-                <H2>Why capture this data?</H2>
+                <H3>Why capture this data?</H3>
 
                 <span>This data has many uses, including:</span>
                 <ul>
@@ -41,7 +41,7 @@
                     </li>
                 </ul>
 
-                <h2>Submit an expedition</h2>
+                <h3>Submit an expedition</h3>
                 <p>
                     The Biodiversity Volunteer Portal is open to any institution or individual who has suitable biodiversity
                     information that needs transcribing, whether that be in the form of specimen labels, field notes, survey sheets
@@ -58,7 +58,7 @@
                     Volunteer Portal please get in touch with me: <strong>paul.flemons at austmus.gov.au</strong>
                 </p>
 
-                <H2>Some useful references:</H2>
+                <H3>Some useful references:</H3>
                 <ul>
                     <li><a class="external" href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1693343/pdf/15253354.pdf">Biodiversity informatics: managing and applying primary biodiversity data</a>
                     </li>

@@ -93,7 +93,7 @@
         <cl:headerContent title="${message(code:'default.projectlist.label', default: "Volunteer for a virtual expedition")}" selectedNavItem="expeditions"/>
 
         <div id="content">
-            <div class="row-fluid">
+            <div class="row">
                 <div class="span8">
                     <h2>${numberOfUncompletedProjects} expeditions need your help. Join now!</h2>
                 </div>
