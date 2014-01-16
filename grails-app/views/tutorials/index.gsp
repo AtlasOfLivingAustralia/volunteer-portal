@@ -17,19 +17,16 @@
         <div class="row">
             <div class="span12">
                 <g:each in="${tutorials.keySet().sort()}" var="group">
+                    <g:if test="${tutorials[group]}">
                     <h3>${group == '-' ? 'Generic Tutorials' : group}</h3>
-                    <ul>
-                        <g:if test="${group == '-'}">
-                            <li>
-                                <a href="${createLink(controller:'tutorials', action:'transcribingSpecimenLabels')}">Transcribing Specimen Labels</a>
-                            </li>
-                        </g:if>
+                    <ul class="nav nav-tabs nav-stacked">
                         <g:each in="${tutorials[group]?.sort({it.title})}" var="tute">
                             <li>
                                 <a href="${tute.url}">${tute.title}</a>
                             </li>
                         </g:each>
                     </ul>
+                    </g:if>
                 </g:each>
             </div>
 
