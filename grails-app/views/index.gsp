@@ -7,7 +7,7 @@
         <style type="text/css">
 
             hgroup h1 {
-                font-size: 32px;
+                font-size: 48px;
             }
 
             .row-fluid .thumbnails .span2:nth-child(6n+1),

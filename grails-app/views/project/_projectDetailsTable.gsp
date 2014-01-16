@@ -54,15 +54,6 @@
 
         <tr class="prop">
             <td valign="top" class="name">
-                <label for="created"><g:message code="project.created.label" default="Created"/></label>
-            </td>
-            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'created', 'errors')}">
-                <g:datePicker name="created" precision="day" value="${projectInstance?.created}" default="none" noSelection="['': '']"/>
-            </td>
-        </tr>
-
-        <tr class="prop">
-            <td valign="top" class="name">
                 <label for="shortDescription"><g:message code="project.shortDescription.label" default="Short description"/></label>
             </td>
             <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'shortDescription', 'errors')}">

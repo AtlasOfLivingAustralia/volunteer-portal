@@ -18,6 +18,9 @@ class Project {
     String collectionEventLookupCollectionCode
     String localityLookupCollectionCode
     String picklistInstitutionCode
+    Integer mapInitZoomLevel
+    Double mapInitLatitude
+    Double mapInitLongitude
 
     def grailsApplication
     def grailsLinkGenerator
@@ -54,6 +57,9 @@ class Project {
         localityLookupCollectionCode nullable: true
         picklistInstitutionCode nullable: true
         projectType nullable: true
+        mapInitZoomLevel nullable: true
+        mapInitLatitude nullable: true
+        mapInitLongitude nullable: true
     }
 
     public String toString() {

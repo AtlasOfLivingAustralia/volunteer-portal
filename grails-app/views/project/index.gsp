@@ -13,20 +13,6 @@
     <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
 
     <r:script>
-        google.load('visualization', '1', {packages: ['gauge']});
-
-        function loadChart() {
-            var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Label');
-            data.addColumn('number', 'Value');
-            data.addRows(3);
-            data.setValue(0, 0, '%');
-            data.setValue(0, 1, <g:formatNumber number="${percentComplete}" format="#"/>);
-
-            var chart = new google.visualization.Gauge(document.getElementById('recordsChartWidget'));
-            var options = {width: 150, height: 150, minorTicks: 5, majorTicks: ["0%", "25%", "50%", "75%", "100%"]};
-            chart.draw(data, options);
-        }
 
         google.load("maps", "3.3", {other_params: "sensor=false"});
         var map, infowindow;
@@ -41,11 +27,11 @@
 
             var myOptions = {
                 scaleControl: true,
-                center: new google.maps.LatLng(-24.766785, 134.824219), // centre of Australia
-                zoom: 3,
+                center: new google.maps.LatLng(${projectInstance.mapInitLatitude ?: -24.766785},${projectInstance.mapInitLongitude ?: 134.824219}), // defaults to centre of Australia
+                zoom: ${projectInstance.mapInitZoomLevel ?: 3},
                 minZoom: 1,
                 streetViewControl: false,
-                scrollwheel: false,
+                scrollwheel: true,
                 mapTypeControl: true,
                 mapTypeControlOptions: {
                     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
@@ -160,23 +146,8 @@
             max-height: none;
         }
 
-        #projectSideBar {
-            position: relative;
-            top: -1px;
-            padding: 10px;
-            background-color: #f0f0e8;
-            border: 1px solid #d1d1d1;
-            border-top: 1px solid #f0f0e8;
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
-        }
-
         #buttonSection {
             text-align: center;
-        }
-
-        #page-header {
-            margin-bottom: 0px;
         }
 
         #transcribeButton {
@@ -222,7 +193,7 @@
         <div class="span4" id="sidebarDiv">
 
             <div class="well well-small">
-                <section id="projectSideBarxxx">
+                <section>
 
                     <section id="buttonSection">
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-large" id="transcribeButton">

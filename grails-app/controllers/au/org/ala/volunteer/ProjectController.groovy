@@ -477,4 +477,20 @@ class ProjectController {
         [projectInstance: projectInstance, role: role]
     }
 
+    def updateMapInitialPosition() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            def zoom = params.int("mapZoomLevel")
+            def latitude = params.double("mapLatitude")
+            def longitude = params.double("mapLongitude")
+
+            if (zoom && latitude && longitude) {
+                projectInstance.mapInitZoomLevel = zoom
+                projectInstance.mapInitLatitude = latitude
+                projectInstance.mapInitLongitude = longitude
+            }
+        }
+        redirect(action:'edit', id:projectInstance?.id)
+    }
+
 }
