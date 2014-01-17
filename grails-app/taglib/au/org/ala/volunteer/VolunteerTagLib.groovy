@@ -18,6 +18,7 @@ class VolunteerTagLib {
     def authService
     def userService
     def grailsApplication
+    def settingsService
 
     def loggedInName = {
         def userName = authService.username()
@@ -1459,8 +1460,13 @@ class VolunteerTagLib {
         if (FrontPage.instance().enableForum) {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
-        if (userService.currentUser) {
-            items << [userDashboard: [link: createLink(controller:'user', action:'dashboard', id: userService.currentUser.id), title:"My Dashboard"]]
+
+        def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyDashboard)
+        if (dashboardEnabled) {
+            def isLoggedIn = AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)
+            if (isLoggedIn || userService.currentUser) {
+                items << [userDashboard: [link: createLink(controller:'user', action:'dashboard'), title:"My Dashboard"]]
+            }
         }
 
         items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]

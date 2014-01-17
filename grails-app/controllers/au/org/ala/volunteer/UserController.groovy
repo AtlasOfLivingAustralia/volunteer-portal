@@ -447,7 +447,11 @@ class UserController {
     }
 
     def dashboard() {
-        def userInstance = User.get(params.int("id"))
+
+        def userInstance = userService.currentUser
+        if (params.int("id")) {
+            userInstance = User.get(params.int("id"))
+        }
 
         if (!userInstance) {
             flash.message = "User not found!"
