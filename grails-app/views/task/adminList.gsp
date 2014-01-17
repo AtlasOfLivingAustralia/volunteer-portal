@@ -9,6 +9,18 @@
 
             $(document).ready(function () {
 
+                $(".lastViewedTask").click(function(e) {
+                    e.preventDefault();
+                    var viewedTaskId = $(this).attr("viewedTaskId");
+                    if (viewedTaskId) {
+                        var options = {
+                            title: "Last view for task",
+                            url: "${createLink(action:'viewedTaskFragment')}?viewedTaskId=" + viewedTaskId
+                        }
+                        showModal(options);
+                    }
+                });
+
                 $("#searchButton").click(function (e) {
                     e.preventDefault();
                     doSearch();
@@ -126,7 +138,13 @@
                         <g:each in="${taskInstanceList}" status="i" var="taskInstance">
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
-                                <td><g:link controller="task" action="show" id="${taskInstance.id}">${taskInstance.externalIdentifier}</g:link></td>
+                                <td>
+                                    <g:link controller="task" action="show" id="${taskInstance.id}">${taskInstance.externalIdentifier}</g:link>
+                                    <g:set var="lastView" value="${lockedMap[taskInstance.id]}" />
+                                    <g:if test="${lastView}">
+                                        <i class="icon-lock lastViewedTask" title="Locked by ${lastView.userId}" viewedTaskId="${lastView.id}"></i>
+                                    </g:if>
+                                </td>
 
                                 <g:each in="${extraFields}" var="field">
                                     <td>${field?.value[taskInstance.id]?.value?.getAt(0)}</td>

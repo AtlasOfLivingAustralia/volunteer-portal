@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
 import grails.converters.*
+import groovy.time.TimeCategory
+import groovy.time.TimeDuration
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -123,9 +125,26 @@ class TaskController {
                 }
             }
 
+            def c = ViewedTask.createCriteria()
+            def views = c {
+                'in'("task", taskInstanceList)
+            }
+
+            views = views?.groupBy { it.task }
+
+            def lockedMap = [:]
+            views.values().each { List viewList ->
+                def max = viewList.max { it.lastView }
+                use (TimeCategory) {
+                    if (new Date(max.lastView) > 2.hours.ago) {
+                        lockedMap[max.task?.id] = max
+                    }
+                }
+            }
+
             // add some associated "field" values
             render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
-                    projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance])
+                    projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance, lockedMap: lockedMap])
         }
         else {
             flash.message = "No project found for ID " + params.id
@@ -809,6 +828,17 @@ class TaskController {
 
     def exportOptionsFragment() {
         [exportCriteria: params.exportCriteria, projectId: params.projectId]
+    }
+
+    def viewedTaskFragment() {
+        def viewedTask = ViewedTask.get(params.int("viewedTaskId"));
+        if (viewedTask) {
+            def lastViewedDate = new Date(viewedTask?.lastView)
+            def tc = TimeCategory.minus(new Date(), lastViewedDate)
+            def agoString = "${tc} ago"
+
+            [viewedTask: viewedTask, lastViewedDate: lastViewedDate, agoString: agoString]
+        }
     }
 
 }

@@ -1757,6 +1757,23 @@ class VolunteerTagLib {
     }
 
     /**
+     * @attr userId User id
+     */
+    def userDisplayName = { attrs, body ->
+        if (attrs.userId) {
+            def user = User.findByUserId(attrs.userId)
+            def mb = new MarkupBuilder(out)
+            mb.span(class:'userDisplayName') {
+                if (user) {
+                    mkp.yield(user.displayName)
+                } else {
+                    mkp.yield(attrs.userId)
+                }
+            }
+        }
+    }
+
+    /**
      * @attr title
      * @attr selectedNavItem
      * @attr crumbLabel

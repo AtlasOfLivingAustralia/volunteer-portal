@@ -163,8 +163,20 @@ var transcribeValidation = {};
             return false;
         }
 
+        if (yearVal && !vlib.validateInNumberRange(yearElement, 1000, 3000)) {
+            messages.push({element: dayElement, message: "Year values must be between 1000 and 3000"});
+            return false;
+        }
+
+
         return true;
     }
+
+//    vlib.valid_months = [
+//        "january","february","march","april","may","june","july","august","september","october","november","december",
+//        "i","ii","iii","iv","v","vi","vii","viii", "ix", "x", "xi", "xii"
+//
+//    ];
 
     vlib.validateLatLongWidgets = function(messages) {
         $(".latLongWidget").each(function(index, element) {
