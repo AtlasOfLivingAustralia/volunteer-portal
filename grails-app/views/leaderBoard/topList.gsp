@@ -8,7 +8,7 @@
 
     <body>
 
-        <cl:headerContent title="${message(code:'default.leaderboard.label', default:'Leaderboard - {0}', args: [heading])}" selectedNavItem="bvp">
+        <cl:headerContent title="${message(code:'default.leaderboard.label', default:'Honour Board - {0}', args: [heading])}" selectedNavItem="bvp">
         </cl:headerContent>
 
         <div class="row">
@@ -16,14 +16,13 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Rank</th>
                             <th>Volunteer</th>
-                            <th>Score</th>
+                            <th>Tasks completed</th>
                         </tr>
                     </thead>
                     <g:each in="${results}" var="row" status="i">
                         <tr>
-                            <td><strong>${i+1}</strong></td>
+                            %{--<td><strong>${i+1}</strong></td>--}%
                             <td><a href="${createLink(controller: 'user', action:'show', id:row.userId)}">${row.name}</a></td>
                             <td>${row.score}</td>
                         </tr>
