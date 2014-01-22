@@ -643,62 +643,69 @@ class TaskService {
     def calculateTaskDates() {
         def taskList = Task.findAllByFullyTranscribedByIsNotNullAndDateFullyTranscribedIsNull()
         println "Processing ${taskList.size()} tasks..."
+        def idList = taskList*.id
 
         int count = 0
-        sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
         try {
-            taskList.each { task ->
+            idList.each { taskId ->
 
-                // Find the most recent field whose transcribed by matches the tasks fully transcribed by...
-                def transcribedCriteria = Field.createCriteria()
-
-                def dateTranscribed = transcribedCriteria.list {
-                    eq("task", task)
-                    eq("transcribedByUserId", task.fullyTranscribedBy)
-
-                    projections {
-                        max("updated")
+                Task.withNewTransaction { status ->
+                    def task = Task.get(taskId)
+                    if (!task) {
+                        println "No task ${taskId}"
+                        return
                     }
-                }
 
-                if (dateTranscribed && dateTranscribed[0]) {
-                    task.dateFullyTranscribed = dateTranscribed[0]
-                } else {
-                    println "No transcription date ${task.id}. Using most recent created date"
-                    task.dateFullyTranscribed = findMostRecentDate("created", task)
-                }
+                    // Find the most recent field whose transcribed by matches the tasks fully transcribed by...
+                    def transcribedCriteria = Field.createCriteria()
 
-                if (StringUtils.isNotEmpty(task.fullyValidatedBy)) {
-
-                    def validatedCriteria = Field.createCriteria()
-                    def dateValidated = validatedCriteria.list {
+                    def dateTranscribed = transcribedCriteria.list {
                         eq("task", task)
-                        eq("validatedByUserId", task.fullyValidatedBy)
+                        eq("transcribedByUserId", task.fullyTranscribedBy)
+
                         projections {
-                            max("updated")
+                            max("created")
                         }
                     }
 
-                    if (dateValidated && dateValidated[0]) {
-                        task.dateFullyValidated = dateValidated[0]
+                    if (dateTranscribed && dateTranscribed[0]) {
+                        task.dateFullyTranscribed = dateTranscribed[0]
                     } else {
-                        println "No validation date! ${task.id}. Using most recent updated date."
-                        task.dateFullyValidated = findMostRecentDate("updated", task)
+                        println "No transcription date ${task.id}. Using most recent created date"
+                        task.dateFullyTranscribed = findMostRecentDate("created", task)
                     }
-                }
 
-                if (++count % 200 == 0) {
-                    println "${count} tasks processed."
+                    if (StringUtils.isNotEmpty(task.fullyValidatedBy)) {
+
+                        def validatedCriteria = Field.createCriteria()
+                        def dateValidated = validatedCriteria.list {
+                            eq("task", task)
+                            eq("validatedByUserId", task.fullyValidatedBy)
+                            projections {
+                                max("updated")
+                            }
+                        }
+
+                        if (dateValidated && dateValidated[0]) {
+                            task.dateFullyValidated = dateValidated[0]
+                        } else {
+                            println "No validation date! ${task.id}. Using most recent updated date."
+                            task.dateFullyValidated = findMostRecentDate("updated", task)
+                        }
+                    }
+
+                    task.save()
+
+                    if (++count % 200 == 0) {
+                        println "${count} tasks processed."
+                    }
+
                 }
             }
 
             println "Done."
         } catch (Exception ex) {
             ex.printStackTrace()
-
-        } finally {
-            sessionFactory.currentSession.flush();
-            sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
         }
     }
 

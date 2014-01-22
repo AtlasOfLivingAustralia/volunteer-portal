@@ -77,6 +77,10 @@
                         <td>Fixes garbled recordedByID fields caused by duplicate hidden fields for this field type</td>
                     </tr>
 
+                    <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'fixUserCounts')}'">Fix User Transcribed and Validated</button></td>
+                        <td>Fixes User transcribed and validated task counts based off actual task data (preserves existing score if greater then computed)</td>
+                    </tr>
 
                 </table>
 

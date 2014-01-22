@@ -213,4 +213,34 @@ class AdminController {
         redirect(action:'index')
     }
 
+
+    def fixUserCounts() {
+
+        if (!checkAdmin()) {
+             throw new RuntimeException("Not authorised!")
+        }
+
+        def users = User.list();
+        int count = 0
+        users.each { user ->
+            def transcribedCount = Task.countByFullyTranscribedBy(user.userId)
+            def validatedCount = Task.countByFullyValidatedBy(user.userId)
+
+            if (user.transcribedCount < transcribedCount) {
+                println "Updating transcribed count for ${user.userId} from ${user.transcribedCount} to ${transcribedCount}"
+                user.transcribedCount = transcribedCount
+            }
+
+            if (user.validatedCount < validatedCount) {
+                println "Updating validated count for ${user.userId} from ${user.validatedCount} to ${validatedCount}"
+                user.validatedCount = validatedCount
+            }
+            count++
+        }
+
+        flash.message ="${count} users checked."
+
+        redirect(action:'index')
+    }
+
 }

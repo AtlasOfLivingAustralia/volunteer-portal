@@ -42,16 +42,16 @@
 <ul class="thumbnails">
     <g:each in="${projects}" var="projectSummary">
         <li class="span3">
-            <div class="thumbnail" inactive="${projectSummary.project.inactive}" style="text-align: center; background-color: white">
-                <div>
+            <div class="thumbnail" inactive="${projectSummary.project.inactive}" style="text-align: center; background-color: white;">
+                <div style="height: 50px; max-height: 50px">
                     <strong>
                         ${projectSummary.project.featuredLabel}
                     </strong>
                 </div>
                 <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
-                    <img src="${projectSummary.project.featuredImage}" />
+                    <img src="${projectSummary.project.featuredImage}" style="max-height: 156px" />
                 </a>
-                <div>
+                <div style="height: 25px; max-height: 25px">
                     <table style="width: 100%">
                         <tr>
                             <td style="text-align: left"><img src="${projectSummary.iconImage}" alt="${projectSummary.iconLabel}" width="16" height="20"></td>

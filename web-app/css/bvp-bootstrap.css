@@ -219,9 +219,9 @@ nav ol, nav ul, nav li {
 }
 
 .featuredExpeditions nav ol li a h2, div.button-nav a h2 {
-    /*position: absolute;*/
+    position: relative;
     float: right;
-    top: 100px;
+    bottom: 50px;
     right: 0px;
     background-color: #3d464c;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#3d464c), to(#353d43));

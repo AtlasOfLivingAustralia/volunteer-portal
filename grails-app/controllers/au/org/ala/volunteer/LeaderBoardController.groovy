@@ -77,7 +77,7 @@ class LeaderBoardController {
                 while (startDate.getAt(Calendar.DAY_OF_MONTH) != 1) {
                     startDate--;
                 }
-                heading = "${headingPrefix} ${startDate.format('MMMM yyy')}"
+                heading = "${headingPrefix} ${startDate.format('MMMM yyyy')}"
                 results = getTopNForPeriod(startDate, today, maxRows)
                 break;
             case LeaderBoardCategory.alltime:

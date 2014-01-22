@@ -281,7 +281,7 @@ class UserController {
         if (projectInstance) {
             totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), projectInstance)
         } else {
-            totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
+            totalTranscribedTasks = userInstance.transcribedCount
         }
 
         def achievements = []

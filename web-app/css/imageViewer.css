@@ -12,7 +12,7 @@
     position: absolute;
     top: 330px;
     left: 10px;
-    background: url('/volunteer-portal/images/map-control.png') no-repeat;
+    background: url('../images/map-control.png') no-repeat;
     height: 63px;
     width: 100px;
     opacity: 0.9;
@@ -71,7 +71,7 @@
     position: absolute;
     top: 370px;
     right: 7px;
-    background: url('/volunteer-portal/images/pin-image.png') no-repeat;
+    background: url('../images/pin-image.png') no-repeat;
     height: 24px;
     width: 24px;
     opacity: 0.9;
@@ -96,7 +96,7 @@
     position: absolute;
     top: 340px;
     right: 7px;
-    background: url('/volunteer-portal/images/image-window.png') no-repeat;
+    background: url('../images/image-window.png') no-repeat;
     height: 24px;
     width: 24px;
     opacity: 0.9;

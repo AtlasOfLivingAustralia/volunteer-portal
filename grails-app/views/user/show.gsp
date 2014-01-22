@@ -114,12 +114,12 @@
                                     <td valign="top" class="value">${score}</td>
                                 </tr>
                                 <tr class="prop">
-                                    <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks Completed"/></td>
-                                    <td valign="top" class="value">${totalTranscribedTasks} (${userInstance.validatedCount} validated)</td>
+                                    <td valign="top" class="name"><g:message code="user.recordsTranscribedCount.label" default="Tasks transcribed"/></td>
+                                    <td valign="top" class="value">${totalTranscribedTasks} (${validatedCount} of which have been validated)</td>
                                 </tr>
                                 <tr class="prop">
                                     <td valign="top" class="name"><g:message code="user.transcribedValidatedCount.label" default="Tasks validated"/></td>
-                                    <td valign="top" class="value">${validatedCount}</td>
+                                    <td valign="top" class="value">${userInstance.validatedCount}</td>
                                 </tr>
                                 <tr class="prop">
                                     <td valign="top" class="name"><g:message code="user.created.label" default="First contribution"/></td>

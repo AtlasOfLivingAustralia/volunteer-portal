@@ -47,7 +47,8 @@ class UserService {
                 count('id')
             }
             and {
-                eq('fullyValidatedBy', user.getUserId())
+                eq('fullyTranscribedBy', user.getUserId())
+                eq('isValid', true)
                 if (project) {
                     eq("project", project)
                 }
