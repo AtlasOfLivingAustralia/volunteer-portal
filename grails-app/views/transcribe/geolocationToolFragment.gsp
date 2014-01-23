@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.volunteer.PicklistItem; au.org.ala.volunteer.Picklist" %>
-<div style="height: 600px">
+<div style="height: 500px">
     <div id="mapWidgets">
         <div id="mapWrapper">
             <div id="mapCanvas"></div>
@@ -12,43 +12,36 @@
             <div id="sightingAddress">
                 <h4>Locality Search</h4>
 
-                <textarea name="address" id="address" size="32" rows="2" value=""></textarea>
+                <textarea name="address" id="address" size="32" rows="1" value=""></textarea>
                 <button id="locationSearch" class="btn btn-small">Search</button>
-                <div class="searchHint">If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description. Choose a location, or move the pin to a location that you think represents the Verbatim Locality as sensibly as possible. Where the map tool cant find a location simply fill in the State/territory and Country fields</div>
+                <a href="#" class="geolocateHelp fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description. Choose a location, or move the pin to a location that you think represents the Verbatim Locality as sensibly as possible. Where the map tool cant find a location simply fill in the State/territory and Country fields">
+                    <span class="help-container">&nbsp;</span>
+                </a>
             </div>
 
             <h4>Coordinate Uncertainty</h4>
 
             <div>Adjust Uncertainty (in metres):
-                <select id="infoUncert">
+                <select class="input-medium" id="infoUncert">
                     <g:set var="coordinateUncertaintyPL" value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
                     <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">
                         <g:set var="isSelected"><g:if test="${(item.value == '1000')}">selected='selected'</g:if></g:set>
                         <option ${isSelected}>${item.value}</option>
                     </g:each>
                 </select>
-
-                <div class="searchHint">Please choose an uncertainty value from the list that best represents the area
-                described by a circle with radius of that value from the given location. This can be seen as the
-                circle around the point on the map <a href="#" class="fieldHelp" title="If in doubt
-                                    choose a larger area. For example if the location is simply a small town then
-                                    choose an uncertainty value that encompasses the town and some surrounding area.
-                                    The larger the town the larger the uncertainty would need to be. If the locality
-                                    description (verbatim locality) is quite detailed and you can find that location
-                                    accurately then the uncertainty value can be smaller"><span class="help-container">&nbsp;</span>
+                <a href="#" class="geolocateHelp fieldHelp" title="If in doubt choose a larger area. For example if the location is simply a small town then choose an uncertainty value that encompasses the town and some surrounding area. The larger the town the larger the uncertainty would need to be. If the locality description (verbatim locality) is quite detailed and you can find that location accurately then the uncertainty value can be smaller">
+                    <span class="help-container">&nbsp;</span>
                 </a>
-                </div>
+                <div class="searchHint">Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map.</div>
             </div>
 
             <h4>Location Data</h4>
 
             <div>Latitude: <span id="infoLat"></span></div>
-
             <div>Longitude: <span id="infoLng"></span></div>
-
             <div>Location: <span id="infoLoc"></span></div>
 
-            <div style="text-align: center">
+            <div style="text-align: center; margin-top: 6px">
                 <button id="setLocationFields" class="btn btn-primary">Copy values to main form</button>
                 <button id="btnClose" class="btn">Cancel</button>
             </div>
@@ -261,9 +254,7 @@
     }
 
     function updateMarkerAddress(str, addressObj) {
-        //$('#markerAddress').html(str);
         $('#infoLoc').html(str);
-        //$('#mapFlashMsg').fadeIn('fast').fadeOut('slow');
         // update form fields with location parts
         if (addressObj && addressObj.address_components) {
             var addressComps = addressObj.address_components;
@@ -287,7 +278,6 @@
         });
 
         $('input#address').keypress(function(e) {
-            //alert('form key event = ' + e.which);
             if (e.which == 13) {
                 codeAddress();
             }
@@ -345,6 +335,16 @@
             }
 
         });
-    });
+
+        initializeGeolocateTool();
+        google.maps.event.trigger(map, "resize");
+        setTimeout(function() {
+            google.maps.event.trigger(map, "resize");
+        }, 500);
+
+        bindTooltips("a.geolocateHelp.fieldHelp", 600);
+
+    }); // End document.ready
+
 
 </script>

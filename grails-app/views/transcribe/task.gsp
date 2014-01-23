@@ -184,13 +184,9 @@
                 showModal({
                     url: "${createLink(controller: 'transcribe', action:'geolocationToolFragment')}",
                     width: 978,
-                    height: 740,
+                    height: 500,
                     hideHeader: true,
-                    title: '',
-                    onShown: function() {
-                        initializeGeolocateTool();
-                        google.maps.event.trigger(map, "resize");
-                    }
+                    title: ''
                 });
             }
 
@@ -260,9 +256,16 @@
                 });
             }
 
-            function bindTooltips() {
+            function bindTooltips(selector, width) {
+
+                if (!selector) {
+                    selector = "a.fieldHelp";
+                }
+                if (!width) {
+                    width = 300;
+                }
                 // Context sensitive help popups
-                $("a.fieldHelp").qtip({
+                $(selector).qtip({
                     tip: true,
                     position: {
                         corner: {
@@ -271,7 +274,7 @@
                         }
                     },
                     style: {
-                        width: 300,
+                        width: width,
                         padding: 8,
                         background: 'white', //'#f0f0f0',
                         color: 'black',
@@ -600,8 +603,6 @@
         </div>
         <g:if test="${taskInstance}">
             <g:form class="transcribeForm">
-                <g:hiddenField name="recordValues.0.basisOfRecord" class="basisOfRecord" id="recordValues.0.basisOfRecord"
-                               value="${recordValues?.get(0)?.basisOfRecord ?: TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.basisOfRecord, template)?.defaultValue}"/>
 
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
