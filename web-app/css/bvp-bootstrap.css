@@ -89,7 +89,7 @@ nav#breadcrumb li {
     display:inline;
 }
 nav#breadcrumb li:after {
-    content:" » ";
+    content:" \BB ";
 }
 nav#breadcrumb li.last:after {
     content:"";

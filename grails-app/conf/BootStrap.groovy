@@ -20,8 +20,6 @@ class BootStrap {
 
         preparePickLists();
 
-        prepareTemplates();
-
         prepareValidationRules();
 
         prepareProjectTypes();
@@ -207,89 +205,6 @@ class BootStrap {
                 }
             }
         }
-
-    }
-
-    private void prepareTemplates() {
-        // Create default template if not in DB
-        Template template = Template.findByName('default')
-        if (!template) {
-            logService.log "creating new Template: default"
-            template = new Template(name: 'default', viewName: 'specimenTranscribe', author: 'webmaster@ala.org.au',
-                    created: new Date(), fieldOrder: '').save(flush: true, failOnError: true)
-        }
-
-        populateTemplateFields(template, "defaultFields")
-
-        template = Template.findByName("FieldNoteBook")
-        if (!template) {
-            logService.log "creating new Template: FieldNoteBook"
-            template = new Template(name: "FieldNoteBook", viewName: "fieldNoteBookTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
-        }
-        populateTemplateFields(template, "fieldNoteBookFields")
-
-        template = Template.findByName("FieldNoteBookDoublePage")
-        if (!template) {
-            logService.log "creating new Template: FieldNoteBookDoublePage"
-            template = new Template(name: "FieldNoteBookDoublePage", viewName: "fieldNoteBookTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [doublePage: 'true']).save(flush: true, failOnError: true)
-        }
-        populateTemplateFields(template, "fieldNoteBookFields")
-
-        template = Template.findByName("SpecimenLabel")
-        if (!template) {
-            logService.log "creating new Template: SpecimenLabel"
-            template = new Template(name: "SpecimenLabel", viewName: "specimenLabelTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
-        }
-        populateTemplateFields(template, "specimenLabelFields")
-
-        template = Template.findByName("AerialObservations")
-        if (!template) {
-            logService.log "creating new Template: AerialObservations"
-            template = new Template(name: "AerialObservations", viewName: "aerialObservationsTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
-        }
-        populateTemplateFields(template, "aerialObservationsFields")
-
-        template = Template.findByName("ObservationDiary")
-        if (!template) {
-            logService.log "creating new Template: ObservationDiary"
-            template = new Template(name: "ObservationDiary", viewName: "observationDiaryTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
-        }
-        populateTemplateFields(template, "observationDiaryFields")
-
-        template = Template.findByName("ObservationDiaryWithMonth")
-        if (!template) {
-            logService.log "creating new Template: ObservationDiaryWithMonth"
-            template = new Template(name: "ObservationDiaryWithMonth", viewName: "observationDiaryTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [showMonth: true, hideLocality: true]).save(flush: true, failOnError: true)
-        }
-        populateTemplateFields(template, "observationDiaryFields")
-
-        template = Template.findByName("FinnishLabelsTest")
-        if (!template) {
-            logService.log "creating new Template: FinnishLabelsTest"
-            template = new Template(name: "FinnishLabelsTest", viewName: "specimenTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
-        }
-        template.viewParams = [specialChars: "x00e5,x00e4,x00f6,x00e6,x00f8", noAutoComplete: 'recordedBy,verbatimLocality', hideMapButton: 'true']
-        template.save(flush: true, failOnError: true)
-
-        populateTemplateFields(template, "finnishTestFields")
-
-        template = Template.findByName("GenericLabels")
-        if (!template) {
-            logService.log "creating new Template: GenericLabels"
-            template = new Template(name: "GenericLabels", viewName: "genericLabelsTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
-        }
-        template.save(flush: true, failOnError: true)
-
-        populateTemplateFields(template, "genericLabelFields")
-
-        template = Template.findByName("SmithsonianPlants")
-        if (!template) {
-            logService.log "creating new Template: SmithsonianPlants"
-            template = new Template(name: "SmithsonianPlants", viewName: "smithsonianPlantsTranscribe", author: 'webmaster@ala.org.au', created: new Date(), fieldOrder: '', viewParams: [:]).save(flush: true, failOnError: true)
-        }
-        template.save(flush: true, failOnError: true)
-
-        populateTemplateFields(template, "smithsonianPlantsFields")
 
     }
 
