@@ -4,7 +4,8 @@ import groovy.time.TimeCategory
 
 class TaskListTagLib {
 
-  def grailsApplication
+    def grailsApplication
+    def multimediaService
 
   def renderTaskList = { attrs, body ->
 
@@ -31,7 +32,7 @@ class TaskListTagLib {
           out << """<a href="${createLink(uri: '/transcribe/task/'+taskInstance.id)}">"""
         }
 
-        def imgUrl = grailsApplication.config.server.url + taskInstance?.multimedia?.filePathToThumbnail?.iterator().next()
+        def imgUrl = multimediaService.getImageUrl(taskInstance?.multimedia?.first())
         out << """<img src="${imgUrl}" class="taskListImg" />"""
 
         if(addLink){

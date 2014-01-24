@@ -1,11 +1,8 @@
 package au.org.ala.volunteer
 
 import org.apache.commons.lang.StringUtils
-import org.hibernate.FlushMode
-
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-import com.thebuzzmedia.imgscalr.Scalr
 import groovy.sql.Sql
 
 class TaskService {
@@ -13,7 +10,8 @@ class TaskService {
     javax.sql.DataSource dataSource
     def logService
     def grailsApplication
-    def sessionFactory
+    def multimediaService
+    def grailsLinkGenerator
 
     static transactional = true
 
@@ -617,9 +615,15 @@ class TaskService {
         return imageMetaData
     }
 
-    public ImageMetaData getImageMetaData(Multimedia multimedia) {
+    public ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
         if (path) {
+            def imageUrl = multimediaService.getImageUrl(multimedia)
+
+            if ([90,180,270].contains(rotate)) {
+                imageUrl = grailsLinkGenerator.link(controller: 'multimedia', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
+            }
+
             String urlPrefix = grailsApplication.config.images.urlPrefix
             String imagesHome = grailsApplication.config.images.home
             path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
@@ -632,7 +636,13 @@ class TaskService {
             }
 
             if (image) {
-                return new ImageMetaData(width: image.width, height: image.height)
+                def width = image.width
+                def height = image.height
+                if (rotate == 90 || rotate == 270) {
+                    width = image.height
+                    height = image.width
+                }
+                return new ImageMetaData(width: width, height: height, url: imageUrl)
             } else {
                 logService.log("Could not read image file: ${path} - could not get image metadata")
             }
@@ -727,4 +737,5 @@ class TaskService {
 public class ImageMetaData {
     int height
     int width
+    String url
 }

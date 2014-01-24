@@ -1,3 +1,7 @@
+#image-container, #image-parent-container {
+    background-color: #a9a9a9;
+}
+
 #image-container {
     width: 100%;
     height: 400px;
@@ -118,11 +122,4 @@
 }
 
 
-.rotate-image {
-    -moz-transform: rotate(180deg);
-    -webkit-transform: rotate(180deg);
-    -o-transform: rotate(180deg);
-    transform: rotate(180deg);
-    -ms-filter: flipv fliph; /*IE*/
-    filter: flipv fliph; /*IE*/
-}
+

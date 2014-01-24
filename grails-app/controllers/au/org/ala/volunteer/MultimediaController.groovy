@@ -1,5 +1,8 @@
 package au.org.ala.volunteer
 
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
 class MultimediaController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -95,6 +98,36 @@ class MultimediaController {
         else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'multimedia.label', default: 'Multimedia'), params.id])}"
             redirect(action: "list")
+        }
+    }
+
+    def imageDownload() {
+        def mm = Multimedia.get(params.int("id"))
+        if (mm) {
+            def path = mm?.filePath
+            String urlPrefix = grailsApplication.config.images.urlPrefix
+            String imagesHome = grailsApplication.config.images.home
+            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+            BufferedImage image = null
+            image = ImageIO.read(new File(path))
+            def rotate = params.int("rotate") ?: 0
+            if (rotate) {
+                image = ImageUtils.rotateImage(image, rotate)
+            }
+
+            if (params.maxDimension) {
+                def size = params.int("maxDimension")
+                image = ImageUtils.scale(image, size, size)
+            } else if (params.maxWidth) {
+                def width = params.int("maxWidth")
+                image = ImageUtils.scaleWidth(image, width)
+            }
+
+            def outputBytes = ImageUtils.imageToBytes(image)
+            response.setContentType(mm.mimeType ?: "image/jpeg")
+            response.setHeader("Content-disposition", "attachment;filename=${mm.task.externalIdentifier}.jpg")
+            response.outputStream.write(outputBytes)
+            response.flushBuffer()
         }
     }
 }

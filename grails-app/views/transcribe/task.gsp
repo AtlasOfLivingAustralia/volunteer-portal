@@ -17,7 +17,7 @@
         <r:require module="bootstrap-js" />
         <r:require module="panZoom" />
         <r:require module="jqZoom" />
-        <r:require module="imageViewerCss" />
+        <r:require module="imageViewer" />
         <r:require module="transcribeWidgets" />
 
         <r:script>
@@ -101,7 +101,7 @@
 
                 $("#rotateImage").click(function(e) {
                     e.preventDefault();
-                    $("#image-container img").toggleClass("rotate-image");
+                    rotateImage();
                 });
 
                 $("#show_task_selector").click(function(e) {
@@ -142,14 +142,6 @@
 
             }
 
-            function setImageViewerHeight(height) {
-                $("#image-container").css("height", "" + height + "px");
-                $(".imageviewer-controls").css("top", "" + (height - 70) + "px");
-                $(".pin-image-control").css("top", "" + (height - 30) + "px");
-                $(".show-image-control").css("top", "" + (height - 60) + "px");
-            }
-
-
             function insertCoordinateSymbolButtons() {
                 // Add clickable icons for deg, min sec in lat/lng inputs
                 var title = "Click to insert this symbol";
@@ -188,28 +180,6 @@
                     hideHeader: true,
                     title: ''
                 });
-            }
-
-            function setupPanZoom() {
-                var target = $("#image-container img");
-                if (target.length > 0) {
-                    target.panZoom({
-                        pan_step:10,
-                        zoom_step:10,
-                        min_width:200,
-                        min_height:200,
-                        mousewheel:true,
-                        mousewheel_delta:5,
-                        'zoomIn':$('#zoomin'),
-                        'zoomOut':$('#zoomout'),
-                        'panUp':$('#pandown'),
-                        'panDown':$('#panup'),
-                        'panLeft':$('#panright'),
-                        'panRight':$('#panleft')
-                    });
-
-                    target.panZoom('fit');
-                }
             }
 
             function showPreviousTaskBrowser() {
@@ -377,6 +347,26 @@
             function getFieldValue(fieldName) {
                 var id = "recordValues\\.0\\." + fieldName;
                 return $("#" + id).val();
+            }
+
+            var imageRotation = 0;
+
+            function rotateImage() {
+                var image = $("#image-container img")
+                if (image) {
+                    imageRotation += 90;
+                    if (imageRotation >= 360) {
+                        imageRotation = 0;
+                    }
+
+                    var height = $("#image-container").height();
+
+                    $.ajax("${createLink(controller:'transcribe', action:'imageViewerFragment', params:[multimediaId:taskInstance.multimedia?.first()?.id])}&height=" + height +"&rotate=" + imageRotation).done(function(html) {
+                        $("#image-parent-container").replaceWith(html);
+                        setupPanZoom();
+                    });
+
+                }
             }
 
         </r:script>

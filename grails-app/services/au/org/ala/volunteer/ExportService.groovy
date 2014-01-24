@@ -11,6 +11,8 @@ class ExportService {
     static transactional = true
 
     def grailsApplication
+    def taskService
+    def multimediaService
 
     private String getUserDisplayName(userId) {
         def user = User.findByUserId(userId)
@@ -78,8 +80,6 @@ class ExportService {
         repeatingFields.each {
             fieldNames.remove(it)
         }
-
-        println repeatingFields
 
         zipExport(project, taskList, valueMap, fieldNames, response, ["dataset"], repeatingFields)
     }
@@ -259,7 +259,7 @@ class ExportService {
         taskList.each { Task task ->
             int recordIdx = 0
             task.multimedia.each { multimedia ->
-                def url = "${grailsApplication.config.server.url}${multimedia.filePath}"
+                def url = multimediaService.getImageUrl(multimedia)
                 String[] values = [task.id.toString(), task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
                 writer.writeNext(values)
                 recordIdx++

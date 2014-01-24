@@ -675,3 +675,4 @@ $(document).ready(function() {
     });
 
 });
+

@@ -16,6 +16,7 @@ class AjaxController {
     def taskLoadService
     def statsService
     DataSource dataSource
+    def multimediaService
 
     def index = {
         render(['VolunteerPortal' : 'Version 1.0'] as JSON)
@@ -185,7 +186,7 @@ class AjaxController {
                     'locality' { findValue(it.fieldValues, 'locality')}
                     'transcriber' { it.task.fullyTranscribedBy }
                     'eventDate' { findValue(it.fieldValues, 'eventDate') }
-                    'associatedMedia' { "${grailsApplication.config.server.url}${it.task?.multimedia?.toList()[0]?.filePath}" }
+                    'associatedMedia' { multimediaService.getImageUrl((Multimedia) it.task?.multimedia?.first()) }
                     'occurrenceId' { createLink(controller: 'task', action: 'show', id: it?.task?.id, absolute: true ) }
                 }
 
@@ -251,7 +252,7 @@ class AjaxController {
                 mmInfo.mimeType = mm.mimeType
                 mmInfo.created = mm.created?.format("yyyy-MM-dd HH:mm:ss")
                 mmInfo.creator = mm.creator
-                mmInfo.url = "${grailsApplication.config.server.url}${mm.filePath}"
+                mmInfo.url = multimediaService.getImageUrl(mm)
                 taskInfo.multimedia << mmInfo
             }
             render(taskInfo as JSON)

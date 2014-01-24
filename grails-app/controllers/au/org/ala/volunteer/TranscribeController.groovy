@@ -83,9 +83,9 @@ class TranscribeController {
                 nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
             }
 
-            def imageMetaData = taskService.getImageMetaData(taskInstance)
+            // def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-            render( view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
+            render( view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -244,6 +244,16 @@ class TranscribeController {
     }
 
     def geolocationToolFragment() {
+    }
+
+    def imageViewerFragment() {
+        def multimedia = Multimedia.get(params.int("multimediaId"))
+        def height = params.height?.toInteger() ?: 400
+        def rotate = params.int("rotate") ?: 0
+        def hideControls = params.boolean("hideControls") ?: false
+        def hideShowInOtherWindow = params.boolean("hideShowInOtherWindow") ?: false
+        def hidePinImage = params.boolean("hidePinImage") ?: false
+        [multimedia: multimedia, height: height, rotate: rotate, hideControls: hideControls, hideShowInOtherWindow: hideShowInOtherWindow, hidePinImage: hidePinImage]
     }
 
 }

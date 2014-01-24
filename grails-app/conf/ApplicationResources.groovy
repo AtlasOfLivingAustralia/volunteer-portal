@@ -40,7 +40,9 @@ modules = {
         resource url:'/js/gmaps.js'
     }
 
-    'imageViewerCss' {
+    'imageViewer' {
+        dependsOn "panZoom"
+        resource url:'/js/imageViewer.js'
         resource url:'/css/imageViewer.css'
     }
 

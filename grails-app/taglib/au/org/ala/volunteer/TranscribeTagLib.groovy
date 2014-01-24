@@ -321,12 +321,26 @@ class TranscribeTagLib {
     def imageViewer = { attrs, body ->
         def multimedia = attrs.multimedia as Multimedia
         if (multimedia) {
-            def imageUrl = "${grailsApplication.config.server.url}${multimedia.filePath}"
-            def imageMetaData = taskService.getImageMetaData(multimedia)
+
+            int rotate = 0
+            if (attrs.rotate) {
+                rotate = attrs.rotate
+            }
+
             def mb = new MarkupBuilder(out)
+
+            def imageMetaData = taskService.getImageMetaData(multimedia, rotate)
+
+            if (!imageMetaData) {
+                mb.dev(class:'alert alert-danger') {
+                    mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                }
+                return;
+            }
+
             mb.div(id:'image-parent-container') {
                 mb.div(id:attrs.elementId ?: 'image-container', preserveWidthWhenPinned:attrs.preserveWidthWhenPinned) {
-                    mb.img(src:imageUrl, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
+                    mb.img(src:imageMetaData.url, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
                     if (!attrs.hideControls) {
                         div(class:'imageviewer-controls') {
                             a(id:'panleft', href:"#", class:'left') {}

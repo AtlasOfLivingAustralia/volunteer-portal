@@ -19,4 +19,8 @@ class MultimediaService {
         }
     }
 
+    public String getImageUrl(Multimedia media) {
+        return "${grailsApplication.config.server.url}${media.filePath}"
+    }
+
 }

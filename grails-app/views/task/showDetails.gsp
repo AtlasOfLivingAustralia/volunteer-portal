@@ -18,7 +18,7 @@
 
         <r:require module="bootstrap-js" />
         <r:require module="panZoom" />
-        <r:require module="imageViewerCss" />
+        <r:require module="imageViewer" />
 
         <r:script>
 
@@ -27,35 +27,9 @@
                 setupPanZoom();
             });
 
-            function setupPanZoom() {
-                var target = $("#image-container img");
-                if (target.length > 0) {
-                    target.panZoom({
-                        pan_step:10,
-                        zoom_step:10,
-                        min_width:200,
-                        min_height:200,
-                        mousewheel:true,
-                        mousewheel_delta:5,
-                        'zoomIn':$('#zoomin'),
-                        'zoomOut':$('#zoomout'),
-                        'panUp':$('#pandown'),
-                        'panDown':$('#panup'),
-                        'panLeft':$('#panright'),
-                        'panRight':$('#panleft')
-                    });
-
-                    target.panZoom('fit');
-                }
-            }
-
         </r:script>
 
         <style type="text/css">
-
-            #image-container, #image-parent-container {
-                background-color: #a9a9a9;
-            }
 
             tr.fieldrow[superceded="true"] td {
                 background-color: palevioletred;
@@ -197,7 +171,15 @@
         </div>
     </body>
     <r:script>
+
         $(document).ready(function() {
+
+            $("#showImageWindow").click(function(e) {
+                e.preventDefault();
+                window.open("${createLink(controller:'task', action:"showImage", id:taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
+            });
+
         });
+
     </r:script>
 </html>
