@@ -17,7 +17,7 @@ environments {
             dbCreate = "update" // one of 'create', 'create-drop','update'
             username="postgres"
             password="password"
-            url = "jdbc:postgresql://localhost/volunteers"
+            url = "jdbc:postgresql://localhost/volunteers-prod"
             loggingSql = false
         }
     }

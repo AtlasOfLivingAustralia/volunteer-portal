@@ -73,6 +73,14 @@ class TaskService {
         projectTaskCounts.toMap()
     }
 
+    Map getProjectVolunteerCounts() {
+        def volunteerCounts = Task.executeQuery(
+            """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
+               from Task t where t.fullyTranscribedBy is not null group by t.project.id"""
+        )
+        volunteerCounts.toMap()
+    }
+
     /**
      *
      * @return Map of project id -> count

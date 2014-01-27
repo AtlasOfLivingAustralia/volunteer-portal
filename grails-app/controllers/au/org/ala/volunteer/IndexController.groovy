@@ -31,8 +31,8 @@ class IndexController {
     def statsFragment = {
         // Stats
         def totalTasks = Task.count()
-        def completedTasks = Task.findAll("from Task where length(fullyTranscribedBy) > 0").size()
-        def transcriberCount = User.findAll("from User where transcribedCount > 0").size()
+        def completedTasks = Task.countByFullyTranscribedByIsNotNull()
+        def transcriberCount = User.countByTranscribedCountGreaterThan(0)
         ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount]
     }
 }

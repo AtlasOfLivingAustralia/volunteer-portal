@@ -14,6 +14,7 @@ class ProjectService {
         def projectList = Project.list()
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+        def volunteerCounts = taskService.getProjectVolunteerCounts()
 
         List results = []
         for (Project project : projectList) {
@@ -27,7 +28,7 @@ class ProjectService {
                     }
                 }
                 if (percent < 100) {
-                    results << getProjectSummary(project, fullyTranscribedCounts, percent)
+                    results << getProjectSummary(project, fullyTranscribedCounts, percent, volunteerCounts)
                 }
             }
         }
@@ -46,7 +47,7 @@ class ProjectService {
         return ProjectType.findByName("specimens")
     }
 
-    private ProjectSummary getProjectSummary(Project project, Map fullyTranscribedCounts, double percent) {
+    private ProjectSummary getProjectSummary(Project project, Map fullyTranscribedCounts, double percent, Map volunteerCounts) {
 
         if (!project.projectType) {
             def projectType = guessProjectType(project)
@@ -65,15 +66,14 @@ class ProjectService {
             iconLabel = project.projectType.label
         }
 
-        def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")
+        // def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")
 
         def ps = new ProjectSummary(project: project)
         ps.iconImage = iconImage
         ps.iconLabel = iconLabel
-        ps.volunteerCount = volunteer.size()
+        ps.volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
         ps.countComplete = (Integer) fullyTranscribedCounts[project.id] ?: 0
         ps.percentComplete = (percent ? Math.round(percent) : 0)
-
         return ps
     }
 
@@ -89,6 +89,7 @@ class ProjectService {
 
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+        def volunteerCounts = taskService.getProjectVolunteerCounts()
 
         Map<Long, ProjectSummary> projects = [:]
 
@@ -107,7 +108,7 @@ class ProjectService {
                 incompleteCount++;
             }
 
-            def ps = getProjectSummary(project, fullyTranscribedCounts, percent)
+            def ps = getProjectSummary(project, fullyTranscribedCounts, percent, volunteerCounts)
             projects[project.id] = ps
         }
 
