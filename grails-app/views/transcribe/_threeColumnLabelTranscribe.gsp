@@ -1,6 +1,9 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 
+<style>
+</style>
+
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span12">

@@ -173,10 +173,13 @@
                             <g:form action="uploadFeaturedImage" controller="project" method="post" enctype="multipart/form-data">
                                 <input type="file" name="featuredImage"/>
                                 <input type="hidden" name="id" value="${projectInstance.id}"/>
-                                <g:submitButton class="btn" name="Upload"/>
+                                <g:submitButton class="btn btn-small btn-primary" name="Upload"/>
+                                <a href="${createLink(action:'resizeExpeditionImage', id:projectInstance.id)}" class="btn btn-small">Resize existing image</a>
                             </g:form>
                             <br/>
-                            Images should be 254 x 158 pixels in size
+                            <div class="alert alert-danger">
+                                Expedition banner images must be exactly <strong>254 x 158</strong> pixels in size (w x h). Images that have different dimensions will be scaled to this size when uploaded. To preserve image quality, crop and scale them to this size before uploading.
+                            </div>
                         </td>
                     </tr>
                     <tr>

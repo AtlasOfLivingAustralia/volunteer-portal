@@ -1,10 +1,12 @@
 package au.org.ala.volunteer
 
 import grails.converters.*
-
+import org.imgscalr.Scalr
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
+
+import javax.imageio.ImageIO
 
 class ProjectController {
 
@@ -351,24 +353,21 @@ class ProjectController {
     }
 
     def edit = {
+
         def currentUser = authService.username()
         if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
-            def projectInstance = Project.get(params.id)
+            def projectInstance = Project.get(params.int("id"))
             if (!projectInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
             } else {
-                def eventCollectionCodes = [""]
-                eventCollectionCodes.addAll(collectionEventService.getCollectionCodes())
-
-                def localityCollectionCodes = [""]
-                localityCollectionCodes.addAll(localityService.getCollectionCodes())
 
                 def picklistInstitutionCodes = [""]
                 picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
 
+                def taskCount = Task.countByProject(projectInstance)
 
-                return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes, picklistInstitutionCodes: picklistInstitutionCodes ]
+                return [projectInstance: projectInstance, taskCount: taskCount, picklistInstitutionCodes: picklistInstitutionCodes ]
             }
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
@@ -441,6 +440,7 @@ class ProjectController {
                     def file = new File(filePath);
                     file.getParentFile().mkdirs();
                     f.transferTo(file);
+                    checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message;
                     render(view:'edit', model:[projectInstance:projectInstance])
@@ -450,6 +450,38 @@ class ProjectController {
             }
         }
         redirect(action: "edit", id: params.id)
+    }
+
+    def resizeExpeditionImage() {
+        def projectInstance = Project.get(params.int("id"))
+        if (projectInstance) {
+            checkAndResizeExpeditionImage(projectInstance)
+        }
+        redirect(action:'edit', id:projectInstance?.id)
+    }
+
+    private checkAndResizeExpeditionImage(Project projectInstance) {
+        try {
+            def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+            def file = new File(filePath);
+            // Now check image size...
+            def image = ImageIO.read(file)
+            println "Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}"
+            if (image.width != 254 || image.height != 158) {
+                println "Image is not the correct size. Scaling to 254 x 158..."
+                image = ImageUtils.scale(image, 254, 158)
+                println "Saving new dimensions ${image.width} x ${image.height}"
+                ImageIO.write(image, "jpg", file)
+                println "Done."
+            } else {
+                println "Image Ok. No scaling required."
+            }
+            return true
+        } catch (Exception ex) {
+            println ex
+            ex.printStackTrace()
+            return false
+        }
     }
 
     def setLeaderIconIndex = {

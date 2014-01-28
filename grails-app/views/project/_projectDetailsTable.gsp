@@ -99,23 +99,23 @@
         </tr>
 
 
-        <tr class="prop">
-            <td valign="top" class="name">
-                <label for="collectionEventLookupCollectionCode"><g:message code="project.collectionEventLookupCollectionCode.label" default="Collection Event Lookup collection code"/></label>
-            </td>
-            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'collectionEventLookupInstitution', 'errors')}">
-                <g:select name="collectionEventLookupCollectionCode" from="${eventCollectionCodes}" value="${projectInstance?.collectionEventLookupCollectionCode}"/>
-            </td>
-        </tr>
+        %{--<tr class="prop">--}%
+            %{--<td valign="top" class="name">--}%
+                %{--<label for="collectionEventLookupCollectionCode"><g:message code="project.collectionEventLookupCollectionCode.label" default="Collection Event Lookup collection code"/></label>--}%
+            %{--</td>--}%
+            %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'collectionEventLookupInstitution', 'errors')}">--}%
+                %{--<g:select name="collectionEventLookupCollectionCode" from="${eventCollectionCodes}" value="${projectInstance?.collectionEventLookupCollectionCode}"/>--}%
+            %{--</td>--}%
+        %{--</tr>--}%
 
-        <tr class="prop">
-            <td valign="top" class="name">
-                <label for="localityLookupCollectionCode"><g:message code="project.localityLookupCollectionCode.label" default="Locality Lookup collection code"/></label>
-            </td>
-            <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'localityEventLookupInstitution', 'errors')}">
-                <g:select name="localityLookupCollectionCode" from="${localityCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}"/>
-            </td>
-        </tr>
+        %{--<tr class="prop">--}%
+            %{--<td valign="top" class="name">--}%
+                %{--<label for="localityLookupCollectionCode"><g:message code="project.localityLookupCollectionCode.label" default="Locality Lookup collection code"/></label>--}%
+            %{--</td>--}%
+            %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'localityEventLookupInstitution', 'errors')}">--}%
+                %{--<g:select name="localityLookupCollectionCode" from="${localityCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}"/>--}%
+            %{--</td>--}%
+        %{--</tr>--}%
 
         <tr class="prop">
             <td valign="top" class="name">

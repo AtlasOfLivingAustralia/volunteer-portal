@@ -72,7 +72,7 @@ public class ImageUtils {
     }
 
     public static BufferedImage scale(BufferedImage src, int destWidth, int destHeight) {
-        return Scalr.resize(src, Scalr.Method.SPEED, destWidth, destHeight, Scalr.OP_ANTIALIAS, Scalr.OP_BRIGHTER);
+        return Scalr.resize(src, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_EXACT, destWidth, destHeight, Scalr.OP_ANTIALIAS, Scalr.OP_BRIGHTER);
     }
 
     public static BufferedImage rotateImage(BufferedImage image, int degrees) {

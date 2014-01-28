@@ -276,11 +276,11 @@
                     <h3>${projectInstance.featuredLabel} personnel</h3>
                     <div class="row">
                         <g:each in="${roles}" status="i" var="role">
-                            <div class="span2">
+                            <div class="span2" style="text-align: center">
                                 <g:set var="iconIndex" value="${(((role.name == 'Expedition Leader') && projectInstance.leaderIconIndex) ? projectInstance.leaderIconIndex : 0)}" scope="page"/>
                                 <g:set var="roleIcon" value="${role.icons[iconIndex]}"/>
+                                <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" title="${roleIcon?.name}" alt="${roleIcon?.name}">
                                 <h4 style="text-align: center">
-                                    <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" title="${roleIcon?.name}" alt="${roleIcon?.name}">
                                     ${role.name}
                                     <g:if test="${role?.name == 'Expedition Leader'}">
                                         <g:if test="${leader?.userId == currentUserId}">

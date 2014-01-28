@@ -392,7 +392,7 @@
                 min-height: 24px;
             }
 
-            .row-fluid select {
+            .row-fluid [class*=span] select {
                 height: 24px;
                 font-size: 12px;
                 line-height: 12px;
