@@ -25,8 +25,7 @@ class PicklistController {
     }
 
     def manage = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
+        [picklistInstanceList: Picklist.list()]
     }
 
     private writeItemsCsv(Writer writer, Picklist picklist, String institutionCode) {

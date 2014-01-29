@@ -230,6 +230,8 @@ class TranscribeTagLib {
             case FieldType.sheetNumber:
                 w = render(template: '/transcribe/sheetNumberWidget', model: widgetModel)
                 break
+            case FieldType.autocompleteTextarea:
+                cssClass += " autocomplete" // fall through
             case FieldType.textarea:
                 int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
                 if (attrs.rows) {

@@ -119,6 +119,7 @@
                     window.open("${createLink(controller:'task', action:"showImage", id:taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
                 });
 
+                suppressReturnKey();
                 bindAutocomplete();
                 bindSymbolButtons();
                 bindTooltips();
@@ -129,6 +130,12 @@
                 bindGlobalKeyHandlers();
                 transcribeWidgets.initializeTranscribeWidgets();
             }); // end Document.ready
+
+            function suppressReturnKey() {
+                $('input,select').keypress(function(event) {
+                    return event.keyCode != 13;
+                });
+            }
 
             function bindGlobalKeyHandlers() {
 
@@ -213,17 +220,20 @@
 
             function bindSymbolButtons() {
 
-                $(".insert-symbol-button").each(function (index) {
+                var selector = $(".insert-symbol-button");
+
+                selector.each(function (index) {
                     $(this).html($(this).attr("symbol"));
                     $(this).attr("tabindex", "-1");
-                });
-
-                $(".insert-symbol-button").click(function (e) {
+                }).click(function (e) {
                     e.preventDefault();
                     var input = $("#recordValues\\.0\\.occurrenceRemarks");
                     $(input).insertAtCaret($(this).attr('symbol'));
                     $(input).focus();
+                }).keypress(function(event) {
+                    return event.keyCode != 13;
                 });
+
             }
 
             function bindTooltips(selector, width) {
@@ -262,7 +272,7 @@
 
             function bindAutocomplete() {
 
-                $("input.autocomplete").not('.noAutoComplete').each(function(index) {
+                $("input.autocomplete,textarea.autocomplete").not('.noAutoComplete').each(function(index) {
 
                     var inputElement = $(this);
                     var matches = $(inputElement).attr("id").match(/^recordValues[.](\d+)[.](\w+)$/);
