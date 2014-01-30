@@ -16,10 +16,6 @@ class FrontPageController {
 
         frontPage.projectOfTheDay = Project.get(Long.parseLong(params['projectOfTheDay']))
 
-        frontPage.featuredProject1 = Project.get(Long.parseLong(params['featuredProject1']))
-        frontPage.featuredProject2 = Project.get(Long.parseLong(params['featuredProject2']))
-        frontPage.featuredProject3 = Project.get(Long.parseLong(params['featuredProject3']))
-        
         frontPage.useGlobalNewsItem = params['useGlobalNewsItem'] == "on"
 
         frontPage.newsTitle = params["newsTitle"]

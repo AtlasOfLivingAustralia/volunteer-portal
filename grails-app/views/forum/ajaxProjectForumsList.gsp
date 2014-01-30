@@ -1,19 +1,17 @@
 %{--<h3>Project Specific Forums</h3>--}%
 <div style="margin-bottom: 15px">
-    <table class="bvp-expeditions" style="margin-bottom: 5px">
+    <table class="table table-striped" style="margin-bottom: 5px">
         <colgroup>
             <col style="width:165px"/>
         </colgroup>
         <thead>
             <tr>
+                <th></th>
                 <th>
-                    <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="button ${params.sort == 'name' ? 'current' : ''}">Name</a>
+                    <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="btn ${params.sort == 'name' ? 'current' : ''}">Name</a>
                 </th>
                 <th>
-                    <a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="button ${params.sort == 'completed' ? 'current' : ''}">Tasks completed</a>
-                </th>
-                <th>
-                    <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="button ${params.sort == 'type' ? 'current' : ''}">Type</a>
+                    <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}" class="btn ${params.sort == 'type' ? 'current' : ''}">Type</a>
                 </th>
                 <th style="text-align: right">
                     <span>
@@ -21,7 +19,7 @@
                         </a>
                     </span>
                     <g:textField style="margin-top: 10px; margin-bottom: 10px" id="searchbox" value="${params.q}" name="searchbox"/>
-                    <button id="btnSearch">Search</button>
+                    <button class="btn btn-primary" id="btnSearch">Search</button>
                 </th>
             </tr>
         </thead>
@@ -29,7 +27,8 @@
             <g:each in="${projectSummaryList.projectRenderList}" status="i" var="projectSummary">
                 <tr inactive="${projectSummary.project.inactive}">
                     <%-- Project thumbnail --%>
-                    <td><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">
+                    <td>
+                        <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">
                         <img src="${projectSummary.project.featuredImage}" width="147" height="81" style="padding-top: 5px"/>
                     </a>
                     </td>
@@ -39,7 +38,7 @@
                     </td>
                     <%-- Project type --%>
                     <td class="type">
-                        <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/${projectSummary.iconImage}" width="40" height="36" alt="">
+                        <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
                     </td>
                     <td style="text-align: right">
                         <a href="${createLink(controller:"forum", action:"projectForum", params:[projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> Expedition Topics and <b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> Task Topics</a>
@@ -49,7 +48,7 @@
             </g:each>
         </tbody>
     </table>
-    <div class="paginateButtons">
+    <div class="pagination">
         <g:paginate controller="forum" action="index" total="${projectSummaryList.matchingProjectCount}" prev="" next="" params="${params}"/>
     </div>
 </div>

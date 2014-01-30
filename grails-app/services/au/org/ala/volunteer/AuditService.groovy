@@ -6,8 +6,6 @@ class AuditService {
 
     static transactional = true
 
-    def serviceMethod() {}
-
     /**
      * Returns the number of tasks in a project that have been viewed
      * at least once

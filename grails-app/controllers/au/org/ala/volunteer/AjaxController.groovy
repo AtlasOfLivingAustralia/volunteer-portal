@@ -16,6 +16,7 @@ class AjaxController {
     def taskLoadService
     def statsService
     DataSource dataSource
+    def multimediaService
 
     def index = {
         render(['VolunteerPortal' : 'Version 1.0'] as JSON)
@@ -29,6 +30,7 @@ class AjaxController {
 
         stats.specimensTranscribed = taskService.countTranscribedByProjectType("default")
         stats.journalPagesTranscribed = taskService.countTranscribedByProjectType("Journal")
+
         def volunteerCounts = userService.getUserCounts()
         stats.volunteerCount = volunteerCounts?.size()
         if (volunteerCounts?.size() >= 10) {
@@ -184,7 +186,7 @@ class AjaxController {
                     'locality' { findValue(it.fieldValues, 'locality')}
                     'transcriber' { it.task.fullyTranscribedBy }
                     'eventDate' { findValue(it.fieldValues, 'eventDate') }
-                    'associatedMedia' { "${grailsApplication.config.server.url}${it.task?.multimedia?.toList()[0]?.filePath}" }
+                    'associatedMedia' { multimediaService.getImageUrl((Multimedia) it.task?.multimedia?.first()) }
                     'occurrenceId' { createLink(controller: 'task', action: 'show', id: it?.task?.id, absolute: true ) }
                 }
 
@@ -211,7 +213,11 @@ class AjaxController {
 
     def statsTranscriptionsByMonth = {
         def results = statsService.transcriptionsByMonth()
-        println results
+        render results as JSON
+    }
+
+    def statsValidationsByMonth = {
+        def results = statsService.validationsByMonth()
         render results as JSON
     }
 
@@ -246,7 +252,7 @@ class AjaxController {
                 mmInfo.mimeType = mm.mimeType
                 mmInfo.created = mm.created?.format("yyyy-MM-dd HH:mm:ss")
                 mmInfo.creator = mm.creator
-                mmInfo.url = "${grailsApplication.config.server.url}${mm.filePath}"
+                mmInfo.url = multimediaService.getImageUrl(mm)
                 taskInfo.multimedia << mmInfo
             }
             render(taskInfo as JSON)

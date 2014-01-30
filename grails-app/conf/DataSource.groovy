@@ -17,6 +17,16 @@ environments {
             dbCreate = "update" // one of 'create', 'create-drop','update'
             username="postgres"
             password="password"
+            // url = "jdbc:postgresql://localhost/volunteers-prod"
+            url = "jdbc:postgresql://localhost/volunteers"
+            loggingSql = false
+        }
+    }
+    uat {
+        dataSource {
+            dbCreate = "update" // one of 'create', 'create-drop','update'
+            username="postgres"
+            password="password"
             url = "jdbc:postgresql://localhost/volunteers"
             loggingSql = false
         }

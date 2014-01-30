@@ -4,59 +4,29 @@
     <head>
         <title>Volunteer Portal - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>
-        <style type="text/css">
-
-        div#wrapper > div#content {
-            background-color: transparent !important;
-        }
-
-        .volunteerportal #page-header {
-            background: #f0f0e8 url(${resource(dir:'images/vp',file:'bg_volunteerportal.jpg')}) center top no-repeat;
-            padding-bottom: 12px;
-            border: 1px solid #d1d1d1;
-        }
-
-        </style>
-
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
-        <cl:navbar selected="tutorials"/>
+        <cl:headerContent title="${message(code:'default.tutorials.label', default:'Tutorials')}" selectedNavItem="tutorials">
+            <cl:ifAdmin>
+                <a class="btn" href="${createLink(controller:'admin', action:'tutorialManagement')}">Manage</a>
+            </cl:ifAdmin>
+        </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li class="last"><g:message code="default.tutorials.label" default="Tutorials"/></li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Tutorials</h1>
-                    <cl:ifAdmin>
-                        <button class="button" onclick="location.href = '${createLink(controller:'admin', action:'tutorialManagement')}'">Manage</button>
-                    </cl:ifAdmin>
-                </hgroup>
-            </div>
-        </header>
-
-        <div>
-            <div class="inner">
+        <div class="row">
+            <div class="span12">
                 <g:each in="${tutorials.keySet().sort()}" var="group">
+                    <g:if test="${tutorials[group]}">
                     <h3>${group == '-' ? 'Generic Tutorials' : group}</h3>
-                    <ul>
-                        <table class="bvp-expeditions">
-                            <g:if test="${group == '-'}">
-                                <li><a href="${createLink(controller:'tutorials', action:'transcribingSpecimenLabels')}">Transcribing Specimen Labels</a></li>
-                            </g:if>
-                            <g:each in="${tutorials[group]?.sort({it.title})}" var="tute">
-                                <li><a href="${tute.url}">${tute.title}</a></li>
-                            </g:each>
-                        </table>
+                    <ul class="nav nav-tabs nav-stacked">
+                        <g:each in="${tutorials[group]?.sort({it.title})}" var="tute">
+                            <li>
+                                <a href="${tute.url}">${tute.title}</a>
+                            </li>
+                        </g:each>
                     </ul>
+                    </g:if>
                 </g:each>
             </div>
 

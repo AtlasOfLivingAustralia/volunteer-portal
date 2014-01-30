@@ -61,7 +61,7 @@ class TranscribeController {
 
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
-            def isReadonly
+            def isReadonly = false
 
             def isValidator = userService.isValidator(project)
             logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
@@ -76,16 +76,16 @@ class TranscribeController {
             Task nextTask = null;
             Integer sequenceNumber = null
 
-            if (recordValues[0]?.sequenceNumber) {
+            if (recordValues[0]?.sequenceNumber && recordValues[0]?.sequenceNumber?.isInteger()) {
                 sequenceNumber = Integer.parseInt(recordValues[0]?.sequenceNumber);
                 // prev task
                 prevTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber - 1).toString())
                 nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
             }
 
-            def imageMetaData = taskService.getImageMetaData(taskInstance)
+            // def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-            render( view: template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
+            render( view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -213,10 +213,6 @@ class TranscribeController {
         }
     }
 
-    def savePartial2 = {
-        redirect(action: 'savePartial', id: params.id)
-    }
-
     /**
      * Show the next task for the supplied project.
      */
@@ -246,4 +242,18 @@ class TranscribeController {
             render(view: 'noTasks')
         }
     }
+
+    def geolocationToolFragment() {
+    }
+
+    def imageViewerFragment() {
+        def multimedia = Multimedia.get(params.int("multimediaId"))
+        def height = params.height?.toInteger() ?: 400
+        def rotate = params.int("rotate") ?: 0
+        def hideControls = params.boolean("hideControls") ?: false
+        def hideShowInOtherWindow = params.boolean("hideShowInOtherWindow") ?: false
+        def hidePinImage = params.boolean("hidePinImage") ?: false
+        [multimedia: multimedia, height: height, rotate: rotate, hideControls: hideControls, hideShowInOtherWindow: hideShowInOtherWindow, hidePinImage: hidePinImage]
+    }
+
 }

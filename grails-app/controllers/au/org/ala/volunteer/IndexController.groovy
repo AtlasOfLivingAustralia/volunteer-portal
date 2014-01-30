@@ -4,6 +4,7 @@ class IndexController {
 
     def userService
     def grailsApplication
+    def projectService
 
     def index = {
         def frontPage = FrontPage.instance()
@@ -18,35 +19,20 @@ class IndexController {
             newsItem = NewsItem.find("""from NewsItem n where n.project.disableNewsItems is null or project.disableNewsItems != true order by n.created desc""")
         }
 
-        render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': FrontPage.instance()] )
+        def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentComplete }
+
+        render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': FrontPage.instance(), featuredProjects: featuredProjects] )
     }
 
     def leaderBoardFragment = {
-
-        def t = new CodeTimer("Calculate user scores")
-        def r = userService.getAllUserScores()
-
-        r.removeAll {
-            it.username == null
-        }
-
-        def results = r.sort({it.score}).reverse()
-        int maxSize = grailsApplication.config.leaderBoard.count
-
-        if (results.size() > maxSize) {
-            results = results.subList(0, maxSize)
-        }
-
-        t.stop(true)
-
-        [results: results]
+        [:]
     }
 
     def statsFragment = {
         // Stats
         def totalTasks = Task.count()
-        def completedTasks = Task.findAll("from Task where length(fullyTranscribedBy) > 0").size()
-        def transcriberCount = User.findAll("from User where transcribedCount > 0").size()
+        def completedTasks = Task.countByFullyTranscribedByIsNotNull()
+        def transcriberCount = User.countByTranscribedCountGreaterThan(0)
         ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount]
     }
 }

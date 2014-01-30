@@ -1,15 +1,22 @@
-import au.org.ala.volunteer.CASRoles
-// locations to search for config files that get merged into the main config
-// config files can either be Java properties files or ConfigSlurper scripts
 
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
+security.cas.uriFilterPattern = "/validate/save.*," +
+        "/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!show).)*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*" +
+        "/locality/.*,/collectionEvent/.*,/ajax/keepSessionAlive.*,/forum/.*,/template/.*"
 
-// if(System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
+security.cas.uriExclusionFilterPattern = "/images.*,/css.*,/js.*"
+security.cas.authenticateOnlyIfLoggedInPattern = "/,/project/index/.*,/task/show/.*,/tutorials/.*"
+security.cas.casServerName = "https://auth.ala.org.au"
+security.cas.loginUrl = "${security.cas.casServerName}/cas/login"
+security.cas.logoutUrl = "${security.cas.casServerName}/cas/logout"
+security.cas.bypass = false
+security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
+
+headerAndFooter.baseURL = 'http://www2.ala.org.au/commonui'
+ala.baseURL = "http://www.ala.org.au"
+bie.baseURL = "http://bie.ala.org.au"
+bie.searchPath = "/search"
+grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination
+
 
 /******************************************************************************\
  *  EXTERNAL SERVERS
@@ -25,36 +32,6 @@ if (!spatial.baseURL) {
 }
 if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
-}
-
-/******************************************************************************\
- *  SECURITY
-\******************************************************************************/
-if (!security.cas.urlPattern) {
-    security.cas.urlPattern = "/validate/save.*," +
-            "/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!show).)*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*" +
-            "/locality/.*,/collectionEvent/.*,/ajax/keepSessionAlive.*,/forum/.*,/template/.*"
-}
-if (!security.cas.urlExclusionPattern) {
-    security.cas.urlExclusionPattern = "/images.*,/css.*,/js.*"
-}
-if (!security.cas.authenticateOnlyIfLoggedInPattern) {
-    security.cas.authenticateOnlyIfLoggedInPattern = "/,/project/index/.*,/task/show/.*,/tutorials/.*"
-}
-if (!security.cas.casServerName) {
-    security.cas.casServerName = "https://auth.ala.org.au"
-}
-if (!security.cas.loginUrl) {
-    security.cas.loginUrl = "${security.cas.casServerName}/cas/login"
-}
-if (!security.cas.logoutUrl) {
-    security.cas.logoutUrl = "${security.cas.casServerName}/cas/logout"
-}
-if (!security.cas.contextPath) {
-    //security.cas.contextPath = "/workforce" //"""${appName}"
-}
-if (!security.cas.bypass) {
-    security.cas.bypass = false
 }
 
 // server.url = "http://localhost" // moved further down
@@ -147,7 +124,7 @@ viewedTask.timeout = 2 * 60 * 60 * 1000
 
 leaderBoard.count = 5
 
-ala.skin = "ala2"
+ala.skin = "ala-bootstrap"
 ala.baseURL = "http://www.ala.org.au"
 bie.baseURL = "http://bie.ala.org.au"
 bie.searchPath = "/search"
@@ -220,6 +197,14 @@ environments {
         log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
         images.home = '/data/volunteer'
     }
+    uat {
+        grails.serverURL = "http://volunteer-uat.ala.org.au/${appName}"
+        server.url = "http://volunteer-uat.ala.org.au"
+        security.cas.appServerName = server.url
+        security.cas.contextPath = "/${appName}"
+        images.home = '/data/volunteer'
+        //log4j.appender.'errors.File'="stacktrace.log"
+    }
 
 }
 
@@ -262,7 +247,7 @@ log4j = {
     warn   'org.mortbay.log',
            'grails.app'
     info   'grails.app'
-    trace  'grails.plugin.mail'
+    warn  'grails.plugin.mail'
 
-//    debug   'au.org.ala.cas.client'
+    warn   'au.org.ala.cas.client'
 }

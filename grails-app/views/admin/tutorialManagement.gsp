@@ -7,15 +7,11 @@
         <style type="text/css">
 
             #buttonBar {
-                margin-bottom: 10px;
-            }
-
-            .bvp-expeditions td button {
-                margin-top: 5px;
+                margin-bottom: 12px;
             }
 
         </style>
-        <script type='text/javascript'>
+        <r:script type='text/javascript'>
 
             $(document).ready(function() {
 
@@ -56,36 +52,27 @@
 
             });
 
-        </script>
+        </r:script>
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
-        <cl:navbar />
+        <cl:headerContent title="${message(code:'default.tutorialmanagement.label', default:'Tutorial Management')}">
+            <%
+                pageScope.crumbs = [
+                    [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
+                ]
+            %>
+        </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><a class="home" href="${createLink(controller: 'admin', action: 'index')}"><g:message code="default.admin.label" default="Admin"/></a></li>
-                        <li class="last"><g:message code="default.tutorials.label" default="Tutorial Management"/></li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Tutorial Management</h1>
-                </hgroup>
-            </div>
-        </header>
+        <div class="row">
+            <div class="span12">
 
-        <div>
-            <div class="inner">
-                <cl:messages />
                 <div id="buttonBar">
                     <g:form action="uploadTutorial" controller="admin" method="post" enctype="multipart/form-data">
                         <label for="tutorialFile"><strong>Upload new tutorial:</strong></label>
                         <input type="file" name="tutorialFile" id="tutorialFile"/>
-                        <g:submitButton name="Upload" />
+                        <g:submitButton class="btn btn-small" name="Upload" />
                     </g:form>
                     <div>
                         <br/>
@@ -98,8 +85,8 @@
                     </div>
                 </div>
 
-
-                <table class="bvp-expeditions">
+                <h3>Tutorial Files</h3>
+                <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="text-align: left">Name</th>
@@ -112,8 +99,8 @@
                             <td>${tute.name}</td>
                             <td><a href="${tute.url}">${tute.url}</a></td>
                             <td>
-                                <button class="button btnDeleteTutorial" tutorial="${tute.name}">Delete</button>
-                                <button class="button btnRenameTutorial" tutorial="${tute.name}">Rename</button>
+                                <button class="btn btn-small btn-danger btnDeleteTutorial" tutorial="${tute.name}">Delete</button>
+                                <button class="btn btn-small btnRenameTutorial" tutorial="${tute.name}">Rename</button>
                             </td>
                         </tr>
                     </g:each>
@@ -135,8 +122,8 @@
                 </tr>
             </table>
             <div>
-                <button class="button" id="btnCancelRename">Cancel</button>
-                <button class="button" id="btnApplyRename">Rename</button>
+                <button class="btn btn-small" id="btnCancelRename">Cancel</button>
+                <button class="btn btn-small" id="btnApplyRename">Rename</button>
             </div>
         </div>
     </body>

@@ -4,6 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
+        <r:require module="jquery-ui" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
         <style type="text/css">
 
@@ -12,7 +13,7 @@
             }
 
         </style>
-        <script type="text/javascript">
+        <r:script type="text/javascript">
 
             $(function() {
 
@@ -62,27 +63,30 @@
 
             });
 
-        </script>
+        </r:script>
     </head>
     <body>
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-        </div>
-        <div class="inner">
-            <h1><g:message code="default.list.label" args="[entityName]" /></h1>
-            <cl:messages />
-            <div class="list">
-                <table class="bvp-expeditions">
+
+        <cl:headerContent title="${message(code: 'default.list.label', args: [entityName])}">
+            <%
+                pageScope.crumbs = [
+                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                ]
+            %>
+            <div>
+                <a href="${createLink(action:'create')}" class="btn">Create new template</a>
+            </div>
+        </cl:headerContent>
+
+        <div class="row" id="content">
+            <div class="span12">
+                <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-
                             <g:sortableColumn property="name" title="${message(code: 'template.name.label', default: 'Name')}" />
                             <g:sortableColumn property="author" title="${message(code: 'template.author.label', default: 'Author')}" />
                             <g:sortableColumn property="viewName" title="${message(code: 'template.viewName.label', default: 'View Name')}" />
-
                             <th></th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -94,18 +98,17 @@
                             <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                             <td>
-                                <a class="button btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
-                                <a class="button" style="margin-top: 6px" href="${createLink(controller:'template', action:'edit', id:templateInstance.id)}">Edit</a>
-                                <a class="button" style="margin-top: 6px" href="${createLink(controller:'template', action:'preview', id:templateInstance.id)}">Preview</a>
-                                <a class="button btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
-
+                                <a class="btn btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
+                                <a class="btn" style="margin-top: 6px" href="${createLink(controller:'template', action:'edit', id:templateInstance.id)}">Edit</a>
+                                <a class="btn" style="margin-top: 6px" href="${createLink(controller:'template', action:'preview', id:templateInstance.id)}">Preview</a>
+                                <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
                             </td>
                         </tr>
                     </g:each>
                     </tbody>
                 </table>
             </div>
-            <div class="paginateButtons">
+            <div class="pagination">
                 <g:paginate total="${templateInstanceTotal}" />
             </div>
         </div>
@@ -119,8 +122,8 @@
                 </tr>
             </table>
             <div>
-                <button class="button" id="btnCancelCopy">Cancel</button>
-                <button class="button" id="btnApplyCopy">Clone Template</button>
+                <button class="btn" id="btnCancelCopy">Cancel</button>
+                <button class="btn" id="btnApplyCopy">Clone Template</button>
             </div>
             <g:hiddenField name="selectedTemplateId" id="selectedTemplateId"/>
         </div>

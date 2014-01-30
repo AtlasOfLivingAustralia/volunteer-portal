@@ -1,6 +1,9 @@
 package au.org.ala.volunteer
 
 import grails.converters.*
+import groovy.time.TimeCategory
+import groovy.time.TimeDuration
+import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
@@ -9,6 +12,8 @@ import java.util.regex.Pattern
 class TaskController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    public static final String PROJECT_LIST_STATE_SESSION_KEY = "project.admin.list.state"
+    public static final String PROJECT_LIST_LAST_PROJECT_ID_KEY = "project.admin.list.lastProjectId"
 
     def taskService
     def fieldSyncService
@@ -73,9 +78,29 @@ class TaskController {
         }
 
         if (projectInstance) {
-            params.max = Math.min(params.max ? params.int('max') : 20, 50)
-            params.order = params.order ? params.order : "asc"
-            params.sort = params.sort ? params.sort : "id"
+            // The last time we were at this view, was it for the same project?
+            def lastProjectId = session[PROJECT_LIST_LAST_PROJECT_ID_KEY]
+            if (lastProjectId && lastProjectId != params.id) {
+                // if not, remove the state from the session
+                session.removeAttribute(PROJECT_LIST_STATE_SESSION_KEY)
+            }
+
+            def lastState = session[PROJECT_LIST_STATE_SESSION_KEY] ?: [ max: 20, order: 'asc', sort: 'id', offset: 0 ]
+
+            params.max = Math.min(params.max ? params.int('max') : lastState.max, 50)
+            params.order = params.order ?: lastState.order
+            params.sort = params.sort ?: lastState.sort
+            params.offset = params.offset ?: lastState.offset
+
+            // Save the current view state in the session, including the current project id
+            session[PROJECT_LIST_STATE_SESSION_KEY] = [
+                max: params.max,
+                order: params.order,
+                sort: params.sort,
+                offset: params.offset
+            ]
+            session[PROJECT_LIST_LAST_PROJECT_ID_KEY] = params.id
+
             def taskInstanceList
             def taskInstanceTotal
             def extraFields = [:] // Map
@@ -100,9 +125,26 @@ class TaskController {
                 }
             }
 
+            def c = ViewedTask.createCriteria()
+            def views = c {
+                'in'("task", taskInstanceList)
+            }
+
+            views = views?.groupBy { it.task }
+
+            def lockedMap = [:]
+            views.values().each { List viewList ->
+                def max = viewList.max { it.lastView }
+                use (TimeCategory) {
+                    if (new Date(max.lastView) > 2.hours.ago) {
+                        lockedMap[max.task?.id] = max
+                    }
+                }
+            }
+
             // add some associated "field" values
             render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
-                    projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance])
+                    projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance, lockedMap: lockedMap])
         }
         else {
             flash.message = "No project found for ID " + params.id
@@ -237,6 +279,22 @@ class TaskController {
         }
     }
 
+    def showDetails = {
+        def taskInstance = Task.get(params.int('id'))
+
+        def c = Field.createCriteria()
+        def fields = c.list {
+            eq('task', taskInstance)
+            and {
+                order('name', 'asc')
+                order('created', 'asc')
+            }
+        }
+
+        // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
+        [taskInstance: taskInstance, fields: fields]
+    }
+
     def show = {
         def taskInstance = Task.get(params.id)
         if (!taskInstance) {
@@ -302,7 +360,7 @@ class TaskController {
 
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-                render(view: '/transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
+                render(view: '/transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
             }
         }
     }
@@ -716,7 +774,6 @@ class TaskController {
             writer.writeHeadings = false
 
             def images = stagingService.buildTaskMetaDataList(projectInstance)
-            println images
 
             images.each {
                 writer << it
@@ -758,6 +815,30 @@ class TaskController {
         }
 
         redirect(action:'loadTaskData', params:[projectId: projectInstance?.id])
+    }
+
+    // One of task to help transition to explicit date recording against tasks
+    def calculateDates() {
+
+        taskService.calculateTaskDates()
+
+        redirect(controller:'admin', action:'index')
+
+    }
+
+    def exportOptionsFragment() {
+        [exportCriteria: params.exportCriteria, projectId: params.projectId]
+    }
+
+    def viewedTaskFragment() {
+        def viewedTask = ViewedTask.get(params.int("viewedTaskId"));
+        if (viewedTask) {
+            def lastViewedDate = new Date(viewedTask?.lastView)
+            def tc = TimeCategory.minus(new Date(), lastViewedDate)
+            def agoString = "${tc} ago"
+
+            [viewedTask: viewedTask, lastViewedDate: lastViewedDate, agoString: agoString]
+        }
     }
 
 }

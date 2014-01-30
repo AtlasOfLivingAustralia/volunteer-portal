@@ -11,34 +11,42 @@ class StatsService {
     javax.sql.DataSource dataSource
 
     def transcriptionsByMonth() {
-        String select = """
-            select distinct foo.updateDate as month, count(foo.task_id) as transcribedTasks from (
-                select task_id, to_char(max(updated), 'YYYY/MM') as updateDate, t.project_id as projectId from field f JOIN task t on f.task_id = t.id
-                where t.fully_transcribed_by is not null
-                group by task_id, t.project_id
-            ) as foo join project p on foo.projectId = p.id
-            group by foo.updateDate
-            order by foo.updateDate
+
+        String query = """
+            select distinct tmp.transcribeDate as month, count(tmp.transcribeDate) as taskCount from (
+                select to_char(date_fully_transcribed, 'YYYY/MM') as transcribeDate
+                from task
+                where date_fully_transcribed is not null
+            ) as tmp
+            group by transcribeDate
+            order by transcribeDate
         """
 
-        /**
-         * alternate query that attempts to filter out changes to updateDate caused by validation
-         *
-         *
-         select distinct foo.updateDate as month, count(foo.task_id) as transcribedTasks from (
-         select task_id, to_char(max(updated), 'YYYY/MM') as updateDate from field f JOIN task t on f.task_id = t.id
-         where t.fully_transcribed_by is not null and f.transcribed_by_user_id = t.fully_transcribed_by
-         group by task_id
-         ) as foo
-         group by foo.updateDate
-         order by foo.updateDate
-         */
+        return prepareByMonthResults(query)
+    }
+
+    def validationsByMonth() {
+
+        String query = """
+            select distinct tmp.validateDate as month, count(tmp.validateDate) as taskCount from (
+                select to_char(date_fully_validated, 'YYYY/MM') as validateDate
+                from task
+                where date_fully_validated is not null
+            ) as tmp
+            group by validateDate
+            order by validateDate
+        """
+
+        return prepareByMonthResults(query)
+    }
+
+    private prepareByMonthResults(String query) {
 
         def results = []
 
         def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select) { row ->
-            def taskRow = [month: row.month, count: row.transcribedTasks ]
+        sql.eachRow(query) { row ->
+            def taskRow = [month: row.month, count: row.taskCount ]
             results.add(taskRow)
         }
 

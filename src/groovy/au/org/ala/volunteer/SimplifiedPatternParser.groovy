@@ -2,13 +2,6 @@ package au.org.ala.volunteer
 
 import java.util.regex.Pattern
 
-/**
- * Created with IntelliJ IDEA.
- * User: baird
- * Date: 30/11/12
- * Time: 4:56 PM
- * To change this template use File | Settings | File Templates.
- */
 class SimplifiedPatternParser {
 
     static String RESERVED = ".[]\$^\\|?*()+"

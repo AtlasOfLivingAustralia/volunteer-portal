@@ -1,12 +1,15 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
 
     static allowedMethods = [save: "POST", update: "POST"]
 
     def userService
+    def templateFieldService
+    def templateService
 
     def index = {
         redirect(action: "list", params: params)
@@ -20,7 +23,7 @@ class TemplateController {
     def create = {
         def templateInstance = new Template()
         templateInstance.properties = params
-        return [templateInstance: templateInstance]
+        return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
     def save = {
@@ -52,7 +55,8 @@ class TemplateController {
             redirect(action: "list")
         }
         else {
-            return [templateInstance: templateInstance]
+            def availableViews = templateService.getAvailableTemplateViews()
+            return [templateInstance: templateInstance, availableViews: availableViews]
         }
     }
 
@@ -123,6 +127,14 @@ class TemplateController {
         if (templateInstance) {
             def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
 
+            [templateInstance: templateInstance, fields: fields]
+        }
+    }
+
+    def addTemplateFieldFragment() {
+        def templateInstance = Template.get(params.int("id"))
+        if (templateInstance) {
+            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
             [templateInstance: templateInstance, fields: fields]
         }
     }
@@ -205,11 +217,14 @@ class TemplateController {
         if (templateInstance && fieldType) {
 
             def existing = TemplateField.findAllByTemplateAndFieldType(templateInstance, fieldType)
-            if (existing && fieldType != DarwinCoreField.spacer.toString()) {
+            if (existing && fieldType != DarwinCoreField.spacer.toString() && fieldType != DarwinCoreField.widgetPlaceholder.toString()) {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {
                 def displayOrder = getLastDisplayOrder(templateInstance) + 1
-                def field =new TemplateField(template: templateInstance, category: FieldCategory.none, fieldType: fieldType, displayOrder: displayOrder, defaultValue: '', type: FieldType.text)
+                FieldCategory category = params.category ?: FieldCategory.none
+                FieldType type = params.type ?: FieldType.text
+                def label = params.label ?: ""
+                def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
                 field.save(failOnError: true)
             }
         }
@@ -248,7 +263,7 @@ class TemplateController {
         def recordValues = [:]
         def imageMetaData = [0: [width: 2048, height: 1433]]
 
-        render(view: '/transcribe/' + templateInstance.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData])
+        render(view: '/transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData])
     }
 
     def exportFieldsAsCSV() {
@@ -256,30 +271,28 @@ class TemplateController {
         def templateInstance = Template.get(params.int("id"))
 
         if (templateInstance) {
-            response.addHeader("Content-type", "text/plain")
-
-            def writer = new BVPCSVWriter( (Writer) response.writer,  {
-                'darwinCore' { it.fieldType?.toString() }
-                'label' { it.label ?: '' }
-                'defaultValue' { it.defaultValue ?: '' }
-                'category' { it.category ?: '' }
-                'fieldType' { it.type?.toString() }
-                'mandatory' { it.mandatory ? "1" : "0" }
-                'multiValue' { it.multiValue ? "1" : "0" }
-                'helpText' { it.helpText ?: '' }
-                'validationRule' { it.validationRule ?: '' }
-                'order' { it.displayOrder ?: ''}
-            })
-
-            writer.writeHeadings = false
-
-            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
-            for (def field : fields) {
-                writer << field
-            }
-            response.writer.flush()
+            templateFieldService.exportFieldToCSV(templateInstance, response)
         }
 
+    }
+
+    def importFieldsFromCSV() {
+
+        MultipartFile f = request.getFile('uploadFile')
+
+        if (!f || f.isEmpty()) {
+            flash.message = "File missing or invalid. Make sure you select an upload file first!"
+        } else {
+
+            def templateInstance = Template.get(params.int("id"))
+            if (templateInstance) {
+                templateFieldService.importFieldsFromCSV(templateInstance, f)
+            } else {
+                flash.message = "Missing/invalid template id specified in request!"
+            }
+        }
+
+        redirect(action:'manageFields', params:[id: params.id])
     }
 
     def cloneTemplate() {

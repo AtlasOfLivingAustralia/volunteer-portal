@@ -1,39 +1,40 @@
 <g:if test="${collectionEvents}">
-  <div id="">
-    <g:each in="${collectionEvents}" var="event" status="i">
-      <g:set var="rowclass" value="${i % 2 == 0 ? 'even' : 'odd'}"/>
-      <table class="${rowclass} collection-event-result" collection_event_id="${i}" lat="${event.latitude}" lng="${event.longitude}" locality="${event.locality}">
-        <tr>
-          <td class="event-date">${event.eventDate}</td>
-          <td class="event-collector">${event.collector}</td>
-          <td class="event-political-region">
-            <g:if test="${event.township}">
-              ${event.township},&nbsp;
-            </g:if>
+    <div id="">
+        <g:each in="${collectionEvents}" var="event" status="i">
+            <g:set var="rowclass" value="${i % 2 == 0 ? 'even' : 'odd'}"/>
+            <table class="${rowclass} collection-event-result" collection_event_id="${i}" lat="${event.latitude}" lng="${event.longitude}" locality="${event.locality}">
+                <tr>
+                    <td class="event-date">${event.eventDate}</td>
+                    <td class="event-collector">${event.collector}</td>
+                    <td class="event-political-region">
+                        <g:if test="${event.township}">
+                            ${event.township},&nbsp;
+                        </g:if>
 
-            ${event.state}
-            <g:if test="${event.state && event.country}">
-              <span>, </span>
-            </g:if>
-            ${event.country}
-          </td>
-          <td class="result-select-button">
-            <button class="select_event_button" externalEventId="${event.externalEventId}" title="Use all of the information from this collection event">Select&nbsp;event</button>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="event-locality">${event.locality}</td>
-          <td class="event-latlong"><a href="#" class="find_on_map_link" title="Locate on map">[${event.latitude}, ${event.longitude}]</a></td>
-          <td class="result-select-button">
-          </td>
-        </tr>
+                        ${event.state}
+                        <g:if test="${event.state && event.country}">
+                            <span>,</span>
+                        </g:if>
+                        ${event.country}
+                    </td>
+                    <td class="result-select-button">
+                        <button class="btn btn-small select_event_button" externalEventId="${event.externalEventId}" title="Use all of the information from this collection event">Select&nbsp;event</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="event-locality">${event.locality}</td>
+                    <td class="event-latlong"><a href="#" class="find_on_map_link" title="Locate on map">[${event.latitude}, ${event.longitude}]</a>
+                    </td>
+                    <td class="result-select-button">
+                    </td>
+                </tr>
 
-      </table>
-    </g:each>
-  </div>
+            </table>
+        </g:each>
+    </div>
 </g:if>
 <g:else>
-  <span>There are no matching collection events.</span>
+    <span>There are no matching collection events.</span>
 </g:else>
 
 <script type="text/javascript">
@@ -41,13 +42,13 @@
   $(".select_event_button").click(function(e) {
     e.preventDefault();
     bindToCollectionEvent($(this).attr("externalEventId"))
-    $.fancybox.close();
+    hideModal();
   });
 
   $(".select_location_button").click(function(e) {
     e.preventDefault();
     bindToCollectionEventLocality($(this).attr("externalEventId"))
-    $.fancybox.close();
+    hideModal();
   });
 
   event_map.removeMarkers();
@@ -115,7 +116,7 @@
       }
   });
 
-  $('#search_results_status').text('${collectionEvents.size()} matching ${collectionEvents.size() == 1 ? "event":"events"}');
+  $('#search_results_status').text('${collectionEvents.size()} matching ${collectionEvents.size() == 1 ? "event" : "events"}');
 
   function correctZoom() {
       var zoom = event_map.map.getZoom();
@@ -147,47 +148,46 @@
       }
   }
 
-
 </script>
 
 <style type="text/css">
 
-  .select_event_button, .select_location_button {
+.select_event_button, .select_location_button {
     width: 100%;
-  }
+}
 
-  .even {
+.even {
     background: #F0F0E8
-  }
+}
 
-  .result-select-button {
+.result-select-button {
     width: 100px;
-  }
+}
 
-  .event-date {
+.event-date {
     width: 80px;
     font-weight: bold;
-  }
+}
 
-  .event-locality {
+.event-locality {
 
-  }
+}
 
-  .event-latlong {
+.event-latlong {
     text-align: right !important;
-  }
+}
 
-  #search-results td {
+#search-results td {
     text-align: left;
     padding: 5px;
-  }
+}
 
-  .event-collector {
+.event-collector {
     font-weight: bold;
-  }
+}
 
-  .event-political-region {
+.event-political-region {
     text-align: right !important;
-  }
+}
 
 </style>

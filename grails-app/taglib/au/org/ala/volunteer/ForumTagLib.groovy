@@ -56,7 +56,7 @@ class ForumTagLib {
                                 mb.img(style: 'vertical-align: middle', src: resource(dir: '/images', file: 'lock.png'))
                                 mkp.yield("Topic is locked")
                             } else {
-                                mb.button(id:'btnReply', class:'button') {
+                                mb.button(id:'btnReply', class:'btn') {
                                     mb.img(src:resource(dir:'images', file:'reply.png')) {
                                         mkp.yieldUnescaped("&nbsp;Post Reply")
                                     }
@@ -91,17 +91,13 @@ class ForumTagLib {
                                 a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: reply.user.id), name:'message_' + reply.id) {
                                     mkp.yield(reply.user.displayName)
                                 }
+                                if (authorIsModerator) {
+                                    i(class:'icon-star-empty') { mkp.yieldUnescaped("&nbsp;") }
+                                }
                                 br {}
                                 span(class: 'forumMessageDate') {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
-                                if (authorIsModerator) {
-                                    br {}
-                                    span(class: 'moderator-label') {
-                                        mkp.yield("Moderator")
-                                    }
-                                }
-
                             }
                             def message = markdownService.sanitize(reply.text ?: "")
                             td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
@@ -219,11 +215,12 @@ class ForumTagLib {
                             tr(class: rowClasses.join(" "), topicId: topic.id) {
                                 td(style: "width: 40px; padding: 0px") {
                                     span(style: 'color:green') {
+                                        mkp.yieldUnescaped("&nbsp;")
                                         if (topic.sticky) {
-                                            mb.img(src: resource(dir: '/images', file: 'forum_sticky_topic.png'))
+                                            i(class:'icon-asterisk', title:'This topic is sticky') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                         if (topic.locked) {
-                                            mb.img(src: resource(dir: '/images', file: 'lock.png', height: '16px', width: '16px'))
+                                            i(class:'icon-lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                     }
                                 }
@@ -247,12 +244,8 @@ class ForumTagLib {
                                 td {
                                     span() {
                                         mkp.yield(topic.creator?.displayName)
-                                    }
-
-                                    if (authorIsModerator) {
-                                        br {}
-                                        span(class:'moderator-label') {
-                                            mkp.yield("Moderator")
+                                        if (authorIsModerator) {
+                                            i(class:'icon-star-empty') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                     }
                                 }
@@ -266,14 +259,18 @@ class ForumTagLib {
                                 }
                                 td {
                                     def replyLink = topic.locked ? "#" : createLink(controller: 'forum', action: 'postMessage', params: [topicId: topic.id])
-                                    a(class: 'button', href: replyLink, disabled: topic.locked ? 'true' : 'false') {
+                                    def attrMap = [class: 'btn btn-small', href: replyLink]
+                                    if (topic.locked) {
+                                        attrMap['disabled'] = 'true'
+                                    }
+                                    a(attrMap) {
                                         mkp.yield("Reply")
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
-                                        a(class: 'button', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
+                                        a(class: 'btn btn-small', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
                                             mkp.yield("Edit")
                                         }
-                                        a(class: 'button', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
+                                        a(class: 'btn btn-small btn-danger', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
                                             mkp.yield("Delete")
                                         }
 
@@ -286,7 +283,7 @@ class ForumTagLib {
                 }
             }
             if (!hidePageButtons) {
-                div(class: 'paginateButtons') {
+                div(class: 'pagination') {
                     mkp.yieldUnescaped(paginate(total: totalCount, action: paginateAction, params: params))
                 }
             }
@@ -403,14 +400,25 @@ class ForumTagLib {
 
     /**
      * @attr task
+     * @attr label
+     * @attr class
+     * @attr style
      */
     def taskTopicButton = { attrs, body ->
         if (FrontPage.instance().enableForum) {
+
             def task = attrs.task as Task
             if (task) {
+                // See if there is already a topic for this task, If there is, change the wording of the button
+                TaskForumTopic topic = null
+                if (task.attached) {
+                    topic = TaskForumTopic.findByTask(task)
+                }
+                def defaultLabel = topic ? 'View Forum Topic' : 'Create Forum Topic'
+                def label = attrs.label ?: defaultLabel
                 def mb = new MarkupBuilder(out)
-                mb.a(href: createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class: 'button', target: 'forumWindow') {
-                    mkp.yield("Create Forum Topic")
+                mb.a(href: createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class: 'btn ' + attrs.class, style: attrs.style ?: '', target: 'forumWindow') {
+                    mkp.yield(label)
                 }
             }
         }
@@ -429,75 +437,6 @@ class ForumTagLib {
     }
 
     /**
-     * @attr task
-     */
-    def taskSummary = { attrs, body ->
-        def task = attrs.task as Task
-        def templateFields = TemplateField.findAllByTemplate(task.project.template)?.collectEntries { [it.fieldType.toString(), it] }
-
-        if (task) {
-            def multimedia = task.multimedia.size() > 0 ? task.multimedia.first() : null
-            if (multimedia) {
-                def imageMetaData = taskService.getImageMetaData(task)
-                def imageSize = imageMetaData[multimedia.id]
-                def mb = new MarkupBuilder(out)
-                def fields = Field.findAllByTask(task)
-                mb.table(style: 'width:100%') {
-                    tr {
-                        td {
-                            if (multimedia) {
-                                def url = grailsApplication.config.server.url + multimedia.filePath
-                                div(class: 'imageContainer', style: 'float: left; width: 600px; height: 400px') {
-                                    div(class: 'pan-image', style: 'margin-top: 0px; padding-top: 0px') {
-                                        mb.img(src: url, alt: 'Task image', "image-height": imageSize?.height, "image-width": imageSize?.width) {
-                                            div(class: 'map-control') {
-                                                a(id: 'panleft', href: '#left', class: 'left') { mkp.yield("Left") }
-                                                a(id: 'panright', href: '#right', class: 'right') { mkp.yield("Right") }
-                                                a(id: 'panup', href: '#up', class: 'up') { mkp.yield("Up") }
-                                                a(id: 'pandown', href: '#down', class: 'down') { mkp.yield("Down") }
-                                                a(id: 'zoomin', href: '#zoom', class: 'zoom') { mkp.yield("Zoom") }
-                                                a(id: 'zoomout', href: '#zoom_out', class: 'back') { mkp.yield("Back") }
-                                            }
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        td {
-                            div(style: 'height: 400px; overflow-y: scroll') {
-                                table(style: 'width: 100%') {
-                                    thead {
-                                        tr {
-                                            th { mkp.yield("Field Name") }
-                                            th { mkp.yield("Field Value") }
-                                        }
-                                    }
-                                    tbody {
-                                        for (Field field : fields) {
-                                            if (!field.superceded && field.value) {
-                                                tr {
-                                                    td {
-                                                        def name = templateFields[field.name]?.label ?: field.name
-                                                        mkp.yield(name)
-                                                    }
-                                                    td {
-                                                        mkp.yield(field.value)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * @attr messages
      * @attr hideUsername
      * @attr paginateAction
@@ -509,7 +448,7 @@ class ForumTagLib {
         if (messages) {
             def mb = new MarkupBuilder(out)
 
-            mb.table(class: 'forum-table', style:'width: 100%') {
+            mb.table(class: 'forum-table table table-striped table-condensed table-bordered', style:'width: 100%') {
                 tbody {
                     ForumTopic lastTopic = null
 
@@ -581,7 +520,7 @@ class ForumTagLib {
                     }
                 }
             }
-            mb.div(class: 'paginateButtons') {
+            mb.div(class: 'pagination') {
                 mkp.yieldUnescaped(paginate(controller: attrs.paginateController, action: attrs.paginateAction, total: messages.totalCount, params: params))
             }
 

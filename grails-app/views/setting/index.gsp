@@ -15,7 +15,7 @@
             }
 
         </style>
-        <script type='text/javascript'>
+        <r:script type='text/javascript'>
 
             $(document).ready(function() {
                 $(".btnEditSetting").click(function(e) {
@@ -27,35 +27,22 @@
                 });
             });
 
-        </script>
+        </r:script>
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
-        <cl:navbar />
+        <cl:headerContent title="${message(code: 'default.advancedSettings.label', default: 'Advanced Settings')}">
+           <%
+               pageScope.crumbs = [
+                   [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+               ]
+           %>
+       </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><a class="home" href="${createLink(controller: 'admin', action: 'index')}"><g:message code="default.admin.label" default="Admin"/></a></li>
-                        <li class="last"><g:message code="default.advancedSettings.label" default="Advanced Settings"/></li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Advanced Settings</h1>
-                </hgroup>
-            </div>
-        </header>
-
-        <div>
-            <div class="inner">
-                <cl:messages />
-                <div id="buttonBar">
-                </div>
-                <h3>Settings</h3>
-                <table class="bvp-expeditions">
+        <div class="row">
+            <div class="span12">
+                <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="text-align: left">Key</th>
@@ -76,12 +63,16 @@
                     </g:each>
                 </table>
             </div>
-            <div class="inner">
+        </div>
+
+        <div class="row">
+            <div class="span12">
                 <g:form action="sendTestEmail">
-                    To: <g:textField name="to"/>
+                    To: <g:textField style="margin-bottom: 0" name="to"/>
                     <button class="btn" type="submit">Send test email</button>
                 </g:form>
             </div>
         </div>
+
     </body>
 </html>

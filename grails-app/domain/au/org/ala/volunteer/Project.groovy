@@ -17,11 +17,17 @@ class Project {
     Boolean inactive = false
     String collectionEventLookupCollectionCode
     String localityLookupCollectionCode
+    String picklistInstitutionCode
+    Integer mapInitZoomLevel
+    Double mapInitLatitude
+    Double mapInitLongitude
 
     def grailsApplication
+    def grailsLinkGenerator
 
-    static belongsTo = [template: Template]
+    static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem]
+    static transients = ['featuredImage']
 
     static mapping = {
         version false
@@ -49,6 +55,11 @@ class Project {
         inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
+        picklistInstitutionCode nullable: true
+        projectType nullable: true
+        mapInitZoomLevel nullable: true
+        mapInitLatitude nullable: true
+        mapInitLongitude nullable: true
     }
 
     public String toString() {
@@ -56,7 +67,16 @@ class Project {
     }
 
     public String getFeaturedImage() {
-        return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-image.jpg"
+        // Check to see if there is a feature image for this expedition by looking in its project directory.
+        // If one exists, use it, otherwise use a default image...
+        def localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-image.jpg"
+        def file = new File(localPath)
+        if (!file.exists()) {
+            return grailsLinkGenerator.resource([dir: '/images/banners', file:'default-expedition.jpg'])
+        } else {
+            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-image.jpg"
+        }
+
     }
 
     public void setFeaturedImage(String image) {

@@ -1,10 +1,8 @@
 package au.org.ala.volunteer
 
-import groovy.sql.Sql
+import grails.converters.JSON
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import java.text.SimpleDateFormat
-import org.codehaus.groovy.util.StringUtil
-import org.apache.commons.lang.StringUtils
 
 class UserController {
 
@@ -14,11 +12,10 @@ class UserController {
     def taskService
     def authService
     def userService
-    def fieldSyncService
-    def fieldService
-    def dataSource
     def achievementService
     def logService
+    def fieldService
+    def forumService
 
     def index = {
         redirect(action: "list", params: params)
@@ -46,28 +43,22 @@ class UserController {
           params.order = "desc"
         }
 
-        def currentUser = authService.username()
-        def results = userService.getUserList(params)
-        //def results = userService.filteredUserList(params)
-        def userList = results.list
+        def userList
 
-        userList.each { user ->
-            def count = taskService.getCountsForUserId(user.userId)?.get(0)
-            if (user.transcribedCount != count) {
-                // Update incorrect transcribed count (from prev bug)
-                User domainUser = User.get(user.id)
-                domainUser.transcribedCount = count.toInteger()
-                if (!domainUser.hasErrors() && domainUser.save(flush:true)) {
-                    log.info("Updating counts for " + domainUser.displayName)
-                } else {
-                    log.error("Failed to update user: " + domainUser.userId + " - " + domainUser.hasErrors())
+        if (params.q) {
+            def c = User.createCriteria()
+            userList = c.list(params) {
+                or {
+                    ilike("displayName", '%' + params.q + '%')
+                    ilike("userId", '%' + params.q + '%')
                 }
             }
+        } else {
+            userList = User.list(params)
         }
-//        def userIds = userList.collect() { User user -> user.userId }
-//        def validatedCounts = userService.getValidatedCounts(userIds)
 
-        [userInstanceList: userList, userInstanceTotal: results.count, currentUser: currentUser ]
+        def currentUser = authService.username()
+        [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
     }
 
     def project = {
@@ -154,33 +145,28 @@ class UserController {
             }
         }
 
-        def cc = Field.createCriteria()
-        def dates = cc {
-            projections {
-                max("updated")
-                groupProperty("task")
-            }
-
-        }
+//        def cc = Field.createCriteria()
+//        def dates = cc {
+//            projections {
+//                max("updated")
+//                groupProperty("task")
+//            }
+//
+//        }
 
         def fieldsByTask = fields.groupBy { it[1] }
-        def datesByTask = dates.groupBy { it[1] }
+//        def datesByTask = dates.groupBy { it[1] }
 
         def viewList = []
-
-        def codeTimer = new CodeTimer("merging")
 
         def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
 
         for (Task t : tasks) {
-            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy, projectId: t.projectId, project: t.project, projectName: t.project.name]
+            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy, projectId: t.projectId, project: t.project, projectName: t.project.name, dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated, dateValidated: t.dateFullyValidated]
 
             List<Field> taskFields = fieldsByTask[t]
-
-            def lastEdit =  datesByTask.get(t)?.get(0)?.getAt(0)
             def catalogNumber = taskFields?.get(0)?.getAt(0)
 
-            taskRow.lastEdit = lastEdit
             taskRow.catalogNumber = catalogNumber
 
             def status = ""
@@ -198,7 +184,9 @@ class UserController {
 
             // This pseudo column concatenates all the searchable columns to make row filtering easier.
 
-            def dateStr = lastEdit ? sdf.format(lastEdit) : ""
+            def dateStr = (t.dateFullyTranscribed ? sdf.format(t.dateFullyTranscribed) : "")
+            dateStr += ";" + (t.dateFullyValidated ? sdf.format(t.dateFullyValidated) : "")
+            dateStr += ";" + (t.dateLastUpdated ? sdf.format(t.dateLastUpdated) : "")
 
             def sb = new StringBuilder(128)
             sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
@@ -207,8 +195,6 @@ class UserController {
 
             viewList.add(taskRow)
         }
-
-        codeTimer.stop(true)
 
         // Filtering...
         if (params.q) {
@@ -295,10 +281,14 @@ class UserController {
         if (projectInstance) {
             totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), projectInstance)
         } else {
-            totalTranscribedTasks = Task.countByFullyTranscribedBy(userInstance.getUserId())
+            totalTranscribedTasks = userInstance.transcribedCount
         }
 
-        def achievements = achievementService.calculateAchievements(userInstance)
+        def achievements = []
+        if (FrontPage.instance().showAchievements) {
+            achievements = achievementService.calculateAchievements(userInstance)
+        }
+
         def score = userService.getUserScore(userInstance)
 
         int selectedTab = params.int("selectedTab") ?: 0
@@ -313,21 +303,25 @@ class UserController {
         }
     }
 
-    def edit = {
-        def currentUser = authService.username()
-        def userInstance = User.get(params.id)
-        if (currentUser != null && (authService.userInRole(CASRoles.ROLE_ADMIN) || currentUser == userInstance.userId)) {
-            if (!userInstance) {
-                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
-                redirect(action: "list")
-            }
-            else {
-                return [userInstance: userInstance]
-            }
-        } else {
-            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
+    def edit() {
+
+        def userInstance = User.get(params.int("id"))
+
+        if (!userInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         }
+
+
+        if (!userService.isAdmin()) {
+            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
+            redirect(action: "show", id: userInstance.id)
+
+        }
+        
+        def roles = UserRole.findAllByUser(userInstance)
+        
+        return [userInstance: userInstance, roles: roles]
     }
 
     def update = {
@@ -450,5 +444,120 @@ class UserController {
 
         redirect(action: 'editRoles', id: userInstance?.id)
 
+    }
+
+    def dashboard() {
+
+        def userInstance = userService.currentUser
+        if (params.int("id")) {
+            userInstance = User.get(params.int("id"))
+        }
+
+        if (!userInstance) {
+            flash.message = "User not found!"
+            redirect(action: "list")
+            return
+        }
+
+        [userInstance: userInstance]
+    }
+
+    def ajaxGetPoints() {
+
+        def userInstance = User.get(params.int("id"))
+        def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
+
+        def data = []
+        tasks.each { task ->
+            def point = fieldService.getPointForTask(task)
+            if (point) {
+                data << [lat:point.lat, lng:point.lng, taskId: task.id]
+            }
+        }
+
+        render(data as JSON)
+    }
+
+    def dashboardMainFragment() {
+        def userInstance = User.get(params.int("id"))
+        def c = Task.createCriteria()
+        def expeditions = c {
+            eq("fullyTranscribedBy", userInstance.userId)
+            projections {
+                countDistinct("project")
+            }
+        }
+
+        def score = userService.getUserScore(userInstance)
+
+        def achievements = achievementService.calculateAchievements(userInstance)
+        def userAchievements = Achievement.findAllByUser(userInstance, [sort:'dateAchieved', order:'desc'])
+
+        def recentAchievement
+        if (userAchievements) {
+            def top = userAchievements[0]
+
+            recentAchievement = achievements.find { it.name == top.name }
+            if (recentAchievement) {
+                recentAchievement.date = top.dateAchieved
+            }
+        }
+
+        def speciesCriteria = Field.createCriteria()
+        def species = speciesCriteria.list(max: 5) {
+            and {
+                eq("transcribedByUserId", userInstance.userId)
+                eq("superceded", false)
+                ilike("name", "scientificName")
+                isNotNull("value")
+                ne("value", "")
+            }
+            projections {
+                groupProperty("value")
+                count("value","count")
+                order("count", "desc")
+            }
+
+        }
+
+        [userInstance: userInstance, expeditionCount: expeditions ? expeditions[0] : 0, score: score, recentAchievement: recentAchievement, topSpecies: species ]
+    }
+
+    def badgesFragment() {
+        def userInstance = User.get(params.int("id"))
+        def achievements = achievementService.calculateAchievements(userInstance)
+        def score = userService.getUserScore(userInstance)
+        def allAchievements = achievementService.getAllAchievements()
+
+        [userInstance: userInstance, achievements: achievements, score: score, allAchievements: allAchievements]
+    }
+
+    def recentTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+        def tasks = taskService.getRecentlyTranscribedTasks(userInstance?.userId, ['max' : 5, 'sort':'dateFullyTranscribed', order:'desc'])
+
+        [userInstance: userInstance, recentTasks: tasks]
+    }
+
+    def socialFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        def recentPosts = forumService.getRecentPostsForUser(userInstance, 5)
+        def watchedTopics = UserForumWatchList.findByUser(userInstance)?.topics
+
+        def messages = ForumMessage.findAllByUser(userInstance)
+        def friends =  messages.unique({ it.topic.creator })*.topic.creator
+
+        if (friends.contains(userInstance)) {
+            friends.remove(userInstance)
+        }
+
+        [userInstance: userInstance, recentPosts: recentPosts, watchedTopics: watchedTopics, friends: friends]
+    }
+
+    def transcribedTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        [userInstance: userInstance]
     }
 }

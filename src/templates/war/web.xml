@@ -17,39 +17,6 @@
         <param-value>@grails.project.key@</param-value>
     </context-param>
 
-    <!-- ***** CAS security ***** -->
-     <!-- CAS Authentication related properties -->
-    <context-param>
-        <!-- Parameter used by CAS filters -->
-        <param-name>serverName</param-name>
-        <param-value>@security.cas.appServerName@</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>casServerName</param-name>
-        <param-value>@security.cas.casServerName@</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>contextPath</param-name>
-        <param-value>@security.cas.contextPath@</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>uriFilterPattern</param-name>
-        <param-value>@security.cas.urlPattern@</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>uriExclusionFilterPattern</param-name>
-        <param-value>@security.cas.urlExclusionPattern@</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>authenticateOnlyIfLoggedInFilterPattern</param-name>
-        <param-value>@security.cas.authenticateOnlyIfLoggedInPattern@</param-value>
-    </context-param>
-
     <listener>
         <listener-class>au.org.ala.volunteer.BVPSessionListener</listener-class>
     </listener>
@@ -59,78 +26,10 @@
         <filter-class>au.org.ala.volunteer.BVPServletFilter</filter-class>
     </filter>
 
-    <!-- CAS Authentication Service filters -->
-    <filter>
-        <filter-name>CAS Single Sign Out Filter</filter-name>
-        <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>CAS Authentication Filter</filter-name>
-        <filter-class>au.org.ala.cas.client.UriFilter</filter-class>
-        <init-param>
-            <param-name>filterClass</param-name>
-            <param-value>org.jasig.cas.client.authentication.AuthenticationFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>casServerLoginUrl</param-name>
-            <param-value>@security.cas.loginUrl@</param-value>
-        </init-param>
-        <init-param>
-            <param-name>gateway</param-name>
-            <param-value>false</param-value>
-        </init-param>
-    </filter>
-
-    <filter>
-        <filter-name>CAS Validation Filter</filter-name>
-        <filter-class>au.org.ala.cas.client.UriFilter</filter-class>
-        <init-param>
-            <param-name>filterClass</param-name>
-            <param-value>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>casServerUrlPrefix</param-name>
-            <param-value>@security.cas.casServerName@/cas</param-value>
-        </init-param>
-    </filter>
-
-    <filter>
-        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
-        <filter-class>au.org.ala.cas.client.UriFilter</filter-class>
-        <init-param>
-            <param-name>filterClass</param-name>
-            <param-value>au.org.ala.cas.client.AlaHttpServletRequestWrapperFilter</param-value>
-        </init-param>
-    </filter>
-
     <filter-mapping>
         <filter-name>BVPServletFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
-    <filter-mapping>
-       <filter-name>CAS Single Sign Out Filter</filter-name>
-       <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CAS Authentication Filter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CAS Validation Filter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <!-- end CAS security -->
-
 
     <filter>
         <filter-name>sitemesh</filter-name>

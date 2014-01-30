@@ -7,16 +7,19 @@
         <title><g:message code="default.show.label" args="[entityName]" /></title>
     </head>
     <body>
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-        </div>
-        <div class="inner">
-            <h1><g:message code="default.show.label" args="[entityName]" /></h1>
-            <cl:messages />
-            <div class="dialog">
-                <table>
+
+        <cl:headerContent title="${message(code: 'default.show.label', args: [entityName])} - ${templateInstance.name}">
+           <%
+               pageScope.crumbs = [
+                   [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                   [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+               ]
+           %>
+        </cl:headerContent>
+
+        <div class="row">
+            <div class="span12">
+                <table class="table">
                     <tbody>
                     
                         <tr class="prop">
@@ -55,7 +58,7 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.project.label" default="Project" /></td>
+                            <td valign="top" class="name"><g:message code="template.project.label" default="Projects" /></td>
                             
                             <td valign="top" style="text-align: left;" class="value">
                                 <ul>
@@ -73,8 +76,8 @@
             <div class="buttons">
                 <g:form>
                     <g:hiddenField name="id" value="${templateInstance?.id}" />
-                    <span class="button"><g:actionSubmit class="edit" action="edit" value="${message(code: 'default.button.edit.label', default: 'Edit')}" /></span>
-                    <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
+                    <g:actionSubmit class="btn edit" action="edit" value="${message(code: 'default.button.edit.label', default: 'Edit')}" />
+                    <g:actionSubmit class="btn btn-danger delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                 </g:form>
             </div>
         </div>

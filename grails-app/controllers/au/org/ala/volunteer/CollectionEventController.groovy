@@ -110,7 +110,7 @@ class CollectionEventController {
         if (event) {
             render(event as JSON)
         } else {
-            return(null as JSON)
+            render(null as JSON)
         }
     }
 

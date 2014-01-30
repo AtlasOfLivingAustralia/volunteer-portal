@@ -18,6 +18,7 @@ class VolunteerTagLib {
     def authService
     def userService
     def grailsApplication
+    def settingsService
 
     def loggedInName = {
         def userName = authService.username()
@@ -1456,37 +1457,52 @@ class VolunteerTagLib {
         items << [bvp:[link: createLink(uri: '/'), title: 'Biodiversity Volunteer Portal']]
         items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
         items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
-        items << [submitexpedition: [link: createLink(controller: 'submitAnExpedition'), title: 'Submit an Expedition']]
         if (FrontPage.instance().enableForum) {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
+
+        def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyDashboard)
+        if (dashboardEnabled) {
+            def isLoggedIn = AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)
+            if (isLoggedIn || userService.currentUser) {
+                items << [userDashboard: [link: createLink(controller:'user', action:'dashboard'), title:"My Dashboard"]]
+            }
+        }
+
         items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
         items << [aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal']]
 
         def mb = new MarkupBuilder(out)
-
-        mb.nav(id:'nav-site') {
-            ul(class:'sf sf-js-enabled') {
-                for (def key : items.keySet()) {
-                    def item = items[key]
-                    mb.li(class:'nav-' + key + (selected == key ? ' selected' : '')) {
-                        a(href:item.link) {
-                            mkp.yield(item.title)
+        mb.div(class:'navbar navbar-static-top', id:"nav-site") {
+            div(class:'navbar-inner') {
+                div(class:'container') {
+                    div(class:'nav-collapse collapse') {
+                        ul(class:'nav') {
+                            for (def key : items.keySet()) {
+                                def item = items[key]
+                                mb.li(class:'nav-' + key + (selected == key ? ' active' : '')) {
+                                    a(href:item.link) {
+                                        mkp.yield(item.title)
+                                    }
+                                }
+                            }
                         }
+
                     }
                 }
             }
         }
+
     }
 
     def messages = { attrs, body ->
 
         if (flash.message) {
-            out << '<div class="message">' + flash.message + '</div>'
+            out << '<div class="alert alert-info" style="margin-top:10px">' + flash.message + '</div>'
         }
 
         if (flash.systemMessage) {
-            out << '<div class="systemMessage">' + flash.systemMessage + '</div>'
+            out << '<div class="alert alert-error" style="margin-top:10px">' + flash.systemMessage + '</div>'
         }
     }
 
@@ -1705,32 +1721,133 @@ class VolunteerTagLib {
         def taskInstance = attrs.task as Task
 
         if (taskInstance) {
-            User userInstance = null;
+            User validator = null;
+            User transcriber = null;
             if (taskInstance.fullyValidatedBy) {
-                userInstance = User.findByUserId(taskInstance?.fullyValidatedBy)
+                validator = User.findByUserId(taskInstance?.fullyValidatedBy)
+            }
+
+            if (taskInstance.fullyTranscribedBy) {
+                transcriber = User.findByUserId(taskInstance?.fullyTranscribedBy)
             }
             def mb = new MarkupBuilder(out)
 
-            // <span style="color:gray;">&nbsp;&nbsp;<g:link controller="task" action="projectAdmin" id="${taskInstance?.project?.id}">Validation List</g:link></span>
-            mb.span(style: "color:gray;") {
-                mkp.yieldUnescaped("&nbsp;&nbsp;")
-                a(href:createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone()), "Validation List")
-
+            if (transcriber) {
+                mb.span(class:"label label-info") {
+                    mkp.yield("Transcribed by ${transcriber.displayName} on ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
+                }
             }
 
-            mb.span(style: "color:gray;") {
-                mkp.yieldUnescaped("&nbsp;&nbsp;")
-                def status = "Not yet validated";
+            if (validator) {
+                def status = "Not yet validated"
+                def badgeClass = "label"
                 if (taskInstance.isValid == false) {
-                    status = "No"
+                    status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    badgeClass = "label label-important"
                 } else if (taskInstance.isValid) {
-                    status = "Yes"
+                    status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    badgeClass = "label label-success"
                 }
+                mb.span(class:badgeClass) {
+                    mkp.yield(status)
+                }
+            }
 
-                mkp.yield("[Is valid: ${status} | validatedBy: ${userInstance?.displayName ?: ''}]")
+        }
+    }
+
+    /**
+     * @attr userId User id
+     */
+    def userDisplayName = { attrs, body ->
+        if (attrs.userId) {
+            def user = User.findByUserId(attrs.userId)
+            def mb = new MarkupBuilder(out)
+            mb.span(class:'userDisplayName') {
+                if (user) {
+                    mkp.yield(user.displayName)
+                } else {
+                    mkp.yield(attrs.userId)
+                }
             }
         }
     }
 
+    /**
+     * @attr title
+     * @attr selectedNavItem
+     * @attr crumbLabel
+     * @attr hideTitle
+     * @attr hideCrumbs
+     */
+    def headerContent = { attrs, body ->
 
+        def mb = new MarkupBuilder(out)
+        def bodyContent = body.call()
+        def crumbLabel = attrs.crumbLabel ?: attrs.title
+
+        if (attrs.selectedNavItem) {
+            sitemesh.parameter(name: 'selectedNavItem', value: attrs.selectedNavItem)
+        }
+
+        sitemesh.captureContent(tag:'page-header') {
+
+            def crumbList = []
+            def keyIndex = 1
+
+            if (pageScope.crumbs) {
+                crumbList = pageScope.crumbs
+            } else {
+                Map crumb
+                while (crumb = attrs.getAt("breadcrumb${keyIndex++}")) {
+                    crumbList << crumb
+                }
+            }
+
+            if (!attrs.hideCrumbs) {
+                mb.nav(id:'breadcrumb') {
+                    ol {
+                        li {
+                            a(href:createLink(uri:'/')) {
+                                mkp.yield(message(code:'default.home.label'))
+                            }
+                        }
+                        if (crumbList) {
+                            for (int i = 0; i < crumbList?.size(); i++) {
+                                def item = crumbList[i]
+                                li {
+                                    a(href: item.link) {
+                                        mkp.yield(item.label)
+                                    }
+                                }
+                            }
+                        }
+                        li(class:'last') {
+                            span {
+                                mkp.yield(crumbLabel)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!attrs.hideTitle) {
+                mb.h1 {
+                    mkp.yield(attrs.title)
+                }
+            }
+
+            if (bodyContent) {
+                mb.div {
+                    mb.mkp.yieldUnescaped(bodyContent)
+                }
+            }
+
+        }
+
+    }
+
+    def spinner = { attrs, body ->
+        out << "<image src=\"${resource(dir:'images', file:'spinner.gif')}\" />"
+    }
 }

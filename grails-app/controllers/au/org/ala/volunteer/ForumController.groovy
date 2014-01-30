@@ -503,8 +503,11 @@ class ForumController {
         }
 
         def c = ForumTopic.createCriteria()
-        def topics = c.list(sort: sort, order: params.order) {
-            inList('id', idList)
+        def topics = []
+        if (idList) {
+            topics = c.list(sort: sort, order: params.order) {
+                inList('id', idList)
+            }
         }
 
         if (params.sort == 'id') {

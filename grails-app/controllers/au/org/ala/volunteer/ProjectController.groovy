@@ -1,10 +1,12 @@
 package au.org.ala.volunteer
 
 import grails.converters.*
-
+import org.imgscalr.Scalr
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
+
+import javax.imageio.ImageIO
 
 class ProjectController {
 
@@ -22,6 +24,7 @@ class ProjectController {
     def collectionEventService
     def localityService
     def projectService
+    def picklistService
 
     /**
      * Project home page - shows stats, etc.
@@ -168,7 +171,7 @@ class ProjectController {
      * @param fieldList
      * @return
      */
-    private Map fieldListToMultiMap(List fieldList) {
+    private static Map fieldListToMultiMap(List fieldList) {
         Map taskMap = [:]
 
         fieldList.each {
@@ -198,7 +201,7 @@ class ProjectController {
     }
 
     /**
-     * Produce a DwC CSV file download for a project
+     * Produce an export file
      */
     def exportCSV = {
         def projectInstance = Project.get(params.id)
@@ -215,20 +218,22 @@ class ProjectController {
                 taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
             }
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
-            def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier", "exportComment"]
+            def fieldNames =  ["taskID", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
-            log.debug("Fields: "+ fieldNames);
 
             Closure export_func = exportService.export_default
-            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
-            if (exporter_func_property) {
-                export_func = exporter_func_property.getProperty(exportService)
+            if (params.exportFormat == 'zip') {
+                export_func = exportService.export_zipFile
             }
+
+//            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
+//            if (exporter_func_property) {
+//                export_func = exporter_func_property.getProperty(exportService)
+//            }
 
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-
                 export_func(projectInstance, taskList, taskMap, fieldNames, response)
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")
@@ -267,7 +272,7 @@ class ProjectController {
     }
 
     def list = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.max = Math.min(params.max ? params.int('max') : 24, 1000)
 
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
 
@@ -279,7 +284,7 @@ class ProjectController {
 
         [
             projects: projectSummaryList.projectRenderList,
-            projectInstanceTotal: projectSummaryList.totalProjectCount,
+            projectInstanceTotal: projectSummaryList.matchingProjectCount,
             numberOfUncompletedProjects: numberOfUncompletedProjects
         ]
     }
@@ -289,7 +294,17 @@ class ProjectController {
         if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
             def projectInstance = new Project()
             projectInstance.properties = params
-            return [projectInstance: projectInstance, templateList: Template.list()]
+
+            def eventCollectionCodes = [""]
+            eventCollectionCodes.addAll(collectionEventService.getCollectionCodes())
+
+            def localityCollectionCodes = [""]
+            localityCollectionCodes.addAll(localityService.getCollectionCodes())
+
+            def picklistInstitutionCodes = [""]
+            picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+
+            return [projectInstance: projectInstance, templateList: Template.list(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes, picklistInstitutionCodes: picklistInstitutionCodes]
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
@@ -302,15 +317,22 @@ class ProjectController {
         if (!projectInstance.template) {
             flash.message = "Please select a template before continuing!"
             render(view: "create", model: [projectInstance: projectInstance])
-        } else {
-
-            if (projectInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
-                redirect(action: "index", id: projectInstance.id)
-            } else {
-                render(view: "create", model: [projectInstance: projectInstance])
-            }
+            return
         }
+
+        if (!projectInstance.featuredLabel) {
+            flash.message = "You must supply a featured label!"
+            render(view: "create", model: [projectInstance: projectInstance])
+            return
+        }
+
+        if (projectInstance.save(flush: true)) {
+            flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
+            redirect(action: "index", id: projectInstance.id)
+        } else {
+            render(view: "create", model: [projectInstance: projectInstance])
+        }
+
     }
 
     /**
@@ -332,29 +354,27 @@ class ProjectController {
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
-        }
-        else {
-            def taskCount = Task.executeQuery('select count(t) from Task t where t.project.id = :projectId', [projectId: projectInstance.id])
-            [projectInstance: projectInstance, taskCount: taskCount]
+        } else {
+            redirect(action:'index', id: projectInstance.id)
         }
     }
 
     def edit = {
+
         def currentUser = authService.username()
         if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
-            def projectInstance = Project.get(params.id)
+            def projectInstance = Project.get(params.int("id"))
             if (!projectInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
             } else {
-                def eventCollectionCodes = [""]
-                eventCollectionCodes.addAll(collectionEventService.getCollectionCodes())
 
-                def localityCollectionCodes = [""]
-                localityCollectionCodes.addAll(localityService.getCollectionCodes())
+                def picklistInstitutionCodes = [""]
+                picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
 
+                def taskCount = Task.countByProject(projectInstance)
 
-                return [projectInstance: projectInstance, taskCount: Task.findAllByProject(projectInstance).size(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes ]
+                return [projectInstance: projectInstance, taskCount: taskCount, picklistInstitutionCodes: picklistInstitutionCodes ]
             }
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
@@ -393,7 +413,7 @@ class ProjectController {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             try {
-                projectInstance.delete(flush: true)
+                projectService.deleteProject(projectInstance)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
             }
@@ -415,7 +435,7 @@ class ProjectController {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
             
             if (f != null) {
-                def allowedMimeTypes = ['image/jpeg']
+                def allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
                     render(view:'edit', model:[projectInstance:projectInstance])
@@ -427,6 +447,7 @@ class ProjectController {
                     def file = new File(filePath);
                     file.getParentFile().mkdirs();
                     f.transferTo(file);
+                    checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message;
                     render(view:'edit', model:[projectInstance:projectInstance])
@@ -436,6 +457,38 @@ class ProjectController {
             }
         }
         redirect(action: "edit", id: params.id)
+    }
+
+    def resizeExpeditionImage() {
+        def projectInstance = Project.get(params.int("id"))
+        if (projectInstance) {
+            checkAndResizeExpeditionImage(projectInstance)
+        }
+        redirect(action:'edit', id:projectInstance?.id)
+    }
+
+    private checkAndResizeExpeditionImage(Project projectInstance) {
+        try {
+            def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+            def file = new File(filePath);
+            // Now check image size...
+            def image = ImageIO.read(file)
+            println "Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}"
+            if (image.width != 254 || image.height != 158) {
+                println "Image is not the correct size. Scaling to 254 x 158..."
+                image = ImageUtils.scale(image, 254, 158)
+                println "Saving new dimensions ${image.width} x ${image.height}"
+                ImageIO.write(image, "jpg", file)
+                println "Done."
+            } else {
+                println "Image Ok. No scaling required."
+            }
+            return true
+        } catch (Exception ex) {
+            println ex
+            ex.printStackTrace()
+            return false
+        }
     }
 
     def setLeaderIconIndex = {
@@ -454,4 +507,29 @@ class ProjectController {
 
         redirect(action: "index", id: params.id)
     }
+
+    def projectLeaderIconSelectorFragment() {
+        def projectInstance = Project.get(params.getInt("id"))
+        def expeditionConfig = grailsApplication.config.expedition
+        // find the leader role from the config map
+        def role = expeditionConfig.find { it.name == "Expedition Leader"}
+        [projectInstance: projectInstance, role: role]
+    }
+
+    def updateMapInitialPosition() {
+        def projectInstance = Project.get(params.int("projectId"))
+        if (projectInstance) {
+            def zoom = params.int("mapZoomLevel")
+            def latitude = params.double("mapLatitude")
+            def longitude = params.double("mapLongitude")
+
+            if (zoom && latitude && longitude) {
+                projectInstance.mapInitZoomLevel = zoom
+                projectInstance.mapInitLatitude = latitude
+                projectInstance.mapInitLongitude = longitude
+            }
+        }
+        redirect(action:'edit', id:projectInstance?.id)
+    }
+
 }

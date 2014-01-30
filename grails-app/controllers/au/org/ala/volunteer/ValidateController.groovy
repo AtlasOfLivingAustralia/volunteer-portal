@@ -54,7 +54,7 @@ class ValidateController {
                 auditService.auditTaskViewing(taskInstance, currentUser)
             }
 
-            def isReadonly
+            def isReadonly = false
 
             def project = Project.findById(taskInstance.project.id)
             def template = Template.findById(project.template.id)
@@ -76,23 +76,23 @@ class ValidateController {
                 }
             }
 
-            def imageMetaData = taskService.getImageMetaData(taskInstance)
-
-            //retrieve the existing values
-            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-
             Task prevTask = null;
             Task nextTask = null;
             Integer sequenceNumber = null
 
-            if (recordValues[0]?.sequenceNumber) {
+            //retrieve the existing values
+            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+            if (recordValues[0]?.sequenceNumber && recordValues[0]?.sequenceNumber?.isInteger()) {
                 sequenceNumber = Integer.parseInt(recordValues[0]?.sequenceNumber);
                 // prev task
                 prevTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber - 1).toString())
                 nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
             }
 
-            render(view: '../transcribe/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, validator: true, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData])
+
+            def imageMetaData = taskService.getImageMetaData(taskInstance)
+
+            render(view: '../transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -107,8 +107,6 @@ class ValidateController {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true)
-            //update the count for validated tasks for the user who transcribed
-            userService.updateUserValidatedCount(taskInstance.fullyTranscribedBy)
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id)
         } else {
             redirect(view: '../index')
@@ -116,7 +114,7 @@ class ValidateController {
     }
 
     /**
-     * To do determin actions if the validator chooses not to validate
+     * To do determine actions if the validator chooses not to validate
      */
     def dontValidate = {
         def currentUser = authService.username()
@@ -124,8 +122,6 @@ class ValidateController {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false)
-            //update the count for validated tasks for the user who transcribed
-            userService.updateUserValidatedCount(taskInstance.fullyTranscribedBy)
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id)
         } else {
             redirect(view: '../index')

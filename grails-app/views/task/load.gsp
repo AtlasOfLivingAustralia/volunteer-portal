@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'record.label', default: 'Record')}"/>
     <title>CSV Image Upload</title>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
-    <script type="text/javascript">
+    <r:script type="text/javascript">
         $(document).ready(function() {
             // tootltip on help icon
             $("a.fieldHelp").qtip({
@@ -37,14 +37,14 @@
                         return false;
                     });
         });
-    </script>
+    </r:script>
 </head>
 
 <body class="two-column-right">
 <div class="nav">
     <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
     <g:if test="${params.id}">
-      <span class="menuButton"><a class="home" href="${createLink(controller: 'project', action:'edit', id: params.id)}">Edit project</a></span>
+        <span class="menuButton"><a class="home" href="${createLink(controller: 'project', action:'edit', id: params.id)}">Edit project</a></span>
     </g:if>
 </div>
 

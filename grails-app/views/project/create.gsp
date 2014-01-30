@@ -5,27 +5,52 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title>Create Expedition</title>
-        <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
+
+        <tinyMce:resources />
+
+        <r:script type="text/javascript">
+
+            tinyMCE.init({
+                mode: "textareas",
+                theme: "advanced",
+                editor_selector: "mceadvanced",
+                theme_advanced_toolbar_location : "top",
+                convert_urls : false
+            });
+
+        </r:script>
+
+        <style type="text/css">
+
+            .table tr td {
+                border: none;
+            }
+
+        </style>
+
     </head>
-    <body class="sublevel sub-site volunteerportal">
-        <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:message code="default.create.label" args="[entityName]" /></span>
-        </div>
-        <div>
-            <h2><g:message code="default.create.label" args="[entityName]" /></h2>
-            <cl:messages />
-            <g:hasErrors bean="${projectInstance}">
-              <div class="errors">
-                <g:renderErrors bean="${projectInstance}" as="list" />
-              </div>
-            </g:hasErrors>
-            <g:form action="save" >
-                <div class="inner">
-                    <table>
+
+    <body>
+
+        <cl:headerContent title="${message(code:'default.createexpedition.label', default: "Create Expedition")}">
+            <%
+                pageScope.crumbs = [
+                    [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
+                ]
+            %>
+        </cl:headerContent>
+
+        <div class="row">
+            <div class="span12">
+                <g:hasErrors bean="${projectInstance}">
+                  <div class="errors">
+                    <g:renderErrors bean="${projectInstance}" as="list" />
+                  </div>
+                </g:hasErrors>
+                <g:form action="save" >
+                    <table class="table">
+
                         <tbody>
-                        
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="name"><g:message code="project.name.label" default="Name" /></label>
@@ -34,7 +59,7 @@
                                     <g:textField name="name" maxlength="200" value="${projectInstance?.name}" />
                                 </td>
                             </tr>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="description"><g:message code="project.description.label" default="Description" /></label>
@@ -49,16 +74,16 @@
 
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="description"><g:message code="project.tutorialLinks.label" default="Tutorial Links" /></label>
+                                  <label for="tutorialLinks"><g:message code="project.tutorialLinks.label" default="Tutorial Links" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tutorialLinks', 'errors')}">
                                     %{--<g:textArea name="tutorialLinks" cols="40" rows="5" value="${projectInstance?.tutorialLinks}" />--}%
-                                    <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" style="width:500px;">
+                                    <tinyMce:renderEditor type="advanced" name="tutorialLinks" cols="60" rows="10" style="width:500px;">
                                         ${projectInstance?.tutorialLinks}
                                     </tinyMce:renderEditor>
                                 </td>
                             </tr>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="template"><g:message code="project.template.label" default="Template" /></label>
@@ -73,7 +98,7 @@
                                   <label for="shortDescription"><g:message code="project.shortDescription.label" default="Short description" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'shortDescription', 'errors')}">
-                                    <g:textArea name="shortDescription" value="${projectInstance?.shortDescription}" rows="5" cols="100" />
+                                    <g:textArea class="input-xxlarge" name="shortDescription" value="${projectInstance?.shortDescription}" rows="5" cols="100" />
                                 </td>
                             </tr>
 
@@ -82,7 +107,7 @@
                                   <label for="featuredLabel"><g:message code="project.featuredLabel.label" default="Featured Label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredLabel', 'errors')}">
-                                    <g:textField name="featuredLabel" value="${projectInstance?.featuredLabel}" />
+                                    <g:textField class="input-xxlarge" name="featuredLabel" value="${projectInstance?.featuredLabel}" />
                                 </td>
                             </tr>
 
@@ -91,7 +116,7 @@
                                   <label for="featuredImageCopyright"><g:message code="project.featuredImageCopyright.label" default="Featured Image Copyright (Optional)" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredImageCopyright', 'errors')}">
-                                    <g:textField name="featuredImageCopyright" value="${projectInstance?.featuredImageCopyright}" />
+                                    <g:textField class="input-xxlarge" name="featuredImageCopyright" value="${projectInstance?.featuredImageCopyright}" />
                                 </td>
                             </tr>
 
@@ -101,27 +126,18 @@
                                   <label for="featuredOwner"><g:message code="project.featuredOwner.label" default="Featured Owner" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredOwner', 'errors')}">
-                                    <g:textField name="featuredOwner" value="${projectInstance?.featuredOwner}" />
+                                    <g:textField class="input-xxlarge" name="featuredOwner" value="${projectInstance?.featuredOwner}" />
                                 </td>
                             </tr>
 
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                    <label for="created"><g:message code="project.created.label" default="Created" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'created', 'errors')}">
-                                    <g:datePicker name="created" precision="day" value="${projectInstance?.created}" noSelection="['': '']" />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                    <label for="bannerImage"><g:message code="project.bannerImage.label" default="Banner Image" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'bannerImage', 'errors')}">
-                                    <g:textField name="bannerImage" value="${projectInstance?.bannerImage}" />
-                                </td>
-                            </tr>
+                            %{--<tr class="prop">--}%
+                                %{--<td valign="top" class="name">--}%
+                                    %{--<label for="created"><g:message code="project.created.label" default="Created" /></label>--}%
+                                %{--</td>--}%
+                                %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'created', 'errors')}">--}%
+                                    %{--<g:datePicker name="created" precision="day" value="${projectInstance?.created}" noSelection="['': '']" />--}%
+                                %{--</td>--}%
+                            %{--</tr>--}%
 
                             <tr class="prop">
                                 <td valign="top" class="name">
@@ -143,11 +159,11 @@
 
                         </tbody>
                     </table>
-                </div>
-                <div class="buttons">
-                    <span class="button"><g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" /></span>
-                </div>
-            </g:form>
+                    <div class="buttons">
+                        <g:submitButton class="btn btn-primary save" name="create" value="${message(code: 'default.button.create.label', default: 'Create')}" />
+                    </div>
+                </g:form>
+            </div>
         </div>
     </body>
 </html>

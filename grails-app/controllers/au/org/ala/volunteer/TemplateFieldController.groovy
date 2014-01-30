@@ -60,7 +60,10 @@ class TemplateFieldController {
             redirect(action: "list")
         }
         else {
-            return [templateFieldInstance: templateFieldInstance]
+            def validationRules = [""]
+            validationRules.addAll(ValidationRule.list(order:'name')*.name)
+
+            return [templateFieldInstance: templateFieldInstance, validationRules: validationRules]
         }
     }
 
@@ -96,7 +99,7 @@ class TemplateFieldController {
             try {
                 templateFieldInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
-                redirect(action: "list")
+                redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
@@ -105,7 +108,7 @@ class TemplateFieldController {
         }
         else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
-            redirect(action: "list")
+            redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
         }
     }
 }

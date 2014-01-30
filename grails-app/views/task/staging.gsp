@@ -19,14 +19,8 @@
             margin-bottom: 5px;
         }
 
-        #btnLoadTasks {
-            background: orange;
-            background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#FFA500 ),color-stop(1, #FF8C00));
-        }
-
-
         </style>
-        <script type='text/javascript'>
+        <r:script type='text/javascript'>
 
             $(document).ready(function () {
 
@@ -91,48 +85,37 @@
 
             });
 
-        </script>
+        </r:script>
     </head>
 
     <body class="sublevel sub-site volunteerportal">
 
-        <cl:navbar/>
+        <cl:headerContent title="Project Task Staging" selectedNavItem="expeditions">
+            <%
+                pageScope.crumbs = [
+                    [link: createLink(controller: 'project', action: 'index', id:projectInstance.id), label: projectInstance.featuredLabel],
+                    [link: createLink(controller: 'project', action: 'edit', id:projectInstance.id), label: "Edit"]
+                ]
+            %>
+        </cl:headerContent>
 
-        <header id="page-header">
-            <div class="inner">
-                <cl:messages/>
-                <nav id="breadcrumb">
-                    <ol>
-                        <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><a class="home" href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a>
-                        <li><a class="home" href="${createLink(controller: 'project', action: 'edit', id: projectInstance.id)}">Edit Project</a>
-                        </li>
-                        <li class="last">Task Load Staging</li>
-                    </ol>
-                </nav>
-                <hgroup>
-                    <h1>Project Task Staging</h1>
-                </hgroup>
-            </div>
-        </header>
-
-        <div>
-            <div class="inner">
+        <div class="row">
+            <div class="span12">
 
                 <div id="fieldDefinitionsSection" class="section">
-                    <table style="width: 100%">
+                    <table class="table">
                         <tr>
                             <td>
                                 <h4>Field Definitions</h4>
                             </td>
                             <td>
                                 <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>
-                                <button class="button" id="btnAddFieldDefinition">Add field</button>
+                                <button class="btn" id="btnAddFieldDefinition">Add field</button>
                             </td>
                         </tr>
                     </table>
 
-                    <table class="bvp-expeditions">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th style="text-align: left">Field</th>
@@ -151,7 +134,7 @@
                                             <g:textField class="fieldValue" name="fieldValue" value="${field.format}" size="40"/>
                                         </g:if>
                                     </td>
-                                    <td><button class="button btnDeleteField">Delete</button></td>
+                                    <td><button class="btn btn-small btn-danger btnDeleteField"><i class="icon-remove icon-white"></i></button></td>
                                 </tr>
                             </g:each>
                         </tbody>
@@ -163,7 +146,7 @@
                     <h4>Upload a csv data file for field values</h4>
                     <g:if test="${hasDataFile}">
                         A data file has been uploaded for this project.
-                        <button class="button" id="btnClearDataFile">Clear data file</button>
+                        <button class="btn btn-warning" id="btnClearDataFile">Clear data file</button>
                         &nbsp;
                         <a href="${dataFileUrl}">View data file</a>
                     </g:if>
@@ -171,9 +154,10 @@
                         <g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data">
                             <input type="file" name="dataFile" id="dataFile" />
                             <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-                            <g:submitButton name="Upload Data File"/>
+                            <g:submitButton class="btn btn-primary" name="Upload Data File"/>
 
                         </g:form>
+                        <br />
                         <div>CSV data files should follow the following conventions:
                             <ul>
                                 <li>First row should contain column headings (comma separated)</li>
@@ -194,29 +178,29 @@
                         %{--<label for="imageFile"><strong>Upload task image file:</strong></label>--}%
                         <input type="file" name="imageFile" id="imageFile" multiple="multiple"/>
                         <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-                        <g:submitButton name="Stage images"/>
+                        <g:submitButton class="btn" name="Stage images"/>
                     </g:form>
                 </div>
 
                 <div id="imagesSection" class="section">
 
                     <div>
-                        <button id="btnExportTasksCSV">Export staged tasks as CSV</button>
-                        <button id="btnClearStagingArea" style="color:red">Delete all images</button>
-                        <button id="btnLoadTasks" >Create tasks from staged images</button>
+                        <button class="btn" id="btnExportTasksCSV">Export staged tasks as CSV</button>
+                        <button id="btnClearStagingArea" class="btn btn-danger">Delete all images</button>
+                        <button id="btnLoadTasks" class="btn btn-primary" >Create tasks from staged images</button>
                         <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
                     </div>
                     <hr/>
 
                     <h4>Staged images (${images.size()})</h4>
-                    <table class="bvp-expeditions">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th style="text-align: left">Image file</th>
                                 <g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">
                                     <th style="text-align: left">${field.fieldName}</th>
                                 </g:each>
-                                <th></th>
+                                <th style="width: 50px"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -227,7 +211,7 @@
                                         <td>${image.valueMap[field.fieldName]}</td>
                                     </g:each>
                                     <td>
-                                        <button class="button btnDeleteImage" imageName="${image.name}">Delete</button>
+                                        <button class="btn btn-small btn-danger btnDeleteImage" imageName="${image.name}"><i class="icon-remove icon-white"></i></button>
                                     </td>
                                 </tr>
                             </g:each>

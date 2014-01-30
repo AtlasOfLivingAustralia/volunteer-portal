@@ -1,157 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-      <title>Volunteer Portal - Atlas of Living Australia</title>
-      <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-      <link rel="stylesheet" href="${resource(dir:'css',file:'vp.css')}" />
-      <style type="text/css">
+    <head>
+        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+        <meta name="section" content="home"/>
+        <title>Volunteer Portal - Atlas of Living Australia</title>
+        <style type="text/css">
 
-        div#wrapper > div#content {
-            background-color: transparent !important;
-        }
+            hgroup h1 {
+                font-size: 48px;
+            }
 
-      </style>
-  </head>
-  <body class="sublevel sub-site volunteerportal">
+            .row-fluid .thumbnails .span4:nth-child(3n+1) {
+                margin-left: 0;
+            }
 
-    <cl:navbar selected="bvp" />
+            .thumbnail h2 {
+                /*float: right;*/
+                font-size: 1.2em;
+                position: absolute;
+                right: 0px;
+                bottom: 5px;
+               	background-color: #3d464c;
+               	background-image: linear-gradient(top, #3d464c, #353d43);
+               	padding:6px 12px 8px 12px;
+               	color: #fff;
+                border-radius: 5px 0 0 5px;
+            }
 
-    <header id="page-header">      
-      <div class="inner">
-        <cl:messages />
+            .thumbnails > li {
+                margin-bottom: 10px;
+            }
 
-        <hgroup>
-              <h1>Biodiversity Volunteer Portal</h1>
-              <h2>Helping to understand, manage and conserve Australia's biodiversity<br>through community based capture of biodiversity data</h2>
-        </hgroup>
-        <nav id="nav-1-2-3">
-          <ol>
-            <li>
-              <cl:isNotLoggedIn>
-                <span class="numbered">1</span> <a href="https://auth.ala.org.au/emmet/selfRegister.html" class="button orange">Register</a> <p>Already registered with the Atlas?<br/><cl:loginLink /></p>
-              </cl:isNotLoggedIn>
-              <cl:isLoggedIn>
-                <span class="numbered">1</span> <h2>Hi !</h2><p>You're registered with the Atlas, so <a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay?.id, action: 'index')}">start transcribing</a> or <a href="${createLink(controller: 'user', action:'myStats')}">view your tasks</a>.</p>
-              </cl:isLoggedIn>
-            </li>
-            <li class="double"><div style="float:left;postition:relative;">
-              <span class="numbered">2</span> <a href="${createLink(controller: 'project', action: 'list')}" class="button orange">Join a virtual expedition</a> <p><a href="${createLink(controller: 'project', action: 'list')}">Find a virtual expedition</a> that suits you.</p></div><span class="grey" style="float:left;postition:relative;">or</span>
-              <div style="float:left;postition:relative;"><a href="${createLink(controller: 'transcribe', id: frontPage.projectOfTheDay?.id, action: 'index')}" class="button orange">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe-orange.png" width="37" height="18" alt=""></a> <p>Join the <a href="${createLink(controller: 'project', id: frontPage.projectOfTheDay?.id, action: 'index')}">virtual expedition of the day</a>.</p></div>
-            </li>
+            .thumbnail a img {
+                border-radius: 5px;
+                max-height: 156px;
+            }
 
-            <li class="last">
-              <span class="numbered">3</span><a href="${createLink(controller: 'user', action:'list')}" class="button orange">Become a leader</a> <p>Are you ready to become an <a href="${createLink(controller: 'user', action:'list')}">expedition leader</a>?</p>
-            </li>
-          </ol>
-        </nav>
-      </div><!--inner-->
-    </header>
-  
+            .thumbnail {
+                border: 0 none;
+                box-shadow: none;
+                padding: 0;
+            }
 
-    <div class="inner">
-      <div class="col-wide">
-        <section>
-          <h1 class="orange">Help us capture Australia's biodiversity</h1>
-          <p>Help capture the wealth of information hidden in our natural history collections, field notebooks and survey sheets. This information will be used for better understanding, managing and conserving our precious biodiversity. <a href="${createLink(controller: 'about', action:'index')}" class="button">Learn more</a></p>
+            .thumbnail .label {
+                position: absolute;
+                top: 5px;
+                left: 5px;
+                background-color: #3d464c;
+            }
 
-          <h2 class="orange">Virtual expedition of the day</h2>
-          <div class="button-nav"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay?.id}" style="background-image:url(${frontPage.projectOfTheDay?.featuredImage});"><h2>${frontPage.projectOfTheDay?.featuredLabel}</h2></a></div>
-          <div>
-            <span class="eyebrow">${frontPage.projectOfTheDay?.featuredOwner}</span>
-            <h2 class="grey"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.name}</a></h2>
-            <p>${frontPage.projectOfTheDay?.shortDescription} <a href="${grailsApplication.config.grails.serverURL}/transcribe/index/${frontPage.projectOfTheDay?.id}" class="button">Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe.png" width="37" height="18" alt=""></a></p>
-          </div>
-        </section>
-        <section>
-          <hgroup><h2 class="alignleft">More expeditions</h2><a href="${createLink(controller: 'project', action: 'list')}" class="button alignright">View all</a></hgroup>
-          <nav>
-            <ol>
-              <li><a href="${createLink(controller: 'project', id: frontPage.featuredProject1?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject1?.featuredImage});"><h2>${frontPage.featuredProject1?.featuredLabel}</h2></a></li>
-              <li><a href="${createLink(controller: 'project', id: frontPage.featuredProject2?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject2?.featuredImage});"><h2>${frontPage.featuredProject2?.featuredLabel}</h2></a></li>
-              <li class="last"><a href="${createLink(controller: 'project', id: frontPage.featuredProject3?.id, action: 'index')}" style="background-image:url(${frontPage.featuredProject3?.featuredImage});"><h2>${frontPage.featuredProject3?.featuredLabel}</h2></a></li>
-            </ol>
-          </nav>
-        </section>
-      </div> <!-- col-wide -->
+            .thumbnail a:hover h2 {
+                background-color: #df4a21;
+            }
 
-      <div class="col-narrow last">
-        <section id="leaderBoardSection">
-          <table border="0" class="borders">
-            <thead>
-              <tr>
-                <th colspan="2"><h2>Leader board</h2> <a class="button alignright" href="${createLink(controller:'user', action:'list')}">View all</a></th>
-              </tr>
-            </thead>
-            <tbody>
-              <g:each in="${1..grailsApplication.config.leaderBoard.count}" var="i">
-                <tr>
-                  <td><img src="${resource(dir:'images', file:'spinner.gif')}"/></td>
-                </tr>
-              </g:each>
-            </tbody>
-          </table>
-        </section>
+            @media (min-width: 1200px) {
+                .thumbnail h2 {
+                    margin-right: 15px;
+                }
+            }
 
-        <section id="expedition-stats">
-          <h2>Expedition stats</h2>
-          Calculating statistics...
-        </section>
-        <section>
-          <g:if test="${newsItem}">
-            <h2>News</h2>
-            <article>
-              <g:if test="${newsItem?.created}">
-                <time datetime="${formatDate(format: "yyyy-MM-dd", date: newsItem.created)}"><g:formatDate format="dd MMM yyyy" date="${newsItem.created}" /></time>
-              </g:if>
-              <h3>
-                <g:if test="${frontPage.useGlobalNewsItem == false}">
-                  <g:link action="show" controller="newsItem" id="${newsItem?.id}">${newsItem.title}</g:link>
-                </g:if>
-                <g:else>
-                  ${newsItem.title}
-                </g:else>
-              </h3>
-              <p>
-                ${newsItem?.shortDescription}
-                <g:if test="${frontPage.useGlobalNewsItem == false}">
-                  <g:link controller="newsItem" action="show" id="${newsItem?.id}">Read more...</g:link>
-                </g:if>
-              </p>
-            </article>
-          </g:if>
-        </section>
-      </div>
+            @media (max-width: 979px) and (min-width: 768px) {
+                .thumbnail h2 {
+                    font-size: 1.0em;
+                }
+            }
 
-      <cl:isLoggedIn>
-        <g:link controller="admin" action="index" style="color:#DDDDDD;">Admin</g:link>
-      </cl:isLoggedIn>
+            @media (max-width: 768px) {
+                .thumbnail h2 {
+                    position: static;
+                    top: inherit;
+                    text-align: center;
+                }
 
-    </div>
+                .thumbnails > li {
+                    margin-bottom: 20px;
+                }
 
-    <script type="text/javascript">
+                .thumbnail {
+                    border: 1px solid #ddd;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+                    padding: 4px;
+                }
 
-        $(function() {
-          $("#rollovers").tabs("#description-panes > div", {event:'mouseover', effect: 'fade', fadeOutSpeed: 400});
-        });
-        $('#description-panes img.active').click(function() {
-            document.location.href = $(this).next('a').attr('href');
-        });
-        $('#rollovers img.active').css("cursor","pointer").click(function() {
-            document.location.href = "${resource(dir:'project/index/')}" + $(this).attr('id');
-        });
+            }
 
-        $(document).ready(function(e) {
-          $.ajax("${createLink(controller: 'index', action:'leaderBoardFragment')}").done(function(content) {
-            $("#leaderBoardSection").html(content);
-          });
+        </style>
+    </head>
 
-          $.ajax("${createLink(controller: 'index', action:'statsFragment')}").done(function(content) {
-            $("#expedition-stats").html(content);
-          });
+    <body>
 
-        });
+        <cl:headerContent title="${message(code:'default.frontpageheading.label', default:'Biodiversity Volunteer Portal')}" selectedNavItem="bvp">
+            <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based transcription of archival and natural history collections</p>
+        </cl:headerContent>
+
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span9">
+                    <section>
+                        <div style="margin-bottom: 10px">
+                            <h2 class="orange">Virtual expedition of the day</h2>
+                            <div class="row-fluid">
+                            <div class="span4" style="position: relative">
+                                <div class="thumbnail">
+                                    <a href="${createLink(controller: 'project', id: frontPage.projectOfTheDay?.id, action: 'index')}">
+                                        <img src="${frontPage.projectOfTheDay?.featuredImage}" />
+                                        <h2>${frontPage.projectOfTheDay?.featuredLabel}</h2>
+                                    </a>
+                                </div>
+                            </div>
+
+                            %{--<div class="button-nav"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay?.id}" style="background-image:url(${frontPage.projectOfTheDay?.featuredImage});"><h2>${frontPage.projectOfTheDay?.featuredLabel}</h2>--}%
+                            %{--</a></div>--}%
+
+                            <div class="span8">
+                                <span class="eyebrow">${frontPage.projectOfTheDay?.featuredOwner}</span>
+                                <h2 class="grey"><a href="${grailsApplication.config.grails.serverURL}/project/index/${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.name}</a></h2>
+                                <p>${frontPage.projectOfTheDay?.shortDescription}</p>
+                                <a href="${grailsApplication.config.grails.serverURL}/transcribe/index/${frontPage.projectOfTheDay?.id}" class="btn btn-small">
+                                    Start transcribing <img src="http://www.ala.org.au/wp-content/themes/ala2011/images/button_transcribe.png" width="37" height="18" alt="">
+                                </a>
+                            </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <g:if test="${featuredProjects}">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <hgroup>
+                                    <h2 class="alignleft">More expeditions</h2>
+                                    <a href="${createLink(controller: 'project', action: 'list')}" class="btn btn-small">View all</a>
+                                </hgroup>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <ul class="thumbnails">
+                                    <g:each in="${featuredProjects}" var="featuredProject">
+                                        <li class="span4" style="position: relative">
+                                            <div class="thumbnail">
+                                                <a href="${createLink(controller: 'project', id: featuredProject.project?.id, action: 'index')}">
+                                                    <img src="${featuredProject.project?.featuredImage}" />
+                                                    <h2>${featuredProject.project?.featuredLabel}</h2>
+                                                    <div class="label label-inverse">${featuredProject.percentComplete}%</div>
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </g:each>
+                                </ul>
+
+                            </div>
+                        </div>
+                    </g:if>
+                </div> <!-- col-wide -->
+
+                <div class="span3">
+                    <section id="leaderBoardSection">
+
+                    </section>
+
+                    <cl:isLoggedIn>
+                        <scetion id="user-stats">
+                            <a class="btn btn-small" href="${createLink(controller:'user', action:'myStats')}">View my tasks</a>
+                        </scetion>
+                    </cl:isLoggedIn>
+
+                    <section id="expedition-stats">
+                        <table>
+                            <tr>
+                                <td>
+                                    <h3>Expedition stats</h3>
+                                </td>
+                                <td>
+                                    <img class="pull-right" src="${resource(dir:"images/vp", file:'compassrose.png')}" />
+                                </td>
+                            </tr>
+                        </table>
+
+                        Calculating statistics...
+                    </section>
+                    <section>
+                        <g:if test="${newsItem}">
+                            <h3>News</h3>
+                            <article>
+                                <g:if test="${newsItem?.created}">
+                                    <time datetime="${formatDate(format: "yyyy-MM-dd", date: newsItem.created)}"><g:formatDate format="dd MMM yyyy" date="${newsItem.created}"/></time>
+                                </g:if>
+                                <h4>
+                                    <g:if test="${frontPage.useGlobalNewsItem == false}">
+                                        <g:link action="show" controller="newsItem" id="${newsItem?.id}">${newsItem.title}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${newsItem.title}
+                                    </g:else>
+                                </h4>
+
+                                <p>
+                                    ${newsItem?.shortDescription}
+                                    <g:if test="${frontPage.useGlobalNewsItem == false}">
+                                        <g:link controller="newsItem" action="show" id="${newsItem?.id}">Read more...</g:link>
+                                    </g:if>
+                                </p>
+                            </article>
+                        </g:if>
+                    </section>
+                </div>
+            </div>
+            <cl:isLoggedIn>
+                <div class="row-fluid">
+                    <div class="span9">
+                        <g:link controller="admin" action="index" style="color:#DDDDDD;">Admin</g:link>
+                    </div>
+                </div>
+            </cl:isLoggedIn>
+        </div>
 
 
-    </script>
-  </body>
+        <r:script type="text/javascript">
+
+
+            $(document).ready(function (e) {
+
+                $.ajax("${createLink(controller: 'leaderBoard', action:'leaderBoardFragment')}").done(function (content) {
+                    $("#leaderBoardSection").html(content);
+                });
+
+                $.ajax("${createLink(controller: 'index', action:'statsFragment')}").done(function (content) {
+                    $("#expedition-stats").html(content);
+                });
+
+                $('#description-panes img.active').click(function () {
+                    document.location.href = $(this).next('a').attr('href');
+                });
+
+                $('#rollovers img.active').css("cursor", "pointer").click(function () {
+                    document.location.href = "${resource(dir:'project/index/')}" + $(this).attr('id');
+                });
+
+            });
+
+
+        </r:script>
+
+    </body>
 </html>

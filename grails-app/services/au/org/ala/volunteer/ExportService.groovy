@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
+
+import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 
@@ -8,56 +10,148 @@ class ExportService {
 
     static transactional = true
 
-    def fieldService
     def grailsApplication
+    def taskService
+    def multimediaService
 
-    // Simply dumps everything out flat. This is a problem for those templates that collect repeating groups (or multivalue fields)
-    // such as journal templates, and the new specimen label templates, but this will do for older specimen label projects.
+    private String getUserDisplayName(userId) {
+        def user = User.findByUserId(userId)
+        if (user) {
+            return user.displayName
+        }
+        return userId
+    }
+
+    private String getTaskField(Task task, String fieldName, Range indexRange = 0..0) {
+
+        def result = ""
+        switch (fieldName.toLowerCase()) {
+            case "taskid":
+                result = task.id
+                break;
+            case "transcriberid":
+                result = getUserDisplayName(task.fullyTranscribedBy)
+                break;
+            case "validatorid":
+                result = getUserDisplayName(task.fullyValidatedBy)
+                break;
+            case "externalidentifier":
+                result = task.externalIdentifier
+                break;
+            case "exportcomment":
+                def sb = new StringBuilder()
+                if (task.fullyTranscribedBy) {
+                    sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy)}. ")
+                }
+                def date = new Date().format("dd-MMM-yyyy")
+                sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
+                result = sb.toString()
+                break;
+            case "datetranscribed":
+                result = task.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
+                break;
+            case "datevalidated":
+                result = task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
+                break;
+        }
+        return result
+    }
+
+    def export_zipFile = { Project project, taskList, valueMap, fieldNames, response ->
+
+        def c = Field.createCriteria()
+        def databaseFieldNames = c {
+            task {
+                eq("project", project)
+            }
+            projections {
+                groupProperty("name")
+                max("recordIdx")
+            }
+        }
+
+        def fieldIndexMap = databaseFieldNames.collectEntries { [ it[0], it[1] ] }
+        def repeatingFields = []
+        fieldNames.each { fieldName ->
+            if (fieldIndexMap[fieldName] > 0) {
+                repeatingFields << fieldName
+            }
+        }
+        repeatingFields.each {
+            fieldNames.remove(it)
+        }
+
+        zipExport(project, taskList, valueMap, fieldNames, response, ["dataset"], repeatingFields)
+    }
+
     def export_default = { Project project, taskList, taskMap, fieldNames, response ->
+
+        def c = Field.createCriteria()
+
+        def databaseFieldNames = c {
+            task {
+                eq("project", project)
+            }
+            projections {
+                groupProperty("name")
+                max("recordIdx")
+            }
+        }
+
+        def fieldIndexMap = databaseFieldNames.collectEntries { [ it[0], it[1] ] }
+
+        List<String> columnNames = []
+
+        fieldNames.each {
+            if (fieldIndexMap.containsKey(it)) {
+                if (fieldIndexMap[it]) {
+                    for (int i = 0; i <= fieldIndexMap[it]; ++i) {
+                        columnNames << "${it}_${i}"
+                    }
+                } else {
+                    columnNames << it
+                }
+            } else {
+                columnNames << it
+            }
+        }
+
         def filename = "Project-" + project.id + "-DwC"
-        response.setHeader("Content-Disposition", "attachment;filename=" + filename +".txt");
+        response.setHeader("Content-Disposition", "attachment;filename=" + filename +".csv");
         response.setContentType("text/plain");
-        OutputStream fout= response.getOutputStream();
+        OutputStream fout = response.getOutputStream();
         OutputStream bos = new BufferedOutputStream(fout);
         OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
 
         CSVWriter writer = new CSVWriter(outputwriter);
         // write header line (field names)
-        writer.writeNext(fieldNames.toArray(new String[0]))
+        writer.writeNext(columnNames as String[])
+        def columnIndexRegex = Pattern.compile("^(\\w+)_(\\d+)\$")
+        taskList.each { Task task ->
+            def fieldMap = taskMap[task.id]
+            def values = []
+            columnNames.each { columnName ->
+                def fieldName = columnName
+                def recordIndex = 0
+                def matcher = columnIndexRegex.matcher(columnName)
+                if (matcher.matches()) {
+                    fieldName = matcher.group(1)
+                    recordIndex = matcher.group(2) as int
+                }
 
-        taskList.each { task ->
-            String[] values = getFieldsForTask(task, fieldNames, taskMap)
-            writer.writeNext(values)
+                String value
+                if (fieldIndexMap.containsKey(fieldName)) {
+                    def valueMap = fieldMap[fieldName]
+                    value = valueMap?.getAt(recordIndex) ?: ""
+                } else {
+                    value = getTaskField(task, fieldName)
+                }
+                values << value
+            }
+            writer.writeNext(values as String[])
         }
-
         writer.close()
     }
-
-    def export_AerialObservations = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset],[])
-    }
-
-    def export_ObservationDiary = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset],[])
-    }
-
-    def export_ObservationDiaryWithMonth = export_ObservationDiary
-
-    def export_FieldNoteBook = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['occurrenceRemarks'])
-    }
-
-    def export_SpecimenLabel = { Project project, taskList, valueMap, List fieldNames, response ->
-        zipExport(project, taskList, valueMap, fieldNames, response, [FieldCategory.dataset], ['recordedBy'])
-    }
-
-    def export_GenericLabels = export_SpecimenLabel
-
-    def export_SmithsonianPlants = export_SpecimenLabel
-
-    def export_FieldNoteBookDoublePage = export_FieldNoteBook
-
-    def export_Journal = export_FieldNoteBook
 
     private void zipExport(Project project, taskList, valueMap, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
         def datasetCategoryFields = [:]
@@ -165,7 +259,7 @@ class ExportService {
         taskList.each { Task task ->
             int recordIdx = 0
             task.multimedia.each { multimedia ->
-                def url = "${grailsApplication.config.server.url}${multimedia.filePath}"
+                def url = multimediaService.getImageUrl(multimedia)
                 String[] values = [task.id.toString(), task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
                 writer.writeNext(values)
                 recordIdx++
@@ -217,44 +311,45 @@ class ExportService {
         List fieldValues = []
         def taskId = task.id
 
-        def userDisplayName = { userId ->
-            def user = User.findByUserId(userId)
-            if (user) {
-                return user.displayName
-            }
-            return userId
-        }
-
         if (taskMap.containsKey(taskId)) {
             Map fieldMap = taskMap.get(taskId)
-            fields.eachWithIndex { fieldName, fieldIndex ->
+            fields.eachWithIndex { String fieldName, fieldIndex ->
 
-                if (fieldIndex == 0) {
-                    fieldValues.add(taskId.toString())
-                }
-                else if (fieldIndex == 1) {
-                    fieldValues.add(userDisplayName(task.fullyTranscribedBy))
-                }
-                else if (fieldIndex == 2) {
-                    fieldValues.add(userDisplayName(task.fullyValidatedBy))
-                }
-                else if (fieldIndex == 3) {
-                    fieldValues.add(task.externalIdentifier)
-                }
-                else if (fieldIndex == 4) {
-                    def sb = new StringBuilder()
-                    if (task.fullyTranscribedBy) {
-                        sb.append("Fully transcribed by ${userDisplayName(task.fullyTranscribedBy)}. ")
-                    }
-                    def date = new Date().format("dd-MMM-yyyy")
-                    sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
-                    fieldValues.add((String) sb.toString())
-                }
-                else if (fieldMap.containsKey(fieldName)) {
-                    fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
-                }
-                else {
-                    fieldValues.add("") // need to leave blank
+                switch (fieldName.toLowerCase()) {
+                    case "taskid":
+                        fieldValues.add(taskId.toString())
+                        break;
+                    case "transcriberid":
+                        fieldValues.add(getUserDisplayName(task.fullyTranscribedBy))
+                        break;
+                    case "validatorid":
+                        fieldValues.add(getUserDisplayName(task.fullyValidatedBy))
+                        break;
+                    case "externalidentifier":
+                        fieldValues.add(task.externalIdentifier)
+                        break;
+                    case "exportcomment":
+                        def sb = new StringBuilder()
+                        if (task.fullyTranscribedBy) {
+                            sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy)}. ")
+                        }
+                        def date = new Date().format("dd-MMM-yyyy")
+                        sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
+                        fieldValues.add((String) sb.toString())
+                        break;
+                    case "datetranscribed":
+                        fieldValues.add(task.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        break;
+                    case "datevalidated":
+                        fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        break;
+                    default:
+                        if (fieldMap.containsKey(fieldName)) {
+                            fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
+                        } else {
+                            fieldValues.add("") // need to leave blank
+                        }
+                        break;
                 }
             }
         }

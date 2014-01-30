@@ -1,9 +1,8 @@
 package au.org.ala.volunteer
 
+import org.apache.commons.lang.StringUtils
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-import com.thebuzzmedia.imgscalr.Scalr
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 
 class TaskService {
@@ -11,11 +10,10 @@ class TaskService {
     javax.sql.DataSource dataSource
     def logService
     def grailsApplication
-    def fieldService
+    def multimediaService
+    def grailsLinkGenerator
 
     static transactional = true
-
-    def serviceMethod() {}
 
   /**
    * This could be a large result set for a system with many registered users.
@@ -73,6 +71,14 @@ class TaskService {
             """select t.project.id as projectId, count(t) as taskCount
                from Task t where t.fullyTranscribedBy is not null group by t.project.id""")
         projectTaskCounts.toMap()
+    }
+
+    Map getProjectVolunteerCounts() {
+        def volunteerCounts = Task.executeQuery(
+            """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
+               from Task t where t.fullyTranscribedBy is not null group by t.project.id"""
+        )
+        volunteerCounts.toMap()
     }
 
     /**
@@ -403,9 +409,12 @@ class TaskService {
    * @return list of tasks
    */
     List<Task> getRecentlyTranscribedTasks(String userId, Map params) {
-      Task.executeQuery("""select distinct t from Task t
-        inner join t.fields fields
-        where fields.transcribedByUserId = :userId""", [userId: userId], params)
+        def c = Task.createCriteria()
+
+        c.list(params) {
+            eq("fullyTranscribedBy", userId)
+            isNotNull("dateFullyTranscribed")
+        }
     }
 
   /**
@@ -607,28 +616,134 @@ class TaskService {
     public Map getImageMetaData(Task taskInstance) {
         def imageMetaData = [:]
 
-        taskInstance.multimedia.each {
-            def path = it.filePath
-            if (path) {
-                String urlPrefix = grailsApplication.config.images.urlPrefix
-                String imagesHome = grailsApplication.config.images.home
-                path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-                BufferedImage image = null
-                try {
-                    image = ImageIO.read(new File(path))
-                } catch (Exception ex) {
-                    logService.log("Exception trying to read image path: ${path} - ${ex}")
-                }
-
-                if (image) {
-                    imageMetaData[it.id] = [width: image.width, height: image.height]
-                } else {
-                    logService.log("Could not read image file: ${path} - could not get image metadata")
-                }
-            }
+        taskInstance.multimedia.each { multimedia ->
+            imageMetaData[multimedia.id] = getImageMetaData(multimedia)
         }
 
         return imageMetaData
     }
 
+    public ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
+        def path = multimedia?.filePath
+        if (path) {
+            def imageUrl = multimediaService.getImageUrl(multimedia)
+
+            if ([90,180,270].contains(rotate)) {
+                imageUrl = grailsLinkGenerator.link(controller: 'multimedia', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
+            }
+
+            String urlPrefix = grailsApplication.config.images.urlPrefix
+            String imagesHome = grailsApplication.config.images.home
+            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+            BufferedImage image = null
+
+            try {
+                image = ImageIO.read(new File(path))
+            } catch (Exception ex) {
+                logService.log("Exception trying to read image path: ${path} - ${ex}")
+            }
+
+            if (image) {
+                def width = image.width
+                def height = image.height
+                if (rotate == 90 || rotate == 270) {
+                    width = image.height
+                    height = image.width
+                }
+                return new ImageMetaData(width: width, height: height, url: imageUrl)
+            } else {
+                logService.log("Could not read image file: ${path} - could not get image metadata")
+            }
+        }
+        return null
+    }
+
+    def calculateTaskDates() {
+        def taskList = Task.findAllByFullyTranscribedByIsNotNullAndDateFullyTranscribedIsNull()
+        println "Processing ${taskList.size()} tasks..."
+        def idList = taskList*.id
+
+        int count = 0
+        try {
+            idList.each { taskId ->
+
+                Task.withNewTransaction { status ->
+                    def task = Task.get(taskId)
+                    if (!task) {
+                        println "No task ${taskId}"
+                        return
+                    }
+
+                    // Find the most recent field whose transcribed by matches the tasks fully transcribed by...
+                    def transcribedCriteria = Field.createCriteria()
+
+                    def dateTranscribed = transcribedCriteria.list {
+                        eq("task", task)
+                        eq("transcribedByUserId", task.fullyTranscribedBy)
+
+                        projections {
+                            max("created")
+                        }
+                    }
+
+                    if (dateTranscribed && dateTranscribed[0]) {
+                        task.dateFullyTranscribed = dateTranscribed[0]
+                    } else {
+                        println "No transcription date ${task.id}. Using most recent created date"
+                        task.dateFullyTranscribed = findMostRecentDate("created", task)
+                    }
+
+                    if (StringUtils.isNotEmpty(task.fullyValidatedBy)) {
+
+                        def validatedCriteria = Field.createCriteria()
+                        def dateValidated = validatedCriteria.list {
+                            eq("task", task)
+                            eq("validatedByUserId", task.fullyValidatedBy)
+                            projections {
+                                max("updated")
+                            }
+                        }
+
+                        if (dateValidated && dateValidated[0]) {
+                            task.dateFullyValidated = dateValidated[0]
+                        } else {
+                            println "No validation date! ${task.id}. Using most recent updated date."
+                            task.dateFullyValidated = findMostRecentDate("updated", task)
+                        }
+                    }
+
+                    task.save()
+
+                    if (++count % 200 == 0) {
+                        println "${count} tasks processed."
+                    }
+
+                }
+            }
+
+            println "Done."
+        } catch (Exception ex) {
+            ex.printStackTrace()
+        }
+    }
+
+
+    private Date findMostRecentDate(String dateField, Task task) {
+        def c = Field.createCriteria()
+        def list = c.list {
+            eq("task", task)
+            projections {
+                max(dateField)
+            }
+
+        }
+        return list?.get(0)
+    }
+
+}
+
+public class ImageMetaData {
+    int height
+    int width
+    String url
 }

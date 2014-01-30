@@ -13,6 +13,7 @@ class TemplateField {
     String validationRule
     Template template
     Integer displayOrder
+    String layoutClass
 
     static mapping = {
         version false
@@ -28,7 +29,9 @@ class TemplateField {
         validationRule nullable:true
         template nullable: true
         displayOrder nullable: true
+        layoutClass nullable: true
     }
+
 }
 
   

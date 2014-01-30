@@ -5,6 +5,7 @@ class PicklistItem {
     Picklist picklist
     String key
     String value
+    String institutionCode
 
     static mapping = {
       version false
@@ -12,5 +13,6 @@ class PicklistItem {
 
     static constraints = {
         key nullable: true
+        institutionCode nullable: true
     }
 }
