@@ -114,6 +114,10 @@
                 showIconSelector();
             });
 
+//            $(".tutorialLinks a").each(function(index, element) {
+//                $(this).css("font-weight", "bold");
+//            });
+
         });
 
         function showIconSelector() {
@@ -251,6 +255,13 @@
                         </div>
                     </div>
 
+
+                    <g:if test="${projectInstance?.tutorialLinks}">
+                        <div class="tutorialLinks alert" style="margin-top: 10px">
+                            ${projectInstance.tutorialLinks}
+                        </div>
+                    </g:if>
+
                     <g:if test="${!projectInstance.disableNewsItems && newsItem}">
                         <div>
                             <h3>${projectInstance.featuredLabel} news</h3>
@@ -263,12 +274,6 @@
                             ${newsItem.body}
                             %{--<g:link controller="newsItem" action="list" id="${projectInstance.id}">All ${projectInstance.featuredLabel} news...</g:link>--}%
                         </div>
-                    </g:if>
-                </section>
-
-                <section id="tutorial">
-                    <g:if test="${projectInstance?.tutorialLinks}">
-                        ${projectInstance.tutorialLinks}
                     </g:if>
                 </section>
 

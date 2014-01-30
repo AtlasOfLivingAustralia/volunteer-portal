@@ -582,9 +582,6 @@
             %>
 
             <div>
-                %{--<g:if test="${taskInstance?.project?.tutorialLinks}">--}%
-                    %{--${taskInstance.project.tutorialLinks}--}%
-                %{--</g:if>--}%
                 <g:if test="${sequenceNumber >= 0}">
                     <span>Image sequence number: ${sequenceNumber}</span>
                 </g:if>

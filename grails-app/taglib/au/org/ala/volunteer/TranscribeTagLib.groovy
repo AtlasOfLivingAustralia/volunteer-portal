@@ -28,47 +28,6 @@ class TranscribeTagLib {
     def markdownService
 
     /**
-    * @attr task
-    * @attr fieldType
-    * @attr recordValues
-    * @attr recordIdx
-    * @attr labelClass
-    * @attr widgetClass
-    */
-    def renderFieldLabelAndWidgetSpans = { attrs, body ->
-        Task task = attrs.task as Task
-        DarwinCoreField fieldType = attrs.fieldType
-        def recordValues = attrs.recordValues
-        def recordIdx = attrs.recordIdx ?: 0
-        def field = getTemplateFieldForTask(task, fieldType)
-        def fieldLabel = getFieldLabel(field)
-        def widgetHtml = getWidgetHtml(task, field, recordValues, recordIdx, attrs, 'span12')
-        def mb = new MarkupBuilder(out)
-        mb.div(class:attrs.labelClass ?: 'span2') {
-            if (field.fieldType != DarwinCoreField.spacer) {
-                mkp.yield(g.message(code:'record.' + field.fieldType.toString() +'.label', default:fieldLabel))
-            } else {
-                mkp.yieldUnescaped("&nbsp;")
-            }
-        }
-        mb.div(class:attrs.widgetClass ?: 'span12') {
-            div(class: 'span10') {
-                mkp.yieldUnescaped(widgetHtml)
-            }
-            div(class: 'span2') {
-                if (field.helpText) {
-                    def helpText = WebUtils.encodeHtmlEntities(markdownService.markdown(field.helpText))
-                    def help = "<a href='#' class='fieldHelp' title='${helpText}' tabindex='-1'><span class='help-container'>&nbsp;</span></a>"
-                    mkp.yieldUnescaped(help)
-                } else {
-                    mkp.yieldUnescaped("&nbsp;")
-                }
-            }
-        }
-
-    }
-
-    /**
      * @attr var
      * @attr task
      * @attr fieldType
@@ -167,13 +126,7 @@ class TranscribeTagLib {
                         mkp.yieldUnescaped(widgetHtml)
                     }
                     div(class:'span2') {
-                        if (field.helpText) {
-                            def helpText = WebUtils.encodeHtmlEntities(markdownService.markdown(field.helpText))
-                            def help = "<a href='#' class='fieldHelp' title='${helpText}'><span class='help-container'>&nbsp;</span></a>"
-                            mkp.yieldUnescaped(help)
-                        } else {
-                            mkp.yieldUnescaped("&nbsp;")
-                        }
+                        renderFieldHelp(mb, field)
                     }
                 }
             }
@@ -252,6 +205,14 @@ class TranscribeTagLib {
                     'class':cssClass
                 )
                 break;
+            case FieldType.checkbox:
+                def checked = Boolean.parseBoolean(recordValues?.get(0)?.get(name)?:field?.defaultValue)
+                w = g.checkBox(
+                    name: "recordValues.${recordIdx}.${name}",
+                    value: checked,
+                    validationRule: validationRule?.name
+                )
+                break;
             case FieldType.select:
                 def options = picklistService.getPicklistItemsForProject(field.fieldType, taskInstance.project)
                 if (options) {
@@ -283,14 +244,6 @@ class TranscribeTagLib {
                     }
                     break
                 }
-            case FieldType.checkbox:
-                def checked = Boolean.parseBoolean(recordValues?.get(0)?.get(name)?:field?.defaultValue)
-                w = g.checkBox(
-                    name: "recordValues.${recordIdx}.${name}",
-                    value: checked,
-                    validationRule: validationRule?.name
-                )
-                break;
             case FieldType.autocomplete:
                 cssClass = cssClass + " autocomplete"
             case FieldType.text: // fall through
@@ -542,15 +495,19 @@ class TranscribeTagLib {
 
     def fieldHelp = { attrs, body ->
         def field = attrs.field as TemplateField
-        if (field && field.helpText) {
-            def mb = new MarkupBuilder(out)
+        renderFieldHelp(new MarkupBuilder(out), field)
+    }
 
-            def helpText = WebUtils.encodeHtmlEntities(markdownService.markdown(field.helpText))
+    private renderFieldHelp(MarkupBuilder mb, TemplateField field) {
+        if (field && field.helpText) {
+            def helpText = markdownService.markdown(field.helpText)
             mb.a(href:'#', class:'fieldHelp', title:helpText, tabindex: "-1") {
                 span(class:'help-container') {
                     mkp.yieldUnescaped('&nbsp;')
                 }
             }
+        } else {
+            mb.mkp.yieldUnescaped("&nbsp;")
         }
     }
 
