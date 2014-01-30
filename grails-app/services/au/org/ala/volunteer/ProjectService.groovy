@@ -9,6 +9,27 @@ class ProjectService {
     def grailsLinkGenerator
     def projectTypeService
 
+    def deleteProject(Project projectInstance) {
+
+        if (!projectInstance) {
+            return;
+        }
+
+        // First need to delete the staging profile, if it exists, and to do that you need to delete all its items first
+        def profile = ProjectStagingProfile.findByProject(projectInstance)
+        if (profile) {
+            def list = profile.fieldDefinitions
+            list.each {
+                profile.fieldDefinitions.remove(it)
+                it.delete(flush: true)
+            }
+            profile.delete(flush: true)
+        }
+
+        // now we can delete the project itself
+        projectInstance.delete(flush: true)
+    }
+
     public List<ProjectSummary> getFeaturedProjectList() {
 
         def projectList = Project.list()

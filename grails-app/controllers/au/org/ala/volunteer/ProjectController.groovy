@@ -317,15 +317,22 @@ class ProjectController {
         if (!projectInstance.template) {
             flash.message = "Please select a template before continuing!"
             render(view: "create", model: [projectInstance: projectInstance])
-        } else {
-
-            if (projectInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
-                redirect(action: "index", id: projectInstance.id)
-            } else {
-                render(view: "create", model: [projectInstance: projectInstance])
-            }
+            return
         }
+
+        if (!projectInstance.featuredLabel) {
+            flash.message = "You must supply a featured label!"
+            render(view: "create", model: [projectInstance: projectInstance])
+            return
+        }
+
+        if (projectInstance.save(flush: true)) {
+            flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
+            redirect(action: "index", id: projectInstance.id)
+        } else {
+            render(view: "create", model: [projectInstance: projectInstance])
+        }
+
     }
 
     /**
@@ -406,7 +413,7 @@ class ProjectController {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             try {
-                projectInstance.delete(flush: true)
+                projectService.deleteProject(projectInstance)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
             }
