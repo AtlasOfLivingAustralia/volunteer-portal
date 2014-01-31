@@ -1,15 +1,26 @@
+/******************************************************************************\
+ *  CONFIG MANAGEMENT
+\******************************************************************************/
+def appName = 'volunteer-portal'
+def ENV_NAME = "${appName.toUpperCase()}_CONFIG"
+default_config = "/data/${appName}/config/${appName}-config.properties"
+if(!grails.config.locations || !(grails.config.locations instanceof List)) {
+    grails.config.locations = []
+}
+if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
+    println "[${appName}] Including configuration file specified in environment: " + System.getenv(ENV_NAME);
+    grails.config.locations.add "file:" + System.getenv(ENV_NAME)
+} else if(System.getProperty(ENV_NAME) && new File(System.getProperty(ENV_NAME)).exists()) {
+    println "[${appName}] Including configuration file specified on command line: " + System.getProperty(ENV_NAME);
+    grails.config.locations.add "file:" + System.getProperty(ENV_NAME)
+} else if(new File(default_config).exists()) {
+    println "[${appName}] Including default configuration file: " + default_config;
+    grails.config.locations.add "file:" + default_config
+} else {
+    println "[${appName}] No external configuration file defined."
+}
 
-security.cas.uriFilterPattern = "/validate/save.*," +
-        "/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!show).)*,/newsItem/.*, /picklist/.*, /admin/.*, /frontPage/.*,/ajax/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*" +
-        "/locality/.*,/collectionEvent/.*,/ajax/keepSessionAlive.*,/forum/.*,/template/.*"
-
-security.cas.uriExclusionFilterPattern = "/images.*,/css.*,/js.*"
-security.cas.authenticateOnlyIfLoggedInPattern = "/,/project/index/.*,/task/show/.*,/tutorials/.*"
-security.cas.casServerName = "https://auth.ala.org.au"
-security.cas.loginUrl = "${security.cas.casServerName}/cas/login"
-security.cas.logoutUrl = "${security.cas.casServerName}/cas/logout"
-security.cas.bypass = false
-security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
+println "[${appName}] (*) grails.config.locations = ${grails.config.locations}"
 
 headerAndFooter.baseURL = 'http://www2.ala.org.au/commonui'
 ala.baseURL = "http://www.ala.org.au"
@@ -249,5 +260,5 @@ log4j = {
     info   'grails.app'
     warn  'grails.plugin.mail'
 
-    warn   'au.org.ala.cas.client'
+    debug   'au.org.ala.cas.client'
 }

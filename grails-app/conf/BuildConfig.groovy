@@ -26,24 +26,25 @@ grails.project.dependency.resolution = {
         mavenRepo "http://maven.ala.org.au/repository/"
     }
     plugins {
-        build ":tomcat:$grailsVersion"
-        runtime ":hibernate:$grailsVersion"
+        build ':tomcat:7.0.50'
+        runtime ':hibernate:3.6.10.7'
         runtime ":jquery:1.8.3"
         compile ":jquery-ui:1.8.24"
-        runtime ":resources:1.2.RC2"
+        runtime ":resources:1.2.1"
         runtime ":mail:1.0.1"
         runtime ":csv:0.3.1"
         runtime ":executor:0.3"
         compile ":markdown:1.1.1"
         runtime ":pretty-time:0.3"
-        runtime ":quartz:1.0-RC5"
+        runtime ":quartz:1.0.1"
         runtime ":tiny-mce:3.4.9"
         runtime ":webxml:1.4.1"
-        runtime ":ala-web-theme:0.1.12"
+        runtime ":ala-web-theme:0.2.2"
         runtime ":lesscss-resources:1.3.3"
     }
 
     dependencies {
-
+        runtime 'postgresql:postgresql:9.1-901.jdbc4'
+        compile 'org.imgscalr:imgscalr-lib:4.2'
     }
 }
