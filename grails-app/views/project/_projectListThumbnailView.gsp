@@ -1,3 +1,15 @@
+<style>
+
+    .thumbnails a {
+        text-decoration: none;
+    }
+
+    .thumbnails a:hover {
+        text-decoration: underline;
+    }
+
+
+</style>
 <div class="row">
     <div class="span12">
         <table class="table table-condensed" style="border: 1px solid gainsboro">
@@ -45,7 +57,9 @@
             <div class="thumbnail" inactive="${projectSummary.project.inactive}" style="text-align: center; background-color: white;">
                 <div style="height: 50px; max-height: 50px">
                     <strong>
+                        <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
                         ${projectSummary.project.featuredLabel}
+                        </a>
                     </strong>
                 </div>
                 <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
