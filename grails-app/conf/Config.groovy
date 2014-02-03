@@ -190,14 +190,12 @@ environments {
         security.cas.appServerName = "http://devt.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer'
-        //log4j.appender.'errors.File'="stacktrace.log"
     }
     test {
         grails.serverURL = "http://volunteer-dev.ala.org.au"
         server.url = "http://volunteer-dev.ala.org.au"
         security.cas.appServerName = "http://volunteer-dev.ala.org.au"
         security.cas.contextPath = ""
-        log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
         images.home = '/data/volunteer/data/volunteer'
     }
     production {
@@ -205,7 +203,6 @@ environments {
         server.url = "http://volunteer.ala.org.au"
         security.cas.appServerName = server.url
         security.cas.contextPath = ""
-        log4j.appender.'errors.File'="/var/log/tomcat/stacktrace.log"
         images.home = '/data/volunteer'
     }
     uat {
@@ -214,7 +211,6 @@ environments {
         security.cas.appServerName = server.url
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer'
-        //log4j.appender.'errors.File'="stacktrace.log"
     }
 
 }
