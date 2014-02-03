@@ -256,5 +256,5 @@ log4j = {
     info   'grails.app'
     warn  'grails.plugin.mail'
 
-    debug   'au.org.ala.cas.client'
+    warn   'au.org.ala.cas.client'
 }

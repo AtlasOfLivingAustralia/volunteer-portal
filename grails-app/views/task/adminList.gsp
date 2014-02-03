@@ -111,89 +111,26 @@
                     %{--<button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated</button>--}%
                     <input class="input-small" style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="30"/>
                     <button class="btn btn-small btn-primary" id="searchButton">search</button>
+
+                    <div class="btn-group pull-right">
+                        <a href="${createLink(action:'projectAdmin', id:projectInstance.id)}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
+                            <i class="icon-th-list"></i>
+                        </a>
+                        <a href="${createLink(action:'projectAdmin', id:projectInstance.id, params:[mode:'thumbs', max: 48])}" class="btn btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
+                            <i class="icon-th"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="row" id="content">
             <div class="span12">
-                <table class="table table-striped table-condensed table-bordered">
-                    <thead>
-                        <tr>
-
-                            <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'External Id')}" params="${[q: params.q]}"/>
-
-                            <g:each in="${extraFields}" var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
-
-                            <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q: params.q]}"/>
-
-                            <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}" params="${[q: params.q]}"/>
-
-                            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Validation Status')}" params="${[q: params.q]}" style="text-align: center;"/>
-
-                            <th style="text-align: center;">Action</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <g:each in="${taskInstanceList}" status="i" var="taskInstance">
-                            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-
-                                <td>
-                                    <g:link controller="task" action="show" id="${taskInstance.id}">${taskInstance.externalIdentifier}</g:link>
-                                    <g:set var="lastView" value="${lockedMap[taskInstance.id]}" />
-                                    <g:if test="${lastView}">
-                                        <i class="icon-lock lastViewedTask" title="Locked by ${lastView.userId}" viewedTaskId="${lastView.id}"></i>
-                                    </g:if>
-                                </td>
-
-                                <g:each in="${extraFields}" var="field">
-                                    <td>${field?.value[taskInstance.id]?.value?.getAt(0)}</td>
-                                </g:each>
-
-                                <td>
-                                    <g:if test="${taskInstance.fullyTranscribedBy}">
-                                        <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                                        <g:link controller="user" action="show" id="${thisUser.id}">${thisUser.displayName}</g:link>
-                                    </g:if>
-                                </td>
-
-                                <td>
-                                    <g:if test="${taskInstance.fullyValidatedBy}">
-                                        <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyValidatedBy)}"/>
-                                        <g:link controller="user" action="show" id="${thisUser.id}">${thisUser.displayName}</g:link>
-                                    </g:if>
-                                </td>
-
-                                <td style="text-align: center;">
-                                    <g:if test="${taskInstance.isValid == true}">&#10003;</g:if>
-                                    <g:elseif test="${taskInstance.isValid == false}">&#10005;</g:elseif>
-                                    <g:else>&#8211;</g:else>
-                                </td>
-
-                                <td style="text-align: center;">
-                                    <g:if test="${taskInstance.fullyValidatedBy}">
-                                        <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
-                                        %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
-                                        %{--</button>--}%
-                                    </g:if>
-                                    <g:elseif test="${taskInstance.fullyTranscribedBy}">
-                                        <button class="btn btn-small" onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
-                                        %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
-                                        %{--</button>--}%
-                                    </g:elseif>
-                                    <g:else>
-                                        <button class="btn btn-small" onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'">transcribe</button>
-                                    </g:else>
-                                </td>
-
-                            </tr>
-                        </g:each>
-                    </tbody>
-                </table>
-
-                <div class="pagination">
-                    <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q: params.q]}"/>
-                </div>
+                <g:if test="${params.mode == 'thumbs'}">
+                    <g:render template="taskListThumbs" />
+                </g:if>
+                <g:else>
+                    <g:render template="taskListTable" />
+                </g:else>
             </div>
         </div>
     </body>

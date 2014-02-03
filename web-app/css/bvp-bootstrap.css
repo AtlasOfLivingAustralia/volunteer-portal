@@ -350,3 +350,8 @@ h2, h3, h4, h5 {
 .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
     background-color: white;
 }
+
+.label a, .badge a {
+    color: white;
+    text-decoration: none;
+}

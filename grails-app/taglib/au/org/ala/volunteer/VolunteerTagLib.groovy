@@ -19,6 +19,7 @@ class VolunteerTagLib {
     def userService
     def grailsApplication
     def settingsService
+    def multimediaService
 
     def loggedInName = {
         def userName = authService.username()
@@ -1849,5 +1850,21 @@ class VolunteerTagLib {
 
     def spinner = { attrs, body ->
         out << "<image src=\"${resource(dir:'images', file:'spinner.gif')}\" />"
+    }
+
+    def taskThumbnail = { attrs, body ->
+        def task = attrs.task as Task
+        if (task) {
+            def url = ""
+            def mm = task.multimedia?.first()
+            if (mm) {
+                url = multimediaService.getImageThumbnailUrl(mm)
+            }
+
+            if (url) {
+                out << "<img src=\"${url}\" style=\"height:100px\"/>"
+            }
+
+        }
     }
 }
