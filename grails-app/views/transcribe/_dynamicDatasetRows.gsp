@@ -25,6 +25,11 @@
         margin: 5px;
     }
 
+    #observationFields hr {
+        margin: 3px;
+        border-top-color: #d3d3d3;
+    }
+
 </style>
 
 <button class="btn btn-small btn-success" id="btnAddRow"><i class="icon-plus icon-white"></i>&nbsp;Add&nbsp;Row</button>
@@ -87,7 +92,7 @@
             }
             $("#observationFields").html(htmlStr);
             $("#noOfEntries").attr('value', itemCount - 1);
-            bindTooltips();
+            bindTooltips("#observationFields a.fieldHelp");
         } catch (e) {
             alert(e)
         }
