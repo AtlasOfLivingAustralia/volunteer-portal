@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
 import org.apache.commons.lang.StringUtils
+import org.imgscalr.Scalr
+
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import groovy.sql.Sql
