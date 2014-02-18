@@ -4,25 +4,22 @@
     <facet type="web" name="GrailsWeb">
       <configuration>
         <webroots>
-          <root url="file://$MODULE_DIR$/target/plugins/mail-1.0.1/grails-app/views" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/csv-0.3.1/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/resources-1.2.1/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/plugins/jquery-ui-1.8.24/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/rest-0.7/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/jquery-ui-1.8.24/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/resources-1.2.1/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/tiny-mce-3.4.9/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/mail-1.0.1/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/jquery-1.8.3/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.2.2/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/plugins/ala-web-theme-0.2.2/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/plugins/csv-0.3.1/web-app" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
     </facet>
     <facet type="hibernate" name="Hibernate">
       <configuration>
-        <datasource-map>
-          <unit-entry name="Gorm" />
-          <unit-entry name="sessionFactory" />
-        </datasource-map>
+        <datasource-map />
         <naming-strategy-map />
       </configuration>
     </facet>
