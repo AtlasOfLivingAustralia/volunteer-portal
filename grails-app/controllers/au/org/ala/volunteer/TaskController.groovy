@@ -1,13 +1,10 @@
 package au.org.ala.volunteer
 
-import grails.converters.*
+import grails.converters.JSON
 import groovy.time.TimeCategory
-import groovy.time.TimeDuration
-import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
-import java.util.regex.Pattern
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 class TaskController {
 
@@ -85,58 +82,55 @@ class TaskController {
                 session.removeAttribute(PROJECT_LIST_STATE_SESSION_KEY)
             }
 
-            def lastState = session[PROJECT_LIST_STATE_SESSION_KEY] ?: [ max: 20, order: 'asc', sort: 'id', offset: 0, mode: '' ]
+            def lastState = session[PROJECT_LIST_STATE_SESSION_KEY] ?: [ max: 20, order: 'asc', sort: 'id', offset: 0 ]
 
-            params.max = Math.min(params.max ? params.int('max') : lastState.max, 500)
+            params.max = Math.min(params.max ? params.int('max') : lastState.max, 50)
             params.order = params.order ?: lastState.order
             params.sort = params.sort ?: lastState.sort
             params.offset = params.offset ?: lastState.offset
-            params.mode = params.mode ?: lastState.mode
 
             // Save the current view state in the session, including the current project id
             session[PROJECT_LIST_STATE_SESSION_KEY] = [
                 max: params.max,
                 order: params.order,
                 sort: params.sort,
-                offset: params.offset,
-                mode: params.mode
+                offset: params.offset
             ]
-
             session[PROJECT_LIST_LAST_PROJECT_ID_KEY] = params.id
 
             def taskInstanceList
             def taskInstanceTotal
             def extraFields = [:] // Map
-            def query = params.q
+            def query = params.q as String
 
             if (query) {
-                def fullList = Task.findAllByProject(projectInstance, [max: 999])
-                taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)
-                taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
-                if (taskInstanceTotal) {
-                    fieldNames.each {
-                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
-                    }
-                }
+                // def fullList = Task.findAllByProject(projectInstance, [max: 9999])
+                def fieldNameList = Arrays.asList(fieldNames)
+                taskInstanceList = fieldService.findAllTasksByFieldValues(projectInstance, query, params, fieldNameList)
+                taskInstanceTotal = fieldService.countAllTasksByFieldValueQuery(projectInstance, query, fieldNameList)
             } else {
                 taskInstanceList = Task.findAllByProject(projectInstance, params)
                 taskInstanceTotal = Task.countByProject(projectInstance)
-                if (taskInstanceTotal) {
-                    fieldNames.each {
-                        extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
-                    }
+            }
+
+            if (taskInstanceTotal) {
+                fieldNames.each {
+                    extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
                 }
             }
 
-            def c = ViewedTask.createCriteria()
-            def views = c {
-                'in'("task", taskInstanceList)
+
+            def views = [:]
+            if (taskInstanceList) {
+                def c = ViewedTask.createCriteria()
+                views = c {
+                    'in'("task", taskInstanceList)
+                }
+                views = views?.groupBy { it.task }
             }
 
-            views = views?.groupBy { it.task }
-
             def lockedMap = [:]
-            views.values().each { List viewList ->
+            views?.values().each { List viewList ->
                 def max = viewList.max { it.lastView }
                 use (TimeCategory) {
                     if (new Date(max.lastView) > 2.hours.ago) {
@@ -152,42 +146,6 @@ class TaskController {
         else {
             flash.message = "No project found for ID " + params.id
         }
-    }
-
-    private def renderListWithSearch(GrailsParameterMap params, List fieldNames, String view) {
-        params.max = Math.min(params.max ? params.int('max') : 20, 50)
-        params.order = params.order ? params.order : "asc"
-        params.sort = params.sort ? params.sort : "id"
-        def taskInstanceList
-        def taskInstanceTotal
-        def extraFields = [:] // Map
-        def query = params.q
-        log.info("q = " + query)
-        if (query) {
-            def max = params.max // store it
-            def offset = params.offset?:0
-            params.max = 999 // to get full list
-            params.offset = 0
-            def fullList = Task.list(params)
-            params.max = max // reset for paging
-            params.offset = offset
-            taskInstanceList = fieldService.findAllFieldsWithTasksAndQuery(fullList, query, params)
-            taskInstanceTotal = fieldService.countAllFieldsWithTasksAndQuery(fullList, query)
-            if (taskInstanceTotal) {
-                fieldNames.each {
-                    extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
-                }
-            }
-        } else {
-            taskInstanceList = Task.list(params)
-            taskInstanceTotal = Task.count()
-            fieldNames.each {
-                extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params)
-            }
-        }
-
-        render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
-                extraFields: extraFields])
     }
 
     /**
@@ -247,8 +205,7 @@ class TaskController {
             //redirect(action: "project", params: params)
             renderProjectListWithSearch(params, "list")
         } else {
-            //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
-            renderListWithSearch(params, ["catalogNumber","scientificName"], "list")
+            redirect(controller: 'project', action:'list')
         }
     }
 

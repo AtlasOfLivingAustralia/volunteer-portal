@@ -7,39 +7,80 @@ class FieldService {
     def serviceMethod() {}
 
     List getLatestFieldsWithTasks(String fieldName, List<Task> taskList, Map params) {
+        if (!taskList) {
+            return []
+        }
+
         def sort = "f.task." + (params.sort?:"id")
         def order = params.order?:"asc"
         def fieldValues = Field.executeQuery(
-            """select f from Field f
+                """select f from Field f
                where f.name = :name and f.superceded = false and f.recordIdx = 0 and
                f.task in (:list) order by ${sort} ${order}""",
-            [name: fieldName, list: taskList])
+                [name: fieldName, list: taskList])
         fieldValues.toList()
     }
 
-    List findAllFieldsWithTasksAndQuery(List<Task> taskList, String query, Map params) {
+    /**
+     * Search for tasks based on field values (within the context of a project)
+     * Also searches psuedo fields, such as external-identifier and fullyTranscribedBy and fullyValidatedBy
+     * @param projectInstance
+     * @param query
+     * @param params
+     * @param fieldNames
+     * @return
+     */
+    List findAllTasksByFieldValues(Project projectInstance, String query, Map params, List fieldNames = []) {
         query = query?.toLowerCase()
 
-        def fieldValues = Field.executeQuery(
-            """select distinct f.task from Field f
+        def taskList
+
+        if (fieldNames) {
+            taskList = Field.executeQuery(
+                    """select distinct f.task from Field f
                where f.superceded = false and
-               f.task in (:list) and (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query)
-               order by 1""", [list: taskList, query: '%'+query+'%'], params)
-        fieldValues.toList()
+               f.name in (:fieldNames) and
+               f.task.project = :projectInstance and
+               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               """, [projectInstance: projectInstance, query: '%' + query + '%', fieldNames: fieldNames], params)
+        } else {
+            taskList = Field.executeQuery(
+                    """select distinct f.task from Field f
+               where f.superceded = false and
+               f.task.project = :projectInstance and
+               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               """, [projectInstance: projectInstance, query: '%' + query + '%'], params)
+        }
+
+        taskList?.toList()
     }
 
-    int countAllFieldsWithTasksAndQuery(List<Task> taskList, String query) {
-        def fieldValues = Field.executeQuery(
-            """select count(distinct f.task) from Field f
+    public int countAllTasksByFieldValueQuery(Project projectInstance, String query, List fieldNames = []) {
+
+        query = query?.toLowerCase()
+        def count
+        if (fieldNames) {
+            count = Field.executeQuery(
+                    """select count(distinct f.task) as count from Field f
                where f.superceded = false and
-               f.task in (:list) and (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query)
-               order by 1""", [list: taskList, query: '%'+query+'%'])
-        fieldValues.get(0)
+               f.name in (:fieldNames) and
+               f.task.project = :projectInstance and
+               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               """, [projectInstance: projectInstance, query: '%' + query + '%', fieldNames: fieldNames])
+        } else {
+            count = Field.executeQuery(
+                    """select count(distinct f.task) from Field f
+               where f.superceded = false and
+               f.task.project = :projectInstance and
+               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               """, [projectInstance: projectInstance, query: '%' + query + '%'])
+        }
+        return count?.get(0) as Integer
     }
 
     List getAllFieldsWithTasks(List<Task> taskList) {
         def fieldValues = Field.executeQuery(
-            """select f from Field f
+                """select f from Field f
                where f.superceded = false and
                f.task in (:list) order by f.task.id""", [list: taskList])
         fieldValues.toList()
@@ -47,7 +88,7 @@ class FieldService {
 
     List getAllFieldNames(List<Task> taskList) {
         def fieldValues = Field.executeQuery(
-            """select distinct f.name from Field f
+                """select distinct f.name from Field f
                where f.superceded = false and
                f.task in (:list) order by f.name""", [list: taskList])
         fieldValues.toList()
