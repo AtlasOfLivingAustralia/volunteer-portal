@@ -256,4 +256,10 @@ class TranscribeController {
         [multimedia: multimedia, height: height, rotate: rotate, hideControls: hideControls, hideShowInOtherWindow: hideShowInOtherWindow, hidePinImage: hidePinImage]
     }
 
+    def taskLockTimeoutFragment() {
+        def taskInstance = Task.get(params.int("taskId"))
+        def validator = params.boolean("validator")
+        [taskInstance: taskInstance, isValidator: validator]
+    }
+
 }

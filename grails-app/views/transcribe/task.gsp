@@ -712,9 +712,6 @@
                         </div>
                     </div>
                 </div>
-
-                <cl:timeoutPopup/>
-
             </g:form>
         </g:if>
         <g:else>
@@ -726,11 +723,41 @@
                 </div>
             </div>
         </g:else>
-        <cl:timeoutPopup/>
     </body>
     <r:script>
 
         $(document).ready(function() {
+
+            // prompt user to save if page has been open for too long
+            <g:if test="${!isReadonly}">
+                var taskLockTimeout = 90 * 60; // Seconds
+
+                window.setTimeout(function() {
+                    showTaskTimeoutMessage();
+                }, taskLockTimeout * 1000);
+
+                function showTaskTimeoutMessage() {
+                    var options = {
+                        url: "${createLink(controller:'transcribe', action:'taskLockTimeoutFragment', params:[taskId:taskInstance.id, validator: validator])}",
+                        title: 'Task lock will expire soon!',
+                        backdrop: 'static',
+                        keyboard: false
+                    };
+
+                    showModal(options);
+                }
+
+            </g:if>
+
+            var keepAliveInterval = 10; // Minutes
+            var intervalSeconds = 60 * keepAliveInterval;
+
+            // Set up the session keep alive
+            setInterval(function() {
+                $.ajax("${createLink(controller: 'ajax', action:'keepSessionAlive')}").done(function(data) {
+                    // console.log(data);
+                });
+            }, intervalSeconds * 1000);
 
             $("#btnSave").click(function(e) {
                 e.preventDefault();

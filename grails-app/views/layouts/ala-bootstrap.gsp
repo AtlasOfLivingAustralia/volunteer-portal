@@ -81,6 +81,8 @@
             function showModal(options) {
 
                 var opts = {
+                    backdrop: options.backdrop ? options.backdrop : true,
+                    keyboard: options.keyboard ? options.keyboard: true,
                     url: options.url ? options.url : false,
                     id: options.id ? options.id : 'modal_element_id',
                     height: options.height ? options.height : 500,
@@ -115,8 +117,11 @@
                 });
 
                 $(selector).modal({
-                    remote: opts.url
+                    remote: opts.url,
+                    keyboard: opts.keyboard,
+                    backdrop: opts.backdrop
                 });
+
             }
 
             function hideModal() {

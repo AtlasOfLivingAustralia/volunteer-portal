@@ -84,8 +84,8 @@
     </servlet-mapping>
 
     <session-config>
-        <!-- 30 minutes -->
-        <session-timeout>60</session-timeout>
+        <!-- 120 minutes, or 2 hours -->
+        <session-timeout>120</session-timeout>
     </session-config>
 
     <welcome-file-list>
