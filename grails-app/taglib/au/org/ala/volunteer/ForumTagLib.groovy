@@ -385,13 +385,13 @@ class ForumTagLib {
         if (topic) {
             mb.h1() {
                 if (taskInstance) {
-                    mkp.yield(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier]))
+                    mkp.yieldUnescaped(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier]))
                 }
                 if (projectInstance) {
-                    mkp.yield(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel, topic.title]))
+                    mkp.yieldUnescaped(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel, topic.title]))
                 }
                 if (!projectInstance && !taskInstance) {
-                    mkp.yield(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title]))
+                    mkp.yieldUnescaped(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title]))
                 }
             }
         }
