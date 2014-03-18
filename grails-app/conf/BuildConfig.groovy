@@ -26,11 +26,11 @@ grails.project.dependency.resolution = {
         mavenRepo "http://maven.ala.org.au/repository/"
     }
     plugins {
-        build ':tomcat:7.0.50'
-        runtime ':hibernate:3.6.10.7'
+        build ':tomcat:7.0.52.1'
+        runtime ':hibernate:3.6.10.10'
         runtime ":jquery:1.8.3"
         compile ":jquery-ui:1.8.24"
-        runtime ":resources:1.2.1"
+        runtime ':resources:1.2.7'
         runtime ":mail:1.0.1"
         runtime ":csv:0.3.1"
         runtime ":executor:0.3"

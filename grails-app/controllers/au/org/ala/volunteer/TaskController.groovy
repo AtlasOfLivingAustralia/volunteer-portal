@@ -243,12 +243,8 @@ class TaskController {
         def taskInstance = Task.get(params.int('id'))
 
         def c = Field.createCriteria()
-        def fields = c.list {
+        def fields = c.list(params) {
             eq('task', taskInstance)
-            and {
-                order('name', 'asc')
-                order('created', 'asc')
-            }
         }
 
         // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
@@ -799,6 +795,40 @@ class TaskController {
 
             [viewedTask: viewedTask, lastViewedDate: lastViewedDate, agoString: agoString]
         }
+    }
+
+    def resetTranscribedStatus() {
+
+        def taskInstance = Task.get(params.int('id'))
+        if (!taskInstance) {
+            redirect(action: 'showDetails')
+            return
+        }
+        if (!userService.isAdmin()) {
+            flash.errorMessage = "Only BVP administrators can perform this action!"
+            redirect(action:'showDetails', id: taskInstance.id)
+            return
+        }
+
+        taskService.resetTranscribedStatus(taskInstance)
+        redirect(action:'showDetails', id: taskInstance.id)
+    }
+
+    def resetValidatedStatus() {
+
+        def taskInstance = Task.get(params.int('id'))
+        if (!taskInstance) {
+            redirect(action: 'showDetails')
+            return
+        }
+        if (!userService.isAdmin()) {
+            flash.errorMessage = "Only BVP administrators can perform this action!"
+            redirect(action:'showDetails', id: taskInstance.id)
+            return
+        }
+
+        taskService.resetValidationStatus(taskInstance)
+        redirect(action:'showDetails', id: taskInstance.id)
     }
 
 }

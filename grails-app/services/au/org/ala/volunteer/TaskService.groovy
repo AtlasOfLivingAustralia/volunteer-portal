@@ -742,6 +742,52 @@ class TaskService {
         return list?.get(0)
     }
 
+    /**
+     * This method clears the transcriber and date transcribed fields. It also decrements the transcribers score
+     * @param task
+     */
+    def resetTranscribedStatus(Task task) {
+        if (!task) {
+            return
+        }
+
+        if (!task.fullyTranscribedBy && !task.dateFullyTranscribed) {
+            return
+        }
+        def transcriber = User.findByUserId(task.fullyTranscribedBy)
+        if (transcriber) {
+            transcriber.transcribedCount--
+        }
+
+        task.fullyTranscribedBy = null
+        task.dateFullyTranscribed = null
+
+        // Also reset the validation status!
+        resetValidationStatus(task)
+    }
+
+    /**
+     * This method takes a task and clears it's validated by and date fully validated fields. It also decrements the score of the user
+     * @param task
+     */
+    def resetValidationStatus(Task task) {
+        if (!task) {
+            return
+        }
+
+        if (!task.fullyValidatedBy && !task.dateFullyValidated) {
+            return
+        }
+
+        def validator = User.findByUserId(task.fullyValidatedBy)
+        if (validator) {
+            validator.validatedCount--
+        }
+        task.isValid = null
+        task.fullyValidatedBy = null
+        task.dateFullyValidated = null
+    }
+
 }
 
 public class ImageMetaData {

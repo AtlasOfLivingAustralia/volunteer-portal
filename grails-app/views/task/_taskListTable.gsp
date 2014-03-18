@@ -22,7 +22,8 @@
             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
                 <td>
-                    <g:link controller="task" action="show" id="${taskInstance.id}">${taskInstance.externalIdentifier}</g:link>
+                    <g:link controller="task" action="showDetails" id="${taskInstance.id}" title="Show task details"><i class="icon-list-alt"></i></g:link>
+                    ${taskInstance.externalIdentifier}
                     <g:set var="lastView" value="${lockedMap[taskInstance.id]}" />
                     <g:if test="${lastView}">
                         <i class="icon-lock lastViewedTask" title="Locked by ${lastView.userId}" viewedTaskId="${lastView.id}"></i>

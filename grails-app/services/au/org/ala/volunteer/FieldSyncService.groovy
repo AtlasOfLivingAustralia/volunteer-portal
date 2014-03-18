@@ -185,10 +185,6 @@ class FieldSyncService {
             if (!task.dateFullyValidated) {
                 task.dateFullyValidated = now
             }
-
-        } else {
-            //reset the fully validated flag
-            task.fullyValidatedBy = null
         }
 
         if (isValid != null) {

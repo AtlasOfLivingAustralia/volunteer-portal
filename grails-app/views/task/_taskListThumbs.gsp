@@ -20,7 +20,7 @@
                 </div>
 
                 <div style="text-align: center">
-                    <a href="${createLink(controller: 'task', action:'show', id:taskInstance.id)}">
+                    <a href="${createLink(controller: 'task', action:'showDetails', id:taskInstance.id)}">
                         <cl:taskThumbnail task="${taskInstance}" />
                     </a>
                 </div>
