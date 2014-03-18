@@ -12,7 +12,6 @@ class AjaxController {
 
     def taskService
     def userService
-    def authService
     def taskLoadService
     def statsService
     DataSource dataSource

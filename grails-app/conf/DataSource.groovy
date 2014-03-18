@@ -44,6 +44,17 @@ environments {
         dataSource {
             dbCreate = "update"
             url = "jdbc:postgresql://ala-biocachedb1.vm.csiro.au/volunteers"
+            testOnBorrow = true
+            properties {
+                maxActive = 10
+                maxIdle = 5
+                minIdle = 5
+                initialSize = 5
+                minEvictableIdleTimeMillis = 60000
+                timeBetweenEvictionRunsMillis = 60000
+                maxWait = 10000
+                validationQuery = "select max(id) from task"
+            }
         }
     }
 }

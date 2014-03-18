@@ -6,8 +6,6 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 
 class TaskCommentController {
 
-    def authService
-
     def index = {
     }
 

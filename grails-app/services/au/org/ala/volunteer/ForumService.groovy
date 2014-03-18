@@ -1,11 +1,7 @@
 package au.org.ala.volunteer
 
-import au.org.ala.cas.util.AuthenticationCookieUtils
-import grails.gorm.DetachedCriteria
 import grails.orm.PagedResultList
 import groovy.time.TimeDuration
-import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate
-import org.springframework.transaction.interceptor.TransactionAspectSupport
 
 class ForumService {
 

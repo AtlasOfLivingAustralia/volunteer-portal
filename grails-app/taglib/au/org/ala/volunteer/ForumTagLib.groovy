@@ -7,7 +7,6 @@ class ForumTagLib {
 
     static namespace = 'vpf'
 
-    def authService
     def userService
     def forumService
     def markdownService

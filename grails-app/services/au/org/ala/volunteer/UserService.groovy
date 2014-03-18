@@ -7,22 +7,22 @@ class UserService {
 
     static transactional = true
 
-   /**
-    * Register the current user in the system.
-    */
+    /**
+     * Register the current user in the system.
+     */
     def registerCurrentUser = {
-      def userId = authService.username()
-      def displayName = authService.displayName()
-      logService.log("Checking user is registered: " + userId+", " + displayName )
-      if(userId){
-        if(User.findByUserId(userId)==null){
-          User user = new User()
-          user.userId = userId
-          user.created = new Date()
-          user.displayName = displayName
-          user.save(flush:true)
+        def userId = authService.username()
+        def displayName = authService.displayName()
+        logService.log("Checking user is registered: " + userId + ", " + displayName)
+        if (userId) {
+            if (User.findByUserId(userId) == null) {
+                User user = new User()
+                user.userId = userId
+                user.created = new Date()
+                user.displayName = displayName
+                user.save(flush: true)
+            }
         }
-      }
     }
 
     def getUserCounts = {
@@ -81,7 +81,9 @@ class UserService {
         def user = User.findByUserId(userId)
         if (user) {
             def validatorRole = Role.findByNameIlike("validator")
-            def role = user.userRoles.find { it.role.id == validatorRole.id && (it.project == null || project == null || it.project.id == project?.id) }
+            def role = user.userRoles.find {
+                it.role.id == validatorRole.id && (it.project == null || project == null || it.project.id == project?.id)
+            }
             if (role) {
                 // a role exists for the current user and the specified project (or the user has a role with a null project
                 // indicating that they can validate tasks from any project

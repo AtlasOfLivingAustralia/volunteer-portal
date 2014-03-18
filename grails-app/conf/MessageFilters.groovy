@@ -1,8 +1,5 @@
 import org.apache.commons.lang.StringUtils
-import java.text.SimpleDateFormat
-import au.org.ala.cas.util.AuthenticationCookieUtils
 import au.org.ala.volunteer.FrontPage
-import groovy.time.TimeDuration
 
 class MessageFilters {
 

@@ -7,7 +7,6 @@ class ForumController {
     def forumService
     def userService
     def markdownService
-    def authService
     def projectService
     def fieldService
 
