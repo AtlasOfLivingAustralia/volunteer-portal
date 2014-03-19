@@ -27,40 +27,24 @@ class TranscribeController {
     def task = {
 
         def taskInstance = Task.get(params.int('id'))
-        def currentUser = authService.username()
+        def currentUser = authService.username() as String
         userService.registerCurrentUser()
 
         if (taskInstance) {
-            // determine if task has been recently viewed by another user
-            def prevUserId = null
-            def prevLastView = 0
-            taskInstance.viewedTasks.each { viewedTask ->
-                // viewedTasks is a set so order is not guaranteed
-                if (viewedTask.lastView > prevLastView) {
-                    // store the most recent viewedTask
-                    prevUserId = viewedTask.userId
-                    prevLastView = viewedTask.lastView
-                }
-            }
-
-            log.debug "userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
-            def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
-
-            if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < grailsApplication.config.viewedTask.timeout) {
+            if (auditService.isTaskLockedForUser(taskInstance, currentUser)) {
+                def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
-                log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
-                def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. " +
-                        "You have been allocated a new task"
+                log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Another task will be allocated")
+                flash.message  = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. You have been allocated a new task"
                 // redirect to another task
-                redirect(action: "showNextFromProject", id: taskInstance.project.id,
-                        params: [msg: msg, prevId: taskInstance.id, prevUserId: prevUserId])
+                redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId])
+                return
             } else {
                 // go ahead with this task
                 auditService.auditTaskViewing(taskInstance, currentUser)
             }
 
             def project = Project.findById(taskInstance.project.id)
-            def template = Template.findById(project.template.id)
             def isReadonly = false
 
             def isValidator = userService.isValidator(project)
@@ -85,7 +69,7 @@ class TranscribeController {
 
             // def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-            render( view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber])
+            render( view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -226,7 +210,12 @@ class TranscribeController {
         }
 
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
-        flash.message = params.msg
+
+        println flash.message
+
+        if (params.msg) {
+            flash.message = params.msg
+        }
         def previousId = params.prevId?:-1
         def prevUserId = params.prevUserId?:-1
         def taskInstance = taskService.getNextTask(currentUser, project)

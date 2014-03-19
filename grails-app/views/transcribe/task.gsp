@@ -581,10 +581,14 @@
                 ]
             %>
 
+
             <div>
                 <g:if test="${sequenceNumber >= 0}">
                     <span>Image sequence number: ${sequenceNumber}</span>
                 </g:if>
+                <cl:ifAdmin>
+                    <a href="${createLink(controller:'task', action:'showDetails', id:taskInstance?.id)}" class="btn btn-small btn-info pull-right">View Details</a>
+                </cl:ifAdmin>
             </div>
 
         </cl:headerContent>

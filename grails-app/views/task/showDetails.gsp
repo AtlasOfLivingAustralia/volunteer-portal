@@ -157,11 +157,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Views (${taskInstance.viewed})</td>
+                                    <td>Views</td>
                                     <td>
                                         <ul>
-                                            <g:each in="${taskInstance.viewedTasks}" var="view">
-                                                <li>${view.numberOfViews} times (last view by ${view.userId} on ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
+                                            <g:each in="${taskInstance.viewedTasks?.sort({ it.lastView })}" var="view">
+                                                <li>Viewed by ${view.userId} ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " times) " : ""} on ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
                                             </g:each>
                                         </ul>
                                     </td>

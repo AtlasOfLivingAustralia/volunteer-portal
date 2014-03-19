@@ -11,6 +11,7 @@ class BootStrap {
     def logService
     def projectTypeService
     def grailsApplication
+    def auditService
 
     def init = { servletContext ->
 
@@ -24,6 +25,8 @@ class BootStrap {
 
         prepareProjectTypes();
 
+        fixTaskLastViews();
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', displayName: 'System User')
@@ -35,6 +38,34 @@ class BootStrap {
             ensureRoleExists(role)
         }
 
+    }
+
+    private void fixTaskLastViews() {
+        def c = Task.createCriteria()
+        def tasks = c.list {
+            isNull("lastViewed")
+            sizeGt("viewedTasks", 0)
+        }
+        if (tasks) {
+            println "Fixing last view for ${tasks.size()} tasks..."
+            int count = 0
+            tasks.each { task ->
+                def lastView = auditService.getLastViewForTask(task)
+                if (lastView) {
+                    task.lastViewed = lastView.lastView
+                    task.lastViewedBy = lastView.userId
+                } else {
+                    println "Problem fixing last view for task ${task.id} - no last view found."
+                }
+                count++
+                if (count % 1000 == 0) {
+                    println "${count} tasks processed."
+                }
+            }
+            println "${count} tasks processed (complete)"
+        } else {
+            println "No tasks with inconsistent last view details"
+        }
     }
 
     private void prepareProjectTypes() {

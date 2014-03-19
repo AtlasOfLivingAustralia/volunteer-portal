@@ -188,34 +188,59 @@ class TaskService {
             return null;
         }
 
-        def currentTime = System.currentTimeMillis() - grailsApplication.config.viewedTask.timeout
-        def tasks = Task.executeQuery(
-            """select t from Task t
-               left outer join t.viewedTasks viewedTasks
-               where
-               t.project.id = :projectId
-               and t.fullyTranscribedBy is null
-               and (viewedTasks.userId is null or (viewedTasks.userId != :userId and viewedTasks.lastView < :currentTime))
-               order by viewedTasks.lastView desc""", [projectId: project.id, userId: userId, currentTime: currentTime, max: 1])
-        if (tasks) {
-            log.info("getNextTask: project " + project.id + " - found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
-            tasks.get(0)
-        } else {
-            //show
-            tasks = Task.executeQuery(
-            """select t from Task t
-               left outer join t.viewedTasks viewedTasks
-               where
-               t.project.id = :projectId
-               and t.fullyTranscribedBy is null
-               order by viewedTasks.lastView desc""", [projectId: project.id, max: 1])
-            if(!tasks.isEmpty()){
-                log.info("getNextTask: found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
-              tasks.get(0)
-            } else {
-              null
-            }
+        // Look for tasks that have never been viewed before!
+        def tasks = Task.createCriteria().list([max:1]) {
+            eq("project", project)
+            isNull("fullyTranscribedBy")
+            sizeLe("viewedTasks", 0)
+            order("id", "asc")
         }
+
+        if (tasks) {
+            def task = tasks.get(0)
+            println "getNextTask(project ${project.id}) found a task with no views: ${task.id}"
+            return task
+        }
+
+        // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
+        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+
+
+
+        tasks = Task.createCriteria().list([max:1]) {
+            eq("project", project)
+            isNull("fullyTranscribedBy")
+            and {
+                ne("lastViewedBy", userId)
+                le("lastViewed", timeoutWindow)
+            }
+            order("lastViewed", "asc")
+        }
+
+        if (tasks) {
+            def task = tasks.get(0)
+            println "getNextTask(project ${project.id}) found a task: ${task.id}"
+            return task
+        }
+
+        // Finally, we'll have to serve up a task that this user has seen before
+        tasks = Task.createCriteria().list([max:1]) {
+            eq("project", project)
+            isNull("fullyTranscribedBy")
+            or {
+                le("lastViewed", timeoutWindow)
+                eq("lastViewedBy", userId)
+            }
+            order("lastViewed", "asc")
+        }
+
+        if (tasks) {
+            def task = tasks.get(0)
+            println "getNextTask(project ${project.id}) found a task: ${task.id}"
+            return task
+        }
+
+        return null
     }
 
 

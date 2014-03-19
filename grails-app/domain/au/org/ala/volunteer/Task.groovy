@@ -13,6 +13,8 @@ class Task {
     Integer viewed = -1
     Date created
     Date dateLastUpdated
+    Long lastViewed
+    String lastViewedBy
 
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
 
@@ -35,6 +37,8 @@ class Task {
         viewed nullable: true
         created nullable: true
         dateLastUpdated nullable: true
+        lastViewed nullable: true
+        lastViewedBy nullable: true
     }
 
 }

@@ -20,34 +20,15 @@ class ValidateController {
         userService.registerCurrentUser()
 
         if (taskInstance) {
-            //record the viewing of the task
-            //auditService.auditTaskViewing(taskInstance, currentUser)
-            // determine if task has been recently viewed by another user
-            def prevUserId = null
-            def prevLastView = 0
-            taskInstance.viewedTasks.each { viewedTask ->
-                // viewedTasks is a set so order is not guaranteed
-                if (viewedTask.lastView > prevLastView) {
-                    // store the most recent viewedTask
-                    prevUserId = viewedTask.userId
-                    prevLastView = viewedTask.lastView
-                }
-            }
 
-
-            log.debug "userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
-            def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
-
-            if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < grailsApplication.config.viewedTask.timeout) {
+            if (auditService.isTaskLockedForUser(taskInstance, currentUser)) {
+                def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
-                log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago."
-                def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited/validated by another user. "
-
+                log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Returning to admin list.")
+                def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited/validated by another user."
                 flash.message = msg
-
+                // redirect to another task
                 redirect(controller: "task", action:  "projectAdmin", id: taskInstance.project.id, params: params + [projectId:taskInstance.project.id])
-//                redirect(action: "showNextFromProject", id: taskInstance.project.id,
-//                        params: [msg: msg, prevId: taskInstance.id, prevUserId: prevUserId])
                 return
             } else {
                 // go ahead with this task
@@ -89,9 +70,7 @@ class ValidateController {
                 nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
             }
 
-
             def imageMetaData = taskService.getImageMetaData(taskInstance)
-
             render(view: '../transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
