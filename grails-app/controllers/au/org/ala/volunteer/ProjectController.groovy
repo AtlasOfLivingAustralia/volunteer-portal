@@ -532,4 +532,45 @@ class ProjectController {
         redirect(action:'edit', id:projectInstance?.id)
     }
 
+    def createNewProjectFlow = {
+
+        welcome {
+            on("continue").to "projectDetails"
+            on("cancel").to "cancel"
+        }
+
+        projectDetails {
+            on("continue") {
+                println params.projectName
+                flow.projectName = params.projectName
+            }.to "summary"
+            on("cancel").to "cancel"
+            on("back").to "welcome"
+        }
+
+        summary {
+            on("continue").to "createProject"
+            on("cancel").to "cancel"
+            on("back").to "projectDetails"
+        }
+
+        createProject {
+            action {
+                println "Create Project: ${flow.projectName}"
+            }
+            on("success").to "finish"
+            on(Exception).to "handleError"
+        }
+
+        cancel {
+            redirect(controller:'admin', action:"index")
+        }
+
+        finish {
+            // TODO: redirect to project home page!
+            redirect(controller:'admin', action:"index")
+        }
+
+    }
+
 }
