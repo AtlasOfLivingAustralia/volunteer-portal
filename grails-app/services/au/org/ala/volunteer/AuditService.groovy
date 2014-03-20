@@ -44,36 +44,5 @@ class AuditService {
         taskInstance.lastViewedBy = userId
 
         taskInstance.addToViewedTasks(viewedTask)
-
-//        if (taskInstance.viewedTasks) {
-//            //update the viewed task
-//            taskInstance.viewedTasks.each { viewedTask ->
-//                //lastViewedTask = viewedTask.clone()
-//                viewedTask.numberOfViews = viewedTask.numberOfViews + 1
-//                viewedTask.lastUpdated = new Date()
-//                viewedTask.userId = userId
-//                viewedTask.lastView = System.currentTimeMillis()
-//                try {
-//                    viewedTask.save(flush: true, failOnError: true)
-//                } catch (ValidationException e) {
-//                    log.error("Error saving viewedTask: " + e.message, e)
-//                }
-//            }
-//        } else {
-//            //store the viewed record event
-//            def viewedTask = new ViewedTask()
-//            viewedTask.userId = userId
-//            viewedTask.task = taskInstance
-//            viewedTask.lastUpdated = new Date()
-//            viewedTask.lastView = System.currentTimeMillis()
-//            viewedTask.numberOfViews = 1
-//            //lastViewedTask = viewedTask
-//            try {
-//                viewedTask.save(flush: true, failOnError: true)
-//            } catch (ValidationException e) {
-//                log.error("Error saving viewedTask: " + e.message, e)
-//            }
-//        }
-
     }
 }

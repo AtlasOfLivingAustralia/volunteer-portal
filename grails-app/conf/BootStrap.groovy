@@ -2,6 +2,7 @@ import au.org.ala.volunteer.*
 import org.apache.commons.fileupload.disk.DiskFileItem
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import org.hibernate.FlushMode
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.util.regex.Pattern
@@ -12,6 +13,7 @@ class BootStrap {
     def projectTypeService
     def grailsApplication
     def auditService
+    def sessionFactory
 
     def init = { servletContext ->
 
@@ -41,28 +43,41 @@ class BootStrap {
     }
 
     private void fixTaskLastViews() {
-        def c = Task.createCriteria()
-        def tasks = c.list {
-            isNull("lastViewed")
-            sizeGt("viewedTasks", 0)
-        }
-        if (tasks) {
-            println "Fixing last view for ${tasks.size()} tasks..."
-            int count = 0
-            tasks.each { task ->
-                def lastView = auditService.getLastViewForTask(task)
-                if (lastView) {
-                    task.lastViewed = lastView.lastView
-                    task.lastViewedBy = lastView.userId
-                } else {
-                    println "Problem fixing last view for task ${task.id} - no last view found."
+        println "Checking task last views..."
+
+        def taskIds = Task.executeQuery("select t.id, count(vt.id) from Task t left outer join t.viewedTasks vt where t.lastViewed is null group by t.id having count(vt.id) > 0")
+
+        if (taskIds) {
+            println "Fixing last view for ${taskIds.size()} tasks..."
+            sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
+            try {
+                int count = 0
+                taskIds.each { taskId ->
+
+                    def task = Task.get(taskId)
+
+                    if (!task) {
+                        return
+                    }
+
+                    def lastView = auditService.getLastViewForTask(task)
+                    if (lastView) {
+                        task.lastViewed = lastView.lastView
+                        task.lastViewedBy = lastView.userId
+                    } else {
+                        println "Problem fixing last view for task ${task.id} - no last view found."
+                    }
+                    count++
+                    if (count % 1000 == 0) {
+                        println "${count} tasks processed."
+                        sessionFactory.currentSession.flush()
+                        sessionFactory.currentSession.clear()
+                    }
                 }
-                count++
-                if (count % 1000 == 0) {
-                    println "${count} tasks processed."
-                }
+                println "${count} tasks processed (complete)"
+            } finally {
+                sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
             }
-            println "${count} tasks processed (complete)"
         } else {
             println "No tasks with inconsistent last view details"
         }

@@ -10,10 +10,6 @@ class ValidateController {
     def logService
     def grailsApplication
 
-    def index = {
-        redirect(action: "showNextTaskForValidation")
-    }
-
     def task = {
         def taskInstance = Task.get(params.id)
         def currentUser = authService.username()
@@ -116,18 +112,8 @@ class ValidateController {
         }
     }
 
-    def showNextTaskForValidation = {
-        //need to check the user has sufficient privileges at a project level
-        def taskInstance = taskService.getNextTaskForValidation()
-        if (taskInstance != null) {
-            redirect(action: 'task', id: taskInstance.id)
-        } else {
-            render(view: 'noTasks')
-        }
-    }
-
     def showNextFromProject = {
-        def currentUser = authService.username()
+        def currentUser = authService.username() as String
         def project = Project.get(params.id)
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
         flash.message = params.msg

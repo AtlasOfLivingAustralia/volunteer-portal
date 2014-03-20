@@ -153,27 +153,57 @@ class TaskService {
      */
     Task getNextTask(String userId) {
 
-        def tasks = Task.executeQuery(
-            """select t from Task t
-               left outer join t.viewedTasks viewedTasks
-               where t.fullyTranscribedBy is null
-               and (viewedTasks.userId != :userId or viewedTasks.userId is null)
-               order by viewedTasks.lastView""", [userId: userId, max: 1])
-        if (tasks) {
-            tasks.get(0)
-        } else {
-            //show
-            tasks = Task.executeQuery(
-            """select t from Task t
-               left outer join t.viewedTasks viewedTasks
-               where t.fullyTranscribedBy is null
-               order by viewedTasks.lastView""", [max: 1])
-            if(!tasks.isEmpty()){
-              tasks.get(0)
-            } else {
-              null
-            }
+        if (!userId) {
+            return null
         }
+
+        // Look for tasks that have never been viewed before!
+        def tasks = Task.createCriteria().list([max:1]) {
+            isNull("fullyTranscribedBy")
+            sizeLe("viewedTasks", 0)
+            order("id", "asc")
+        }
+
+        if (tasks) {
+            def task = tasks.get(0)
+            println "getNextTask(no project) found a task with no views: ${task.id}"
+            return task
+        }
+
+        // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
+        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+        tasks = Task.createCriteria().list([max:1]) {
+            isNull("fullyTranscribedBy")
+            and {
+                ne("lastViewedBy", userId)
+                le("lastViewed", timeoutWindow)
+            }
+            order("lastViewed", "asc")
+        }
+
+        if (tasks) {
+            def task = tasks.get(0)
+            println "getNextTask(no project) found a task: ${task.id}"
+            return task
+        }
+
+        // Finally, we'll have to serve up a task that this user has seen before
+        tasks = Task.createCriteria().list([max:1]) {
+            isNull("fullyTranscribedBy")
+            or {
+                le("lastViewed", timeoutWindow)
+                eq("lastViewedBy", userId)
+            }
+            order("lastViewed", "asc")
+        }
+
+        if (tasks) {
+            def task = tasks.get(0)
+            println "getNextTask(no project) found a task: ${task.id}"
+            return task
+        }
+
+        return null
     }
 
     /**
@@ -204,9 +234,6 @@ class TaskService {
 
         // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
-
-
-
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNull("fullyTranscribedBy")
@@ -243,48 +270,6 @@ class TaskService {
         return null
     }
 
-
-    /**
-     * Get the next task for this user
-     *
-     * @param userId
-     * @return
-     */
-    Task getNextTaskForValidation() {
-
-        def tasks = Task.executeQuery(
-            """select t from Task t
-               where t.fullyTranscribedBy is not null
-               and t.fullyValidatedBy is null""", [max: 1])
-        if (tasks) {
-            tasks.get(0)
-        } else {
-            null
-        }
-    }
-
-    /**
-     * Get the next task for this user
-     *
-     * @param userId
-     * @return
-     */
-    Task getNextTaskForValidationForProject(Project project, String taskId) {
-        def previousTaskId = (taskId) ? taskId.toLong() : -1L
-        log.debug("taskId = " + taskId + " || previousTaskId = " + previousTaskId)
-        def tasks = Task.executeQuery(
-            """select t from Task t
-               where t.fullyTranscribedBy is not null
-               and t.fullyValidatedBy is null and t.project = :project
-               and t.id != :previousTaskId
-               """, [project:project, previousTaskId: previousTaskId, max: 1])
-        if (tasks) {
-            tasks.get(0)
-        } else {
-            null
-        }
-    }
-
     /**
      * Get the next task for this user (with checking for concurrent access)
      *
@@ -293,57 +278,49 @@ class TaskService {
      * @return
      */
     Task getNextTaskForValidationForProject(String userId, Project project) {
-        log.debug "getNextTaskForValidationForProject checking access..."
-        def currentTime = System.currentTimeMillis() - grailsApplication.config.viewedTask.timeout
-        def tasks = Task.executeQuery(
-                """select t from Task t
-               left outer join t.viewedTasks viewedTasks
-               where
-               t.project.id = :projectId
-               and t.fullyTranscribedBy is not null
-               and t.fullyValidatedBy is null
-               and (viewedTasks.userId is null or (viewedTasks.userId != :userId and viewedTasks.lastView < :currentTime))
-               order by viewedTasks.lastView desc""", [projectId: project.id, userId: userId, currentTime: currentTime, max: 1])
-        if (tasks) {
-            log.info("getNextTask: project " + project.id + " - found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
-            tasks.get(0)
-        } else {
-            //show
-            tasks = Task.executeQuery(
-                    """select t from Task t
-               left outer join t.viewedTasks viewedTasks
-               where
-               t.project.id = :projectId
-               and t.fullyTranscribedBy is not null
-               and t.fullyValidatedBy is null
-               order by viewedTasks.lastView desc""", [projectId: project.id, max: 1])
-            if(!tasks.isEmpty()){
-                log.info("getNextTask: found task with " + tasks.get(0).viewedTasks.size() + " viewTasks.")
-                tasks.get(0)
-            } else {
-                null
+
+        if (!project || !userId) {
+            return null;
+        }
+
+        // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
+        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+        def tasks = Task.createCriteria().list([max:1]) {
+            eq("project", project)
+            isNotNull("fullyTranscribedBy")
+            isNull("fullyValidatedBy")
+            and {
+                ne("lastViewedBy", userId)
+                le("lastViewed", timeoutWindow)
             }
+            order("lastViewed", "asc")
         }
-    }
 
-    /**
-     * Get the next task for this user for this project.
-     *
-     * @param userId
-     * @return
-     */
-    Task getNextTaskForProject(Project project, String userId) {
-
-        def tasks = Task.executeQuery(
-            """select t from Task t
-               left outer join t.viewedTasks viewedTasks
-               where t.project = :project and (viewedTasks.userId=:userId or viewedTasks.userId is null)
-               order by viewedTasks.lastView""", [project:project, userId: userId, max: 1])
         if (tasks) {
-            tasks.get(0)
-        } else {
-            null
+            def task = tasks.get(0)
+            println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
+            return task
         }
+
+        // Finally, we'll have to serve up a task that this user has seen before
+        tasks = Task.createCriteria().list([max:1]) {
+            eq("project", project)
+            isNotNull("fullyTranscribedBy")
+            isNull("fullyValidatedBy")
+            or {
+                le("lastViewed", timeoutWindow)
+                eq("lastViewedBy", userId)
+            }
+            order("lastViewed", "asc")
+        }
+
+        if (tasks) {
+            def task = tasks.get(0)
+            println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
+            return task
+        }
+
+        return null
     }
 
     /**
