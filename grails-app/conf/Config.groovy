@@ -27,6 +27,8 @@ ala.baseURL = "http://www.ala.org.au"
 bie.baseURL = "http://bie.ala.org.au"
 bie.searchPath = "/search"
 grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination
+security.cas.adminRole = "ROLE_VP_ADMIN"
+security.cas.validatorRole = "ROLE_VP_VALIDATOR"
 
 
 /******************************************************************************\
