@@ -43,12 +43,12 @@ class BootStrap {
     }
 
     private void fixTaskLastViews() {
-        println "Checking task last views..."
+        logService.log("Checking task last views...")
 
         def taskIds = Task.executeQuery("select t.id, count(vt.id) from Task t left outer join t.viewedTasks vt where t.lastViewed is null group by t.id having count(vt.id) > 0")
 
         if (taskIds) {
-            println "Fixing last view for ${taskIds.size()} tasks..."
+            logService.log("Fixing last view for ${taskIds.size()} tasks...")
             sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
             try {
                 int count = 0
@@ -65,7 +65,7 @@ class BootStrap {
                         task.lastViewed = lastView.lastView
                         task.lastViewedBy = lastView.userId
                     } else {
-                        println "Problem fixing last view for task ${task.id} - no last view found."
+                        logService.log("Problem fixing last view for task ${task.id} - no last view found.")
                     }
                     count++
                     if (count % 1000 == 0) {
@@ -74,12 +74,12 @@ class BootStrap {
                         sessionFactory.currentSession.clear()
                     }
                 }
-                println "${count} tasks processed (complete)"
+                logService.log("${count} tasks processed (complete).")
             } finally {
                 sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
             }
         } else {
-            println "No tasks with inconsistent last view details"
+            logService.log("No tasks with inconsistent last view details.")
         }
     }
 

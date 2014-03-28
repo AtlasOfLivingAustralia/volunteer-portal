@@ -52,6 +52,8 @@ images.urlPrefix = "/data/volunteer/"
 
 grails.plugin.reveng.packageName = "au.org.ala.volunteer"
 
+grails.databinding.convertEmptyStringsToNull = false
+
 // Mappings for expedition labels, icons, etc
 expedition = [
         [name: "Expedition Leader",

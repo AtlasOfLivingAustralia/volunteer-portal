@@ -22,7 +22,7 @@ class TemplateField {
     static constraints = {
         fieldType maxSize: 200
         label nullable: true
-        defaultValue maxSize: 200
+        defaultValue maxSize: 200, nullable: true
         mandatory nullable: true
         multiValue nullable: true
         helpText nullable:true, widget:'textarea', maxSize: 2000
