@@ -194,7 +194,7 @@ class FieldSyncService {
         task.dateLastUpdated = now
         task.viewed++; // increment view count
 
-        task.save(flush: true)
+        task.save(flush: true, failOnError: true)
     }
 
 }

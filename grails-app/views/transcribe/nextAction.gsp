@@ -40,7 +40,7 @@
         <div class="row">
             <div class="span12">
                 <div class="lead">Thank you - your transcription was saved
-                    <span id="dateSaved">at <g:formatDate date="${ViewedTask.findByTaskAndUserId(taskInstance, userId)?.lastUpdated}" format="h:mm:ss a z 'on' d MMMM yyyy"/>
+                    <span id="dateSaved">at <g:formatDate date="${taskInstance.dateLastUpdated}" format="h:mm:ss a z 'on' d MMMM yyyy"/>
                 </div>
 
                 <ul>
