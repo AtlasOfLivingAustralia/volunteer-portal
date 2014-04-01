@@ -41,7 +41,9 @@ grails.project.dependency.resolution = {
         runtime ":webxml:1.4.1"
         runtime ":ala-web-theme:0.2.2"
         runtime ":lesscss-resources:1.3.3"
-        compile ":webflow:2.0.8.1"
+        compile (':webflow:2.0.8.1') {
+            excludes 'javassist'
+        }
     }
 
     dependencies {

@@ -18,7 +18,7 @@ class ForumTopic {
     static hasMany = [ messages: ForumMessage ]
 
     static constraints = {
-        dateCreated nullable: false
+        dateCreated nullable: true
         creator nullable: false
         title nullable: false
         sticky nullable:  true
