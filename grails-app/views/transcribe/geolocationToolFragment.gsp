@@ -294,40 +294,58 @@
             e.preventDefault();
             if ($('#infoLat').html() && $('#infoLng').html()) {
                 // copy map fields into main form
-                $('.decimalLatitude').val($('#infoLat').html());
-                $('.decimalLongitude').val($('#infoLng').html());
-                $(':input.coordinateUncertaintyInMeters').val($('#infoUncert').val());
-                // locationObj is a global var set from geocoding lookup
-                for (var i = 0; i < locationObj.length; i++) {
-                    var name = locationObj[i].long_name;
-                    var type = locationObj[i].types[0];
-                    var hasLocality = false;
-                    // go through each avail option
-                    if (type == 'country') {
-                        //$(':input.countryCode').val(name1);
-                        $(':input.country').val(name);
-                    } else if (type == 'locality') {
-                        $(':input.locality').val(name);
-                        hasLocality = true;
-                    } else if (type == 'administrative_area_level_1') {
-                        $(':input.stateProvince').val(name);
-                    } else {
-                        //$(':input.locality').val(name);
-                    }
+
+                var latWidget = $('.decimalLatitude');
+                var lngWidget = $('.decimalLongitude');
+                var localityWidget = $(".locality");
+                if (!latWidget.length || !lngWidget.length) {
+                    // decimal controls do not exist in current template, so try the verbatim ones
+                    latWidget = $(".verbatimLatitude");
+                    lngWidget = $(".verbatimLongitude");
                 }
 
-                // update the verbatimLocality picklist on the server
-                var url = VP_CONF.updatePicklistUrl;
-                var params = {
-                    name: $(":input.verbatimLocality").val(),
-                    lat: $(":input.decimalLatitude").val(),
-                    lng: $(":input.decimalLongitude").val(),
-                    cuim: $(':input.coordinateUncertaintyInMeters').val()
-                };
-                $.getJSON(url, params, function(data) {
-                    // only interested in return text for debugging problems
-                    //alert(url + " returned: " + data);
-                });
+                if (!localityWidget.length) {
+                    localityWidget =  $(".verbatimLocality");
+                }
+
+                if (latWidget.length && lngWidget.length) {
+
+                    latWidget.val($('#infoLat').html()).trigger("change");
+                    lngWidget.val($('#infoLng').html()).trigger("change");
+
+                    $(':input.coordinateUncertaintyInMeters').val($('#infoUncert').val());
+                    // locationObj is a global var set from geocoding lookup
+                    for (var i = 0; i < locationObj.length; i++) {
+                        var name = locationObj[i].long_name;
+                        var type = locationObj[i].types[0];
+                        var hasLocality = false;
+                        // go through each avail option
+                        if (type == 'country') {
+                            //$(':input.countryCode').val(name1);
+                            $(':input.country').val(name);
+                        } else if (type == 'locality') {
+                            localityWidget.val(name);
+                            hasLocality = true;
+                        } else if (type == 'administrative_area_level_1') {
+                            $(':input.stateProvince').val(name);
+                        } else {
+                            //$(':input.locality').val(name);
+                        }
+                    }
+
+                    // update the verbatimLocality picklist on the server
+                    var url = VP_CONF.updatePicklistUrl;
+                    var params = {
+                        name: $(":input.verbatimLocality").val(),
+                        lat: latWidget.val(),
+                        lng: lngWidget.val(),
+                        cuim: $(':input.coordinateUncertaintyInMeters').val()
+                    };
+                    $.getJSON(url, params, function (data) {
+                        // only interested in return text for debugging problems
+                        //alert(url + " returned: " + data);
+                    });
+                }
 
                 hideModal();
             } else {

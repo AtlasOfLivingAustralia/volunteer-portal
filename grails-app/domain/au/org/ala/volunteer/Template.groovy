@@ -19,6 +19,7 @@ class Template {
         name maxSize: 200
         viewName nullable: true
         viewParams nullable: true
+        fieldOrder nullable: true
     }
 
     public String toString() {

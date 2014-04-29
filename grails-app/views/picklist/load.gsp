@@ -13,7 +13,7 @@
     </div>
     <div>
       <h1>Load Picklist</h1>
-      <g:form method="post" action="upload" controller="picklist">
+      <g:form method="post" controller="picklist">
         <div class="dialog">
           <table>
             <tbody>

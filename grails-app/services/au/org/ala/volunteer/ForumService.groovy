@@ -357,17 +357,17 @@ class ForumService {
 
         watchLists?.each {
             it.removeFromTopics(topic)
-            it.save(flush: true)
+            it.save(flush: true, failOnError: true)
         }
 
         // Also clear any pending notification messages that may reference this topic
         def notifications = ForumTopicNotificationMessage.findAllByTopic(topic)
         notifications.each {
-            it.delete(flush: true)
+            it.delete(flush: true, failOnError: true)
         }
 
         // finally delete the topic
-        topic.delete(flush: true)
+        topic.delete(flush: true, failOnError: true)
     }
 
     def deleteMessage(ForumMessage message) {

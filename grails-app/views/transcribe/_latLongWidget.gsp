@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" />
+    <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" class="${field.fieldType}" />
 </div>
 
 %{--<div class="row-fluid">--}%

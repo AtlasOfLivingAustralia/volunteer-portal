@@ -20,7 +20,8 @@
 
         <div class="row">
             <div class="span12">
-                <g:form controller="picklist" action="manage">
+                <g:form method="post">
+
                     <g:hiddenField name="id" value="${params.id}" />
 
                     <div class="form-horizontal">

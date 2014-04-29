@@ -249,25 +249,7 @@ class ProjectController {
 
         def projectInstance = Project.get(params.id)
         boolean deleteImages = params.deleteImages?.toBoolean()
-        if (projectInstance) {
-            def tasks = Task.findAllByProject(projectInstance)
-            for (Task t : tasks) {
-                try {
-                    if (deleteImages) {
-                        t.multimedia.each { image ->
-                            try {
-                                multimediaService.deleteMultimedia(image)
-                            } catch (IOException ex) {
-                                logService.log("Failed to delete multimedia: " + ex.message)
-                            }
-                        }
-                    }
-                    t.delete()
-                } catch (Exception ex) {
-                    logService.log("Failed to delete task ${t.id}: " + ex.message)
-                }
-            }
-        }
+        projectService.deleteTasksForProject(projectInstance, deleteImages)
         redirect(action: "edit", id: projectInstance?.id)
     }
 

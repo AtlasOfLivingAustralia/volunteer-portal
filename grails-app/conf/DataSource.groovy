@@ -19,7 +19,7 @@ environments {
             password="password"
             url = "jdbc:postgresql://localhost/volunteers-prod"
             // url = "jdbc:postgresql://localhost/volunteers"
-            loggingSql = false
+            logSql = false
         }
     }
     uat {
@@ -28,7 +28,7 @@ environments {
             username="postgres"
             password="password"
             url = "jdbc:postgresql://localhost/volunteers"
-            loggingSql = false
+            logSql = false
         }
     }
     test {

@@ -1,15 +1,46 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
+import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
+@Transactional
 class ProjectService {
 
     def authService
     def taskService
     def grailsLinkGenerator
     def projectTypeService
+    def forumService
+    def multimediaService
+    def logService
+    def grailsApplication
+
+    def deleteTasksForProject(Project projectInstance, boolean deleteImages = true) {
+        if (projectInstance) {
+            def tasks = Task.findAllByProject(projectInstance)
+            for (Task t : tasks) {
+                try {
+                    if (deleteImages) {
+                        t.multimedia.each { image ->
+                            try {
+                                multimediaService.deleteMultimedia(image)
+                            } catch (IOException ex) {
+                                logService.log("Failed to delete multimedia: " + ex.message)
+                            }
+                        }
+                    }
+                    t.delete()
+                } catch (Exception ex) {
+                    logService.log("Failed to delete task ${t.id}: " + ex.message)
+                }
+            }
+        }
+
+    }
 
     def deleteProject(Project projectInstance) {
+
 
         if (!projectInstance) {
             return;
@@ -17,17 +48,68 @@ class ProjectService {
 
         // First need to delete the staging profile, if it exists, and to do that you need to delete all its items first
         def profile = ProjectStagingProfile.findByProject(projectInstance)
+        logService.log("Delete Project ${projectInstance.id}: Delete staging profile...")
         if (profile) {
-            def list = profile.fieldDefinitions
-            list.each {
-                profile.fieldDefinitions.remove(it)
-                it.delete(flush: true)
-            }
-            profile.delete(flush: true)
+            StagingFieldDefinition.executeUpdate("delete from StagingFieldDefinition f where f.id in (select ff.id from StagingFieldDefinition ff where ff.profile = :profile)", [profile: profile])
+            profile.delete(flush: true, failOnError: true)
         }
 
+        // Also need to delete forum topics/posts that might be associated with this project
+        logService.log("Delete Project ${projectInstance.id}: Delete Project Forum Topics...")
+        def topics = ProjectForumTopic.findByProject(projectInstance)
+        def topicCount = 0
+        topics?.each { topic ->
+            forumService.deleteTopic(topic)
+            topicCount++
+        }
+
+        logService.log("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
+        topics = TaskForumTopic.executeQuery("from TaskForumTopic where id in (select TT.id from TaskForumTopic TT where TT.task.project = :project)", [project: projectInstance])
+        topics?.each { topic ->
+            logService.log("Deleting topic ${topic.id}...")
+            forumService.deleteTopic(topic)
+            topicCount++
+        }
+        logService.log("Delete Project ${projectInstance.id}: ${topicCount} forum topics deleted")
+
+        // Delete Multimedia
+        logService.log("Delete Project ${projectInstance.id}: Delete multimedia...")
+        def mmCount = Multimedia.executeUpdate("delete from Multimedia m where m.id in (select mm.id from Multimedia mm where mm.task.project = :project)", [project: projectInstance])
+        logService.log("Delete Project ${projectInstance.id}: ${mmCount} multimedia items deleted")
+        // Delete Fields
+        logService.log("Project ${projectInstance.id}: Delete Fields...")
+        def fieldCount = Field.executeUpdate("delete from Field f where f.id in (select ff.id from Field ff where ff.task.project = :project)", [project: projectInstance])
+        logService.log("Delete Project ${projectInstance.id}: ${fieldCount} fields deleted")
+
+        // Viewed Tasks
+        logService.log("Project ${projectInstance.id}: Delete Viewed Tasks...")
+        def viewedTaskCount = ViewedTask.executeUpdate("delete from ViewedTask vt where vt.id in (select vt2.id from ViewedTask vt2 where vt2.task.project = :project)", [project: projectInstance])
+        logService.log("Delete Project ${projectInstance.id}: ${viewedTaskCount} viewed tasks deleted")
+
+        // Viewed Tasks
+        logService.log("Project ${projectInstance.id}: Delete Task comments...")
+        def commentCount = TaskComment.executeUpdate("delete from TaskComment tc where tc.id in (select tc2.id from TaskComment tc2 where tc2.task.project = :project)", [project: projectInstance])
+        logService.log("Delete Project ${projectInstance.id}: ${commentCount} task comments deleted")
+
+        // Delete Tasks
+        logService.log("Project ${projectInstance.id}: Delete Tasks...")
+        def taskCount = Task.executeUpdate("delete from Task t where t.id in (select tt.id from Task tt where project = :project)", [project: projectInstance])
+        logService.log("Delete Project ${projectInstance.id}: ${taskCount} tasks deleted")
+
         // now we can delete the project itself
-        projectInstance.delete(flush: true)
+        logService.log("Project ${projectInstance.id}: Delete Project...")
+        projectInstance.delete(flush: true, failOnError: true)
+
+        // if we get here we can delete the project directory on the disk
+        logService.log("Project ${projectInstance.id}: Removing folder from disk...")
+        def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id )
+        if (dir.exists()) {
+            logService.log("DeleteProject: Preparing to remove project directory ${dir.absolutePath}")
+            FileUtils.deleteDirectory(dir)
+        } else {
+            logService.log("DeleteProject: Directory ${dir.absolutePath} does not exist!")
+        }
+
     }
 
     public List<ProjectSummary> getFeaturedProjectList() {

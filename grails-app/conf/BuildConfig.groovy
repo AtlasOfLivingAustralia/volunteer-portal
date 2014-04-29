@@ -27,7 +27,7 @@ grails.project.dependency.resolution = {
     }
     plugins {
         build ':tomcat:7.0.52.1'
-        runtime ':hibernate:3.6.10.10'
+        runtime ':hibernate:3.6.10.13'
         runtime ":jquery:1.8.3"
         compile ":jquery-ui:1.8.24"
         runtime ':resources:1.2.7'
@@ -41,6 +41,8 @@ grails.project.dependency.resolution = {
         runtime ":webxml:1.4.1"
         runtime ":ala-web-theme:0.2.2"
         runtime ":lesscss-resources:1.3.3"
+        compile ':scaffolding:2.0.3'
+        runtime ':database-migration:1.4.0'
         compile (':webflow:2.0.8.1') {
             excludes 'javassist'
         }
