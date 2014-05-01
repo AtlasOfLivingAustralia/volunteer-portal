@@ -30,8 +30,8 @@ grails.project.groupId = "au.org.ala" // change this to alter the default packag
 security.cas.adminRole = "ROLE_VP_ADMIN"
 security.cas.validatorRole = "ROLE_VP_VALIDATOR"
 
-bvp.user.activity.monitor.enabled = true; // can turn off activity monitoring
-bvp.user.activity.monitor.timeout = 60; // seconds
+bvp.user.activity.monitor.enabled = true // can turn off activity monitoring
+bvp.user.activity.monitor.timeout = 3600 // seconds
 
 /******************************************************************************\
  *  EXTERNAL SERVERS

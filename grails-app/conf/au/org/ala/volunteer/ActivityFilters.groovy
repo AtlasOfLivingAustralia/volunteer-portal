@@ -19,9 +19,11 @@ class ActivityFilters {
                     userService.recordUserActivity(userId, request, params)
                 }
             }
+
             after = { Map model ->
 
             }
+
             afterView = { Exception e ->
 
             }
