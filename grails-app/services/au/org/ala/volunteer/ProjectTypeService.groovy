@@ -14,7 +14,12 @@ class ProjectTypeService {
         }
 
         def file = new File(getLocalFileNameForIcon(projectType));
-        file.getParentFile().mkdirs();
+        if (!file.parentFile?.exists()) {
+            if (!file.getParentFile().mkdirs()) {
+                throw new RuntimeException("Failed to create directory for project type icon: ${file.parentFile.absolutePath} - check permissions?")
+            }
+        }
+
         FileUtils.copyFile(imageFile, file);
     }
 

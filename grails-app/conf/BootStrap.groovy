@@ -91,11 +91,12 @@ class BootStrap {
             if (!existing) {
                 logService.log("Creating project type ${it.name}")
                 def projectType = new ProjectType(name: it.name, label: it.label)
-                projectType.save(failOnError: true, flush: true)
+
                 File iconFile = grailsApplication.mainContext.getResource(it.icon)?.file
                 if (iconFile) {
                     projectTypeService.saveImageForProjectType(projectType, iconFile)
                 }
+                projectType.save(failOnError: true, flush: true)
             }
         }
     }
