@@ -243,4 +243,12 @@ class AdminController {
         redirect(action:'index')
     }
 
+    def currentUsers() {
+    }
+
+    def userActivityFragment() {
+        def activities = UserActivity.list([sort:'timeLastActivity', order:'desc'])
+        [activities: activities]
+    }
+
 }

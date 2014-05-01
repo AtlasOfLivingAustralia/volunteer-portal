@@ -21,6 +21,22 @@
                         </tr>
                     </thead>
                     <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'project', action:'create')}'">Create Expedition</button></td>
+                        <td>Create a new Volunteer Expedition</td>
+                    </tr>
+                    <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button></td>
+                        <td>Manage project templates and their fields</td>
+                    </tr>
+                    <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'picklist', action:'manage')}'">Bulk manage picklists</button></td>
+                        <td>Allows modification to the values held in various picklists</td>
+                    </tr>
+                    <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'validationRule', action:'list')}'">Validation Rules</button></td>
+                        <td>Manage transcription validation rules</td>
+                    </tr>
+                    <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'mailingList')}'">Global mailing List</button></td>
                         <td>Display a list of email address for all volunteers</td>
                     </tr>
@@ -29,25 +45,17 @@
                         <td>Users and their various counts and last activity etc...</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'picklist', action:'manage')}'">Bulk manage picklists</button></td>
-                        <td>Allows modification to the values held in various picklists</td>
-                    </tr>
-                    <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'frontPage', action:'edit')}'">Configure front page</button></td>
                         <td>Configure the appearance of the front page</td>
                     </tr>
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'project', action:'create')}'">Create Expedition</button></td>
-                        <td>Create a new Volunteer Expedition</td>
-                    </tr>
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'collectionEvent', action:'load')}'">Load collection events</button></td>
-                        <td>Load/Replace collection events for a particular institution</td>
-                    </tr>
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'locality', action:'load')}'">Load localities</button></td>
-                        <td>Load/Replace localities for a particular institution</td>
-                    </tr>
+                    %{--<tr>--}%
+                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'collectionEvent', action:'load')}'">Load collection events</button></td>--}%
+                        %{--<td>Load/Replace collection events for a particular institution</td>--}%
+                    %{--</tr>--}%
+                    %{--<tr>--}%
+                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'locality', action:'load')}'">Load localities</button></td>--}%
+                        %{--<td>Load/Replace localities for a particular institution</td>--}%
+                    %{--</tr>--}%
                     <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'stats', action:'index')}'">Stats</button></td>
                         <td>Various Statistics (Experimental!)</td>
@@ -57,35 +65,24 @@
                         <td>Manage tutorial files</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button></td>
-                        <td>Manage project templates and their fields</td>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'currentUsers')}'">Current users</button></td>
+                        <td>A summary of recent user activity</td>
                     </tr>
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'validationRule', action:'list')}'">Validation Rules</button></td>
-                        <td>Manage transcription validation rules</td>
-                    </tr>
+
                     <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'setting', action:'index')}'">Advanced Settings</button></td>
                         <td>Advanced Settings</td>
                     </tr>
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'task', action:'calculateDates')}'">Calculate Task Dates (one off)</button></td>
-                        <td>Advanced Settings</td>
-                    </tr>
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'fixRecordedByID')}'">Fixed garbled recordedByID fields</button></td>
-                        <td>Fixes garbled recordedByID fields caused by duplicate hidden fields for this field type</td>
-                    </tr>
 
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'fixUserCounts')}'">Fix User Transcribed and Validated</button></td>
-                        <td>Fixes User transcribed and validated task counts based off actual task data (preserves existing score if greater then computed)</td>
-                    </tr>
+                    %{--<tr>--}%
+                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'task', action:'calculateDates')}'">Calculate Task Dates (one off)</button></td>--}%
+                        %{--<td>Advanced Settings</td>--}%
+                    %{--</tr>--}%
 
-                    <tr>
-                        <td><button onclick="location.href = '${createLink(controller:'admin', action:'fixRecordedByID')}'">Fix recordedByID fields</button></td>
-                        <td>Fixed mangled recordedIdBY fields caused by duplicate hidden fields</td>
-                    </tr>
+                    %{--<tr>--}%
+                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'fixUserCounts')}'">Fix User Transcribed and Validated</button></td>--}%
+                        %{--<td>Fixes User transcribed and validated task counts based off actual task data (preserves existing score if greater then computed)</td>--}%
+                    %{--</tr>--}%
 
 
                 </table>

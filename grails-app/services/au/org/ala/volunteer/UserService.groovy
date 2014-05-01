@@ -1,11 +1,20 @@
 package au.org.ala.volunteer
 
+import grails.transaction.NotTransactional
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+
+import javax.servlet.http.HttpServletRequest
+import java.util.concurrent.ConcurrentLinkedQueue
+
 class UserService {
 
     def authService
     def logService
+    def grailsApplication
 
     static transactional = true
+
+    private static Queue<UserActivity> _userActivityQueue = new ConcurrentLinkedQueue<UserActivity>()
 
     /**
      * Register the current user in the system.
@@ -171,5 +180,88 @@ class UserService {
         }
 
         return results
+    }
+
+    private static INTERESTING_REQUEST_PARAMETERS = ["id", "projectId", "taskId", "topicId", "messageId", "userId"]
+
+    def recordUserActivity(String userId, HttpServletRequest request, GrailsParameterMap params) {
+
+        if (!grailsApplication.config.bvp.user.activity.monitor.enabled) {
+            return
+        }
+
+        def action = new StringBuilder(request.requestURI)
+        def valuePairs = []
+        INTERESTING_REQUEST_PARAMETERS.each { paramName ->
+            if (params[paramName]) {
+                valuePairs << "${paramName}=${params[paramName]}"
+            }
+        }
+        if (valuePairs) {
+            action.append("(")
+            action.append(valuePairs.join(", "))
+            action.append(")")
+        }
+
+        def now = new Date()
+        _userActivityQueue.add(new UserActivity(userId: userId, lastRequest: action.toString(), timeFirstActivity: now, timeLastActivity: now))
+    }
+
+    @NotTransactional
+    def flushActivityRecords() {
+
+        if (!grailsApplication.config.bvp.user.activity.monitor.enabled) {
+            return
+        }
+
+        int activityCount = 0
+        UserActivity activity;
+
+        while (activityCount < 100 && (activity = _userActivityQueue.poll()) != null) {
+            if (activity) {
+                UserActivity.withNewTransaction {
+                    def existing = UserActivity.findByUserId(activity.userId)
+                    if (existing) {
+                        // update the existing one
+                        existing.timeLastActivity = activity.timeLastActivity
+                        existing.lastRequest = activity.lastRequest
+                    } else {
+                        activity.save()
+                    }
+                }
+                activityCount++
+            }
+        }
+
+        if (activityCount) {
+            logService.log("${activityCount} activity records flushed to database")
+        }
+    }
+
+    /**
+     * Remove all user activity records older then a specified number of seconds
+     */
+    def purgeUserActivity(int seconds) {
+
+        if (!grailsApplication.config.bvp.user.activity.monitor.enabled) {
+            return
+        }
+
+        long millis = new Date().getTime() - (seconds * 1000);
+
+        def targetDate = new Date(millis)
+        // find all user activity records whose timeLastActivity is older than this time...
+        def c = UserActivity.createCriteria()
+        def oldRecords = c.list {
+            lt("timeLastActivity", targetDate)
+        }
+        int purgeCount = 0
+        oldRecords.each { userActivity ->
+            purgeCount++
+            userActivity.delete(flush: true)
+        }
+        if (purgeCount) {
+            logService.log("${purgeCount} activity records purged from database")
+        }
     }
 }

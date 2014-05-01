@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import groovy.time.TimeCategory
+
 //import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 import java.text.NumberFormat
 import java.text.DecimalFormat
@@ -1752,6 +1754,18 @@ class VolunteerTagLib {
                 out << "<img src=\"${url}\" style=\"height:100px\"/>"
             }
 
+        }
+    }
+
+    /**
+     * @attr startTime
+     * @attr endTime
+     */
+    def timeAgo = { attrs, body ->
+        def s = attrs.startTime as Date
+        def e = attrs.endTime as Date
+        use(TimeCategory) {
+            out << "${(e - s)} ago"
         }
     }
 }

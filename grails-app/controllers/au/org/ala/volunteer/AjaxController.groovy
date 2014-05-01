@@ -101,6 +101,8 @@ class AjaxController {
                 writer << row
             }
 
+            response.flushBuffer()
+
         } else {
             render report as JSON
         }
