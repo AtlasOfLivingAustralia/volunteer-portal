@@ -26,7 +26,7 @@ environments {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
             username="postgres"
-            password="password" 
+            password="password"
             url = "jdbc:postgresql://localhost/volunteers"
             logSql = false
         }
