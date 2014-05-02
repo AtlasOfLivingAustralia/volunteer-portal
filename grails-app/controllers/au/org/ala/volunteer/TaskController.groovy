@@ -396,17 +396,8 @@ class TaskController {
             def task = Task.findById(params.int("id"))
 
             if (task) {
-                Task prevTask = null
-                Task nextTask = null
-                Integer sequenceNumber = null;
-                def field = Field.findByTaskAndName(task, "sequenceNumber")
-                if (field) {
-                    sequenceNumber = Integer.parseInt(field.value)
-                    prevTask = taskService.findByProjectAndFieldValue(task.project, "sequenceNumber", (sequenceNumber - 1).toString())
-                    nextTask = taskService.findByProjectAndFieldValue(task.project, "sequenceNumber", (sequenceNumber + 1).toString())
-                }
-
-                [taskInstance: task, sequenceNumber: sequenceNumber, prevTask:prevTask, nextTask:nextTask]
+                def adjacentTasks = taskService.getAdjacentTasksBySequence(task)
+                [taskInstance: task, sequenceNumber: adjacentTasks.sequenceNumber, prevTask:adjacentTasks?.prev, nextTask:adjacentTasks?.next]
             }
         }
     }

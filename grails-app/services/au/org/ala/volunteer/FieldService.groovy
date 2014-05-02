@@ -4,8 +4,6 @@ class FieldService {
 
     static transactional = true
 
-    def serviceMethod() {}
-
     List getLatestFieldsWithTasks(String fieldName, List<Task> taskList, Map params) {
         if (!taskList) {
             return []

@@ -14,6 +14,7 @@ class TaskService {
     def grailsApplication
     def multimediaService
     def grailsLinkGenerator
+    def fieldService
 
     static transactional = true
 
@@ -788,6 +789,40 @@ class TaskService {
         task.isValid = null
         task.fullyValidatedBy = null
         task.dateFullyValidated = null
+    }
+
+    public Map getAdjacentTasksBySequence(Task task) {
+        def results = [:]
+        if (!task) {
+            return results
+        }
+
+
+        def field = fieldService.getFieldForTask(task, "sequenceNumber")
+
+        if (field?.value && field.value.isInteger()) {
+            def sequenceNumber = Integer.parseInt(field.value);
+            def padSize = 0
+            if (field.value.startsWith("0")) {
+                // remember to left pad the resulting sequence numbers with 0
+                padSize = field.value.length()
+            }
+
+            def formatSequence = { int sequence ->
+                def result = sequence.toString()
+                if (padSize) {
+                    result = result.padLeft(padSize, "0")
+                }
+                return result
+            }
+
+            // prev task
+            results.sequenceNumber = sequenceNumber
+            results.prev = findByProjectAndFieldValue(task.project, "sequenceNumber", formatSequence(sequenceNumber - 1))
+            results.next = findByProjectAndFieldValue(task.project, "sequenceNumber", formatSequence(sequenceNumber + 1))
+        }
+
+        return results
     }
 
 }

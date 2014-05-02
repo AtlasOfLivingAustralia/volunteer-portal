@@ -55,21 +55,8 @@ class TranscribeController {
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-
-            Task prevTask = null;
-            Task nextTask = null;
-            Integer sequenceNumber = null
-
-            if (recordValues[0]?.sequenceNumber && recordValues[0]?.sequenceNumber?.isInteger()) {
-                sequenceNumber = Integer.parseInt(recordValues[0]?.sequenceNumber);
-                // prev task
-                prevTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber - 1).toString())
-                nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
-            }
-
-            // def imageMetaData = taskService.getImageMetaData(taskInstance)
-
-            render( view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber])
+            def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
+            render(view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber])
         } else {
             redirect(view: 'list', controller: "task")
         }

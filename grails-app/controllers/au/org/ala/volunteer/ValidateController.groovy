@@ -53,21 +53,9 @@ class ValidateController {
                 }
             }
 
-            Task prevTask = null;
-            Task nextTask = null;
-            Integer sequenceNumber = null
-
-            //retrieve the existing values
-            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-            if (recordValues[0]?.sequenceNumber && recordValues[0]?.sequenceNumber?.isInteger()) {
-                sequenceNumber = Integer.parseInt(recordValues[0]?.sequenceNumber);
-                // prev task
-                prevTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber - 1).toString())
-                nextTask = taskService.findByProjectAndFieldValue(project, "sequenceNumber", (sequenceNumber + 1).toString())
-            }
-
+            def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
-            render(view: '../transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData])
+            render(view: '../transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData])
         } else {
             redirect(view: 'list', controller: "task")
         }
