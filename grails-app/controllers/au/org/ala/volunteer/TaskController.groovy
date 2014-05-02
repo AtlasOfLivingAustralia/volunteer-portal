@@ -642,7 +642,9 @@ class TaskController {
         def imageName = params.imageName
         if (projectInstance && imageName) {
             try {
-                stagingService.unstageImage(projectInstance, imageName)
+                if (!stagingService.unstageImage(projectInstance, imageName)) {
+                    flash.message = "Failed to delete image. Possibly file permissions?"
+                }
             } catch (Exception ex) {
                 flash.message = "Failed to delete image: " + ex.message
             }
