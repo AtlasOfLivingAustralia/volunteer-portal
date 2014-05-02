@@ -53,8 +53,7 @@ class StagingService {
     def unstageImage(Project project, String imageName) {
         def file = new File(createStagedPath(project, imageName))
         if (file.exists()) {
-            file.delete()
-            return true
+            return file.delete()
         }
         return false
     }
