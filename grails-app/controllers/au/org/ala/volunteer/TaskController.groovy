@@ -541,12 +541,21 @@ class TaskController {
         if (!profile) {
             profile = new ProjectStagingProfile(project: projectInstance)
             profile.save(flush: true, failOnError: true)
+        }
+
+        if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
             profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
         }
 
         def images = stagingService.buildTaskMetaDataList(projectInstance)
 
         [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+    }
+
+    def editStagingFieldFragment() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
+        [projectInstance: projectInstance, fieldDefinition: fieldDefinition]
     }
 
     def uploadStagingDataFile() {
@@ -617,7 +626,7 @@ class TaskController {
             if(request instanceof MultipartHttpServletRequest) {
                 ((MultipartHttpServletRequest) request).getMultiFileMap().imageFile.each { f ->
                     if (f != null) {
-                        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png']
+                        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
                         if (!allowedMimeTypes.contains(f.getContentType())) {
                             flash.message = "The image file must be one of: ${allowedMimeTypes}"
                             return
@@ -652,12 +661,28 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
-    def addFieldDefinition() {
+    def saveFieldDefinition() {
         def projectInstance = Project.get(params.int("projectId"))
         def fieldName = params.fieldName
         if (projectInstance && fieldName) {
+
+            def fieldType = (params.fieldType as FieldDefinitionType) ?: FieldDefinitionType.Literal
+            def format = params.format ?: ""
+            def recordIndex = params.int("recordIndex") ?: 0
+
             def profile = ProjectStagingProfile.findByProject(projectInstance)
-            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.Literal, format: "", fieldName: fieldName))
+
+            def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
+            if (fieldDefinition) {
+                // this is a 'save', not a 'create'
+                fieldDefinition.fieldName = fieldName
+                fieldDefinition.recordIndex = recordIndex
+                fieldDefinition.fieldDefinitionType = fieldType
+                fieldDefinition.format = format
+            } else {
+                profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex))
+            }
+
         }
 
         redirect(action:'staging', params:[projectId:projectInstance?.id])
@@ -720,13 +745,13 @@ class TaskController {
             })
 
             profile.fieldDefinitions.each { field ->
-                writer.columns[field.fieldName] =  {
-                    it.valueMap[field.fieldName] ?: ''
+                writer.columns[field.fieldName + "_" + field.recordIndex] =  {
+                    it.valueMap[field.fieldName + "_" + field.recordIndex] ?: ''
                 }
             }
             writer.resetProducers()
 
-            writer.writeHeadings = false
+            writer.writeHeadings = true
 
             def images = stagingService.buildTaskMetaDataList(projectInstance)
 

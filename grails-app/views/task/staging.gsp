@@ -6,18 +6,13 @@
         <title><g:message code="admin.label" default="Administration"/></title>
         <style type="text/css">
 
-        .bvp-expeditions td button {
-            margin-top: 5px;
-        }
+            .well {
+                /*background-color: rgba(245, 245, 245, 0.4);*/
+            }
 
-        .section {
-            border: 1px solid #a9a9a9;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .section h4 {
-            margin-bottom: 5px;
-        }
+            .dropdown-menu a {
+                text-decoration: none;
+            }
 
         </style>
         <r:script type='text/javascript'>
@@ -31,31 +26,38 @@
                     }
                 });
 
+
+                $(".btnDeleteShadowFile").click(function(e) {
+                    var filename = $(this).attr("filename");
+                    if (filename) {
+                        window.location = "${createLink(controller:'task', action:'unstageImage', params:[projectId: projectInstance.id])}&imageName=" + filename;
+                    }
+                });
+
+
                 $("#btnAddFieldDefinition").click(function(e) {
-                    var fieldName = encodeURIComponent($("#fieldName").val());
-                    if (fieldName) {
-                        window.location = "${createLink(controller:'task', action:'addFieldDefinition', params:[projectId: projectInstance.id])}&fieldName=" + fieldName
+                    e.preventDefault();
+                    var options = {
+                        title: "Add field definition",
+                        url:"${createLink(action:'editStagingFieldFragment', params:[projectId: projectInstance.id])}"
                     }
+                    showModal(options);
                 });
 
-                $(".fieldType").change(function(e) {
-                    var fieldId = $(this).parents("tr[fieldDefinitionId]").attr("fieldDefinitionId");
-                    var newFieldType = encodeURI($(this).val());
-                    if (fieldId && newFieldType) {
-                        window.location = "${createLink(controller:'task', action:'updateFieldDefinitionType', params:[projectId:projectInstance.id])}&fieldDefinitionId=" + fieldId + "&newFieldType=" + newFieldType;
-                    }
-                });
-
-                $(".fieldValue").change(function(e) {
-                    var fieldId = $(this).parents("tr[fieldDefinitionId]").attr("fieldDefinitionId");
-                    var newFieldValue = encodeURIComponent($(this).val());
-                    if (fieldId && newFieldValue) {
-                        window.location = "${createLink(controller:'task', action:'updateFieldDefinitionFormat', params:[projectId:projectInstance.id])}&fieldDefinitionId=" + fieldId + "&newFieldFormat=" + newFieldValue;
+                $(".btnEditField").click(function(e) {
+                    e.preventDefault();
+                    var fieldId = $(this).parents("[fieldDefinitionId]").attr("fieldDefinitionId");
+                    if (fieldId) {
+                        var options = {
+                            title: "Edit field definition",
+                            url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}&fieldDefinitionId=" + fieldId
+                        };
+                        showModal(options);
                     }
                 });
 
                 $(".btnDeleteField").click(function(e) {
-                    var fieldId = $(this).parents("tr[fieldDefinitionId]").attr("fieldDefinitionId");
+                    var fieldId = $(this).parents("[fieldDefinitionId]").attr("fieldDefinitionId");
                     if (fieldId) {
                         window.location = "${createLink(controller:'task', action:'deleteFieldDefinition', params:[projectId:projectInstance.id])}&fieldDefinitionId=" + fieldId;
                     }
@@ -74,7 +76,7 @@
                 $("#btnClearDataFile").click(function(e) {
                     e.preventDefault();
                     window.location = "${createLink(controller:'task', action:'clearStagedDataFile', params:[projectId: projectInstance.id])}";
-                })
+                });
 
                 $("#btnClearStagingArea").click(function(e) {
                     e.preventDefault();
@@ -102,47 +104,45 @@
         <div class="row">
             <div class="span12">
 
-                <div id="fieldDefinitionsSection" class="section">
-                    <table class="table">
-                        <tr>
-                            <td>
-                                <h4>Field Definitions</h4>
-                            </td>
-                            <td>
-                                <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"/>
-                                <button class="btn" id="btnAddFieldDefinition">Add field</button>
-                            </td>
-                        </tr>
-                    </table>
+                %{--<div class="well well-small">--}%
 
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th style="text-align: left">Field</th>
-                                <th style="text-align: left">Field Type</th>
-                                <th style="text-align: left">Field Value definition</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">
-                                <tr fieldDefinitionId="${field.id}">
-                                    <td>${field.fieldName}</td>
-                                    <td><g:select class="fieldType" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}" value="${field.fieldDefinitionType}"/></td>
-                                    <td>
-                                        <g:if test="${field.fieldDefinitionType != FieldDefinitionType.Sequence && field.fieldDefinitionType != au.org.ala.volunteer.FieldDefinitionType.DataFileColumn}">
-                                            <g:textField class="fieldValue" name="fieldValue" value="${field.format}" size="40"/>
-                                        </g:if>
-                                    </td>
-                                    <td><button class="btn btn-small btn-danger btnDeleteField"><i class="icon-remove icon-white"></i></button></td>
-                                </tr>
-                            </g:each>
-                        </tbody>
-                    </table>
+                    %{--<h3 style="display: inline-block">Field Definitions</h3>--}%
+                    %{--<button class="btn btn-success pull-right" id="btnAddFieldDefinition"><i class="icon-plus icon-white"></i> Add field</button>--}%
+                    %{--<table class="table table-striped table-condensed">--}%
+                        %{--<thead>--}%
+                            %{--<tr>--}%
+                                %{--<th>Field</th>--}%
+                                %{--<th>Record Index</th>--}%
+                                %{--<th>Field Type</th>--}%
+                                %{--<th>Field Value definition</th>--}%
+                                %{--<th></th>--}%
+                            %{--</tr>--}%
+                        %{--</thead>--}%
+                        %{--<tbody>--}%
+                            %{--<g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">--}%
+                                %{--<tr fieldDefinitionId="${field.id}">--}%
+                                    %{--<td>${field.fieldName}</td>--}%
+                                    %{--<td>${field.recordIndex}</td>--}%
+                                    %{--<td>${field.fieldDefinitionType}</td>--}%
+                                    %{--<td>--}%
+                                        %{--<g:if test="${field.fieldDefinitionType != FieldDefinitionType.Sequence}">--}%
+                                            %{--${field.format}--}%
+                                        %{--</g:if>--}%
+                                    %{--</td>--}%
+                                    %{--<td>--}%
+                                        %{--<button class="btn btn-small btnEditField"><i class="icon-edit"></i></button>--}%
+                                        %{--<g:if test="${field.fieldName != 'externalIdentifier'}">--}%
+                                            %{--<button class="btn btn-small btn-danger btnDeleteField"><i class="icon-remove icon-white"></i></button>--}%
+                                        %{--</g:if>--}%
+                                    %{--</td>--}%
+                                %{--</tr>--}%
+                            %{--</g:each>--}%
+                        %{--</tbody>--}%
+                    %{--</table>--}%
 
-                </div>
+                %{--</div>--}%
 
-                <div id="dataFileSection" class="section">
+                <div id="dataFileSection" class="well well-small">
                     <h4>Upload a csv data file for field values</h4>
                     <g:if test="${hasDataFile}">
                         A data file has been uploaded for this project.
@@ -172,7 +172,7 @@
                 </div>
 
 
-                <div id="uploadImagesSection" class="section">
+                <div id="uploadImagesSection" class="well well-small">
                     <h4>Upload task images to staging area</h4>
                     <g:form controller="task" action="stageImage" method="post" enctype="multipart/form-data">
                         %{--<label for="imageFile"><strong>Upload task image file:</strong></label>--}%
@@ -182,33 +182,86 @@
                     </g:form>
                 </div>
 
-                <div id="imagesSection" class="section">
+                <div id="imagesSection" class="">
+                    <table style="width:100%; margin-bottom: 5px">
+                        <tr>
+                            <td><h4>Staged images (${images.size()})</h4></td>
+                            <td>
+                                %{--<button class="btn btn-success"><i class="icon-upload icon-white"></i>&nbsp;Upload Images</button>--}%
 
-                    <div>
-                        <button class="btn" id="btnExportTasksCSV">Export staged tasks as CSV</button>
-                        <button id="btnClearStagingArea" class="btn btn-danger">Delete all images</button>
-                        <button id="btnLoadTasks" class="btn btn-primary" >Create tasks from staged images</button>
-                        <span><strong>Warning: </strong> The staging area will be cleared once these images are submitted.</span>
-                    </div>
-                    <hr/>
+                                <div class="btn-group pull-right">
+                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <i class="icon-cog"></i>
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="#" id="btnAddFieldDefinition"><i class="icon-plus"></i>&nbsp;Add a column</a>
+                                        </li>
+                                        <li class="divider"></li>
 
-                    <h4>Staged images (${images.size()})</h4>
-                    <table class="table table-striped">
+                                        <li>
+                                            <a href="#" id="btnExportTasksCSV"><i class="icon-file"></i>&nbsp;Export staged tasks as CSV</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="#" id="btnClearStagingArea"><i class="icon-trash"></i>&nbsp;Delete all images</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button id="btnLoadTasks" class="btn btn-primary pull-right" style="margin-right: 10px">Create tasks from staged images</button>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                    <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th style="text-align: left">Image file</th>
+                                <th>
+                                    <div>&nbsp;</div>
+                                    Image file
+                                </th>
                                 <g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">
-                                    <th style="text-align: left">${field.fieldName}</th>
+                                    <th fieldDefinitionId="${field.id}">
+                                        <div class="label" style="display: block">
+                                            <span style="font-weight: normal">${field.fieldDefinitionType} "${field.format}"</span>
+
+                                            <a href="#" class="btnEditField pull-right" title="Edit column definition"><i class="icon-edit icon-white"></i></a>
+                                            <g:if test="${field.fieldName != 'externalIdentifier'}">
+                                                <a href="#" class="btnDeleteField pull-right" title="Remove column"><i class="icon-remove icon-white"></i></a>
+                                            </g:if>
+
+                                        </div>
+                                        ${field.fieldName}<g:if test="${field.recordIndex}">[${field.recordIndex}]</g:if>
+                                    </th>
                                 </g:each>
-                                <th style="width: 50px"></th>
+                                <th style="width: 120px">
+                                    %{--<button id="btnAddFieldDefinition" class="btn btn-small">Add column</button>--}%
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <g:each in="${images}" var="image">
                                 <tr>
-                                    <td><a href="${image.url}">${image.name}</a></td>
+                                    <td>
+                                        <a href="${image.url}">${image.name}</a>
+                                        <g:if test="${image.shadowFiles}">
+                                            <ul class="nav nav-pills nav-stacked" style="margin-left: 10px">
+                                                <g:each in="${image.shadowFiles}" var="shadow">
+                                                    <li>
+                                                        <div class="label">
+                                                            <g:set var="shadowLabel" value="${shadow.stagedFile.name.replace(shadow.fieldName, "<em>${shadow.fieldName}</em>")}" />
+                                                            <i class="icon-chevron-right icon-white"></i> ${shadowLabel}
+                                                            <a href="#" class="btnDeleteShadowFile" title="Delete shadow file ${shadow.stagedFile.name}" filename="${shadow.stagedFile.name}"><i class="icon-remove icon-white"></i></a>
+                                                        </div>
+                                                    </li>
+                                                </g:each>
+                                            </ul>
+                                        </g:if>
+                                    </td>
                                     <g:each in="${profile.fieldDefinitions.sort({it.id})}" var="field">
-                                        <td>${image.valueMap[field.fieldName]}</td>
+                                        <td>${image.valueMap[field.fieldName + "_" + field.recordIndex]}</td>
                                     </g:each>
                                     <td>
                                         <button class="btn btn-small btn-danger btnDeleteImage" imageName="${image.name}"><i class="icon-remove icon-white"></i></button>

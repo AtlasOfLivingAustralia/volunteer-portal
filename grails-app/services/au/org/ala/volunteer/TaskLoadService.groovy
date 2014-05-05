@@ -2,11 +2,13 @@ package au.org.ala.volunteer
 
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
+import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.regex.Pattern
 
 class TaskLoadService {
 
@@ -24,6 +26,7 @@ class TaskLoadService {
     def authService
     def logService
     def stagingService
+    def fieldService
 
     static transactional = true
 
@@ -102,26 +105,48 @@ class TaskLoadService {
         def results = [message:'Tasks Queued for load.', success: false]
         def imageData = stagingService.buildTaskMetaDataList(project)
 
+        def nameIndexRegex = Pattern.compile("^([A-Za-z]+)_(\\d+)")
+
         imageData.each { imgData ->
-            def taskDesc = new TaskDescriptor(project: project, imageUrl: imgData.url, externalIdentifier: imgData.valueMap.externalIdentifier)
-            def recordIndexMap = [:]
-            imgData.valueMap.each {
-                if (it.key != 'externalIdentifier') {
-                    if (!recordIndexMap[it.key]) {
-                        recordIndexMap[it.key] = 0
-                    } else {
-                        recordIndexMap[it.key]++
-                    }
-                    taskDesc.fields.add([name: it.key, recordIdx: recordIndexMap[it.key], transcribedByUserId: 'system', value: it.value])
-                    taskDesc.afterLoad = {
-                        try {
-                            imgData.file.delete()
-                        } catch (Exception ex) {
-                            println "Failed to delete staged image!"
-                        }
-                    }
+
+            def taskDesc = new TaskDescriptor(project: project, imageUrl: imgData.url, externalIdentifier: imgData.valueMap["externalIdentifier"] ?: imgData.valueMap["externalIdentifier_0"])
+            imgData.valueMap.each { kvp ->
+                def fieldName = kvp.key
+                def recordIndex = 0
+
+                def matcher = nameIndexRegex.matcher(fieldName)
+                if (matcher.matches()) {
+                    fieldName = matcher.group(1)
+                    recordIndex = Integer.parseInt(matcher.group(2))
+                }
+
+                if (fieldName != 'externalIdentifier') {
+                    taskDesc.fields.add([name: fieldName, recordIdx: recordIndex, transcribedByUserId: 'system', value: kvp.value])
                 }
             }
+
+            taskDesc.afterLoad = { Task task ->
+                // Process shadow file entries after the task has been created. They will replace any defined field assignments
+                try {
+                    // Add shadow file contents...
+                    imgData.shadowFiles?.each { shadowFile ->
+                        logService.log("Processing shadow files post task import ${task.id}: ${shadowFile.stagedFile.file}")
+                        def file = new File(shadowFile.stagedFile.file as String)
+                        if (file && file.exists()) {
+                            def fieldValue = FileUtils.readFileToString(file)
+                            if (fieldValue) {
+                                fieldService.setFieldValueForTask(task, shadowFile.fieldName as String, shadowFile.recordIndex as Integer, fieldValue)
+                            }
+                            file.delete()
+                        }
+                    }
+                    imgData.file.delete()
+                } catch (Exception ex) {
+                    ex.printStackTrace()
+                    println "AfterLoad for task ${task.id} failed: ${ex.message}"
+                }
+            }
+
             _loadQueue.put(taskDesc)
         }
         backgroundProcessQueue(true)
@@ -280,7 +305,7 @@ class TaskLoadService {
             fd.task = t;
 
             // Check value for special character replacements...
-            fd.value = replaceSpecialCharacters(fd.value)
+            fd.value = replaceSpecialCharacters(fd.value ?: "")
 
             new Field(fd).save(flush: true)
         }
@@ -321,7 +346,7 @@ class TaskLoadService {
 
         if (t) {
             if (taskDesc.afterLoad) {
-                taskDesc.afterLoad()
+                taskDesc.afterLoad(t)
             }
         }
 
@@ -349,7 +374,18 @@ class TaskLoadService {
                     if (existing && existing.size() > 0) {
                         if (replaceDuplicates) {
                             for (Task t : existing) {
-                                t.delete();
+                                Task.withNewSession {
+                                    t.attach()
+                                    def fields = Field.findAllByTask(t)
+                                    fields?.each {
+                                        it.delete(flush: true)
+                                    }
+                                    def mm = Multimedia.findAllByTask(t)
+                                    mm.each {
+                                        it.delete(flush:true)
+                                    }
+                                    t.delete(flush: true);
+                                }
                             }
                         } else {
                             synchronized (_report) {
@@ -359,7 +395,7 @@ class TaskLoadService {
                         }
                     }
 
-                    Task.withTransaction { status ->
+                    Task.withNewTransaction { status ->
 
                         try {
 

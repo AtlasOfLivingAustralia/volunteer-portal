@@ -152,4 +152,26 @@ class FieldService {
         return 0
     }
 
+    Field setFieldValueForTask(Task task, String fieldName, int recordIndex, String value, String userId = "system") {
+        // Check if there is an existing (current) value for this field/index
+        if (task == null || fieldName == null || value == null) {
+            return null
+        }
+
+        def existing = Field.find {
+            eq("task", task)
+            eq("name", fieldName)
+            eq("superceded", false)
+            eq("recordIdx", recordIndex)
+        }
+
+        if (existing) {
+            existing.superceded = true
+        }
+        // Now create a new field for this value
+        def field = new Field(task: task, name: fieldName, recordIdx: recordIndex, superceded: false, value: value, transcribedByUserId: userId)
+        field.save(flush: true, failOnError: true)
+        return field
+    }
+
 }

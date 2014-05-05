@@ -2,7 +2,6 @@ package au.org.ala.volunteer
 
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.input.BOMInputStream
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartFile
 import java.util.regex.Pattern
 import org.grails.plugins.csv.CSVMapReader
@@ -27,7 +26,7 @@ class StagingService {
 
     def stageImage(Project project, MultipartFile file) {
         def filePath = createStagedPath(project, file.originalFilename)
-        println "copying image to " + filePath
+        println "copying stagedFile to " + filePath
         def newFile = new File(filePath);
         file.transferTo(newFile);
     }
@@ -139,7 +138,7 @@ class StagingService {
     }
 
     def buildTaskMetaDataList(Project project) {
-        def images = listStagedFiles(project)
+        def stagedFiles = listStagedFiles(project)
         def profile = ProjectStagingProfile.findByProject(project)
 
         int sequenceNo = fieldService.getLastSequenceNumberForProject(project)
@@ -205,8 +204,30 @@ class StagingService {
             }
         }
 
-        images.each { image ->
-            image.valueMap = [:]
+        def images = []
+        def shadowFiles =[:]
+
+        def shadowFilePattern = Pattern.compile('^(.+?)__([A-Za-z]+)(?:__(\\d+))?[.]txt$')
+
+        // First pass - computed defined field values (either literals, name captures etc...)
+        stagedFiles.each { stagedFile ->
+
+            def m = shadowFilePattern.matcher(stagedFile.name)
+            if (m.matches()) {
+
+                def parentFile = m.group(1)
+                def shadowFile = [stagedFile: stagedFile, fieldName: m.group(2), recordIndex: Integer.parseInt(m.group(3) ?: '0'), parentFile: parentFile]
+                if (!shadowFiles[parentFile]) {
+                    shadowFiles[parentFile] = []
+                }
+                shadowFiles[parentFile] << shadowFile
+
+                return
+            }
+
+            images << stagedFile
+
+            stagedFile.valueMap = [:]
             sequenceNo++
             profile.fieldDefinitions.each { field ->
                 def value = ""
@@ -215,14 +236,14 @@ class StagingService {
                     case FieldDefinitionType.NamePattern:
                         Pattern pattern = patternMap[field] as Pattern
                         if (field.format && pattern) {
-                            def matcher = pattern.matcher(image.name)
+                            def matcher = pattern.matcher(stagedFile.name)
                             if (matcher.matches()) {
                                 if (matcher.groupCount() >= 1) {
                                     value = matcher.group(1)
                                 }
                             }
                         } else {
-                            value = image.name
+                            value = stagedFile.name
                         }
                         break;
                     case FieldDefinitionType.Literal:
@@ -232,18 +253,22 @@ class StagingService {
                         value = "${sequenceNo}"
                         break;
                     case FieldDefinitionType.DataFileColumn:
-                        def values = dataFileMap[image.name]
+                        def values = dataFileMap[stagedFile.name]
                         if (values) {
-                            value = values[field.fieldName]
+                            value = values[field.format ?: field.fieldName]
                         }
                         break;
                     default:
                         value = "err"
                         break;
                 }
-                image.valueMap[field.fieldName] = value
+                stagedFile.valueMap[field.fieldName + "_" + field.recordIndex] = value
             }
+        }
 
+        // stage 2, process shadow files...
+        images.each { imageFile ->
+            imageFile.shadowFiles = shadowFiles[imageFile.name]
         }
 
         return images
