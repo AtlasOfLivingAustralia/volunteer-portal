@@ -73,7 +73,7 @@
                 } else if (fieldType == 'NamePattern') {
                     $("#formatLabel").html("Pattern")
                 } else if (fieldType == 'DataFileColumn') {
-                    $("#formatLabel").html("Column (leave blank to user field name)")
+                    $("#formatLabel").html("Column (leave blank to use field name)")
                 } else {
                     $("#formatLabel").html("Value")
                 }
