@@ -137,6 +137,12 @@ class TranscribeController {
      */
     def save = {
         def currentUser = authService.username()
+
+        if (!params.id && params.failoverTaskId) {
+            redirect(action:'task', id: params.failoverTaskId)
+            return
+        }
+
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
             def project = Project.findById(taskInstance.project.id)
@@ -166,6 +172,12 @@ class TranscribeController {
     def savePartial = {
         def currentUser = authService.username()
         if (currentUser) {
+
+            if (!params.id && params.failoverTaskId) {
+                redirect(action:'task', id: params.failoverTaskId)
+                return
+            }
+
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues) // removes strange characters from UTF-8 pages
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, null)

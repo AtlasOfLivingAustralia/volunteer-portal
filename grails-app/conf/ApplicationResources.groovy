@@ -55,5 +55,10 @@ modules = {
         resource url: '/js/jstz-1.0.4.min.js'
     }
 
+    'amplify' {
+        dependsOn 'jquery'
+        resource url: '/js/amplify.js'
+    }
+
 
 }

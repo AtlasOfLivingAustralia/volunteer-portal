@@ -3,6 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+        <r:require module="amplify" />
         <title>Project Administration</title>
 
         <r:script type="text/javascript">
@@ -60,6 +61,10 @@
                     };
                     showModal(options);
                 });
+
+                <g:if test="${params.lastTaskId}">
+                     amplify.store("bvp_task_${params.lastTaskId}", null);
+                </g:if>
 
             }); // end .ready()
 

@@ -53,6 +53,7 @@ class ValidateController {
                 }
             }
 
+            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
             render(view: '../transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData])
@@ -66,11 +67,17 @@ class ValidateController {
      */
     def validate = {
         def currentUser = authService.username()
+
+        if (!params.id && params.failoverTaskId) {
+            redirect(action:'task', id: params.failoverTaskId)
+            return
+        }
+
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true)
-            redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id)
+            redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')
         }
@@ -81,11 +88,17 @@ class ValidateController {
      */
     def dontValidate = {
         def currentUser = authService.username()
+
+        if (!params.id && params.failoverTaskId) {
+            redirect(action:'task', id: params.failoverTaskId)
+            return
+        }
+
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false)
-            redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id)
+            redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')
         }
