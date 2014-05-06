@@ -81,6 +81,11 @@
                     </div>
                     <div class="transcribeSectionBody">
                         <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
+                        <g:if test="${isPreview && !entriesField}">
+                            <div class="alert alert-error">
+                                This template view (fieldNoteBookTranscribe) requires the <strong>individualCount</strong> field to be configured.
+                            </div>
+                        </g:if>
                         <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'displayOrder'])}" />
                         <g:render template="/transcribe/dynamicDatasetRows" model="${[recordValues:recordValues, fieldList: fieldList, entriesField: entriesField]}" />
                     </div>

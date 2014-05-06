@@ -29,6 +29,12 @@
     </div>
 
     <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
+    <g:if test="${isPreview && !entriesField}">
+        <div class="alert alert-error">
+            This template view (journalTranscribe) requires the <strong>individualCount</strong> field to be configured.
+        </div>
+    </g:if>
+
     <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'displayOrder'])}" />
     <g:set var="viewParams" value="${taskInstance.project.template?.viewParams}" />
     <g:set var="numberOfTextRows" value="${12}" />

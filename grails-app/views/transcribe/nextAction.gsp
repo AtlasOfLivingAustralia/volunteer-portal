@@ -6,6 +6,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
         <title>Task saved</title>
+        <r:require module="amplify" />
         <r:script type="text/javascript">
             $(document).ready(function () {
                 $("li#goBack a").click(function (e) {

@@ -26,8 +26,19 @@
     </div>
 
     <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
+    <g:if test="${isPreview && !entriesField}">
+        <div class="alert alert-error">
+            observationDiaryTranscribe view requires that you configure 'sightingCount' as a defined field for this template - it can be hidden.
+        </div>
+    </g:if>
     <g:set var="fieldList" value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort:'displayOrder'])}" />
     <g:set var="viewParams" value="${taskInstance.project.template?.viewParams}" />
+
+    <g:if test="${isPreview && !fieldList}">
+        <div class="alert alert-error">
+            This template view requires at least one field configured in the <strong>dataset</strong> category!
+        </div>
+    </g:if>
 
     <g:if test="${viewParams?.showMonth}">
         <div class="well well-small transcribeSection">

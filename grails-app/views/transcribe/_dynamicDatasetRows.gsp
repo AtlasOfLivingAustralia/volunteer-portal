@@ -1,38 +1,45 @@
-<g:hiddenField name="recordValues.0.${entriesField.fieldType}" id="noOfEntries" value="${recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue ?: 0}" />
-<g:set var="numItems" value="${(recordValues?.get(0)?.get(entriesField.fieldType.name())?:entriesField.defaultValue ?: "0").toInteger()}" />
+<g:if test="${!entriesField}">
+    <div class="alert alert-error">
+        No entriesField defined. Each template will require a specific field defined to capture the number of entries. Please consult with the BVP team for more details.
+    </div>
+</g:if>
 
-<div id="observationFields">
-</div>
+<g:hiddenField name="recordValues.0.${entriesField?.fieldType}" id="recordValues.0.${entriesField?.fieldType}" value="${recordValues?.get(0)?.get(entriesField?.fieldType?.name())?:entriesField?.defaultValue ?: 0}" />
+<g:set var="numItems" value="${(recordValues?.get(0)?.get(entriesField?.fieldType?.name())?:entriesField?.defaultValue ?: "0").toInteger()}" />
+<g:if test="${fieldList}">
+    <div id="observationFields" entriesFieldId="recordValues.0.${entriesField?.fieldType}">
+    </div>
+    <button class="btn btn-small btn-success" id="btnAddRow"><i class="icon-plus icon-white"></i>&nbsp;Add&nbsp;Row</button>
+</g:if>
+
 <style type="text/css">
 
-    .fieldLabel {
-        margin-right: 10px;
-        margin-left: 10px;
-        text-wrap: none;
-    }
+.fieldLabel {
+    margin-right: 10px;
+    margin-left: 10px;
+    text-wrap: none;
+}
 
-    .fieldValue input[type="text"] {
-        padding: 0px;
-        min-height: 22px;
-        width: 130px;
-    }
+.fieldValue input[type="text"] {
+    padding: 0px;
+    min-height: 22px;
+    width: 130px;
+}
 
-    #btnAddRow {
-        margin-top: 10px;
-    }
+#btnAddRow {
+    margin-top: 10px;
+}
 
-    .deleteButton {
-        margin: 5px;
-    }
+.deleteButton {
+    margin: 5px;
+}
 
-    #observationFields hr {
-        margin: 3px;
-        border-top-color: #d3d3d3;
-    }
+#observationFields hr {
+    margin: 3px;
+    border-top-color: #d3d3d3;
+}
 
 </style>
-
-<button class="btn btn-small btn-success" id="btnAddRow"><i class="icon-plus icon-white"></i>&nbsp;Add&nbsp;Row</button>
 
 <r:script>
 
@@ -91,7 +98,7 @@
                 itemCount++;
             }
             $("#observationFields").html(htmlStr);
-            $("#noOfEntries").attr('value', itemCount - 1);
+            $("#recordValues\\.0\\.${entriesField?.fieldType}").attr('value', itemCount - 1);
             bindTooltips("#observationFields a.fieldHelp");
         } catch (e) {
             alert(e)
@@ -151,7 +158,6 @@
         });
 
         renderEntries();
-
     });
 
 </r:script>

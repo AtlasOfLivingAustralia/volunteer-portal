@@ -131,26 +131,7 @@
                 bindGlobalKeyHandlers();
                 transcribeWidgets.initializeTranscribeWidgets();
 
-                // Now check if we are have to restore from a save gone wrong...
-                checkAndRecoverFromFailedSubmit();
             }); // end Document.ready
-
-            function checkAndRecoverFromFailedSubmit() {
-                var lastState = amplify.store("bvp_task_${taskInstance.id}");
-                if (lastState && lastState.fields) {
-                    alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
-                    for (var i = 0; i < lastState.fields.length; ++i) {
-                        var field = lastState.fields[i];
-                        if (field.id) {
-                            var key = "#" + field.id.replace(/\./g, '\\.');
-                            $(key).val(field.value);
-                            $(key).change();
-                        }
-                    }
-                    // Now clear our local store so this message doesn't happen again if the user chooses not to save this time.
-                    amplify.store("bvp_task_${taskInstance.id}", null);
-                }
-            }
 
             function suppressReturnKey() {
                 $('input,select').keypress(function(event) {
@@ -855,23 +836,70 @@
                 };
             </g:each>
 
+            // Now check if we are have to restore from a save gone wrong...
+            checkAndRecoverFromFailedSubmit();
+
         });
 
-        function submitFormWithAction(action) {
-            var form = $(".transcribeForm");
 
-            // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
+        function saveFormState(action) {
+            var dynamicDataSetFieldId = $("#observationFields").attr("entriesFieldId");
+
             var taskState = {
                 action: action,
                 taskId: ${taskInstance.id},
+                dynamicDataSetFieldId: dynamicDataSetFieldId,
                 fields: []
             };
             $('[id*="recordValues\\."]').each(function (index, widget) {
                 var field = { id: $(widget).attr("id"), value: $(widget).val() };
                 taskState.fields.push(field);
             });
-            amplify.store("bvp_task_${taskInstance.id}", taskState);
 
+            amplify.store("bvp_task_${taskInstance.id}", taskState);
+        }
+
+        function checkAndRecoverFromFailedSubmit() {
+            var lastState = amplify.store("bvp_task_${taskInstance.id}");
+            if (lastState && lastState.fields) {
+                alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
+
+                // If the form uses the dynamicDataSet template (observation diaries etc), we need to render them correctly first.
+
+                if (lastState.dynamicDataSetFieldId) {
+                    var numRows = 0;
+                    for (var fieldIdx in lastState.fields) {
+                        var field = lastState.fields[fieldIdx];
+                        if (field.id == lastState.dynamicDataSetFieldId) {
+                            numRows = parseInt(field.value);
+                        }
+                    }
+
+                    if (numRows && addEntry) {
+                        for (var i = 0; i < numRows; ++i) {
+                            addEntry();
+                        }
+                    }
+                }
+
+                for (var i = 0; i < lastState.fields.length; ++i) {
+                    var field = lastState.fields[i];
+                    if (field.id) {
+                        var key = "#" + field.id.replace(/\./g, '\\.');
+                        $(key).val(field.value);
+                        $(key).change();
+                    }
+                }
+                // Now clear our local store so this message doesn't happen again if the user chooses not to save this time.
+                amplify.store("bvp_task_${taskInstance.id}", null);
+            }
+        }
+
+        function submitFormWithAction(action) {
+            var form = $(".transcribeForm");
+
+            // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
+            saveFormState(action);
             // Now we can attempt the submission
             form.get(0).setAttribute('action', action);
             form.submit();
