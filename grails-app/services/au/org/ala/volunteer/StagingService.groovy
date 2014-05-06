@@ -1,8 +1,11 @@
 package au.org.ala.volunteer
 
 import org.apache.commons.io.ByteOrderMark
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.input.BOMInputStream
 import org.springframework.web.multipart.MultipartFile
+import sun.misc.IOUtils
+
 import java.util.regex.Pattern
 import org.grails.plugins.csv.CSVMapReader
 
@@ -161,7 +164,7 @@ class StagingService {
                             }
                         }
 
-                        def filename = map.remove('filename')
+                        def filename = map.get('filename')
 
                         if (filename) {
                             dataFileMap[filename] = map
@@ -277,6 +280,18 @@ class StagingService {
     public boolean projectHasDataFile(Project projectInstance) {
         def f = new File(createDataFilePath(projectInstance))
         return f.exists()
+    }
+
+    public List getDataFileColumns(Project projectInstance) {
+        def f = new File(createDataFilePath(projectInstance))
+        if (f.exists()) {
+            def lines = FileUtils.readLines(f)
+            if (lines && lines.size() > 0) {
+                return lines[0].split(",")
+            }
+        }
+
+        return []
     }
 
     public void clearDataFile(Project projectInstance) {

@@ -555,7 +555,18 @@ class TaskController {
     def editStagingFieldFragment() {
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
-        [projectInstance: projectInstance, fieldDefinition: fieldDefinition]
+        def hasDataFile = stagingService.projectHasDataFile(projectInstance)
+        def dataFileColumns = []
+        if (hasDataFile) {
+            dataFileColumns = ['']
+            dataFileColumns.addAll(stagingService.getDataFileColumns(projectInstance))
+        }
+        [projectInstance: projectInstance, fieldDefinition: fieldDefinition, hasDataFile: hasDataFile, dataFileColumns: dataFileColumns ]
+    }
+
+    def uploadDataFileFragment() {
+        def projectInstance = Project.get(params.int("projectId"))
+        [projectInstance: projectInstance]
     }
 
     def uploadStagingDataFile() {
@@ -564,9 +575,9 @@ class TaskController {
             if(request instanceof MultipartHttpServletRequest) {
                 MultipartFile f = ((MultipartHttpServletRequest) request).getFile('dataFile')
                 if (f != null) {
-                    def allowedMimeTypes = ['text/plain','text/csv']
+                    def allowedMimeTypes = ['text/plain','text/csv', 'application/octet-stream']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = "The image file must be one of: ${allowedMimeTypes}"
+                        flash.message = "The image file must be one of: ${allowedMimeTypes}, recieved '${f.getContentType()}'}"
                         redirect(action:'staging', params:[projectId:projectInstance?.id])
                         return
                     }

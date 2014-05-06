@@ -26,6 +26,10 @@
             <label class="control-label" for="definition" id="formatLabel">Definition/Value</label>
             <div class="controls">
                 <g:textField name="definition" value="${fieldDefinition?.format}" />
+
+                <g:if test="${hasDataFile && dataFileColumns}">
+                    <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition.format}" />
+                </g:if>
             </div>
         </div>
     </div>
@@ -51,6 +55,7 @@
             var fieldType = encodeURIComponent($("#fieldType").val());
             var recordIndex = encodeURIComponent($("#recordIndex").val());
             var format = encodeURIComponent($("#definition").val());
+
             if (fieldName) {
                 window.location = "${createLink(controller:'task', action:'saveFieldDefinition', params:[projectId: projectInstance.id, fieldDefinitionId: fieldDefinition?.id])}&fieldName=" + fieldName + "&fieldType=" + fieldType + "&recordIndex=" + recordIndex + "&format=" + format
             }
@@ -64,6 +69,9 @@
 
         function updateFormatOptions() {
             var fieldType = $("#fieldType").val();
+            $("#definition").css("display", "block");
+            $("#dataFileColumn").css("display", "none");
+
             if (fieldType == 'Sequence') {
                 $("#formatBlock").css('display', 'none');
             } else {
@@ -74,11 +82,19 @@
                     $("#formatLabel").html("Pattern")
                 } else if (fieldType == 'DataFileColumn') {
                     $("#formatLabel").html("Column (leave blank to use field name)")
+                    <g:if test="${hasDataFile && dataFileColumns}">
+                        $("#definition").css("display", "none");
+                        $("#dataFileColumn").css("display", "block");
+                    </g:if>
                 } else {
                     $("#formatLabel").html("Value")
                 }
             }
         }
+
+        $("#dataFileColumn").change(function() {
+            $("#definition").val($("#dataFileColumn").val());
+        });
 
         updateFormatOptions();
 
