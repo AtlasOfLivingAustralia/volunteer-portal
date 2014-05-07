@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class Template {
+class Template implements Serializable {
 
     String name
     String viewName  //this should be the GSP in use for this template

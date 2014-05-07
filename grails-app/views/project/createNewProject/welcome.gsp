@@ -30,6 +30,7 @@
                 Before you start you will need the following:
                 <ul>
                     <li>A name and other details for your expedition</li>
+                    <li>(recommended) A banner image (preferably JPG) sized 254 x 158 pixels</li>
                     <li>A collection of images, each representing a task to be transcribed</li>
                     <li>(optional) A csv data file containing additional data for each task (keyed by image filename)</li>
                 </ul>

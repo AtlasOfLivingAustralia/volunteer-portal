@@ -24,7 +24,7 @@
 
     $("#btnCloseViewedTask").click(function(e) {
         e.preventDefault();
-        hideModal();
+        bvp.hideModal();
     });
 
 </script>

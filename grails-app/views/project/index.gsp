@@ -121,7 +121,7 @@
         });
 
         function showIconSelector() {
-            showModal({
+            bvp.showModal({
                 url: "${createLink(action:'projectLeaderIconSelectorFragment', id: projectInstance.id)}",
                 width:800,
                 height:500,

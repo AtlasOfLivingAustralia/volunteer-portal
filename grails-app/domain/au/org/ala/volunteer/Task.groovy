@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class Task {
+class Task implements Serializable {
 
     Project project
     String externalIdentifier

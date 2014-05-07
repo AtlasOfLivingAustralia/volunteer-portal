@@ -90,8 +90,3 @@ class AchievementService {
 
 
 }
-
-class AchievementRuleResult {
-    boolean success;
-    Date dateAchieved;
-}

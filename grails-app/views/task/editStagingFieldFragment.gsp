@@ -46,7 +46,7 @@
 
         $("#btnCancelEditFieldDefinition").click(function(e) {
             e.preventDefault();
-            hideModal();
+            bvp.hideModal();
         });
 
         $("#btnSaveFieldDefinition").click(function(e) {
@@ -60,7 +60,7 @@
                 window.location = "${createLink(controller:'task', action:'saveFieldDefinition', params:[projectId: projectInstance.id, fieldDefinitionId: fieldDefinition?.id])}&fieldName=" + fieldName + "&fieldType=" + fieldType + "&recordIndex=" + recordIndex + "&format=" + format
             }
 
-            hideModal();
+            bvp.hideModal();
         });
 
         $("#fieldType").change(function() {

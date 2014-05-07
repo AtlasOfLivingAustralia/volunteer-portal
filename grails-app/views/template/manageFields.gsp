@@ -110,7 +110,7 @@
                         onClose : function() { }
                     };
 
-                    showModal(options);
+                    bvp.showModal(options);
                 });
 
                 $(".btnDeleteField").click(function(e) {

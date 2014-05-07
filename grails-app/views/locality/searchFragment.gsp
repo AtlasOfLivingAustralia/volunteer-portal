@@ -123,7 +123,7 @@
 
                 $(".btnClose").click(function(e) {
                     e.preventDefault();
-                    hideModal();
+                    bvp.hideModal();
                 });
 
                 $(".btnSearch").click(function(e) {

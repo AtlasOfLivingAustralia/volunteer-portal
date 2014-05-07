@@ -18,7 +18,7 @@
                             title: "Last view for task",
                             url: "${createLink(action:'viewedTaskFragment')}?viewedTaskId=" + viewedTaskId
                         }
-                        showModal(options);
+                        bvp.showModal(options);
                     }
                 });
 
@@ -40,7 +40,7 @@
                         title:'Export all tasks',
                         url:"${createLink(action:"exportOptionsFragment", params:[exportCriteria:'all', projectId: projectInstance.id])}"
                     };
-                    showModal(options);
+                    bvp.showModal(options);
                 });
 
                 $("#btnExportTranscribed").click(function(e) {
@@ -49,7 +49,7 @@
                         title:'Export transcribed tasks',
                         url:"${createLink(action:"exportOptionsFragment", params:[exportCriteria:'transcribed', projectId: projectInstance.id])}"
                     };
-                    showModal(options);
+                    bvp.showModal(options);
 
                 });
 
@@ -59,7 +59,7 @@
                         title:'Export validated tasks',
                         url:"${createLink(action:"exportOptionsFragment", params:[exportCriteria:'validated', projectId: projectInstance.id])}"
                     };
-                    showModal(options);
+                    bvp.showModal(options);
                 });
 
                 <g:if test="${params.lastTaskId}">

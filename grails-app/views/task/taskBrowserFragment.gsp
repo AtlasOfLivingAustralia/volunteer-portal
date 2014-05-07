@@ -212,12 +212,12 @@
         var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
         var taskId = $("#task_" + currentTaskIndex).attr("task_id")
         copyDataFromTask(taskId)
-        hideModal();
+        bvp.hideModal();
     });
 
 
     $("#cancel_button").click(function (e) {
-        hideModal();
+        bvp.hideModal();
     });
 
     $("#show_prev_task").click(function (e) {

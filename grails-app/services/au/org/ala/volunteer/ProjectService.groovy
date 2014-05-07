@@ -4,6 +4,8 @@ import grails.transaction.Transactional
 import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
+import javax.imageio.ImageIO
+
 @Transactional
 class ProjectService {
 
@@ -291,20 +293,32 @@ class ProjectService {
         return summaryList
     }
 
-}
+    def checkAndResizeExpeditionImage(Project projectInstance) {
+        try {
+            def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+            def file = new File(filePath);
+            if (!file.exists()) {
+                return
+            }
 
-class ProjectSummaryList {
-    List<ProjectSummary> projectRenderList
-    int totalProjectCount
-    int numberOfIncompleteProjects
-    int matchingProjectCount
-}
+            // Now check image size...
+            def image = ImageIO.read(file)
+            logService.log("Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}")
+            if (image.width != 254 || image.height != 158) {
+                logService.log "Image is not the correct size. Scaling to 254 x 158..."
+                image = ImageUtils.scale(image, 254, 158)
+                logService.log "Saving new dimensions ${image.width} x ${image.height}"
+                ImageIO.write(image, "jpg", file)
+                logService.log "Done."
+            } else {
+                logService.log "Image Ok. No scaling required."
+            }
+            return true
+        } catch (Exception ex) {
+            println ex
+            ex.printStackTrace()
+            return false
+        }
+    }
 
-class ProjectSummary {
-    Project project
-    String iconLabel
-    String iconImage
-    long volunteerCount
-    long countComplete
-    int percentComplete
 }

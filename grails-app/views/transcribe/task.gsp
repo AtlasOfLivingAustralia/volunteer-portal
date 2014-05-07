@@ -123,7 +123,7 @@
                 suppressReturnKey();
                 bindAutocomplete();
                 bindSymbolButtons();
-                bindTooltips();
+                bvp.bindTooltips();
                 bindShrinkExpandLinks();
                 setupPanZoom();
                 applyReadOnlyIfRequired();
@@ -182,7 +182,7 @@
             }
 
             function showGeolocationTool() {
-                showModal({
+                bvp.showModal({
                     url: "${createLink(controller: 'transcribe', action:'geolocationToolFragment')}",
                     width: 978,
                     height: 500,
@@ -193,7 +193,7 @@
 
             function showPreviousTaskBrowser() {
 
-                showModal({
+                bvp.showModal({
                     url: "${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}",
                     width:700,
                     height:600,
@@ -236,40 +236,6 @@
                     return event.keyCode != 13;
                 });
 
-            }
-
-            function bindTooltips(selector, width) {
-
-                if (!selector) {
-                    selector = "a.fieldHelp";
-                }
-                if (!width) {
-                    width = 300;
-                }
-                // Context sensitive help popups
-                $(selector).qtip({
-                    tip: true,
-                    position: {
-                        corner: {
-                            target: 'topMiddle',
-                            tooltip: 'bottomRight'
-                        }
-                    },
-                    style: {
-                        width: width,
-                        padding: 8,
-                        background: 'white', //'#f0f0f0',
-                        color: 'black',
-                        textAlign: 'left',
-                        border: {
-                            width: 4,
-                            radius: 5,
-                            color: '#E66542'// '#E66542' '#DD3102'
-                        },
-                        tip: 'bottomRight',
-                        name: 'light' // Inherit the rest of the attributes from the preset light style
-                    }
-                }).bind('click', function(e){ e.preventDefault(); return false; });
             }
 
             function bindAutocomplete() {
@@ -750,7 +716,7 @@
                         keyboard: false
                     };
 
-                    showModal(options);
+                    bvp.showModal(options);
                 }
 
             </g:if>

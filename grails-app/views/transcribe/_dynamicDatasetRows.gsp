@@ -99,7 +99,7 @@
             }
             $("#observationFields").html(htmlStr);
             $("#recordValues\\.0\\.${entriesField?.fieldType}").attr('value', itemCount - 1);
-            bindTooltips("#observationFields a.fieldHelp");
+            bvp.bindTooltips("#observationFields a.fieldHelp");
         } catch (e) {
             alert(e)
         }

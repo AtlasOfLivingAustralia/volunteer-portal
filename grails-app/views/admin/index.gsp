@@ -21,11 +21,16 @@
                         </tr>
                     </thead>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'project', action:'create')}'">Create Expedition</button></td>
+                        <td>
+                            <button class="btn" onclick="location.href = '${createLink(controller:'project', action:'create')}'">Create Expedition</button>
+                            <button class="btn btn-warning" onclick="location.href = '${createLink(controller:'project', action:'createNewProject')}'">Create Expedition Wizard (Experimental)</button>
+                        </td>
                         <td>Create a new Volunteer Expedition</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button></td>
+                        <td>
+                            <button class="btn" onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button>
+                        </td>
                         <td>Manage project templates and their fields</td>
                     </tr>
                     <tr>

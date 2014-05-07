@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class ViewedTask {
+class ViewedTask implements Serializable {
 
   String userId
   Task task

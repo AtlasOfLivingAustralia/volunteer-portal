@@ -113,8 +113,6 @@
                                 </g:else>
                             </td>
 
-                            %{--<td><cl:loggedInName /></td>--}%
-
                         </tr>
                     </g:each>
                     </tbody>

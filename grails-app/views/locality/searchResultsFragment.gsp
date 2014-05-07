@@ -35,7 +35,7 @@
         $(".selectLocalityButton").click(function(e) {
             e.preventDefault();
             bindToLocality($(this).attr("localityId"));
-            hideModal();
+            bvp.hideModal();
         });
 
 

@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import grails.converters.*
-import org.imgscalr.Scalr
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
@@ -17,7 +16,6 @@ class ProjectController {
     def grailsApplication
     def taskService
     def fieldService
-    def multimediaService
     def logService
     def authService
     def exportService
@@ -25,6 +23,7 @@ class ProjectController {
     def localityService
     def projectService
     def picklistService
+    def projectStagingService
 
     /**
      * Project home page - shows stats, etc.
@@ -429,13 +428,12 @@ class ProjectController {
                     def file = new File(filePath);
                     file.getParentFile().mkdirs();
                     f.transferTo(file);
-                    checkAndResizeExpeditionImage(projectInstance)
+                    projectService.checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message;
                     render(view:'edit', model:[projectInstance:projectInstance])
                     return;
                 }
-
             }
         }
         redirect(action: "edit", id: params.id)
@@ -444,33 +442,9 @@ class ProjectController {
     def resizeExpeditionImage() {
         def projectInstance = Project.get(params.int("id"))
         if (projectInstance) {
-            checkAndResizeExpeditionImage(projectInstance)
+            projectService.checkAndResizeExpeditionImage(projectInstance)
         }
         redirect(action:'edit', id:projectInstance?.id)
-    }
-
-    private checkAndResizeExpeditionImage(Project projectInstance) {
-        try {
-            def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
-            def file = new File(filePath);
-            // Now check image size...
-            def image = ImageIO.read(file)
-            println "Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}"
-            if (image.width != 254 || image.height != 158) {
-                println "Image is not the correct size. Scaling to 254 x 158..."
-                image = ImageUtils.scale(image, 254, 158)
-                println "Saving new dimensions ${image.width} x ${image.height}"
-                ImageIO.write(image, "jpg", file)
-                println "Done."
-            } else {
-                println "Image Ok. No scaling required."
-            }
-            return true
-        } catch (Exception ex) {
-            println ex
-            ex.printStackTrace()
-            return false
-        }
     }
 
     def setLeaderIconIndex = {
@@ -516,40 +490,159 @@ class ProjectController {
 
     def createNewProjectFlow = {
 
+        def checkMandatory = { List errors, Map...paramDescriptors ->
+            paramDescriptors?.each { paramDesc ->
+                if (!params[paramDesc.name]) {
+                    errors << "You must supply a ${paramDesc.label}"
+                }
+            }
+        }
+
         welcome {
+            onEntry {
+                if (!flow.project) {
+                    flow.project = new NewProjectDescriptor(stagingId: UUID.randomUUID().toString())
+                }
+            }
             on("continue").to "projectDetails"
             on("cancel").to "cancel"
         }
 
         projectDetails {
+            onEntry {
+                flow.templates = Template.list()
+                flow.projectTypes = ProjectType.list()
+            }
             on("continue") {
-                println params.projectName
-                flow.projectName = params.projectName
-            }.to "summary"
+
+                def errors = []
+
+                checkMandatory(errors, [name:'projectName', label:'project name'], [name:'shortDescription', label: 'short description'], [name:'longDescription', label:'long description'])
+
+                // The hibernate session (including it's cache) is included in the flow persistence context
+                // which means that if we do a findByName below, and a project exists, it will stored.
+                // Projects are currently not serializable because of an injected dependency, so we do the count
+                // method instead
+                def existing = Project.countByName(params.projectName)
+                if (existing) {
+                    errors << "A project with this name already exists. Choose another name"
+                }
+
+                if (errors) {
+                    flow.errorMessages = errors
+                    return validationError()
+                } else {
+                    flow.errorMessages = []
+                }
+
+                flow.project.name = params.projectName
+                flow.project.shortDescription = params.shortDescription
+                flow.project.longDescription = params.longDescription
+                flow.project.templateId = Long.parseLong(params.templateId)
+                flow.project.projectTypeId = Long.parseLong(params.projectTypeId)
+
+            }.to "projectImage"
+
             on("cancel").to "cancel"
             on("back").to "welcome"
         }
 
-        summary {
-            on("continue").to "createProject"
+        projectImage {
+            onEntry {
+                if (projectStagingService.hasProjectImage(flow.project)) {
+                    flow.projectImageUrl = projectStagingService.getProjectImageUrl(flow.project)
+                } else {
+                    flow.projectImageUrl = null
+                }
+            }
+
+            on("continue") {
+
+                def errors = []
+
+                if(request instanceof MultipartHttpServletRequest) {
+                    MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
+                    if (f != null && f.size > 0) {
+                        def allowedMimeTypes = ['image/jpeg', 'image/png']
+                        if (!allowedMimeTypes.contains(f.getContentType())) {
+                            errors << "Image must be one of: ${allowedMimeTypes}"
+                        } else {
+                            projectStagingService.uploadProjectImage(flow.project, f)
+                        }
+                    }
+                }
+
+                flow.project.imageCopyright = params.imageCopyright
+
+                if (errors) {
+                    flow.errorMessages = errors
+                    return validationError()
+                } else {
+                    flow.errorMessages = []
+                }
+
+            }.to "projectMap"
+
+            on("clearImage") {
+                projectStagingService.clearProjectImage(flow.project)
+            }.to "projectImage"
             on("cancel").to "cancel"
             on("back").to "projectDetails"
         }
 
+        projectMap {
+            onEntry {
+            }
+            on("continue"){
+
+                flow.project.showMap = params.showMap ? true : false
+                if (params.showMap) {
+                    flow.project.mapInitZoomLevel = Integer.parseInt(params.mapZoomLevel)
+                    flow.project.mapInitLatitude = Double.parseDouble(params.mapLatitude)
+                    flow.project.mapInitLongitude = Double.parseDouble(params.mapLongitude)
+                }
+
+            }.to "createProject"
+            on("cancel").to "cancel"
+            on("back").to "projectImage"
+        }
+
         createProject {
             action {
-                println "Create Project: ${flow.projectName}"
+                def projectInstance = projectStagingService.createProject(flow.project as NewProjectDescriptor)
+                if (!projectInstance) {
+                    return fail()
+                }
+                flow.projectId = projectInstance.id
+                flow.persistenceContext.evict(projectInstance)
             }
-            on("success").to "finish"
-            on(Exception).to "handleError"
+            on("success").to "createSuccess"
+            on("fail").to "createFailure"
         }
 
         cancel {
             redirect(controller:'admin', action:"index")
         }
 
+        createFailure {
+            on("finish") {
+                redirect(controller:'admin', action:"index")
+            }
+        }
+
+        createSuccess {
+
+            on("finish") {
+                redirect(controller:'admin', action:"index")
+            }
+
+            on("createAnother") {
+                redirect(controller:'project', action:"createNewProject")
+            }
+
+        }
+
         finish {
-            // TODO: redirect to project home page!
             redirect(controller:'admin', action:"index")
         }
 

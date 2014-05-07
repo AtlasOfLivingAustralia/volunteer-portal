@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class TaskComment {
+class TaskComment implements Serializable {
 
     static belongsTo = [task:Task]
 

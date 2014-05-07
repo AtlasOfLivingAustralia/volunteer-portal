@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class Field {
+class Field implements Serializable {
 
   Task task
   String name

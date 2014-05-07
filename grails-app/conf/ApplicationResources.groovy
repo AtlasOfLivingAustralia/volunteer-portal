@@ -60,5 +60,9 @@ modules = {
         resource url: '/js/amplify.js'
     }
 
+    'bvp' {
+        dependsOn('jquery, qtip')
+        resource url: '/js/bvp-common.js'
+    }
 
 }

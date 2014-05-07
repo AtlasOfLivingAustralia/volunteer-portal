@@ -42,13 +42,13 @@
   $(".select_event_button").click(function(e) {
     e.preventDefault();
     bindToCollectionEvent($(this).attr("externalEventId"))
-    hideModal();
+    bvp.hideModal();
   });
 
   $(".select_location_button").click(function(e) {
     e.preventDefault();
     bindToCollectionEventLocality($(this).attr("externalEventId"))
-    hideModal();
+    bvp.hideModal();
   });
 
   event_map.removeMarkers();

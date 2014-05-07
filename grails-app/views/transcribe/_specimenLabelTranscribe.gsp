@@ -205,7 +205,7 @@
         var verbatimLocality = $('#recordValues\\.0\\.verbatimLocality').val();
         verbatimLocality = verbatimLocality.replace(/(\r\n|\n|\r)/gm, ' ');
         var contentUrl = "${createLink(controller: 'locality', action:'searchFragment', params: [taskId: taskInstance.id])}&verbatimLocality=" + encodeURIComponent(verbatimLocality);
-        showModal({
+        bvp.showModal({
             url: contentUrl,
             width:800,
             height:650,
@@ -222,7 +222,7 @@
             queryParams += '&eventDate=' + encodeURIComponent($('#recordValues\\.0\\.eventDate').val());
             var contentUrl = "${createLink(controller: 'collectionEvent', action:'searchFragment', params: [taskId: taskInstance.id])}" + queryParams;
 
-            showModal({
+            bvp.showModal({
                 url: contentUrl,
                 width:800,
                 height:650,

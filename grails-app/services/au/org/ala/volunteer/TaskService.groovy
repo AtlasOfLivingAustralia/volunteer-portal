@@ -826,9 +826,3 @@ class TaskService {
     }
 
 }
-
-public class ImageMetaData {
-    int height
-    int width
-    String url
-}

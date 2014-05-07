@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class Multimedia {
+class Multimedia implements Serializable {
   static belongsTo = [task:Task]
   //Task task
   String filePath

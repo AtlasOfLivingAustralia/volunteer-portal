@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class ProjectType {
+class ProjectType implements Serializable {
 
     String name
     String label

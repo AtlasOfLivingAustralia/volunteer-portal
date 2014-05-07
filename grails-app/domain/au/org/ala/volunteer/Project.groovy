@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class Project {
+class Project implements Serializable {
 
     String name
     String description
@@ -27,7 +27,7 @@ class Project {
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem]
-    static transients = ['featuredImage']
+    static transients = ['featuredImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {
         version false

@@ -57,7 +57,7 @@
                         title: "Add field definition",
                         url:"${createLink(action:'editStagingFieldFragment', params:[projectId: projectInstance.id])}"
                     }
-                    showModal(options);
+                    bvp.showModal(options);
                 });
 
                 $(".btnEditField").click(function(e) {
@@ -68,7 +68,7 @@
                             title: "Edit field definition",
                             url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}&fieldDefinitionId=" + fieldId
                         };
-                        showModal(options);
+                        bvp.showModal(options);
                     }
                 });
 
@@ -95,7 +95,7 @@
                         title: "Upload a data file",
                         url:"${createLink(action:'uploadDataFileFragment', params:[projectId: projectInstance.id])}"
                     }
-                    showModal(options);
+                    bvp.showModal(options);
 
                 });
 
@@ -178,13 +178,13 @@
                                 %{--<button class="btn btn-success"><i class="icon-upload icon-white"></i>&nbsp;Upload Images</button>--}%
 
                                 <g:if test="${hasDataFile}">
-                                    A data file has been uploaded
+                                    A data file has been uploaded&nbsp;
                                     <button class="btn btn-warning" id="btnClearDataFile">Clear data file</button>
                                     &nbsp;
                                     <a href="${dataFileUrl}">View data file</a>
                                 </g:if>
                                 <g:else>
-                                    No data file has been upload
+                                    No data file has been uploaded&nbsp;
                                     <button class="btn btn-success" id="btnUploadDataFile"><i class="icon-upload icon-white"></i>&nbsp;Upload data file</button>
                                 </g:else>
 

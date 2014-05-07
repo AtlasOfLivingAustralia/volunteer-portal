@@ -267,7 +267,7 @@
 
         $("#btnClose").click(function(e) {
             e.preventDefault();
-            hideModal();
+            bvp.hideModal();
         });
 
         // trigger Google geolocation search on search button
@@ -347,7 +347,7 @@
                     });
                 }
 
-                hideModal();
+                bvp.hideModal();
             } else {
                 alert('Location data is empty. Use the search and/or drag the map icon to set the location first.');
             }
@@ -360,7 +360,7 @@
             google.maps.event.trigger(map, "resize");
         }, 500);
 
-        bindTooltips("a.geolocateHelp.fieldHelp", 600);
+        bvp.bindTooltips("a.geolocateHelp.fieldHelp", 600);
 
     }); // End document.ready
 

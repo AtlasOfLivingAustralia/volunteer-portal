@@ -91,6 +91,13 @@
 
         <cl:headerContent title="${message(code:'default.frontpageheading.label', default:'Biodiversity Volunteer Portal')}" selectedNavItem="bvp">
             <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based transcription of archival and natural history collections</p>
+
+            <cl:isLoggedIn>
+                <cl:ifAdmin>
+                    <g:link class="btn btn-warning pull-right" controller="admin" action="index"><i class="icon-cog icon-white"></i>&nbsp;Admin</g:link>
+                </cl:ifAdmin>
+            </cl:isLoggedIn>
+
         </cl:headerContent>
 
         <div class="container-fluid">
@@ -206,13 +213,6 @@
                     </section>
                 </div>
             </div>
-            <cl:isLoggedIn>
-                <div class="row-fluid">
-                    <div class="span9">
-                        <g:link controller="admin" action="index" style="color:#DDDDDD;">Admin</g:link>
-                    </div>
-                </div>
-            </cl:isLoggedIn>
         </div>
 
 
