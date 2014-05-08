@@ -124,6 +124,7 @@
                 bindAutocomplete();
                 bindSymbolButtons();
                 bvp.bindTooltips();
+                bvp.disableBackspace();
                 bindShrinkExpandLinks();
                 setupPanZoom();
                 applyReadOnlyIfRequired();

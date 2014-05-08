@@ -82,15 +82,21 @@ class StagingService {
             BOMInputStream bomInputStream = new BOMInputStream(fis, ByteOrderMark.UTF_8) // Ignore any UTF-8 Byte Order Marks, as they will stuff up the mapping!
             try {
                 new CSVMapReader(new InputStreamReader(bomInputStream)).each { Map map ->
-                    if (map.externalId) {
+                    if (map.externalId || map.filename) {
+
+                        def externalIdCol = 'externalId'
+                        if (!map.externalId) {
+                            externalIdCol= 'filename'
+                        }
+
                         if (!dataFileColumns) {
                             map.each {
-                                if (it.key != 'externalId') {
+                                if (it.key != externalIdCol) {
                                     dataFileColumns << it.key
                                 }
                             }
                         }
-                        dataFileMap[map.remove('externalId')] = map
+                        dataFileMap[map.remove(externalIdCol)] = map
                     }
                 }
             } finally {

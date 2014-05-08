@@ -115,7 +115,7 @@ var bvp = {};
             form.append("<input type='hidden' name='_eventId_" + event + "' />");
             form.submit();
         }
-    }
+    };
 
     bvplib.suppressEnterSubmit = function() {
         $("input[type=text]").keypress(function(e) {
@@ -123,7 +123,17 @@ var bvp = {};
                 e.preventDefault();
             }
         });
-    }
+    };
+
+    bvplib.disableBackspace = function() {
+        $(document).keydown(function(e) {
+            var elid = $(document.activeElement).is('input[type=text], textarea');
+            if (e.keyCode === 8 && !elid) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    };
 
 
 })(bvp);

@@ -1,11 +1,10 @@
 package au.org.ala.volunteer
 
 import grails.converters.*
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
-
-import javax.imageio.ImageIO
 
 class ProjectController {
 
@@ -345,51 +344,192 @@ class ProjectController {
 
         def currentUser = authService.username()
         if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
-            def projectInstance = Project.get(params.int("id"))
-            if (!projectInstance) {
-                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
-                redirect(action: "list")
-            } else {
 
-                def picklistInstitutionCodes = [""]
-                picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+            redirect(action:"editGeneralSettings", params: params)
+            return
 
-                def taskCount = Task.countByProject(projectInstance)
-
-                return [projectInstance: projectInstance, taskCount: taskCount, picklistInstitutionCodes: picklistInstitutionCodes ]
-            }
+//            def projectInstance = Project.get(params.int("id"))
+//            if (!projectInstance) {
+//                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+//                redirect(action: "list")
+//            } else {
+//
+//                def picklistInstitutionCodes = [""]
+//                picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+//
+//                def taskCount = Task.countByProject(projectInstance)
+//
+//                return [projectInstance: projectInstance, taskCount: taskCount, picklistInstitutionCodes: picklistInstitutionCodes ]
+//            }
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
-    def update = {
+    def editGeneralSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            return [projectInstance: projectInstance, templates: Template.list(), projectTypes: ProjectType.list() ]
+        }
+    }
+
+    def editTutorialLinksSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            return [projectInstance: projectInstance, templates: Template.list(), projectTypes: ProjectType.list() ]
+        }
+    }
+
+
+    def editPicklistSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            def picklistInstitutionCodes = [""]
+            picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+
+            return [projectInstance: projectInstance, picklistInstitutionCodes: picklistInstitutionCodes ]
+        }
+    }
+
+    def editMapSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            return [projectInstance: projectInstance ]
+        }
+    }
+
+    def editBannerImageSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            return [projectInstance: projectInstance ]
+        }
+    }
+
+    def editTaskSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            def taskCount = Task.countByProject(projectInstance)
+            return [projectInstance: projectInstance, taskCount: taskCount]
+        }
+    }
+
+    def editNewsItemsSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            def taskCount = Task.countByProject(projectInstance)
+            return [projectInstance: projectInstance, taskCount: taskCount]
+        }
+    }
+
+    def updateGeneralSettings() {
+
         def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            if (!saveProjectSettingsFromParams(projectInstance, params)) {
+                render(view: "editGeneralSettings", model: [projectInstance: projectInstance])
+            } else {
+                redirect(action:'editGeneralSettings', id: projectInstance.id)
+            }
+        }  else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
+    def updateTutorialLinksSettings() {
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            if (!saveProjectSettingsFromParams(projectInstance, params)) {
+                render(view: "editTutorialLinksSettings", model: [projectInstance: projectInstance])
+            } else {
+                redirect(action:'editTutorialLinksSettings', id: projectInstance.id)
+            }
+        }  else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
+    def updateNewsItemsSettings() {
+
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            if (!saveProjectSettingsFromParams(projectInstance, params)) {
+                render(view: "editNewsItemsSettings", model: [projectInstance: projectInstance])
+            } else {
+                redirect(action:'editNewsItemsSettings', id: projectInstance.id)
+            }
+        }  else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
+
+    def deleteAllTasksFragment() {
+        def projectInstance = Project.get(params.int("id"))
+        def taskCount = Task.countByProject(projectInstance)
+        [projectInstance: projectInstance, taskCount: taskCount]
+    }
+
+    private boolean saveProjectSettingsFromParams(Project projectInstance, GrailsParameterMap params) {
+
         if (projectInstance) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (projectInstance.version > version) {
-
                     projectInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'project.label', default: 'Project')] as Object[], "Another user has updated this Project while you were editing")
-                    render(view: "edit", model: [projectInstance: projectInstance])
-                    return
+                    return false
                 }
             }
             projectInstance.properties = params
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
-                redirect(action: "index", id: projectInstance.id)
-            }
-            else {
-                render(view: "edit", model: [projectInstance: projectInstance])
+                return false
+            } else {
+                return true
             }
         }
-        else {
+        return false
+    }
+
+    def updatePicklistSettings() {
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            if (!saveProjectSettingsFromParams(projectInstance, params)) {
+                render(view: "editPicklistSettings", model: [projectInstance: projectInstance])
+                return
+            } else {
+                redirect(action:'editPicklistSettings', id: projectInstance.id)
+            }
+        }  else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         }
     }
+
 
     def delete = {
         def projectInstance = Project.get(params.id)
@@ -416,11 +556,12 @@ class ProjectController {
         if(request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
             
-            if (f != null) {
+            if (f != null && f.size > 0) {
+
                 def allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
-                    render(view:'edit', model:[projectInstance:projectInstance])
+                    render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
                     return;
                 }
 
@@ -432,12 +573,15 @@ class ProjectController {
                     projectService.checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message;
-                    render(view:'edit', model:[projectInstance:projectInstance])
+                    render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
                     return;
                 }
             }
         }
-        redirect(action: "edit", id: params.id)
+
+        projectInstance.featuredImageCopyright = params.featuredImageCopyright
+
+        redirect(action: "editBannerImageSettings", id: params.id)
     }
 
     def resizeExpeditionImage() {

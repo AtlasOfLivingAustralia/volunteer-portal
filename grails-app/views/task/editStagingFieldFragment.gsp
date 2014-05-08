@@ -28,7 +28,7 @@
                 <g:textField name="definition" value="${fieldDefinition?.format}" />
 
                 <g:if test="${hasDataFile && dataFileColumns}">
-                    <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition.format}" />
+                    <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}" />
                 </g:if>
             </div>
         </div>

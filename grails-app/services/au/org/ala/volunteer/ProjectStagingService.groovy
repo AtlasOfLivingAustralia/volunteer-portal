@@ -22,6 +22,7 @@ class ProjectStagingService {
         project.mapInitLatitude = projectDescriptor.mapInitLatitude
         project.mapInitLongitude = projectDescriptor.mapInitLongitude
         project.mapInitZoomLevel = projectDescriptor.mapInitZoomLevel
+        project.featuredImageCopyright = projectDescriptor.imageCopyright
         project.inactive = true
 
         project.save(failOnError: true, flush: true)

@@ -44,7 +44,7 @@
 
 
         <div class="well well-small">
-            <g:uploadForm name="detailsForm">
+            <g:uploadForm>
                 <div class="form-horizontal">
                     <div class="control-group">
                         <label class="control-label" for="featuredImage">Expedition Image</label>
