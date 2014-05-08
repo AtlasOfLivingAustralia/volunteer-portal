@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 class NewProjectDescriptor implements Serializable {
 
+    String featuredOwner
     String stagingId
     String name
     String shortDescription

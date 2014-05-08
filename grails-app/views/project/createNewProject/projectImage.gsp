@@ -2,11 +2,19 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <title>Create a new Expedition - Details</title>
+        <title>Create a new Expedition - Banner image</title>
 
         <r:script type="text/javascript">
 
+            bvp.bindTooltips();
+            bvp.suppressEnterSubmit();
+
             $(document).ready(function() {
+                $("#btnNext").click(function(e) {
+                    e.preventDefault();
+                    bvp.submitWithWebflowEvent($(this));
+                });
+
             });
 
         </r:script>
@@ -17,7 +25,7 @@
     </head>
     <body>
 
-        <cl:headerContent title="Create a new Expedition - Details cont." selectedNavItem="expeditions">
+        <cl:headerContent title="Create a new Expedition - Expedition image" selectedNavItem="expeditions">
             <% pageScope.crumbs = [] %>
         </cl:headerContent>
 
@@ -36,7 +44,7 @@
 
 
         <div class="well well-small">
-            <g:uploadForm>
+            <g:uploadForm name="detailsForm">
                 <div class="form-horizontal">
                     <div class="control-group">
                         <label class="control-label" for="featuredImage">Expedition Image</label>
@@ -64,9 +72,9 @@
 
                     <div class="control-group">
                         <div class="controls">
-                            <g:link class="btn btn-small" event="cancel">Cancel</g:link>
-                            <g:link class="btn btn-small" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
-                            <g:submitButton name="continue" class="btn btn-small btn-primary" value="Next" />
+                            <g:link class="btn" event="cancel">Cancel</g:link>
+                            <g:link class="btn" event="back"><i class="icon-chevron-left"></i>&nbsp;Back</g:link>
+                            <button id="btnNext" event="continue" class="btn btn-primary">Next&nbsp;<i class="icon-chevron-right icon-white"></i></button>
                         </div>
                     </div>
 

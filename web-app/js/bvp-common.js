@@ -104,6 +104,28 @@ var bvp = {};
         }).bind('click', function(e){ e.preventDefault(); return false; });
     }
 
+    bvplib.submitWithWebflowEvent = function(jqButton, event) {
+
+        if (event == null) {
+            event = $(jqButton).attr("event");
+        }
+
+        var form = $(jqButton).closest("form");
+        if (form.length && event) {
+            form.append("<input type='hidden' name='_eventId_" + event + "' />");
+            form.submit();
+        }
+    }
+
+    bvplib.suppressEnterSubmit = function() {
+        $("input[type=text]").keypress(function(e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+            }
+        });
+    }
+
+
 })(bvp);
 
 

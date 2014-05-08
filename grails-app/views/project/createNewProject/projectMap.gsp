@@ -19,13 +19,16 @@
 
             $(document).ready(function() {
 
+                bvp.bindTooltips();
+                bvp.suppressEnterSubmit();
+
                 $("#showMap").change(function(e) {
                     updateMapDisplay();
                 });
 
-                $("#btnUpdateMap").click(function(e) {
+                $("#btnNext").click(function(e) {
                     e.preventDefault();
-                    updateMapFromFields();
+                    bvp.submitWithWebflowEvent($(this));
                 });
 
                 loadMap();
@@ -80,19 +83,6 @@
                 $("#mapLongitude").val(center.lng());
             }
 
-            function updateMapFromFields() {
-
-                try {
-                    mapListenerActive = false;
-                    map.setZoom(parseInt($('#mapInitZoomLevel').val()));
-                    var lat =  parseFloat($("#mapLatitude").val());
-                    var lng = parseFloat($("#mapLongitude").val());
-                    map.setCenter(new google.maps.LatLng(lat, lng));
-                } finally {
-                    mapListenerActive = true;
-                }
-            }
-
             function updateMapDisplay() {
                 if ($("#showMap").attr("checked")) {
                     $("#mapPositionControls").css("opacity", "1");
@@ -128,7 +118,7 @@
         </cl:headerContent>
 
         <div class="well well-small">
-            <g:form>
+            <g:form name="detailsForm">
                 <div class="form-horizontal">
 
                     <div class="control-group">
@@ -173,11 +163,6 @@
                                             </div>
                                         </div>
 
-                                        %{--<div class="control-group">--}%
-                                            %{--<div class="controls">--}%
-                                                %{--<button id="btnUpdateMap" type="button" class="btn btn-small"><i class="icon-arrow-left"></i>&nbsp;Update map from fields</button>--}%
-                                            %{--</div>--}%
-                                        %{--</div>--}%
                                     </td>
                                 </tr>
                             </table>
@@ -186,9 +171,9 @@
 
                     <div class="control-group" style="margin-top: 10px">
                         <div class="controls">
-                            <g:link class="btn btn-small" event="cancel">Cancel</g:link>
-                            <g:link class="btn btn-small" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
-                            <g:submitButton name="continue" class="btn btn-small btn-primary" value="Next" />
+                            <g:link class="btn" event="cancel">Cancel</g:link>
+                            <g:link class="btn" event="back"><i class="icon-chevron-left"></i>&nbsp;Back</g:link>
+                            <button id="btnNext" event="continue" class="btn btn-primary">Next&nbsp;<i class="icon-chevron-right icon-white"></i></button>
                         </div>
                     </div>
 

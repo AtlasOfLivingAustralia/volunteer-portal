@@ -24,6 +24,7 @@ class ProjectController {
     def projectService
     def picklistService
     def projectStagingService
+    def projectTypeService
 
     /**
      * Project home page - shows stats, etc.
@@ -504,8 +505,31 @@ class ProjectController {
                     flow.project = new NewProjectDescriptor(stagingId: UUID.randomUUID().toString())
                 }
             }
-            on("continue").to "projectDetails"
+            on("continue").to "institutionDetails"
             on("cancel").to "cancel"
+        }
+
+        institutionDetails {
+            onEntry {
+                println flow.project.featuredOwner
+            }
+            on("continue") {
+                def errors = []
+                if (!params.featuredOwner) {
+                    errors << "You must supply the name of the project owner or sponsor"
+                }
+
+                if (errors) {
+                    flow.errorMessages = errors
+                    return validationError()
+                } else {
+                    flow.errorMessages = []
+                }
+
+                flow.project.featuredOwner = params.featuredOwner
+            }.to "projectDetails"
+            on("cancel").to "cancel"
+            on("back").to "welcome"
         }
 
         projectDetails {
@@ -544,7 +568,7 @@ class ProjectController {
             }.to "projectImage"
 
             on("cancel").to "cancel"
-            on("back").to "welcome"
+            on("back").to "institutionDetails"
         }
 
         projectImage {
@@ -602,9 +626,23 @@ class ProjectController {
                     flow.project.mapInitLongitude = Double.parseDouble(params.mapLongitude)
                 }
 
-            }.to "createProject"
+            }.to "summary"
             on("cancel").to "cancel"
             on("back").to "projectImage"
+        }
+
+        summary {
+            onEntry {
+                if (projectStagingService.hasProjectImage(flow.project)) {
+                    flow.projectImageUrl = projectStagingService.getProjectImageUrl(flow.project)
+                } else {
+                    flow.projectImageUrl = null
+                }
+                flow.projectTypeImageUrl = projectTypeService.getIconURL(ProjectType.get(flow.project.projectTypeId))
+            }
+            on("continue").to "createProject"
+            on("cancel").to "cancel"
+            on("back").to "projectMap"
         }
 
         createProject {
@@ -621,6 +659,9 @@ class ProjectController {
         }
 
         cancel {
+            onEntry {
+                projectStagingService.purgeProject(flow.project)
+            }
             redirect(controller:'admin', action:"index")
         }
 
@@ -646,6 +687,17 @@ class ProjectController {
             redirect(controller:'admin', action:"index")
         }
 
+    }
+
+    def ajaxFeaturedOwnerList() {
+        def c = Project.createCriteria()
+        def results = c {
+            ilike("featuredOwner", "%${params.q ?: ''}%")
+            projections {
+                distinct("featuredOwner")
+            }
+        }
+        render(results as JSON)
     }
 
 }

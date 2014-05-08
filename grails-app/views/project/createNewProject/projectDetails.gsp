@@ -6,9 +6,17 @@
 
         <r:script type="text/javascript">
 
-            $(document).ready(function() {
+            $(document).ready(function () {
                 bvp.bindTooltips();
+                bvp.suppressEnterSubmit();
+
+                $("#btnNext").click(function (e) {
+                    e.preventDefault();
+                    bvp.submitWithWebflowEvent($(this));
+                });
+
             });
+
 
         </r:script>
 
@@ -78,9 +86,9 @@
 
                     <div class="control-group">
                         <div class="controls">
-                            <g:link class="btn btn-small" event="cancel">Cancel</g:link>
-                            <g:link class="btn btn-small" event="back"><i class="icon-chevron-left"></i>&nbsp;Previous</g:link>
-                            <g:submitButton name="continue" class="btn btn-small btn-primary" value="Next" />
+                            <g:link class="btn" event="cancel">Cancel</g:link>
+                            <g:link class="btn" event="back"><i class="icon-chevron-left"></i>&nbsp;Back</g:link>
+                            <button id="btnNext" event="continue" class="btn btn-primary">Next&nbsp;<i class="icon-chevron-right icon-white"></i></button>
                         </div>
                     </div>
 
