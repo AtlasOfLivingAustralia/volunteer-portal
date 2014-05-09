@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 class NewsItem implements Serializable {
+
     Project project
     String title
     String shortDescription

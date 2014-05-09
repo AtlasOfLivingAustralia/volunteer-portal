@@ -30,18 +30,23 @@
 
         </style>
         <title>Edit Project ${projectInstance?.name}</title>
+        <r:require module="bootstrap-switch" />
+
     </head>
 
     <body>
 
         <tinyMce:resources />
 
-        <cl:headerContent title="${message(code: 'default.edit.label', args: ['Expedition'])} - ${projectInstance.name}" selectedNavItem="expeditions">
+
+
+        <cl:headerContent hideTitle="${true}" selectedNavItem="expeditions">
             <%
                 pageScope.crumbs = [
                         [link: createLink(controller: 'project', action: 'index', id:projectInstance.id), label: projectInstance.featuredLabel]
                 ]
             %>
+            <h1>Expedition Settings - ${projectInstance.name} <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted></small></h1>
         </cl:headerContent>
 
         <div class="container-fluid">
@@ -62,7 +67,6 @@
                 <div class="span9">
                     <legend>
                         ${projectInstance.name} - <g:pageProperty name="page.pageTitle"/>
-                        <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted></small>
                         <div class="btn-group pull-right">
                             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                                 <i class="icon-cog"></i>&nbsp;Actions
@@ -78,6 +82,10 @@
                                 </li>
                             </ul>
                         </div>
+                        <div class="btn-group pull-right" style="margin-left: 5px;margin-right: 5px">
+                            <g:pageProperty name="page.adminButtonBar"/>
+                        </div>
+
 
                         <g:form name="activationForm" controller="project" action="updateGeneralSettings">
                             <g:hiddenField name="id" value="${projectInstance.id}" />

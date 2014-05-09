@@ -65,4 +65,10 @@ modules = {
         resource url: '/js/bvp-common.js'
     }
 
+    "bootstrap-switch" {
+        dependsOn "jquery"
+        resource url: 'js/bootstrap-switch/bootstrap-switch.css'
+        resource url: 'js/bootstrap-switch/bootstrap-switch.js'
+    }
+
 }

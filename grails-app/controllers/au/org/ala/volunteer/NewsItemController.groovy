@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 class NewsItemController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST"]
 
     def authService
 
@@ -40,7 +40,7 @@ class NewsItemController {
             return [newsItemInstance: newsItemInstance, currentUser: currentUser]
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
-            redirect(controller: "project", action: "index", id: params.id)
+            redirect(controller: "project", action: "editNewsItemsSettings", id: params.id)
         }
     }
 
@@ -48,6 +48,7 @@ class NewsItemController {
         def projectId = params.int("project")
         params.project = null
         def newsItemInstance = new NewsItem(params)
+        newsItemInstance.created = new Date()
         if (projectId) {
             def project = Project.get(projectId)
             newsItemInstance.project = project
@@ -55,9 +56,12 @@ class NewsItemController {
 
         if (newsItemInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"
-            redirect(action: "show", id: newsItemInstance.id)
-        }
-        else {
+            if (newsItemInstance.project) {
+                redirect(controller: 'project', action: "editNewsItemsSettings", id: newsItemInstance.project.id)
+            } else {
+                redirect(action: "show", id: newsItemInstance.id)
+            }
+        } else {
             render(view: "create", model: [newsItemInstance: newsItemInstance])
         }
     }
@@ -108,7 +112,11 @@ class NewsItemController {
                 newsItemInstance.properties = params
                 if (!newsItemInstance.hasErrors() && newsItemInstance.save(flush: true)) {
                     flash.message = "${message(code: 'default.updated.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"
-                    redirect(action: "show", id: newsItemInstance.id)
+                    if (newsItemInstance.project) {
+                        redirect(controller:'project', action:'editNewsItemsSettings', id: newsItemInstance.project.id)
+                    } else {
+                        redirect(action: "show", id: newsItemInstance.id)
+                    }
                 }
                 else {
                     render(view: "edit", model: [newsItemInstance: newsItemInstance])
@@ -127,10 +135,15 @@ class NewsItemController {
     def delete = {
         def newsItemInstance = NewsItem.get(params.id)
         if (newsItemInstance) {
+            def fromProjectId = newsItemInstance.project?.id
             try {
                 newsItemInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
-                redirect(action: "list")
+                if (fromProjectId) {
+                    redirect(controller:'project', action:'editNewsItemsSettings', id: fromProjectId)
+                } else {
+                    redirect(action: "list")
+                }
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"

@@ -40,84 +40,47 @@
             %>
         </cl:headerContent>
 
-        <div class="row">
-            <div class="span12">
-                <g:hasErrors bean="${newsItemInstance}">
-                    <div class="errors">
-                        <g:renderErrors bean="${newsItemInstance}" as="list"/>
-                    </div>
-                </g:hasErrors>
-                <g:form action="save">
-                    <div class="dialog">
-                        <table class="table">
-                            <tbody>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="title"><g:message code="newsItem.title.label" default="Title"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'title', 'errors')}">
-                                        <g:textField name="title" value="${newsItemInstance?.title}"/>
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="shortDescription"><g:message code="newsItem.shortDescription.label" default="Short description"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'shortDescription', 'errors')}">
-                                        <g:textField name="shortDescription" value="${newsItemInstance?.shortDescription}"/>
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="body"><g:message code="newsItem.body.label" default="Body"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'body', 'errors')}">
-                                        %{--<g:textArea name="body" cols="40" rows="5" value="${newsItemInstance?.body}" />--}%
-                                        <tinyMce:renderEditor type="advanced" name="body" cols="60" rows="10" style="width:500px;">
-                                            ${newsItemInstance?.body}
-                                        </tinyMce:renderEditor>
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="created"><g:message code="newsItem.created.label" default="Created"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'created', 'errors')}">
-                                        <g:datePicker name="created" precision="day" value="${newsItemInstance?.created}"/>
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="createdBy"><g:message code="newsItem.createdBy.label" default="Created By"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'createdBy', 'errors')}">
-                                        <g:textField name="createdBy" value="${(newsItemInstance?.createdBy) ? newsItemInstance.createdBy : currentUser}"/>
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="project"><g:message code="newsItem.project.label" default="Project"/></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: newsItemInstance, field: 'project', 'errors')}">
-                                        <g:select name="project" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${newsItemInstance?.project?.id}"/>
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="buttons">
-                        <span class="button"><g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}"/></span>
-                    </div>
-                </g:form>
+        <g:hasErrors bean="${newsItemInstance}">
+            <div class="alert alert-danger">
+                <g:renderErrors bean="${newsItemInstance}" as="list"/>
             </div>
-        </div>
+        </g:hasErrors>
+        <g:form action="save" class="form-horizontal">
+
+            <div class="control-group">
+                <label for="title" class="control-label"><g:message code="newsItem.title.label" default="Title"/></label>
+                <div class="controls">
+                    <g:textField name="title" value="${newsItemInstance?.title}"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="shortDescription" class="control-label"><g:message code="newsItem.shortDescription.label" default="Short description"/></label>
+                <div class="controls">
+                    <g:textField class="input-xxlarge" name="shortDescription" value="${newsItemInstance?.shortDescription}"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="body" class="control-label"><g:message code="newsItem.body.label" default="Body"/></label>
+                <div class="controls">
+                    <tinyMce:renderEditor type="advanced" name="body" cols="60" rows="10" class="input-xxlarge">
+                        ${newsItemInstance?.body}
+                    </tinyMce:renderEditor>
+
+                </div>
+            </div>
+
+            <g:hiddenField name="createdBy" value="${(newsItemInstance?.createdBy) ? newsItemInstance.createdBy : currentUser }" />
+
+            <g:hiddenField name="project" value="${newsItemInstance?.project?.id}" />
+
+            <div class="control-group">
+                <div class="controls">
+                    <g:submitButton name="create" class="btn btn-primary" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+                </div>
+            </div>
+
+        </g:form>
     </body>
 </html>

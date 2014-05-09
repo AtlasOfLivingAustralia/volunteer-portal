@@ -12,11 +12,11 @@
         <cl:headerContent title="${newsItemInstance.title}">
             <%
                 pageScope.crumbs = [
-                    [link: createLink(controller: 'newsItem', action: 'list'), label: message(code: 'default.list.label', args: [entityName])],
+                    [link: createLink(controller: 'newsItem', action: 'list', id:newsItemInstance?.project?.id), label: message(code: 'default.list.label', args: [entityName])],
                 ]
 
                 if (newsItemInstance.project) {
-                    pageScope.crumbs << [link: createLink(controller: 'project', action: 'show'), label: newsItemInstance.project?.featuredLabel]
+                    pageScope.crumbs << [link: createLink(controller: 'project', action: 'show', id:newsItemInstance?.project?.id), label: newsItemInstance.project?.featuredLabel]
                 }
             %>
         </cl:headerContent>
@@ -24,7 +24,10 @@
         <div class="row">
             <div class="span12">
 
-                <div class="lead">${fieldValue(bean: newsItemInstance, field: "shortDescription")}</div>
+                <legend>
+                    ${fieldValue(bean: newsItemInstance, field: "shortDescription")}
+                    <small class="pull-right"><g:formatDate date="${newsItemInstance.created}" format="yyyy-MM-dd HH:mm"/> by <cl:userDisplayName userId="${newsItemInstance.createdBy}"/></small>
+                </legend
 
                 <div>
                     ${newsItemInstance.body}

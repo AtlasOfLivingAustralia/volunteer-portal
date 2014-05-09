@@ -263,16 +263,25 @@
                     </g:if>
 
                     <g:if test="${!projectInstance.disableNewsItems && newsItem}">
-                        <div>
-                            <h3>${projectInstance.featuredLabel} news</h3>
-                            <small>
-                                <time datetime="${formatDate(format: "dd MMMM yyyy", date: newsItem.created)}"><g:formatDate format="dd MMMM yyyy" date="${newsItem.created}"/></time>
-                            </small>
+                        <div class="well well-small" style="margin-top: 10px">
+                            <legend>
+                                Expedition news
+                                <small class="pull-right">
+                                    <time datetime="${formatDate(format: "dd MMMM yyyy", date: newsItem.created)}"><g:formatDate format="dd MMMM yyyy" date="${newsItem.created}"/></time>
+                                </small>
+
+                            </legend>
                             <h4 style="margin-top: 0px">
                                 <a href="${createLink(controller: 'newsItem', action: 'list', id: projectInstance.id)}">${newsItem.title}</a>
                             </h4>
-                            ${newsItem.body}
-                            %{--<g:link controller="newsItem" action="list" id="${projectInstance.id}">All ${projectInstance.featuredLabel} news...</g:link>--}%
+                            <div>
+                                ${newsItem.body}
+                            </div>
+                            <g:if test="${newsItems?.size() > 1}">
+                                <small>
+                                    <g:link controller="newsItem" action="list" id="${projectInstance.id}">Read older news...</g:link>
+                                </small>
+                            </g:if>
                         </div>
                     </g:if>
                 </section>

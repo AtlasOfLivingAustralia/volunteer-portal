@@ -30,14 +30,14 @@
         <g:set var="initLatitude" value="${projectInstance.mapInitLatitude ?: -27.76133033947936}"/>
         <g:set var="initLongitude" value="${projectInstance.mapInitLongitude ?: 134.47265649999997}"/>
 
-        <g:form method="post" class="form-horizontal">
+        <g:form method="post" class="form-horizontal" name="updateForm" action="updateMapSettings">
 
             <g:hiddenField name="id" value="${projectInstance?.id}"/>
             <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
             <div class="control-group">
                 <label for="showMap" class="checkbox">
-                    <g:checkBox name="showMap" checked="${projectInstance.showMap}"/>&nbsp;Show the map on the expedition landing page
+                    Show the map on the expedition landing page&nbsp;<g:checkBox name="showMap" checked="${projectInstance.showMap}"/>
                 </label>
             </div>
 
@@ -77,14 +77,17 @@
                                 </div>
                             </div>
 
+                            <div class="control-group">
+                                <div class="controls">
+                                    <g:actionSubmit class="save btn btn-primary" action="updateMapSettings" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                                </div>
+                            </div>
+
                         </td>
                     </tr>
                 </table>
             </div>
 
-            <div class="control-group">
-                <g:actionSubmit class="save btn btn-primary" action="updateMapSettings" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-            </div>
 
         </g:form>
 
@@ -99,11 +102,17 @@
 
             $(document).ready(function () {
 
+                $('input:checkbox').bootstrapSwitch({
+                    size: "small",
+                    onText: "yes",
+                    offText: "no"
+                });
+
                 bvp.bindTooltips();
                 bvp.suppressEnterSubmit();
 
-                $("#showMap").change(function (e) {
-                    updateMapDisplay();
+                $('input:checkbox').on('switchChange.bootstrapSwitch', function(event, state) {
+                    $("#updateForm").submit();
                 });
 
                 $("#btnNext").click(function (e) {

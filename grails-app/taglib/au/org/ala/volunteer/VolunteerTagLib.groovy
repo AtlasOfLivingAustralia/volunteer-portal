@@ -324,7 +324,7 @@ class VolunteerTagLib {
 
         def mb = new MarkupBuilder(out)
         def bodyContent = body.call()
-        def crumbLabel = attrs.crumbLabel ?: attrs.title
+        def crumbLabel = attrs.crumbLabel ?: attrs.title ?: ""
 
         if (attrs.selectedNavItem) {
             sitemesh.parameter(name: 'selectedNavItem', value: attrs.selectedNavItem)

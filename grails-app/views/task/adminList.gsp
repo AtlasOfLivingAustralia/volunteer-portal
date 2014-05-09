@@ -92,7 +92,6 @@
             <div>
                 <cl:ifAdmin>
                     <button class="btn" style="float:left;margin:5px;" onclick="location.href = '${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
-                    <button class="btn" style="float:left;margin:5px;" onclick="location.href = '${createLink(controller:'newsItem', action:'create', params:['project.id': projectInstance.id])}'">New News Item</button>
                     <button class="btn" style="float:left;margin:5px;" onclick="location.href = '${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
                     <button class="btn" style="float:left;margin:5px;" onclick="location.href = '${createLink(controller:'picklist', id:projectInstance.id)}'">Picklists</button>
                 </cl:ifAdmin>

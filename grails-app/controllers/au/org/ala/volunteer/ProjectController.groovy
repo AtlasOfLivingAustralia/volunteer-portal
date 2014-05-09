@@ -74,8 +74,8 @@ class ProjectController {
             }
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
-            def items = projectInstance.newsItems.asList()
-            def newsItem = items.size() > 0 ? items[0] : null;
+            def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', date:'desc'])
+            def newsItem = newsItems?.first()
 
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
             if (percentComplete > 99 && taskCount != tasksTranscribed) {
@@ -83,7 +83,7 @@ class ProjectController {
                 percentComplete = 99;
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete])
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete, newsItems: newsItems])
         }
     }
 
@@ -436,8 +436,8 @@ class ProjectController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
-            def taskCount = Task.countByProject(projectInstance)
-            return [projectInstance: projectInstance, taskCount: taskCount]
+            def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc'])
+            return [projectInstance: projectInstance, newsItems: newsItems]
         }
     }
 
@@ -460,7 +460,8 @@ class ProjectController {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
-                render(view: "editTutorialLinksSettings", model: [projectInstance: projectInstance])
+                def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc'])
+                render(view: "editTutorialLinksSettings", model: [projectInstance: projectInstance, newsItems: newsItems])
             } else {
                 redirect(action:'editTutorialLinksSettings', id: projectInstance.id)
             }
@@ -511,8 +512,6 @@ class ProjectController {
             projectInstance.properties = params
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "Expedition updated"
-                return false
-            } else {
                 return true
             }
         }
