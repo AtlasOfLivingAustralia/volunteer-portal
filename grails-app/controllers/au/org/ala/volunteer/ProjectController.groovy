@@ -245,10 +245,8 @@ class ProjectController {
     }
 
     def deleteTasks = {
-
         def projectInstance = Project.get(params.id)
-        boolean deleteImages = params.deleteImages?.toBoolean()
-        projectService.deleteTasksForProject(projectInstance, deleteImages)
+        projectService.deleteTasksForProject(projectInstance, true)
         redirect(action: "edit", id: projectInstance?.id)
     }
 
@@ -494,6 +492,12 @@ class ProjectController {
         [projectInstance: projectInstance, taskCount: taskCount]
     }
 
+    def deleteProjectFragment() {
+        def projectInstance = Project.get(params.int("id"))
+        def taskCount = Task.countByProject(projectInstance)
+        [projectInstance: projectInstance, taskCount: taskCount]
+    }
+
     private boolean saveProjectSettingsFromParams(Project projectInstance, GrailsParameterMap params) {
 
         if (projectInstance) {
@@ -506,7 +510,7 @@ class ProjectController {
             }
             projectInstance.properties = params
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
+                flash.message = "Expedition updated"
                 return false
             } else {
                 return true
@@ -617,20 +621,24 @@ class ProjectController {
         [projectInstance: projectInstance, role: role]
     }
 
-    def updateMapInitialPosition() {
-        def projectInstance = Project.get(params.int("projectId"))
+    def updateMapSettings() {
+        def projectInstance = Project.get(params.int("id"))
         if (projectInstance) {
+            def showMap = params.showMap == "on"
             def zoom = params.int("mapZoomLevel")
             def latitude = params.double("mapLatitude")
             def longitude = params.double("mapLongitude")
+
+            projectInstance.showMap = showMap
 
             if (zoom && latitude && longitude) {
                 projectInstance.mapInitZoomLevel = zoom
                 projectInstance.mapInitLatitude = latitude
                 projectInstance.mapInitLongitude = longitude
             }
+            flash.message = "Map settings updated"
         }
-        redirect(action:'edit', id:projectInstance?.id)
+        redirect(action:'editMapSettings', id:projectInstance?.id)
     }
 
     def createNewProjectFlow = {

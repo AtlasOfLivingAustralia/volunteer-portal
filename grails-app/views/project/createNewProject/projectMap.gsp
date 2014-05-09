@@ -118,7 +118,7 @@
         </cl:headerContent>
 
         <div class="well well-small">
-            <g:form name="detailsForm">
+            <g:form>
                 <div class="form-horizontal">
 
                     <div class="control-group">

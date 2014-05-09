@@ -192,7 +192,7 @@
                         </td>
                         <td>
                             Position the map on the left to how it should look on the project page (if map is enabled)
-                            <g:form action="updateMapInitialPosition" class="form-horizontal">
+                            <g:form action="updateMapSettings" class="form-horizontal">
                                 <g:hiddenField name="projectId" value="${projectInstance.id}" />
                                 <div class="control-group">
                                     <label class="control-label" for="mapZoomLevel">Zoom</label>

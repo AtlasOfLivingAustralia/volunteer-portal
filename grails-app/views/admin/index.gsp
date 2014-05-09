@@ -8,7 +8,10 @@
 
     <body>
 
-        <cl:headerContent title="${message(code:'default.admin.label', default:'Admin')}" />
+        <cl:headerContent title="${message(code:'default.admin.label', default:'Admin')}">
+            <small class="muted">Version ${grailsApplication.metadata['app.version']}.${grailsApplication.metadata['app.buildNumber']}&nbsp;(built ${grailsApplication.metadata['app.buildDate']}&nbsp;${grailsApplication.metadata['app.buildProfile']})</small>
+        </cl:headerContent>
+
 
         <div class="row">
             <div class="span12">

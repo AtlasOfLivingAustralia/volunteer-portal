@@ -37,7 +37,10 @@
             <div class="control-group">
                 <label class="control-label" for="description">Long description</label>
                 <div class="controls">
-                    <g:textArea rows="8" class="input-xxlarge" name="description"  value="${projectInstance.description}" />
+                    <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" class="span12">
+                        ${projectInstance.description}
+                    </tinyMce:renderEditor>
+                    %{--<g:textArea rows="8" class="input-xxlarge" name="description"  value="${projectInstance.description}" />--}%
                 </div>
             </div>
             <div class="control-group">
@@ -61,8 +64,15 @@
 
         </g:form>
 
-        <script type='text/javascript'>
-            $(document).ready(function () {
+        <script type="text/javascript">
+            $(document).ready(function() {
+                tinyMCE.init({
+                    mode: "textareas",
+                    theme: "advanced",
+                    editor_selector: "mceadvanced",
+                    theme_advanced_toolbar_location : "top",
+                    convert_urls : false
+                });
             });
         </script>
     </body>

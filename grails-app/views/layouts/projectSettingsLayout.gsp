@@ -24,32 +24,24 @@
             opacity: .25;
         }
 
+        .dropdown-menu a {
+            text-decoration: none;
+        }
+
         </style>
         <title>Edit Project ${projectInstance?.name}</title>
     </head>
 
     <body>
+
+        <tinyMce:resources />
+
         <cl:headerContent title="${message(code: 'default.edit.label', args: ['Expedition'])} - ${projectInstance.name}" selectedNavItem="expeditions">
             <%
                 pageScope.crumbs = [
                         [link: createLink(controller: 'project', action: 'index', id:projectInstance.id), label: projectInstance.featuredLabel]
                 ]
             %>
-            <div class="pull-right">
-                <g:form controller="project" action="updateGeneralSettings">
-                    <g:hiddenField name="id" value="${projectInstance.id}" />
-                    <g:if test="${projectInstance.inactive}">
-                        <g:hiddenField name="inactive" value="false"/>
-                        <button type="submit" class="btn btn-success">Activate expedition</button>
-                    </g:if>
-                    <g:else>
-                        <g:hiddenField name="inactive" value="true"/>
-                        <button type="submit" class="btn btn-warning">Deactivate expedition</button>
-                    </g:else>
-                    <g:actionSubmit class="delete btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
-                </g:form>
-            </div>
-
         </cl:headerContent>
 
         <div class="container-fluid">
@@ -68,10 +60,62 @@
                 </div>
 
                 <div class="span9">
-                    <h2><g:pageProperty name="page.pageTitle"/></h2>
-                    <g:layoutBody/>
+                    <legend>
+                        ${projectInstance.name} - <g:pageProperty name="page.pageTitle"/>
+                        <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted></small>
+                        <div class="btn-group pull-right">
+                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="icon-cog"></i>&nbsp;Actions
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a id="btnToggleActivation" href="#">${projectInstance.inactive ? 'Activate expedition' : 'Deactivate expedition'}</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a id="btnDeleteProject" href="#"><i class="icon-trash"></i>&nbsp;Delete expedition</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <g:form name="activationForm" controller="project" action="updateGeneralSettings">
+                            <g:hiddenField name="id" value="${projectInstance.id}" />
+                            <g:if test="${projectInstance.inactive}">
+                                <g:hiddenField name="inactive" value="false"/>
+                            </g:if>
+                            <g:else>
+                                <g:hiddenField name="inactive" value="true"/>
+                            </g:else>
+                        </g:form>
+
+                    </legend>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <g:layoutBody/>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+    </div>
+        <script>
+            $(document).ready(function() {
+                $("#btnDeleteProject").click(function(e) {
+                    e.preventDefault();
+                    var opts = {
+                        title: "Delete expedition '${projectInstance.name}'",
+                        url: "${createLink(action:"deleteProjectFragment",id: projectInstance.id)}"
+                    };
+
+                    bvp.showModal(opts);
+                });
+
+                $("#btnToggleActivation").click(function(e) {
+                    e.preventDefault();
+                    $("#activationForm").submit();
+                });
+
+            });
+        </script>
     </body>
 </g:applyLayout>
