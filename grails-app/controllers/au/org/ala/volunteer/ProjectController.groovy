@@ -75,7 +75,11 @@ class ProjectController {
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
             def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', date:'desc'])
-            def newsItem = newsItems?.first()
+
+            def newsItem = null
+            if (newsItems) {
+                newsItem = newsItems?.first()
+            }
 
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
             if (percentComplete > 99 && taskCount != tasksTranscribed) {

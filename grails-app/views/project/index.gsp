@@ -263,11 +263,12 @@
                     </g:if>
 
                     <g:if test="${!projectInstance.disableNewsItems && newsItem}">
-                        <div class="well well-small" style="margin-top: 10px">
+                        <div class="" style="margin-top: 10px">
                             <legend>
                                 Expedition news
                                 <small class="pull-right">
-                                    <time datetime="${formatDate(format: "dd MMMM yyyy", date: newsItem.created)}"><g:formatDate format="dd MMMM yyyy" date="${newsItem.created}"/></time>
+                                    <g:formatDate format="MMM d, yyyy" date="${newsItem.created}"/>
+                                    %{--<time datetime="${formatDate(format: "dd MMMM yyyy", date: newsItem.created)}"></time>--}%
                                 </small>
 
                             </legend>

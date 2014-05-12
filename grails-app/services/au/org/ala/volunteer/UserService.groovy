@@ -233,9 +233,9 @@ class UserService {
             }
         }
 
-        if (activityCount) {
-            logService.log("${activityCount} activity records flushed to database")
-        }
+//        if (activityCount) {
+//            logService.log("${activityCount} activity records flushed to database")
+//        }
     }
 
     /**
