@@ -41,6 +41,12 @@
                     </li>
                 </ul>
 
+                <h3>Interested in becoming an online volunteer?</h3>
+                <p>
+                    Anyone can contribute by registering with the Atlas of Living Australia and transcribing information from photographed labels or documents.
+                    You can see more information about volunteering <a href="${createLink(controller:'getInvolved')}">here</a>.
+                </p>
+
                 <h3>Submit an expedition</h3>
                 <p>
                     The Biodiversity Volunteer Portal is open to any institution or individual who has suitable biodiversity

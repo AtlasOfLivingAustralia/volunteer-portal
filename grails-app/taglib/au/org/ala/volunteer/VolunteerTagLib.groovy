@@ -130,6 +130,7 @@ class VolunteerTagLib {
         }
 
         items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
+        items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:"How can I volunteer?"]]
         items << [aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal']]
 
         def mb = new MarkupBuilder(out)
