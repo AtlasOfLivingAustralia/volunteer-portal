@@ -44,13 +44,13 @@
             <div>
                 <img class="img-polaroid" src="${resource(dir:"images/getinvolved", file:"bvp_getinvolved_screen1.png")}" />
             </div>
-            <em>An example specimen page:</em>
+            <em>An example specimen page</em>
         </div>
         <div style="text-align: center">
             <div>
                 <img class="img-polaroid" src="${resource(dir:"images/getinvolved", file:"bvp_getinvolved_screen2.png")}" />
             </div>
-            <em>An example journal page:</em>
+            <em>An example journal page</em>
         </div>
 
         <p></p>
