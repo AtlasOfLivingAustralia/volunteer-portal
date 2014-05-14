@@ -3,6 +3,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <title><g:message code="frontPage.label" default="Front Page Configuration"/></title>
+        <r:require module="bvp-js" />
     </head>
 
     <body>
@@ -32,7 +33,8 @@
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'projectOfTheDay', 'errors')}">
                                         <g:select name="projectOfTheDay" from="${au.org.ala.volunteer.Project.listOrderByName()}" optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
-                                        <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
+                                        <button class="btn" id="btnFindProject">Find an expedition</button>
+                                        <g:link class="btn btn-warning" action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
 
@@ -122,5 +124,21 @@
                 </g:form>
             </div>
         </div>
+
+        <r:script>
+
+            $(document).ready(function () {
+
+                $("#btnFindProject").click(function (e) {
+                    e.preventDefault();
+                    bvp.selectProjectId(function (projectId) {
+                        $("#projectOfTheDay").val(projectId);
+                    });
+
+                });
+            });
+
+        </r:script>
+
     </body>
 </html>

@@ -53,14 +53,14 @@ class VolunteerTagLib {
     }
 
     /**
-     *
+     * @attr markdown defaults to true, will invoke the markdown service
      */
     def helpText = { attrs, body ->
         def mb = new MarkupBuilder(out)
-        def helpText = body()
+        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
         if (helpText) {
             helpText = markdownService.markdown(helpText)
-            mb.a(href:'#', class:'fieldHelp', title:body(), tabindex: "-1") {
+            mb.a(href:'#', class:'fieldHelp', title:helpText, tabindex: "-1") {
                 span(class:'help-container') {
                     mkp.yieldUnescaped('&nbsp;')
                 }

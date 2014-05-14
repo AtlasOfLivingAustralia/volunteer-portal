@@ -35,6 +35,8 @@
 
             $(document).ready(function () {
 
+                bvp.bindTooltips("a.fieldHelp", 650);
+
                 $(".btnDeleteImage").click(function(e) {
                     var imageName = $(this).attr("imageName");
                     if (imageName) {
@@ -111,6 +113,16 @@
                     }
                 });
 
+                $("#btnSelectImages").click(function(e) {
+                    e.preventDefault();
+                    var opts = {
+                        title:"Upload images to the staging area",
+                        url: "${createLink(action:"selectImagesForStagingFragment", params:[projectId: projectInstance.id])}"
+                    };
+
+                    bvp.showModal(opts);
+                });
+
             });
 
         </r:script>
@@ -137,18 +149,22 @@
                             Upload your images to the staging area
                         </div>
                         <div class="span3">
-                            <h4><span class="numberCircle">2</span>&nbsp;Upload datafile</h4>
+                            <h4><span class="numberCircle">2</span>&nbsp;Upload datafile (Optional)</h4>
                             <p>
-                            (Optional) Upload a csv file containing extra data to attach to each task. This is useful for prepopulating task data.
+                            Upload a csv file containing extra data to attach to each task. This is useful for prepopulating task data.
                             </p>
                         </div>
                         <div class="span3">
-                            <h4><span class="numberCircle">3</span>&nbsp;Configure columns</h4>
+                            <h4><span class="numberCircle">3</span>&nbsp;Configure columns (Optional)</h4>
                             <p>
-                            (Optional) Configure columns
+                            Add and configure columns in the table below to pre-populate data in your tasks.
+                                <cl:helpText>
+                                    <p>Pre-populated field values can be derived from the image filename, or portions thereof, or can also be read from a separate csv datafile keyed by the image filename.</p>
+                                    <p><strong>Note:</strong> Only data displayed in the staged images table will be loaded</p>
+                                </cl:helpText>
                             </p>
-                            <p><strong>Note:</strong> Only data displayed in the staged images table will be loaded</p>
-                            <p>Use the <i class="icon-cog"></i> menu to add columns</p>
+                            <p>Use the '<i class="icon-cog"></i> Actions' menu to add columns</p>
+
                         </div>
                         <div class="span3">
                             <h4><span class="numberCircle">4</span>&nbsp;Create tasks</h4>
@@ -158,16 +174,33 @@
                 </div>
 
                 <div id="uploadImagesSection" class="well well-small">
-                    <h4>Upload task images to staging area</h4>
-                    <div class="alert">
-                        Depending on your connection speed and the size of your images, it might be a good idea to stage images in batches of 200 or less.
-                    </div>
-                    <g:form controller="task" action="stageImage" method="post" enctype="multipart/form-data">
-                        %{--<label for="imageFile"><strong>Upload task image file:</strong></label>--}%
-                        <input type="file" name="imageFile" id="imageFile" multiple="multiple"/>
-                        <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-                        <g:submitButton class="btn" name="Stage images"/>
-                    </g:form>
+                    <h4>Upload files to staging area</h4>
+                    <p>
+                        In addition to task image files, you can also upload auxiliary data files that can contain additional data that should
+                        be attached to individual tasks (e.g. OCR text)
+                        <cl:helpText markdown="${false}">
+                            <div>
+                                <p>
+                                    Auxiliary files must conform to the following naming scheme in order to be correctly attached:
+                                </p>
+                                <code>&lt;imageFilename&gt;__&ltdarwinCoreTerm&gt;__&lt;recordIndex&gt;.txt</code>
+                                where:
+                                <ul>
+                                    <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension</li>
+                                    <li><code>darwinCoreTerm</code> is the name of the field which should be populated with the contents of the file</li>
+                                    <li><code>recordIndex</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)</li>
+                                </ul>
+                                <div class="well well-small">
+                                    <p>
+                                        For example, assuming an image file has been staged with the name <code>image123.jpg</code>:
+                                        <br/>
+                                        The contents of <code>image123.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
+                                    </p>
+                                </div>
+                            </div>
+                        </cl:helpText>
+                    </p>
+                    <button id="btnSelectImages" class="btn">Select images</button>
                 </div>
 
                 <div id="imagesSection" class="">
@@ -191,7 +224,7 @@
                                 <button id="btnLoadTasks" class="btn btn-primary pull-right" style="margin-left: 10px">Create tasks from staged images</button>
                                 <div class="btn-group pull-right">
                                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                        <i class="icon-cog"></i>
+                                        <i class="icon-cog"></i> Actions
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">

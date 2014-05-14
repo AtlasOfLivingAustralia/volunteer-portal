@@ -552,6 +552,11 @@ class TaskController {
         [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
     }
 
+    def selectImagesForStagingFragment() {
+        def projectInstance = Project.get(params.int("projectId"))
+        [projectInstance: projectInstance]
+    }
+
     def editStagingFieldFragment() {
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))

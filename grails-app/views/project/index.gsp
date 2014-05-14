@@ -186,7 +186,7 @@
             <cl:isLoggedIn>
                 <cl:ifAdmin>
                     <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="task" action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
-                    <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="project" action="edit" id="${projectInstance.id}">Edit</g:link>&nbsp;
+                    <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="project" action="edit" id="${projectInstance.id}"><i class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
                 </cl:ifAdmin>
             </cl:isLoggedIn>
         </div>

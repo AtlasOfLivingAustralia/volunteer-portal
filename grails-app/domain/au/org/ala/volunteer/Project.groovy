@@ -4,7 +4,6 @@ class Project implements Serializable {
 
     String name
     String description
-    String bannerImage
     String tutorialLinks
     Boolean showMap = true
     Date created
@@ -42,7 +41,6 @@ class Project implements Serializable {
         description nullable: true, maxSize: 3000, widget: 'textarea'
         template nullable: true
         created nullable: true
-        bannerImage nullable: true
         showMap nullable: true
         tutorialLinks nullable: true, maxSize: 2000, widget: 'textarea'
         featuredImage nullable: true

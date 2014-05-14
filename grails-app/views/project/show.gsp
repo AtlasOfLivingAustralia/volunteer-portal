@@ -71,11 +71,6 @@
                             
                         </tr>
                     
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="project.bannerImage.label" default="Banner Image" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: projectInstance, field: "bannerImage")}</td>
-                        </tr>
-
                     <tr class="prop">
                         <td valign="top" class="name"><g:message code="project.featuredImage.label" default="Featured Image" /></td>
                         <td valign="top" class="value"><img src="${fieldValue(bean: projectInstance, field: "featuredImage")}" height="150"/></td>

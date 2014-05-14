@@ -1,8 +1,8 @@
 var bvp = {};
 
-(function(bvplib) {
+(function(lib) {
 
-    bvplib.showModal = function(options) {
+    lib.showModal = function(options) {
 
         var opts = {
             backdrop: options.backdrop ? options.backdrop : true,
@@ -28,10 +28,10 @@ var bvp = {};
         var selector = "#" + opts.id;
 
         $(selector).on("hidden", function() {
-            $(selector).remove();
             if (opts.onClose) {
                 opts.onClose();
             }
+            $(selector).remove();
         });
 
         $(selector).on("shown", function() {
@@ -48,11 +48,11 @@ var bvp = {};
 
     };
 
-    bvplib.hideModal = function() {
+    lib.hideModal = function() {
         $("#modal_element_id").modal('hide');
     };
 
-    bvplib.htmlEscape = function(str) {
+    lib.htmlEscape = function(str) {
         return String(str)
             .replace(/&/g, '&amp;')
             .replace(/"/g, '&quot;')
@@ -61,7 +61,7 @@ var bvp = {};
             .replace(/>/g, '&gt;');
     };
 
-    bvplib.htmlUnescape = function(value) {
+    lib.htmlUnescape = function(value) {
         return String(value)
             .replace(/&quot;/g, '"')
             .replace(/&#39;/g, "'")
@@ -70,7 +70,7 @@ var bvp = {};
             .replace(/&amp;/g, '&');
     };
 
-    bvplib.bindTooltips = function(selector, width) {
+    lib.bindTooltips = function(selector, width) {
 
         if (!selector) {
             selector = "a.fieldHelp";
@@ -104,7 +104,7 @@ var bvp = {};
         }).bind('click', function(e){ e.preventDefault(); return false; });
     }
 
-    bvplib.submitWithWebflowEvent = function(jqButton, event) {
+    lib.submitWithWebflowEvent = function(jqButton, event) {
 
         if (event == null) {
             event = $(jqButton).attr("event");
@@ -117,7 +117,7 @@ var bvp = {};
         }
     };
 
-    bvplib.suppressEnterSubmit = function() {
+    lib.suppressEnterSubmit = function() {
         $("input[type=text]").keypress(function(e) {
             if (e.keyCode == 13) {
                 e.preventDefault();
@@ -125,7 +125,7 @@ var bvp = {};
         });
     };
 
-    bvplib.disableBackspace = function() {
+    lib.disableBackspace = function() {
         $(document).keydown(function(e) {
             var elid = $(document.activeElement).is('input[type=text], textarea');
             if (e.keyCode === 8 && !elid) {
@@ -134,6 +134,24 @@ var bvp = {};
             }
         });
     };
+
+    lib.selectProjectId = function(callback) {
+        var options = {
+            title: "Find an Expedition",
+            url: BVP_JS_URLS.selectProjectFragment,
+            width: 800,
+            onClose: function() {
+                if (callback) {
+                    var projectId = $("#selectedProjectId").val();
+                    if (projectId) {
+                        callback(projectId);
+                    }
+                }
+            }
+        };
+
+        lib.showModal(options);
+    }
 
 
 })(bvp);

@@ -47,6 +47,7 @@
                 <label class="control-label" for="template">Template</label>
                 <div class="controls">
                     <g:select name="template" from="${templates}" value="${projectInstance.template?.id}" optionKey="id" />
+                    <a class="btn" href="${createLink(controller:'template', action:'edit', id:projectInstance?.template?.id)}">Edit template</a>
                 </div>
             </div>
             <div class="control-group">

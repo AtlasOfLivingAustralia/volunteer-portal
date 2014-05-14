@@ -449,6 +449,9 @@ class ProjectController {
 
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
+
+            params.featuredLabel = params.name
+
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
                 render(view: "editGeneralSettings", model: [projectInstance: projectInstance])
             } else {
@@ -853,6 +856,29 @@ class ProjectController {
             }
         }
         render(results as JSON)
+    }
+
+    def findProjectFragment() {
+
+    }
+
+    def findProjectResultsFragment() {
+
+        def q = params.q as String ?: ""
+
+        def c = Project.createCriteria()
+        def projectList = c.list {
+            or {
+                ilike("name", "%${q}%")
+                ilike("featuredOwner", "%${q}%")
+                ilike("featuredLabel", "%${q}%")
+                ilike("shortDescription", "%${q}%")
+                ilike("description", "%${q}%")
+            }
+        }
+
+        [projectList: projectList]
+
     }
 
 }
