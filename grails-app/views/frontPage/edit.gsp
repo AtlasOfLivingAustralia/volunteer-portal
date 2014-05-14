@@ -31,7 +31,7 @@
                                         <label for="projectOfTheDay"><g:message code="frontPage.projectOfTheDay.label" default="Project of the day"/></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'projectOfTheDay', 'errors')}">
-                                        <g:select name="projectOfTheDay" from="${au.org.ala.volunteer.Project.list()}" optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
+                                        <g:select name="projectOfTheDay" from="${au.org.ala.volunteer.Project.listOrderByName()}" optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
                                         <g:link class="btn btn-small btn-warning" action="edit" controller="project" id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
                                     </td>
                                 </tr>
