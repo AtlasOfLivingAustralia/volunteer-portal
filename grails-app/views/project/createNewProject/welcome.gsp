@@ -25,14 +25,17 @@
         </cl:headerContent>
 
         <div class="well well-small">
-            <h3>Welcome to the New Expedition Wizard</h3>
+            <h3>Welcome to the New Expedition wizard</h3>
             <div>
                 Before you start you will need the following:
                 <ul>
-                    <li>A name and other details for your expedition</li>
-                    <li>(recommended) A banner image (preferably JPG) sized 254 x 158 pixels</li>
+                    <li>A name for your expedition, and a description</li>
+                    <li>An image that represents your expedition (JPEG sized 254 x 158 pixels)</li>
                     <li>A collection of images, each representing a task to be transcribed</li>
-                    <li>(optional) A csv data file containing additional data for each task (keyed by image filename)</li>
+                    <li>A template for transcribing each task. These are created from the Admin page</li>
+                    <li>(Optional) Picklists for fields on your template. These can be uploaded through the Admin page</li>
+                    <li>(Optional) Tutorials or helpful web links. Tutorial files can be uploaded from the Admin page</li>
+                    <li>(Optional) A csv data file containing additional data for each task</li>
                 </ul>
                 <p>
                     Click 'Continue' to start the process of creating a new Expedition in the Volunteer Portal.

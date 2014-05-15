@@ -124,7 +124,7 @@
                     <div class="control-group">
                         <div class="controls">
                             <label for="showMap" class="checkbox">
-                                <g:checkBox name="showMap" checked="${project.showMap}"/>&nbsp;Show the map on the expedition landing page
+                                <g:checkBox name="showMap" checked="${project.showMap}"/>&nbsp;Show the map on the expedition front page
                             </label>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
 
                         <div class="controls">
                             <div class="alert">
-                                Position the map to how you would like it to appear on the project start page
+                                Position the map to how you would like it to appear on the expedition front page
                             </div>
 
                             <table style="width: 100%">

@@ -82,14 +82,14 @@
 </head>
 <body>
 
-    <cl:headerContent title="Create a new Expedition - Summary" selectedNavItem="expeditions">
+    <cl:headerContent title="Create a new Expedition - Expedition summary" selectedNavItem="expeditions">
         <% pageScope.crumbs = [] %>
     </cl:headerContent>
 
     <div class="">
 
         <p>
-            You expedition is almost ready! Please review the following, and if everything is correct, click on the 'Create Expedition' button.
+            Your expedition is almost ready! Please review the following, and if everything is correct, click on the 'Create Expedition' button.
         </p>
         <p>
             If you find a mistake, or you wish to change something you can click the 'Back' button until you find the item you wish to change.
@@ -97,7 +97,7 @@
 
         <table class="table table-bordered table-striped">
             <tr>
-                <td class="prop-name">Expedition Owner/Sponsor</td>
+                <td class="prop-name">Expedition sponsor</td>
                 <td class="prop-value">${project.featuredOwner}</td>
             </tr>
             <tr>

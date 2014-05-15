@@ -67,7 +67,7 @@
                         <label class="control-label" for="longDescription">Long description</label>
                         <div class="controls">
                             <g:textArea rows="8" class="input-xxlarge" name="longDescription"  value="${project.longDescription}" />
-                            <cl:helpText>Displayed on the expedition landing page</cl:helpText>
+                            <cl:helpText>Displayed on the expedition front page</cl:helpText>
                         </div>
                     </div>
                     <div class="control-group">

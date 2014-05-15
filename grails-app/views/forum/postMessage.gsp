@@ -74,6 +74,10 @@
             <vpf:forumNavItems topic="${topic}" lastLabel="${message(code:'forum.project.newMessage', default:'New Message')}" />
         </cl:headerContent>
 
+        <g:if test="${taskInstance}">
+            <g:render template="taskSummary" model="${[taskInstance: taskInstance]}" />
+        </g:if>
+
         <div class="row">
             <div class="span12">
                 <h3>Conversation history:</h3>

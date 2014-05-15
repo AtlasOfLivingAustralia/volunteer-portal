@@ -16,7 +16,7 @@
     </head>
     <body class="content">
 
-        <cl:headerContent title="Create a new Expedition - Expedition Details" selectedNavItem="expeditions">
+        <cl:headerContent title="Create a new Expedition - Expedition created" selectedNavItem="expeditions">
             <%
                 pageScope.crumbs = [
                 ]
@@ -25,9 +25,9 @@
 
         <div class="well well-small">
             <g:form>
-                <h3>Your project has been created!</h3>
+                <h3>Your expedition has been created!</h3>
                 <p>
-                    <strong>Note:</strong> Your project is currently inactive, and transcribers will not be able to see it in the expeditions list until you mark it as active,
+                    <strong>Note:</strong> Your expedition is currently inactive, and transcribers will not be able to see it in the expeditions list until you mark it as active,
                     which you should only do once your tasks are loaded.
                 </p>
                 <p>
@@ -36,17 +36,9 @@
                 <p>
                     OR
                 </p>
-                <ul>
-                    <li>
-                        You can visit the project landing page <g:link controller="project" action="index" id="${projectId}">here</g:link>.
-                    </li>
-                    <li>
-                        You can edit it's settings <g:link controller="project" action="edit" id="${projectId}">here</g:link>.
-                    </li>
-                    <li>
-                        You can view the the administration/validation area <g:link controller="task" action="projectAdmin" id="${projectId}">here</g:link>.
-                    </li>
-                </ul>
+                <p>
+                    You can edit it's settings <g:link controller="project" action="edit" id="${projectId}">here</g:link>.
+                </p>
 
                 <g:link class="btn btn-small" event="finish">Done</g:link>
                 <g:link class="btn btn-small" event="createAnother">Create a another project</g:link>

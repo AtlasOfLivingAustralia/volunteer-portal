@@ -287,9 +287,19 @@ class ForumController {
                replyTo = forumService.getFirstMessageForTopic(topic)
             }
 
+            Project projectInstance = null
+            Task taskInstance = null
+            if (topic.instanceOf(ProjectForumTopic)) {
+                projectInstance = (topic as ProjectForumTopic).project
+            } else if (topic.instanceOf(TaskForumTopic)) {
+                taskInstance = (topic as TaskForumTopic).task
+            }
+
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
 
-            [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched]
+            [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched, taskInstance: taskInstance, projectInstance: projectInstance]
+        } else {
+            redirect(controller:'forum', action: 'index')
         }
 
     }

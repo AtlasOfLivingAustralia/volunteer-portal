@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>Create a new Expedition - Sponsor details</title>
+    <title>Create a new Expedition - Expedition sponsor</title>
 
     <r:script type="text/javascript">
 
@@ -72,10 +72,10 @@
     <g:uploadForm name="detailsForm">
         <div class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="featuredOwner">Expedition Owner/Sponsor</label>
+                <label class="control-label" for="featuredOwner">Expedition sponsor</label>
                 <div class="controls">
                     <g:textField name="featuredOwner" value="${project.featuredOwner}" />
-                    <cl:helpText>This may be an institution name, or a specific department or collection with an institution.</cl:helpText>
+                    <cl:helpText>This may be the name of an institution, or a specific department or collection within an institution</cl:helpText>
                 </div>
             </div>
 

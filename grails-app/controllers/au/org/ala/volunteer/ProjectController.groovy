@@ -375,7 +375,7 @@ class ProjectController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
-            return [projectInstance: projectInstance, templates: Template.list(), projectTypes: ProjectType.list() ]
+            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName() ]
         }
     }
 
@@ -450,7 +450,9 @@ class ProjectController {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
 
-            params.featuredLabel = params.name
+            if (params.name) {
+                params.featuredLabel = params.name
+            }
 
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
                 render(view: "editGeneralSettings", model: [projectInstance: projectInstance])
@@ -692,8 +694,8 @@ class ProjectController {
 
         projectDetails {
             onEntry {
-                flow.templates = Template.list()
-                flow.projectTypes = ProjectType.list()
+                flow.templates = Template.listOrderByName()
+                flow.projectTypes = ProjectType.listOrderByName()
             }
             on("continue") {
 

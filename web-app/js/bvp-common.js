@@ -79,29 +79,48 @@ var bvp = {};
             width = 300;
         }
         // Context sensitive help popups
-        $(selector).qtip({
-            tip: true,
-            position: {
-                corner: {
-                    target: 'topMiddle',
-                    tooltip: 'bottomRight'
-                }
-            },
-            style: {
-                width: width,
-                padding: 8,
-                background: 'white', //'#f0f0f0',
-                color: 'black',
-                textAlign: 'left',
-                border: {
-                    width: 4,
-                    radius: 5,
-                    color: '#E66542'// '#E66542' '#DD3102'
-                },
-                tip: 'bottomRight',
-                name: 'light' // Inherit the rest of the attributes from the preset light style
+        $(selector).each(function() {
+
+
+            var tooltipPosition = $(this).attr("tooltipPosition");
+            if (!tooltipPosition) {
+                tooltipPosition = "bottomRight";
             }
-        }).bind('click', function(e){ e.preventDefault(); return false; });
+
+            var targetPosition = $(this).attr("targetPosition");
+            if (!targetPosition) {
+                targetPosition = "topMiddle";
+            }
+            var tipPosition = $(this).attr("tipPosition");
+            if (!tipPosition) {
+                tipPosition = "bottomRight";
+            }
+
+            $(this).qtip({
+                tip: true,
+                position: {
+                    corner: {
+                        target: targetPosition,
+                        tooltip: tooltipPosition
+                    }
+                },
+                style: {
+                    width: width,
+                    padding: 8,
+                    background: 'white', //'#f0f0f0',
+                    color: 'black',
+                    textAlign: 'left',
+                    border: {
+                        width: 4,
+                        radius: 5,
+                        color: '#E66542'// '#E66542' '#DD3102'
+                    },
+                    tip: tipPosition,
+                    name: 'light' // Inherit the rest of the attributes from the preset light style
+                }
+            }).bind('click', function(e){ e.preventDefault(); return false; });
+
+        });
     }
 
     lib.submitWithWebflowEvent = function(jqButton, event) {

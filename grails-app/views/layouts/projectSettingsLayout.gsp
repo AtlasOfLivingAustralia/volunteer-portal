@@ -43,7 +43,7 @@
         <cl:headerContent hideTitle="${true}" selectedNavItem="expeditions">
             <%
                 pageScope.crumbs = [
-                        [link: createLink(controller: 'project', action: 'index', id:projectInstance.id), label: projectInstance.featuredLabel]
+                        [link: createLink(controller: 'project', action: 'index', id:projectInstance.id), label: projectInstance.featuredLabel ?: ""]
                 ]
             %>
             <h1>Expedition Settings - ${projectInstance.name} <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted></small></h1>

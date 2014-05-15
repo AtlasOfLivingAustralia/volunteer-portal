@@ -53,7 +53,7 @@
                 });
 
 
-                $("#btnAddFieldDefinition").click(function(e) {
+                $(".btnAddFieldDefinition").click(function(e) {
                     e.preventDefault();
                     var options = {
                         title: "Add field definition",
@@ -146,12 +146,46 @@
                     <div class="row-fluid">
                         <div class="span3">
                             <h4><span class="numberCircle">1</span>&nbsp;Upload Images</h4>
+                            <p>
                             Upload your images to the staging area
+                            </p>
+                            <p>
+                            In addition to task image files, you can also upload auxiliary data files that can contain additional data that should
+                            be attached to individual tasks (e.g. OCR text)
+                            <cl:helpText markdown="${false}" tooltipPosition="bottomLeft" tipPosition="bottomLeft">
+                                <div>
+                                    <p>
+                                        Image filenames should be of the form <code>&lt;filename&gt;.jpg</code>
+                                        <b/>
+                                        Example: image01.jpg
+                                    </p>
+                                    <p>
+                                        Text files must match the following pattern:
+                                    </p>
+                                    <code>&lt;imageFilename&gt;__&ltDwC field name&gt;__&lt;record index&gt;.txt</code>
+                                    where:
+                                    <ul>
+                                        <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension</li>
+                                        <li><code>DwC field name</code> is the name of the field which should be populated with the contents of the file</li>
+                                        <li><code>record index</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)</li>
+                                    </ul>
+                                    <p><strong>Important:</strong> <code>__</code> in the filename are two underscore characters.</p>
+                                    <div>
+                                        <p>
+                                            For example, assuming an image file has been staged with the name <code>image01.jpg</code>:
+                                            <br/>
+                                            The contents of <code>image01.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
+                                        </p>
+                                    </div>
+                                </div>
+                            </cl:helpText>
+                            </p>
+
                         </div>
                         <div class="span3">
                             <h4><span class="numberCircle">2</span>&nbsp;Upload datafile (Optional)</h4>
                             <p>
-                            Upload a csv file containing extra data to attach to each task. This is useful for prepopulating task data.
+                            Upload a csv file containing extra data to attach to each task. This can also be used for prepopulating fields within your template.
                             </p>
                         </div>
                         <div class="span3">
@@ -163,65 +197,44 @@
                                     <p><strong>Note:</strong> Only data displayed in the staged images table will be loaded</p>
                                 </cl:helpText>
                             </p>
-                            <p>Use the '<i class="icon-cog"></i> Actions' menu to add columns</p>
-
                         </div>
                         <div class="span3">
                             <h4><span class="numberCircle">4</span>&nbsp;Create tasks</h4>
                             Review the staged images table, and create the tasks.
                         </div>
                     </div>
+                    <div class="row-fluid">
+                        <div class="span3" style="text-align: center">
+                            <button id="btnSelectImages" class="btn">Select files</button>
+                        </div>
+                        <div class="span3" style="text-align: center">
+                            <g:if test="${hasDataFile}">
+                                <button class="btn btn-warning" id="btnClearDataFile">Clear data file</button>
+                                <a href="${dataFileUrl}">View data file</a>
+                            </g:if>
+                            <g:else>
+                                <button class="btn" id="btnUploadDataFile"><i class="icon-upload"></i>&nbsp;Upload data file</button>
+                            </g:else>
+                        </div>
+                        <div class="span3" style="text-align: center">
+                            <button class="btnAddFieldDefinition btn"><i class="icon-plus"></i> Add column</button>
+                        </div>
+                        <div class="span3" style="text-align: center">
+                            <button id="btnLoadTasks" class="btn btn-primary" style="margin-left: 10px">Create tasks from staged images</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="uploadImagesSection" class="well well-small">
-                    <h4>Upload files to staging area</h4>
-                    <p>
-                        In addition to task image files, you can also upload auxiliary data files that can contain additional data that should
-                        be attached to individual tasks (e.g. OCR text)
-                        <cl:helpText markdown="${false}">
-                            <div>
-                                <p>
-                                    Auxiliary files must conform to the following naming scheme in order to be correctly attached:
-                                </p>
-                                <code>&lt;imageFilename&gt;__&ltdarwinCoreTerm&gt;__&lt;recordIndex&gt;.txt</code>
-                                where:
-                                <ul>
-                                    <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension</li>
-                                    <li><code>darwinCoreTerm</code> is the name of the field which should be populated with the contents of the file</li>
-                                    <li><code>recordIndex</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)</li>
-                                </ul>
-                                <div class="well well-small">
-                                    <p>
-                                        For example, assuming an image file has been staged with the name <code>image123.jpg</code>:
-                                        <br/>
-                                        The contents of <code>image123.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
-                                    </p>
-                                </div>
-                            </div>
-                        </cl:helpText>
-                    </p>
-                    <button id="btnSelectImages" class="btn">Select images</button>
-                </div>
+                %{--<div id="uploadImagesSection" class="well well-small">--}%
+                    %{--<h4>Upload files to staging area</h4>--}%
+                    %{--<p>--}%
+                %{--</div>--}%
 
                 <div id="imagesSection" class="">
                     <table style="width:100%; margin-bottom: 5px">
                         <tr>
                             <td><h3>Staged images (${images.size()})</h3></td>
                             <td>
-                                %{--<button class="btn btn-success"><i class="icon-upload icon-white"></i>&nbsp;Upload Images</button>--}%
-
-                                <g:if test="${hasDataFile}">
-                                    A data file has been uploaded&nbsp;
-                                    <button class="btn btn-warning" id="btnClearDataFile">Clear data file</button>
-                                    &nbsp;
-                                    <a href="${dataFileUrl}">View data file</a>
-                                </g:if>
-                                <g:else>
-                                    No data file has been uploaded&nbsp;
-                                    <button class="btn btn-success" id="btnUploadDataFile"><i class="icon-upload icon-white"></i>&nbsp;Upload data file</button>
-                                </g:else>
-
-                                <button id="btnLoadTasks" class="btn btn-primary pull-right" style="margin-left: 10px">Create tasks from staged images</button>
                                 <div class="btn-group pull-right">
                                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                                         <i class="icon-cog"></i> Actions
@@ -229,7 +242,7 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a href="#" id="btnAddFieldDefinition"><i class="icon-plus"></i>&nbsp;Add a column</a>
+                                            <a href="#" class="btnAddFieldDefinition"><i class="icon-plus"></i>&nbsp;Add a column</a>
                                         </li>
                                         <li class="divider"></li>
 
@@ -242,7 +255,6 @@
                                         </li>
                                     </ul>
                                 </div>
-
                             </td>
                         </tr>
                     </table>
@@ -270,7 +282,6 @@
                                     </th>
                                 </g:each>
                                 <th style="width: 40px">
-                                    %{--<button id="btnAddFieldDefinition" class="btn btn-small">Add column</button>--}%
                                 </th>
                             </tr>
                         </thead>

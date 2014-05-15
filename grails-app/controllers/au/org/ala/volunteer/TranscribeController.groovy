@@ -31,7 +31,11 @@ class TranscribeController {
         userService.registerCurrentUser()
 
         if (taskInstance) {
-            if (auditService.isTaskLockedForUser(taskInstance, currentUser)) {
+
+            boolean isLockedByOtherUser = auditService.isTaskLockedForUser(taskInstance, currentUser)
+
+            def isAdmin = userService.isAdmin()
+            if (isLockedByOtherUser && !isAdmin) {
                 def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
                 log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Another task will be allocated")
@@ -40,6 +44,9 @@ class TranscribeController {
                 redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId])
                 return
             } else {
+                if (isLockedByOtherUser) {
+                    flash.message = "This task is currently locked by another user. Because you are an admin you are able to work on this task, but only do so if you are confident that no-one else is working on this task as well, as data will be lost if two people save the same task!"
+                }
                 // go ahead with this task
                 auditService.auditTaskViewing(taskInstance, currentUser)
             }

@@ -46,8 +46,14 @@
         <div class="well well-small">
             <g:uploadForm>
                 <div class="form-horizontal">
+
                     <div class="control-group">
-                        <label class="control-label" for="featuredImage">Expedition Image</label>
+                        <div class="controls">
+                        The Expedition image appears on the expedition front page, and in the expeditions list.
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="featuredImage">Expedition image</label>
                         <div class="controls">
                             <input type="file" name="featuredImage" id="featuredImage"/>
                             <cl:helpText>Expedition images must be exactly <strong>254 x 158</strong> pixels in size (w x h). Images that have different dimensions will be scaled to this size when uploaded. To preserve image quality, crop and scale them to this size before uploading.</cl:helpText>
