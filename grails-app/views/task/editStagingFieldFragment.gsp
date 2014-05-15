@@ -1,23 +1,18 @@
 <div class="form-horizontal">
 
     <div class="control-group">
-        <label class="control-label" for="fieldName">Field name</label>
-        <div class="controls">
-            <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}" value="${fieldDefinition?.fieldName}"/>
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="recordIndex">Index (optional)</label>
-        <div class="controls">
-            <g:textField name="recordIndex" value="${fieldDefinition?.recordIndex}"/>
-        </div>
-    </div>
-
-    <div class="control-group">
         <label class="control-label" for="fieldType">Field type</label>
         <div class="controls">
             <g:select class="fieldType" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}" value="${fieldDefinition?.fieldDefinitionType}"/>
+            <cl:helpText tooltipPosition="topMiddle" targetPosition="bottomMiddle" tipPosition="topMiddle" width="600">
+                <ul>
+                    <li><code>NameRegex</code> extracts part of the filename out using a <em>regular expression</em> and a capturing group.</li>
+                    <li><code>NamePattern</code> extracts part of the filename out using a wildcard surrounded by parentheses <code>(*)</code></li>
+                    <li><code>Literal</code> to assign the same static field value to every task</li>
+                    <li><code>Sequence</code> assigns a automatically incremented number to each task</li>
+                    <li><code>DataFileColumn</code> assigns a value from an uploaded csv file</li>
+                </ul>
+            </cl:helpText>
         </div>
     </div>
 
@@ -31,6 +26,20 @@
                     <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}" />
                 </g:if>
             </div>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="fieldName">Field name</label>
+        <div class="controls">
+            <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}" value="${fieldDefinition?.fieldName}"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="recordIndex">Index (optional)</label>
+        <div class="controls">
+            <g:textField name="recordIndex" value="${fieldDefinition?.recordIndex}"/>
         </div>
     </div>
 
@@ -67,6 +76,10 @@
             updateFormatOptions();
         });
 
+        $("#dataFileColumn").change(function() {
+            $("#fieldName").val($("#dataFileColumn").val());
+        });
+
         function updateFormatOptions() {
             var fieldType = $("#fieldType").val();
             $("#definition").css("display", "block");
@@ -97,6 +110,8 @@
         });
 
         updateFormatOptions();
+
+        bvp.bindTooltips();
 
     </script>
 

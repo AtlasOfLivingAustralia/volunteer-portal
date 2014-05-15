@@ -580,9 +580,15 @@ class TaskController {
             if(request instanceof MultipartHttpServletRequest) {
                 MultipartFile f = ((MultipartHttpServletRequest) request).getFile('dataFile')
                 if (f != null) {
-                    def allowedMimeTypes = ['text/plain','text/csv', 'application/octet-stream']
+                    def allowedMimeTypes = ['text/plain','text/csv', 'application/octet-stream', 'application/vnd.ms-excel']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
                         flash.message = "The image file must be one of: ${allowedMimeTypes}, recieved '${f.getContentType()}'}"
+                        redirect(action:'staging', params:[projectId:projectInstance?.id])
+                        return
+                    }
+
+                    if (f.size == 0 || !f.originalFilename) {
+                        flash.message = "You must select a file to upload"
                         redirect(action:'staging', params:[projectId:projectInstance?.id])
                         return
                     }

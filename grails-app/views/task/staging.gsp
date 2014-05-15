@@ -225,11 +225,6 @@
                     </div>
                 </div>
 
-                %{--<div id="uploadImagesSection" class="well well-small">--}%
-                    %{--<h4>Upload files to staging area</h4>--}%
-                    %{--<p>--}%
-                %{--</div>--}%
-
                 <div id="imagesSection" class="">
                     <table style="width:100%; margin-bottom: 5px">
                         <tr>

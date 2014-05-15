@@ -74,6 +74,10 @@ class VolunteerTagLib {
                 attributes.targetPosition = attrs.targetPosition
             }
 
+            if (attrs.width) {
+                attributes.width = attrs.width
+            }
+
             mb.a(attributes) {
                 span(class:'help-container') {
                     mkp.yieldUnescaped('&nbsp;')

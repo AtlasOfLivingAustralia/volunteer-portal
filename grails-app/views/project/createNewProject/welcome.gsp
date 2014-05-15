@@ -37,10 +37,8 @@
                     <li>(Optional) Tutorials or helpful web links. Tutorial files can be uploaded from the Admin page</li>
                     <li>(Optional) A csv data file containing additional data for each task</li>
                 </ul>
-                <p>
-                    Click 'Continue' to start the process of creating a new Expedition in the Volunteer Portal.
-                </p>
             </div>
+
             <g:link class="btn" event="cancel">Cancel</g:link>
             <g:link class="btn btn-primary" event="continue">Start&nbsp;<i class="icon-chevron-right icon-white"></i></g:link>
         </div>

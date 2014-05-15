@@ -96,6 +96,11 @@ var bvp = {};
                 tipPosition = "bottomRight";
             }
 
+            var elemWidth = $(this).attr("width");
+            if (elemWidth) {
+                width = elemWidth;
+            }
+
             $(this).qtip({
                 tip: true,
                 position: {
