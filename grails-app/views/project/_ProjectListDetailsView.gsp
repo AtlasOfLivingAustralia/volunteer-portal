@@ -47,7 +47,7 @@
                         </th>
                         <th align="center" style="border-bottom: none">
                             <cl:ifAdmin>
-                                <g:link class="adminLink" controller="project" action="edit" id="${projectSummary.project.id}">Edit</g:link>
+                                <g:link class="adminLink" controller="project" action="edit" id="${projectSummary.project.id}">Settings</g:link>
                                 <g:link class="adminLink" controller="task" action="projectAdmin" id="${projectSummary.project.id}">Admin</g:link>
                             </cl:ifAdmin>
                         </th>
