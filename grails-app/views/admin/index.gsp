@@ -25,8 +25,8 @@
                     </thead>
                     <tr>
                         <td>
-                            <button class="btn" onclick="location.href = '${createLink(controller:'project', action:'create')}'">Create Expedition</button>
-                            <button class="btn btn-warning" onclick="location.href = '${createLink(controller:'project', action:'createNewProject')}'">Create Expedition Wizard (Experimental)</button>
+                            %{--<button class="btn" onclick="location.href = '${createLink(controller:'project', action:'create')}'">Create Expedition</button>--}%
+                            <button class="btn" onclick="location.href = '${createLink(controller:'project', action:'createNewProject')}'">Create New Expedition</button>
                         </td>
                         <td>Create a new Volunteer Expedition</td>
                     </tr>
