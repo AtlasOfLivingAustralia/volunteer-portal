@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import org.hibernate.FlushMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import org.apache.commons.lang.StringUtils
@@ -11,6 +12,7 @@ class AdminController {
     def taskService
     def grailsApplication
     def tutorialService
+    def sessionFactory
 
     def index = {
         checkAdmin()
@@ -170,45 +172,66 @@ class AdminController {
         def count = 0
         def collectorsFound = 0
         def picklist = Picklist.findByName("recordedBy")
-        fields.each { field ->
-            // find the collector name
-            def collectorNameField = Field.findByTaskAndNameAndRecordIdxAndSuperceded(field.task, "recordedBy", field.recordIdx, false)
-            def collectorName = collectorNameField?.value
-            def newValue = ''
 
+        sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
 
-            if (collectorName) {
-                def instCode = field.task.project.picklistInstitutionCode
-                if (instCode) {
-                    def items = PicklistItem.findAllByPicklistAndInstitutionCodeAndValue(picklist, instCode, collectorName)
-                    if (items) {
+        try {
+            fields.each { field ->
+                // find the collector name
+                def collectorNameField = Field.findByTaskAndNameAndRecordIdxAndSuperceded(field.task, "recordedBy", field.recordIdx, false)
+                def collectorName = collectorNameField?.value
+                def newValue = ''
+
+                if (collectorName) {
+                    def instCode = field.task.project.picklistInstitutionCode
+                    def items
+                    if (instCode) {
+                        items = PicklistItem.findAllByPicklistAndInstitutionCodeAndValue(picklist, instCode, collectorName)
+                    } else {
+                        items = PicklistItem.findAllByPicklistAndValue(picklist, collectorName)
+                    }
+
+                    if (items && items.size() > 0) {
+
                         if (items.size() == 1 && items[0].key) {
                             newValue = items[0].key
                             println "1st chance. Found one collector number for ${collectorName}: ${newValue}"
-                        }
-                    } else {
-                        items = PicklistItem.findAllByPicklistAndValue(picklist, collectorName)
-                        if (items) {
-
-                            if (items.size() == 1 && items[0].key) {
-                                // Only one candidate, so we'll use it
-                                newValue = items[0].key
-                                println "2nd chance. Found one collector number for ${collectorName}: ${newValue}"
+                        } else {
+                            for (int i = 0; i < items.size(); ++i) {
+                                def item = items[i]
+                                if (item.key) {
+                                    println "2nd chance. Found a collector number for ${collectorName}: ${newValue}"
+                                    newValue = item.key
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            println "Updating field ${field.id} value from '${field.value}' to '${newValue}'."
-            if (newValue) {
-                collectorsFound++
-            }
+                println "Updating field ${field.id} value from '${field.value}' to '${newValue}'."
+                field.value = newValue;
 
-            count++
+                if (newValue) {
+                    collectorsFound++
+                }
+
+                count++
+                if (count % 1000 == 0) {
+                    // Doing this significantly speeds up imports...
+                    sessionFactory.currentSession.flush()
+                    println "${count} rows flushed."
+                }
+            }
+            // flush the last lot
+            sessionFactory.currentSession.flush()
+        } finally {
+            sessionFactory.currentSession.flushMode = FlushMode.AUTO
         }
 
-        flash.message = "${count} fields updated, $collectorsFound of which were set to a collector number."
+        def message = "${count} fields updated, $collectorsFound of which were set to a collector number."
+        flash.message = message
+        println message
 
         redirect(action:'index')
     }

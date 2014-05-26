@@ -304,9 +304,10 @@
                     lngWidget = $(".verbatimLongitude");
                 }
 
-                if (!localityWidget.length) {
-                    localityWidget =  $(".verbatimLocality");
-                }
+// DON'T UNCOMMENT - Never copy over verbatimLocality, even though we sometimes copy over verbatimLatitude and verbatimLongitude
+//                if (!localityWidget.length) {
+//                    localityWidget =  $(".verbatimLocality");
+//                }
 
                 if (latWidget.length && lngWidget.length) {
 
