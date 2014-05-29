@@ -91,9 +91,31 @@
 
             <div>
                 <cl:ifAdmin>
-                    <button class="btn" style="float:left;margin:5px;" onclick="location.href = '${createLink(controller:'project', action:'edit', id:projectInstance.id)}'">Edit Project</button>
-                    <button class="btn" style="float:left;margin:5px;" onclick="location.href = '${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}'">Mailing List</button>
-                    <button class="btn" style="float:left;margin:5px;" onclick="location.href = '${createLink(controller:'picklist', id:projectInstance.id)}'">Picklists</button>
+                    <div class="btn-group">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="icon-cog"></i> Tools
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="${createLink(controller:'project', action:'edit', id:projectInstance.id)}"><i class="icon-edit"></i>&nbsp;Edit project</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="${createLink(controller:'project', action:'mailingList', id:projectInstance.id)}"><i class="icon-envelope"></i>&nbsp;Mailing list</a>
+                            </li>
+                            <li>
+                                <a href="${createLink(controller:'picklist', id:projectInstance.id)}"><i class="icon-list-alt"></i>&nbsp;Manage picklists</a>
+                            </li>
+                            <g:if test="${projectInstance.picklistInstitutionCode}">
+                            <li class="divider"></li>
+                            <li>
+                                <a href="${createLink(controller:'projectTools', action:'matchRecordedByIdFromPicklist', id:projectInstance.id)}"><i class="icon-wrench"></i>&nbsp;Update empty recordedByID values from picklist match</a>
+                            </li>
+                            </g:if>
+
+                        </ul>
+                    </div>
                 </cl:ifAdmin>
                 <g:link style="color: white" class="btn btn-info pull-right" controller="user" action="myStats" id="${userInstance.id}" params="${['projectId': projectInstance.id]}">My Stats</g:link>
             </div>
@@ -109,10 +131,6 @@
                     <button id="btnExportAll" class="btn btn-small">Export all</button>
                     <button id="btnExportTranscribed" class="btn btn-small">Export transcribed</button>
                     <button id="btnExportValidated" class="btn btn-small">Export validated</button>
-
-                    %{--<button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id)}'">Export all</button>--}%
-                    %{--<button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[transcribed:true])}'">Export transcribed</button>--}%
-                    %{--<button class="btn btn-small" onclick="location.href = '${createLink(controller:'project', action:'exportCSV', id:projectInstance.id, params:[validated:true])}'">Export validated</button>--}%
                     <input class="input-small" style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="30"/>
                     <button class="btn btn-small btn-primary" id="searchButton">search</button>
 

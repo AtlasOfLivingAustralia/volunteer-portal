@@ -24,10 +24,6 @@
             opacity: .25;
         }
 
-        .dropdown-menu a {
-            text-decoration: none;
-        }
-
         </style>
         <title>Edit Project ${projectInstance?.name}</title>
         <r:require module="bootstrap-switch" />

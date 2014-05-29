@@ -10,10 +10,6 @@
                 /*background-color: rgba(245, 245, 245, 0.4);*/
             }
 
-            .dropdown-menu a {
-                text-decoration: none;
-            }
-
             .numberCircle {
                 border-radius: 50%;
                 display: inline-block;
@@ -128,7 +124,7 @@
         </r:script>
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body>
 
         <cl:headerContent title="Project Task Staging" selectedNavItem="expeditions">
             <%
