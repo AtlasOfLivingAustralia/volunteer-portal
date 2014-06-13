@@ -10,6 +10,7 @@ class Project implements Serializable {
     String shortDescription
     String featuredLabel
     String featuredOwner
+    //Institution featuredOwnerInstitution
     Boolean disableNewsItems = false
     Integer leaderIconIndex = 0
     String featuredImageCopyright = null
@@ -20,6 +21,7 @@ class Project implements Serializable {
     Integer mapInitZoomLevel
     Double mapInitLatitude
     Double mapInitLongitude
+    Boolean harvestableByAla = true
 
     def grailsApplication
     def grailsLinkGenerator
@@ -34,6 +36,7 @@ class Project implements Serializable {
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
+        harvestableByAla defaultValue: true
     }
 
     static constraints = {
@@ -46,6 +49,7 @@ class Project implements Serializable {
         featuredImage nullable: true
         featuredLabel nullable: true
         featuredOwner nullable: true
+        //featuredOwnerInstitution nullable: true
         shortDescription nullable: true, maxSize: 500
         disableNewsItems nullable: true
         leaderIconIndex nullable: true
@@ -58,6 +62,7 @@ class Project implements Serializable {
         mapInitZoomLevel nullable: true
         mapInitLatitude nullable: true
         mapInitLongitude nullable: true
+        harvestableByAla nullable: true
     }
 
     public String toString() {
