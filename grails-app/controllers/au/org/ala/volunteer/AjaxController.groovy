@@ -198,7 +198,11 @@ class AjaxController {
                 for (Task t : fields.keySet()) {
                     writer << [task: t, fieldValues: fields[t]]
                 }
+
+                response.writer.flush()
             }
+        } else {
+            render([success: false, message:"Unable to retrieve project with id '${params.id}'"] as JSON)
         }
     }
 

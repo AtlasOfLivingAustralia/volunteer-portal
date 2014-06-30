@@ -59,6 +59,14 @@
 
             <div class="control-group">
                 <div class="controls">
+                    <label for="harvestableByAla" class="checkbox">
+                        <g:checkBox name="harvestableByAla" checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
                     <g:actionSubmit class="save btn btn-primary" action="updateGeneralSettings" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
                 </div>
             </div>
