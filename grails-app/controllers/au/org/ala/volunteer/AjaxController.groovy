@@ -277,6 +277,7 @@ class AjaxController {
             final link = createLink(absolute: true, controller: 'project', action: 'index', id: it.id)
             final fullyTranscribedCount = it.tasks.count { t -> t.dateFullyTranscribed as boolean }
             final fullyValidatedCount = it.tasks.count { t -> t.dateFullyValidated as boolean }
+            final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: it.id)
 
             final topics = ProjectForumTopic.findAllByProject(it)
             def forumMessagesCount = 0
@@ -284,7 +285,7 @@ class AjaxController {
                 topics.each { topic -> forumMessagesCount += (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }
             }
 
-            [id: it.id, name: it.name, description: it.description, forumMessagesCount: forumMessagesCount, newsItemsCount: it.newsItems.size(), tasksCount: it.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, url: link]
+            [id: it.id, name: it.name, description: it.description, forumMessagesCount: forumMessagesCount, newsItemsCount: it.newsItems.size(), tasksCount: it.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl]
         }) as JSON)
     }
 
