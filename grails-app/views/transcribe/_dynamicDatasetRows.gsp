@@ -1,3 +1,4 @@
+<%@ page import="groovy.json.StringEscapeUtils" %>
 <g:if test="${!entriesField}">
     <div class="alert alert-error">
         No entriesField defined. Each template will require a specific field defined to capture the number of entries. Please consult with the BVP team for more details.
@@ -42,17 +43,15 @@
 </style>
 
 <r:script>
-
     var entries = [
-
     <g:each in="${0..numItems}" var="i">
         [
         <g:each in="${fieldList}" var="field" status="fieldIndex">
-            <g:set var="fieldLabel" value="${field.label?:field.fieldType.label}"/>
+            <g:set var="fieldLabel" value="${StringEscapeUtils.escapeJavaScript(field.label?:field.fieldType.label)}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
-            <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\')}" />
-            <g:set var="fieldHelpText" value="${field.helpText}" />
-            {name:'${fieldName}', label:'${fieldLabel}', fieldType:'${field.type?.toString()}', helpText: "${fieldHelpText}", value: "${fieldValue}", layoutClass:"${field.layoutClass ?: 'span1'}"}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
+            <g:set var="fieldValue" value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}" />
+            <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText)}" />
+            {'name':'${fieldName}', 'label':'${fieldLabel}', 'fieldType':'${field.type?.toString()}', 'helpText': "${fieldHelpText}", 'value': "${fieldValue}", layoutClass:"${field.layoutClass ?: 'span1'}"}<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
         </g:each>
         ]<g:if test="${i < numItems}">,</g:if>
     </g:each>
