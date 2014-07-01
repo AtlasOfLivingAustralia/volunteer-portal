@@ -28,7 +28,7 @@
 
     <div class="text-center">
         <g:set var="buttonCaption" value="${isValidator ? 'Mark task as invalid' : 'Save task'}" />
-        <button id="btnDefaultSaveTask" class="btn btn-primary">${buttonCaption}</button>
+        <button type="button" id="btnDefaultSaveTask" class="btn btn-primary">${buttonCaption}</button>
     </div>
     <br />
     <div class="text-center">

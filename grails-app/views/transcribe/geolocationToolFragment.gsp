@@ -13,7 +13,7 @@
                 <h4>Locality Search</h4>
 
                 <textarea name="address" id="address" size="32" rows="1" value=""></textarea>
-                <button id="locationSearch" class="btn btn-small">Search</button>
+                <button type="button" id="locationSearch" class="btn btn-small">Search</button>
                 <a href="#" class="geolocateHelp fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description. Choose a location, or move the pin to a location that you think represents the Verbatim Locality as sensibly as possible. Where the map tool cant find a location simply fill in the State/territory and Country fields">
                     <span class="help-container">&nbsp;</span>
                 </a>
@@ -42,8 +42,8 @@
             <div>Location: <span id="infoLoc"></span></div>
 
             <div style="text-align: center; margin-top: 6px">
-                <button id="setLocationFields" class="btn btn-primary">Copy values to main form</button>
-                <button id="btnClose" class="btn">Cancel</button>
+                <button type="button" id="setLocationFields" class="btn btn-primary">Copy values to main form</button>
+                <button type="button" id="btnClose" class="btn">Cancel</button>
             </div>
 
         </div>

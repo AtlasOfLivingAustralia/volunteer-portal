@@ -19,7 +19,8 @@ class TranscribeController {
             log.debug("index redirect to showNextFromProject: " + params.id)
             redirect(action: "showNextFromProject", id: params.id)
         } else {
-            redirect(action: "showNextFromAny", params: params)
+            flash.message = "Something unexpected happened. Try pressing the back button to return to the previous task and trying again."
+            redirect(uri:"/")
         }
 
     }
@@ -73,31 +74,6 @@ class TranscribeController {
         log.debug("rendering view: nextAction")
         def taskInstance = Task.get(params.id)
         render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: authService.username()])
-    }
-
-    /**
-     * Retrieve the next un-transcribed record from any project, but supply one I havent seen,
-     * or the least recently seen record.
-     */
-    def showNextFromAny = {
-        def projectInstance = Project.get(params.id)
-        def currentUser = authService.username()
-        def taskInstance
-        
-        if (projectInstance) {
-            taskInstance = taskService.getNextTask(currentUser, projectInstance)
-            log.info("skip with project id "+ projectInstance.id)
-        } else {
-            taskInstance = taskService.getNextTask(currentUser)
-        }
-
-        //retrieve the details of the template
-        if (taskInstance) {
-            redirect(action: 'task', id: taskInstance.id)
-        } else {
-            //TODO retrieve this information from the template
-            render(view: 'noTasks')
-        }
     }
 
     /**

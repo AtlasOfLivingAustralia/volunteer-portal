@@ -109,7 +109,8 @@ class ValidateController {
         if (taskInstance != null) {
             redirect(action: 'showNextFromProject', id:taskInstance.project.id)
         } else {
-            redirect(action: 'showNextFromProject')
+            flash.message = "No task id supplied!"
+            redirect(uri:"/")
         }
     }
 

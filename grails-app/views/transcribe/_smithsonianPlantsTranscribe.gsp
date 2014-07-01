@@ -25,7 +25,7 @@
                     </ul>
 
                     <span>
-                        <button class="btn btn-small" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
+                        <button type="button" class="btn btn-small" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
                         <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
                     </span>
 
@@ -44,11 +44,11 @@
                 <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><span class="help-container">&nbsp;</span></a>
                 <g:textArea class="span12" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="6" cols="42"/>
                 <div>
-                    <button class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol"></button>
-                    <button class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol"></button>
-                    <button class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol"></button>
-                    <button class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol"></button>
-                    <button class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol"></button>
                 </div>
             </div>
         </div>

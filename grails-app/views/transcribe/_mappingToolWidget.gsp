@@ -9,7 +9,7 @@
     </div>
     <div class="span8">
         <div class="span10">
-            <button class="btn btn-info pull-right" id="btnGeolocate">Use mapping tool</button>
+            <button type="button" class="btn btn-info pull-right" id="btnGeolocate">Use mapping tool</button>
         </div>
         <div class="span2">
             <g:fieldHelp field="${field}" />

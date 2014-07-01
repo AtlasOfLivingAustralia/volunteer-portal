@@ -657,18 +657,18 @@
                             <div class="span12">
                                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                                 <g:if test="${validator}">
-                                    <button id="btnValidate" class="btn btn-success"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
-                                    <button id="btnDontValidate" class="btn btn-danger"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
-                                    <button class="btn" id="showNextFromProject">Skip</button>
+                                    <button type="button" id="btnValidate" class="btn btn-success"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                                    <button type="button" id="btnDontValidate" class="btn btn-danger"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
+                                    <button type="button" class="btn" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
                                         <a href="${createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone())}" />
                                     </g:if>
                                 </g:if>
                                 <g:else>
-                                    <button id="btnSave" class="btn btn-primary">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
-                                    <button id="btnSavePartial" class="btn">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
-                                    <button class="btn" id="showNextFromProject">Skip</button>
+                                    <button type="button" id="btnSave" class="btn btn-primary">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
+                                    <button type="button" id="btnSavePartial" class="btn">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                                    <button type="button" class="btn" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
 

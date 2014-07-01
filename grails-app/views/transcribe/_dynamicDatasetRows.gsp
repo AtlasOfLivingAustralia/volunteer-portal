@@ -9,7 +9,7 @@
 <g:if test="${fieldList}">
     <div id="observationFields" entriesFieldId="recordValues.0.${entriesField?.fieldType}">
     </div>
-    <button class="btn btn-small btn-success" id="btnAddRow"><i class="icon-plus icon-white"></i>&nbsp;Add&nbsp;Row</button>
+    <button type="button" class="btn btn-small btn-success" id="btnAddRow"><i class="icon-plus icon-white"></i>&nbsp;Add&nbsp;Row</button>
 </g:if>
 
 <style type="text/css">

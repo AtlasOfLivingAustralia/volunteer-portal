@@ -29,7 +29,7 @@
                     </ul>
 
                     <span>
-                        <button class="btn" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
+                        <button type="button" class="btn" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
                         <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
                     </span>
 
@@ -53,11 +53,11 @@
 
                 <g:textArea class="span12" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="4" cols="42"/>
                 <div>
-                    <button class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol"></button>
-                    <button class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol"></button>
-                    <button class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol"></button>
-                    <button class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol"></button>
-                    <button class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&deg;" title="Insert a degree symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&#39;" title="Insert an apostrophe (minutes) symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&quot;" title="Insert a quote (minutes) symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&#x2642;" title="Insert the male gender symbol"></button>
+                    <button type="button" class="insert-symbol-button" symbol="&#x2640;" title="Insert the female gender symbol"></button>
                 </div>
                 <div class="span12" style="margin-top: 5px">Verbatim Locality <a href='#' class='fieldHelp' title='Enter (or cut and paste from the box above) the locality information into this box'><span class='help-container'>&nbsp;</span></a></div>
                 <textarea class="span12" name="recordValues.0.verbatimLocality" cols="38" rows="2" class="verbatimLocality noAutoComplete" id="recordValues.0.verbatimLocality">${recordValues?.get(0)?.verbatimLocality}</textarea>
@@ -118,7 +118,7 @@
                     <h4>EITHER</h4>
                 </div>
                 <div class="span6 collectionEventSection">
-                    <strong>a.</strong>&nbsp; <button class="btn" id="show_collection_event_selector">Find existing collection event</button>
+                    <strong>a.</strong>&nbsp; <button type="button" class="btn" id="show_collection_event_selector">Find existing collection event</button>
                 </div>
                 <div class="span4">
                     <div id="boundCollectionEvent" class="alert alert-success" style="display:none"></div>
@@ -136,7 +136,7 @@
 
                 <div class="row-fluid">
                     <div class="span6 offset2">
-                        <strong>i.</strong>&nbsp;<button class="btn" id="showLocalitySelector">Find existing locality</button>&nbsp;<strong>OR</strong>
+                        <strong>i.</strong>&nbsp;<button type="button" class="btn" id="showLocalitySelector">Find existing locality</button>&nbsp;<strong>OR</strong>
                     </div>
                     <div class="span4">
                         <div id="boundLocality" class="alert alert-success" style="display:none"></div>
@@ -151,7 +151,7 @@
                 </div>
                 <div class="row-fluid" style="margin-bottom: 10px">
                     <div class="span10 offset2">
-                        <button class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
+                        <button type="button" class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
                     </div>
                 </div>
                 <div class="row-fluid">
@@ -187,7 +187,6 @@
     <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}" recordValues="${recordValues}" title="Identification" description="If a label contains information on the name of the organism then record the name and associated information in this section" />
 
 </div>
-
 
 <r:script>
 
