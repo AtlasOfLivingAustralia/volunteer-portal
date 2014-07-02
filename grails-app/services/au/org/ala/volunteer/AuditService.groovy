@@ -5,7 +5,8 @@ class AuditService {
     static transactional = true
 
     def grailsApplication
-    def authService
+    def userService
+
 
     def getLastViewForTask(Task taskInstance) {
 
@@ -20,8 +21,7 @@ class AuditService {
 
     public boolean isTaskLockedForUser(Task taskInstance, String userId) {
         def lastView = getLastViewForTask(taskInstance)
-        def currentUser = authService.username()
-
+        def currentUser = userService.currentUserId
         if (lastView) {
             log.debug "userId = " + currentUser + " || prevUserId = " + lastView.userId + " || prevLastView = " + lastView.lastView
             def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView

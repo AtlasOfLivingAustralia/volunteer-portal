@@ -5,14 +5,13 @@ class ValidateController {
     def fieldSyncService
     def auditService
     def taskService
-    def authService
     def userService
     def logService
     def grailsApplication
 
     def task = {
         def taskInstance = Task.get(params.id)
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
         userService.registerCurrentUser()
 
         if (taskInstance) {
@@ -37,14 +36,14 @@ class ValidateController {
             def template = Template.findById(project.template.id)
 
             def isValidator = userService.isValidator(project)
-            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
+            logService.log(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
 
-            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(CASRoles.ROLE_ADMIN) || isValidator)) {
+            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(userService.isAdmin() || isValidator)) {
                 isReadonly = "readonly"
             } else {
                 // check that the validator is not the transcriber...Admins can, though!
                 if ((currentUser == taskInstance.fullyTranscribedBy)) {
-                    if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
+                    if (userService.isAdmin()) {
                         flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
                     } else {
                         flash.message = "This task is read-only. You cannot validate your own tasks!"
@@ -66,7 +65,7 @@ class ValidateController {
      * Mark a task as validated, hence removing it from the list of tasks to be validated.
      */
     def validate = {
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
             redirect(action:'task', id: params.failoverTaskId)
@@ -87,7 +86,7 @@ class ValidateController {
      * To do determine actions if the validator chooses not to validate
      */
     def dontValidate = {
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
             redirect(action:'task', id: params.failoverTaskId)
@@ -115,7 +114,7 @@ class ValidateController {
     }
 
     def showNextFromProject = {
-        def currentUser = authService.username() as String
+        def currentUser = userService.currentUserId
         def project = Project.get(params.id)
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
         flash.message = params.msg

@@ -10,7 +10,6 @@ class UserController {
 
     def grailsApplication
     def taskService
-    def authService
     def userService
     def achievementService
     def logService
@@ -29,7 +28,7 @@ class UserController {
 
     def myStats = {
       userService.registerCurrentUser()
-      def currentUser = authService.username()
+      def currentUser = userService.currentUserId
       def userInstance = User.findByUserId(currentUser)
       redirect(action: "show", id: userInstance.id, params: params )
     }
@@ -57,7 +56,7 @@ class UserController {
             userList = User.list(params)
         }
 
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
         [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
     }
 
@@ -84,7 +83,7 @@ class UserController {
                 }
             }
 
-            def currentUser = authService.username()
+            def currentUser = userService.currentUserId
             render(view: "list", model:[userInstanceList: userList, userInstanceTotal: userCount, currentUser: currentUser, projectInstance: projectInstance])
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -263,7 +262,7 @@ class UserController {
     def show = {
 
         def userInstance = User.get(params.int("id"))
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
 
         if (!userInstance) {
             flash.message = "Missing user id, or user not found!"
@@ -326,8 +325,8 @@ class UserController {
 
     def update = {
         def userInstance = User.get(params.id)
-        def currentUser = authService.username()
-        if (userInstance && currentUser && (authService.userInRole(CASRoles.ROLE_ADMIN) || currentUser == userInstance.userId)) {
+        def currentUser = userService.currentUserId
+        if (userInstance && currentUser && (userService.isAdmin() || currentUser == userInstance.userId)) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (userInstance.version > version) {
@@ -354,8 +353,8 @@ class UserController {
 
     def delete = {
         def userInstance = User.get(params.id)
-        def currentUser = authService.username()
-        if (userInstance && currentUser && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        def currentUser = userService.currentUserId
+        if (userInstance && currentUser && userService.isAdmin()) {
             try {
                 userInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
@@ -375,14 +374,14 @@ class UserController {
     def editRoles = {
 
         def userInstance = User.get(params.id)
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
         if (!userInstance || !currentUser) {
             flash.message = "User not found!"
             redirect(action: "list")
             return
         }
 
-        if (!authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        if (!userService.isAdmin()) {
             flash.message = "You have insufficient priviliges to manage the roles for this user!"
             redirect(action: "show")
         }
@@ -399,7 +398,7 @@ class UserController {
             return
         }
 
-        if (!authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        if (!userService.isAdmin()) {
             flash.message = "You have insufficient priviliges to manage the roles for this user!"
             redirect(action: "show")
             return

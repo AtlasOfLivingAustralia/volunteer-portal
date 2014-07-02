@@ -8,7 +8,6 @@ class TranscribeController {
     def fieldSyncService
     def auditService
     def taskService
-    def authService
     def userService
     def logService
 
@@ -28,12 +27,12 @@ class TranscribeController {
     def task = {
 
         def taskInstance = Task.get(params.int('id'))
-        def currentUser = authService.username() as String
+        def currentUserId = userService.currentUserId
         userService.registerCurrentUser()
 
         if (taskInstance) {
 
-            boolean isLockedByOtherUser = auditService.isTaskLockedForUser(taskInstance, currentUser)
+            boolean isLockedByOtherUser = auditService.isTaskLockedForUser(taskInstance, currentUserId)
 
             def isAdmin = userService.isAdmin()
             if (isLockedByOtherUser && !isAdmin) {
@@ -49,15 +48,15 @@ class TranscribeController {
                     flash.message = "This task is currently locked by another user. Because you are an admin you are able to work on this task, but only do so if you are confident that no-one else is working on this task as well, as data will be lost if two people save the same task!"
                 }
                 // go ahead with this task
-                auditService.auditTaskViewing(taskInstance, currentUser)
+                auditService.auditTaskViewing(taskInstance, currentUserId)
             }
 
             def project = Project.findById(taskInstance.project.id)
             def isReadonly = false
 
             def isValidator = userService.isValidator(project)
-            logService.log(currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator)
-            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(authService.userInRole(CASRoles.ROLE_ADMIN))) {
+            logService.log(currentUserId + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
+            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUserId && !userService.isAdmin()) {
                 isReadonly = "readonly"
             }
 
@@ -73,7 +72,7 @@ class TranscribeController {
     def showNextAction = {
         log.debug("rendering view: nextAction")
         def taskInstance = Task.get(params.id)
-        render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: authService.username()])
+        render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: userService.currentUserId])
     }
 
     /**
@@ -114,12 +113,10 @@ class TranscribeController {
 
     /**
      * Sync fields.
-     * TODO record validation using the template information. Hoping some data validation
-     *
      * done in the form.
      */
     def save = {
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
             redirect(action:'task', id: params.failoverTaskId)
@@ -153,7 +150,7 @@ class TranscribeController {
      * TODO handle multiple records per submit.
      */
     def savePartial = {
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
         if (currentUser) {
 
             if (!params.id && params.failoverTaskId) {
@@ -183,7 +180,7 @@ class TranscribeController {
      * Show the next task for the supplied project.
      */
     def showNextFromProject = {
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
         def project = Project.get(params.id)
 
         if (project == null) {

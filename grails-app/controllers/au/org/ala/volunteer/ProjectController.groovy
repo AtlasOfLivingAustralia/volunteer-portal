@@ -16,7 +16,7 @@ class ProjectController {
     def taskService
     def fieldService
     def logService
-    def authService
+    def userService
     def exportService
     def collectionEventService
     def localityService
@@ -136,7 +136,7 @@ class ProjectController {
     def mailingList = {
         def projectInstance = Project.get(params.id)
 
-        if (projectInstance && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        if (projectInstance && userService.isAdmin()) {
             def userIds = taskService.getUserIdsForProject(projectInstance)
             log.debug("userIds = " + userIds)
             //render(userIds)
@@ -273,8 +273,8 @@ class ProjectController {
     }
 
     def create = {
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        def currentUser = userService.currentUserId
+        if (currentUser != null && userService.isAdmin()) {
             def projectInstance = new Project()
             projectInstance.properties = params
 
@@ -343,26 +343,10 @@ class ProjectController {
     }
 
     def edit = {
-
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
-
+        def currentUser = userService.currentUserId
+        if (currentUser != null && userService.isAdmin()) {
             redirect(action:"editGeneralSettings", params: params)
             return
-
-//            def projectInstance = Project.get(params.int("id"))
-//            if (!projectInstance) {
-//                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
-//                redirect(action: "list")
-//            } else {
-//
-//                def picklistInstitutionCodes = [""]
-//                picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
-//
-//                def taskCount = Task.countByProject(projectInstance)
-//
-//                return [projectInstance: projectInstance, taskCount: taskCount, picklistInstitutionCodes: picklistInstitutionCodes ]
-//            }
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "index", id: params.id)
@@ -388,7 +372,6 @@ class ProjectController {
             return [projectInstance: projectInstance, templates: Template.list(), projectTypes: ProjectType.list() ]
         }
     }
-
 
     def editPicklistSettings() {
         def projectInstance = Project.get(params.int("id"))

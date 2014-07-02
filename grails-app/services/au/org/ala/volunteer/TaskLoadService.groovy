@@ -23,7 +23,7 @@ class TaskLoadService {
     private static boolean _cancel = false;
 
     def taskService
-    def authService
+    def userService
     def logService
     def stagingService
     def fieldService
@@ -357,9 +357,9 @@ class TaskLoadService {
 
         if (_loadQueue.size() > 0) {
 
-            _currentBatchSize = _loadQueue.size();
-            _currentBatchStart = Calendar.instance.time;
-            _currentBatchInstigator = authService.username()
+            _currentBatchSize = _loadQueue.size()
+            _currentBatchStart = Calendar.instance.time
+            _currentBatchInstigator = userService.currentUserId
             synchronized (_report) {
                 _report.clear()
             }

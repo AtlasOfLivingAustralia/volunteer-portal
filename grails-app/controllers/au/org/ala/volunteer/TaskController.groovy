@@ -15,7 +15,6 @@ class TaskController {
     def taskService
     def fieldSyncService
     def fieldService
-    def authService
     def taskLoadService
     def logService
     def userService
@@ -39,7 +38,7 @@ class TaskController {
     }
 
     def projectAdmin = {
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
         def project = Project.get(params.int("id"))
         if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, "adminList")
@@ -59,7 +58,7 @@ class TaskController {
 
         def projectInstance = Project.get(params.id)
 
-        def currentUser = authService.username()
+        def currentUser = userService.currentUserId
         def userInstance = User.findByUserId(currentUser)
 
         String[] fieldNames = null;
@@ -223,8 +222,9 @@ class TaskController {
     }
 
     def create = {
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        def currentUser = userService.currentUserId
+
+        if (currentUser != null && userService.isAdmin()) {
             def taskInstance = new Task()
             taskInstance.properties = params
             return [taskInstance: taskInstance]
@@ -264,7 +264,7 @@ class TaskController {
             redirect(action: "list")
         } else {
 
-            def currentUser = authService.username()
+            def currentUser = userService.currentUserId
 
             def readonly = false
             def msg = ""
@@ -316,7 +316,7 @@ class TaskController {
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
                 def isValidator = userService.isValidator(project)
-                logService.log currentUser + " has role: ADMIN = " + authService.userInRole(CASRoles.ROLE_ADMIN) + " &&  VALIDATOR = " + isValidator
+                logService.log currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
 
                 def imageMetaData = taskService.getImageMetaData(taskInstance)
 
@@ -328,8 +328,8 @@ class TaskController {
     }
 
     def edit = {
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        def currentUser = userService.currentUserId
+        if (currentUser != null && userService.isAdmin()) {
             def taskInstance = Task.get(params.id)
             if (!taskInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
@@ -418,7 +418,7 @@ class TaskController {
         if (params.taskId) {
             def task = Task.get(params.int("taskId"))
             def projectInstance = task?.project
-            def taskList = taskService.transcribedDatesByUserAndProject(getUserId(), projectInstance.id, params.search_text)
+            def taskList = taskService.transcribedDatesByUserAndProject(userService.currentUserId, projectInstance.id, params.search_text)
 
             taskList = taskList.sort { it.lastEdit }
 
@@ -430,16 +430,11 @@ class TaskController {
 
     }
 
-    def getUserId = {
-        def userId = authService.username();
-        return userId;
-    }
-
     def taskDetailsFragment = {
         def task = Task.get(params.int("taskId"))
         if (task) {
 
-            def userId = getUserId();
+            def userId = userService.currentUserId
 
             def c = Field.createCriteria();
 
@@ -500,10 +495,10 @@ class TaskController {
     def ajaxTaskData = {
         def task = Task.get(params.int("taskId"))
 
-        def username = getUserId();
+        def username = userService.currentUserId
 
         if (task) {
-            def c = Field.createCriteria();
+            def c = Field.createCriteria()
 
             def fields = c {
                 and {

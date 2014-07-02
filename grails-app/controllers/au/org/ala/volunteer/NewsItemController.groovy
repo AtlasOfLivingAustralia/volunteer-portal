@@ -4,8 +4,7 @@ class NewsItemController {
 
     static allowedMethods = [save: "POST", update: "POST"]
 
-    def authService
-
+    def userService
 
     def index = {
         redirect(action: "list", params: params)
@@ -32,12 +31,11 @@ class NewsItemController {
     }
 
     def create = {
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        def currentUserId = userService.currentUserId
+        if (currentUserId != null && userService.isAdmin()) {
             def newsItemInstance = new NewsItem()
-            //def currentUser = authService.username()
             newsItemInstance.properties = params
-            return [newsItemInstance: newsItemInstance, currentUser: currentUser]
+            return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
             redirect(controller: "project", action: "editNewsItemsSettings", id: params.id)
@@ -78,16 +76,15 @@ class NewsItemController {
     }
 
     def edit = {
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        def currentUserId = userService.currentUserId
+        if (currentUserId != null && userService.isAdmin()) {
             def newsItemInstance = NewsItem.get(params.id)
-            //def currentUser = authService.username()
             if (!newsItemInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
                 redirect(action: "list")
             }
             else {
-                return [newsItemInstance: newsItemInstance, currentUser: currentUser]
+                return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
             }
         } else {
             flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
@@ -96,8 +93,8 @@ class NewsItemController {
     }
 
     def update = {
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        def currentUserId = userService.currentUserId
+        if (currentUserId != null && userService.isAdmin()) {
             def newsItemInstance = NewsItem.get(params.id)
             if (newsItemInstance) {
                 if (params.version) {

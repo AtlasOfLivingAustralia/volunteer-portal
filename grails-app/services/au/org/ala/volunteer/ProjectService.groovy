@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 @Transactional
 class ProjectService {
 
-    def authService
+    def userService
     def taskService
     def grailsLinkGenerator
     def projectTypeService
@@ -186,7 +186,7 @@ class ProjectService {
 
         def projectList
 
-        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        if (userService.isAdmin()) {
             projectList = Project.list()
         } else {
             projectList = Project.findAllByInactiveOrInactive(false, null)

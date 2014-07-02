@@ -13,6 +13,7 @@ class AdminController {
     def grailsApplication
     def tutorialService
     def sessionFactory
+    def userService
 
     def index = {
         checkAdmin()
@@ -27,8 +28,8 @@ class AdminController {
     }
 
     boolean checkAdmin() {
-        def currentUser = authService.username()
-        if (currentUser != null && authService.userInRole(CASRoles.ROLE_ADMIN)) {
+
+        if (userService.isAdmin()) {
             return true;
         }
 

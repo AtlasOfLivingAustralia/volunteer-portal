@@ -1,17 +1,13 @@
 package au.org.ala.volunteer
 
 import groovy.time.TimeCategory
-import java.text.NumberFormat
-import java.text.DecimalFormat
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
 
 class VolunteerTagLib {
-    //def authenticateService
 
     static namespace = 'cl'
 
-    def authService
     def userService
     def grailsApplication
     def settingsService
@@ -19,6 +15,7 @@ class VolunteerTagLib {
     def markdownService
 
     def isLoggedIn = { attrs, body ->
+
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << body()
         }
@@ -214,7 +211,7 @@ class VolunteerTagLib {
                         }
                     }
                 }
-                if (authService.username()) {
+                if (userService.currentUserId) {
                     tr(class: 'prop', style: 'width: 100%; min-height: 0px') {
                         td(style: 'padding-bottom: 0px; padding-top: 0px;') {
                             span('Add a new comment by typing in the box below, and clicking "Save comment"') {}

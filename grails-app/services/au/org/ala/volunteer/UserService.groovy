@@ -20,8 +20,8 @@ class UserService {
      * Register the current user in the system.
      */
     def registerCurrentUser = {
-        def userId = authService.username()
-        def displayName = authService.displayName()
+        def userId = currentUserId
+        def displayName = authService.displayName
         logService.log("Checking user is registered: " + userId + ", " + displayName)
         if (userId) {
             if (User.findByUserId(userId) == null) {
@@ -71,7 +71,9 @@ class UserService {
      * @return
      */
     public boolean isValidator(Project project) {
-        def userId = authService.username()
+
+
+        def userId = currentUserId
 
         if (!userId) {
             return false;
@@ -104,9 +106,12 @@ class UserService {
 
     }
 
-    public User getCurrentUser() {
-        def userId = authService.username()
+    public String getCurrentUserId() {
+        return authService.email
+    }
 
+    public User getCurrentUser() {
+        def userId = currentUserId
         if (userId) {
             return User.findByUserId(userId)
         }
@@ -115,7 +120,7 @@ class UserService {
     }
 
     def isAdmin() {
-        def userId = authService.username()
+        def userId = currentUserId
 
         if (!userId) {
             return false
