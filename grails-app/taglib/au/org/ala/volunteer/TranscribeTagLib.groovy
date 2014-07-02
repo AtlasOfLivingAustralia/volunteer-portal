@@ -102,12 +102,15 @@ class TranscribeTagLib {
         def name = field.fieldType?.name()
         def label = getFieldLabel(field)
         def hideLabel = attrs.hideLabel as Boolean
+
         def widgetHtml = getWidgetHtml(task, field, recordValues,recordIdx, attrs, "span12")
 
         if (field.type == FieldType.hidden) {
             mb.mkp.yieldUnescaped(widgetHtml)
         } else if (field.fieldType == DarwinCoreField.widgetPlaceholder) {
-            mb.mkp.yieldUnescaped(widgetHtml)
+            mb.div() {
+                mb.mkp.yieldUnescaped(widgetHtml)
+            }
         } else {
             mb.div(class:rowClass) {
                 if (!hideLabel) {
@@ -162,7 +165,9 @@ class TranscribeTagLib {
             validationRule = ValidationRule.findByName(field.validationRule)
         }
 
-        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance]
+        def tabindex = attrs.tabindex ? attrs.tabindex * 10 : null
+
+        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance, tabindex: tabindex]
 
         switch (field.type) {
             case FieldType.latLong:
@@ -186,7 +191,7 @@ class TranscribeTagLib {
             case FieldType.autocompleteTextarea:
                 cssClass += " autocomplete" // fall through
             case FieldType.textarea:
-                int rows = ((name == 'occurrenceRemarks') ? 6 : 4)
+                int rows = 6
                 if (attrs.rows) {
                     rows = Integer.parseInt(attrs.rows);
                 }
@@ -195,7 +200,8 @@ class TranscribeTagLib {
                     rows: rows,
                     value:recordValues?.get(0)?.get(name),
                     'class':cssClass,
-                    validationRule: validationRule?.name
+                    validationRule: validationRule?.name,
+                    tabindex: tabindex
                 )
                 break
             case FieldType.hidden:
@@ -210,7 +216,8 @@ class TranscribeTagLib {
                 w = g.checkBox(
                     name: "recordValues.${recordIdx}.${name}",
                     value: checked,
-                    validationRule: validationRule?.name
+                    validationRule: validationRule?.name,
+                    tabindex: tabindex
                 )
                 break;
             case FieldType.select:
@@ -224,7 +231,8 @@ class TranscribeTagLib {
                         value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
                         noSelection:['':''],
                         'class':cssClass,
-                        validationRule: validationRule?.name
+                        validationRule: validationRule?.name,
+                        tabindex: tabindex
                     )
                     break
                 }
@@ -238,7 +246,8 @@ class TranscribeTagLib {
                         values: labels,
                         labels: labels,
                         // 'class':cssClass,
-                        validationRule:validationRule?.name
+                        validationRule:validationRule?.name,
+                        tabindex: tabindex
                     ) {
                         out << "<span class=\"radio-item\">${it.radio}&nbsp;${it.label}</span>"
                     }
@@ -258,7 +267,8 @@ class TranscribeTagLib {
                     maxLength:200,
                     value:recordValues?.get(0)?.get(name),
                     'class':cssClass,
-                    validationRule: validationRule?.name
+                    validationRule: validationRule?.name,
+                    tabindex: tabindex
                 )
         }
 

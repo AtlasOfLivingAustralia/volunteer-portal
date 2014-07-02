@@ -49,14 +49,7 @@
                             <td valign="top" class="value">${fieldValue(bean: templateInstance, field: "viewName")}</td>
                             
                         </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.fieldOrder.label" default="Field Order" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: templateInstance, field: "fieldOrder")}</td>
-                            
-                        </tr>
-                    
+
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="template.project.label" default="Projects" /></td>
                             

@@ -16,7 +16,7 @@
             %{--from--}%
         %{--</div>--}%
         <div class="span3">
-            <g:textField name="${field.fieldType}.minValue" class="span12 rangeMinValue" value="" placeholder="From"/>
+            <g:textField tabindex="${tabindex}" name="${field.fieldType}.minValue" class="span12 rangeMinValue" value="" placeholder="From"/>
         </div>
         <div class="span1 muted" style="text-align: center">-
             </div>
@@ -24,10 +24,10 @@
             %{--to--}%
         %{--</div>--}%
         <div class="span3">
-            <g:textField name="${field.fieldType}.maxValue" class="span12 rangeMaxValue" value="" placeholder="To"/>
+            <g:textField tabindex="${tabindex}" name="${field.fieldType}.maxValue" class="span12 rangeMaxValue" value="" placeholder="To"/>
         </div>
         <div class="span5">
-            <g:select class="span12 rangeUnits" name="${field.fieldType}.units" value="" from="${values}" />
+            <g:select tabindex="${tabindex}" class="span12 rangeUnits" name="${field.fieldType}.units" value="" from="${values}" />
         </div>
 
     </div>

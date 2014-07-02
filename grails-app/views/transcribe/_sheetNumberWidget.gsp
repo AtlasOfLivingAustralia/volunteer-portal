@@ -2,13 +2,13 @@
 
     <div class="control-group" >
         <div class="span3">
-            <g:textField name="${field.fieldType}.sheetNumber" class="span12 sheetNumber" value="" validationRule="${field.validationRule}" />
+            <g:textField tabindex="${tabindex}" name="${field.fieldType}.sheetNumber" class="span12 sheetNumber" value="" validationRule="${field.validationRule}" />
         </div>
         <div class="span1">
             of
         </div>
         <div class="span3">
-            <g:textField name="${field.fieldType}.sheetNumberOf" class="span12 sheetNumberOf" value="" validationRule="${field.validationRule}" />
+            <g:textField tabindex="${tabindex}" name="${field.fieldType}.sheetNumberOf" class="span12 sheetNumberOf" value="" validationRule="${field.validationRule}" />
         </div>
         <div class="span3">
             (if&nbsp;noted)

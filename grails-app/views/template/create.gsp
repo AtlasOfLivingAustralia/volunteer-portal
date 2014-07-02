@@ -61,15 +61,6 @@
                                     </td>
                                 </tr>
 
-                                <tr class="prop">
-                                    <td valign="top" class="name">
-                                        <label for="fieldOrder"><g:message code="template.fieldOrder.label" default="Field Order" /></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'fieldOrder', 'errors')}">
-                                        <g:textField name="fieldOrder" value="${templateInstance?.fieldOrder}" />
-                                    </td>
-                                </tr>
-
                             </tbody>
                         </table>
                     </div>

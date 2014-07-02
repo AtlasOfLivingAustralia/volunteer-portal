@@ -310,7 +310,7 @@ class TemplateController {
 
         if (template && newName) {
 
-            def newTemplate = new Template(name: newName, viewName: template.viewName, fieldOrder: template.fieldOrder, author: userService.currentUser.userId)
+            def newTemplate = new Template(name: newName, viewName: template.viewName, author: userService.currentUser.userId)
 
             newTemplate.viewParams = [:]
             template.viewParams.keySet().each { key ->
@@ -328,6 +328,11 @@ class TemplateController {
         }
 
         redirect(action:'list')
+    }
+
+    def cloneTemplateFragment() {
+        def template = Template.get(params.int("sourceTemplateId"))
+        [templateInstance: template]
     }
 
 }

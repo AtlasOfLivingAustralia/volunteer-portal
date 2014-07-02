@@ -4,7 +4,7 @@ class Template implements Serializable {
 
     String name
     String viewName  //this should be the GSP in use for this template
-    String fieldOrder // JSON encoded list
+    String fieldOrder = "[]" // not used - consider removing
     String author
     Map<String, String> viewParams
 
