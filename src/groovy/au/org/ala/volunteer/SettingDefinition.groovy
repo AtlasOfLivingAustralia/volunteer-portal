@@ -6,6 +6,8 @@ public class SettingDefinition<T> {
     public static def ForumNotificationsEnabled = new SettingDefinition("forum.notifications.enabled", true, "Whether or not notifications are sent out")
     public static def BatchForumNotificationMessages = new SettingDefinition("forum.notifications.batched", false, "Whether or not notifications are batch sent periodically or sent out directly on posting")
     public static def EnableMyDashboard = new SettingDefinition("dashboard.enabled", false, "Enable the user dashboard tab")
+    public static def PicklistCollectionCodes = new SettingDefinition("picklist.collection.codes", new ArrayList<String>(), "List of collection codes used to partition picklist items")
+
 //    public static def NotificationEmailServerName = new SettingDefinition("notifications.emailServer.name", "localhost", "The name or address of the SMTP server to user to send out notifications")
 //    public static def NotificationEmailServerPort = new SettingDefinition("notifications.emailServer.port", 25, "The port that the SMTP server is listening on")
 //    public static def NotificationEmailServerUsername = new SettingDefinition("notifications.emailServer.username", "", "SMTP Server username")

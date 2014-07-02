@@ -74,7 +74,7 @@ class ProjectController {
             }
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
-            def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', date:'desc'])
+            def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc', max: 1])
 
             def newsItem = null
             if (newsItems) {

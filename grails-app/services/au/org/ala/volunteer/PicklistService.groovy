@@ -6,6 +6,7 @@ class PicklistService {
 
     static transactional = true
     def sessionFactory
+    def settingsService
     def logService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -85,7 +86,45 @@ class PicklistService {
                 distinct("institutionCode")
             }
         }
-        return results;
+        List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes)
+        boolean changed = false
+        results.each {
+            if (!codes.contains(it)) {
+                codes.add(it)
+                changed = true
+            }
+        }
+
+        if (changed) {
+            settingsService.setSetting(SettingDefinition.PicklistCollectionCodes.key, codes.sort())
+        }
+
+        return codes;
+    }
+
+    public boolean addCollectionCode(String code) {
+        List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes) as List<String>
+        if (codes && code) {
+            if (!codes.contains(code)) {
+                codes.add(code)
+                settingsService.setSetting(SettingDefinition.PicklistCollectionCodes.key, codes.sort())
+                return true
+            }
+        }
+        return false
+    }
+
+    public boolean removeCollectionCode(String code) {
+        List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes) as List<String>
+        if (codes && code) {
+            if (codes.contains(code)) {
+                codes.remove(code)
+                settingsService.setSetting(SettingDefinition.PicklistCollectionCodes.key, codes)
+                return true
+            }
+        }
+        return false
+
     }
     
     public List getPicklistItemsForProject(DarwinCoreField picklistField, Project project) {

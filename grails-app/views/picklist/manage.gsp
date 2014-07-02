@@ -26,23 +26,25 @@
 
                     <div class="form-horizontal">
                         <div class="control-group">
-                            <lable class="control-label" for="picklistId">Picklist</lable>
+                            <label class="control-label" for="picklistId">Picklist</label>
                             <div class="controls">
                                 <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${params.picklistId}"/>
-                                <a href="${createLink(controller:'picklist', action:'create')}">Create new picklist</a>
+                                <a class="btn" href="${createLink(controller:'picklist', action:'create')}">Create new picklist</a>
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label" for="institutionCode">Institution Code:</label>
+                            <label class="control-label" for="institutionCode">Collection code:</label>
                             <div class="controls">
-                                <g:textField name="institutionCode" id="institutionCode" value="${institutionCode}"/>
-                                <span>Can be left blank to use default values</span>
+                                <g:select name="institutionCode" from="${collectionCodes}" value="${institutionCode}" />
+                                %{--<g:textField name="institutionCode" id="institutionCode" value="${institutionCode}"/>--}%
+                                <button id="btnAddCollectionCode" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i>&nbsp;Add collection code</button>
+                                <g:actionSubmit class="btn" name="download.picklist" value="${message(code: 'download.picklist.label', default: 'Download items as CSV')}" action="download"/>
+                                <g:actionSubmit class="btn" name="load.textarea" value="${message(code: 'loadtextarea.label', default: 'Load items into text area')}" action="loadcsv"/>
+                                %{--<span>Can be left blank to use default values</span>--}%
                             </div>
                         </div>
-                        <div class="control-group">
-                            <g:actionSubmit class="btn" name="download.picklist" value="${message(code: 'download.picklist.label', default: 'Download')}" action="download"/>
-                            <g:actionSubmit class="btn" name="load.textarea" value="${message(code: 'loadtextarea.label', default: 'Load items into text area')}" action="loadcsv"/>
-                        </div>
+                        %{--<div class="control-group">--}%
+                        %{--</div>--}%
                     </div>
 
                     <p>
@@ -56,5 +58,31 @@
             </div>
         </div>
 
+        <r:script>
+
+            $(document).ready(function() {
+
+                $("#btnAddCollectionCode").click(function(e) {
+                    e.preventDefault();
+                    bvp.newCollectionCode = "";
+                    bvp.showModal({
+                        title:'Create picklist collection code',
+                        url: "addCollectionCodeFragment",
+                        onClose: function() {
+                            if (bvp.newCollectionCode) {
+                                // Add item to list...
+                                var select = $("#institutionCode");
+                                select.append(
+                                    $('<option></option>').val(bvp.newCollectionCode).html(bvp.newCollectionCode)
+                                );
+                                select.val(bvp.newCollectionCode);
+                            }
+                        }
+                    });
+                });
+
+            });
+
+        </r:script>
     </body>
 </html>

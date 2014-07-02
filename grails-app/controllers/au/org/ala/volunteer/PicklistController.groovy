@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
 import org.grails.plugins.csv.CSVWriter
 
 class PicklistController {
@@ -25,7 +26,9 @@ class PicklistController {
     }
 
     def manage = {
-        [picklistInstanceList: Picklist.list()]
+        def picklistInstitutionCodes = [""]
+        picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+        [picklistInstanceList: Picklist.list(), collectionCodes: picklistInstitutionCodes]
     }
 
     private writeItemsCsv(Writer writer, Picklist picklist, String institutionCode) {
@@ -51,7 +54,9 @@ class PicklistController {
             writeItemsCsv(sw, picklist, institutionCode)
             csvdata = sw.toString();
         }
-        render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id, institutionCode: params.institutionCode])
+        def picklistInstitutionCodes = [""]
+        picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+        render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id, institutionCode: params.institutionCode, collectionCodes: picklistInstitutionCodes])
     }
     
     def download = {
@@ -173,5 +178,23 @@ class PicklistController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
             redirect(action: "list")
         }
+    }
+
+    def addCollectionCodeFragment() {
+    }
+
+    def ajaxCreateNewCollectionCode() {
+        def code = params.code
+        boolean success = false
+        def message = ""
+        if (code) {
+            success = picklistService.addCollectionCode(code)
+            if (!success) {
+                message = "Collection code ${code} already exists."
+            }
+        } else {
+            message = "No code parameter supplied!"
+        }
+        render([success: success, message: message] as JSON)
     }
 }

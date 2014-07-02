@@ -11,6 +11,7 @@
         <cl:headerContent title="${message(code: "default.create.label", args: [entityName])}">
             <%
                 pageScope.crumbs = [
+                    [link: createLink(controller: 'picklist', action: 'manage'), label: message(code: 'manage.picklists.label', default:'Manage picklists')],
                     [link: createLink(controller: 'picklist', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
                 ]
             %>

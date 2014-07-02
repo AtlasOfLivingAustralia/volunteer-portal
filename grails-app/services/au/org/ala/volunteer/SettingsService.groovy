@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
+
 class SettingsService {
 
     def <T> T getSetting(SettingDefinition<T> setting) {
@@ -8,6 +10,16 @@ class SettingsService {
 
     def getSetting(String key, String defaultValue = null) {
         return get(key, defaultValue)
+    }
+
+    List<String> getSetting(String key, List<String> defaultValue) {
+        String str = get(key, defaultValue as JSON)
+        return JSON.parse(str) as List<String>
+    }
+
+    def setSetting(String key, List<String> items) {
+        String str = items as JSON
+        set(key, str)
     }
 
     def getSetting(String key, int defaultValue) {

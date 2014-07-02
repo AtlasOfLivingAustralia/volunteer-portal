@@ -14,10 +14,10 @@
                 <g:hiddenField name="id" value="${projectInstance?.id}"/>
                 <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-                <div class="alert">A picklist with a specific Insititution Code must be loaded first</div>
+                <div class="alert">A picklist with a specific 'Collection Code' must be <a href="${createLink(controller:'picklist', action:'manage')}">loaded</a> first</div>
 
                 <div class="control-group">
-                    <label class="control-label" for="projectType"><g:message code="project.picklistInstitutionCode.label" default="Picklist Institution Code"/></label>
+                    <label class="control-label" for="projectType"><g:message code="project.picklistInstitutionCode.label" default="Picklist Collection Code"/></label>
                     <div class="controls">
                         <g:select name="picklistInstitutionCode" from="${picklistInstitutionCodes}" value="${projectInstance?.picklistInstitutionCode}"/>
                     </div>
