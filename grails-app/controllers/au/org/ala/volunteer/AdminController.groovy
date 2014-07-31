@@ -275,4 +275,11 @@ class AdminController {
         [activities: activities]
     }
 
+    def tools() {
+    }
+
+    def mappingTool() {
+
+    }
+
 }

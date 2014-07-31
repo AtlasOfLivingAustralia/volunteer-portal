@@ -41,7 +41,7 @@
             <div>Longitude: <span id="infoLng"></span></div>
             <div>Location: <span id="infoLoc"></span></div>
 
-            <div style="text-align: center; margin-top: 6px">
+            <div id="geolocationToolButtons" style="text-align: center; margin-top: 6px">
                 <button type="button" id="setLocationFields" class="btn btn-primary">Copy values to main form</button>
                 <button type="button" id="btnClose" class="btn">Cancel</button>
             </div>
@@ -205,6 +205,11 @@
                             updateMarkerPosition(latLng);
                             marker.setPosition(latLng);
                             map.panTo(latLng);
+
+                            if (geocodeCallback) {
+                                geocodeCallback(results[0])
+                            }
+
                             return true;
                         } else {
                             // alert("Geocode was not successful for the following reason: " + status + " (count: " + quotaCount + ")");
@@ -259,6 +264,10 @@
         if (addressObj && addressObj.address_components) {
             var addressComps = addressObj.address_components;
             locationObj = addressComps; // save to global var
+
+            if (geocodeCallback) {
+                geocodeCallback(addressObj)
+            }
         }
     }
 

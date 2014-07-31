@@ -25,7 +25,6 @@
                     </thead>
                     <tr>
                         <td>
-                            %{--<button class="btn" onclick="location.href = '${createLink(controller:'project', action:'create')}'">Create Expedition</button>--}%
                             <button class="btn" onclick="location.href = '${createLink(controller:'project', action:'createNewProject')}'">Create New Expedition</button>
                         </td>
                         <td>Create a new Volunteer Expedition</td>
@@ -45,25 +44,9 @@
                         <td>Manage transcription validation rules</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'mailingList')}'">Global mailing List</button></td>
-                        <td>Display a list of email address for all volunteers</td>
-                    </tr>
-                    <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'ajax', action:'userReport', params: [wt: 'csv'])}'">User report</button></td>
-                        <td>Users and their various counts and last activity etc...</td>
-                    </tr>
-                    <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'frontPage', action:'edit')}'">Configure front page</button></td>
                         <td>Configure the appearance of the front page</td>
                     </tr>
-                    %{--<tr>--}%
-                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'collectionEvent', action:'load')}'">Load collection events</button></td>--}%
-                        %{--<td>Load/Replace collection events for a particular institution</td>--}%
-                    %{--</tr>--}%
-                    %{--<tr>--}%
-                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'locality', action:'load')}'">Load localities</button></td>--}%
-                        %{--<td>Load/Replace localities for a particular institution</td>--}%
-                    %{--</tr>--}%
                     <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'stats', action:'index')}'">Stats</button></td>
                         <td>Various Statistics (Experimental!)</td>
@@ -73,25 +56,21 @@
                         <td>Manage tutorial files</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'currentUsers')}'">Current users</button></td>
-                        <td>A summary of recent user activity</td>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'tools')}'">Tools</button></td>
+                        <td>Tools</td>
                     </tr>
-
                     <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'setting', action:'index')}'">Advanced Settings</button></td>
                         <td>Advanced Settings</td>
                     </tr>
-
-                    %{--<tr>--}%
-                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'task', action:'calculateDates')}'">Calculate Task Dates (one off)</button></td>--}%
-                        %{--<td>Advanced Settings</td>--}%
-                    %{--</tr>--}%
-
-                    %{--<tr>--}%
-                        %{--<td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'fixUserCounts')}'">Fix User Transcribed and Validated</button></td>--}%
-                        %{--<td>Fixes User transcribed and validated task counts based off actual task data (preserves existing score if greater then computed)</td>--}%
-                    %{--</tr>--}%
-
+                    <tr>
+                        <td>Admin reports</td>
+                        <td>
+                            <button class="btn" title="Display a list of email address for all volunteers" onclick="location.href = '${createLink(controller:'admin', action:'mailingList')}'">Global mailing List</button>
+                            <button class="btn" title="Users and their various counts and last activity etc..." onclick="location.href = '${createLink(controller:'ajax', action:'userReport', params: [wt: 'csv'])}'">User report</button>
+                            <button class="btn" title="A summary of recent user activity" onclick="location.href = '${createLink(controller:'admin', action:'currentUsers')}'">Current users</button>
+                        </td>
+                    </tr>
 
                 </table>
 
