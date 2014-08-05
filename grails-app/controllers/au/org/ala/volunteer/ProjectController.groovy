@@ -94,7 +94,8 @@ class ProjectController {
     /**
      * REST web service to return a list of tasks with coordinates to show on Google Map
      */
-    def tasksToMap = {
+    def tasksToMap() {
+
         def projectInstance = Project.get(params.id)
         def taskListFields = []
 

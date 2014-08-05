@@ -21,11 +21,11 @@ class TaskController {
     def grailsApplication
     def stagingService
 
-    def load = {
+    def load() {
         [projectList: Project.list()]
     }
 
-    def project = {
+    def project() {
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
@@ -37,7 +37,7 @@ class TaskController {
         }
     }
 
-    def projectAdmin = {
+    def projectAdmin() {
         def currentUser = userService.currentUserId
         def project = Project.get(params.int("id"))
         if (project && currentUser && userService.isValidator(project)) {
@@ -156,7 +156,7 @@ class TaskController {
     /**
      * Webservice for Google Maps to display task details in infowindow
      */
-    def details = {
+    def details() {
         def taskInstance = Task.get(params.id)
         Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
         def jsonObj = [:]
@@ -166,7 +166,7 @@ class TaskController {
         render jsonObj as JSON
     }
 
-    def loadCSV = {
+    def loadCSV() {
         def projectId = params.int('projectId')
 
         if (params.csv) {
@@ -175,7 +175,7 @@ class TaskController {
         }
     }
 
-    def loadCSVAsync = {
+    def loadCSVAsync() {
         def projectId = params.int('projectId')
         def replaceDuplicates = params.duplicateMode == 'replace'
         if (projectId && params.csv) {
@@ -190,18 +190,18 @@ class TaskController {
         }
     }
 
-    def cancelLoad = {
+    def cancelLoad() {
         taskLoadService.cancelLoad()
         flash.message = "Cancelled!"
         redirect( controller:'loadProgress', action:'index')
     }
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
     /** list all tasks  */
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
@@ -214,14 +214,14 @@ class TaskController {
         }
     }
 
-    def thumbs = {
+    def thumbs() {
         params.max = Math.min(params.max ? params.int('max') : 8, 16)
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
-    def create = {
+    def create() {
         def currentUser = userService.currentUserId
 
         if (currentUser != null && userService.isAdmin()) {
@@ -234,7 +234,7 @@ class TaskController {
         }
     }
 
-    def save = {
+    def save() {
         def taskInstance = new Task(params)
         if (taskInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.id])}"
@@ -245,7 +245,7 @@ class TaskController {
         }
     }
 
-    def showDetails = {
+    def showDetails() {
         def taskInstance = Task.get(params.int('id'))
 
         def c = Field.createCriteria()
@@ -257,7 +257,7 @@ class TaskController {
         [taskInstance: taskInstance, fields: fields]
     }
 
-    def show = {
+    def show() {
         def taskInstance = Task.get(params.id)
         if (!taskInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
@@ -327,7 +327,7 @@ class TaskController {
         }
     }
 
-    def edit = {
+    def edit() {
         def currentUser = userService.currentUserId
         if (currentUser != null && userService.isAdmin()) {
             def taskInstance = Task.get(params.id)
@@ -344,7 +344,7 @@ class TaskController {
         }
     }
 
-    def update = {
+    def update() {
         def taskInstance = Task.get(params.id)
         if (taskInstance) {
             if (params.version) {
@@ -371,7 +371,7 @@ class TaskController {
         }
     }
 
-    def delete = {
+    def delete() {
         def taskInstance = Task.get(params.id)
         if (taskInstance) {
             try {
@@ -390,7 +390,7 @@ class TaskController {
         }
     }
 
-    def showImage = {
+    def showImage() {
 
         if (params.id) {
             def task = Task.findById(params.int("id"))
@@ -402,7 +402,7 @@ class TaskController {
         }
     }
 
-    def taskBrowserFragment = {
+    def taskBrowserFragment() {
         if (params.projectId) {
             Task task = null;
             if (params.taskId) {
@@ -414,7 +414,7 @@ class TaskController {
     }
 
 
-    def taskBrowserTaskList = {
+    def taskBrowserTaskList() {
         if (params.taskId) {
             def task = Task.get(params.int("taskId"))
             def projectInstance = task?.project
@@ -430,7 +430,7 @@ class TaskController {
 
     }
 
-    def taskDetailsFragment = {
+    def taskDetailsFragment() {
         def task = Task.get(params.int("taskId"))
         if (task) {
 
@@ -492,7 +492,7 @@ class TaskController {
         }
     }
 
-    def ajaxTaskData = {
+    def ajaxTaskData() {
         def task = Task.get(params.int("taskId"))
 
         def username = userService.currentUserId

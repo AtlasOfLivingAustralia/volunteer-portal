@@ -78,7 +78,7 @@
         function load_content(marker, id) {
             $.ajax({
 
-                url: "${createLink(controller: 'task', action:'details')}/" + id + ".json",
+                url: "${createLink(controller: 'task', action:'details')}/" + id,
                 success: function (data) {
                     var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber + "</div>";
                     infowindow.close();
