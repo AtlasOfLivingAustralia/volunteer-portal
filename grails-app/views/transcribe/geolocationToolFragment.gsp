@@ -182,6 +182,11 @@
                 });
     }
 
+    var geocodeCallback = function() {
+        // do nothing by default
+    };
+
+
     /**
      * Reverse geocode coordinates via Google Maps API
      */
