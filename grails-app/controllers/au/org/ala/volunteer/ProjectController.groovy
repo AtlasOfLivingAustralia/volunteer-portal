@@ -649,6 +649,12 @@ class ProjectController {
                     flow.project = new NewProjectDescriptor(stagingId: UUID.randomUUID().toString())
                 }
             }
+            onRender {
+                final list = Institution.list()
+                final institutions = list*.name
+                final institutionsMap = list.collectEntries { [ (it.name): it.id ] }
+                [institutions: institutions, institutionsMap: institutionsMap]
+            }
             on("continue").to "institutionDetails"
             on("cancel").to "cancel"
         }
@@ -663,6 +669,16 @@ class ProjectController {
                     errors << "You must supply the name of the project owner or sponsor"
                 }
 
+                final featuredOwnerId
+                if (params.featuredOwnerId)  {
+                    final paramId = Long.parseLong(params.featuredOwnerId)
+                    featuredOwnerId = paramId
+                } else {
+                    def existing = Institution.executeQuery("select id from Institution where name = :name", [name: params.featuredOwner])
+                    featuredOwnerId = existing ? existing[0] : null
+                }
+
+
                 if (errors) {
                     flow.errorMessages = errors
                     return validationError()
@@ -671,6 +687,7 @@ class ProjectController {
                 }
 
                 flow.project.featuredOwner = params.featuredOwner
+                flow.project.featuredOwnerId = featuredOwnerId
             }.to "projectDetails"
             on("cancel").to "cancel"
             on("back").to "welcome"

@@ -10,7 +10,7 @@ class Project implements Serializable {
     String shortDescription
     String featuredLabel
     String featuredOwner
-    //Institution featuredOwnerInstitution
+    Institution featuredOwnerInstitution
     Boolean disableNewsItems = false
     Integer leaderIconIndex = 0
     String featuredImageCopyright = null
@@ -49,7 +49,7 @@ class Project implements Serializable {
         featuredImage nullable: true
         featuredLabel nullable: true
         featuredOwner nullable: true
-        //featuredOwnerInstitution nullable: true
+        featuredOwnerInstitution nullable: true
         shortDescription nullable: true, maxSize: 500
         disableNewsItems nullable: true
         leaderIconIndex nullable: true

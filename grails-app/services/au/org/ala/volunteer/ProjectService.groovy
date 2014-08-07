@@ -233,6 +233,10 @@ class ProjectService {
                     return true
                 }
 
+                if (project.featuredOwnerInstitution && project.featuredOwnerInstitution.name?.toLowerCase()?.contains(query)) {
+                    return true
+                }
+
                 if (project.featuredOwner?.toLowerCase()?.contains(query)) {
                     return true
                 }
@@ -260,7 +264,7 @@ class ProjectService {
             }
 
             if (params.sort == 'institution') {
-                return projectSummary.project.featuredOwner;
+                return projectSummary.project.featuredOwnerInstitution?.name ?: projectSummary.project.featuredOwner;
             }
 
             if (params.sort == 'type') {
