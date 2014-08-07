@@ -846,7 +846,7 @@ class TaskController {
             return
         }
         if (!userService.isAdmin()) {
-            flash.errorMessage = "Only BVP administrators can perform this action!"
+            flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
             redirect(action:'showDetails', id: taskInstance.id)
             return
         }
@@ -863,7 +863,7 @@ class TaskController {
             return
         }
         if (!userService.isAdmin()) {
-            flash.errorMessage = "Only BVP administrators can perform this action!"
+            flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
             redirect(action:'showDetails', id: taskInstance.id)
             return
         }

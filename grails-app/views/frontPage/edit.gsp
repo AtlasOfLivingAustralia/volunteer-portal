@@ -106,7 +106,7 @@
 
                                 <tr class="prop">
                                     <td valign="top" class="name">
-                                        <label for="enableForum"><g:message code="frontPage.enableForum.label" default="Enable the BVP Forum"/></label>
+                                        <label for="enableForum"><g:message code="frontPage.enableForum.label" default="Enable the ${message(code:"default.application.name")} Forum"/></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: frontPage, field: 'enableForum', 'errors')}">
                                         <g:checkBox name="enableForum" value="${frontPage.enableForum}"/>

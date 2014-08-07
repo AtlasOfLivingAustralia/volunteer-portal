@@ -143,10 +143,36 @@
         </div>
         <div class="row">
             <div class="span12 form-horizontal">
-                <div>
-                    Locality: <span class="geocoded-value" id="gc_locality"></span> State: <span class="geocoded-value" id="gc_state"></span> Country: <span class="geocoded-value" id="gc_country"></span>
-                    Latitude: <span class="geocoded-value" id="gc_latitude"></span> Longitude: <span class="geocoded-value" id="gc_longitude" ></span>
-                </div>
+                <table class="table">
+                    <tr>
+                        <td>Locality</td>
+                        <td>State</td>
+                        <td>Country</td>
+                        <td>Longitude</td>
+                        <td>Latitude</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="geocoded-value" id="gc_locality"></span>
+                        </td>
+                        <td>
+                            <span class="geocoded-value" id="gc_state"></span>
+                        </td>
+                        <td>
+                            <span class="geocoded-value" id="gc_country"></span>
+                        </td>
+                        <td>
+                            <span class="geocoded-value" id="gc_longitude" ></span>
+                        </td>
+                        <td>
+                            <span class="geocoded-value" id="gc_latitude"></span>
+                        </td>
+                    </tr>
+                </table>
+                %{--<div>--}%
+                    %{--Locality: <span class="geocoded-value" id="gc_locality"></span> State: <span class="geocoded-value" id="gc_state"></span> Country: <span class="geocoded-value" id="gc_country"></span>--}%
+                    %{--Latitude: <span class="geocoded-value" id="gc_latitude"></span> Longitude: <span class="geocoded-value" id="gc_longitude" ></span>--}%
+                %{--</div>--}%
             </div>
         </div>
         <button class="btn" id="btnToggleFullData">Toggle full geolocate data</button>

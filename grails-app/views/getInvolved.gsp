@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Volunteer Portal - Atlas of Living Australia</title>
+        <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <style>
 
@@ -21,14 +21,14 @@
         <cl:headerContent title="${message(code:'default.about.label', default:'How can I volunteer?')}" selectedNavItem="getinvolved" />
 
         <p>
-        The <a href="http://ala.org.au">Atlas of Living Australia</a>, in collaboration with the <a href="http://australianmuseum.net.au/">Australian Museum</a>, developed the Biodiversity Volunteer Portal to harness the power of online volunteers to digitise biodiversity data that is locked up in biodiversity collections, field notebooks and survey sheets.
+        The <a href="http://ala.org.au">Atlas of Living Australia</a>, in collaboration with the <a href="http://australianmuseum.net.au/">Australian Museum</a>, developed <g:message code="default.application.name" /> to harness the power of online volunteers to digitise biodiversity data that is locked up in biodiversity collections, field notebooks and survey sheets.
         </p>
         <h3>Registering</h3>
         <p>
             You can contribute by registering with the Atlas of Living Australia and transcribing information from photographed labels or documents.
         </p>
         <p>
-            Anyone can register, by providing their email address and a few details <a href="http://auth.ala.org.au/userdetails/registration/createAccount">here</a>. This will give you access to the volunteer portal and associated forums, and you’ll receive occasional updates from the Atlas of Living Australia by email.
+            Anyone can register, by providing their email address and a few details <a href="http://auth.ala.org.au/userdetails/registration/createAccount">here</a>. This will give you access to <g:message code="default.application.name" /> and associated forums, and you’ll receive occasional updates from the Atlas of Living Australia by email.
         </p>
 
         <h3>Transcribing</h3>

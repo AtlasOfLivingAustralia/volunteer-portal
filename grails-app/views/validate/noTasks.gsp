@@ -15,7 +15,7 @@
 
     </head>
 
-    <body class="sublevel sub-site volunteerportal">
+    <body class="">
         <cl:navbar selected="expeditions"/>
 
         <header id="page-header">

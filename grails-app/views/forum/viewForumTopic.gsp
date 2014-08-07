@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Volunteer Portal - Atlas of Living Australia</title>
+        <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
         <r:require module="panZoom" />

@@ -81,8 +81,10 @@ class SettingController {
     def sendTestEmail() {
         def to = params.to
 
+        def name = message(code:'default.application.name', default: 'DigiVol')
+
         if (to) {
-            emailService.sendMail(to,"Test message from the BVP", "This is a test message form the ALA Biodiversity Volunteer Portal.")
+            emailService.sendMail(to,"Test message from ${name}", "This is a test message from ${name}.")
             flash.message = "Sent a test message to '${to}'"
         }
         redirect(action:'index')

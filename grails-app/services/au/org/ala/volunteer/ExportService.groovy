@@ -5,6 +5,7 @@ import au.com.bytecode.opencsv.CSVWriter
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
+import org.springframework.context.i18n.LocaleContextHolder
 
 class ExportService {
 
@@ -13,6 +14,7 @@ class ExportService {
     def grailsApplication
     def taskService
     def multimediaService
+    def messageSource
 
     private String getUserDisplayName(userId) {
         def user = User.findByUserId(userId)
@@ -44,7 +46,8 @@ class ExportService {
                     sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy)}. ")
                 }
                 def date = new Date().format("dd-MMM-yyyy")
-                sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
+                def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+                sb.append("Exported on ${date} from ${appName} (http://volunteer.ala.org.au)")
                 result = sb.toString()
                 break;
             case "datetranscribed":
@@ -334,7 +337,8 @@ class ExportService {
                             sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy)}. ")
                         }
                         def date = new Date().format("dd-MMM-yyyy")
-                        sb.append("Exported on ${date} from ALA Volunteer Portal (http://volunteer.ala.org.au)")
+                        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+                        sb.append("Exported on ${date} from ${appName} (http://volunteer.ala.org.au)")
                         fieldValues.add((String) sb.toString())
                         break;
                     case "datetranscribed":

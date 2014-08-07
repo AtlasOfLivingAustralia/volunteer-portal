@@ -6,7 +6,7 @@
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
     </head>
-    <body class="sublevel sub-site volunteerportal">
+    <body class="">
 
         <cl:headerContent title="${message(code:'default.show.label', args: [entityName])}" selectedNavItem="expeditions">
             <%

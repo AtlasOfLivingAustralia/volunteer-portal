@@ -27,13 +27,13 @@
                         <td>
                             <button class="btn" onclick="location.href = '${createLink(controller:'project', action:'createNewProject')}'">Create New Expedition</button>
                         </td>
-                        <td>Create a new Volunteer Expedition</td>
+                        <td>Create a new ${message(code:'default.application.name')} Expedition</td>
                     </tr>
                     <tr>
                         <td>
                             <button class="btn" onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button>
                         </td>
-                        <td>Manage project templates and their fields</td>
+                        <td>Manage expedition templates and their fields</td>
                     </tr>
                     <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'picklist', action:'manage')}'">Bulk manage picklists</button></td>

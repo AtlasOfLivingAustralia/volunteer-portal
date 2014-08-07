@@ -3,7 +3,7 @@
     <head>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <meta name="section" content="home"/>
-        <title>Volunteer Portal - Atlas of Living Australia</title>
+        <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
         <style type="text/css">
 
             hgroup h1 {
@@ -89,7 +89,7 @@
 
     <body>
 
-        <cl:headerContent title="${message(code:'default.frontpageheading.label', default:'Biodiversity Volunteer Portal')}" selectedNavItem="bvp">
+        <cl:headerContent title="${message(code:'default.application.name', default:'DigiVol')}" selectedNavItem="bvp" hideCrumbs="${true}">
             <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based transcription of archival and natural history collections</p>
 
             <cl:isLoggedIn>

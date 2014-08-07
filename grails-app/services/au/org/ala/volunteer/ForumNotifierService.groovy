@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import org.springframework.context.i18n.LocaleContextHolder
+
 class ForumNotifierService {
 
     // This is deliberate so that if the mails service fails to send it wont kill the requests current transaction
@@ -11,6 +13,7 @@ class ForumNotifierService {
     def settingsService
     au.org.ala.volunteer.CustomPageRenderer customPageRenderer
     def emailService
+    def messageSource
 
     List<User> getModeratorsForTopic(ForumTopic topic) {
         List<User> results = []
@@ -94,8 +97,9 @@ class ForumNotifierService {
                 def interestedUsers = getUsersInterestedInTopic(topic)
                 logService.log("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { it.userId })
                 def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: lastMessage])
+                def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { user ->
-                    emailService.sendMail(user.userId, "BVP Forum notification", message)
+                    emailService.sendMail(user.userId, "${appName} Forum notification", message)
                 }
             }
         } catch (Throwable ex) {
@@ -109,8 +113,9 @@ class ForumNotifierService {
                 def interestedUsers = getModeratorsForTopic(topic)
                 logService.log("Sending notifications to moderators for new topic ${topic.id}: " + interestedUsers.collect { it.userId })
                 def message = customPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage])
+                def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { user ->
-                    emailService.sendMail(user.userId, "BVP Forum new topic notification", message)
+                    emailService.sendMail(user.userId, "${appName} Forum new topic notification", message)
                 }
             }
         } catch (Throwable ex) {
@@ -126,12 +131,13 @@ class ForumNotifierService {
             if (messageList) {
                 def userMap = messageList.groupBy { it.user }
                 logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
+                def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 userMap.keySet().each { user ->
                     logService.log("Processing messages for ${user.userId}...")
                     try {
                         def messages = userMap[user]?.sort { it.message.date }
                         def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
-                        emailService.sendMail(user.userId, "BVP Forum notification", message)
+                        emailService.sendMail(user.userId, "${appName} Forum notification", message)
                     } catch (Exception ex) {
                         logService.log("Failed to send email to ${user.userId}: " + ex.message)
                     }

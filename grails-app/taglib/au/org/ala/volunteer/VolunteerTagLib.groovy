@@ -130,7 +130,7 @@ class VolunteerTagLib {
 
         def items = [:]
 
-        items << [bvp:[link: createLink(uri: '/'), title: 'Biodiversity Volunteer Portal']]
+        items << [bvp:[link: createLink(uri: '/'), title: message(code:'default.application.name', default:'DigiVol')]]
         items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
         items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
         if (FrontPage.instance().enableForum) {
@@ -147,7 +147,7 @@ class VolunteerTagLib {
 
         items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
         items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:"How can I volunteer?"]]
-        items << [aboutbvp: [link: createLink(controller: 'about'), title: 'About the Portal']]
+        items << [aboutbvp: [link: createLink(controller: 'about'), title: "About ${message(code:'default.application.name')}"]]
 
         def mb = new MarkupBuilder(out)
         mb.div(class:'navbar navbar-static-top', id:"nav-site") {

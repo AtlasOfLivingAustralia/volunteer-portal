@@ -8,7 +8,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>Volunteer Portal - ${projectInstance.name ?: 'Atlas of Living Australia'}</title>
+    <title><g:message code="default.application.name" /> - ${projectInstance.name ?: 'Atlas of Living Australia'}</title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
 
@@ -172,7 +172,7 @@
 
 <body>
 
-    <cl:headerContent title="Welcome to the ${projectInstance.name ?: 'Volunteer Portal'}" selectedNavItem="expeditions">
+    <cl:headerContent title="Welcome to the ${projectInstance.name ?: message(code:'default.application.name')}" selectedNavItem="expeditions">
         <%
             pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]

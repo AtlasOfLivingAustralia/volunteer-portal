@@ -23,7 +23,7 @@ class AjaxController {
     def collectoryClient
 
     def index = {
-        render(['VolunteerPortal' : 'Version 1.0'] as JSON)
+        render([ "${message(code:"default.application.name")}" : 'Version 1.0'] as JSON)
     }
 
     def stats = {

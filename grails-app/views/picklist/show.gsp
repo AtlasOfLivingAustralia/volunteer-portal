@@ -32,7 +32,7 @@
         </r:script>
 
     </head>
-    <body class="sublevel sub-site volunteerportal">
+    <body class="">
 
         <cl:headerContent title="${message(code:"default.show.label", args:[entityName])} - ${picklistInstance.name}">
             <%

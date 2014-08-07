@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Volunteer Portal - Atlas of Living Australia</title>
+        <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
 
@@ -118,7 +118,7 @@
 
         </r:script>
 
-        <cl:headerContent title="${message(code:'default.forum.label', default:'Volunteer Portal Forum')}" selectedNavItem="forum"/>
+        <cl:headerContent title="${message(code:'default.forum.label', default:'DigiVol Forum')}" selectedNavItem="forum"/>
 
         <div class="row" id="content">
             <div class="span12">

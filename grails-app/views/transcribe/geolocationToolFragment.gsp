@@ -182,11 +182,6 @@
                 });
     }
 
-    var geocodeCallback = function() {
-        // do nothing by default
-    };
-
-
     /**
      * Reverse geocode coordinates via Google Maps API
      */
@@ -211,7 +206,7 @@
                             marker.setPosition(latLng);
                             map.panTo(latLng);
 
-                            if (geocodeCallback) {
+                            if (typeof(geocodeCallback) == "function") {
                                 geocodeCallback(results[0])
                             }
 
@@ -270,7 +265,7 @@
             var addressComps = addressObj.address_components;
             locationObj = addressComps; // save to global var
 
-            if (geocodeCallback) {
+            if (typeof(geocodeCallback) == "function") {
                 geocodeCallback(addressObj)
             }
         }

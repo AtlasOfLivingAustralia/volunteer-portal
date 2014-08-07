@@ -7,11 +7,12 @@ class LeaderBoardController {
     def userService
 
     def leaderBoardFragment() {
+        def appName = message(code:'default.application.name')
         def leaderBoardSections = [
             [category: LeaderBoardCategory.daily, label:'Day Tripper', link: createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:LeaderBoardCategory.daily])],
             [category: LeaderBoardCategory.weekly, label:'Weekly Wonder', link: createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:LeaderBoardCategory.weekly])],
             [category: LeaderBoardCategory.monthly, label:'Monthly Maestro', link:createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:LeaderBoardCategory.monthly])],
-            [category: LeaderBoardCategory.alltime, label:'BVP Legend', link: createLink(action:'ajaxBVPLegend')]
+            [category: LeaderBoardCategory.alltime, label:"${appName} Legend", link: createLink(action:'ajaxBVPLegend')]
         ]
         [leaderBoardSections : leaderBoardSections ]
     }

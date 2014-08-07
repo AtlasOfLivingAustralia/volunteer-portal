@@ -2,19 +2,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Volunteer Portal - Atlas of Living Australia</title>
+        <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     </head>
 
     <body>
 
-        <cl:headerContent title="${message(code:'default.about.label', default:'About the Volunteer Portal')}" selectedNavItem="aboutbvp" />
+        <cl:headerContent title="${message(code:'default.about.label', default:'About DigiVol')}" selectedNavItem="aboutbvp" />
 
         <div class="row">
             <div class="span12">
 
                 <p>
-                    The <a href="http://www.ala.org.au">Atlas of Living Australia</a>, in collaboration with the <a class="external" href="http://www.australianmuseum.net.au">Australian Museum</a>, developed the Biodiversity Volunteer Portal to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked up in biodiversity collections, field notebooks and survey sheets.
+                    The <a href="http://www.ala.org.au">Atlas of Living Australia</a>, in collaboration with the <a class="external" href="http://www.australianmuseum.net.au">Australian Museum</a>, developed <g:message code="default.application.name" /> to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked up in biodiversity collections, field notebooks and survey sheets.
                 </p>
 
                 <H3>Why capture this data?</H3>
@@ -49,7 +49,7 @@
 
                 <h3>Submit an expedition</h3>
                 <p>
-                    The Biodiversity Volunteer Portal is open to any institution or individual who has suitable biodiversity
+                    <g:message code="default.application.name" /> is open to any institution or individual who has suitable biodiversity
                     information that needs transcribing, whether that be in the form of specimen labels, field notes, survey sheets
                     or something similar.
                 </p>
@@ -60,8 +60,7 @@
                     transcription task template.
                 </p>
                 <p>
-                    So if you think you have some material that would be suitable for creating an expedition in the Biodiversity
-                    Volunteer Portal please get in touch with me: <strong>paul.flemons at austmus.gov.au</strong>
+                    So if you think you have some material that would be suitable for creating an expedition in <g:message code="default.application.name" /> please get in touch with me: <strong>paul.flemons at austmus.gov.au</strong>
                 </p>
 
                 <H3>Some useful references:</H3>

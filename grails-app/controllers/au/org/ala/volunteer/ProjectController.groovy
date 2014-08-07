@@ -650,9 +650,9 @@ class ProjectController {
                 }
             }
             onRender {
-                final list = Institution.list()
-                final institutions = list*.name
-                final institutionsMap = list.collectEntries { [ (it.name): it.id ] }
+                def list = Institution.list()
+                def institutions = list*.name
+                def institutionsMap = list.collectEntries { [ (it.name): it.id ] }
                 [institutions: institutions, institutionsMap: institutionsMap]
             }
             on("continue").to "institutionDetails"
@@ -669,9 +669,9 @@ class ProjectController {
                     errors << "You must supply the name of the project owner or sponsor"
                 }
 
-                final featuredOwnerId
+                def featuredOwnerId
                 if (params.featuredOwnerId)  {
-                    final paramId = Long.parseLong(params.featuredOwnerId)
+                    def paramId = Long.parseLong(params.featuredOwnerId)
                     featuredOwnerId = paramId
                 } else {
                     def existing = Institution.executeQuery("select id from Institution where name = :name", [name: params.featuredOwner])
@@ -695,8 +695,8 @@ class ProjectController {
 
         projectDetails {
             onEntry {
-                flow.templates = Template.listOrderByName()
-                flow.projectTypes = ProjectType.listOrderByName()
+                flow.templates = Template.listOrderByName([:])
+                flow.projectTypes = ProjectType.listOrderByName([:])
             }
             on("continue") {
 

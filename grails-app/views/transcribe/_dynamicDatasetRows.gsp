@@ -1,7 +1,7 @@
 <%@ page import="groovy.json.StringEscapeUtils" %>
 <g:if test="${!entriesField}">
     <div class="alert alert-error">
-        No entriesField defined. Each template will require a specific field defined to capture the number of entries. Please consult with the BVP team for more details.
+        No entriesField defined. Each template will require a specific field defined to capture the number of entries. Please consult with the <g:message code="default.application.name" /> team for more details.
     </div>
 </g:if>
 
