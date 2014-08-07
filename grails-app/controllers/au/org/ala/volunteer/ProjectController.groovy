@@ -674,8 +674,8 @@ class ProjectController {
                     final paramId = Long.parseLong(params.featuredOwnerId)
                     featuredOwnerId = paramId
                 } else {
-                    def inst = Institution.findByName(params.featuredOwner)
-                    featuredOwnerId = inst?.id
+                    def existing = Institution.executeQuery("select id from Institution where name = :name", [name: params.featuredOwner])
+                    featuredOwnerId = existing ? existing[0] : null
                 }
 
 

@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 class NewProjectDescriptor implements Serializable {
 
     String featuredOwner
-    long featuredOwnerId
+    Long featuredOwnerId
     String stagingId
     String name
     String shortDescription
