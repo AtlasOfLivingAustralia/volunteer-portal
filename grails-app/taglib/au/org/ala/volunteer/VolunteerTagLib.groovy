@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
 import groovy.time.TimeCategory
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
@@ -460,6 +461,12 @@ class VolunteerTagLib {
         }
     }
 
-
+    /**
+     * @attr value the object to convert to JSON
+     */
+    def json = { attrs, body ->
+        final val = attrs.value as JSON
+        out << val
+    }
 
 }

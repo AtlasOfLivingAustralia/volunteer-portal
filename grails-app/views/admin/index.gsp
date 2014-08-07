@@ -60,6 +60,11 @@
                         <td>Tools</td>
                     </tr>
                     <tr>
+                        <td><button class="btn" onclick="location.href = '${createLink(controller:'institution', action:'index')}'">Manage Institutions</button></td>
+                        <td>Manage Institutions</td>
+                    </tr>
+
+                    <tr>
                         <td><button class="btn" onclick="location.href = '${createLink(controller:'setting', action:'index')}'">Advanced Settings</button></td>
                         <td>Advanced Settings</td>
                     </tr>

@@ -13,6 +13,7 @@ class ProjectStagingService {
         def project = new Project(name: projectDescriptor.name)
 
         project.featuredOwner = projectDescriptor.featuredOwner
+        project.featuredOwnerInstitution = Institution.get(projectDescriptor.featureOwnerId)
         project.featuredLabel = projectDescriptor.name
         project.shortDescription = projectDescriptor.shortDescription
         project.description = projectDescriptor.longDescription

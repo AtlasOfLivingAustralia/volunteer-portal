@@ -20,23 +20,28 @@
 
         });
 
+        var institutions = <cl:json value="${institutions}" />;
+        var nameToId = <cl:json value="${institutionsMap}" />;
+
+        function onAutocompleteSelect(event, ui) {
+            if (ui.item && nameToId[ui.item.label]) {
+                var ownerId = nameToId[ui.item.label];
+                $('#featuredOwnerId').val(ownerId);
+            } else {
+                $('#featuredOwnerId').val('');
+            }
+        }
+
         function setupAutocomplete(jqElement, url) {
             var inputElement = $(jqElement);
 
             var autoCompleteOptions = {
+                change: onAutocompleteSelect,
                 disabled: false,
                 minLength: 1,
                 delay: 200,
-                select: function(event, ui) {
-                },
-                source: function(request, response) {
-                    var query = url + "&q=" + encodeURIComponent($(jqElement).val());
-                    $.ajax(query).done(function(data) {
-                        if (response) {
-                            response(data);
-                        }
-                    });
-                }
+                select: onAutocompleteSelect,
+                source: institutions
             };
             inputElement.autocomplete(autoCompleteOptions);
         }
@@ -76,6 +81,7 @@
                 <div class="controls">
                     <g:textField name="featuredOwner" value="${project.featuredOwner}" />
                     <cl:helpText>This may be the name of an institution, or a specific department or collection within an institution</cl:helpText>
+                    <g:hiddenField name="featuredOwnerId" value="${project.featuredOwner}" />
                 </div>
             </div>
 

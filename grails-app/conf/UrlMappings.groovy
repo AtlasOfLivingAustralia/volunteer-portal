@@ -1,8 +1,16 @@
+import au.org.ala.volunteer.Institution
+
 class UrlMappings {
 
 	static mappings = {
 
-		"/$controller/$action?/$id?"{
+        "/admin/institutions/$action?/$id?"(controller: 'institution') {
+            constraints {
+
+            }
+        }
+
+        "/$controller/$action?/$id?"{
 			constraints {
 				// apply constraints here
 			}

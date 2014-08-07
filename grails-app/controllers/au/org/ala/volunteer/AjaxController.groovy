@@ -1,5 +1,8 @@
 package au.org.ala.volunteer
 
+import com.google.common.collect.ImmutableMap
+import com.google.common.collect.Sets
+import com.google.gson.Gson
 import grails.converters.JSON
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
@@ -16,6 +19,8 @@ class AjaxController {
     def statsService
     DataSource dataSource
     def multimediaService
+
+    def collectoryClient
 
     def index = {
         render(['VolunteerPortal' : 'Version 1.0'] as JSON)
@@ -287,6 +292,23 @@ class AjaxController {
 
             [id: it.id, name: it.name, description: it.description, forumMessagesCount: forumMessagesCount, newsItemsCount: it.newsItems.size(), tasksCount: it.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl]
         }) as JSON)
+    }
+
+    def ci(int id) {
+        final gson = new Gson()
+        render(text: gson.toJson(collectoryClient.getInstitution("in$id")), contentType: 'application/json', encoding: 'UTF-8')
+    }
+
+    def newCis() {
+        def institutions = collectoryClient.getInstitutions()
+        def instById = institutions.collectEntries { ImmutableMap.of(Integer.parseInt(it.uid.substring(2)), it) }
+        def ids = instById.keySet()
+        def existing = Institution.executeQuery("select collectoryId from Institution where collectoryId in :ids", [ids: ids])
+        def missing = Sets.difference(ids, existing.toSet())
+        render(missing.collect {
+            def inst = instById[it]
+            [id: it, name: inst.name]
+        } as JSON)
     }
 
 }
