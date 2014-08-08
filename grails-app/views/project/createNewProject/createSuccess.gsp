@@ -40,8 +40,8 @@
                     You can edit it's settings <g:link controller="project" action="edit" id="${projectId}">here</g:link>.
                 </p>
 
-                <g:link class="btn btn-small" event="finish">Done</g:link>
-                <g:link class="btn btn-small" event="createAnother">Create a another project</g:link>
+                <g:link class="btn" event="finish">Done</g:link>
+                <g:link class="btn" event="createAnother">Create a another project</g:link>
             </g:form>
         </div>
 

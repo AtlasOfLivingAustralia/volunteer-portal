@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class Institution {
+class Institution implements Serializable {
 
     Long id
 

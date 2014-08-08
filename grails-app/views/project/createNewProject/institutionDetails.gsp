@@ -81,7 +81,7 @@
                 <div class="controls">
                     <g:textField name="featuredOwner" value="${project.featuredOwner}" />
                     <cl:helpText>This may be the name of an institution, or a specific department or collection within an institution</cl:helpText>
-                    <g:hiddenField name="featuredOwnerId" value="${project.featuredOwner}" />
+                    <g:hiddenField name="featuredOwnerId" value="${project.featuredOwnerId}" />
                 </div>
             </div>
 

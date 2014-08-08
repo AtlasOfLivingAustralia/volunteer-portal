@@ -27,8 +27,8 @@
     <g:form>
         <h3>Boo! Something went wrong</h3>
 
-        <g:link class="btn btn-small" event="finish">Done</g:link>
-        <g:link class="btn btn-small" event="createAnother">Create a another project</g:link>
+        <g:link class="btn" event="finish">Done</g:link>
+        <g:link class="btn" event="createAnother">Create a another project</g:link>
     </g:form>
 </div>
 
