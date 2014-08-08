@@ -43,24 +43,18 @@
         var model = {};
         var loads = 0;
         (function() {
-            var initCid = $('#collectoryId').val();
-            if (initCid && !isNaN(initCid) && initCid > 0) {
+            var initCid = $('#collectoryUid').val();
+
+            if (initCid) {
                 getData(initCid, function(data) {
                     model = data;
                     setValues();
                 });
             }
         })();
-        $('#collectoryId').change(function(e) {
+        $('#collectoryUid').change(function(e) {
             var cid = $( this ).val();
-            if (!cid || isNaN(cid)) {
-                $( this ).val('');
-                clearValues();
-                return;
-            }
-
-            cid = parseInt(cid);
-            if (cid < 1) {
+            if (!cid) {
                 $( this ).val('');
                 clearValues();
                 return;
@@ -75,6 +69,7 @@
             setPhone();
         });
         function getData(id, success) {
+
             if (++loads == 1) {
                 $('#pop-col-val').button('loading');
             }
@@ -97,6 +92,7 @@
         }
         function modelVal(model, param) { return model[param] || '' };
         function setValues() {
+
             $('#collec-dt-name').text(modelVal(model, 'name'));
             $('#collec-dt-desc').text(modelVal(model, 'pubDescription'));
             $('#collec-dt-email').text(modelVal(model, 'email'));

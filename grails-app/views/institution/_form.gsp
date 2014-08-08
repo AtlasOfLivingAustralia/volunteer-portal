@@ -1,10 +1,10 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
-    <label for="collectoryId">
-        <g:message code="institution.collectoryId.label" default="Collectory Uid" />
+    <label for="collectoryUid">
+        <g:message code="institution.collectoryUid.label" default="Collectory Uid" />
     </label>
-    <g:field class="input-mini" name="collectoryUid" type="number" value="${institutionInstance.collectoryUid}"/>
+    <g:textField class="input-mini" name="collectoryUid" value="${institutionInstance.collectoryUid}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'name', 'error')} required">
@@ -19,7 +19,7 @@
     <label for="acronym">
         <g:message code="institution.acronym.label" default="Acronym" />
     </label>
-    <g:textField class="input-block-level" name="name" required="" value="${institutionInstance?.acronym}"/>
+    <g:textField class="input-block-level" name="acronym" required="" value="${institutionInstance?.acronym}"/>
 </div>
 
 

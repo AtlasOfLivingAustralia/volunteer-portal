@@ -27,6 +27,16 @@
 		<div id="show-institution" class="content scaffold-show" role="main">
             <ol class="property-list institution">
 
+                <g:if test="${institutionInstance?.collectoryUid}">
+                    <li class="fieldcontain">
+                        <span id="collectoryUid-label" class="property-label"><g:message code="institution.collectoryUid.label" default="Collectory Uid" /></span>
+
+                        <span class="property-value" aria-labelledby="collectoryUid-label"><g:fieldValue bean="${institutionInstance}" field="collectoryUid"/></span>
+
+                    </li>
+                </g:if>
+
+
                 <g:if test="${institutionInstance?.name}">
                     <li class="fieldcontain">
                         <span id="name-label" class="property-label"><g:message code="institution.name.label" default="Name" /></span>
@@ -85,16 +95,6 @@
                     <li class="fieldcontain">
                         <span id="websiteUrl-label" class="property-label"><g:message code="institution.websiteUrl.label" default="Website URL" /></span>
                         <span class="property-value" aria-labelledby="websiteUrl-label"><g:fieldValue bean="${institutionInstance}" field="websiteUrl"/></span>
-
-                    </li>
-                </g:if>
-
-
-                <g:if test="${institutionInstance?.collectoryUid}">
-                    <li class="fieldcontain">
-                        <span id="collectoryId-label" class="property-label"><g:message code="institution.collectoryId.label" default="Collectory Uid" /></span>
-
-                        <span class="property-value" aria-labelledby="collectoryId-label"><g:fieldValue bean="${institutionInstance}" field="collectoryUid"/></span>
 
                     </li>
                 </g:if>

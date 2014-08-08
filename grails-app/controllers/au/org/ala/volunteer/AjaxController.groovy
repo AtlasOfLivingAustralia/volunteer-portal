@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -294,9 +295,15 @@ class AjaxController {
         }) as JSON)
     }
 
-    def ci(int id) {
+    def ci(String id) {
         final gson = new Gson()
-        render(text: gson.toJson(collectoryClient.getInstitution("in$id")), contentType: 'application/json', encoding: 'UTF-8')
+        CollectoryProviderDto provider = null
+        if (id?.toLowerCase()?.startsWith("in")) {
+            provider = collectoryClient.getInstitution("$id")
+        } else if (id?.toLowerCase()?.startsWith("co")) {
+            provider = collectoryClient.getCollection("$id")
+        }
+        render(text: gson.toJson(provider), contentType: 'application/json', encoding: 'UTF-8')
     }
 
     def newCis() {
