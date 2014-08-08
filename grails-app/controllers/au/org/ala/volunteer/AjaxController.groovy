@@ -300,10 +300,16 @@ class AjaxController {
     }
 
     def newCis() {
+
         def institutions = collectoryClient.getInstitutions()
-        def instById = institutions.collectEntries { ImmutableMap.of(Integer.parseInt(it.uid.substring(2)), it) }
+        def collections = collectoryClient.getCollections()
+        // Merge the two lists
+        institutions.addAll(collections)
+        institutions.sort { it.name }
+
+        def instById = institutions.collectEntries { ImmutableMap.of(it.uid, it) }
         def ids = instById.keySet()
-        def existing = Institution.executeQuery("select collectoryId from Institution where collectoryId in :ids", [ids: ids])
+        def existing = Institution.executeQuery("select collectoryUid from Institution where collectoryUid in :ids", [ids: ids])
         def missing = Sets.difference(ids, existing.toSet())
         render(missing.collect {
             def inst = instById[it]

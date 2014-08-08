@@ -10,46 +10,13 @@ import java.util.List;
 /**
  * DTO representing institutions from the ALA collectory
  */
-public class CollectoryInstitutionDto {
+public class CollectoryInstitutionDto extends CollectoryProviderDto {
 
-    // present on both collection and individual versions
-
-    public String name;
-    public String uid;
-    public URL uri;
-
-    // only on individual dtos
-
-    public CollectoryAddressDto address;
-
-    public String acronym;
-    public String guid;
-
-    public String phone;
-    public String email;
-
-    public String pubDescription;
-    public String techDescription;
-    public String focus;
-    public Double latitude;
-    public Double longitude;
-
-    public String state;
-    public URL websiteUrl;
     public URL alaPublicUrl;
+    public String institutionType;
 
-    public ImageLinkDto imageRef;
-    public ImageLinkDto logoRef;
-
-    public List<JsonElement> networkMembership = Lists.newArrayList(); // heterogenous list
 
     public List<CollectoryLinkDto> hubMembership = Lists.newArrayList();
-    public List<UrlLinkDto> attributions = Lists.newArrayList();
-
-    public Date dateCreated;
-    public Date lastUpdated;
-    public String userLastModified;
-    public String institutionType; // enum
 
     public List<CollectoryLinkDto> collections = Lists.newArrayList();
     public List<CollectoryLinkDto> parentInstitutions = Lists.newArrayList();

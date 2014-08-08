@@ -1,10 +1,10 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
 
-<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryId', 'error')} ">
+<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
     <label for="collectoryId">
-        <g:message code="institution.collectoryId.label" default="Collectory Id" />
+        <g:message code="institution.collectoryId.label" default="Collectory Uid" />
     </label>
-    <g:field class="input-mini" name="collectoryId" type="number" value="${institutionInstance.collectoryId}"/>
+    <g:field class="input-mini" name="collectoryUid" type="number" value="${institutionInstance.collectoryUid}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'name', 'error')} required">
@@ -14,6 +14,14 @@
     </label>
     <g:textField class="input-block-level" name="name" required="" value="${institutionInstance?.name}"/>
 </div>
+
+<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'acronym', 'error')}">
+    <label for="acronym">
+        <g:message code="institution.acronym.label" default="Acronym" />
+    </label>
+    <g:textField class="input-block-level" name="name" required="" value="${institutionInstance?.acronym}"/>
+</div>
+
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'description', 'error')}">
     <label for="description">
@@ -41,4 +49,11 @@
         <g:message code="institution.contactPhone.label" default="Contact Phone" />
     </label>
     <g:textField name="contactPhone" value="${institutionInstance?.contactPhone}"/>
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'websiteUrl', 'error')}">
+    <label for="websiteUrl">
+        <g:message code="institution.websiteUrl.label" default="Website URL" />
+    </label>
+    <g:textField name="websiteUrl" value="${institutionInstance?.websiteUrl}"/>
 </div>

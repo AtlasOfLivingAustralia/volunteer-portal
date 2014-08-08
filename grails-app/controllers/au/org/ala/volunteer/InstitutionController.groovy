@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import au.org.ala.web.AlaSecured
 import retrofit.RetrofitError
 
@@ -97,25 +98,32 @@ class InstitutionController {
     }
 
     @Transactional
-    def quickCreate(int cid) {
-        def existing = Institution.executeQuery("select id from Institution where collectoryId = :cid", [cid: cid])
+    def quickCreate(String cid) {
+        def existing = Institution.executeQuery("select id from Institution where collectoryUid = :cid", [cid: cid])
         if (existing) {
             response.setHeader('Location', createLink(action: 'show', id: existing[0]))
             render status: SEE_OTHER
             return
         }
-        def collectoryInstitution
+        CollectoryProviderDto collectoryObject = null;
         try {
-            collectoryInstitution = collectoryClient.getInstitution("in"+cid)
+
+            if (cid.toLowerCase().startsWith("in")) {
+                collectoryObject = collectoryClient.getInstitution(cid)
+            } else {
+                collectoryObject = collectoryClient.getCollection(cid)
+            }
         } catch (RetrofitError e) {
             render status: e.networkError ? INTERNAL_SERVER_ERROR : BAD_REQUEST
         }
         def institutionInstance = new Institution(
-                name: collectoryInstitution.name,
-                description: collectoryInstitution.pubDescription,
-                contactPhone: collectoryInstitution.phone,
-                contactEmail: collectoryInstitution.email,
-                collectoryId: cid)
+                name: collectoryObject.name,
+                description: collectoryObject.pubDescription,
+                contactPhone: collectoryObject.phone,
+                contactEmail: collectoryObject.email,
+                acronym: collectoryObject.acronym,
+                websiteUrl: collectoryObject.websiteUrl,
+                collectoryUid: cid)
 
         if (!institutionInstance.validate()) {
             respond institutionInstance.errors, view:'create'

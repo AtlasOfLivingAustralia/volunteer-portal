@@ -36,6 +36,15 @@
                     </li>
                 </g:if>
 
+                <g:if test="${institutionInstance?.acronym}">
+                    <li class="fieldcontain">
+                        <span id="acronym-label" class="property-label"><g:message code="institution.acronym.label" default="Acronym" /></span>
+
+                        <span class="property-value" aria-labelledby="acronym-label"><g:fieldValue bean="${institutionInstance}" field="acronym"/></span>
+
+                    </li>
+                </g:if>
+
                 <g:if test="${institutionInstance?.description}">
                     <li class="fieldcontain">
                         <span id="description-label" class="property-label"><g:message code="institution.description.label" default="Description" /></span>
@@ -72,11 +81,20 @@
                     </li>
                 </g:if>
 
-                <g:if test="${institutionInstance?.collectoryId}">
+                <g:if test="${institutionInstance?.websiteUrl}">
                     <li class="fieldcontain">
-                        <span id="collectoryId-label" class="property-label"><g:message code="institution.collectoryId.label" default="Collectory Id" /></span>
+                        <span id="websiteUrl-label" class="property-label"><g:message code="institution.websiteUrl.label" default="Website URL" /></span>
+                        <span class="property-value" aria-labelledby="websiteUrl-label"><g:fieldValue bean="${institutionInstance}" field="websiteUrl"/></span>
 
-                        <span class="property-value" aria-labelledby="collectoryId-label"><g:fieldValue bean="${institutionInstance}" field="collectoryId"/></span>
+                    </li>
+                </g:if>
+
+
+                <g:if test="${institutionInstance?.collectoryUid}">
+                    <li class="fieldcontain">
+                        <span id="collectoryId-label" class="property-label"><g:message code="institution.collectoryId.label" default="Collectory Uid" /></span>
+
+                        <span class="property-value" aria-labelledby="collectoryId-label"><g:fieldValue bean="${institutionInstance}" field="collectoryUid"/></span>
 
                     </li>
                 </g:if>
