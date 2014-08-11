@@ -4,7 +4,7 @@ class UrlMappings {
 
 	static mappings = {
 
-        "/admin/institutions/$action?/$id?"(controller: 'institution') {
+        "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin') {
             constraints {
 
             }

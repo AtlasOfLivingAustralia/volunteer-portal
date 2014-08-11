@@ -5,9 +5,9 @@ package au.org.ala.volunteer
 import grails.test.mixin.*
 import spock.lang.*
 
-@TestFor(InstitutionController)
+@TestFor(InstitutionAdminController)
 @Mock(Institution)
-class InstitutionControllerSpec extends Specification {
+class InstitutionAdminControllerSpec extends Specification {
 
     def populateValidParams(params) {
         assert params != null

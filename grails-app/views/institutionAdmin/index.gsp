@@ -70,7 +70,7 @@
                 <h3>Quick Create Institution</h3>
             </div>
             <div class="modal-body">
-                <form id="quick-create-form" action="${createLink(controller: 'institution', action: 'quickCreate')}" method="POST">
+                <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}" method="POST">
                     <select name="cid" id="cid" class="input-block-level">
                     </select>
                 </form>

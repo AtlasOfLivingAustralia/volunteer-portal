@@ -12,7 +12,7 @@ import grails.transaction.Transactional
 
 @Transactional(readOnly = true)
 @AlaSecured("ROLE_VP_ADMIN")
-class InstitutionController {
+class InstitutionAdminController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", quickCreate: "POST"]
 

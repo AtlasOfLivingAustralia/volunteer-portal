@@ -11,7 +11,7 @@
             <%
                 pageScope.crumbs = [
                         [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')],
-                        [link:createLink(controller:'institution'), label:message(code:'default.institutions.label', default:'Manage Institutions')]
+                        [link:createLink(controller:'institutionAdmin'), label:message(code:'default.institutions.label', default:'Manage Institutions')]
                 ]
             %>
         </cl:headerContent>
