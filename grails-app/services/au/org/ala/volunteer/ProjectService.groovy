@@ -182,16 +182,7 @@ class ProjectService {
         return ps
     }
 
-    public ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
-
-        def projectList
-
-        if (userService.isAdmin()) {
-            projectList = Project.list()
-        } else {
-            projectList = Project.findAllByInactiveOrInactive(false, null)
-        }
-
+    public makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params) {
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
         def volunteerCounts = taskService.getProjectVolunteerCounts()
@@ -233,7 +224,7 @@ class ProjectService {
                     return true
                 }
 
-                if (project.featuredOwnerInstitution && project.featuredOwnerInstitution.name?.toLowerCase()?.contains(query)) {
+                if (project.institution && project.institution.name?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
@@ -264,7 +255,7 @@ class ProjectService {
             }
 
             if (params.sort == 'institution') {
-                return projectSummary.project.featuredOwnerInstitution?.name ?: projectSummary.project.featuredOwner;
+                return projectSummary.project.institution?.name ?: projectSummary.project.featuredOwner;
             }
 
             if (params.sort == 'type') {
@@ -295,6 +286,20 @@ class ProjectService {
         summaryList.projectRenderList = (renderList ? renderList[startIndex..endIndex] : [])
 
         return summaryList
+
+    }
+
+    public ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
+
+        def projectList
+
+        if (userService.isAdmin()) {
+            projectList = Project.list()
+        } else {
+            projectList = Project.findAllByInactiveOrInactive(false, null)
+        }
+
+        return makeSummaryListFromProjectList(projectList, params)
     }
 
     def checkAndResizeExpeditionImage(Project projectInstance) {

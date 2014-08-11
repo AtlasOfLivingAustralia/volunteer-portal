@@ -133,6 +133,12 @@ class VolunteerTagLib {
 
         items << [bvp:[link: createLink(uri: '/'), title: message(code:'default.application.name', default:'DigiVol')]]
         items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
+        def institutionsEnabled = settingsService.getSetting(SettingDefinition.InstitutionsEnabled)
+
+        if (institutionsEnabled) {
+            items << [institutions:[link: createLink(controller: 'institution', action:'list'), title: 'Institutions']]
+        }
+
         items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
         if (FrontPage.instance().enableForum) {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
