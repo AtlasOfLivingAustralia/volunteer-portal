@@ -267,13 +267,13 @@ class ProjectService {
 
         Integer startIndex = params.int('offset') ?: 0;
         if (startIndex >= renderList.size()) {
-            startIndex = renderList.size() - params.int('max');
+            startIndex = renderList.size() - (params.int('max') ?: 0)
             if (startIndex < 0) {
                 startIndex = 0;
             }
         }
 
-        int endIndex = startIndex + (params.int('max') ?: 0) - 1;
+        int endIndex = startIndex + (params.int('max') ?: 0) - 1
         if (endIndex >= renderList.size()) {
             endIndex = renderList.size() - 1;
         }

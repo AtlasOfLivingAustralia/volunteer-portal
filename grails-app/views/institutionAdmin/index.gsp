@@ -15,21 +15,14 @@
                 pageScope.crumbs = [
                         [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
                 ]
+
             %>
+
+            <a class="btn btn-success" href="${createLink(action:"create")}"><i class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
+            <a id="quick-create" role="button" class="create btn" href="javascript:void(0)" data-target="#quick-create-modal" data-toggle="modal"><g:message code="quick.new.label" default="Quick Create" args="[entityName]" /></a>
         </cl:headerContent>
 
-		<div class="nav" role="navigation">
-			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-                <li><a id="quick-create" role="button" class="create" href="javascript:void(0)" data-target="#quick-create-modal" data-toggle="modal"><g:message code="quick.new.label" default="Quick Create" args="[entityName]" /></a></li>
-			</ul>
-		</div>
 		<div id="list-institution" class="content scaffold-list" role="main">
-			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
-			<g:if test="${flash.message}">
-				<div class="message" role="status">${flash.message}</div>
-			</g:if>
 			<table>
     			<thead>
 					<tr>
@@ -48,7 +41,7 @@
 				<g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                        <td><g:link action="show" id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
+                        <td><g:link action="edit" id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
 
                         <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
 

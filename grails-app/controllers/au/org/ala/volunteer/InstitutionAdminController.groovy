@@ -24,10 +24,6 @@ class InstitutionAdminController {
         respond Institution.list(params), model:[institutionInstanceCount: Institution.count()]
     }
 
-    def show(Institution institutionInstance) {
-        respond institutionInstance
-    }
-
     def create() {
         respond new Institution(params)
     }
@@ -46,13 +42,8 @@ class InstitutionAdminController {
 
         institutionInstance.save flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'institution.label', default: 'Institution'), institutionInstance.id])
-                redirect institutionInstance
-            }
-            '*' { respond institutionInstance, [status: CREATED] }
-        }
+        redirect(action:'index')
+
     }
 
     def edit(Institution institutionInstance) {
@@ -73,13 +64,8 @@ class InstitutionAdminController {
 
         institutionInstance.save flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Institution.label', default: 'Institution'), institutionInstance.id])
-                redirect institutionInstance
-            }
-            '*'{ respond institutionInstance, [status: OK] }
-        }
+        redirect(action:'index')
+
     }
 
     @Transactional
@@ -105,7 +91,7 @@ class InstitutionAdminController {
     def quickCreate(String cid) {
         def existing = Institution.executeQuery("select id from Institution where collectoryUid = :cid", [cid: cid])
         if (existing) {
-            response.setHeader('Location', createLink(action: 'show', id: existing[0]))
+            response.setHeader('Location', createLink(action: 'edit', id: existing[0]))
             render status: SEE_OTHER
             return
         }
