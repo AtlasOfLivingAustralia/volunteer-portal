@@ -82,7 +82,7 @@
         </div>
         <r:script>
             jQuery(function($) {
-                var api = "${createLink(controller: 'ajax', action: 'newCis')}";
+                var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
                 $('#quick-create-modal').on('show', function (e) {
                     loadQuickCreateData();
                 })

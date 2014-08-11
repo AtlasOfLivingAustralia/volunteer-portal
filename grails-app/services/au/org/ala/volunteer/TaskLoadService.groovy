@@ -30,7 +30,7 @@ class TaskLoadService {
 
     static transactional = true
 
-    def status = {
+    def status() {
         def completedTasks = _currentBatchSize - _loadQueue.size();
         def startTime = ""
 

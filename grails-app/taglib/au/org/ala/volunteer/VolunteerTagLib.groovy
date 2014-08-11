@@ -14,6 +14,7 @@ class VolunteerTagLib {
     def settingsService
     def multimediaService
     def markdownService
+    def institutionService
 
     def isLoggedIn = { attrs, body ->
 
@@ -468,5 +469,20 @@ class VolunteerTagLib {
         final val = attrs.value as JSON
         out << val
     }
+
+    /**
+     * @id The id of the institution
+     */
+    def institutionBannerUrl = { attrs, body ->
+        out << institutionService.getBannerImageUrl(Institution.get(attrs.id as Long))
+    }
+
+    /**
+     * @id The id of the institution
+     */
+    def institutionLogoUrl = { attrs, body ->
+        out << institutionService.getLogoImageUrl(Institution.get(attrs.id as Long))
+    }
+
 
 }

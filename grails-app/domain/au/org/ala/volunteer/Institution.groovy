@@ -30,4 +30,5 @@ class Institution implements Serializable {
     static mapping = {
         description widget: 'textarea'
     }
+
 }

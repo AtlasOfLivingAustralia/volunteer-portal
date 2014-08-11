@@ -39,7 +39,7 @@
 </dl>
 <r:script>
     jQuery(function($) {
-        var apiPrefix = "${createLink(controller: 'ajax', action: 'ci')}";
+        var apiPrefix = "${createLink(controller: 'ajax', action: 'collectoryObjectDetails')}";
         var model = {};
         var loads = 0;
         (function() {

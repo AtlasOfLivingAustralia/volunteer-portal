@@ -6,6 +6,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}" />
         <title><g:message code="default.create.label" args="[entityName]" /></title>
+        <g:setProvider library="jquery"/>
 	</head>
 	<body>
         <cl:headerContent title="${message(code:'default.edit.label', args:[entityName])}">
@@ -58,7 +59,41 @@
                         <g:render template="collectory_info"/>
                     </div>
                 </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <hr />
+                        <h2>Images</h2>
+                        <h3>Banner</h3>
+                        <img src="<cl:institutionBannerUrl id="${institutionInstance.id}" />">
+                        <button class="btn" type="button" id="btnUploadBannerImage">Upload banner</button>
+                        <h3>Logo</h3>
+                        <img src="<cl:institutionLogoUrl id="${institutionInstance.id}" />">
+                        <button class="btn" type="button" id="btnUploadLogoImage">Upload logo</button>
+                    </div>
+                </div>
             </div>
 		</div>
+        <r:script>
+
+            $(document).ready(function() {
+                $("#btnUploadBannerImage").click(function(e) {
+                    e.preventDefault();
+                    bvp.showModal({
+                        url: "${createLink(action: "uploadBannerImageFragment", id: institutionInstance.id)}",
+                        title: "Upload banner image"
+                    });
+                });
+
+                $("#btnUploadLogoImage").click(function(e) {
+                    e.preventDefault();
+                    bvp.showModal({
+                        url: "${createLink(action: "uploadLogoImageFragment", id: institutionInstance.id)}",
+                        title: "Upload institution logo"
+                    });
+                });
+
+            });
+
+        </r:script>
 	</body>
 </html>

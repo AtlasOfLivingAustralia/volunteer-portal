@@ -2,6 +2,9 @@ package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import au.org.ala.web.AlaSecured
+import grails.converters.JSON
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 import retrofit.RetrofitError
 
 import static org.springframework.http.HttpStatus.*
@@ -14,6 +17,7 @@ class InstitutionController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", quickCreate: "POST"]
 
     def collectoryClient
+    def institutionService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -150,4 +154,58 @@ class InstitutionController {
             '*'{ render status: NOT_FOUND }
         }
     }
+
+    def uploadBannerImageFragment() {
+        def institution = Institution.get(params.int("id"))
+        [institutionInstance: institution]
+    }
+
+    def uploadLogoImageFragment() {
+        def institution = Institution.get(params.int("id"))
+        [institutionInstance: institution]
+    }
+
+
+    def uploadInstitutionImage() {
+        def institution = Institution.get(params.int("id"))
+        def imageType = params.imageType ?: 'banner'
+
+        if (!["banner", "logo"].contains(imageType)) {
+            flash.message = "Missing or invalid imageType parameter: " + imageType
+            redirect(action:'edit', id: institution.id)
+            return
+        }
+
+        if (institution) {
+            if (request instanceof MultipartHttpServletRequest) {
+                MultipartFile f = ((MultipartHttpServletRequest) request).getFile('imagefile')
+
+                if (f != null && f.size > 0) {
+                    def allowedMimeTypes = ['image/jpeg', 'image/png']
+                    if (!allowedMimeTypes.contains(f.getContentType())) {
+                        flash.message = "Image must be one of: ${allowedMimeTypes}"
+                    } else {
+                        def result = false
+                        if (imageType == 'banner') {
+                            result = institutionService.uploadBannerImage(institution, f)
+                        } else if (imageType == 'logo') {
+                            result = institutionService.uploadLogoImage(institution, f)
+                        }
+
+                        if (result) {
+                            flash.message = "Image uploaded"
+                        } else {
+                            flash.message = "Failed to upload image. Unknown error!"
+                        }
+                    }
+                } else {
+                    flash.message = "Please select a file!"
+                }
+            } else {
+                flash.message = "Form must be multipart file!"
+            }
+        }
+        redirect(action:'edit', id: institution.id)
+    }
+
 }

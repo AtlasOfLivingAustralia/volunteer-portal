@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
 import grails.converters.JSON
+import grails.converters.XML
+
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 import javax.sql.DataSource
@@ -20,14 +22,17 @@ class AjaxController {
     def statsService
     DataSource dataSource
     def multimediaService
+    def institutionService
 
-    def collectoryClient
 
-    def index = {
-        render([ "${message(code:"default.application.name")}" : 'Version 1.0'] as JSON)
+    static responseFormats = ['json', 'xml']
+
+    def index() {
+        def results = [ "${message(code:"default.application.name")}" : 'Version 1.0']
+        respond results
     }
 
-    def stats = {
+    def stats() {
 
         setNoCache()
 
@@ -60,11 +65,10 @@ class AjaxController {
         stats.activeExpeditionsCount = incompleteCount;
         stats.completedExpeditionsCount = completedCount;
 
-        render stats as JSON
-
+        respond stats
     }
 
-    def userReport = {
+    def userReport() {
 
         setNoCache()
 
@@ -93,6 +97,8 @@ class AjaxController {
 
         if (params.wt && params.wt == 'csv') {
 
+            response.addHeader("Content-type", "text/plain")
+
             def writer = new CSVWriter((Writer) response.writer,  {
                 'user_id' { it[0] }
                 'display_name' { it[1] }
@@ -102,24 +108,21 @@ class AjaxController {
                 'projects_count' { it[5] }
                 'volunteer_since' { it[6] }
             })
-
             for (def row : report) {
                 writer << row
             }
-
             response.flushBuffer()
-
         } else {
-            render report as JSON
+            respond report
         }
     }
 
-    def loadProgress = {
+    def loadProgress() {
         setNoCache()
-        render( taskLoadService.status() as JSON)
+        respond taskLoadService.status()
     }
 
-    def taskLoadReport = {
+    def taskLoadReport() {
         setNoCache()
         response.addHeader("Content-type", "text/plain")
 
@@ -143,7 +146,7 @@ class AjaxController {
         response.writer.flush()
     }
 
-    def expeditionInfo = {
+    def expeditionInfo() {
         setNoCache()
         def sql = new Sql(dataSource:dataSource)
 
@@ -172,7 +175,7 @@ class AjaxController {
         render results as JSON
     }
 
-    def expeditionBiocacheData = {
+    def expeditionBiocacheData() {
         setNoCache()
         response.addHeader("Content-type", "text/plain")
 
@@ -212,8 +215,9 @@ class AjaxController {
         }
     }
 
-    def keepSessionAlive = {
-        render(['status':'ok', 'currentTime': formatDate(date: new Date(), format: DateConstants.DATE_TIME_FORMAT), systemMessage: flash.systemMessage ] as JSON)
+    def keepSessionAlive() {
+        def results = ['success':'true', 'currentTime': formatDate(date: new Date(), format: DateConstants.DATE_TIME_FORMAT), systemMessage: flash.systemMessage ]
+        respond results
     }
 
     private def setNoCache() {
@@ -222,18 +226,18 @@ class AjaxController {
         response.addHeader("Cache-Control", "no-store");
     }
 
-    def statsTranscriptionsByMonth = {
+    def statsTranscriptionsByMonth() {
         def results = statsService.transcriptionsByMonth()
-        render results as JSON
+        respond results
     }
 
-    def statsValidationsByMonth = {
+    def statsValidationsByMonth() {
         def results = statsService.validationsByMonth()
-        render results as JSON
+        respond results
     }
 
     def taskInfo() {
-        def task = Task.get(params.int("taskId"))
+        def task = Task.get(params.int("id") ?: params.int("taskId"))
         if (task) {
             def taskInfo = [:]
             taskInfo.projectId = task.project.id
@@ -266,9 +270,9 @@ class AjaxController {
                 mmInfo.url = multimediaService.getImageUrl(mm)
                 taskInfo.multimedia << mmInfo
             }
-            render(taskInfo as JSON)
+            respond taskInfo
         } else {
-            render(['error':'Missing or invalid taskId!'] as JSON)
+            respond null // 404
         }
     }
 
@@ -278,50 +282,45 @@ class AjaxController {
 
     def harvesting() {
         final harvestables = Project.findAllByHarvestableByAla(true)
-
-        render(harvestables.collect({
+        def results = harvestables.collect({
             final link = createLink(absolute: true, controller: 'project', action: 'index', id: it.id)
             final fullyTranscribedCount = it.tasks.count { t -> t.dateFullyTranscribed as boolean }
             final fullyValidatedCount = it.tasks.count { t -> t.dateFullyValidated as boolean }
             final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: it.id)
-
             final topics = ProjectForumTopic.findAllByProject(it)
             def forumMessagesCount = 0
             if (topics) {
                 topics.each { topic -> forumMessagesCount += (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }
             }
-
             [id: it.id, name: it.name, description: it.description, forumMessagesCount: forumMessagesCount, newsItemsCount: it.newsItems.size(), tasksCount: it.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl]
-        }) as JSON)
+        })
+
+        respond results
     }
 
-    def ci(String id) {
+    def collectoryObjectDetails(String id) {
         final gson = new Gson()
-        CollectoryProviderDto provider = null
-        if (id?.toLowerCase()?.startsWith("in")) {
-            provider = collectoryClient.getInstitution("$id")
-        } else if (id?.toLowerCase()?.startsWith("co")) {
-            provider = collectoryClient.getCollection("$id")
+        CollectoryProviderDto provider = institutionService.getCollectoryObjectFromUid(id)
+        withFormat {
+            json { render(text: gson.toJson(provider), contentType: 'application/json', encoding: 'UTF-8') }
+            xml { render provider as XML }
         }
-        render(text: gson.toJson(provider), contentType: 'application/json', encoding: 'UTF-8')
     }
 
-    def newCis() {
+    def availableCollectoryProviders() {
 
-        def institutions = collectoryClient.getInstitutions()
-        def collections = collectoryClient.getCollections()
-        // Merge the two lists
-        institutions.addAll(collections)
-        institutions.sort { it.name }
+        def collectoryObjects = institutionService.getCombinedInsitutionsAndCollections()
 
-        def instById = institutions.collectEntries { ImmutableMap.of(it.uid, it) }
+        def instById = collectoryObjects.collectEntries { ImmutableMap.of(it.uid, it) }
         def ids = instById.keySet()
         def existing = Institution.executeQuery("select collectoryUid from Institution where collectoryUid in :ids", [ids: ids])
         def missing = Sets.difference(ids, existing.toSet())
-        render(missing.collect {
+
+        def results = missing.collect {
             def inst = instById[it]
             [id: it, name: inst.name]
-        } as JSON)
+        }
+        respond results
     }
 
 }
