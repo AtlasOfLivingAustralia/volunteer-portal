@@ -507,12 +507,12 @@ class ProjectController {
             }
             projectInstance.properties = params
 
-            final instId = params.getLong("featuredOwnerInstitutionId")
+            final instId = params.getLong("institutionId")
             def inst
             if (instId && (inst = Institution.get(instId))) {
-                projectInstance.featuredOwnerInstitution = inst
+                projectInstance.institution = inst
             } else {
-                projectInstance.featuredOwnerInstitution = null
+                projectInstance.institution = null
             }
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {

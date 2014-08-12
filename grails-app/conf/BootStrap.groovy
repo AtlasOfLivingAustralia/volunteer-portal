@@ -87,17 +87,18 @@ class BootStrap {
         logService.log("Checking project types...")
         def builtIns = [[name:'specimens', label:'Specimens', icon:'/images/icon_specimens.png'], [name:'fieldnotes', label: 'Field notes', icon:'/images/icon_fieldnotes.png']]
         builtIns.each {
-            def existing = ProjectType.findByName(it.name)
-            if (!existing) {
+            def projectType = ProjectType.findByName(it.name)
+            if (!projectType) {
                 logService.log("Creating project type ${it.name}")
-                def projectType = new ProjectType(name: it.name, label: it.label)
-
-                File iconFile = grailsApplication.mainContext.getResource(it.icon)?.file
-                if (iconFile) {
-                    projectTypeService.saveImageForProjectType(projectType, iconFile)
-                }
-                projectType.save(failOnError: true, flush: true)
+                projectType = new ProjectType(name: it.name, label: it.label)
             }
+
+            File iconFile = grailsApplication.mainContext.getResource(it.icon)?.file
+            if (iconFile) {
+                projectTypeService.saveImageForProjectType(projectType, iconFile)
+            }
+            projectType.save(failOnError: true, flush: true)
+
         }
     }
 

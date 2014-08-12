@@ -10,9 +10,9 @@
             function onAutocompleteSelect(event, ui) {
                 if (ui && ui.item && nameToId[ui.item.label]) {
                     var ownerId = nameToId[ui.item.label];
-                    $('#featuredOwnerInstitutionId').val(ownerId);
+                    $('#institutionId').val(ownerId);
                 } else {
-                    $('#featuredOwnerInstitutionId').val('');
+                    $('#institutionId').val('');
                 }
             }
 
@@ -52,7 +52,7 @@
                 <label class="control-label" for="featuredOwner">Expedition sponsor</label>
                 <div class="controls">
                     <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}" />
-                    <g:hiddenField name="featuredOwnerInstitutionId" value="${projectInstance?.featuredOwnerInstitution?.id}" />
+                    <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}" />
                 </div>
             </div>
 
