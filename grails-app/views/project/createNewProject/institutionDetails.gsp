@@ -2,6 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    %{--<meta name="layout" content="ala-bootstrap"/>--}%
     <title>Create a new Expedition - Expedition sponsor</title>
 
     <r:script type="text/javascript">
@@ -24,7 +25,7 @@
         var nameToId = <cl:json value="${institutionsMap}" />;
 
         function onAutocompleteSelect(event, ui) {
-            if (ui.item && nameToId[ui.item.label]) {
+            if (ui && ui.item && nameToId[ui.item.label]) {
                 var ownerId = nameToId[ui.item.label];
                 $('#featuredOwnerId').val(ownerId);
             } else {
@@ -43,6 +44,7 @@
                 select: onAutocompleteSelect,
                 source: institutions
             };
+            inputElement.change(onAutocompleteSelect)
             inputElement.autocomplete(autoCompleteOptions);
         }
 

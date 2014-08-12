@@ -108,4 +108,18 @@ class InstitutionService {
     }
 
 
+    Institution findByIdOrName(Long id, String name) {
+        Institution retVal
+        if (id)  {
+            retVal = Institution.get(id)
+        } else {
+            try {
+               retVal = Institution.findByName(name)
+            } catch (Exception e) {
+                log.error("Exception", e)
+                throw e
+            }
+        }
+        return retVal
+    }
 }

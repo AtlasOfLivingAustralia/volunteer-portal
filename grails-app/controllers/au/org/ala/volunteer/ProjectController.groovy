@@ -360,7 +360,10 @@ class ProjectController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
-            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName() ]
+            final insts = Institution.list()
+            final names = insts*.name
+            final nameToId = insts.collectEntries { ["${it.name}": it.id] }
+            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId]
         }
     }
 
@@ -503,6 +506,15 @@ class ProjectController {
                 }
             }
             projectInstance.properties = params
+
+            final instId = params.getLong("featuredOwnerInstitutionId")
+            def inst
+            if (instId && (inst = Institution.get(instId))) {
+                projectInstance.featuredOwnerInstitution = inst
+            } else {
+                projectInstance.featuredOwnerInstitution = null
+            }
+
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "Expedition updated"
                 return true
@@ -669,16 +681,6 @@ class ProjectController {
                     errors << "You must supply the name of the project owner or sponsor"
                 }
 
-                def featuredOwnerId
-                if (params.featuredOwnerId)  {
-                    def paramId = Long.parseLong(params.featuredOwnerId)
-                    featuredOwnerId = paramId
-                } else {
-                    def existing = Institution.executeQuery("select id from Institution where name = :name", [name: params.featuredOwner])
-                    featuredOwnerId = existing ? existing[0] : null
-                }
-
-
                 if (errors) {
                     flow.errorMessages = errors
                     return validationError()
@@ -687,7 +689,7 @@ class ProjectController {
                 }
 
                 flow.project.featuredOwner = params.featuredOwner
-                flow.project.featuredOwnerId = featuredOwnerId
+                flow.project.featuredOwnerId = params.getLong('featuredOwnerId')
             }.to "projectDetails"
             on("cancel").to "cancel"
             on("back").to "welcome"
