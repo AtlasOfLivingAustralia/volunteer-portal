@@ -47,6 +47,19 @@ class VolunteerTagLib {
         }
     }
 
+    /**
+     * @attr institution The institution to test against
+     */
+    def ifInstitutionAdmin = { attrs, body ->
+        if (isInstitutionAdmin(attrs.institution)) {
+            out << body()
+        }
+    }
+
+    private boolean isInstitutionAdmin(Institution institution) {
+        return isAdmin() || userService.isInstitutionAdmin(institution)
+    }
+
     private boolean isAdmin() {
         return grailsApplication.config.security.cas.bypass || request?.isUserInRole(CASRoles.ROLE_ADMIN)
     }

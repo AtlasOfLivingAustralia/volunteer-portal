@@ -5,6 +5,9 @@
         <g:set var="entityName" value="${message(code: 'institutions.label', default: 'Institution')}"/>
         <title><g:message code="default.list.label" args="[entityName]"/></title>
         <style type="text/css">
+            tr.institution-details-row, .institution-details-row td {
+                border-top: none;
+            }
         </style>
 
         <r:script>
@@ -75,7 +78,7 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <td colspan="3">
+                            <td>
                                 <g:if test="${params.q}">
                                     <h4>
                                         <g:if test="${institutions}">
@@ -87,7 +90,8 @@
                                     </h4>
                                 </g:if>
                             </td>
-                            <td colspan="2" style="text-align: right">
+
+                            <td colspan="2" style="text-align: right;max-width: 400px">
                                 <span>
                                     <a style="vertical-align: middle;" href="#" class="fieldHelp" title="Enter search text here to find institutions"><span class="help-container">&nbsp;</span></a>
                                 </span>
@@ -97,32 +101,32 @@
                         </tr>
                         <tr>
                             <th><a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}" class="btn ${params.sort == 'name' ? 'active' : ''}">Name</a></th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <g:each in="${institutions}" status="i" var="inst">
                             <tr>
-                                <th colspan="4" style="border-bottom: none">
-                                    <h3><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h3>
+                                <th colspan="2" style="border-bottom: none">
+                                    <h3><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a>&nbsp;<small>${inst.acronym}</small></h3>
+                                </th>
+                                <th style="text-align: right; width: 100px">
+                                    <cl:ifInstitutionAdmin institution="${inst}">
+                                        <a class="btn btn-warning btn-small" href="${createLink(controller:'institutionAdmin', action:'edit', id: inst.id)}"><i class="icon-cog icon-white"></i>&nbsp;Settings</a>
+                                    </cl:ifInstitutionAdmin>
                                 </th>
                             </tr>
-                            <tr style="border: none">
+                            <tr class="institution-details-row">
 
-                                <td style="border-top: none">
+                                <td style="width: 300px">
                                     <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
-                                        <img src="<cl:institutionBannerUrl id="${inst.id}" />" width="147" height="81"/>
+                                        <img src="<cl:institutionBannerUrl id="${inst.id}" />"/>
                                     </a>
                                 </td>
 
-                                <td style="border-top: none">
-                                </td>
-
-
-                                <td style="border-top: none" class="bold centertext"></td>
-
-                                <td style="border-top: none"></td>
-
-                                <td style="border-top: none" class="type">
+                                <td colspan="2">
+                                    ${inst.description}
                                 </td>
 
                             </tr>

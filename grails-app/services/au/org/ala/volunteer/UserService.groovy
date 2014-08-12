@@ -65,6 +65,24 @@ class UserService {
         }[0]
     }
 
+    public boolean isInstitutionAdmin(Institution institution) {
+
+        def userId = currentUserId
+
+        if (!userId) {
+            return false;
+        }
+
+        // If there the user has been granted the ALA-AUTH roles then these override everything
+        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
+            return true
+        }
+
+        // to do - check the institution admin roles for this user
+
+        return false
+    }
+
     /**
      * returns true if the current user can validate tasks from the specified project
      * @param project

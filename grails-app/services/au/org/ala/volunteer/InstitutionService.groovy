@@ -19,8 +19,14 @@ class InstitutionService {
         try {
             def filePath = getBannerImagePath(institution.id)
             def file = new File(filePath);
-            file.getParentFile().mkdirs();
+            if (!file.getParentFile().exists()) {
+                if (!file.getParentFile().mkdirs()) {
+                    throw new RuntimeException("Failed to create institution directories: ${file.getParentFile().getAbsolutePath()}")
+                }
+            }
+
             mpfile.transferTo(file);
+
             return true
         } catch (Exception ex) {
             log.error("Failed to upload image file for institution", ex)
