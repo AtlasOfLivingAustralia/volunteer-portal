@@ -2,6 +2,39 @@
 <html>
     <head>
         <meta name="layout" content="projectSettingsLayout"/>
+        <r:script type="text/javascript">
+        $(document).ready(function() {
+            var institutions = <cl:json value="${institutions}" />;
+            var nameToId = <cl:json value="${institutionsMap}" />;
+
+            function onAutocompleteSelect(event, ui) {
+                if (ui && ui.item && nameToId[ui.item.label]) {
+                    var ownerId = nameToId[ui.item.label];
+                    $('#featuredOwnerInstitutionId').val(ownerId);
+                } else {
+                    $('#featuredOwnerInstitutionId').val('');
+                }
+            }
+
+            function setupAutocomplete(jqElement) {
+                var inputElement = $(jqElement);
+
+                var autoCompleteOptions = {
+                    change: onAutocompleteSelect,
+                    disabled: false,
+                    minLength: 1,
+                    delay: 200,
+                    select: onAutocompleteSelect,
+                    source: institutions
+                };
+                inputElement.change(onAutocompleteSelect)
+                inputElement.autocomplete(autoCompleteOptions);
+            }
+
+            setupAutocomplete("#featuredOwner");
+
+        });
+        </r:script>
     </head>
 
     <body>
@@ -16,9 +49,10 @@
             <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
             <div class="control-group">
-                <label class="control-label" for="name">Expedition sponsor</label>
+                <label class="control-label" for="featuredOwner">Expedition sponsor</label>
                 <div class="controls">
                     <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}" />
+                    <g:hiddenField name="featuredOwnerInstitutionId" value="${projectInstance?.featuredOwnerInstitution?.id}" />
                 </div>
             </div>
 

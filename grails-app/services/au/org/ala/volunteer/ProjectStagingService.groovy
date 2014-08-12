@@ -7,13 +7,14 @@ class ProjectStagingService {
 
     def grailsApplication
     def projectService
+    def institutionService
 
     public Project createProject(NewProjectDescriptor projectDescriptor) {
 
         def project = new Project(name: projectDescriptor.name)
 
         project.featuredOwner = projectDescriptor.featuredOwner
-        project.institution = projectDescriptor.featuredOwnerId ? Institution.get(projectDescriptor.featuredOwnerId) : null
+        project.institution = projectDescriptor.featuredOwnerId ? institutionService.findByIdOrName(projectDescriptor.featuredOwnerId, projectDescriptor.featuredOwner) : null
         project.featuredLabel = projectDescriptor.name
         project.shortDescription = projectDescriptor.shortDescription
         project.description = projectDescriptor.longDescription
