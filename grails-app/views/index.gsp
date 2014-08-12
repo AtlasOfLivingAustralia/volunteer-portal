@@ -92,11 +92,11 @@
         <cl:headerContent title="${message(code:'default.application.name', default:'DigiVol')}" selectedNavItem="bvp" hideCrumbs="${true}">
             <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based transcription of archival and natural history collections</p>
 
-            <cl:isLoggedIn>
-                <cl:ifAdmin>
-                    <g:link class="btn btn-warning pull-right" controller="admin" action="index"><i class="icon-cog icon-white"></i>&nbsp;Admin</g:link>
-                </cl:ifAdmin>
-            </cl:isLoggedIn>
+            %{--<cl:isLoggedIn>--}%
+                %{--<cl:ifAdmin>--}%
+                    %{--<g:link class="btn btn-warning pull-right" controller="admin" action="index"><i class="icon-cog icon-white"></i>&nbsp;Admin</g:link>--}%
+                %{--</cl:ifAdmin>--}%
+            %{--</cl:isLoggedIn>--}%
 
         </cl:headerContent>
 

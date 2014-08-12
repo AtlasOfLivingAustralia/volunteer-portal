@@ -22,6 +22,12 @@
     <g:textField class="input-block-level" name="acronym" required="" value="${institutionInstance?.acronym}"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'shortDescription', 'error')}">
+    <label for="shortDescription">
+        <g:message code="institution.description.label" default="Short description" />
+    </label>
+    <g:textArea class="input-block-level" rows="2" name="shortDescription" value="${institutionInstance?.shortDescription}"/>
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'description', 'error')}">
     <label for="description">

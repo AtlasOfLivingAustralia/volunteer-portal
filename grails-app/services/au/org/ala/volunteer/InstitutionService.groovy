@@ -122,4 +122,24 @@ class InstitutionService {
         }
         return retVal
     }
+
+    /**
+     * Returns a map of project counts, keyed by institution
+     *
+     * @param institutions
+     */
+    def getProjectCounts(List<Institution> institutions) {
+       def c = Project.createCriteria()
+        def results = c.list {
+            'in'("institution", institutions)
+            projections {
+                groupProperty("institution")
+                count("id")
+            }
+        }
+
+        return results.collectEntries {
+            [it[0], it[1]]
+        }
+    }
 }

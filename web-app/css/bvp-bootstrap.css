@@ -21,6 +21,18 @@ a.external {
     padding-right: 15px;
 }
 
+#bvpmenuitem-bvpadmin {
+    background-color: #df4a21 !important;
+    background-image: none !important;
+}
+
+.nav-bvpadmin .active > #bvpmenuitem-bvpadmin {
+    background-image: none;
+    background-color: #3d464c;
+    border-width: 0;
+}
+
+
 #nav-site .navbar-inner {
     z-index: 100;
     background-color: blue;
@@ -30,7 +42,7 @@ a.external {
     -icab-border-radius: 0 0 3px 3px;
     -khtml-border-radius: 0 0 3px 3px;
     border-radius: 0 0 3px 3px;
-    border: 1px solid #21446c;
+    /*border: 1px solid #21446c;*/
     border-top: none;
     background-color: #3a5c83;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#3a5c83), to(#21446c));

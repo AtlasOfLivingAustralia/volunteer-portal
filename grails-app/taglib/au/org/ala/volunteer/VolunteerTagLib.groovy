@@ -168,6 +168,9 @@ class VolunteerTagLib {
         items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
         items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:"How can I volunteer?"]]
         items << [aboutbvp: [link: createLink(controller: 'about'), title: "About ${message(code:'default.application.name')}"]]
+        if (isAdmin()) {
+            items << [bvpadmin: [link: createLink(controller: 'admin'), title: "Admin", icon:'icon-cog icon-white']]
+        }
 
         def mb = new MarkupBuilder(out)
         mb.div(class:'navbar navbar-static-top', id:"nav-site") {
@@ -178,7 +181,13 @@ class VolunteerTagLib {
                             for (def key : items.keySet()) {
                                 def item = items[key]
                                 mb.li(class:'nav-' + key + (selected == key ? ' active' : '')) {
-                                    a(href:item.link) {
+                                    a(href:item.link, id: 'bvpmenuitem-' + key) {
+                                        if (item.icon) {
+                                            i(class: item.icon) {
+                                                mkp.yieldUnescaped("&nbsp;")
+                                            }
+                                            mkp.yieldUnescaped("&nbsp;")
+                                        }
                                         mkp.yield(item.title)
                                     }
                                 }
