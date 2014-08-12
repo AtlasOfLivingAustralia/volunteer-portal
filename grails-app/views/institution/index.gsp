@@ -42,7 +42,13 @@
             <img src="<cl:institutionBannerUrl id="${institutionInstance.id}"/>" />
         </div>
         <div class="span8">
-            ${institutionInstance.description}
+            <div class="institution-description">
+                <markdown:renderHtml>${institutionInstance.description}</markdown:renderHtml>
+            </div>
+
+            <div class="institution-logo">
+                <img src="<cl:institutionLogoUrl id="${institutionInstance.id}" />" height="100px" width="100px" />
+            </div>
         </div>
     </div>
 

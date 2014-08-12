@@ -128,7 +128,7 @@
                                     <td colspan="2">
                                         <div class="row-fluid">
                                             <div class="span12">
-                                                ${inst.shortDescription}
+                                                <markdown:renderHtml>${inst.shortDescription}</markdown:renderHtml>
                                             </div>
                                         </div>
                                         <div class="row-fluid">

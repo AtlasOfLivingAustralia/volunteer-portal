@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryDto
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
+import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
 
 class InstitutionService {
@@ -9,6 +10,31 @@ class InstitutionService {
     def grailsApplication
     def collectoryClient
     def grailsLinkGenerator
+
+    public uploadBannerImageFromUrl(Institution institution, String url) {
+        if (!url) {
+            return
+        }
+        try {
+            def filePath = getBannerImagePath(institution.id)
+            FileUtils.copyURLToFile(new URL(url), new File(filePath), 30 * 1000, 30 * 1000)
+        } catch (Exception ex) {
+            log.error("Failed to transfer image file from url for institution", ex)
+        }
+    }
+
+    public uploadLogoImageFromUrl(Institution institution, String url) {
+        if (!url) {
+            return
+        }
+        try {
+            def filePath = getLogoImagePath(institution.id)
+            FileUtils.copyURLToFile(new URL(url), new File(filePath), 30 * 1000, 30 * 1000)
+        } catch (Exception ex) {
+            log.error("Failed to transfer image file from url for institution", ex)
+        }
+    }
+
 
     public uploadBannerImage(Institution institution, MultipartFile mpfile) {
 

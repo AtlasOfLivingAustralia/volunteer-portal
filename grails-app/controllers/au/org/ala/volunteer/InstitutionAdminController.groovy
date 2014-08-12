@@ -122,6 +122,15 @@ class InstitutionAdminController {
 
         institutionInstance.save flush:true
 
+        // Now try and copy any images accross...
+        if (collectoryObject.imageRef?.uri) {
+            institutionService.uploadBannerImageFromUrl(institutionInstance, collectoryObject.imageRef.uri.toExternalForm())
+        }
+
+        if (collectoryObject.logoRef?.uri) {
+            institutionService.uploadLogoImageFromUrl(institutionInstance, collectoryObject.logoRef.uri.toExternalForm())
+        }
+
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'institution.label', default: 'Institution'), institutionInstance.id])

@@ -13,28 +13,24 @@
         <cl:headerContent title="${message(code:'default.institutions.label', default:'Manage Institutions')}">
             <%
                 pageScope.crumbs = [
-                        [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
+                    [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
                 ]
 
             %>
 
             <a class="btn btn-success" href="${createLink(action:"create")}"><i class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
-            <a id="quick-create" role="button" class="create btn" href="javascript:void(0)" data-target="#quick-create-modal" data-toggle="modal"><g:message code="quick.new.label" default="Quick Create" args="[entityName]" /></a>
+            <a id="quick-create" role="button" class="create btn" href="javascript:void(0)" data-target="#quick-create-modal" data-toggle="modal"><g:message code="quick.new.label" default="Create from Atlas Collectory" args="[entityName]" /></a>
         </cl:headerContent>
 
 		<div id="list-institution" class="content scaffold-list" role="main">
 			<table>
     			<thead>
 					<tr>
-
                         <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}" />
-
                         <g:sortableColumn property="contactName" title="${message(code: 'institution.contactName.label', default: 'Contact Name')}" />
-
                         <g:sortableColumn property="contactEmail" title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}" />
-
 						<g:sortableColumn property="dateCreated" title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}" />
-					
+					    <th />
 					</tr>
 				</thead>
 				<tbody>
@@ -48,6 +44,14 @@
                         <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
 
 						<td><g:formatDate date="${institutionInstance.dateCreated}" /></td>
+
+                        <td>
+                            <g:form url="[action:'delete', id:institutionInstance.id]" method="DELETE">
+                                <fieldset class="buttons">
+                                    <g:actionSubmit class="btn btn-danger" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                </fieldset>
+                            </g:form>
+                        </td>
 
 					</tr>
 				</g:each>
