@@ -2,36 +2,13 @@
 <html>
     <head>
         <meta name="layout" content="projectSettingsLayout"/>
+        <r:require module="institution-dropdown" />
         <r:script type="text/javascript">
-        $(document).ready(function() {
+        jQuery(function($) {
             var institutions = <cl:json value="${institutions}" />;
             var nameToId = <cl:json value="${institutionsMap}" />;
 
-            function onAutocompleteSelect(event, ui) {
-                if (ui && ui.item && nameToId[ui.item.label]) {
-                    var ownerId = nameToId[ui.item.label];
-                    $('#institutionId').val(ownerId);
-                } else {
-                    $('#institutionId').val('');
-                }
-            }
-
-            function setupAutocomplete(jqElement) {
-                var inputElement = $(jqElement);
-
-                var autoCompleteOptions = {
-                    change: onAutocompleteSelect,
-                    disabled: false,
-                    minLength: 1,
-                    delay: 200,
-                    select: onAutocompleteSelect,
-                    source: institutions
-                };
-                inputElement.change(onAutocompleteSelect)
-                inputElement.autocomplete(autoCompleteOptions);
-            }
-
-            setupAutocomplete("#featuredOwner");
+            setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", institutions, nameToId);
 
         });
         </r:script>
@@ -53,6 +30,7 @@
                 <div class="controls">
                     <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}" />
                     <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}" />
+                    <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to institution!</small></span>
                 </div>
             </div>
 

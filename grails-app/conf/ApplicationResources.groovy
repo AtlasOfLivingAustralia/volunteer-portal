@@ -71,4 +71,9 @@ modules = {
         resource url: 'js/bootstrap-switch/bootstrap-switch.js'
     }
 
+    "institution-dropdown" {
+        dependsOn "jquery,jquery-ui"
+        resource url: 'js/institutions-dropdown.js'
+    }
+
 }
