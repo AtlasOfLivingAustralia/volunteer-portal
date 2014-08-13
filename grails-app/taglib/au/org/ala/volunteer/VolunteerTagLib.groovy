@@ -512,5 +512,32 @@ class VolunteerTagLib {
         out << institutionService.getLogoImageUrl(Institution.get(attrs.id as Long))
     }
 
+    /**
+     * @attr institution
+     */
+    def ifInstitutionHasLogo = { attrs, body ->
+        def institutionInstance = attrs.institution as Institution
+        if (institutionService.hasLogoImage(institutionInstance)) {
+            out << body()
+        }
+    }
+
+    /**
+     * @attr email
+     * @atte name
+     */
+    def contactLink = { attrs, body ->
+        def name = attrs.name ?: attrs.email
+        def email = attrs.email
+        def mb = new MarkupBuilder(out)
+        if (name && email) {
+            mb.a(href: "mailto:${email}") {
+                mkp.yield(name)
+            }
+        } else if (name) {
+            out << name
+        }
+    }
+
 
 }

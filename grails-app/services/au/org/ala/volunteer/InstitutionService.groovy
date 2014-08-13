@@ -155,6 +155,11 @@ class InstitutionService {
      * @param institutions
      */
     def getProjectCounts(List<Institution> institutions) {
+
+        if (!institutions) {
+            return [:]
+        }
+
        def c = Project.createCriteria()
         def results = c.list {
             'in'("institution", institutions)

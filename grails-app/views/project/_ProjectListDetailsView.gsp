@@ -71,7 +71,14 @@
                         <%-- Volunteer count --%>
                         <td style="border-top: none" class="bold centertext">${projectSummary.volunteerCount}</td>
                         <%-- Institution --%>
-                        <td style="border-top: none">${projectSummary.project.featuredOwner}</td>
+                        <td style="border-top: none">
+                        <g:if test="${projectSummary.project.institution}">
+                            <a href="${createLink(controller:'institution', action:'index', id:projectSummary.project.institution.id)}">${projectSummary.project.institution.name}</a>
+                        </g:if>
+                        <g:else>
+                            ${projectSummary.project.featuredOwner}
+                        </g:else>
+                    </td>
                         <%-- Project type --%>
                         <td style="border-top: none" class="type">
                             <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
@@ -85,7 +92,7 @@
         </table>
 
         <div class="pagination">
-            <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q]}" />
+            <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q] + extraParams ?: [:]}" />
         </div>
     </div>
 </div>

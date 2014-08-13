@@ -76,6 +76,13 @@ class InstitutionAdminController {
             return
         }
 
+        def projects = Project.findAllByInstitution(institutionInstance)
+        if (projects) {
+            flash.message = "This institution has projects associated with it, and cannot be deleted at this time."
+            redirect action:"index", method:"GET"
+            return
+        }
+
         institutionInstance.delete flush:true
 
         request.withFormat {

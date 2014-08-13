@@ -49,8 +49,12 @@
                             <g:form url="[action:'delete', id:institutionInstance.id]" method="DELETE">
                                 <fieldset class="buttons">
                                     <g:actionSubmit class="btn btn-danger" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                    <a class="btn" href="${createLink(controller:'institution', action:'index', id:institutionInstance.id)}"><i class="icon-home"></i></a>
+                                    <a class="btn" href="${createLink(controller:'institutionAdmin', action:'edit', id:institutionInstance.id)}"><i class="icon-edit"></i></a>
                                 </fieldset>
+
                             </g:form>
+
                         </td>
 
 					</tr>
