@@ -92,7 +92,7 @@
         </table>
 
         <div class="pagination">
-            <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q] + extraParams ?: [:]}" />
+            <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q] + (extraParams ?: [:])}" />
         </div>
     </div>
 </div>
