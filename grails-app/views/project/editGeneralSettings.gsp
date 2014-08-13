@@ -3,7 +3,9 @@
     <head>
         <meta name="layout" content="projectSettingsLayout"/>
         <r:script type="text/javascript">
-        $(document).ready(function() {
+        jQuery(function($) {
+
+
             var institutions = <cl:json value="${institutions}" />;
             var nameToId = <cl:json value="${institutionsMap}" />;
 
@@ -11,9 +13,13 @@
                 if (ui && ui.item && nameToId[ui.item.label]) {
                     var ownerId = nameToId[ui.item.label];
                     $('#institutionId').val(ownerId);
+                } else if (event && event.target && event.target.value ) {
+                    var ownerId = nameToId[event.target.value];
+                    $('#institutionId').val(ownerId);
                 } else {
                     $('#institutionId').val('');
                 }
+                showHideIcon();
             }
 
             function setupAutocomplete(jqElement) {
@@ -27,8 +33,19 @@
                     select: onAutocompleteSelect,
                     source: institutions
                 };
-                inputElement.change(onAutocompleteSelect)
+                inputElement.change(onAutocompleteSelect);
                 inputElement.autocomplete(autoCompleteOptions);
+                showHideIcon();
+            }
+
+            function showHideIcon() {
+                var icon = $('#institution-link-icon');
+                var linked = $('#institutionId').val();
+                if (linked) {
+                    icon.removeClass('hidden');
+                } else {
+                    icon.addClass('hidden');
+                }
             }
 
             setupAutocomplete("#featuredOwner");
@@ -53,6 +70,7 @@
                 <div class="controls">
                     <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}" />
                     <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}" />
+                    <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to institution!</small></span>
                 </div>
             </div>
 

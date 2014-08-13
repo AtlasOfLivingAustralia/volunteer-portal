@@ -2,7 +2,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    %{--<meta name="layout" content="ala-bootstrap"/>--}%
     <title>Create a new Expedition - Expedition sponsor</title>
 
     <r:script type="text/javascript">
@@ -28,9 +27,13 @@
             if (ui && ui.item && nameToId[ui.item.label]) {
                 var ownerId = nameToId[ui.item.label];
                 $('#featuredOwnerId').val(ownerId);
+            } else if (event && event.target && event.target.value ) {
+                var ownerId = nameToId[event.target.value];
+                $('#featuredOwnerId').val(ownerId);
             } else {
                 $('#featuredOwnerId').val('');
             }
+            showHideIcon();
         }
 
         function setupAutocomplete(jqElement, url) {
@@ -46,8 +49,19 @@
             };
             inputElement.change(onAutocompleteSelect)
             inputElement.autocomplete(autoCompleteOptions);
+            showHideIcon();
         }
 
+
+        function showHideIcon() {
+            var icon = $('#institution-link-icon');
+            var linked = $('#featuredOwnerId').val();
+            if (linked) {
+                icon.removeClass('hidden');
+            } else {
+                icon.addClass('hidden');
+            }
+        }
 
     </r:script>
 
@@ -84,6 +98,7 @@
                     <g:textField name="featuredOwner" value="${project.featuredOwner}" />
                     <cl:helpText>This may be the name of an institution, or a specific department or collection within an institution</cl:helpText>
                     <g:hiddenField name="featuredOwnerId" value="${project.featuredOwnerId}" />
+                    <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to institution!</small></span>
                 </div>
             </div>
 
