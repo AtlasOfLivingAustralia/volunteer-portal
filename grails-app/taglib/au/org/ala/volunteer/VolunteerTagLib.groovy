@@ -501,6 +501,14 @@ class VolunteerTagLib {
     /**
      * @id The id of the institution
      */
+    def institutionImageUrl = { attrs, body ->
+        out << institutionService.getImageUrl(Institution.get(attrs.id as Long))
+    }
+
+
+    /**
+     * @id The id of the institution
+     */
     def institutionBannerUrl = { attrs, body ->
         out << institutionService.getBannerImageUrl(Institution.get(attrs.id as Long))
     }
@@ -521,6 +529,33 @@ class VolunteerTagLib {
             out << body()
         }
     }
+
+    /**
+     * @attr institution
+     */
+    def ifInstitutionHasBanner = { attrs, body ->
+        def institutionInstance = attrs.institution as Institution
+        if (!institutionInstance) {
+            def id = (attrs.institution ?: attrs.id) as Long
+            institutionInstance = Institution.get(id)
+        }
+        if (institutionInstance) {
+            if (institutionService.hasBannerImage(institutionInstance)) {
+                out << body()
+            }
+        }
+    }
+
+    /**
+     * @attr institution
+     */
+    def ifInstitutionHasImage = { attrs, body ->
+        def institutionInstance = attrs.institution as Institution
+        if (institutionService.hasImage(institutionInstance)) {
+            out << body()
+        }
+    }
+
 
     /**
      * @attr email

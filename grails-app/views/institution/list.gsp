@@ -119,9 +119,9 @@
                                 </tr>
                                 <tr class="institution-details-row">
 
-                                    <td style="width: 300px">
+                                    <td style="width: 120px">
                                         <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
-                                            <img src="<cl:institutionBannerUrl id="${inst.id}" />"/>
+                                            <img src="<cl:institutionLogoUrl id="${inst.id}" />" style="height: 150px; width: 150px"/>
                                         </a>
                                     </td>
 

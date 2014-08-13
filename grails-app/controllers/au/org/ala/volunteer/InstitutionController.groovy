@@ -12,6 +12,7 @@ class InstitutionController {
             return
         }
 
+        params.max = params.max ?: 10
         params.sort = params.sort ?: 'completed'
         params.order = params.order ?: 'asc'
 

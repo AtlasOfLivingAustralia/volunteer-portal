@@ -15,6 +15,12 @@
     </r:script>
 
     <style type="text/css">
+
+        <cl:ifInstitutionHasBanner institution="${institutionInstance}">
+        #page-header {
+            background-image: url(<cl:institutionBannerUrl id="${institutionInstance.id}" />);
+        }
+        </cl:ifInstitutionHasBanner>
     </style>
 
 </head>
@@ -38,8 +44,8 @@
     </cl:headerContent>
 
     <div class="row">
-        <div class="span4">
-            <img src="<cl:institutionBannerUrl id="${institutionInstance.id}"/>" />
+        <div class="span3">
+            <img src="<cl:institutionImageUrl id="${institutionInstance.id}"/>" />
         </div>
         <div class="span8">
             <div class="institution-description">
@@ -62,8 +68,8 @@
                 </g:if>
 
             </small>
-
-
+        </div>
+        <div class="span1">
             <cl:ifInstitutionHasLogo institution="${institutionInstance}">
                 <div class="institution-logo">
                     <img src="<cl:institutionLogoUrl id="${institutionInstance.id}" />" height="100px" width="100px" />

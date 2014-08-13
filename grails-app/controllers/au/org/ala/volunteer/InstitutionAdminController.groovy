@@ -131,7 +131,7 @@ class InstitutionAdminController {
 
         // Now try and copy any images accross...
         if (collectoryObject.imageRef?.uri) {
-            institutionService.uploadBannerImageFromUrl(institutionInstance, collectoryObject.imageRef.uri.toExternalForm())
+            institutionService.uploadImageFromUrl(institutionInstance, collectoryObject.imageRef.uri.toExternalForm())
         }
 
         if (collectoryObject.logoRef?.uri) {
@@ -159,20 +159,45 @@ class InstitutionAdminController {
 
     def uploadBannerImageFragment() {
         def institution = Institution.get(params.int("id"))
-        [institutionInstance: institution]
+        render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType:'banner'])
     }
 
     def uploadLogoImageFragment() {
         def institution = Institution.get(params.int("id"))
-        [institutionInstance: institution]
+        render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType:'logo'])
     }
 
+    def uploadInstitutionImageFragment() {
+        def institution = Institution.get(params.int("id"))
+        [institutionInstance: institution, imageType: 'main']
+    }
+
+    def clearLogoImage(Institution institutionInstance) {
+        if (institutionInstance) {
+            institutionService.clearLogo(institutionInstance)
+        }
+        redirect(action:'edit', id: institutionInstance.id)
+    }
+
+    def clearBannerImage(Institution institutionInstance) {
+        if (institutionInstance) {
+            institutionService.clearBanner(institutionInstance)
+        }
+        redirect(action:'edit', id: institutionInstance.id)
+    }
+
+    def clearImage(Institution institutionInstance) {
+        if (institutionInstance) {
+            institutionService.clearImage(institutionInstance)
+        }
+        redirect(action:'edit', id: institutionInstance.id)
+    }
 
     def uploadInstitutionImage() {
         def institution = Institution.get(params.int("id"))
         def imageType = params.imageType ?: 'banner'
 
-        if (!["banner", "logo"].contains(imageType)) {
+        if (!["banner", "logo", "main"].contains(imageType)) {
             flash.message = "Missing or invalid imageType parameter: " + imageType
             redirect(action:'edit', id: institution.id)
             return
@@ -187,11 +212,19 @@ class InstitutionAdminController {
                     if (!allowedMimeTypes.contains(f.getContentType())) {
                         flash.message = "Image must be one of: ${allowedMimeTypes}"
                     } else {
-                        def result = false
-                        if (imageType == 'banner') {
-                            result = institutionService.uploadBannerImage(institution, f)
-                        } else if (imageType == 'logo') {
-                            result = institutionService.uploadLogoImage(institution, f)
+                        boolean result
+                        switch (imageType) {
+                            case "banner":
+                                result = institutionService.uploadBannerImage(institution, f)
+                                break;
+                            case "logo":
+                                result = institutionService.uploadLogoImage(institution, f)
+                                break;
+                            case "main":
+                                result = institutionService.uploadImage(institution, f)
+                                break;
+                            default:
+                                throw new RuntimeException("Unhandled image type: ${imageType}")
                         }
 
                         if (result) {

@@ -11,69 +11,88 @@ class InstitutionService {
     def collectoryClient
     def grailsLinkGenerator
 
+    private boolean uploadtoLocalPathFromUrl(String url, String localPath) {
+        if (url && localPath) {
+            try {
+                FileUtils.copyURLToFile(new URL(url), new File(localPath), 30 * 1000, 30 * 1000)
+                return true
+            } catch (Exception ex) {
+                log.error("Failed to transfer image file from url for institution", ex)
+            }
+        }
+        return false
+    }
+
+    public uploadImageFromUrl(Institution institution, String url) {
+        uploadtoLocalPathFromUrl(url, getImagePath(institution.id))
+    }
+
     public uploadBannerImageFromUrl(Institution institution, String url) {
-        if (!url) {
-            return
-        }
-        try {
-            def filePath = getBannerImagePath(institution.id)
-            FileUtils.copyURLToFile(new URL(url), new File(filePath), 30 * 1000, 30 * 1000)
-        } catch (Exception ex) {
-            log.error("Failed to transfer image file from url for institution", ex)
-        }
+        uploadtoLocalPathFromUrl(url, getBannerImagePath(institution.id))
     }
 
     public uploadLogoImageFromUrl(Institution institution, String url) {
-        if (!url) {
-            return
+        uploadtoLocalPathFromUrl(url, getLogoImagePath(institution.id))
+    }
+
+    public clearImage(Institution institution) {
+        deleteLocalFile(getImagePath(institution.id))
+    }
+
+    public clearLogo(Institution institution) {
+        deleteLocalFile(getLogoImagePath(institution.id))
+    }
+
+    public clearBanner(Institution institution) {
+        deleteLocalFile(getBannerImagePath(institution.id))
+    }
+
+    private static deleteLocalFile(String filename) {
+        if (filename) {
+            def file = new File(filename)
+            if (file.exists()) {
+                file.delete()
+                return true
+            }
         }
-        try {
-            def filePath = getLogoImagePath(institution.id)
-            FileUtils.copyURLToFile(new URL(url), new File(filePath), 30 * 1000, 30 * 1000)
-        } catch (Exception ex) {
-            log.error("Failed to transfer image file from url for institution", ex)
-        }
+        return false
     }
 
 
-    public uploadBannerImage(Institution institution, MultipartFile mpfile) {
-
-        if (!institution || !mpfile) {
-            return
+    private boolean uploadToLocalPath(MultipartFile mpfile, String localFile) {
+        if (!mpfile) {
+            return false
         }
 
         try {
-            def filePath = getBannerImagePath(institution.id)
-            def file = new File(filePath);
+            def file = new File(localFile);
             if (!file.getParentFile().exists()) {
                 if (!file.getParentFile().mkdirs()) {
                     throw new RuntimeException("Failed to create institution directories: ${file.getParentFile().getAbsolutePath()}")
                 }
             }
-
             mpfile.transferTo(file);
-
             return true
         } catch (Exception ex) {
             log.error("Failed to upload image file for institution", ex)
         }
     }
 
+    public uploadImage(Institution institution, MultipartFile mpfile) {
+        uploadToLocalPath(mpfile, getImagePath(institution?.id))
+    }
+
+    public uploadBannerImage(Institution institution, MultipartFile mpfile) {
+        uploadToLocalPath(mpfile, getBannerImagePath(institution.id))
+    }
+
     public uploadLogoImage(Institution institution, MultipartFile mpfile) {
+        uploadToLocalPath(mpfile, getLogoImagePath(institution.id))
+    }
 
-        if (!institution || !mpfile) {
-            return
-        }
-
-        try {
-            def filePath = getLogoImagePath(institution.id)
-            def file = new File(filePath);
-            file.getParentFile().mkdirs();
-            mpfile.transferTo(file);
-            return true
-        } catch (Exception ex) {
-            log.error("Failed to upload image file for institution", ex)
-        }
+    public boolean hasImage(Institution institution) {
+        def f = new File(getImagePath(institution?.id))
+        return f.exists()
     }
 
     public boolean hasBannerImage(Institution institution) {
@@ -86,11 +105,17 @@ class InstitutionService {
         return f.exists()
     }
 
+    public String getImageUrl(Institution institution) {
+        if (hasImage(institution)) {
+            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/image.jpg"
+        } else {
+            return grailsLinkGenerator.resource([dir: '/images/banners', file: 'default-institution-image.jpg'])
+        }
+    }
+
     public String getBannerImageUrl(Institution institution) {
         if (hasBannerImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/banner-image.jpg"
-        } else {
-            return grailsLinkGenerator.resource([dir: '/images/banners', file: 'default-institution-banner.jpg'])
         }
     }
 
@@ -98,8 +123,12 @@ class InstitutionService {
         if (hasLogoImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/logo-image.jpg"
         } else {
-            return grailsLinkGenerator.resource([dir: '/images/banners', file: 'default-institution-logo.jpg'])
+            return grailsLinkGenerator.resource([dir: '/images/banners', file: 'default-institution-logo.png'])
         }
+    }
+
+    private String getImagePath(long institutionId) {
+        return "${grailsApplication.config.images.home}/institution/${institutionId}/image.jpg"
     }
 
     private String getBannerImagePath(long institutionId) {
