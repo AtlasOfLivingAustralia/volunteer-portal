@@ -2,53 +2,13 @@
 <html>
     <head>
         <meta name="layout" content="projectSettingsLayout"/>
+        <r:require module="institution-dropdown" />
         <r:script type="text/javascript">
         jQuery(function($) {
-
-
             var institutions = <cl:json value="${institutions}" />;
             var nameToId = <cl:json value="${institutionsMap}" />;
 
-            function onAutocompleteSelect(event, ui) {
-                if (ui && ui.item && nameToId[ui.item.label]) {
-                    var ownerId = nameToId[ui.item.label];
-                    $('#institutionId').val(ownerId);
-                } else if (event && event.target && event.target.value ) {
-                    var ownerId = nameToId[event.target.value];
-                    $('#institutionId').val(ownerId);
-                } else {
-                    $('#institutionId').val('');
-                }
-                showHideIcon();
-            }
-
-            function setupAutocomplete(jqElement) {
-                var inputElement = $(jqElement);
-
-                var autoCompleteOptions = {
-                    change: onAutocompleteSelect,
-                    disabled: false,
-                    minLength: 1,
-                    delay: 200,
-                    select: onAutocompleteSelect,
-                    source: institutions
-                };
-                inputElement.change(onAutocompleteSelect);
-                inputElement.autocomplete(autoCompleteOptions);
-                showHideIcon();
-            }
-
-            function showHideIcon() {
-                var icon = $('#institution-link-icon');
-                var linked = $('#institutionId').val();
-                if (linked) {
-                    icon.removeClass('hidden');
-                } else {
-                    icon.addClass('hidden');
-                }
-            }
-
-            setupAutocomplete("#featuredOwner");
+            setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", institutions, nameToId);
 
         });
         </r:script>

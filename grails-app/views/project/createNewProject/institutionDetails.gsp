@@ -4,7 +4,10 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title>Create a new Expedition - Expedition sponsor</title>
 
+    <r:require module="institution-dropdown" />
     <r:script type="text/javascript">
+        var institutions = <cl:json value="${institutions}" />;
+        var nameToId = <cl:json value="${institutionsMap}" />;
 
         bvp.bindTooltips();
         bvp.suppressEnterSubmit();
@@ -16,52 +19,8 @@
                 bvp.submitWithWebflowEvent($(this));
             });
 
-            setupAutocomplete($("#featuredOwner"), "${createLink(controller: 'project', action:'ajaxFeaturedOwnerList')}");
-
+            setupInstitutionAutocomplete("#featuredOwner", "#featuredOwnerId", "#institution-link-icon", institutions, nameToId);
         });
-
-        var institutions = <cl:json value="${institutions}" />;
-        var nameToId = <cl:json value="${institutionsMap}" />;
-
-        function onAutocompleteSelect(event, ui) {
-            if (ui && ui.item && nameToId[ui.item.label]) {
-                var ownerId = nameToId[ui.item.label];
-                $('#featuredOwnerId').val(ownerId);
-            } else if (event && event.target && event.target.value ) {
-                var ownerId = nameToId[event.target.value];
-                $('#featuredOwnerId').val(ownerId);
-            } else {
-                $('#featuredOwnerId').val('');
-            }
-            showHideIcon();
-        }
-
-        function setupAutocomplete(jqElement, url) {
-            var inputElement = $(jqElement);
-
-            var autoCompleteOptions = {
-                change: onAutocompleteSelect,
-                disabled: false,
-                minLength: 1,
-                delay: 200,
-                select: onAutocompleteSelect,
-                source: institutions
-            };
-            inputElement.change(onAutocompleteSelect)
-            inputElement.autocomplete(autoCompleteOptions);
-            showHideIcon();
-        }
-
-
-        function showHideIcon() {
-            var icon = $('#institution-link-icon');
-            var linked = $('#featuredOwnerId').val();
-            if (linked) {
-                icon.removeClass('hidden');
-            } else {
-                icon.addClass('hidden');
-            }
-        }
 
     </r:script>
 
