@@ -218,7 +218,6 @@
 
         <r:script type="text/javascript">
 
-
             $(document).ready(function (e) {
 
                 $.ajax("${createLink(controller: 'leaderBoard', action:'leaderBoardFragment')}").done(function (content) {

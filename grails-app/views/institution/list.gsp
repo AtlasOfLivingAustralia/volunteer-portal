@@ -67,7 +67,11 @@
 
     <body>
 
-        <cl:headerContent title="${message(code:'default.institutionlist.label', default: "Institutions")}" selectedNavItem="institutions"/>
+        <cl:headerContent title="${message(code:'default.institutionlist.label', default: "Institutions")}" selectedNavItem="institutions" >
+            <cl:ifAdmin>
+                <a class="btn btn-warning pull-right" href="${createLink(controller:'institutionAdmin', action:'index')}">Manage</a>
+            </cl:ifAdmin>
+        </cl:headerContent>
 
         <div id="content">
             <div class="row">

@@ -166,6 +166,13 @@
             font-size: 0.9em;
         }
 
+        <g:if test="${projectInstance.institution}">
+            <cl:ifInstitutionHasBanner institution="${projectInstance.institution}">
+            #page-header {
+                background-image: url(<cl:institutionBannerUrl id="${projectInstance.institution.id}" />);
+            }
+            </cl:ifInstitutionHasBanner>
+        </g:if>
 
     </style>
 </head>
@@ -174,9 +181,14 @@
 
     <cl:headerContent title="Welcome to the ${projectInstance.name ?: message(code:'default.application.name')}" selectedNavItem="expeditions">
         <%
-            pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
-            ]
+            def crumbs = []
+
+            if (projectInstance.institution) {
+                crumbs << [link: createLink(controller:'institution', action: 'index', id:projectInstance.institution.id), label: projectInstance.institution.name]
+            } else {
+                crumbs << [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
+            }
+            pageScope.crumbs = crumbs
         %>
 
         <div>

@@ -10,6 +10,10 @@
 
         $(document).ready(function () {
 
+            $.ajax("${createLink(controller: 'leaderBoard', action:'leaderBoardFragment', params:[institutionId: institutionInstance.id])}").done(function (content) {
+                $("#leaderBoardSection").html(content);
+            });
+
         });
 
     </r:script>
@@ -21,6 +25,12 @@
             background-image: url(<cl:institutionBannerUrl id="${institutionInstance.id}" />);
         }
         </cl:ifInstitutionHasBanner>
+
+        .institution-image {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
     </style>
 
 </head>
@@ -37,7 +47,7 @@
         <div>
             <cl:isLoggedIn>
                 <cl:ifAdmin>
-                    <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="institutionAdmin" action="edit" id="${institutionInstance.id}">Edit</g:link>&nbsp;
+                    <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="institutionAdmin" action="edit" id="${institutionInstance.id}"><i class="icon-cog icon-white"></i>&nbsp;Settings</g:link>&nbsp;
                 </cl:ifAdmin>
             </cl:isLoggedIn>
         </div>
@@ -45,36 +55,40 @@
 
     <div class="row">
         <div class="span3">
-            <img src="<cl:institutionImageUrl id="${institutionInstance.id}"/>" />
-        </div>
-        <div class="span8">
-            <div class="institution-description">
-                <markdown:renderHtml>${institutionInstance.description}</markdown:renderHtml>
+            <div class="institution-image">
+                <img src="<cl:institutionImageUrl id="${institutionInstance.id}"/>" />
+            </div>
+            <div class="well well-small">
+                <small>
+                    <g:if test="${institutionInstance.contactEmail || institutionInstance.contactName}" >
+                        <div class="contactEmail"><strong>Email:</strong><cl:contactLink email="${institutionInstance.contactEmail}" name="${institutionInstance.contactName}" /></div>
+                    </g:if>
+                    <g:if test="${institutionInstance.contactPhone}">
+                        <div class="contactPhone"><strong>Phone:</strong>${institutionInstance.contactPhone}</div>
+                    </g:if>
+                    <g:if test="${institutionInstance.websiteUrl}">
+                        <div class="institutionWebsiteLink"><strong><a class="external" href="${institutionInstance.websiteUrl}">Website</a></strong></div>
+                    </g:if>
+                    <g:if test="${institutionInstance.collectoryUid}">
+                        <g:set var="collectoryUrl" value="http://collections.ala.org.au/public/show/${institutionInstance.collectoryUid}" />
+                        <div class="institutionCollectoryLink"><strong><a class="external" href="${collectoryUrl}">Collectory page</a></strong></div>
+                    </g:if>
+                </small>
             </div>
 
-            <small>
-                <g:if test="${institutionInstance.contactEmail || institutionInstance.contactName}" >
-                    <div class="contactEmail"><strong>Contact: </strong><cl:contactLink email="${institutionInstance.contactEmail}" name="${institutionInstance.contactName}" /></div>
-                </g:if>
-                <g:if test="${institutionInstance.contactPhone}">
-                    <div class="contactPhone"><strong>Phone: </strong>${institutionInstance.contactPhone}</div>
-                </g:if>
-                <g:if test="${institutionInstance.websiteUrl}">
-                    <div class="institutionWebsiteLink"><strong>Website: </strong><a class="external" href="${institutionInstance.websiteUrl}">${institutionInstance.websiteUrl}</a></div>
-                </g:if>
-                <g:if test="${institutionInstance.collectoryUid}">
-                    <g:set var="collectoryUrl" value="http://collections.ala.org.au/public/show/${institutionInstance.collectoryUid}" />
-                    <div class="institutionCollectoryLink"><strong>${institutionInstance.acronym} in the ALA Collectory: </strong><a class="external" href="${collectoryUrl}">${collectoryUrl}</a></div>
-                </g:if>
-
-            </small>
         </div>
-        <div class="span1">
-            <cl:ifInstitutionHasLogo institution="${institutionInstance}">
-                <div class="institution-logo">
-                    <img src="<cl:institutionLogoUrl id="${institutionInstance.id}" />" height="100px" width="100px" />
-                </div>
-            </cl:ifInstitutionHasLogo>
+        <div class="span6">
+            <div class="institution-description">
+                <cl:ifInstitutionHasLogo institution="${institutionInstance}">
+                    <img align="right" src="<cl:institutionLogoUrl id="${institutionInstance.id}" />" height="100" width="100"  style="max-height: 50px; max-width: 50px"/>
+                </cl:ifInstitutionHasLogo>
+                <markdown:renderHtml>${institutionInstance.description}</markdown:renderHtml>
+            </div>
+        </div>
+        <div class="span3">
+            <section id="leaderBoardSection">
+
+            </section>
         </div>
     </div>
 

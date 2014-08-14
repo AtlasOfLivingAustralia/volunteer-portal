@@ -6,7 +6,7 @@
 
     <body>
 
-        <content tag="pageTitle">Banner image</content>
+        <content tag="pageTitle">Expedition image</content>
 
         <content tag="adminButtonBar">
         </content>
@@ -17,7 +17,7 @@
 
             <div class="control-group">
                 <div class="alert">
-                    Expedition banner images must be exactly <strong>254 x 158</strong> pixels in size (w x h). Images that have different dimensions will be scaled to this size when uploaded. To preserve image quality, crop and scale them to this size before uploading.
+                    Expedition images must be exactly <strong>254 x 158</strong> pixels in size (w x h). Images that have different dimensions will be scaled to this size when uploaded. To preserve image quality, crop and scale them to this size before uploading.
                 </div>
             </div>
 

@@ -24,8 +24,16 @@
             opacity: .25;
         }
 
-        </style>
-        <title>Edit Project ${projectInstance?.name}</title>
+        <g:if test="${projectInstance.institution}">
+            <cl:ifInstitutionHasBanner institution="${projectInstance.institution}">
+                #page-header {
+                    background-image: url(<cl:institutionBannerUrl id="${projectInstance.institution.id}" />);
+                }
+            </cl:ifInstitutionHasBanner>
+        </g:if>
+
+    </style>
+    <title>Edit Project ${projectInstance?.name}</title>
         <r:require module="bootstrap-switch" />
 
     </head>
@@ -51,7 +59,7 @@
                 <div class="span3">
                     <ul class="nav nav-list nav-stacked nav-tabs">
                         <cl:settingsMenuItem href="${createLink(controller: 'project', action: 'editGeneralSettings', id:projectInstance.id)}" title="General Settings" />
-                        <cl:settingsMenuItem href="${createLink(controller: 'project', action: 'editBannerImageSettings', id:projectInstance.id)}" title="Banner image" />
+                        <cl:settingsMenuItem href="${createLink(controller: 'project', action: 'editBannerImageSettings', id:projectInstance.id)}" title="Expedition image" />
                         <cl:settingsMenuItem href="${createLink(controller: 'project', action: 'editPicklistSettings', id:projectInstance.id)}" title="Picklists" />
                         <cl:settingsMenuItem href="${createLink(controller: 'project', action: 'editTaskSettings', id:projectInstance.id)}" title="Tasks" />
                         <cl:settingsMenuItem href="${createLink(controller: 'project', action: 'editMapSettings', id:projectInstance.id)}" title="Map" />

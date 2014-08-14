@@ -19,7 +19,7 @@ class UserService {
     /**
      * Register the current user in the system.
      */
-    def registerCurrentUser = {
+    def registerCurrentUser() {
         def userId = currentUserId
         def displayName = authService.displayName
         logService.log("Checking user is registered: " + userId + ", " + displayName)
@@ -34,15 +34,13 @@ class UserService {
         }
     }
 
-    def getUserCounts = {
-
+    def getUserCounts() {
         User.executeQuery("""
             select displayName, (transcribedCount + validatedCount) as score, id
             from User
             where (transcribedCount + validatedCount) > 0
             order by (transcribedCount + validatedCount) desc
         """)
-
     }
 
     def getUserScore(User user) {

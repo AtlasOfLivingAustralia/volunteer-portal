@@ -1,9 +1,9 @@
-<div style="margin-top: 10px">
+<div>
     <table class="table table-bordered table-condensed table-striped">
         <thead style="background-color: #f0f0e8">
             <tr>
                 <td colspan="2" style="vertical-align: middle">
-                    <h3 style="margin: 0; display: inline-block">Honour Board</h3>
+                    <h3 style="margin: 0; display: inline-block">${institutionInstance ? institutionInstance.acronym + " " : ""}Honour Board</h3>
                 </td>
             </tr>
         </thead>
@@ -12,10 +12,10 @@
                 <tr>
                     <th colspan="2">
                         ${section.label}
-                        <a class="btn btn-small pull-right" href="${createLink(controller:'leaderBoard', action:'topList', params:[category: section.category])}">View Top 20</a>
+                        <a class="btn btn-small pull-right" href="${createLink(controller:'leaderBoard', action:'topList', params:[category: section.category, institutionId:institutionInstance?.id])}">View Top 20</a>
                     </th>
                 </tr>
-                <tr resultLink="${createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:section.category])}">
+                <tr resultLink="${createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:section.category, institutionId:institutionInstance?.id])}">
                     <td><img src="${resource(dir: 'images', file: 'spinner.gif')}"/></td>
                     <td></td>
                 </tr>

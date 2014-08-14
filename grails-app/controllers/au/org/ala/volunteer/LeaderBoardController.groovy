@@ -7,44 +7,65 @@ class LeaderBoardController {
     def userService
 
     def leaderBoardFragment() {
-        def appName = message(code:'default.application.name')
+        def institutionInstance = Institution.get(params.int("institutionId"))
+
+        def legendName = institutionInstance ? institutionInstance.acronym : message(code:'default.application.name')
         def leaderBoardSections = [
-            [category: LeaderBoardCategory.daily, label:'Day Tripper', link: createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:LeaderBoardCategory.daily])],
-            [category: LeaderBoardCategory.weekly, label:'Weekly Wonder', link: createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:LeaderBoardCategory.weekly])],
-            [category: LeaderBoardCategory.monthly, label:'Monthly Maestro', link:createLink(action:'ajaxLeaderBoardCategoryWinner', params:[category:LeaderBoardCategory.monthly])],
-            [category: LeaderBoardCategory.alltime, label:"${appName} Legend", link: createLink(action:'ajaxBVPLegend')]
+            [category: LeaderBoardCategory.daily, label:'Day Tripper'],
+            [category: LeaderBoardCategory.weekly, label:'Weekly Wonder'],
+            [category: LeaderBoardCategory.monthly, label:'Monthly Maestro'],
+            [category: LeaderBoardCategory.alltime, label:"${legendName} Legend"]
         ]
-        [leaderBoardSections : leaderBoardSections ]
+
+        [leaderBoardSections : leaderBoardSections, institutionInstance: institutionInstance ]
+    }
+
+    private static Date getTodaysDate() {
+        // def today = Date.parse("yyyy-MM-dd", "2014-03-01") // for testing
+        def today = new Date().clearTime()
+        return today.clearTime()
     }
 
     def ajaxLeaderBoardCategoryWinner() {
         def category = params.category as LeaderBoardCategory
-        def today = new Date().clearTime()
+        def institution = Institution.get(params.int("institutionId"))
+
+        def today = todaysDate
 
         def result = [name: '', score: 0]
         switch (category) {
             case LeaderBoardCategory.daily:
-                result = getLeaderboardWinner(today, today)
+                result = getLeaderboardWinner(today, today, institution)
                 break;
             case LeaderBoardCategory.weekly:
                 def startDate = (Date) today.clone()
                 while (startDate.getAt(Calendar.DAY_OF_WEEK) != 1) {
                     startDate--;
                 }
-                result = getLeaderboardWinner(startDate, today)
+                result = getLeaderboardWinner(startDate, today, institution)
                 break;
             case LeaderBoardCategory.monthly:
                 def startDate = (Date) today.clone()
                 while (startDate.getAt(Calendar.DAY_OF_MONTH) != 1) {
                     startDate--;
                 }
-                result = getLeaderboardWinner(startDate, today)
+
+                result = getLeaderboardWinner(startDate, today, institution)
                 break;
             case LeaderBoardCategory.alltime:
-                def userScores = userService.getUserCounts();
-                if (userScores) {
-                    result = [name: userScores[0][0], score: userScores[0][1]]
+
+                if (institution) {
+                    def tmp = getTopNForInstitution(1, institution )
+                    if (tmp) {
+                        result = tmp[0]
+                    }
+                } else {
+                    def userScores = userService.getUserCounts();
+                    if (userScores) {
+                        result = [name: userScores[0][0], score: userScores[0][1]]
+                    }
                 }
+
                 break;
             default:
                 break;
@@ -54,8 +75,13 @@ class LeaderBoardController {
     }
 
     def topList() {
+
         def category = params.category as LeaderBoardCategory
-        def today = new Date().clearTime()
+
+        def institution = Institution.get(params.int("institutionId"))
+
+        def today = todaysDate
+
         def headingPrefix = "Top 20 volunteers for "
         def heading =  headingPrefix + category?.toString()?.toTitleCase()
         def maxRows = 20
@@ -63,7 +89,7 @@ class LeaderBoardController {
         switch (category) {
             case LeaderBoardCategory.daily:
                 heading = "${headingPrefix} ${today.format('d MMMM yyyy')}"
-                results = getTopNForPeriod(today, today, maxRows)
+                results = getTopNForPeriod(today, today, maxRows, institution)
                 break;
             case LeaderBoardCategory.weekly:
                 def startDate = (Date) today.clone()
@@ -71,7 +97,7 @@ class LeaderBoardController {
                     startDate--;
                 }
                 heading = "${headingPrefix} week starting ${startDate.format('dd MMMM yyy')}"
-                results = getTopNForPeriod(startDate, today, maxRows)
+                results = getTopNForPeriod(startDate, today, maxRows, institution)
                 break;
             case LeaderBoardCategory.monthly:
                 def startDate = (Date) today.clone()
@@ -79,16 +105,20 @@ class LeaderBoardController {
                     startDate--;
                 }
                 heading = "${headingPrefix} ${startDate.format('MMMM yyyy')}"
-                results = getTopNForPeriod(startDate, today, maxRows)
+                results = getTopNForPeriod(startDate, today, maxRows, institution)
                 break;
             case LeaderBoardCategory.alltime:
-                def userScores = userService.getUserCounts();
-                heading = "${headingPrefix} All Time"
-                for (int i = 0; i < userScores.size(); ++i) {
-                    if (i >= maxRows) {
-                        break;
+                if (institution) {
+                    results = getTopNForInstitution(maxRows, institution)
+                } else {
+                    def userScores = userService.getUserCounts();
+                    heading = "${headingPrefix} All Time"
+                    for (int i = 0; i < userScores.size(); ++i) {
+                        if (i >= maxRows) {
+                            break;
+                        }
+                        results << [name: userScores[i][0], score: userScores[i][1], userId: userScores[i][2]]
                     }
-                    results << [name: userScores[i][0], score: userScores[i][1], userId: userScores[i][2]]
                 }
                 break;
             default:
@@ -98,8 +128,8 @@ class LeaderBoardController {
         [category: category, results: results, heading: heading]
     }
 
-    private Map getLeaderboardWinner(Date startDate, Date endDate) {
-        def results = getTopNForPeriod(startDate, endDate, 5)
+    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution) {
+        def results = getTopNForPeriod(startDate, endDate, 5, institution)
         if (results) {
             return results[0]
         }
@@ -107,12 +137,45 @@ class LeaderBoardController {
         return [name:'', score:0]
     }
 
-    private List getTopNForPeriod(Date startDate, Date endDate, int count) {
+    private List getTopNForInstitution(int count, Institution institution) {
+
+        def scoreMap = getUserCountsForInstitution(institution, ActivityType.Transcribed)
+        def validatedMap = getUserCountsForInstitution(institution, ActivityType.Validated)
+
+        // merge the validated map into the transcribed map, forming a total activity score for the superset of users
+        validatedMap.each { kvp ->
+            // if there exists a validator who is not a transcriber, set the transcription count to 0
+            if (!scoreMap[kvp.key]) {
+                scoreMap[kvp.key] = 0
+            }
+            // combine the transcribed count with the validated count for that user.
+            scoreMap[kvp.key] += kvp.value
+        }
+
+        // Flatten the map into a list for easy sorting, so we can slice off the top N
+        def list = []
+        scoreMap.each { kvp ->
+            def user = User.findByUserId(kvp.key)
+            if (user) {
+                list << [name: user?.displayName, score: kvp?.value ?: 0, userId: user?.id]
+            } else {
+                println "Failed to find user with key: ${kvp.key}"
+            }
+        }
+
+        // Sort in descending order...
+        list?.sort { a, b -> b.score <=> a.score }
+        // and just return the top N items
+        return list.subList(0, Math.min(list.size(), count))
+
+    }
+
+    private List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution) {
 
         // Get a map of users who transcribed tasks during this period, along with the count
-        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed)
+        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institution)
         // Get a map of user who validated tasks during this periodn, along with the count
-        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated)
+        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institution)
 
         // merge the validated map into the transcribed map, forming a total activity score for the superset of users
         validatedMap.each { kvp ->
@@ -141,12 +204,17 @@ class LeaderBoardController {
         return list.subList(0, Math.min(list.size(), count))
     }
 
-    private Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType) {
+    private Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution) {
         def c = Task.createCriteria()
 
         def results = c {
             ge("dateFully${activityType}", startDate)
             lt("dateFully${activityType}", endDate + 1)
+            if (institution) {
+                project {
+                    eq("institution", institution)
+                }
+            }
 
             projections {
                 groupProperty("fully${activityType}By")
@@ -161,5 +229,30 @@ class LeaderBoardController {
 
         return map
     }
+
+    private getUserCountsForInstitution(Institution institution, ActivityType activityType) {
+        def c = Task.createCriteria()
+
+        def results = c {
+            if (institution) {
+                project {
+                    eq("institution", institution)
+                }
+            }
+
+            projections {
+                groupProperty("fully${activityType}By")
+                count("fully${activityType}By", 'count')
+            }
+        }
+
+        def map = [:]
+        results.each { row ->
+            map[row[0]] = row[1]
+        }
+
+        return map
+    }
+
 }
 

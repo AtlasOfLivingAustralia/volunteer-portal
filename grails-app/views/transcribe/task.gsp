@@ -536,6 +536,15 @@
                 margin-bottom: 6px;
             }
 
+            <g:if test="${taskInstance.project.institution}">
+                <cl:ifInstitutionHasBanner institution="${taskInstance.project.institution}">
+                #page-header {
+                    background-image: url(<cl:institutionBannerUrl id="${taskInstance.project.institution.id}" />);
+                }
+                </cl:ifInstitutionHasBanner>
+            </g:if>
+
+
         </style>
 
     </head>
@@ -544,12 +553,16 @@
 
         <cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.externalIdentifier}" hideTitle="${true}">
             <%
-                pageScope.crumbs = [
-                    [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')],
-                    [link: createLink(controller: 'project', action: 'index', id:taskInstance?.project?.id), label: taskInstance?.project.featuredLabel]
-                ]
-            %>
+                def crumbs = []
+                if (taskInstance.project.institution) {
+                    crumbs << [link: createLink(controller:'institution', action: 'index', id:taskInstance.project.institution.id), label: taskInstance.project.institution.name]
+                } else {
+                    crumbs << [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
+                }
+                crumbs << [link: createLink(controller: 'project', action: 'index', id:taskInstance?.project?.id), label: taskInstance?.project.featuredLabel]
 
+                pageScope.crumbs = crumbs
+            %>
 
             <div>
                 <g:if test="${sequenceNumber >= 0}">
