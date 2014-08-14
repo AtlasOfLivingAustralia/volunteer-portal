@@ -93,9 +93,31 @@
     </div>
 
     <div class="row">
+        <div class="span8">
+            <h2>${institutionInstance.acronym} Expeditions</h2>
+        </div>
+        <div class="span4">
+            <div class="btn-group pull-right">
+                <a href="${createLink(action:'index', id: institutionInstance.id)}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View expedition list">
+                    <i class="icon-th-list"></i>
+                </a>
+                <a href="${createLink(action:'index', id: institutionInstance.id, params:[mode:'thumbs'])}" class="btn btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View expedition thumbnails">
+                    <i class="icon-th"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="span12">
-            <h3>${institutionInstance.acronym} Expeditions</h3>
-            <g:render template="../project/ProjectListDetailsView" model="${[extraParams:[id:institutionInstance.id]]}" />
+            <g:if test="${params.mode == 'thumbs'}">
+                <g:render template="../project/projectListThumbnailView" model="${[extraParams:[id:institutionInstance.id]]}" />
+            </g:if>
+            <g:else>
+                <g:render template="../project/ProjectListDetailsView" model="${[extraParams:[id:institutionInstance.id]]}" />
+            </g:else>
+
+
         </div>
     </div>
 

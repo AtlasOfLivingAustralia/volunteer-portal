@@ -81,6 +81,6 @@
     </g:each>
 </ul>
 <div class="pagination">
-    <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q, mode:'thumbs']}" />
+    <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q, mode:'thumbs'] + (extraParams ?: [:])}" />
 </div>
 
