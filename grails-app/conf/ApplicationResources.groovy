@@ -74,6 +74,7 @@ modules = {
     "institution-dropdown" {
         dependsOn "jquery,jquery-ui"
         resource url: 'js/institutions-dropdown.js'
+        resource url: 'css/institution-dropdown.css'
     }
 
 }
