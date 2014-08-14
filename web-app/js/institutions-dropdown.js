@@ -1,4 +1,4 @@
-function setupInstitutionAutocomplete(jqElement, idFieldSelector, iconSelector, institutions, nameToId) {
+function setupInstitutionAutocomplete(jqElement, idFieldSelector, iconSelector, linkSelector, institutions, nameToId, instBaseUrl) {
     var inputElement = $(jqElement);
 
     function onAutocompleteSelect(event, ui) {
@@ -21,6 +21,7 @@ function setupInstitutionAutocomplete(jqElement, idFieldSelector, iconSelector, 
         var linked = $(idFieldSelector).val();
         if (linked) {
             icon.removeClass('hidden');
+            $(linkSelector).attr('href', instBaseUrl + '/' + linked);
         } else {
             icon.addClass('hidden');
         }

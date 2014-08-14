@@ -7,8 +7,9 @@
         jQuery(function($) {
             var institutions = <cl:json value="${institutions}" />;
             var nameToId = <cl:json value="${institutionsMap}" />;
+            var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
-            setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", institutions, nameToId);
+            setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
 
         });
         </r:script>
@@ -31,7 +32,7 @@
                 <div class="controls">
                     <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}" />
                     <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}" />
-                    <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to institution!</small></span>
+                    <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to <a id="institution-link" href="">institution</a>!</small></span>
                 </div>
             </div>
 
