@@ -146,10 +146,8 @@ class TranscribeController {
 
     /**
      * Sync fields.
-     *
-     * TODO handle multiple records per submit.
      */
-    def savePartial = {
+    def savePartial() {
         def currentUser = userService.currentUserId
         if (currentUser) {
 

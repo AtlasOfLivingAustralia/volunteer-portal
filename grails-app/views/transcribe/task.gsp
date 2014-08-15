@@ -661,8 +661,8 @@
                                         <g:set var="okCaption" value="It's ok, mark as valid anyway" />
                                         <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields" />
                                     </g:if>
-                                    <button id="btnValidateSubmitInvalid" class="btn">${okCaption}</button>
-                                    <button id="btnWarningCancelSubmission" class="btn btn-primary">${cancelCaption}</button>
+                                    <button id="btnValidateSubmitInvalid" class="btn bvp-submit-button">${okCaption}</button>
+                                    <button id="btnWarningCancelSubmission" class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
                                 </div>
                             </div>
                         </div>
@@ -670,18 +670,18 @@
                             <div class="span12">
                                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
                                 <g:if test="${validator}">
-                                    <button type="button" id="btnValidate" class="btn btn-success"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
-                                    <button type="button" id="btnDontValidate" class="btn btn-danger"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
-                                    <button type="button" class="btn" id="showNextFromProject">Skip</button>
+                                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
+                                    <button type="button" class="btn" id="showNextFromProject bvp-submit-button">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
                                         <a href="${createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone())}" />
                                     </g:if>
                                 </g:if>
                                 <g:else>
-                                    <button type="button" id="btnSave" class="btn btn-primary">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
-                                    <button type="button" id="btnSavePartial" class="btn">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
-                                    <button type="button" class="btn" id="showNextFromProject">Skip</button>
+                                    <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
+                                    <button type="button" id="btnSavePartial" class="btn bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                                    <button type="button" class="btn bvp-submit-button" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
 
@@ -816,18 +816,20 @@
                 };
             </g:each>
 
+            enableSubmitButtons();
+
             // Now check if we are have to restore from a save gone wrong...
             checkAndRecoverFromFailedSubmit();
 
-        });
+    });
 
 
-        function saveFormState(action) {
-            var dynamicDataSetFieldId = $("#observationFields").attr("entriesFieldId");
+    function saveFormState(action) {
+        var dynamicDataSetFieldId = $("#observationFields").attr("entriesFieldId");
 
-            var taskState = {
-                action: action,
-                taskId: ${taskInstance.id},
+        var taskState = {
+            action: action,
+            taskId: ${taskInstance.id},
                 dynamicDataSetFieldId: dynamicDataSetFieldId,
                 fields: []
             };
@@ -876,13 +878,25 @@
         }
 
         function submitFormWithAction(action) {
-            var form = $(".transcribeForm");
+            try {
+                disableSubmitButtons();
+                var form = $(".transcribeForm");
+                // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
+                saveFormState(action);
+                // Now we can attempt the submission
+                form.get(0).setAttribute('action', action);
+                form.submit();
+            } catch(error) {
+                enableSubmitButtons();
+            }
+        }
 
-            // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
-            saveFormState(action);
-            // Now we can attempt the submission
-            form.get(0).setAttribute('action', action);
-            form.submit();
+        function disableSubmitButtons() {
+            $(".bvp-submit-button").attr('disabled', 'disabled');
+        }
+
+        function enableSubmitButtons() {
+            $(".bvp-submit-button").removeAttr('disabled');
         }
 
         function checkValidation() {
