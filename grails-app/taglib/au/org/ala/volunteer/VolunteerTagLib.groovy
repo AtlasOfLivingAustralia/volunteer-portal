@@ -418,7 +418,7 @@ class VolunteerTagLib {
             }
 
             if (!attrs.hideTitle) {
-                mb.h1 {
+                mb.h1(class:'bvp-heading') {
                     mkp.yield(attrs.title)
                 }
             }

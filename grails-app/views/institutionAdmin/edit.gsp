@@ -95,9 +95,12 @@
                                         <img src="<cl:institutionBannerUrl id="${institutionInstance.id}" />" style="margin-bottom: 10px">
                                     </cl:ifInstitutionHasBanner>
                                     <div class="alert alert-info">
-                                        Banner images will replace the banner behind the heading at the top of the page. They should be 1170 x 150 pixels in size, and should be light in colour so that the heading text can still be read.
-                                        <br/>
-                                        For best results try and blend the left and right of your image with HTML color <code>#F0F0E8</code> (<span style="background-color: #F0F0E8">&nbsp;&nbsp;</span>)
+                                        <p>
+                                        Banner images will replace the banner behind the heading at the top of the page and behind the text on the Institutions list page
+                                        </p>
+                                        <p>
+                                        Banners should be 1170 x 200 pixels in size, and should be mostly transparent so that overlaid text is easily readable.
+                                        </p>
                                     </div>
                                     <div>
                                         <button class="btn" type="button" id="btnUploadBannerImage">Upload banner image</button>

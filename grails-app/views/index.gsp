@@ -6,8 +6,16 @@
         <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
         <style type="text/css">
 
-            hgroup h1 {
-                font-size: 48px;
+           h1.bvp-heading {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                font-size: 90px;
+                line-height: 90px
+            }
+
+            .bvp-byline {
+                font-size: 1.6em;
+                font-weight: bold;
             }
 
             .row-fluid .thumbnails .span4:nth-child(3n+1) {
@@ -88,16 +96,8 @@
     </head>
 
     <body>
-
         <cl:headerContent title="${message(code:'default.application.name', default:'DigiVol')}" selectedNavItem="bvp" hideCrumbs="${true}">
-            <p style="font-size: 1.2em">Helping to understand, manage and conserve biodiversity<br>through community based transcription of archival and natural history collections</p>
-
-            %{--<cl:isLoggedIn>--}%
-                %{--<cl:ifAdmin>--}%
-                    %{--<g:link class="btn btn-warning pull-right" controller="admin" action="index"><i class="icon-cog icon-white"></i>&nbsp;Admin</g:link>--}%
-                %{--</cl:ifAdmin>--}%
-            %{--</cl:isLoggedIn>--}%
-
+            <p class="bvp-byline">Volunteers building knowledge through digitising collections</p>
         </cl:headerContent>
 
         <div class="container-fluid">

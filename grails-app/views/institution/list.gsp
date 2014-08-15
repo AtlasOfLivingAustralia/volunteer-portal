@@ -111,39 +111,42 @@
                         </thead>
                         <tbody>
                             <g:each in="${institutions}" status="i" var="inst">
-                                <tr>
-                                    <th colspan="2" style="border-bottom: none">
-                                        <h3><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a>&nbsp;<small>${inst.acronym}</small></h3>
-                                    </th>
-                                    <th style="text-align: right; width: 100px">
-                                        <cl:ifInstitutionAdmin institution="${inst}">
-                                            <a class="btn btn-warning btn-small" href="${createLink(controller:'institutionAdmin', action:'edit', id: inst.id)}"><i class="icon-cog icon-white"></i>&nbsp;Settings</a>
-                                        </cl:ifInstitutionAdmin>
-                                    </th>
-                                </tr>
-                                <tr class="institution-details-row">
+                                <tr style="background-image: url(<cl:institutionBannerUrl id="${inst.id}" />)">
 
-                                    <td style="width: 120px">
-                                        <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
-                                            <img src="<cl:institutionLogoUrl id="${inst.id}" />" style="height: 150px; width: 150px"/>
-                                        </a>
-                                    </td>
-
-                                    <td colspan="2">
+                                    <td colspan="3">
                                         <div class="row-fluid">
-                                            <div class="span12">
-                                                <markdown:renderHtml>${inst.shortDescription}</markdown:renderHtml>
+                                            <div class="span8">
+                                                <h3><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a>&nbsp;<small>${inst.acronym}</small></h3>
+                                            </div>
+                                            <div class="span4">
+                                                <cl:ifInstitutionAdmin institution="${inst}">
+                                                    <a class="btn btn-warning btn-small pull-right" href="${createLink(controller:'institutionAdmin', action:'edit', id: inst.id)}"><i class="icon-cog icon-white"></i>&nbsp;Settings</a>
+                                                </cl:ifInstitutionAdmin>
+
                                             </div>
                                         </div>
                                         <div class="row-fluid">
-                                            <div class="span12">
-                                                <g:set var="projectCount" value="${projectCounts[inst] ?: 0}" />
-                                                <strong>${projectCount} Expedition${projectCount == 1 ? '' : 's'}</strong>
+                                            <div class="span3">
+                                                <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
+                                                    <img src="<cl:institutionLogoUrl id="${inst.id}" />" style="height: 100px; width: 100px"/>
+                                                </a>
+                                            </div>
+                                            <div class="span9">
+                                                <div class="row-fluid">
+                                                    <div class="span12">
+                                                        <markdown:renderHtml>${inst.shortDescription}</markdown:renderHtml>
+                                                    </div>
+                                                </div>
+                                                <div class="row-fluid">
+                                                    <div class="span12">
+                                                        <g:set var="projectCount" value="${projectCounts[inst] ?: 0}" />
+                                                        <strong>${projectCount} Expedition${projectCount == 1 ? '' : 's'}</strong>
 
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
-
                                 </tr>
                             </g:each>
                         </tbody>
