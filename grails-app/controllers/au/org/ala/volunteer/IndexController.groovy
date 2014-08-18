@@ -19,7 +19,7 @@ class IndexController {
             newsItem = NewsItem.find("""from NewsItem n where n.project.disableNewsItems is null or project.disableNewsItems != true order by n.created desc""")
         }
 
-        def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentComplete }
+        def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentTranscribed }
 
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': FrontPage.instance(), featuredProjects: featuredProjects] )
     }

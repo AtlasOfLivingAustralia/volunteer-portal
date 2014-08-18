@@ -31,7 +31,21 @@
             text-align: center;
         }
 
-    </style>
+        [inactive=true] {
+            background-color: #d3d3d3;
+            opacity: 0.5;
+        }
+
+        tr .adminLink {
+            color: #d3d3d3;
+        }
+
+        tr[inactive=true] .adminLink {
+            color: black;
+            opacity: 1;
+        }
+
+</style>
 
 </head>
 
@@ -66,13 +80,15 @@
                     <g:if test="${institutionInstance.contactPhone}">
                         <div class="contactPhone"><strong>Phone:</strong>${institutionInstance.contactPhone}</div>
                     </g:if>
-                    <g:if test="${institutionInstance.websiteUrl}">
-                        <div class="institutionWebsiteLink"><strong><a class="external" href="${institutionInstance.websiteUrl}">Website</a></strong></div>
-                    </g:if>
-                    <g:if test="${institutionInstance.collectoryUid}">
-                        <g:set var="collectoryUrl" value="http://collections.ala.org.au/public/show/${institutionInstance.collectoryUid}" />
-                        <div class="institutionCollectoryLink"><strong><a class="external" href="${collectoryUrl}">Collectory page</a></strong></div>
-                    </g:if>
+                    <div>
+                        <g:if test="${institutionInstance.websiteUrl}">
+                            <span class="institutionWebsiteLink"><strong><a class="external" href="${institutionInstance.websiteUrl}">Website</a></strong></span>
+                        </g:if>
+                        <g:if test="${institutionInstance.collectoryUid}">
+                            <g:set var="collectoryUrl" value="http://collections.ala.org.au/public/show/${institutionInstance.collectoryUid}" />
+                            <span class="institutionCollectoryLink"><strong><a class="external" href="${collectoryUrl}">Collectory page</a></strong></span>
+                        </g:if>
+                    </div>
                 </small>
             </div>
 

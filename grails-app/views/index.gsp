@@ -149,7 +149,7 @@
                                                 <a href="${createLink(controller: 'project', id: featuredProject.project?.id, action: 'index')}">
                                                     <img src="${featuredProject.project?.featuredImage}" />
                                                     <h2>${featuredProject.project?.featuredLabel}</h2>
-                                                    <div class="label label-inverse">${featuredProject.percentComplete}%</div>
+                                                    <div class="label label-inverse">${featuredProject.percentTranscribed}%</div>
                                                 </a>
                                             </div>
                                         </li>

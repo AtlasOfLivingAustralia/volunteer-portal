@@ -114,26 +114,43 @@ class ProjectService {
 
     }
 
+    private calcPercent(count, total) {
+        def percent = ((count / total) * 100)
+        if (percent > 99 && count != total) {
+            // Avoid reported 100% unless the count actually equals the task total
+            percent = 99;
+        }
+        return percent
+    }
+
+
     public List<ProjectSummary> getFeaturedProjectList() {
 
         def projectList = Project.list()
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+        def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
         def volunteerCounts = taskService.getProjectVolunteerCounts()
 
         List results = []
         for (Project project : projectList) {
             if (!project.inactive) {
-                def percent = 0
-                if (taskCounts[project.id] && fullyTranscribedCounts[project.id]) {
-                    percent = ((fullyTranscribedCounts[project.id] / taskCounts[project.id]) * 100)
-                    if (percent > 99 && taskCounts[project.id] != fullyTranscribedCounts[project.id]) {
-                        // Avoid reported 100% unless the transcribed count actually equals the task count
-                        percent = 99;
-                    }
+
+                double percentTranscribed = 0
+                double percentValidated = 0
+
+                def taskCount = (Long) taskCounts[project.id] ?: 0
+                long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
+                long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
+                def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
+
+                if (taskCount) {
+                    percentTranscribed = calcPercent(transcribedCount, taskCount)
+                    percentValidated = calcPercent(validatedCount, taskCount)
                 }
-                if (percent < 100) {
-                    results << getProjectSummary(project, fullyTranscribedCounts, percent, volunteerCounts)
+
+                if (percentTranscribed < 100) {
+                    results << makeProjectSummary(project, taskCount, transcribedCount, percentTranscribed, validatedCount, percentValidated, volunteerCount)
                 }
             }
         }
@@ -152,7 +169,7 @@ class ProjectService {
         return ProjectType.findByName("specimens")
     }
 
-    private ProjectSummary getProjectSummary(Project project, Map fullyTranscribedCounts, double percent, Map volunteerCounts) {
+    private ProjectSummary makeProjectSummary(Project project, long taskCount, long transcribedCount, double percentTranscribed, long fullyValidatedCount, double percentValidated, int volunteerCount) {
 
         if (!project.projectType) {
             def projectType = guessProjectType(project)
@@ -176,35 +193,46 @@ class ProjectService {
         def ps = new ProjectSummary(project: project)
         ps.iconImage = iconImage
         ps.iconLabel = iconLabel
-        ps.volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
-        ps.countComplete = (Integer) fullyTranscribedCounts[project.id] ?: 0
-        ps.percentComplete = (percent ? Math.round(percent) : 0)
+        ps.volunteerCount = volunteerCount
+        ps.taskCount = taskCount
+        ps.countTranscribed = transcribedCount
+        ps.percentTranscribed = (percentTranscribed ? Math.round(percentTranscribed) : 0)
+        ps.countValidated = fullyValidatedCount
+        ps.percentValidated = (percentValidated ? Math.round(percentValidated) : 0)
+
         return ps
     }
 
     public makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params) {
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+        def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
         def volunteerCounts = taskService.getProjectVolunteerCounts()
 
         Map<Long, ProjectSummary> projects = [:]
 
         def incompleteCount = 0;
+
         for (Project project : projectList) {
 
-            double percent = 0;
-            if (taskCounts[project.id] && fullyTranscribedCounts[project.id]) {
-                percent = ((fullyTranscribedCounts[project.id] / taskCounts[project.id]) * 100)
-                if (percent > 99 && taskCounts[project.id] != fullyTranscribedCounts[project.id]) {
-                    // Avoid reported 100% unless the transcribed count actually equals the task count
-                    percent = 99;
-                }
+            double percentTranscribed = 0
+            double percentValidated = 0
+
+            def taskCount = (Long) taskCounts[project.id] ?: 0
+            long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
+            long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
+            def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
+
+            if (taskCount) {
+                percentTranscribed = calcPercent(transcribedCount, taskCount)
+                percentValidated = calcPercent(validatedCount, taskCount)
             }
-            if (percent < 100 && !project.inactive) {
+
+            if (percentTranscribed < 100 && !project.inactive) {
                 incompleteCount++;
             }
 
-            def ps = getProjectSummary(project, fullyTranscribedCounts, percent, volunteerCounts)
+            def ps = makeProjectSummary(project, taskCount, transcribedCount, percentTranscribed, validatedCount, percentValidated, volunteerCount)
             projects[project.id] = ps
         }
 
@@ -247,7 +275,7 @@ class ProjectService {
         renderList = renderList.sort { projectSummary ->
 
             if (params.sort == 'completed') {
-                return projectSummary.percentComplete
+                return projectSummary.percentTranscribed
             }
 
             if (params.sort == 'volunteers') {

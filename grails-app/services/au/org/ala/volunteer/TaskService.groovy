@@ -66,7 +66,6 @@ class TaskService {
     }
 
     /**
-     *
      * @return Map of project id -> count
      */
     Map getProjectTaskFullyTranscribedCounts() {

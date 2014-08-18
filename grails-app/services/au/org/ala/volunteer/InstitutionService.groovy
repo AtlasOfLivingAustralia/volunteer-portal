@@ -183,7 +183,7 @@ class InstitutionService {
      *
      * @param institutions
      */
-    def getProjectCounts(List<Institution> institutions) {
+    def getProjectCounts(List<Institution> institutions, boolean includeDeactivated = false) {
 
         if (!institutions) {
             return [:]
@@ -192,6 +192,12 @@ class InstitutionService {
        def c = Project.createCriteria()
         def results = c.list {
             'in'("institution", institutions)
+            if (!includeDeactivated) {
+                or {
+                    isNull("inactive")
+                    eq("inactive", false)
+                }
+            }
             projections {
                 groupProperty("institution")
                 count("id")

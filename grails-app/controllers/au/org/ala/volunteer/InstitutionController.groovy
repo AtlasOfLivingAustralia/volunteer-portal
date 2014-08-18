@@ -4,6 +4,7 @@ class InstitutionController {
 
     def projectService
     def institutionService
+    def userService
 
     def index() {
         def institution = Institution.get(params.int("id"))
@@ -16,9 +17,17 @@ class InstitutionController {
         params.sort = params.sort ?: 'completed'
         params.order = params.order ?: 'asc'
 
-        def projects = projectService.makeSummaryListFromProjectList(Project.findAllByInstitution(institution), params)
+        def projects
 
-        [institutionInstance: institution, projects: projects.projectRenderList, projectInstanceTotal: projects.totalProjectCount]
+        if (userService.isAdmin()) {
+            projects = Project.findAllByInstitution(institution)
+        } else {
+            projects = Project.findAllByInstitutionAndInactiveNotEqual(institution, true)
+        }
+
+        def projectSummaries = projectService.makeSummaryListFromProjectList(projects, params)
+
+        [institutionInstance: institution, projects: projectSummaries.projectRenderList, projectInstanceTotal: projectSummaries.totalProjectCount]
     }
 
     def list() {

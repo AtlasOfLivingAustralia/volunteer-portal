@@ -5,6 +5,9 @@ class ProjectSummary {
     String iconLabel
     String iconImage
     long volunteerCount
-    long countComplete
-    int percentComplete
+    long taskCount
+    long countTranscribed
+    int percentTranscribed
+    long countValidated
+    int percentValidated
 }

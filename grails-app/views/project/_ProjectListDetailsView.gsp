@@ -60,13 +60,15 @@
                         </td>
                         <%-- Progress bar --%>
                         <td style="border-top: none">
-                            <div id="recordsChart">
-                                <strong>${projectSummary.countComplete}</strong> tasks completed (<strong>${projectSummary.percentComplete}%</strong>)
+                            <div>
+                                <strong>${projectSummary.countTranscribed}</strong> of ${projectSummary.taskCount} tasks completed (<strong>${projectSummary.percentTranscribed}%</strong>)
+                                <span class="pull-right"><strong>${projectSummary.percentValidated}%</strong> validated.</span>
                             </div>
 
-                            <div id="recordsChartWidget${i}" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${projectSummary.percentComplete}">
-                                <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectSummary.percentComplete}%; "></div>
+                            <div class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${projectSummary.percentTranscribed}">
+                                <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectSummary.percentTranscribed}%; "></div>
                             </div>
+
                         </td>
                         <%-- Volunteer count --%>
                         <td style="border-top: none" class="bold centertext">${projectSummary.volunteerCount}</td>
