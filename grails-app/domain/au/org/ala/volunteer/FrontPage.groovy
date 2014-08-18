@@ -16,7 +16,7 @@ class FrontPage {
 
     static constraints = {
         newsTitle nullable: true, maxSize: 100
-        newsBody nullable: true, maxSize: 255
+        newsBody nullable: true, maxSize: 1024
         newsCreated nullable: true
         systemMessage nullable:  true
         showAchievements nullable: true
