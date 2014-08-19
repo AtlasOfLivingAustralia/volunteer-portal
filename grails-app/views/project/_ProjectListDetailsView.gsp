@@ -1,3 +1,18 @@
+<style>
+    .expedition-progress {
+        height: 30px;
+    }
+
+    .expedition-progress .bar-warning {
+        background: white url(${resource(dir:'images/vp',file:'progress_1x100b.png')}) 50% 50% repeat-x;
+    }
+
+    .expedition-progress .bar-success {
+        background: white url(${resource(dir:'images/vp',file:'progress_1x100g.png')}) 50% 50% repeat-x;
+    }
+
+</style>
+
 <div class="row-fluid">
     <div class="span12">
 
@@ -61,12 +76,13 @@
                         <%-- Progress bar --%>
                         <td style="border-top: none">
                             <div>
-                                <strong>${projectSummary.countTranscribed}</strong> of ${projectSummary.taskCount} tasks completed (<strong>${projectSummary.percentTranscribed}%</strong>)
+                                <strong>${projectSummary.percentTranscribed}%</strong> of ${projectSummary.taskCount} tasks transcribed
                                 <span class="pull-right"><strong>${projectSummary.percentValidated}%</strong> validated.</span>
                             </div>
 
-                            <div class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${projectSummary.percentTranscribed}">
-                                <div class="ui-progressbar-value ui-widget-header ui-corner-left ui-corner-right" style="width: ${projectSummary.percentTranscribed}%; "></div>
+                            <div class="progress expedition-progress">
+                                <div class="bar bar-success" style="width: ${projectSummary.percentValidated}%"></div>
+                                <div class="bar bar-warning" style="width: ${projectSummary.percentTranscribed - projectSummary.percentValidated}%"></div>
                             </div>
 
                         </td>

@@ -34,7 +34,7 @@ class BootStrap {
             User u = new User(userId: 'system', displayName: 'System User')
         }
 
-        def internalRoles = ["validator", "forum_moderator"]
+        def internalRoles = [BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR, BVPRole.SITE_ADMIN]
 
         internalRoles.each { role ->
             ensureRoleExists(role)
@@ -132,50 +132,6 @@ class BootStrap {
     }
 
     def destroy = {
-    }
-
-    void populateTemplateFields(Template template, String resourceName) {
-        // populate default set of TemplateFields
-        //
-        def numberRegex = Pattern.compile('^\\d+\$')
-        String fields = ApplicationHolder.application.parentContext.getResource("classpath:resources/${resourceName}.csv").inputStream.text
-        int fileOrder = 0
-
-        fields.eachCsvLine { fs ->
-            if (fs.size() > 0) {
-                fileOrder++
-                DarwinCoreField dwcf = DarwinCoreField.valueOf(fs[0].trim())
-                if (!TemplateField.findByFieldTypeAndTemplate(dwcf, template)) {
-                    logService.log "creating new FieldType for template ${template.name}: " + fs + " size=" + fs.size()
-                    // Work out the display order - by default it will be in the order of appearance in the file
-                    def displayOrder = fileOrder
-                    if (fs.size() >= 10) {
-                        def orderString = fs[9].trim()
-                        def m = numberRegex.matcher(orderString)
-                        if (m.matches()) {
-                            displayOrder = Integer.parseInt(orderString)
-                        }
-                    }
-
-                    TemplateField tf = new TemplateField(
-                            fieldType: dwcf,
-                            label: fs[1].trim(),
-                            defaultValue: fs[2].trim(),
-                            category: FieldCategory.valueOf(fs[3].trim()),
-                            type: FieldType.valueOf(fs[4].trim()),
-                            mandatory: ((fs[5].trim() == '1') ? true : false),
-                            multiValue: ((fs[6].trim() == '1') ? true : false),
-                            helpText: fs[7].trim(),
-                            validationRule: fs[8].trim(),
-                            template: template,
-                            displayOrder: displayOrder
-                    ).save(flush: true, failOnError: true)
-                } else {
-                    logService.log "Field already exists for template ${template.name} ${dwcf}"
-                }
-            }
-        }
-
     }
 
     private void prepareFrontPage() {

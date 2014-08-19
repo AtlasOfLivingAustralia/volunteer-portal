@@ -188,8 +188,6 @@ class TranscribeController {
 
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
 
-        println flash.message
-
         if (params.msg) {
             flash.message = params.msg
         }

@@ -1,7 +1,9 @@
 package au.org.ala.volunteer
 
 import grails.transaction.NotTransactional
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -11,6 +13,9 @@ class UserService {
     def authService
     def logService
     def grailsApplication
+    def emailService
+    def CustomPageRenderer customPageRenderer
+    def messageSource
 
     static transactional = true
 
@@ -22,15 +27,29 @@ class UserService {
     def registerCurrentUser() {
         def userId = currentUserId
         def displayName = authService.displayName
-        logService.log("Checking user is registered: " + userId + ", " + displayName)
+        logService.log("Checking user is registered: ${displayName} (UserId=${userId})")
         if (userId) {
             if (User.findByUserId(userId) == null) {
+                logService.log("Registering new user: ${displayName} (UserId=${userId})")
                 User user = new User()
                 user.userId = userId
                 user.created = new Date()
                 user.displayName = displayName
                 user.save(flush: true)
+                // Notify admins that a new user has registered
+                notifyNewUser(user)
             }
+        }
+    }
+
+    @NotTransactional
+    private void notifyNewUser(User user) {
+        def interestedUsers = getUsersWithRole(BVPRole.SITE_ADMIN)
+        def message = customPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
+        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+
+        interestedUsers.each {
+            emailService.pushMessageOnQueue(it.userId, "A new user has been registered to ${appName}", message)
         }
     }
 
@@ -71,12 +90,36 @@ class UserService {
             return false;
         }
 
-        // If there the user has been granted the ALA-AUTH roles then these override everything
-        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
+        if (isSiteAdmin()) {
             return true
         }
 
         // to do - check the institution admin roles for this user
+
+        return false
+    }
+
+    public boolean isSiteAdmin() {
+
+        def userId = currentUserId
+
+        if (!userId) {
+            return false;
+        }
+
+        // If  the user has been granted the ALA-AUTH ROLE_BVP_ADMIN....
+        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
+            return true
+        }
+
+        def user = User.findByUserId(userId)
+        if (user) {
+            def siteAdminRole = Role.findByNameIlike(BVPRole.SITE_ADMIN)
+            def userRole = user.userRoles.find { it.role.id == siteAdminRole.id }
+            if (userRole) {
+                return true
+            }
+        }
 
         return false
     }
@@ -88,38 +131,40 @@ class UserService {
      */
     public boolean isValidator(Project project) {
 
-
         def userId = currentUserId
 
         if (!userId) {
             return false;
         }
 
-        // If there the user has been granted the ALA-AUTH roles then these override everything
-        if (authService.userInRole(CASRoles.ROLE_ADMIN) || authService.userInRole(CASRoles.ROLE_VALIDATOR)) {
+        // Site administrator can validate anything
+        if (isSiteAdmin()) {
+            return true
+        }
+
+        // If the user has been granted the ALA-AUTH ROLE_VALIDATOR role...
+        if (authService.userInRole(CASRoles.ROLE_VALIDATOR)) {
             return true
         }
 
         // Otherwise check the intra app roles...
-
         // If project is null, return true if the user can validate in any project
         // If project is not null, return true only if they are validator for that project, or if they have a null project in their validator role (meaning 'all projects')
 
         def user = User.findByUserId(userId)
         if (user) {
-            def validatorRole = Role.findByNameIlike("validator")
+            def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
             def role = user.userRoles.find {
                 it.role.id == validatorRole.id && (it.project == null || project == null || it.project.id == project?.id)
             }
             if (role) {
                 // a role exists for the current user and the specified project (or the user has a role with a null project
-                // indicating that they can validate tasks from any project
+                // indicating that they can validate tasks from any project)
                 return true;
             }
         }
 
         return false;
-
     }
 
     public String getCurrentUserId() {
@@ -136,17 +181,7 @@ class UserService {
     }
 
     def isAdmin() {
-        def userId = currentUserId
-
-        if (!userId) {
-            return false
-        }
-
-        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
-            return true
-        }
-
-        return false
+        return isSiteAdmin()
     }
 
     def isForumModerator(Project project = null) {
@@ -253,10 +288,6 @@ class UserService {
                 activityCount++
             }
         }
-
-//        if (activityCount) {
-//            logService.log("${activityCount} activity records flushed to database")
-//        }
     }
 
     /**

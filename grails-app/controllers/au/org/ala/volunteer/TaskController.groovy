@@ -229,7 +229,7 @@ class TaskController {
             taskInstance.properties = params
             return [taskInstance: taskInstance]
         } else {
-            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page"
             redirect(view: '/index')
         }
     }
@@ -339,7 +339,7 @@ class TaskController {
                 return [taskInstance: taskInstance]
             }
         } else {
-            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page"
             redirect(view: '/index')
         }
     }

@@ -290,7 +290,7 @@ class ProjectController {
 
             return [projectInstance: projectInstance, templateList: Template.list(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes, picklistInstitutionCodes: picklistInstitutionCodes]
         } else {
-            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
@@ -349,7 +349,7 @@ class ProjectController {
             redirect(action:"editGeneralSettings", params: params)
             return
         } else {
-            flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
+            flash.message = "You do not have permission to view this page"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }

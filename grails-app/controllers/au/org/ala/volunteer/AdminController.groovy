@@ -33,7 +33,7 @@ class AdminController {
             return true;
         }
 
-        flash.message = "You do not have permission to view this page (${CASRoles.ROLE_ADMIN} required)"
+        flash.message = "You do not have permission to view this page"
         redirect(uri:"/")
     }
 

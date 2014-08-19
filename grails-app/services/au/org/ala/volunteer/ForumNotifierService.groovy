@@ -11,7 +11,7 @@ class ForumNotifierService {
     def logService
     def userService
     def settingsService
-    au.org.ala.volunteer.CustomPageRenderer customPageRenderer
+    def CustomPageRenderer customPageRenderer
     def emailService
     def messageSource
 

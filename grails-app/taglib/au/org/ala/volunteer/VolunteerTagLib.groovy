@@ -61,7 +61,7 @@ class VolunteerTagLib {
     }
 
     private boolean isAdmin() {
-        return grailsApplication.config.security.cas.bypass || request?.isUserInRole(CASRoles.ROLE_ADMIN)
+        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin()
     }
 
     /**

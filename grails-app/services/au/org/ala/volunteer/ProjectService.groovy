@@ -275,7 +275,11 @@ class ProjectService {
         renderList = renderList.sort { projectSummary ->
 
             if (params.sort == 'completed') {
-                return projectSummary.percentTranscribed
+                return projectSummary.percentTranscribed < 100 ? projectSummary.percentTranscribed : projectSummary.percentValidated + projectSummary.percentTranscribed
+            }
+
+            if (params.sort == 'validated') {
+                return projectSummary.percentValidated
             }
 
             if (params.sort == 'volunteers') {
