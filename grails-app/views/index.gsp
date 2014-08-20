@@ -9,9 +9,9 @@
            h1.bvp-heading {
                 margin-top: 20px;
                 margin-bottom: 20px;
-                font-size: 90px;
+                font-size: 6em;
                 line-height: 90px
-            }
+           }
 
             .bvp-byline {
                 font-size: 1.6em;
@@ -22,8 +22,11 @@
                 margin-left: 0;
             }
 
+            .thumbnail a {
+                text-decoration: none;
+            }
+
             .thumbnail h2 {
-                /*float: right;*/
                 font-size: 1.2em;
                 position: absolute;
                 right: 0px;
@@ -78,6 +81,7 @@
                     position: static;
                     top: inherit;
                     text-align: center;
+                    border-radius: 5px;
                 }
 
                 .thumbnails > li {
@@ -85,11 +89,20 @@
                 }
 
                 .thumbnail {
-                    border: 1px solid #ddd;
+                    background: #f0f0e8;
+
+                    text-align: center;
+                    /*border: 1px solid #ddd;*/
                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
                     padding: 4px;
                 }
 
+            }
+
+            @media (max-width: 480px) {
+                #site-header .navbar-inner #search-2013 {
+                    width: 100px;
+                }
             }
 
         </style>
