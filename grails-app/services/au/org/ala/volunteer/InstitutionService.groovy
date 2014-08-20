@@ -208,4 +208,19 @@ class InstitutionService {
             [it[0], it[1]]
         }
     }
+
+    Long getTranscriberCount(Institution institution) {
+        // TODO Check this produces a sane query plan with real data
+        Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.id in (select id from Project where institution = :institution)", [institution: institution]).get(0)
+    }
+
+    Map<String, Long> getProjectTypeCounts(Institution institution) {
+        Project.createCriteria().list {
+            eq('institution', institution)
+            projections {
+                groupProperty('projectType')
+                count('id')
+            }
+        }.collectEntries { ["${it[0].label}": it[1]] }
+    }
 }

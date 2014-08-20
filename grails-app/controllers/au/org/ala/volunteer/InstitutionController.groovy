@@ -26,8 +26,10 @@ class InstitutionController {
         }
 
         def projectSummaries = projectService.makeSummaryListFromProjectList(projects, params)
+        def transcriberCount = institutionService.getTranscriberCount(institution)
+        def projectTypeCounts = institutionService.getProjectTypeCounts(institution)
 
-        [institutionInstance: institution, projects: projectSummaries.projectRenderList, projectInstanceTotal: projectSummaries.totalProjectCount]
+        [institutionInstance: institution, projects: projectSummaries.projectRenderList, projectInstanceTotal: projectSummaries.totalProjectCount, transcriberCount: transcriberCount, projectTypes: projectTypeCounts]
     }
 
     def list() {

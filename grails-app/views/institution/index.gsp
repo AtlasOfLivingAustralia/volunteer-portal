@@ -110,7 +110,8 @@
 
     <div class="row">
         <div class="span8">
-            <h2>${institutionInstance.acronym} Expeditions</h2>
+            <h2 style="display:inline-block">${institutionInstance.acronym} Expeditions</h2>
+            <small><g:message code="institution.transcribers.label" default="Total Transcribers"/>: ${transcriberCount}. <g:each in="${projectTypes}" var="pt" status="i">${pt.key} <g:message code="institution.projectTypes.label" default="projects"/>: ${pt.value}<g:if test="${i < (projectTypes.size() - 1)}">, </g:if> </g:each> </small>
         </div>
         <div class="span4">
             <div class="btn-group pull-right">
@@ -130,7 +131,7 @@
                 <g:render template="../project/projectListThumbnailView" model="${[extraParams:[id:institutionInstance.id]]}" />
             </g:if>
             <g:else>
-                <g:render template="../project/ProjectListDetailsView" model="${[extraParams:[id:institutionInstance.id]]}" />
+                <g:render template="../project/ProjectListDetailsView" model="${[extraParams:[id:institutionInstance.id, transcriberCount:transcriberCount, projectTypes: projectTypes]]}" />
             </g:else>
 
 
