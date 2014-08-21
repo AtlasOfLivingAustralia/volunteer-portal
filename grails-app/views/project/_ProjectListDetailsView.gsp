@@ -33,12 +33,6 @@
                                 </g:else>
                             </h4>
                         </g:if>
-                        <g:if test="${extraParams.transcriberCount}">
-                            <span><g:message code="institution.transcribers.label" default="Total Transcribers"/>: ${transcriberCount}.</span>
-                        </g:if>
-                        <g:if test="${extraParams.projectTypes}">
-                            <span><g:each in="${projectTypes}" var="pt" status="i">${pt.key} <g:message code="institution.projectTypes.label" default="projects"/>: ${pt.value}<g:if test="${i < (projectTypes.size() - 1)}">, </g:if> </g:each></span>
-                        </g:if>
                     </td>
                     <td colspan="2" style="text-align: right">
                         <span>

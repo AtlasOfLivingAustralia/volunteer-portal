@@ -114,16 +114,6 @@ class ProjectService {
 
     }
 
-    private calcPercent(count, total) {
-        def percent = ((count / total) * 100)
-        if (percent > 99 && count != total) {
-            // Avoid reported 100% unless the count actually equals the task total
-            percent = 99;
-        }
-        return percent
-    }
-
-
     public List<ProjectSummary> getFeaturedProjectList() {
 
         def projectList = Project.list()
@@ -136,21 +126,12 @@ class ProjectService {
         for (Project project : projectList) {
             if (!project.inactive) {
 
-                double percentTranscribed = 0
-                double percentValidated = 0
-
                 def taskCount = (Long) taskCounts[project.id] ?: 0
                 long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
                 long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
                 def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
-
-                if (taskCount) {
-                    percentTranscribed = calcPercent(transcribedCount, taskCount)
-                    percentValidated = calcPercent(validatedCount, taskCount)
-                }
-
-                if (percentTranscribed < 100) {
-                    results << makeProjectSummary(project, taskCount, transcribedCount, percentTranscribed, validatedCount, percentValidated, volunteerCount)
+                if (transcribedCount < taskCount) {
+                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, volunteerCount)
                 }
             }
         }
@@ -169,7 +150,7 @@ class ProjectService {
         return ProjectType.findByName("specimens")
     }
 
-    private ProjectSummary makeProjectSummary(Project project, long taskCount, long transcribedCount, double percentTranscribed, long fullyValidatedCount, double percentValidated, int volunteerCount) {
+    private ProjectSummary makeProjectSummary(Project project, long taskCount, long transcribedCount, long fullyValidatedCount, int volunteerCount) {
 
         if (!project.projectType) {
             def projectType = guessProjectType(project)
@@ -196,9 +177,7 @@ class ProjectService {
         ps.volunteerCount = volunteerCount
         ps.taskCount = taskCount
         ps.countTranscribed = transcribedCount
-        ps.percentTranscribed = (percentTranscribed ? Math.round(percentTranscribed) : 0)
         ps.countValidated = fullyValidatedCount
-        ps.percentValidated = (percentValidated ? Math.round(percentValidated) : 0)
 
         return ps
     }
@@ -215,24 +194,16 @@ class ProjectService {
 
         for (Project project : projectList) {
 
-            double percentTranscribed = 0
-            double percentValidated = 0
-
             def taskCount = (Long) taskCounts[project.id] ?: 0
             long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
             long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
             def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
 
-            if (taskCount) {
-                percentTranscribed = calcPercent(transcribedCount, taskCount)
-                percentValidated = calcPercent(validatedCount, taskCount)
-            }
-
-            if (percentTranscribed < 100 && !project.inactive) {
+            if (transcribedCount < taskCount && !project.inactive) {
                 incompleteCount++;
             }
 
-            def ps = makeProjectSummary(project, taskCount, transcribedCount, percentTranscribed, validatedCount, percentValidated, volunteerCount)
+            def ps = makeProjectSummary(project, taskCount, transcribedCount, validatedCount, volunteerCount)
             projects[project.id] = ps
         }
 

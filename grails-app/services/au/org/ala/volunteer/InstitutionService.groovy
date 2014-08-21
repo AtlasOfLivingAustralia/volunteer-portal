@@ -223,4 +223,24 @@ class InstitutionService {
             }
         }.collectEntries { ["${it[0].label}": it[1]] }
     }
+
+    TaskCounts getTaskCounts(Institution institution) {
+        def totalTasks = countTasksForInstitution(institution)
+        def transcribedTasks = countTranscribedTasksForInstitution(institution)
+        def validatedTasks = countValidatedTasksForInstitution(institution)
+        new TaskCounts(taskCount: totalTasks, countTranscribed: transcribedTasks, countValidated: validatedTasks)
+    }
+
+    int countTasksForInstitution(Institution institution) {
+        Task.executeQuery("select count(*) from Task where project.id in (select id from Project where institution = :institution)", [institution: institution])?.get(0)
+    }
+
+    int countTranscribedTasksForInstitution(Institution institution) {
+        Task.executeQuery("select count(*) from Task where fullyTranscribedBy is not null and project.id in (select id from Project where institution = :institution)", [institution: institution])?.get(0)
+    }
+
+    int countValidatedTasksForInstitution(Institution institution) {
+        Task.executeQuery("select count(*) from Task where fullyValidatedBy is not null and project.id in (select id from Project where institution = :institution)", [institution: institution])?.get(0)
+    }
+
 }

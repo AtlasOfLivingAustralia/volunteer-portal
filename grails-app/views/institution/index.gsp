@@ -100,6 +100,29 @@
                 </cl:ifInstitutionHasLogo>
                 <markdown:renderHtml>${institutionInstance.description}</markdown:renderHtml>
             </div>
+            <div class="insitution-statistics">
+                <table class="table table-condensed">
+                    <tr>
+                        <td><g:message code="institution.transcribers.label" default="Volunteers"/></td>
+                        <td><strong>${transcriberCount}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Expeditions</td>
+                        <td>
+                            <strong>${projectInstanceTotal}</strong> in total
+                            (<g:each in="${projectTypes}" var="pt" status="i"><span>${pt.key}: <strong>${pt.value}</strong></span><g:if test="${i < projectTypes.size() - 1}">, </g:if></g:each>)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <g:message code="institution.tasks.label" default="Tasks"/>
+                        </td>
+                        <td>
+                            <strong>${taskCounts?.taskCount}</strong> in total (<strong>${taskCounts.percentTranscribed}%</strong> transcribed, <strong>${taskCounts.percentValidated}%</strong> validated)
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <div class="span3">
             <section id="leaderBoardSection">
@@ -111,7 +134,6 @@
     <div class="row">
         <div class="span8">
             <h2 style="display:inline-block">${institutionInstance.acronym} Expeditions</h2>
-            <small><g:message code="institution.transcribers.label" default="Total Transcribers"/>: ${transcriberCount}. <g:each in="${projectTypes}" var="pt" status="i">${pt.key} <g:message code="institution.projectTypes.label" default="projects"/>: ${pt.value}<g:if test="${i < (projectTypes.size() - 1)}">, </g:if> </g:each> </small>
         </div>
         <div class="span4">
             <div class="btn-group pull-right">
@@ -131,10 +153,8 @@
                 <g:render template="../project/projectListThumbnailView" model="${[extraParams:[id:institutionInstance.id]]}" />
             </g:if>
             <g:else>
-                <g:render template="../project/ProjectListDetailsView" model="${[extraParams:[id:institutionInstance.id, transcriberCount:transcriberCount, projectTypes: projectTypes]]}" />
+                <g:render template="../project/ProjectListDetailsView" model="${[extraParams:[id:institutionInstance.id]]}" />
             </g:else>
-
-
         </div>
     </div>
 
