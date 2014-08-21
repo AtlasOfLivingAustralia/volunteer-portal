@@ -1,3 +1,4 @@
+
 <%@ page import="au.org.ala.volunteer.ProjectActiveFilterType; au.org.ala.volunteer.ProjectStatusFilterType" contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
@@ -14,7 +15,26 @@
                 $("#leaderBoardSection").html(content);
             });
 
+            $("#searchbox").keydown(function(e) {
+                if (e.keyCode ==13) {
+                    doSearch();
+                }
+            });
+
+            $("#btnSearch").click(function(e) {
+                e.preventDefault();
+                doSearch();
+            });
+
+            $("#searchbox").focus();
+
         });
+
+        function doSearch() {
+            var q = $("#searchbox").val();
+            var url = "${createLink(controller: 'institution',action:'index', id: institutionInstance.id)}?mode=${params.mode}&q=" + encodeURIComponent(q) + "&statusMode=${statusFilterMode}&activeMode=${activeFilterMode}";
+            window.location = url;
+        }
 
     </r:script>
 

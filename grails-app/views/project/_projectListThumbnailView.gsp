@@ -20,7 +20,7 @@
             <thead>
                 <tr>
                     <td colspan="2">
-                        <g:if test="${params.q}">
+                        <g:if test="${filteredProjectsCount != totalProjectCount}">
                             <h4>
                                 <g:if test="${projects}">
                                     ${filteredProjectsCount} matching projects
@@ -40,14 +40,11 @@
                     </td>
                 </tr>
                 <tr>
-
                     <g:set var="additionalParams" value="mode=thumbs&statusFilter=${params.statusFilter ?: ""}&activeFilter=${params.activeFilter ?: ""}" />
-
-                    <th><a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'name' ? 'active' : ''}">Name</a></th>
-                    <th><a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'completed' ? 'active' : ''}">Tasks&nbsp;completed</a></th>
-                    <th><a href="?sort=volunteers&order=${params.sort == 'volunteers' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'volunteers' ? 'active' : ''}">Volunteers</a></th>
-                    <th><a href="?sort=institution&order=${params.sort == 'institution' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'institution' ? 'active' : ''}">Sponsoring&nbsp;Institution</a></th>
-                    <th><a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'type' ? 'active' : ''}">Type</a></th>
+                    <g:set var="columns" value="${[ ['name', 'Name'], ['completed', 'Tasks completed'], ['volunteers', 'Volunteers'], ['institution', 'Sponsoring Institution'], ['type', 'Type']]}" />
+                    <g:each in="${columns}" var="colkvp">
+                        <th><a href="?sort=${colkvp[0]}&order=${params.sort == colkvp[0] && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == colkvp[0] ? 'active' : ''}">${colkvp[1]}</a></th>
+                    </g:each>
                 </tr>
             </thead>
             <tbody>
