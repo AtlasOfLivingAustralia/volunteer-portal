@@ -19,7 +19,7 @@ class InstitutionController {
 
         def projects
 
-        if (userService.isAdmin()) {
+        if (userService.isInstitutionAdmin(institution)) {
             projects = Project.findAllByInstitution(institution)
         } else {
             projects = Project.findAllByInstitutionAndInactiveNotEqual(institution, true)

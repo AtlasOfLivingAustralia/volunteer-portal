@@ -12,6 +12,7 @@ class Institution implements Serializable {
     String contactPhone // optional
     String websiteUrl // optional
     String collectoryUid // optional
+    String imageCaption // optional
 
     int version
 
@@ -27,6 +28,7 @@ class Institution implements Serializable {
         description blank: true, nullable: true, maxSize: 16384
         acronym blank: true, nullable: true
         websiteUrl blank: true, nullable: true
+        imageCaption blank: true, nullable: true
     }
 
     static mapping = {

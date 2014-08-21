@@ -6,28 +6,36 @@ class PicklistItemController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
     
-    def autocomplete = {
-        def picklistName = params.picklist
+    def autocomplete() {
 
+        def picklistName = params.picklist
         def task = Task.get(params.int('taskId'))
         def query = params.q
-        if (picklistName) {
+        if (picklistName && query && task) {
             def picklist = Picklist.findByName(picklistName)
-            // First look for institution specific picklist items
-            def items = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%"+query+"%", picklist, task.project?.picklistInstitutionCode)
-            // If there aren't any, look for global items
-            if (!items) {
-                items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNullAndValueIlike(picklist, "%"+query+"%")
-            }
+            if (picklist) {
+                // Check to see if there are institution specific values for this pick list.
+                // If there, we constrain our search to those items, otherwise we look in the general (null institution code) list
+                def instItemCount = PicklistItem.countByPicklistAndInstitutionCode(picklist, task.project?.picklistInstitutionCode)
+                def items
+                if (instItemCount > 0) {
+                    items = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%" + query + "%", picklist, task.project?.picklistInstitutionCode)
+                } else {
+                    items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNullAndValueIlike(picklist, "%" + query + "%")
+                }
 
-            render(contentType:"application/json") {
-                autoCompleteList = array {
-                    for (pli in items) {
-                        picklistItem(name:pli.value, key:pli.key)
+                if (items) {
+                    // Send the results back as an array
+                    render(contentType: "application/json") {
+                        autoCompleteList = array {
+                            for (pli in items) {
+                                picklistItem(name: pli.value, key: pli.key)
+                            }
+                        }
                     }
+                    return
                 }
             }
-            return
         }
 
         render([] as JSON)

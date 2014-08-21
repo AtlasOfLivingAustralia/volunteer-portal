@@ -155,11 +155,13 @@ class LeaderBoardController {
         // Flatten the map into a list for easy sorting, so we can slice off the top N
         def list = []
         scoreMap.each { kvp ->
-            def user = User.findByUserId(kvp.key)
-            if (user) {
-                list << [name: user?.displayName, score: kvp?.value ?: 0, userId: user?.id]
-            } else {
-                println "Failed to find user with key: ${kvp.key}"
+            if (kvp.key) {
+                def user = User.findByUserId(kvp.key)
+                if (user) {
+                    list << [name: user?.displayName, score: kvp?.value ?: 0, userId: user?.id]
+                } else {
+                    println "Failed to find user with key: ${kvp.key}"
+                }
             }
         }
 

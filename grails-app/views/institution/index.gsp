@@ -45,6 +45,11 @@
             opacity: 1;
         }
 
+    .image-caption {
+        font-style: italic;
+        font-size: 0.8em;
+    }
+
 </style>
 
 </head>
@@ -71,6 +76,9 @@
         <div class="span3">
             <div class="institution-image">
                 <img src="<cl:institutionImageUrl id="${institutionInstance.id}"/>" />
+                <g:if test="${institutionInstance.imageCaption}">
+                    <div class="image-caption">${institutionInstance.imageCaption}</div>
+                </g:if>
             </div>
             <div class="well well-small">
                 <small>

@@ -63,3 +63,11 @@
     </label>
     <g:textField name="websiteUrl" value="${institutionInstance?.websiteUrl}"/>
 </div>
+
+<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'imageCaption', 'error')}">
+    <label for="imageCaption">
+        <g:message code="institution.imageCaption.label" default="Image caption/attribution" />
+    </label>
+    <g:textField name="imageCaption" value="${institutionInstance?.imageCaption}"/>
+</div>
+

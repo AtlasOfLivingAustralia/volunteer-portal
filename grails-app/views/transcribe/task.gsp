@@ -381,6 +381,9 @@
                 min-height: 24px;
             }
 
+            .ui-state-hover, .ui-widget-content .ui-state-hover {
+                border: none;
+            }
 
             #image-container, #image-parent-container {
                 background-color: #a9a9a9;
