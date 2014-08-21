@@ -214,14 +214,20 @@ class InstitutionService {
         Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.id in (select id from Project where institution = :institution)", [institution: institution]).get(0)
     }
 
-    Map<String, Long> getProjectTypeCounts(Institution institution) {
+    Map<String, Long> getProjectTypeCounts(Institution institution, boolean includeDeactivated = false) {
         Project.createCriteria().list {
             eq('institution', institution)
+            if (!includeDeactivated) {
+                or {
+                    isNull("inactive")
+                    eq("inactive", false)
+                }
+            }
             projections {
                 groupProperty('projectType')
                 count('id')
             }
-        }.collectEntries { ["${it[0].label}": it[1]] }
+        }.collectEntries { [ "${it[0].label}": it[1] ] }
     }
 
     TaskCounts getTaskCounts(Institution institution) {
