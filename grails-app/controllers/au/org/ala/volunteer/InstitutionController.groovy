@@ -32,7 +32,7 @@ class InstitutionController {
 
         def projectSummaries = projectService.makeSummaryListFromProjectList(projects, params, filter)
         def transcriberCount = institutionService.getTranscriberCount(institution)
-        def projectTypeCounts = institutionService.getProjectTypeCounts(institution)
+        def projectTypeCounts = institutionService.getProjectTypeCounts(institution, userService.isInstitutionAdmin(institution))
         def taskCounts = institutionService.getTaskCounts(institution)
 
         [
