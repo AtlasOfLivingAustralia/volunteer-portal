@@ -10,12 +10,16 @@
                 margin-top: 20px;
                 margin-bottom: 20px;
                 font-size: 6em;
-                line-height: 90px
+                line-height: 90px;
+           }
+
+           h1.bvp-heading, .bvp-byline {
+               font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif
            }
 
             .bvp-byline {
-                font-size: 1.6em;
-                font-weight: bold;
+                font-size: 1.4em;
+                /*font-weight: bold;*/
             }
 
             .row-fluid .thumbnails .span4:nth-child(3n+1) {
@@ -110,7 +114,7 @@
 
     <body>
         <cl:headerContent title="${message(code:'default.application.name', default:'DigiVol')}" selectedNavItem="bvp" hideCrumbs="${true}">
-            <p class="bvp-byline">Volunteers building knowledge through digitising collections</p>
+            <p class="bvp-byline">Volunteers building knowledge and communities through digitising collections</p>
         </cl:headerContent>
 
         <div class="container-fluid">
