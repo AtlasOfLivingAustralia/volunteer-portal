@@ -228,7 +228,7 @@ class InstitutionService {
         def totalTasks = countTasksForInstitution(institution)
         def transcribedTasks = countTranscribedTasksForInstitution(institution)
         def validatedTasks = countValidatedTasksForInstitution(institution)
-        new TaskCounts(taskCount: totalTasks, countTranscribed: transcribedTasks, countValidated: validatedTasks)
+        new TaskCounts(taskCount: totalTasks, transcribedCount: transcribedTasks, validatedCount: validatedTasks)
     }
 
     int countTasksForInstitution(Institution institution) {

@@ -23,10 +23,10 @@
             <thead>
                 <tr>
                     <td colspan="3">
-                        <g:if test="${params.q}">
+                        <g:if test="${filteredProjectsCount != projectsTotalCount}">
                             <h4>
                                 <g:if test="${projects}">
-                                    ${projectInstanceTotal} matching projects
+                                    ${filteredProjectsCount} matching projects
                                 </g:if>
                                 <g:else>
                                     No matching projects
@@ -110,7 +110,7 @@
         </table>
 
         <div class="pagination">
-            <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q] + (extraParams ?: [:])}" />
+            <g:paginate total="${filteredProjectsCount}" prev="" next="" params="${[q:params.q] + (extraParams ?: [:])}" />
         </div>
     </div>
 </div>

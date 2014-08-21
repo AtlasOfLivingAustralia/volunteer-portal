@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.ProjectSummary" %>
 <style>
 
     .thumbnails a {
@@ -22,7 +23,7 @@
                         <g:if test="${params.q}">
                             <h4>
                                 <g:if test="${projects}">
-                                    ${projectInstanceTotal} matching projects
+                                    ${filteredProjectsCount} matching projects
                                 </g:if>
                                 <g:else>
                                     No matching projects
@@ -39,11 +40,14 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&mode=thumbs" class="btn ${params.sort == 'name' ? 'active' : ''}">Name</a></th>
-                    <th><a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&mode=thumbs" class="btn ${params.sort == 'completed' ? 'active' : ''}">Tasks&nbsp;completed</a></th>
-                    <th><a href="?sort=volunteers&order=${params.sort == 'volunteers' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&mode=thumbs" class="btn ${params.sort == 'volunteers' ? 'active' : ''}">Volunteers</a></th>
-                    <th><a href="?sort=institution&order=${params.sort == 'institution' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&mode=thumbs" class="btn ${params.sort == 'institution' ? 'active' : ''}">Sponsoring&nbsp;Institution</a></th>
-                    <th><a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&mode=thumbs" class="btn ${params.sort == 'type' ? 'active' : ''}">Type</a></th>
+
+                    <g:set var="additionalParams" value="mode=thumbs&statusFilter=${params.statusFilter ?: ""}&activeFilter=${params.activeFilter ?: ""}" />
+
+                    <th><a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'name' ? 'active' : ''}">Name</a></th>
+                    <th><a href="?sort=completed&order=${params.sort == 'completed' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'completed' ? 'active' : ''}">Tasks&nbsp;completed</a></th>
+                    <th><a href="?sort=volunteers&order=${params.sort == 'volunteers' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'volunteers' ? 'active' : ''}">Volunteers</a></th>
+                    <th><a href="?sort=institution&order=${params.sort == 'institution' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'institution' ? 'active' : ''}">Sponsoring&nbsp;Institution</a></th>
+                    <th><a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&${additionalParams}" class="btn ${params.sort == 'type' ? 'active' : ''}">Type</a></th>
                 </tr>
             </thead>
             <tbody>
@@ -72,7 +76,7 @@
                             <td style="text-align: center">
                                 <small>${projectSummary.project.featuredOwner ?: "&nbsp;"}</small>
                             </td>
-                            <td style="text-align: right">${projectSummary.percentComplete}%</td>
+                            <td style="text-align: right">${projectSummary.percentTranscribed}%</td>
                         </tr>
                     </table>
                 </div>
@@ -81,6 +85,6 @@
     </g:each>
 </ul>
 <div class="pagination">
-    <g:paginate total="${projectInstanceTotal}" prev="" next="" params="${[q:params.q, mode:'thumbs'] + (extraParams ?: [:])}" />
+    <g:paginate total="${filteredProjectsCount}" prev="" next="" params="${[q:params.q, mode:'thumbs'] + (extraParams ?: [:])}" />
 </div>
 

@@ -268,7 +268,7 @@ class ProjectController {
 
         [
             projects: projectSummaryList.projectRenderList,
-            projectInstanceTotal: projectSummaryList.matchingProjectCount,
+            filteredProjectsCount: projectSummaryList.matchingProjectCount,
             numberOfUncompletedProjects: numberOfUncompletedProjects
         ]
     }

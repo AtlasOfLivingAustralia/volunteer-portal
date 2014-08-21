@@ -176,13 +176,13 @@ class ProjectService {
         ps.iconLabel = iconLabel
         ps.volunteerCount = volunteerCount
         ps.taskCount = taskCount
-        ps.countTranscribed = transcribedCount
-        ps.countValidated = fullyValidatedCount
+        ps.transcribedCount = transcribedCount
+        ps.validatedCount = fullyValidatedCount
 
         return ps
     }
 
-    public makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params) {
+    public makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params, Closure<Boolean> filter = null) {
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
         def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
@@ -213,6 +213,12 @@ class ProjectService {
 
         renderList = projects.collect({ kvp -> kvp.value })
 
+        // first remove any filtered projects - This supports view filters such as 'active' or 'incomplete' only views
+        if (filter) {
+            renderList = renderList.findAll filter
+        }
+
+        // Then apply the query paramter
         if (params.q) {
             String query = params.q.toLowerCase()
 

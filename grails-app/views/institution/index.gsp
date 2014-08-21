@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="au.org.ala.volunteer.ProjectActiveFilterType; au.org.ala.volunteer.ProjectStatusFilterType" contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -117,7 +117,7 @@
                     <tr>
                         <td>Expeditions</td>
                         <td>
-                            <strong>${projectInstanceTotal}</strong> in total
+                            <strong>${totalProjectCount}</strong> in total
                             (<g:each in="${projectTypes}" var="pt" status="i"><span>${pt.key}: <strong>${pt.value}</strong></span><g:if test="${i < projectTypes.size() - 1}">, </g:if></g:each>)
                         </td>
                     </tr>
@@ -134,34 +134,55 @@
         </div>
         <div class="span3">
             <section id="leaderBoardSection">
-
             </section>
         </div>
     </div>
 
     <div class="row">
-        <div class="span8">
+        <div class="span4">
             <h2 style="display:inline-block">${institutionInstance.acronym} Expeditions</h2>
         </div>
-        <div class="span4">
+        <div class="span8">
+
+            <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]}" />
+
             <div class="btn-group pull-right">
-                <a href="${createLink(action:'index', id: institutionInstance.id)}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View expedition list">
+                <a href="${createLink(action:'index', id: institutionInstance.id, params: urlParams + [mode: 'list'] )}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View expedition list">
                     <i class="icon-th-list"></i>
                 </a>
-                <a href="${createLink(action:'index', id: institutionInstance.id, params:[mode:'thumbs'])}" class="btn btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View expedition thumbnails">
+                <a href="${createLink(action:'index', id: institutionInstance.id, params: urlParams + [mode:'thumbs'])}" class="btn btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View expedition thumbnails">
                     <i class="icon-th"></i>
                 </a>
             </div>
+
+            <div class="btn-group pull-right" style="padding-right: 10px">
+                <g:each in="${ProjectStatusFilterType.values()}" var="mode">
+                    <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
+                    <a href="${href}" class="btn btn-small ${statusFilterMode == mode ? "active" : ""}">${mode.description}</a>
+                </g:each>
+            </div>
+
+            <cl:ifInstitutionAdmin institution="${institutionInstance}">
+            <div class="btn-group pull-right" style="padding-right: 10px">
+                <g:each in="${ProjectActiveFilterType.values()}" var="mode">
+                    <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
+                    %{--<g:set var="href" value="?sort=${params.sort ?: ""}&order=${params.order ?: ""}&offset=0&q=${params.q ?: ""}&mode=${params.mode ?: ""}&activeFilter=${mode.toString()}&statusFilter=${statusFilterMode?.toString()}" />--}%
+                    <a href="${href}" class="btn btn-small ${activeFilterMode == mode ? "active" : ""}">${mode.description}</a>
+                </g:each>
+            </div>
+            </cl:ifInstitutionAdmin>
         </div>
     </div>
 
     <div class="row">
         <div class="span12">
+            <g:set var="model" value="${[extraParams:[id:institutionInstance.id, statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
+
             <g:if test="${params.mode == 'thumbs'}">
-                <g:render template="../project/projectListThumbnailView" model="${[extraParams:[id:institutionInstance.id]]}" />
+                <g:render template="../project/projectListThumbnailView" model="${model}" />
             </g:if>
             <g:else>
-                <g:render template="../project/ProjectListDetailsView" model="${[extraParams:[id:institutionInstance.id]]}" />
+                <g:render template="../project/ProjectListDetailsView" model="${model}" />
             </g:else>
         </div>
     </div>

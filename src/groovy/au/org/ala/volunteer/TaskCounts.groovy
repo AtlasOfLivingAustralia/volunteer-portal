@@ -8,17 +8,31 @@ package au.org.ala.volunteer
 class TaskCounts {
 
     long taskCount
-    long countTranscribed
-    long countValidated
+    long transcribedCount
+    long validatedCount
 
+    /**
+     * Calculated property. Depends on taskCount and transcribedCount being set
+     * @return The percent transcribed
+     */
     public int getPercentTranscribed() {
-        return calcPercent(countTranscribed, taskCount)
+        return calcPercent(transcribedCount, taskCount)
     }
 
+    /**
+     * Calculated property. Depends on taskCount and validatedCount being set
+     * @return the percent validated
+     */
     public int getPercentValidated() {
-        return calcPercent(countValidated, taskCount)
+        return calcPercent(validatedCount, taskCount)
     }
 
+    /**
+     * Calculates a percentage, but ensures that 100% is not erroneously returned due to rounding
+     * @param count
+     * @param total
+     * @return The percentage
+     */
     private static double calcPercent(double count, double total) {
         if (total == 0) {
             return 0
