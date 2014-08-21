@@ -167,7 +167,7 @@
                 <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                     <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
                     %{--<g:set var="href" value="?sort=${params.sort ?: ""}&order=${params.order ?: ""}&offset=0&q=${params.q ?: ""}&mode=${params.mode ?: ""}&activeFilter=${mode.toString()}&statusFilter=${statusFilterMode?.toString()}" />--}%
-                    <a href="${href}" class="btn btn-small ${activeFilterMode == mode ? "active" : ""}">${mode.description}</a>
+                    <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode ? "active" : ""}">${mode.description}</a>
                 </g:each>
             </div>
             </cl:ifInstitutionAdmin>
