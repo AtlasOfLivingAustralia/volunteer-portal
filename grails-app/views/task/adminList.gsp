@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <r:require module="amplify" />
-        <title>Project Administration</title>
+        <title>Expedition administration</title>
 
         <r:script type="text/javascript">
 
@@ -81,7 +81,7 @@
 
     <body>
 
-        <cl:headerContent title="Project Admin - ${projectInstance ? projectInstance.featuredLabel : 'Tasks'}" selectedNavItem="expeditions">
+        <cl:headerContent title="Expedition administration - ${projectInstance ? projectInstance.featuredLabel : 'Tasks'}" selectedNavItem="expeditions">
             <%
                 pageScope.crumbs = [
                     [link: createLink(controller: 'project', action: 'list'), label: 'Expeditions'],

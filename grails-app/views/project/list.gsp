@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.Project" %>
+<%@ page import="au.org.ala.volunteer.ProjectActiveFilterType; au.org.ala.volunteer.ProjectStatusFilterType; au.org.ala.volunteer.Project" %>
 
 <html>
     <head>
@@ -6,31 +6,8 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
         <title><g:message code="default.list.label" args="[entityName]"/></title>
+
         <style type="text/css">
-
-        .ui-widget-header {
-            border: 1px solid #3A5C83;
-            background: white url(${resource(dir:'images/vp',file:'progress_1x100b.png')}) 50% 50% repeat-x;
-        }
-
-        .ui-widget-content {
-            border: 1px solid #3A5C83;
-        }
-
-        [inactive=true] {
-            background-color: #d3d3d3;
-            opacity: 0.5;
-        }
-
-        tr .adminLink {
-            color: #d3d3d3;
-        }
-
-        tr[inactive=true] .adminLink {
-            color: black;
-            opacity: 1;
-        }
-
         </style>
 
         <r:script>
@@ -94,10 +71,16 @@
 
         <div id="content">
             <div class="row">
-                <div class="span8">
+                <div class="span6">
                     <h2>${numberOfUncompletedProjects} expeditions need your help. Join now!</h2>
                 </div>
-                <div class="span4">
+                <div class="span6">
+
+                    <g:set var="statusFilterMode" value="${ params.statusFilter ?: ProjectStatusFilterType.showAll}" />
+                    <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
+
+                    <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
+
                     <div class="btn-group pull-right">
                         <a href="${createLink(action:'list')}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View expedition list">
                             <i class="icon-th-list"></i>
@@ -106,14 +89,33 @@
                             <i class="icon-th"></i>
                         </a>
                     </div>
+
+                    <div class="btn-group pull-right" style="padding-right: 10px">
+                        <g:each in="${ProjectStatusFilterType.values()}" var="mode">
+                            <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
+                            <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                        </g:each>
+                    </div>
+
+                    <cl:ifAdmin>
+                        <div class="btn-group pull-right" style="padding-right: 10px">
+                            <g:each in="${ProjectActiveFilterType.values()}" var="mode">
+                                <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
+                                <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                            </g:each>
+                        </div>
+                    </cl:ifAdmin>
+
                 </div>
             </div>
 
+            <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
+
             <g:if test="${params.mode == 'thumbs'}">
-                <g:render template="projectListThumbnailView" />
+                <g:render template="projectListThumbnailView" model="${model}"/>
             </g:if>
             <g:else>
-                <g:render template="ProjectListDetailsView" />
+                <g:render template="ProjectListDetailsView" model="${model}" />
             </g:else>
         </div>
 

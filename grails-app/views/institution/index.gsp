@@ -51,26 +51,12 @@
             text-align: center;
         }
 
-        [inactive=true] {
-            background-color: #d3d3d3;
-            opacity: 0.5;
+        .image-caption {
+            font-style: italic;
+            font-size: 0.8em;
         }
 
-        tr .adminLink {
-            color: #d3d3d3;
-        }
-
-        tr[inactive=true] .adminLink {
-            color: black;
-            opacity: 1;
-        }
-
-    .image-caption {
-        font-style: italic;
-        font-size: 0.8em;
-    }
-
-</style>
+    </style>
 
 </head>
 

@@ -308,7 +308,12 @@ class ProjectService {
             projectList = Project.findAllByInactiveOrInactive(false, null)
         }
 
-        return makeSummaryListFromProjectList(projectList, params)
+        def statusFilterMode = params.statusFilter as ProjectStatusFilterType ?: ProjectStatusFilterType.showAll
+        def activeFilterMode = params.activeFilter as ProjectActiveFilterType ?: ProjectActiveFilterType.showAll
+
+        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
+
+        return makeSummaryListFromProjectList(projectList, params, filter)
     }
 
     def checkAndResizeExpeditionImage(Project projectInstance) {

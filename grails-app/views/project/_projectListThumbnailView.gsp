@@ -9,6 +9,9 @@
         text-decoration: underline;
     }
 
+    [inactive=true]  {
+        opacity: 0.5;
+    }
 
 </style>
 <div class="row">
