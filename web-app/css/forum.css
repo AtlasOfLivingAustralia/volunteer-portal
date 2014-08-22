@@ -129,27 +129,6 @@ tr.Critical td:nth-of-type(2) a {
   width: 120px;
 }
 
-.ui-widget {
-    font-family: inherit !important;
-    font-size: inherit !important;
-}
-
-.ui-widget-content, .ui-state-active, .ui-tabs-anchor {
-    background-color: inherit !important;
-}
-
-.ui-widget-content .ui-state-active {
-    background-color: #FFFEF7 !important;
-}
-
-.ui-tabs, .ui-tabs-panel, .ui-tabs-nav {
-    background-color: #FFFEF7 !important;
-}
-
-h3 {
-    background-color: #FFFEF7 !important;
-}
-
 .moderator-label {
     color: royalblue;
     font-size: smaller;

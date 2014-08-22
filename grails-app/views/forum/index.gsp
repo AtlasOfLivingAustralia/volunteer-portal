@@ -15,41 +15,6 @@
                 padding: 10px;
             }
 
-            .ui-widget {
-                font-family: inherit !important;
-                font-size: inherit !important;
-            }
-
-            .ui-widget-content, .ui-state-active, .ui-tabs-anchor {
-                background-color: inherit !important;
-            }
-
-            .ui-widget-content .ui-state-active {
-                background-color: #FFFEF7 !important;
-            }
-
-            .ui-tabs, .ui-tabs-panel, .ui-tabs-nav {
-                background-color: #FFFEF7 !important;
-            }
-
-            h3 {
-                background-color: #FFFEF7 !important;
-            }
-
-            [inactive=true] {
-                background-color: #d3d3d3;
-                opacity: 0.5;
-            }
-
-            tr[inactive=true] h3 {
-                background-color: #d3d3d3 !important;
-            }
-
-            tr[inactive=true] .adminLink {
-                color: black;
-                opacity: 1;
-            }
-
         </style>
 
     </head>
