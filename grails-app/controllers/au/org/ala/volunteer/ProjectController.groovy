@@ -81,13 +81,15 @@ class ProjectController {
                 newsItem = newsItems?.first()
             }
 
+            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], params)?.projectRenderList?.get(0)
+
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
             if (percentComplete > 99 && taskCount != tasksTranscribed) {
                 // Avoid reporting 100% unless the transcribed count actually equals the task count
                 percentComplete = 99;
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete, newsItems: newsItems])
+            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete, newsItems: newsItems, projectSummary: projectSummary])
         }
     }
 

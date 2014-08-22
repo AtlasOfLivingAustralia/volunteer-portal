@@ -1,18 +1,5 @@
 <style>
 
-    .expedition-progress {
-        height: 30px;
-        margin-bottom: 0;
-    }
-
-    .expedition-progress .bar-warning {
-        background: white url(${resource(dir:'images/vp',file:'progress_1x100b.png')}) 50% 50% repeat-x;
-    }
-
-    .expedition-progress .bar-success {
-        background: white url(${resource(dir:'images/vp',file:'progress_1x100g.png')}) 50% 50% repeat-x;
-    }
-
     [inactive=true]  {
         background-color: #F0F0E8;
     }
@@ -128,16 +115,7 @@
                                 </div>
                                 <%-- Progress bar --%>
                                 <div class="span3">
-                                    <div>
-                                        <span><strong>${projectSummary.percentTranscribed}%</strong> of ${projectSummary.taskCount} tasks transcribed</span>
-                                    </div>
-                                    <div class="progress expedition-progress">
-                                        <div class="bar bar-success" style="width: ${projectSummary.percentValidated}%"></div>
-                                        <div class="bar bar-warning" style="width: ${projectSummary.percentTranscribed - projectSummary.percentValidated}%"></div>
-                                    </div>
-                                    <div>
-                                        <span><strong>${projectSummary.percentValidated}%</strong> validated</span>
-                                    </div>
+                                    <g:render template="../project/projectSummaryProgressBar" model="${[projectSummary: projectSummary]}" />
                                 </div>
                                 <%-- Volunteer count --%>
                                 <div class="span2">

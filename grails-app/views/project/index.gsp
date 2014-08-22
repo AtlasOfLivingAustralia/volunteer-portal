@@ -133,14 +133,6 @@
 
     <style type="text/css">
 
-        .ui-widget-header {
-            border: 1px solid #3A5C83;
-            background: white url(${resource(dir:'images/vp',file:'progress_1x100b.png')}) 50% 50% repeat-x;
-        }
-
-        .ui-widget-content {
-            border: 1px solid #3A5C83;
-        }
         .projectContent {
             margin-top: 10px;
         }
@@ -232,14 +224,14 @@
 
                     <section class="padding-bottom">
                         <h4>${projectInstance.featuredLabel} progress</h4>
-
-                        <div id="recordsChart">
-                            <strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${percentComplete}" format="#"/>%</strong>)
-                        </div>
-
-                        <div id="recordsChartWidget1" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="41">
-                            <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: ${formatNumber(format: "#", number: percentComplete)}%; "></div>
-                        </div>
+                        <g:render template="../project/projectSummaryProgressBar" model="${[projectSummary: projectSummary]}" />
+                        %{--<div id="recordsChart">--}%
+                            %{--<strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${percentComplete}" format="#"/>%</strong>)--}%
+                        %{--</div>--}%
+                        %{--<div class="progress expedition-progress">--}%
+                            %{--<div class="bar bar-success" style="width: ${projectSummary.percentValidated}%"></div>--}%
+                            %{--<div class="bar bar-warning" style="width: ${projectSummary.percentTranscribed - projectSummary.percentValidated}%"></div>--}%
+                        %{--</div>--}%
                     </section>
 
                     <g:if test="${projectInstance.showMap}">
