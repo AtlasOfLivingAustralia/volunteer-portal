@@ -23,7 +23,7 @@ class Institution implements Serializable {
         contactName blank: true, nullable: true
         contactEmail email: true, blank: true, nullable: true
         contactPhone blank: true, nullable: true
-        collectoryUid nullable: true, unique: true
+        collectoryUid nullable: true
         shortDescription nullable: true, blank: true, maxSize: 512
         description blank: true, nullable: true, maxSize: 16384
         acronym blank: true, nullable: true
