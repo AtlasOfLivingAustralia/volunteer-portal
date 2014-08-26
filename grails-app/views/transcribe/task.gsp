@@ -66,8 +66,8 @@
 
                 $(".transcribeForm").submit(function(eventObj) {
 
-                    if (typeof(transcribeBeforeSubmit) != "undefined") {
-                        return transcribeBeforeSubmit();
+                    if (typeof(transcribeBeforeSubmit) === "function") {
+                        transcribeBeforeSubmit();
                     }
 
                     transcribeWidgets.prepareFieldWidgetsForSubmission();
@@ -832,7 +832,7 @@
 
         var taskState = {
             action: action,
-            taskId: ${taskInstance.id},
+            taskId: ${taskInstance.id ?: 0},
                 dynamicDataSetFieldId: dynamicDataSetFieldId,
                 fields: []
             };
@@ -841,11 +841,11 @@
                 taskState.fields.push(field);
             });
 
-            amplify.store("bvp_task_${taskInstance.id}", taskState);
+            amplify.store("bvp_task_${taskInstance.id ?: 0}", taskState);
         }
 
         function checkAndRecoverFromFailedSubmit() {
-            var lastState = amplify.store("bvp_task_${taskInstance.id}");
+            var lastState = amplify.store("bvp_task_${taskInstance.id ?: 0}");
             if (lastState && lastState.fields) {
                 alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
 
@@ -876,7 +876,7 @@
                     }
                 }
                 // Now clear our local store so this message doesn't happen again if the user chooses not to save this time.
-                amplify.store("bvp_task_${taskInstance.id}", null);
+                amplify.store("bvp_task_${taskInstance.id ?: 0}", null);
             }
         }
 
@@ -903,6 +903,11 @@
         }
 
         function checkValidation() {
+
+            if (typeof(transcribeBeforeValidation) === "function") {
+                transcribeBeforeValidation();
+            }
+
             transcribeWidgets.prepareFieldWidgetsForSubmission();
             var validationResults = transcribeValidation.validateFields()
 

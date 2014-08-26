@@ -638,28 +638,34 @@ class TaskService {
 
             String urlPrefix = grailsApplication.config.images.urlPrefix
             String imagesHome = grailsApplication.config.images.home
-            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-            BufferedImage image = null
+            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
 
-            try {
-                image = ImageIO.read(new File(path))
-            } catch (Exception ex) {
-                logService.log("Exception trying to read image path: ${path} - ${ex}")
-            }
-
-            if (image) {
-                def width = image.width
-                def height = image.height
-                if (rotate == 90 || rotate == 270) {
-                    width = image.height
-                    height = image.width
-                }
-                return new ImageMetaData(width: width, height: height, url: imageUrl)
-            } else {
-                logService.log("Could not read image file: ${path} - could not get image metadata")
-            }
+            return getImageMetaDataFromFile(new File(path), imageUrl, rotate)
         }
         return null
+    }
+
+    def getImageMetaDataFromFile(File file, String imageUrl, int rotate) {
+
+        BufferedImage image
+        try {
+            image = ImageIO.read(file)
+        } catch (Exception ex) {
+            logService.log("Exception trying to read image path: ${file.getAbsolutePath()} - ${ex}")
+        }
+
+        if (image) {
+            def width = image.width
+            def height = image.height
+            if (rotate == 90 || rotate == 270) {
+                width = image.height
+                height = image.width
+            }
+            return new ImageMetaData(width: width, height: height, url: imageUrl)
+        } else {
+            logService.log("Could not read image file: ${file?.getAbsolutePath()} - could not get image metadata")
+        }
+
     }
 
     def calculateTaskDates() {
