@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+
 class ProjectSummaryFilter {
 
     public static Closure<Boolean> composeProjectFilter(ProjectStatusFilterType statusMode, ProjectActiveFilterType activeMode) {
@@ -49,6 +51,14 @@ public enum ProjectStatusFilterType {
         description = desc
     }
 
+    public static ProjectStatusFilterType fromString(String statusFilter) {
+        if (statusFilter) {
+            statusFilter as ProjectStatusFilterType
+        } else {
+            showAll
+        }
+    }
+
 }
 
 public enum ProjectActiveFilterType {
@@ -60,5 +70,14 @@ public enum ProjectActiveFilterType {
     public ProjectActiveFilterType(String desc) {
         description = desc
     }
+
+    public static ProjectActiveFilterType fromString(String activeFilter) {
+        if (activeFilter) {
+            activeFilter as ProjectActiveFilterType
+        } else {
+            showAll
+        }
+    }
+
 
 }
