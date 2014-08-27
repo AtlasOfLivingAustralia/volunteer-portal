@@ -1,4 +1,8 @@
-<%@ page import="au.org.ala.volunteer.FieldType; groovy.json.StringEscapeUtils; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="grails.converters.JSON; au.org.ala.volunteer.PicklistService; au.org.ala.volunteer.FieldType; groovy.json.StringEscapeUtils; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="au.org.ala.volunteer.PicklistService" %>
+<%
+    PicklistService picklistService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.PicklistService').newInstance()
+%>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 <r:require module="slickgrid" />
 
@@ -22,10 +26,10 @@
     }
 
     .slick-cell.editable {
-        border-color: #F0F0E8;
+        border-color: silver;
     }
 
-    .slick-cell input[type='text'] {
+    .slick-cell input[type='text'], .slick-cell select {
         padding: 0;
         margin: 0;
         min-height: 22px;
@@ -33,7 +37,7 @@
         border-radius: 0;
         color: #000000;
         font-size: 1em;
-        width: 100%;
+        width: 99%;
     }
 
     .fixed-column {
@@ -109,7 +113,25 @@
             return parseInt(data) + 1;
         };
 
-        <g:set var="widgetMap" value="${[(FieldType.textarea):"Slick.Editors.LongText", (FieldType.date): "BVP.SlickGrid.Date"]}" />
+        <%
+            // Maps a field type to a SlickGrid editor closure reference
+            def editorExpr = { FieldType fieldType, long taskId, DarwinCoreField darwinCoreField ->
+                switch (fieldType) {
+                    case FieldType.textarea:
+                        return "Slick.Editors.LongText"
+                    case FieldType.date:
+                        return "BVP.SlickGrid.Date"
+                     case FieldType.autocomplete:
+                         return "BVP.SlickGrid.Autocomplete(${taskId}, '${darwinCoreField.toString()}')"
+                    case FieldType.select:
+                        def items = picklistService.getPicklistItemsForProject(darwinCoreField, taskInstance.project)
+                        def options = items.collect { '"' + StringEscapeUtils.escapeJavaScript(it.value) + '"' }
+                        return "BVP.SlickGrid.Select([${options.join(',')}])"
+                    default:
+                        return "Slick.Editors.Text"
+                }
+            }
+        %>
 
         var columns = [
             {id: 'id', name:'', field:'id', focusable: false, cssClass: 'fixed-column', maxWidth: 35, formatter: fixedColumnFormatter },
@@ -118,7 +140,7 @@
                 <g:set var="fieldName" value="${field.fieldType.name()}"/>
                 <g:set var="fieldValue" value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}" />
                 <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText)}" />
-                <g:set var="slickEditor" value="${widgetMap[field.type] ?: 'Slick.Editors.Text'}" />
+                <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance.id, field.fieldType)}" />
                 {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor} }<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
             </g:each>
         ];
