@@ -308,8 +308,8 @@ class ProjectService {
             projectList = Project.findAllByInactiveOrInactive(false, null)
         }
 
-        def statusFilterMode = params.statusFilter as ProjectStatusFilterType ?: ProjectStatusFilterType.showAll
-        def activeFilterMode = params.activeFilter as ProjectActiveFilterType ?: ProjectActiveFilterType.showAll
+        def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter)
+        def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter)
 
         def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
 
