@@ -43,9 +43,9 @@
         <r:script>
 
             var BVP_JS_URLS = {
-                selectProjectFragment: "${createLink(controller:'project', action:'findProjectFragment')}"
+                selectProjectFragment: "${createLink(controller:'project', action:'findProjectFragment')}",
+                webappRoot: "${resource(dir:'/')}"
             };
-
 
             // initialise plugins
             $(document).ready(function() {

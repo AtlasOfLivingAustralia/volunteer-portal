@@ -85,6 +85,7 @@ modules = {
         resource url: 'js/slickgrid/slick.dataview.js'
         resource url: 'js/slickgrid/slick.formatters.js'
         resource url: 'js/slickgrid/slick.editors.js'
+        resource url: 'js/slickgrid.bvp.js' // BVP Specific editors/formatters for slickgrid
         resource url: 'js/slickgrid/slick.grid.css'
     }
 
