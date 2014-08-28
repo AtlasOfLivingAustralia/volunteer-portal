@@ -22,10 +22,10 @@
     }
 
     .slick-cell.editable {
-        border-color: #F0F0E8;
+        border-color: silver;
     }
 
-    .slick-cell input[type='text'] {
+    .slick-cell input[type='text'], .slick-cell select {
         padding: 0;
         margin: 0;
         min-height: 22px;
@@ -33,7 +33,7 @@
         border-radius: 0;
         color: #000000;
         font-size: 1em;
-        width: 100%;
+        width: 99%;
     }
 
     .fixed-column {
@@ -93,101 +93,6 @@
     var spreadsheetDataView = null;
     var grid = null;
 
-    (function ($) {
-        // register namespace
-        $.extend(true, window, {
-            "Slick": {
-                "Editors": {
-                    "BVPDate": BVPDateEditor
-                }
-            }
-        });
-
-        function BVPDateEditor(args) {
-            var $input;
-            var defaultValue;
-            var scope = this;
-            var calendarOpen = false;
-
-            this.init = function () {
-                $input = $("<INPUT type=text class='editor-text' />");
-                $input.appendTo(args.container);
-                $input.focus().select();
-                $input.datepicker({
-                    showOn: "button",
-                    buttonImageOnly: true,
-                    buttonImage: "../images/calendar.gif",
-                    dateFormat: 'yy-mm-dd',
-                    beforeShow: function () {
-                        calendarOpen = true
-                    },
-                    onClose: function () {
-                        calendarOpen = false
-                    }
-                });
-                $input.width($input.width() - 20);
-            };
-
-            this.destroy = function () {
-                $.datepicker.dpDiv.stop(true, true);
-                $input.datepicker("hide");
-                $input.datepicker("destroy");
-                $input.remove();
-            };
-
-            this.show = function () {
-                if (calendarOpen) {
-                    $.datepicker.dpDiv.stop(true, true).show();
-                }
-            };
-
-            this.hide = function () {
-                if (calendarOpen) {
-                    $.datepicker.dpDiv.stop(true, true).hide();
-                }
-            };
-
-            this.position = function (position) {
-                if (!calendarOpen) {
-                    return;
-                }
-                $.datepicker.dpDiv.css("top", position.top + 30).css("left", position.left);
-            };
-
-            this.focus = function () {
-                $input.focus();
-            };
-
-            this.loadValue = function (item) {
-                defaultValue = item[args.column.field];
-                $input.val(defaultValue);
-                $input[0].defaultValue = defaultValue;
-                $input.select();
-            };
-
-            this.serializeValue = function () {
-                return $input.val();
-            };
-
-            this.applyValue = function (item, state) {
-                item[args.column.field] = state;
-            };
-
-            this.isValueChanged = function () {
-                return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
-            };
-
-            this.validate = function () {
-                return {
-                    valid: true,
-                    msg: null
-                };
-            };
-
-            this.init();
-        }
-    })($);
-
     $(document).ready(function() {
 
         $(".tutorialLinks a").each(function(index, element) {
@@ -204,7 +109,25 @@
             return parseInt(data) + 1;
         };
 
-        <g:set var="widgetMap" value="${[(FieldType.textarea):"Slick.Editors.LongText", (FieldType.date): "Slick.Editors.BVPDate"]}" />
+        <%
+            // Maps a field type to a SlickGrid editor closure reference
+            def editorExpr = { FieldType fieldType, long taskId, DarwinCoreField darwinCoreField ->
+                switch (fieldType) {
+                    case FieldType.textarea:
+                        return "Slick.Editors.LongText"
+                    case FieldType.date:
+                        return "BVP.SlickGrid.Date"
+                     case FieldType.autocomplete:
+                         return "BVP.SlickGrid.Autocomplete(${taskId}, '${darwinCoreField.toString()}')"
+                    case FieldType.select:
+                        def items = picklistService.getPicklistItemsForProject(darwinCoreField, taskInstance.project)
+                        def options = items.collect { '"' + StringEscapeUtils.escapeJavaScript(it.value) + '"' }
+                        return "BVP.SlickGrid.Select([${options.join(',')}])"
+                    default:
+                        return "Slick.Editors.Text"
+                }
+            }
+        %>
 
         var columns = [
             {id: 'id', name:'', field:'id', focusable: false, cssClass: 'fixed-column', maxWidth: 35, formatter: fixedColumnFormatter },
@@ -213,8 +136,8 @@
                 <g:set var="fieldName" value="${field.fieldType.name()}"/>
                 <g:set var="fieldValue" value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}" />
                 <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText)}" />
-                <g:set var="slickEditor" value="${widgetMap[field.type] ?: 'Slick.Editors.Text'}" />
-                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor} }<g:if test="${fieldIndex < fieldList.size() - 1 }">,</g:if>
+                <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance.id, field.fieldType)}" />
+                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor} }<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
             </g:each>
         ];
 
