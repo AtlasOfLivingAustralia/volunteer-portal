@@ -26,6 +26,11 @@
         padding: 0;
     }
 
+    .slick-cell.invalid input[type='text'], .slick-cell.invalid select {
+        background: #ff4500;
+    }
+
+
     .slick-cell.editable {
         border-color: silver;
     }
@@ -135,11 +140,40 @@
         %>
 
         var makeValidator = function(ruleName) {
-            if (!ruleName) {
+
+            if (ruleName) {
+
                 return function(value) {
+
+                    var rule = transcribeValidation.rules[ruleName];
+                    console.log(rule);
+                    if (rule) {
+                        console.log("Here");
+                        var element = $(grid.getActiveCellNode()).find("input, select");
+                        var result = rule.test(value, element);
+                        var message = "";
+
+                        if (!result) {
+                            var messageSource = rule.message;
+                            if (messageSource) {
+                                if (typeof(messageSource) === 'string') {
+                                    message = messageSource;
+                                } else if (typeof(messageSource) === 'function') {
+                                    message = messageSource(element);
+                                }
+                            }
+                        }
+                        element.attr("title", message);
+                        return {
+                            valid: result,
+                            msg: message
+                        }
+                    }
+
+                    // Default case, no rule
                     return {
-                        valid: false,
-                        msg: 'The message!'
+                        valid: true,
+                        msg: ""
                     }
                 }
             }
@@ -203,11 +237,6 @@
             dataView.addItem(item);
         });
 
-        grid.onValidationError.subscribe(function(event, args) {
-            console.log(event);
-            console.log(args);
-        });
-
         spreadsheetDataView = dataView;
 
         return grid
@@ -250,9 +279,6 @@
             }
             $("#recordValues\\.0\\.${entriesField?.fieldType}").attr('value', items.length);
         }
-
     }
-
-
 
 </r:script>
