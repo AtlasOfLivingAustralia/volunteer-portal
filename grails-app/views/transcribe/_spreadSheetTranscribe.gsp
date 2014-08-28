@@ -1,4 +1,9 @@
 <%@ page import="au.org.ala.volunteer.FieldType; groovy.json.StringEscapeUtils; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="au.org.ala.volunteer.PicklistService" %>
+<%
+    PicklistService picklistService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.PicklistService').newInstance()
+%>
+
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 <r:require module="slickgrid" />
 
@@ -129,6 +134,18 @@
             }
         %>
 
+        var makeValidator = function(ruleName) {
+            if (!ruleName) {
+                return function(value) {
+                    return {
+                        valid: false,
+                        msg: 'The message!'
+                    }
+                }
+            }
+            return null;
+        };
+
         var columns = [
             {id: 'id', name:'', field:'id', focusable: false, cssClass: 'fixed-column', maxWidth: 35, formatter: fixedColumnFormatter },
             <g:each in="${fieldList}" var="field" status="fieldIndex">
@@ -137,7 +154,8 @@
                 <g:set var="fieldValue" value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}" />
                 <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText)}" />
                 <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance.id, field.fieldType)}" />
-                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor} }<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
+                <g:set var="validationRuleName" value="${field.validationRule}" />
+                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor}, validator: makeValidator('${validationRuleName}') }<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
             </g:each>
         ];
 
@@ -181,8 +199,13 @@
 
         grid.onAddNewRow.subscribe(function(event, args) {
             var item = args.item;
-            item.id = "" + (dataView.getLength());
+            item.id = "" + dataView.getLength();
             dataView.addItem(item);
+        });
+
+        grid.onValidationError.subscribe(function(event, args) {
+            console.log(event);
+            console.log(args);
         });
 
         spreadsheetDataView = dataView;

@@ -62,6 +62,14 @@
         };
 
         this.validate = function () {
+
+            if (args.column.validator) {
+                var validationResults = args.column.validator($input.val());
+                if (!validationResults.valid) {
+                    return validationResults;
+                }
+            }
+
             return {
                 valid: true,
                 msg: null
@@ -145,6 +153,14 @@
         };
 
         this.validate = function () {
+
+            if (args.column.validator) {
+                var validationResults = args.column.validator($input.val());
+                if (!validationResults.valid) {
+                    return validationResults;
+                }
+            }
+
             return {
                 valid: true,
                 msg: null
