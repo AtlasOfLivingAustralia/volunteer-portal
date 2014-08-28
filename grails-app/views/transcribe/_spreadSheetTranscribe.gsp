@@ -214,7 +214,7 @@
                 <g:set var="fieldValue" value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}" />
                 <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText)}" />
                 <g:set var="slickEditor" value="${widgetMap[field.type] ?: 'Slick.Editors.Text'}" />
-                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor} }<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
+                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor} }<g:if test="${fieldIndex < fieldList.size() - 1 }">,</g:if>
             </g:each>
         ];
 
@@ -258,7 +258,7 @@
 
         grid.onAddNewRow.subscribe(function(event, args) {
             var item = args.item;
-            item.id = "" + (dataView.getLength() + 1);
+            item.id = "" + (dataView.getLength());
             dataView.addItem(item);
         });
 
