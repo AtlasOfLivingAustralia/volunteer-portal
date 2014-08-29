@@ -210,24 +210,36 @@ class InstitutionService {
     }
 
     Long getTranscriberCount(Institution institution) {
-        // TODO Check this produces a sane query plan with real data
-        Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.id in (select id from Project where institution = :institution)", [institution: institution]).get(0)
+        Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.institution = :institution", [institution: institution]).get(0)
     }
 
-    Map<String, Long> getProjectTypeCounts(Institution institution, boolean includeDeactivated = false) {
-        Project.createCriteria().list {
-            eq('institution', institution)
-            if (!includeDeactivated) {
-                or {
-                    isNull("inactive")
-                    eq("inactive", false)
-                }
+    Map<String, Map<String, Long>> getProjectTypeCounts(Institution institution, boolean includeDeactivated = false) {
+        final tasks = Task.executeQuery("select new map(project.id as projId, project.projectType.label as label, fullyTranscribedBy as ft, fullyValidatedBy as fv) from Task where project.institution = :institution and ((project.inactive is null) or (project.inactive is not null and (project.inactive = :incDe or :incDe = true)))", [institution: institution, incDe: includeDeactivated])
+
+        // Do this to ensure projects with 0 tasks still get counted
+        final projectCountByProjectType = Project.executeQuery("select projectType.label, count(id) from Project where institution = :institution and ((inactive is null) or (inactive is not null and (inactive = :incDe or :incDe = true))) group by projectType.label", [institution: institution, incDe: includeDeactivated])
+
+        final accumulator = projectCountByProjectType.collectEntries {
+            final result = [:]
+            final key = it.length > 1 ? it[0] ?: 'None' : 'None'
+            final total = it.length > 1 ? it[1] : it[0]
+            result.put(key, [complete: 0, started: 0, total: total])
+            result
+        }
+
+        final groups = tasks.groupBy([{ it.label }, { it.projId }])
+
+        final projectTypeCounts = groups.inject(accumulator) { acc, val ->
+            final key = val.key ?: 'None'
+            final result = acc.get(key)
+            val.value.each { projTaskList ->
+                if (projTaskList.value.every { it.fv }) result.complete++
+                else if (projTaskList.value.any { it.fv || it.ft }) result.started++
             }
-            projections {
-                groupProperty('projectType')
-                count('id')
-            }
-        }.collectEntries { [ "${it[0].label}": it[1] ] }
+            acc
+        }
+
+        return projectTypeCounts
     }
 
     TaskCounts getTaskCounts(Institution institution) {
@@ -238,15 +250,15 @@ class InstitutionService {
     }
 
     int countTasksForInstitution(Institution institution) {
-        Task.executeQuery("select count(*) from Task where project.id in (select id from Project where institution = :institution)", [institution: institution])?.get(0)
+        Task.executeQuery("select count(*) from Task where project.institution = :institution", [institution: institution])?.get(0)
     }
 
     int countTranscribedTasksForInstitution(Institution institution) {
-        Task.executeQuery("select count(*) from Task where fullyTranscribedBy is not null and project.id in (select id from Project where institution = :institution)", [institution: institution])?.get(0)
+        Task.executeQuery("select count(*) from Task where fullyTranscribedBy is not null and project.institution = :institution", [institution: institution])?.get(0)
     }
 
     int countValidatedTasksForInstitution(Institution institution) {
-        Task.executeQuery("select count(*) from Task where fullyValidatedBy is not null and project.id in (select id from Project where institution = :institution)", [institution: institution])?.get(0)
+        Task.executeQuery("select count(*) from Task where fullyValidatedBy is not null and project.institution = :institution", [institution: institution])?.get(0)
     }
 
 }

@@ -5,8 +5,37 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="default.application.name" /> - ${institutionInstance.name ?: 'unknown'}</title>
-    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
+    <r:style>
+        .pt-div {
+            padding: 0 1em 0 0;
+        }
+
+        .pt-div dl {
+            margin-left: 0.5em;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .pt-div dt {
+            font-weight: normal;
+        }
+
+        .pt-div dt, .pt-div dd {
+            display: inline;
+            margin: 0;
+        }
+
+        .pt-div dt:after {
+            content: ':';
+        }
+
+        .pt-div dd:after {
+	        content: '\A';
+	        white-space: pre;
+        }
+    </r:style>
     <r:script>
 
         $(document).ready(function () {
@@ -27,7 +56,6 @@
             });
 
             $("#searchbox").focus();
-
         });
 
         function doSearch() {
@@ -121,18 +149,27 @@
                         <td><strong>${transcriberCount}</strong></td>
                     </tr>
                     <tr>
-                        <td>Expeditions</td>
-                        <td>
-                            <strong>${totalProjectCount}</strong> in total
-                            (<g:each in="${projectTypes}" var="pt" status="i"><span>${pt.key}: <strong>${pt.value}</strong></span><g:if test="${i < projectTypes.size() - 1}">, </g:if></g:each>)
-                        </td>
-                    </tr>
-                    <tr>
                         <td>
                             <g:message code="institution.tasks.label" default="Tasks"/>
                         </td>
                         <td>
                             <strong>${taskCounts?.taskCount}</strong> in total (<strong>${taskCounts.percentTranscribed}%</strong> transcribed, <strong>${taskCounts.percentValidated}%</strong> validated)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Expeditions</td>
+                        <td>
+                            <g:each in="${projectTypes}" var="pt">
+                                <div class="pt-div" style="display:inline-block;">
+                                    <span><strong>${pt.key}</strong> ${pt.value.total}</span>
+                                    <dl>
+                                        <dt>Underway</dt>
+                                        <dd>${pt.value.started}</dd>
+                                        <dt>Complete</dt>
+                                        <dd>${pt.value.complete}</dd>
+                                    </dl>
+                                </div>
+                            </g:each>
                         </td>
                     </tr>
                 </table>
