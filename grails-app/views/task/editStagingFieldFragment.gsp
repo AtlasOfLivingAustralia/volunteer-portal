@@ -68,8 +68,6 @@
             if (fieldName) {
                 window.location = "${createLink(controller:'task', action:'saveFieldDefinition', params:[projectId: projectInstance.id, fieldDefinitionId: fieldDefinition?.id])}&fieldName=" + fieldName + "&fieldType=" + fieldType + "&recordIndex=" + recordIndex + "&format=" + format
             }
-
-            bvp.hideModal();
         });
 
         $("#fieldType").change(function() {

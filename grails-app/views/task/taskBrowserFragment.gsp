@@ -209,6 +209,7 @@
     });
 
     $("#copy_task_data").click(function (e) {
+        e.preventDefault();
         var currentTaskIndex = $("#task_list").attr("currentTaskIndex");
         var taskId = $("#task_" + currentTaskIndex).attr("task_id")
         copyDataFromTask(taskId)
@@ -217,6 +218,7 @@
 
 
     $("#cancel_button").click(function (e) {
+        e.preventDefault();
         bvp.hideModal();
     });
 
