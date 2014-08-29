@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="default.application.name" /> - ${institutionInstance.name ?: 'unknown'}</title>
-    <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
     <r:style>
         .pt-div {
@@ -34,10 +34,6 @@
         .pt-div dd:after {
 	        content: '\A';
 	        white-space: pre;
-        }
-
-        #exp-table td, #exp-table thead th:not(:first-of-type) {
-            text-align: center;
         }
     </r:style>
     <r:script>
