@@ -38,8 +38,13 @@ class AjaxController {
 
         def stats = [:]
 
-        stats.specimensTranscribed = taskService.countTranscribedByProjectType("default")
-        stats.journalPagesTranscribed = taskService.countTranscribedByProjectType("Journal")
+        def projectTypes = ProjectType.list()
+
+        projectTypes.each {
+            def c = Task.createCriteria()
+            def projects = Project.findAllByProjectType(it)
+            stats[it.description ?: it.name] = Task.countByProjectInList(projects)
+        }
 
         def volunteerCounts = userService.getUserCounts()
         stats.volunteerCount = volunteerCounts?.size()
@@ -52,18 +57,24 @@ class AjaxController {
         def projectCounts = taskService.getProjectTaskTranscribedCounts()
         def projectTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
 
-        int completedCount = 0;
-        int incompleteCount = 0;
+        int completedCount = 0
+        int incompleteCount = 0
+        int deactivated = 0
         for (Project p : projects) {
-            if (projectCounts[p.id] == projectTranscribedCounts[p.id]) {
-                completedCount++;
+            if (p.inactive) {
+                deactivated++
             } else {
-                incompleteCount++;
+                if (projectCounts[p.id] == projectTranscribedCounts[p.id]) {
+                    completedCount++
+                } else {
+                    incompleteCount++
+                }
             }
         }
 
-        stats.activeExpeditionsCount = incompleteCount;
-        stats.completedExpeditionsCount = completedCount;
+        stats.activeExpeditionsCount = incompleteCount
+        stats.completedExpeditionsCount = completedCount
+        stats.deactivatedExpeditionsCount = deactivated
 
         respond stats
     }
