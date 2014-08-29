@@ -37,7 +37,6 @@
         var format = $("input:radio[name='optionsExport']:checked").val();
         var url = "${createLink(controller:'project', action:'exportCSV', id: projectId, params:[validated: exportCriteria == 'validated', transcribed: exportCriteria=='transcribed'])}&exportFormat=" + format;
         window.location = url;
-        bvp.hideModal();
     });
 
 </script>

@@ -129,16 +129,13 @@ class PicklistService {
     
     public List getPicklistItemsForProject(DarwinCoreField picklistField, Project project) {
         def results = []
-        if (picklistField) {        
+        if (picklistField && project) {
             def pl = Picklist.findByName(picklistField.toString())
             if (pl) {
-                if (project) {
+                if (project.picklistInstitutionCode) {
                     results = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project.picklistInstitutionCode)
-                    if (!results) {
-                        results = PicklistItem.findAllByPicklist(pl)
-                    }
                 } else {
-                    results = PicklistItem.findAllByPicklist(pl)
+                    results = PicklistItem.findAllByPicklistAndInstitutionCode(pl, null)
                 }
             }
         }

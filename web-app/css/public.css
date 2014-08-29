@@ -74,18 +74,9 @@ html {
 }
 /* end */
 
-#content input[type="submit"], #fancybox-wrap input[type="submit"] {
+#content input[type="submit"] {
     color: black;
 }
-
-/* div.nav { margin-bottom: 10px; } */
-
-/*div.nav a, #breadcrumb a {*/
-    /*background: url('http://www.ala.org.au/wp-content/themes/ala/images/breadcrumb-bg.png') right center no-repeat;*/
-    /*padding-right: 5px;*/
-    /*margin-right: 3px;*/
-    /* text-decoration: none; */
-/*}*/
 
 .section > #breadcrumb {
     padding-left: 0px;

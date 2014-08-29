@@ -5,8 +5,6 @@
         <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-        <script type="text/javascript" src="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.pack.js')}"></script>
-        <link rel="stylesheet" href="${resource(dir: 'js/fancybox', file: 'jquery.fancybox-1.3.4.css')}"/>
 
         <style type="text/css">
 

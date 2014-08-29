@@ -16,6 +16,7 @@
 package au.org.ala.volunteer
 
 import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.compiler.support.GrailsResourceLoader
 
 /**
  * Tag Lib for Transcribe page
@@ -297,10 +298,15 @@ class TranscribeTagLib {
             def imageMetaData = taskService.getImageMetaData(multimedia, rotate)
 
             if (!imageMetaData) {
+
+                def sampleFile = grailsApplication.mainContext.getResource("images/sample-task.jpg").file
+
+
+                def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
+                imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
                 mb.dev(class:'alert alert-danger') {
                     mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
                 }
-                return;
             }
 
             mb.div(id:'image-parent-container') {

@@ -77,4 +77,16 @@ modules = {
         resource url: 'css/institution-dropdown.css'
     }
 
+    "slickgrid" {
+        dependsOn "jquery, jquery-ui"
+        resource url: 'js/slickgrid/jquery.event.drag-2.2.js'
+        resource url: 'js/slickgrid/slick.core.js'
+        resource url: 'js/slickgrid/slick.grid.js'
+        resource url: 'js/slickgrid/slick.dataview.js'
+        resource url: 'js/slickgrid/slick.formatters.js'
+        resource url: 'js/slickgrid/slick.editors.js'
+        resource url: 'js/slickgrid.bvp.js' // BVP Specific editors/formatters for slickgrid
+        resource url: 'js/slickgrid/slick.grid.css'
+    }
+
 }
