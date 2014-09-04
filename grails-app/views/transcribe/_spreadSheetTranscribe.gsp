@@ -57,6 +57,10 @@
         background-image: none;
     }
 
+    .checkbox-cell {
+        text-align: center;
+    }
+
 </style>
 
 
@@ -129,6 +133,8 @@
                         return "BVP.SlickGrid.Date"
                      case FieldType.autocomplete:
                          return "BVP.SlickGrid.Autocomplete(${taskId}, '${darwinCoreField.toString()}')"
+                    case FieldType.checkbox:
+                        return "BVP.SlickGrid.Checkbox"
                     case FieldType.select:
                         def items = picklistService.getPicklistItemsForProject(darwinCoreField, taskInstance.project)
                         def options = items.collect { '"' + StringEscapeUtils.escapeJavaScript(it.value) + '"' }
@@ -148,7 +154,6 @@
                     var rule = transcribeValidation.rules[ruleName];
                     console.log(rule);
                     if (rule) {
-                        console.log("Here");
                         var element = $(grid.getActiveCellNode()).find("input, select");
                         var result = rule.test(value, element);
                         var message = "";
@@ -187,9 +192,15 @@
                 <g:set var="fieldName" value="${field.fieldType.name()}"/>
                 <g:set var="fieldValue" value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}" />
                 <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText)}" />
-                <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance.id, field.fieldType)}" />
+                <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance?.id ?: -1, field.fieldType)}" />
                 <g:set var="validationRuleName" value="${field.validationRule}" />
-                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor}, validator: makeValidator('${validationRuleName}') }<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
+                <g:set var="formatter" value="" />
+                <g:set var="cssClass" value="" />
+                <g:if test="${field.type == FieldType.checkbox}">
+                    <g:set var="formatter" value="BVP.SlickGrid.Checkmark" />
+                    <g:set var="cssClass" value="checkbox-cell" />
+                </g:if>
+                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor}, validator: makeValidator('${validationRuleName}'), formatter: ${formatter ?: 'null'}, cssClass: "${cssClass ?: ''}" }<g:if test="${fieldIndex < fieldList.size()- 1 }">,</g:if>
             </g:each>
         ];
 
@@ -198,7 +209,8 @@
             enableCellNavigation: true,
             enableColumnReorder: false,
             enableAddRow: true,
-            autoEdit: true
+            autoEdit: true,
+            syncColumnCellResize: true
         };
 
         var dataView = new Slick.Data.DataView();

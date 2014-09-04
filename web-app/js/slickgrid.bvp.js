@@ -1,4 +1,21 @@
 (function ($) {
+    // register namespace
+    $.extend(true, window, {
+        "BVP": {
+            "SlickGrid": {
+                "Checkmark": CheckmarkFormatter
+            }
+        }
+    });
+
+    function CheckmarkFormatter(row, cell, value, columnDef, dataContext) {
+        return value ? "<input type='checkbox' checked='checked'/>" : "<input type='checkbox' />";
+    }
+
+})(jQuery);
+
+
+(function ($) {
 
     // register namespace
     $.extend(true, window, {
@@ -11,10 +28,60 @@
                 },
                 "Select": function(options) {
                     return SelectEditor.bind(this, options)
-                }
+                },
+                "Checkbox": CheckboxEditor
             }
         }
     });
+
+    function CheckboxEditor(args) {
+        var $select;
+        var defaultValue;
+
+        this.init = function () {
+            $select = $("<INPUT type=checkbox value='true' class='editor-checkbox' hideFocus>");
+            $select.appendTo(args.container);
+            $select.focus();
+        };
+
+        this.destroy = function () {
+            $select.remove();
+        };
+
+        this.focus = function () {
+            $select.focus();
+        };
+
+        this.loadValue = function (item) {
+            defaultValue = !!item[args.column.field];
+            if (defaultValue) {
+                $select.prop('checked', true);
+            } else {
+                $select.prop('checked', false);
+            }
+        };
+
+        this.serializeValue = function () {
+            return $select.prop('checked');
+        };
+
+        this.applyValue = function (item, state) {
+            item[args.column.field] = state;
+        };
+
+        this.isValueChanged = function () {
+            return (this.serializeValue() !== defaultValue);
+        };
+
+        this.validate = function () {
+            return {
+                valid: true,
+                msg: null
+            };
+        };
+
+        this.init();
+    }
 
     function SelectEditor(options, args) {
 
@@ -78,7 +145,6 @@
 
         this.init();
     }
-
 
     function AutoCompleteEditor(taskId, fieldName, args) {
 
