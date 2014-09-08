@@ -27,6 +27,7 @@
         <div class="row">
             <div class="span12">
                 <a href="${createLink(action:'mappingTool')}" class="btn">Mapping tool</a>
+                <a href="${createLink(action:'migrateProjectsToInstitutions')}" class="btn">Expedition-Institution migration tool</a>
             </div>
         </div>
     </body>

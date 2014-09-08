@@ -1,12 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
 
-<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
-    <label for="collectoryUid">
-        <g:message code="institution.collectoryUid.label" default="Collectory Uid" />
-    </label>
-    <g:textField class="input-mini" name="collectoryUid" value="${institutionInstance.collectoryUid}"/>
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'name', 'error')} required">
     <label for="name">
         <g:message code="institution.name.label" default="Name" />
@@ -33,7 +26,10 @@
     <label for="description">
         <g:message code="institution.description.label" default="Description" />
     </label>
-    <g:textArea class="input-block-level" rows="6" name="description" value="${institutionInstance?.description}"/>
+    <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" class="span12">
+        ${institutionInstance?.description}
+    </tinyMce:renderEditor>
+    %{--<g:textArea class="input-block-level" rows="6" name="description" value="${institutionInstance?.description}"/>--}%
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'contactName', 'error')}">
@@ -71,3 +67,20 @@
     <g:textField name="imageCaption" value="${institutionInstance?.imageCaption}"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
+    <label for="collectoryUid">
+        <g:message code="institution.collectoryUid.label" default="Collectory Uid" />
+    </label>
+    <g:textField class="input-mini" name="collectoryUid" value="${institutionInstance.collectoryUid}"/>
+</div>
+<r:script>
+jQuery(function($) {
+    tinyMCE.init({
+        mode: "textareas",
+        theme: "advanced",
+        editor_selector: "mceadvanced",
+        theme_advanced_toolbar_location : "top",
+        convert_urls : false
+    });
+});
+</r:script>

@@ -3,20 +3,27 @@
 <html>
 	<head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+        <meta name="layout" content="institutionSettingsLayout"/>
         <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
         <g:setProvider library="jquery"/>
 	</head>
 	<body>
-        <cl:headerContent title="${message(code:'default.edit.label', args:[entityName])} - ${institutionInstance?.acronym}">
-            <%
-                pageScope.crumbs = [
-                        [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')],
-                        [link:createLink(controller:'institutionAdmin'), label:message(code:'default.institutions.label', default:'Manage Institutions')]
-                ]
-            %>
-        </cl:headerContent>
+        %{--<cl:headerContent title="${message(code:'default.edit.label', args:[entityName])} - ${institutionInstance?.acronym}">--}%
+            %{--<%--}%
+                %{--pageScope.crumbs = [--}%
+                        %{--[link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')],--}%
+                        %{--[link:createLink(controller:'institutionAdmin'), label:message(code:'default.institutions.label', default:'Manage Institutions')]--}%
+                %{--]--}%
+            %{--%>--}%
+        %{--</cl:headerContent>--}%
+
+        <content tag="pageTitle">General Settings</content>
+
+        <content tag="adminButtonBar">
+            <a class="btn" href="${createLink(controller:'institution', action:'index', id: institutionInstance.id)}"><i class="icon-eye-open"></i> View client page</a>
+        </content>
+
 		<div id="edit-institution" class="content scaffold-edit" role="main">
 			<g:hasErrors bean="${institutionInstance}">
 			<ul class="errors" role="alert">
@@ -25,9 +32,9 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-            <div class="container-fluid">
-                <div class="row-fluid">
-                    <div class="span6">
+            %{--<div class="container-fluid">--}%
+                %{--<div class="row-fluid">--}%
+                    %{--<div class="span6">--}%
                         <g:form url="[controller:'institutionAdmin', id:institutionInstance?.id, action:'update']" method="PUT" >
                             <g:hiddenField name="version" value="${institutionInstance?.version}" />
                             <fieldset class="form">
@@ -37,19 +44,10 @@
                                 <g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
                             </fieldset>
                         </g:form>
-                    </div>
-                    <div class="span1">
-                        <button type="button" id="pop-col-val" class="btn btn-primary" name="pop-col-val" data-loading-text="...">
-                            <i id="pop-col-icon" class="icon-arrow-populate icon-white"></i>
-                        </button>
-                    </div>
-                    <div class="span5">
-                        <h2>Collectory Info</h2>
-                        <g:render template="collectory_info"/>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span12">
+                    %{--</div>--}%
+                %{--</div>--}%
+                %{--<div class="row-fluid">--}%
+                    %{--<div class="span12">--}%
                         <hr />
                         <h2>Images</h2>
 
@@ -111,9 +109,9 @@
                                 </td>
                             </tr>
                         </table>
-                    </div>
-                </div>
-            </div>
+                    %{--</div>--}%
+                %{--</div>--}%
+            %{--</div>--}%
 		</div>
         <r:script>
 
@@ -141,7 +139,6 @@
                         title: "Upload institution logo"
                     });
                 });
-
 
             });
 

@@ -44,18 +44,25 @@ class NewsItemController {
 
     def save = {
         def projectId = params.int("project")
+        def institutionId = params.int("institution")
         params.project = null
+        params.institution = null
         def newsItemInstance = new NewsItem(params)
         newsItemInstance.created = new Date()
         if (projectId) {
             def project = Project.get(projectId)
             newsItemInstance.project = project
+        } else if (institutionId) {
+            def institution = Institution.get(institutionId)
+            newsItemInstance.institution = institution
         }
 
         if (newsItemInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"
             if (newsItemInstance.project) {
                 redirect(controller: 'project', action: "editNewsItemsSettings", id: newsItemInstance.project.id)
+            } else if (newsItemInstance.institution) {
+                redirect(controller: 'institutionAdmin', action: 'editNewsItems', id: newsItemInstance.institution.id)
             } else {
                 redirect(action: "show", id: newsItemInstance.id)
             }
@@ -111,6 +118,8 @@ class NewsItemController {
                     flash.message = "${message(code: 'default.updated.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"
                     if (newsItemInstance.project) {
                         redirect(controller:'project', action:'editNewsItemsSettings', id: newsItemInstance.project.id)
+                    } else if (newsItemInstance.institution) {
+                        redirect(controller:'institutionAdmin', action:'editNewsItems', id: newsItemInstance.institution.id)
                     } else {
                         redirect(action: "show", id: newsItemInstance.id)
                     }
@@ -133,11 +142,14 @@ class NewsItemController {
         def newsItemInstance = NewsItem.get(params.id)
         if (newsItemInstance) {
             def fromProjectId = newsItemInstance.project?.id
+            def fromInstitutionId = newsItemInstance.institution?.id
             try {
                 newsItemInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
                 if (fromProjectId) {
                     redirect(controller:'project', action:'editNewsItemsSettings', id: fromProjectId)
+                } else if (fromInstitutionId) {
+                    redirect(controller:'institutionAdmin', action:'editNewsItems', id: fromInstitutionId)
                 } else {
                     redirect(action: "list")
                 }

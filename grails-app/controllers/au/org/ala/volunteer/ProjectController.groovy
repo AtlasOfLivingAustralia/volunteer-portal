@@ -443,6 +443,14 @@ class ProjectController {
                 params.featuredLabel = params.name
             }
 
+            final instId = params.getLong("institutionId")
+            def inst
+            if (instId && (inst = Institution.get(instId))) {
+                projectInstance.institution = inst
+            } else {
+                projectInstance.institution = null
+            }
+
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
                 render(view: "editGeneralSettings", model: [projectInstance: projectInstance])
             } else {
@@ -508,14 +516,6 @@ class ProjectController {
                 }
             }
             projectInstance.properties = params
-
-            final instId = params.getLong("institutionId")
-            def inst
-            if (instId && (inst = Institution.get(instId))) {
-                projectInstance.institution = inst
-            } else {
-                projectInstance.institution = null
-            }
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "Expedition updated"

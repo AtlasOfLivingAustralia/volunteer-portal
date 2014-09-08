@@ -74,6 +74,7 @@
             <g:hiddenField name="createdBy" value="${(newsItemInstance?.createdBy) ? newsItemInstance.createdBy : currentUser }" />
 
             <g:hiddenField name="project" value="${newsItemInstance?.project?.id}" />
+            <g:hiddenField name="institution" value="${newsItemInstance?.institution?.id}" />
 
             <div class="control-group">
                 <div class="controls">

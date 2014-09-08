@@ -35,10 +35,12 @@ class InstitutionController {
         def projectTypeCounts = institutionService.getProjectTypeCounts(institution, userService.isInstitutionAdmin(institution))
         def taskCounts = institutionService.getTaskCounts(institution)
 
+        def newsItem = NewsItem.findByInstitution(institution)
+
         [
             institutionInstance: institution, projects: projectSummaries.projectRenderList, filteredProjectsCount: projectSummaries.matchingProjectCount, totalProjectCount: projectSummaries.totalProjectCount,
             transcriberCount: transcriberCount, projectTypes: projectTypeCounts, taskCounts: taskCounts,
-            statusFilterMode: statusFilterMode, activeFilterMode: activeFilterMode
+            statusFilterMode: statusFilterMode, activeFilterMode: activeFilterMode, newsItem: newsItem
         ]
     }
 

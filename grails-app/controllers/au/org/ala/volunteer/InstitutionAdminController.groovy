@@ -21,7 +21,7 @@ class InstitutionAdminController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond Institution.list(params), model:[institutionInstanceCount: Institution.count()]
+        respond Institution.list(params), model: [institutionInstanceCount: Institution.count()]
     }
 
     def create() {
@@ -36,18 +36,38 @@ class InstitutionAdminController {
         }
 
         if (institutionInstance.hasErrors()) {
-            respond institutionInstance.errors, view:'create'
+            respond institutionInstance.errors, view: 'create'
             return
         }
 
-        institutionInstance.save flush:true
+        institutionInstance.save flush: true
 
-        redirect(action:'index')
+        redirect(action: 'index')
 
     }
 
     def edit(Institution institutionInstance) {
         respond institutionInstance
+    }
+
+    def editNewsItems(Institution institutionInstance) {
+        def newsItems = NewsItem.findAllByInstitution(institutionInstance)
+        respond institutionInstance, model: [newsItems: newsItems]
+    }
+
+    @Transactional
+    def updateNewsItems() {
+        def institutionInstance = Institution.get(params.id)
+        if (!institutionInstance) {
+            notFound()
+            return
+        }
+        def pdni = params.getBoolean('disableNewsItems')
+        if (institutionInstance.disableNewsItems != pdni) {
+            institutionInstance.disableNewsItems = pdni
+            institutionInstance.save()
+        }
+        redirect(action: 'editNewsItems', id: institutionInstance.id)
     }
 
     @Transactional
@@ -58,13 +78,13 @@ class InstitutionAdminController {
         }
 
         if (institutionInstance.hasErrors()) {
-            respond institutionInstance.errors, view:'edit'
+            respond institutionInstance.errors, view: 'edit'
             return
         }
 
-        institutionInstance.save flush:true
+        institutionInstance.save flush: true
 
-        redirect(action:'index')
+        redirect(action: 'index')
 
     }
 
@@ -79,18 +99,18 @@ class InstitutionAdminController {
         def projects = Project.findAllByInstitution(institutionInstance)
         if (projects) {
             flash.message = "This institution has projects associated with it, and cannot be deleted at this time."
-            redirect action:"index", method:"GET"
+            redirect action: "index", method: "GET"
             return
         }
 
-        institutionInstance.delete flush:true
+        institutionInstance.delete flush: true
 
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'Institution.label', default: 'Institution'), institutionInstance.id])
-                redirect action:"index", method:"GET"
+                redirect action: "index", method: "GET"
             }
-            '*'{ render status: NO_CONTENT }
+            '*' { render status: NO_CONTENT }
         }
     }
 
@@ -123,11 +143,11 @@ class InstitutionAdminController {
                 collectoryUid: cid)
 
         if (!institutionInstance.validate()) {
-            respond institutionInstance.errors, view:'create'
+            respond institutionInstance.errors, view: 'create'
             return
         }
 
-        institutionInstance.save flush:true
+        institutionInstance.save flush: true
 
         // Now try and copy any images accross...
         if (collectoryObject.imageRef?.uri) {
@@ -153,18 +173,18 @@ class InstitutionAdminController {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])
                 redirect action: "index", method: "GET"
             }
-            '*'{ render status: NOT_FOUND }
+            '*' { render status: NOT_FOUND }
         }
     }
 
     def uploadBannerImageFragment() {
         def institution = Institution.get(params.int("id"))
-        render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType:'banner'])
+        render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType: 'banner'])
     }
 
     def uploadLogoImageFragment() {
         def institution = Institution.get(params.int("id"))
-        render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType:'logo'])
+        render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType: 'logo'])
     }
 
     def uploadInstitutionImageFragment() {
@@ -176,21 +196,21 @@ class InstitutionAdminController {
         if (institutionInstance) {
             institutionService.clearLogo(institutionInstance)
         }
-        redirect(action:'edit', id: institutionInstance.id)
+        redirect(action: 'edit', id: institutionInstance.id)
     }
 
     def clearBannerImage(Institution institutionInstance) {
         if (institutionInstance) {
             institutionService.clearBanner(institutionInstance)
         }
-        redirect(action:'edit', id: institutionInstance.id)
+        redirect(action: 'edit', id: institutionInstance.id)
     }
 
     def clearImage(Institution institutionInstance) {
         if (institutionInstance) {
             institutionService.clearImage(institutionInstance)
         }
-        redirect(action:'edit', id: institutionInstance.id)
+        redirect(action: 'edit', id: institutionInstance.id)
     }
 
     def uploadInstitutionImage() {
@@ -199,7 +219,7 @@ class InstitutionAdminController {
 
         if (!["banner", "logo", "main"].contains(imageType)) {
             flash.message = "Missing or invalid imageType parameter: " + imageType
-            redirect(action:'edit', id: institution.id)
+            redirect(action: 'edit', id: institution.id)
             return
         }
 
@@ -240,7 +260,7 @@ class InstitutionAdminController {
                 flash.message = "Form must be multipart file!"
             }
         }
-        redirect(action:'edit', id: institution.id)
+        redirect(action: 'edit', id: institution.id)
     }
 
 }
