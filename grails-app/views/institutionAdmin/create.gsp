@@ -25,7 +25,6 @@
 			</g:hasErrors>
             <div class="container-fluid">
                 <div class="row-fluid">
-                    <div class="span6">
                         <g:form url="[controller:'institutionAdmin', action:'save']" >
                             <fieldset class="form">
                                 <g:render template="form"/>
@@ -34,16 +33,6 @@
                                 <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
                             </fieldset>
                         </g:form>
-                    </div>
-                    <div class="span1">
-                        <button type="button" id="pop-col-val" class="btn btn-primary" name="pop-col-val" data-loading-text="...">
-                            <i id="pop-col-icon" class="icon-arrow-populate icon-white"></i>
-                        </button>
-                    </div>
-                    <div class="span5">
-                        <h2>Collectory Info</h2>
-                        <g:render template="collectory_info"/>
-                    </div>
                 </div>
             </div>
 		</div>

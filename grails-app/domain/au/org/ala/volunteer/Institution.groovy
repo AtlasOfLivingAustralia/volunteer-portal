@@ -13,6 +13,7 @@ class Institution implements Serializable {
     String websiteUrl // optional
     String collectoryUid // optional
     String imageCaption // optional
+    boolean disableNewsItems = false
 
     int version
 
@@ -33,6 +34,7 @@ class Institution implements Serializable {
 
     static mapping = {
         description widget: 'textarea'
+        disableNewsItems defaultValue: 'false'
     }
 
 }

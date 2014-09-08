@@ -35,6 +35,12 @@
 	        content: '\A';
 	        white-space: pre;
         }
+        .invis-well {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            min-height: 20px;
+            padding-bottom: 9px;
+        }
     </r:style>
     <r:script>
 
@@ -174,6 +180,29 @@
                     </tr>
                 </table>
             </div>
+            <g:if test="${!institutionInstance.disableNewsItems && newsItem}">
+                <div class="invis-well">
+                    <legend>
+                        News
+                        <small class="pull-right">
+                            <g:formatDate format="MMM d, yyyy" date="${newsItem.created}"/>
+                            %{--<time datetime="${formatDate(format: "dd MMMM yyyy", date: newsItem.created)}"></time>--}%
+                        </small>
+
+                    </legend>
+                    <h4 style="margin-top: 0px">
+                        <a href="${createLink(controller: 'newsItem', action: 'list', id: institutionInstance.id)}">${newsItem.title}</a>
+                    </h4>
+                    <div>
+                        ${newsItem.body}
+                    </div>
+                    <g:if test="${newsItems?.size() > 1}">
+                        <small>
+                            <g:link controller="newsItem" action="list" id="${institutionInstance.id}">Read older news...</g:link>
+                        </small>
+                    </g:if>
+                </div>
+            </g:if>
         </div>
         <div class="span3">
             <section id="leaderBoardSection">

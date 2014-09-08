@@ -218,4 +218,30 @@ class AdminController {
 
     }
 
+    def migrateProjectsToInstitutions() {
+        final projectsWithOwners = Project.executeQuery("select new map (id as id, name as name, featuredOwner as featuredOwner) from Project where institution is null order by ${params.sort ?: 'featuredOwner'} ${params.order ?: 'asc'}").each { it.put('lowerFeaturedOwner', it?.featuredOwner?.replaceAll('\\s', '')?.toLowerCase()) }
+        final insts = Institution.executeQuery("select new map(id as id, name as name) from Institution").each { it.put('lowerName', it?.name?.replaceAll('\\s', '')?.toLowerCase()) }
+
+        final projectsWithScores = projectsWithOwners.collect { proj ->
+            final projOwner = proj.lowerFeaturedOwner ?: ''
+            final scores = insts.collect {
+                final name = it.lowerName ?: ''
+                [id: it.id, name: it.name, score: Fuzzy.ldRatio(projOwner, name)]
+            }.sort { it.score }.reverse()//.subList(0, 10)
+            [id: proj.id, name: proj.name, owner: proj.featuredOwner, scores: scores ]
+        }
+
+        respond projectsWithScores, model: [projectsWithScores: projectsWithScores]
+    }
+
+    def doMigrateProjectsToInstitutions() {
+        def cmd = request.JSON
+        cmd.each {
+            def proj = Project.get(it.id)
+            proj.institution = Institution.get(it.inst)
+            proj.save()
+        }
+        render status: 205
+    }
+
 }

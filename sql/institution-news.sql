@@ -1,0 +1,2 @@
+ALTER TABLE news_item
+   ALTER COLUMN project_id DROP NOT NULL;
