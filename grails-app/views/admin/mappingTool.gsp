@@ -12,10 +12,8 @@
             display: none;
         }
 
-
-
         .geocoded-value {
-            font-weight: bold;
+            font-size: 1.2em
         }
 
         div#mapWidgets {
@@ -84,6 +82,9 @@
 
             var geocodeCallback = function(results) {
 
+                // clear all values
+                $(".geocoded-value").html("");
+
                 if (!results) {
                     return;
                 }
@@ -148,8 +149,8 @@
                         <td>Locality</td>
                         <td>State</td>
                         <td>Country</td>
-                        <td>Longitude</td>
                         <td>Latitude</td>
+                        <td>Longitude</td>
                     </tr>
                     <tr>
                         <td>
@@ -162,10 +163,10 @@
                             <span class="geocoded-value" id="gc_country"></span>
                         </td>
                         <td>
-                            <span class="geocoded-value" id="gc_longitude" ></span>
+                            <span class="geocoded-value" id="gc_latitude"></span>
                         </td>
                         <td>
-                            <span class="geocoded-value" id="gc_latitude"></span>
+                            <span class="geocoded-value" id="gc_longitude" ></span>
                         </td>
                     </tr>
                 </table>
