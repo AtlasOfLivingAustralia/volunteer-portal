@@ -35,12 +35,13 @@ class InstitutionController {
         def projectTypeCounts = institutionService.getProjectTypeCounts(institution, userService.isInstitutionAdmin(institution))
         def taskCounts = institutionService.getTaskCounts(institution)
 
-        def newsItem = NewsItem.findByInstitution(institution)
+        def newsItems = NewsItem.findAllByInstitution(institution, [sort:'created', order: 'desc'])
+        def newsItem = newsItems?.size() > 0 ? newsItems.get(0) : null
 
         [
             institutionInstance: institution, projects: projectSummaries.projectRenderList, filteredProjectsCount: projectSummaries.matchingProjectCount, totalProjectCount: projectSummaries.totalProjectCount,
             transcriberCount: transcriberCount, projectTypes: projectTypeCounts, taskCounts: taskCounts,
-            statusFilterMode: statusFilterMode, activeFilterMode: activeFilterMode, newsItem: newsItem
+            statusFilterMode: statusFilterMode, activeFilterMode: activeFilterMode, newsItem: newsItem, newsItems: newsItems
         ]
     }
 

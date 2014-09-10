@@ -12,14 +12,23 @@ class NewsItemController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.sort = params.sort ?: 'created'
+        params.order = params.order ?: 'desc'
         def newsItems = null
-        def project = null
+        Project project = null
+        Institution institution = null
         if (params.id) {
-            project = Project.get(params.id)
+            // id could actually mean either a project or an institution - look for a project first
+            project = Project.get(params.int('id'))
             if (project) {
                 // find by project
-
-                newsItems = NewsItem.findAllByProject(project, [:], params)
+                newsItems = NewsItem.findAllByProject(project, params)
+            } else {
+                institution = Institution.get(params.int("id"))
+                if (institution) {
+                    // find by institution
+                    newsItems = NewsItem.findAllByInstitution(institution, params)
+                }
             }
         }
 
@@ -27,7 +36,7 @@ class NewsItemController {
             newsItems = NewsItem.list(params).asList()
         }
 
-        [newsItemInstanceList: newsItems, newsItemInstanceTotal: newsItems?.size(), projectInstance: project]
+        [newsItemInstanceList: newsItems, newsItemInstanceTotal: newsItems?.size(), projectInstance: project, institutionInstance: institution]
     }
 
     def create = {

@@ -9,11 +9,19 @@
 
     <body>
 
-        <cl:headerContent crumbLabel="News Items" title="News Items ${projectInstance ? " - " + projectInstance.featuredLabel:''}">
+        <%
+            def headingByLine = projectInstance?.featuredLabel ?: institutionInstance?.name ?: ""
+        %>
+
+        <cl:headerContent crumbLabel="News Items" title="News Items ${headingByLine ? " - " + headingByLine : ''}">
             <%
             if (projectInstance) {
                 pageScope.crumbs = [
-                    [link: createLink(controller: 'project', action: 'show'), label: projectInstance.featuredLabel]
+                    [link: createLink(controller: 'project', action: 'show', id: projectInstance.id), label: projectInstance.featuredLabel]
+                ]
+            } else if (institutionInstance) {
+                pageScope.crumbs = [
+                    [link: createLink(controller: 'institution', action: 'index', id: institutionInstance.id), label: institutionInstance.acronym]
                 ]
             }
             %>
@@ -27,7 +35,6 @@
                             <g:sortableColumn style="text-align: left; width: 100px" property="created" title="${message(code: 'newsItem.created.label', default: 'Date')}"/>
                             <g:sortableColumn style="text-align: left; width: 200px" property="title" title="${message(code: 'newsItem.title.label', default: 'Title')}"/>
                             <g:sortableColumn style="text-align: left" property="body" title="${message(code: 'newsItem.body.label', default: 'Body')}"/>
-                            <th style="text-align: left; width: 150px"><g:message code="newsItem.project.label" default="Project"/></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,10 +61,6 @@
                                     <div>
                                         ${newsItemInstance?.body}
                                     </div>
-                                </td>
-
-                                <td style="vertical-align: top">
-                                    <g:link controller="project" action="index" id="${newsItemInstance?.project?.id}">${newsItemInstance?.project?.featuredLabel}</g:link>
                                 </td>
 
                             </tr>
