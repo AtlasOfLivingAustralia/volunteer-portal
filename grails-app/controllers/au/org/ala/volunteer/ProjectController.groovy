@@ -462,6 +462,20 @@ class ProjectController {
         }
     }
 
+    def update() {
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            if (!saveProjectSettingsFromParams(projectInstance, params)) {
+                render(view: "editGeneralSettings", model: [projectInstance: projectInstance])
+            } else {
+                redirect(action:'editGeneralSettings', id: projectInstance.id)
+            }
+        }  else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
     def updateTutorialLinksSettings() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
