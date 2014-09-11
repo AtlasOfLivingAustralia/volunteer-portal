@@ -91,7 +91,7 @@
                         </div>
 
 
-                        <g:form name="activationForm" controller="project" action="updateGeneralSettings">
+                        <g:form name="activationForm" controller="project" action="update">
                             <g:hiddenField name="id" value="${projectInstance.id}" />
                             <g:if test="${projectInstance.inactive}">
                                 <g:hiddenField name="inactive" value="false"/>
