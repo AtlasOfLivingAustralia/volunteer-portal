@@ -31,7 +31,7 @@ class PicklistController {
         [picklistInstanceList: Picklist.list(), collectionCodes: picklistInstitutionCodes]
     }
 
-    private writeItemsCsv(Writer writer, Picklist picklist, String institutionCode) {
+    private static writeItemsCsv(Writer writer, Picklist picklist, String institutionCode) {
         if (picklist) {
 
             def delim = ','
@@ -39,7 +39,7 @@ class PicklistController {
             items?.each { item ->
                 writer.write('"' + (item.value ?: '') + '"')
                 writer.write(delim)
-                writer.write(item.key ?: "")
+                writer.write('"' + item.key + '"' ?: "")
                 writer.write("\n")
             }
         }

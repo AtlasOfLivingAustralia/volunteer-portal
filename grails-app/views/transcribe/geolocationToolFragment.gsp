@@ -26,7 +26,7 @@
                     <g:set var="coordinateUncertaintyPL" value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
                     <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">
                         <g:set var="isSelected"><g:if test="${(item.value == '1000')}">selected='selected'</g:if></g:set>
-                        <option ${isSelected}>${item.value}</option>
+                        <option ${isSelected} value="${item.value}">${item.key ?: item.value}</option>
                     </g:each>
                 </select>
                 <a href="#" class="geolocateHelp fieldHelp" title="If in doubt choose a larger area. For example if the location is simply a small town then choose an uncertainty value that encompasses the town and some surrounding area. The larger the town the larger the uncertainty would need to be. If the locality description (verbatim locality) is quite detailed and you can find that location accurately then the uncertainty value can be smaller">
