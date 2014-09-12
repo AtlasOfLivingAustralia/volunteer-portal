@@ -56,7 +56,7 @@ class PicklistService {
                 if (m.find()) {
                     value = m.group(2);
                 }
-                def picklistItem = new PicklistItem(picklist: picklist, value: value, institutionCode: institutionCode)
+                def picklistItem = new PicklistItem(picklist: picklist, value: value, institutionCode: institutionCode ?: null)
 
                 if (tokens.size() > 1) {
                     picklistItem.key = tokens[1] // optional second value as "key"
