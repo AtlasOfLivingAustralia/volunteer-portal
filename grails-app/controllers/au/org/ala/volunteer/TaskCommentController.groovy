@@ -6,6 +6,8 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 
 class TaskCommentController {
 
+    def authService
+
     def index = {
     }
 
@@ -64,8 +66,8 @@ class TaskCommentController {
             for (TaskComment comment : comments) {
                 def showDelete = false;
                 use (groovy.time.TimeCategory) {
-                    def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
-                    if ( comment.user.email == username && comment.date >= 15.minutes.ago) {
+                    def userid = authService.userId ?: "unknown"
+                    if ( comment.user.userId == userid && comment.date >= 15.minutes.ago) {
                         showDelete = true;
                     }
                 }
