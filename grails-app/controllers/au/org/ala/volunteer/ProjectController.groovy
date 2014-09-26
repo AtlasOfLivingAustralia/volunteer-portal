@@ -62,6 +62,7 @@ class ProjectController {
                     roles.eachWithIndex { role, i ->
                         if (count >= role.threshold && role.members.size() < role.max && !assigned) {
                             // assign role
+                            // TODO Get displayName from userdetails service
                             def userMap = [name: user.displayName, id: user.id, count: count, userId: user.userId]
                             role.get("members").add(userMap)
                             assigned = true

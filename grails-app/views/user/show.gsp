@@ -92,7 +92,7 @@
             <table class="table">
                 <tr>
                     <td style="padding-top:18px; width:150px;">
-                        <img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;" class="avatar"/>
+                        <img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" style="width:150px;" class="avatar"/>
                         <g:if test="${userInstance.userId == currentUser}">
                             <p>
                                 <a href="http://en.gravatar.com/" class="external" target="_blank" id="gravitarLink" title="To customise this avatar, register your email address at gravatar.com...">Change avatar</a>
@@ -158,7 +158,8 @@
                             <div class="alert alert-info" style="margin-bottom: 0px">
                             <g:link class="btn btn-small" controller="user" action="editRoles" id="${userInstance.id}">Manage user roles</g:link>
                             <g:link class="btn btn-small" controller="user" action="edit" id="${userInstance.id}">Edit user details</g:link>
-                            &nbsp;Email:&nbsp;<a href="mailto:${userInstance.userId}">${userInstance.userId}</a>
+                            <%-- TODO Pull this from user details service --%>
+                            &nbsp;Email:&nbsp;<a href="mailto:${userInstance.email}">${userInstance.email}</a>
                             </div>
                         </cl:ifAdmin>
                     </td>
