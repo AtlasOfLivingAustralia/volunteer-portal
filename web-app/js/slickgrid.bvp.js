@@ -243,6 +243,7 @@
         var calendarOpen = false;
 
         this.init = function () {
+            var now = new Date();
             $input = $("<INPUT type=text class='editor-text' />");
             $input.appendTo(args.container);
             $input.focus().select();
@@ -251,6 +252,10 @@
                 buttonImageOnly: true,
                 buttonImage: BVP_JS_URLS.webappRoot + "js/slickgrid/images/calendar.gif",
                 dateFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true,
+                maxDate: now,
+                yearRange: '1800:'+now.getFullYear(),
                 beforeShow: function () {
                     calendarOpen = true
                 },
