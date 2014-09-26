@@ -33,6 +33,8 @@ security.cas.validatorRole = "ROLE_VP_VALIDATOR"
 bvp.user.activity.monitor.enabled = true // can turn off activity monitoring
 bvp.user.activity.monitor.timeout = 3600 // seconds
 
+bvp.users.migrateIds = false
+
 /******************************************************************************\
  *  EXTERNAL SERVERS
 \******************************************************************************/
@@ -147,7 +149,7 @@ bie.baseURL = "http://bie.ala.org.au"
 bie.searchPath = "/search"
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 
-  grails.project.groupId = "au.org.ala.volunteer" // change this to alter the default package name and Maven publishing destination
+grails.project.groupId = "au.org.ala.volunteer" // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
 grails.mime.types = [ html: ['text/html','application/xhtml+xml'],

@@ -98,7 +98,7 @@
                     <tbody>
                         <g:each in="${userInstanceList}" status="i" var="userInstance">
                             <tr>
-                                <td><img src="http://www.gravatar.com/avatar/${userInstance.userId.toLowerCase().encodeAsMD5()}?s=80" class="avatar"/>
+                                <td><img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=80" class="avatar"/>
                                 </td>
                                 <td style="width:300px;">
                                     <g:link controller="user" action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "displayName")}</g:link>

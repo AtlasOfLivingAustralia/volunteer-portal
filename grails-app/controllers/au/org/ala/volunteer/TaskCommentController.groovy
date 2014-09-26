@@ -65,7 +65,7 @@ class TaskCommentController {
                 def showDelete = false;
                 use (groovy.time.TimeCategory) {
                     def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
-                    if ( comment.user.userId == username && comment.date >= 15.minutes.ago) {
+                    if ( comment.user.email == username && comment.date >= 15.minutes.ago) {
                         showDelete = true;
                     }
                 }

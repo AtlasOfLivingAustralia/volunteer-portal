@@ -21,7 +21,7 @@ class AdminController {
 
     def mailingList = {
         if (checkAdmin()) {
-            def userIds = User.all.collect{ it.userId }
+            def userIds = User.all.collect{ it.email }
             def list = userIds.join(";\n")
             render(text:list, contentType: "text/plain")
         }
@@ -187,12 +187,14 @@ class AdminController {
             def validatedCount = Task.countByFullyValidatedBy(user.userId)
 
             if (user.transcribedCount < transcribedCount) {
-                println "Updating transcribed count for ${user.userId} from ${user.transcribedCount} to ${transcribedCount}"
+                // TODO Get email from userdetails service
+                println "Updating transcribed count for ${user.userId} (${user.email}) from ${user.transcribedCount} to ${transcribedCount}"
                 user.transcribedCount = transcribedCount
             }
 
             if (user.validatedCount < validatedCount) {
-                println "Updating validated count for ${user.userId} from ${user.validatedCount} to ${validatedCount}"
+                // TODO Get email from userdetails service
+                println "Updating validated count for ${user.userId} (${user.email}) from ${user.validatedCount} to ${validatedCount}"
                 user.validatedCount = validatedCount
             }
             count++

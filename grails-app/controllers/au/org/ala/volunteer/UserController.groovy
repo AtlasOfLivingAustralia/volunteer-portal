@@ -45,11 +45,12 @@ class UserController {
         def userList
 
         if (params.q) {
+            // TODO Migrate away from database email addresses
             def c = User.createCriteria()
             userList = c.list(params) {
                 or {
                     ilike("displayName", '%' + params.q + '%')
-                    ilike("userId", '%' + params.q + '%')
+                    ilike("email", '%' + params.q + '%')
                 }
             }
         } else {

@@ -250,7 +250,8 @@ class ExportService {
                 order('date', 'asc')
             }
             for (TaskComment comment : comments) {
-                String[] outputValues = [task.id.toString(), task.externalIdentifier, comment.user.userId, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
+                // TODO Get email from userdetails service
+                String[] outputValues = [task.id.toString(), task.externalIdentifier, comment.user.email, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
                 writer.writeNext(outputValues)
             }
         }
