@@ -21,7 +21,7 @@ modules = {
 
     overrides {
         'jquery-theme' {
-            resource id:'theme', url:'/css/smoothness/ui.all.css'
+            resource id:'theme', url:'/js/jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'
         }
     }
 
