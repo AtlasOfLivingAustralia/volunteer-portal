@@ -98,7 +98,8 @@ class AjaxController {
 
             def projectCount = ViewedTask.executeQuery("select distinct t.project from Task t where t.fullyTranscribedBy = :userId", [userId:  user.userId]).size()
 
-            report.add([user.userId, user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
+            // TODO Get email from userdetails service
+            report.add([user.email, user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
         }
 
         // Sort by the transcribed count

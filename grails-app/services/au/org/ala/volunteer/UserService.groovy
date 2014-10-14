@@ -33,6 +33,7 @@ class UserService {
                 logService.log("Registering new user: ${displayName} (UserId=${userId})")
                 User user = new User()
                 user.userId = userId
+                user.email = currentUserEmail
                 user.created = new Date()
                 user.displayName = displayName
                 user.save(flush: true)
@@ -49,7 +50,7 @@ class UserService {
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
 
         interestedUsers.each {
-            emailService.pushMessageOnQueue(it.userId, "A new user has been registered to ${appName}", message)
+            emailService.pushMessageOnQueue(it.email, "A new user has been registered to ${appName}", message)
         }
     }
 
@@ -168,6 +169,10 @@ class UserService {
     }
 
     public String getCurrentUserId() {
+        return authService.userId
+    }
+
+    public String getCurrentUserEmail() {
         return authService.email
     }
 

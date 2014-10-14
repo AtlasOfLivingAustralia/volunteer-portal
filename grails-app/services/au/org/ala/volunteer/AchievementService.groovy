@@ -35,7 +35,8 @@ class AchievementService {
                     logService.log "Checking rule for achievement ${desc.name}"
                     AchievementRuleResult result = rule.getProperty(this)(user, tasks);
                     if (result && result.success) {
-                        logService.log "${user.userId} just achieved ${desc.name}!"
+                        // TODO Get email from user details service
+                        logService.log "${user.userId} (${user.email}) just achieved ${desc.name}!"
                         Date dateAchieved = result.dateAchieved ?: new Date();
                         def newAchievement = new Achievement( name: desc.name, user: user, dateAchieved: dateAchieved)
                         newAchievement.save(flush: true, failOnError: true)
