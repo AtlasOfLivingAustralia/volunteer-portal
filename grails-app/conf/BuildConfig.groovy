@@ -37,6 +37,7 @@ grails.project.dependency.resolution = {
         mavenRepo "http://maven.tmatesoft.com/content/repositories/releases/"
     }
     plugins {
+        build ":release:3.0.1"
         compile ":cache:1.1.7"
         build ':tomcat:7.0.54'
         runtime ':hibernate:3.6.10.16'
