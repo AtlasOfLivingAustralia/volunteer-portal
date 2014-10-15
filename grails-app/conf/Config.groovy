@@ -54,8 +54,6 @@ if (!ala.baseURL) {
 // server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
 
-grails.plugin.reveng.packageName = "au.org.ala.volunteer"
-
 grails.databinding.convertEmptyStringsToNull = false
 
 // Mappings for expedition labels, icons, etc
