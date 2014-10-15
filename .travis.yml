@@ -21,7 +21,7 @@ before_script:
 script:
 - grails clean && grails refresh-dependencies --non-interactive && grails prod war --non-interactive
 after_success:
-- '[ "${TRAVIS_PULL_REQUEST}" == "false" ] && grails prod maven-deploy --repository=$MAVEN_REPO --non-interactive'
+- '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && grails prod maven-deploy --repository=$MAVEN_REPO --non-interactive'
 env:
   global:
   - secure: 2MEDHHQ3nxNwf+YGgtC/GXx6kb0y4ixYA7Ia50pZHaN8xMHYdQ8EymKZJ8F9SXw0Feg9FsDc5I90lBJB8URYZZ4hPZN9+uj9crOvnOFMByvJpPikrQ6Yw8IdUjmYxHO/zv+kmOkqVnu6zCtS42olSM7ljeZs0PzW484Ci9w5eM4=
