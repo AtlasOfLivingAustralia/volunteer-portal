@@ -115,7 +115,7 @@
                 $("#btnDeleteProject").click(function(e) {
                     e.preventDefault();
                     var opts = {
-                        title: "Delete expedition '${projectInstance.name}'",
+                        title: "Delete expedition '${projectInstance.name.encodeAsJavaScript()}'",
                         url: "${createLink(action:"deleteProjectFragment",id: projectInstance.id)}"
                     };
 
