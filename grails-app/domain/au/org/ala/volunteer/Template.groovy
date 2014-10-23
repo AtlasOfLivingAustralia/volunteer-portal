@@ -15,7 +15,7 @@ class Template implements Serializable {
     }
 
     static constraints = {
-        author maxSize: 200, email: true, nullable: true
+        author maxSize: 200, nullable: true
         name maxSize: 200
         viewName nullable: true
         viewParams nullable: true

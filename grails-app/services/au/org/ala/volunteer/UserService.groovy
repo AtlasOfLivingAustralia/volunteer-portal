@@ -321,4 +321,32 @@ class UserService {
             logService.log("${purgeCount} activity records purged from database")
         }
     }
+
+    List<String> getEmailAddressesForIds(List<String> userIds) {
+        userIds.collect { authService.getUserForUserId(it).userName }
+    }
+
+    def propForUserId(String userid, String prop) {
+        if (!userid) return ''
+        else if ('system' == userid) return userid
+
+        def values = User.withCriteria {
+            eq 'userId', userid
+            projections {
+                property(prop)
+            }
+        }
+
+        values.size() > 0 ? values[0] : 'unknown'
+    }
+
+    def idForUserProperty(String propertyName, String propertyValue) {
+        def values = User.withCriteria {
+            eq propertyName, propertyValue
+            projections {
+                property 'userId'
+            }
+        }
+        values.size() > 0 ? values[0] : ''
+    }
 }

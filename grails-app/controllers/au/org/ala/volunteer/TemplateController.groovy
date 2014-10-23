@@ -22,11 +22,13 @@ class TemplateController {
 
     def create = {
         def templateInstance = new Template()
+        templateInstance.author = userService.currentUserId
         templateInstance.properties = params
         return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
     def save = {
+        params.author = userService.currentUserId
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'template.label', default: 'Template'), templateInstance.id])}"

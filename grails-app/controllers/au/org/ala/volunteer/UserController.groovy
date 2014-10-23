@@ -15,6 +15,7 @@ class UserController {
     def logService
     def fieldService
     def forumService
+    def authService
 
     def index = {
         redirect(action: "list", params: params)
@@ -321,7 +322,7 @@ class UserController {
         
         def roles = UserRole.findAllByUser(userInstance)
         
-        return [userInstance: userInstance, roles: roles]
+        return [userInstance: userInstance, roles: roles, userDetails: authService.getUserForUserId(userInstance.getUserId())]
     }
 
     def update = {

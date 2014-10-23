@@ -74,7 +74,7 @@
                         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}" templateId="${templateInstance.id}" templateName="${templateInstance.name}" >
 
                             <td>${fieldValue(bean: templateInstance, field: "name")}</td>
-                            <td>${fieldValue(bean: templateInstance, field: "author")}</td>
+                            <td>${cl.emailForUserId(id: templateInstance.author)}</td>
                             <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                             <td>

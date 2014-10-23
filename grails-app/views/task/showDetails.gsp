@@ -108,7 +108,7 @@
                                     <td>Transcribed</td>
                                     <td>
                                         <g:if test="${taskInstance.dateFullyTranscribed}">
-                                            ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by ${taskInstance.fullyTranscribedBy ?: "<span class='muted'>unknown</span>"}
+                                            ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyTranscribedBy) ?: "<span class='muted'>unknown</span>"}
                                         </g:if>
                                         <g:else>
                                             <span class="muted">
@@ -122,7 +122,7 @@
                                     <td>Validated</td>
                                     <td>
                                         <g:if test="${taskInstance.dateFullyValidated}">
-                                            ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} by ${taskInstance.fullyValidatedBy ?: "<span class='muted'>unknown</span>"}
+                                            ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
                                         </g:if>
                                         <g:else>
                                             <span class="muted">
@@ -161,7 +161,7 @@
                                     <td>
                                         <ul>
                                             <g:each in="${taskInstance.viewedTasks?.sort({ it.lastView })}" var="view">
-                                                <li>Viewed by ${view.userId} ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " times) " : ""} on ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
+                                                <li>Viewed by <cl:userDisplayString id="${view.userId}" /> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " times) " : ""} on ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
                                             </g:each>
                                         </ul>
                                     </td>
@@ -210,8 +210,8 @@
                                         <td>${field.value}</td>
                                         <td>${field.created?.format("yyyy-MM-dd HH:mm:ss")}</td>
                                         <td>${field.updated?.format("yyyy-MM-dd HH:mm:ss")}</td>
-                                        <td>${field.transcribedByUserId}</td>
-                                        <td>${field.validatedByUserId}</td>
+                                        <td><cl:emailForUserId id="${field.transcribedByUserId}" /></td>
+                                        <td><cl:emailForUserId id="${field.validatedByUserId}" /></td>
                                     </tr>
                                 </g:each>
                             </tbody>
