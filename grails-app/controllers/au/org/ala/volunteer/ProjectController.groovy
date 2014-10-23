@@ -143,8 +143,9 @@ class ProjectController {
         if (projectInstance && userService.isAdmin()) {
             def userIds = taskService.getUserIdsForProject(projectInstance)
             log.debug("userIds = " + userIds)
+            def userEmails = userService.getEmailAddressesForIds(userIds)
             //render(userIds)
-            def list = userIds.join(";\n")
+            def list = userEmails.join(";\n")
             render(text:list, contentType: "text/plain")
         }
         else if (projectInstance) {

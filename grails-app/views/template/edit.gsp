@@ -56,15 +56,6 @@
 
                                 <tr class="prop">
                                     <td valign="top" class="name">
-                                      <label for="author"><g:message code="template.author.label" default="Author" /></label>
-                                    </td>
-                                    <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'author', 'errors')}">
-                                        <g:textField name="author" maxlength="200" value="${templateInstance?.author}" />
-                                    </td>
-                                </tr>
-
-                                <tr class="prop">
-                                    <td valign="top" class="name">
                                       <label for="name"><g:message code="template.name.label" default="Name" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: templateInstance, field: 'name', 'errors')}">

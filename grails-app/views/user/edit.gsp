@@ -8,10 +8,10 @@
     </head>
     <body>
 
-        <cl:headerContent crumbLabel="Volunteers" title="Edit User ${userInstance.userId}">
+        <cl:headerContent crumbLabel="Volunteers" title="Edit User ${userInstance.userId} - ${userDetails.displayName} (${userDetails.userName})">
             <%
                 pageScope.crumbs = []
-                pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: userInstance.displayName]
+                pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: userDetails.displayName]
             %>
         </cl:headerContent>
 
@@ -72,6 +72,15 @@
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: userInstance, field: 'displayName', 'errors')}">
                                         <g:textField name="displayName" value="${userInstance?.displayName}" />
+                                    </td>
+                                </tr>
+
+                                <tr class="prop">
+                                    <td valign="top" class="name">
+                                        <label for="email"><g:message code="user.email.label" default="Email addresss" /></label>
+                                    </td>
+                                    <td valign="top" class="value ${hasErrors(bean: userInstance, field: 'email', 'errors')}">
+                                        <g:textField name="email" value="${userInstance?.email}" />
                                     </td>
                                 </tr>
 

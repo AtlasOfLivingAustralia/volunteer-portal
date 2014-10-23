@@ -15,6 +15,9 @@ class VolunteerTagLib {
     def multimediaService
     def markdownService
     def institutionService
+    def authService
+
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId']
 
     def isLoggedIn = { attrs, body ->
 
@@ -347,7 +350,7 @@ class VolunteerTagLib {
      */
     def userDisplayName = { attrs, body ->
         if (attrs.userId) {
-            def user = User.findByUserId(attrs.userId)
+            def user = authService.getUserForUserId(attrs.userId)
             def mb = new MarkupBuilder(out)
             mb.span(class:'userDisplayName') {
                 if (user) {
@@ -574,5 +577,66 @@ class VolunteerTagLib {
         }
     }
 
+    def emailForUserId = { attrs, body ->
+        propForUserId(attrs, 'email')
+    }
+
+    def displayNameForUserId = { attrs, body ->
+        propForUserId(attrs, 'displayName')
+    }
+
+    private def propForUserId(def attrs, String prop) {
+        def id = attrs.remove('id')
+
+        userService.propForUserId(id, prop)
+    }
+
+    /**
+     * Output a users email or display name, fetched from userdetails.
+     *
+     * @attr id REQUIRED The user id to get the user details for
+     * @attr displayName true to output the display name, defaults to false
+     * @attr email true to output the email address, defaults to false
+     */
+    def userDetails = { attrs, body ->
+        def id = attrs.remove('id')
+        def displayName = attrs.remove('displayName')?.asBoolean() ?: false
+        def email = attrs.remove('email')?.asBoolean() ?: false
+
+        if (displayName && email) {
+            log.error("Both display name and email specified, select only one!")
+            throw new RuntimeException("Both display name and email specified, select only one!")
+        }
+
+        def user = authService.getUserForUserId(attrs.userId)
+        if (user) {
+            out << email ? user.userName : displayName ? user.displayName : ''
+        }
+    }
+
+    /**
+     * Output a users email or display name, fetched from userdetails.
+     *
+     * @attr id REQUIRED The user id to get the user details for
+     * @attr notFound value to use if the user is not found
+     * @attr muted set to true to wrap not found value in <span class='muted'>
+     */
+    def userDisplayString = { attrs, body ->
+        def id = attrs.remove('id')
+        def notFound = attrs.remove('notFound')
+        def muted = attrs.remove('muted')?.asBoolean()
+
+        def user
+        if (id) user = authService.getUserForUserId(id)
+        else user = null
+
+        if (user) {
+            out << "${user.displayName.encodeAsHTML()} (${user.userName.encodeAsHTML()})"
+        } else if (muted) {
+            out << "<span class='muted'>${notFound ?: id}</span>"
+        } else {
+            out << notFound ?: id
+        }
+    }
 
 }

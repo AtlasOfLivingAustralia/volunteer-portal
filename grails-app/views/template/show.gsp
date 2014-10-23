@@ -32,7 +32,7 @@
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="template.author.label" default="Author" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: templateInstance, field: "author")}</td>
+                            <td valign="top" class="value">${cl.emailForUserId(id: templateInstance.author)}</td>
                             
                         </tr>
                     

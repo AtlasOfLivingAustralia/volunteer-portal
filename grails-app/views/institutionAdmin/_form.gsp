@@ -67,12 +67,14 @@
     <g:textField name="imageCaption" value="${institutionInstance?.imageCaption}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
-    <label for="collectoryUid">
-        <g:message code="institution.collectoryUid.label" default="Collectory Uid" />
-    </label>
-    <g:textField class="input-mini" name="collectoryUid" value="${institutionInstance.collectoryUid}"/>
-</div>
+<g:if test="${institutionInstance.collectoryUid}">
+    <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
+        <label for="collectoryUid">
+            <g:message code="institution.collectoryUid.label" default="Collectory Uid" />
+        </label>
+        <g:textField class="input-mini" name="collectoryUid" value="${institutionInstance.collectoryUid}"/>
+    </div>
+</g:if>
 <r:script>
 jQuery(function($) {
     tinyMCE.init({
