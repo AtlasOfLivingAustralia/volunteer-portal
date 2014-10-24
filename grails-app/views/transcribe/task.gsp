@@ -105,7 +105,7 @@
                     rotateImage();
                 });
 
-                $("#show_task_selector").click(function(e) {
+                $(".btnCopyFromPreviousTask").click(function(e) {
                     e.preventDefault();
                     showPreviousTaskBrowser();
                 });
@@ -195,7 +195,7 @@
             function showPreviousTaskBrowser() {
 
                 bvp.showModal({
-                    url: "${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance.project.id, taskId: taskInstance.id])}",
+                    url: "${createLink(controller: 'task', action:'taskBrowserFragment', params: [projectId: taskInstance?.project?.id, taskId: taskInstance?.id])}",
                     width:700,
                     height:600,
                     hideHeader: false,

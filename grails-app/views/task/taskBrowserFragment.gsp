@@ -54,7 +54,7 @@
     </g:if>
 
     <div id="task_browser_controls">
-        <h3>Your previously transcribed tasks in ${projectInstance.featuredLabel}</h3>
+        <h3>Your previously transcribed tasks in ${projectInstance?.featuredLabel ?: "<project>"}</h3>
 
         <div id="tasklist_container" style="color: white">
 
@@ -186,7 +186,7 @@
         $('#tasklist_container').html("");
         $('#task_content').html("Searching for tasks...");
 
-        var taskFindUrl = "${createLink(controller: 'task', action:'taskBrowserTaskList')}?taskId=" + ${taskInstance.id};
+        var taskFindUrl = "${createLink(controller: 'task', action:'taskBrowserTaskList')}?taskId=" + ${taskInstance?.id};
         var searchText = $("#search_text").val();
         if (searchText) {
             taskFindUrl += "&search_text=" + encodeURIComponent(searchText);

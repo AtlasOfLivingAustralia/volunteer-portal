@@ -25,7 +25,7 @@
                     </ul>
 
                     <span>
-                        <button type="button" class="btn btn-small" id="show_task_selector" href="#task_selector" style="">Copy values from a previous task</button>
+                        <button type="button" class="btn btn-small btnCopyFromPreviousTask" href="#task_selector" style="">Copy values from a previous task</button>
                         <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
                     </span>
 

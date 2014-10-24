@@ -65,11 +65,11 @@ class TranscribeTagLib {
      * @attr recordIdx
      * @attr labelClass
      * @attr valueClass
+     * @attr field Optional, if the template already has the field object, no need to look up from it's name.
      */
     def renderFieldBootstrap = { attrs, body ->
 
         Task task = attrs.task as Task
-        DarwinCoreField fieldType = attrs.fieldType
         def recordValues = attrs.recordValues
         def labelClass = attrs.labelClass ?: "span2"
         def valueClass = attrs.valueClass ?: "span12"
@@ -80,7 +80,11 @@ class TranscribeTagLib {
             return
         }
 
-        def field = getTemplateFieldForTask(task, fieldType)
+        def field = attrs.field as TemplateField
+        if (!field) {
+            DarwinCoreField fieldType = attrs.fieldType
+            field = getTemplateFieldForTask(task, fieldType)
+        }
 
         def mb = new MarkupBuilder(out)
         renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass)
@@ -182,6 +186,9 @@ class TranscribeTagLib {
                 break
             case FieldType.mappingTool:
                 w = render(template: '/transcribe/mappingToolWidget', model: widgetModel)
+                break
+            case FieldType.copyFromPreviousTaskButton:
+                w = render(template: '/transcribe/copyFromPreviousTaskWidget', model: widgetModel)
                 break
             case FieldType.unitRange:
                 w = render(template: '/transcribe/rangeWidget', model: widgetModel)

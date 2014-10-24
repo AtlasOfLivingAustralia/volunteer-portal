@@ -67,7 +67,7 @@
             <g:each in="${columns}" var="column">
             <div class="${spanClass}">
                 <g:each in="${column}" var="field">
-                    <g:renderFieldBootstrap tabindex="${field.displayOrder}" fieldType="${field.fieldType}" recordIdx="${0}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
+                    <g:renderFieldBootstrap tabindex="${field.displayOrder}" field="${field}" recordIdx="${0}" recordValues="${recordValues}" task="${taskInstance}" labelClass="span4" valueClass="span8" />
                 </g:each>
             </div>
             </g:each>
