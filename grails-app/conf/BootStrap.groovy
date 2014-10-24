@@ -109,9 +109,9 @@ class BootStrap {
                     def results = sql.withBatch { stmt ->
                         stmt.addBatch("SET temp_buffers = '1GB';")
                         // DROP INDEXES
-                        stmt.addBatch("DROP INDEX field_name_index_superceeded_task_idx;")
-                        stmt.addBatch("DROP INDEX fieldnameidx;")
-                        stmt.addBatch("DROP INDEX fieldupdatedidx;")
+                        stmt.addBatch("DROP INDEX if exists field_name_index_superceeded_task_idx;")
+                        stmt.addBatch("DROP INDEX if exists fieldnameidx;")
+                        stmt.addBatch("DROP INDEX if exists fieldupdatedidx;")
                         // BATCH UPDATES
                         stmt.addBatch("UPDATE task AS t SET last_viewed_by = v.user_id FROM vp_user AS v WHERE t.last_viewed_by is not null AND t.last_viewed_by = v.email;")
                         stmt.addBatch("UPDATE task AS t SET fully_transcribed_by = v.user_id FROM vp_user AS v WHERE t.fully_transcribed_by is not null AND t.fully_transcribed_by = v.email;")
