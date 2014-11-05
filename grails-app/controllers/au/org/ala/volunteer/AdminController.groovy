@@ -1,19 +1,21 @@
 package au.org.ala.volunteer
 
+import groovy.time.TimeCategory
+import org.grails.plugins.csv.CSVWriter
 import org.hibernate.FlushMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
-import org.apache.commons.lang.StringUtils
-import grails.converters.JSON
+
+import java.text.SimpleDateFormat
 
 class AdminController {
 
-    def authService
     def taskService
     def grailsApplication
     def tutorialService
     def sessionFactory
     def userService
+    def projectService
 
     def index = {
         checkAdmin()
@@ -244,6 +246,71 @@ class AdminController {
             proj.save()
         }
         render status: 205
+    }
+
+    def projectSummaryReport() {
+        if (checkAdmin()) {
+            def projects = Project.list([sort:'id'])
+
+            def data = []
+
+            def dates = taskService.getProjectDates()
+
+            def projectSummaries = projectService.getProjectSummaryList()
+
+            projects.each { project ->
+                def summary = projectSummaries.projectRenderList.find { it.project.id == project.id }
+                data << [project: project, summary: summary, dates: dates[project.id]]
+
+            }
+
+            response.setHeader("Content-Disposition", "attachment;filename=expedition-summary.csv");
+            response.addHeader("Content-type", "text/plain")
+            def sdf = new SimpleDateFormat("yyyy-MM-dd")
+
+            def dateStr = { d ->
+                if (d) {
+                    return sdf.format(d)
+                }
+                return ""
+            }
+
+            def daysBetween = { Date d1, Date d2 ->
+                if (d1 && d2) {
+                    return TimeCategory.minus(d2, d1).days
+                }
+                return ""
+            }
+
+            def writer = new CSVWriter((Writer) response.writer,  {
+                'Expedition Id' { it.project.id }
+                'Expedtion Name' { it.project.featuredLabel }
+                'Institution' { it.project.institution ? it.project.institution.name : it.project.featuredOwner }
+                'Institution Id' { it.project.institution?.id ?: "" }
+                'Inactive' { it.project.inactive ? "t" : "f" }
+                'Template' { it.project.template?.name }
+                'Expedition Type' { it.project.projectType?.name ?: "<unknown>" }
+                'Tasks' { it.summary?.taskCount ?: 0 }
+                'Transcribed Tasks' { it.summary?.transcribedCount ?: 0 }
+                'Validated Tasks' { it.summary?.validatedCount ?: 0 }
+                'Percent Transcribed' { it.summary?.percentTranscribed }
+                'Percent Validated' { it.summary?.percentValidated }
+                'Active Transcribers' { it.summary?.transcriberCount }
+                'Active Validators' { it.summary?.validatorCount }
+                'Transcription Start Date' { dateStr(it.dates?.transcribeStartDate) }
+                'Transcription End Date' { dateStr(it.dates?.transcribeEndDate) }
+                'Time taken (Transcribe)' { daysBetween(it.dates?.transcribeStartDate, it.dates?.transcribeEndDate) }
+                'Validation Start Date' { dateStr(it.dates?.validateStartDate) }
+                'Validation End Date' { dateStr(it.dates?.validateEndDate) }
+                'Time taken (Validate)' { daysBetween(it.dates?.validateStartDate, it.dates?.validateEndDate) }
+
+            })
+
+            for (def row : data) {
+                writer << row
+            }
+            response.flushBuffer()
+        }
     }
 
 }

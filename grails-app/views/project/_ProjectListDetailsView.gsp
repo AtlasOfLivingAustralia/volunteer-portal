@@ -120,7 +120,7 @@
                                 <%-- Volunteer count --%>
                                 <div class="span2">
                                     <div class="volunteer-count">
-                                        <strong>${projectSummary.volunteerCount}</strong>
+                                        <strong>${projectSummary.transcriberCount}</strong>
                                     </div>
                                 </div>
                                 <%-- Institution --%>

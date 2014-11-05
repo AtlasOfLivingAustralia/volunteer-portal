@@ -4,5 +4,6 @@ class ProjectSummary extends TaskCounts {
     Project project
     String iconLabel
     String iconImage
-    long volunteerCount
+    long transcriberCount
+    long validatorCount
 }

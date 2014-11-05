@@ -120,7 +120,7 @@ class ProjectService {
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
         def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
-        def volunteerCounts = taskService.getProjectVolunteerCounts()
+        def volunteerCounts = taskService.getProjectTranscriberCounts()
 
         List results = []
         for (Project project : projectList) {
@@ -150,7 +150,7 @@ class ProjectService {
         return ProjectType.findByName("specimens")
     }
 
-    private ProjectSummary makeProjectSummary(Project project, long taskCount, long transcribedCount, long fullyValidatedCount, int volunteerCount) {
+    private ProjectSummary makeProjectSummary(Project project, long taskCount, long transcribedCount, long fullyValidatedCount, int transcriberCount, int validatorCount) {
 
         if (!project.projectType) {
             def projectType = guessProjectType(project)
@@ -174,9 +174,11 @@ class ProjectService {
         def ps = new ProjectSummary(project: project)
         ps.iconImage = iconImage
         ps.iconLabel = iconLabel
-        ps.volunteerCount = volunteerCount
+        ps.transcriberCount = transcriberCount
+
         ps.taskCount = taskCount
         ps.transcribedCount = transcribedCount
+        ps.validatorCount = validatorCount
         ps.validatedCount = fullyValidatedCount
 
         return ps
@@ -186,7 +188,9 @@ class ProjectService {
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
         def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
-        def volunteerCounts = taskService.getProjectVolunteerCounts()
+        def transcriberCounts = taskService.getProjectTranscriberCounts()
+        def validatorCounts = taskService.getProjectValidatorCounts()
+
 
         Map<Long, ProjectSummary> projects = [:]
 
@@ -197,13 +201,14 @@ class ProjectService {
             def taskCount = (Long) taskCounts[project.id] ?: 0
             long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
             long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
-            def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
+            def transcriberCount = (Integer) transcriberCounts[project.id] ?: 0
+            def validatorCount = (Integer) validatorCounts[project.id] ?: 0
 
             if (transcribedCount < taskCount && !project.inactive) {
                 incompleteCount++;
             }
 
-            def ps = makeProjectSummary(project, taskCount, transcribedCount, validatedCount, volunteerCount)
+            def ps = makeProjectSummary(project, taskCount, transcribedCount, validatedCount, transcriberCount, validatorCount)
             projects[project.id] = ps
         }
 
@@ -219,7 +224,7 @@ class ProjectService {
         }
 
         // Then apply the query paramter
-        if (params.q) {
+        if (params?.q) {
             String query = params.q.toLowerCase()
 
             renderList = renderList.findAll { projectSummary ->
@@ -251,43 +256,43 @@ class ProjectService {
 
         renderList = renderList.sort { projectSummary ->
 
-            if (params.sort == 'completed') {
+            if (params?.sort == 'completed') {
                 return projectSummary.percentTranscribed < 100 ? projectSummary.percentTranscribed : projectSummary.percentValidated + projectSummary.percentTranscribed
             }
 
-            if (params.sort == 'validated') {
+            if (params?.sort == 'validated') {
                 return projectSummary.percentValidated
             }
 
-            if (params.sort == 'volunteers') {
-                return projectSummary.volunteerCount;
+            if (params?.sort == 'volunteers') {
+                return projectSummary.transcriberCount;
             }
 
-            if (params.sort == 'institution') {
+            if (params?.sort == 'institution') {
                 return projectSummary.project.institution?.name ?: projectSummary.project.featuredOwner;
             }
 
-            if (params.sort == 'type') {
+            if (params?.sort == 'type') {
                 return projectSummary.iconLabel;
             }
 
             projectSummary.project.featuredLabel?.toLowerCase()
         }
 
-        Integer startIndex = params.int('offset') ?: 0;
+        Integer startIndex = params?.int('offset') ?: 0;
         if (startIndex >= renderList.size()) {
-            startIndex = renderList.size() - (params.int('max') ?: 0)
+            startIndex = renderList.size() - (params?.int('max') ?: 0)
             if (startIndex < 0) {
                 startIndex = 0;
             }
         }
 
-        int endIndex = startIndex + (params.int('max') ?: 0) - 1
+        int endIndex = startIndex + (params?.int('max') ?: 0) - 1
         if (endIndex >= renderList.size()) {
             endIndex = renderList.size() - 1;
         }
 
-        if (params.order == 'desc') {
+        if (params?.order == 'desc') {
             renderList = renderList.reverse()
         }
 
@@ -308,8 +313,8 @@ class ProjectService {
             projectList = Project.findAllByInactiveOrInactive(false, null)
         }
 
-        def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter)
-        def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter)
+        def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
+        def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
 
         def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
 

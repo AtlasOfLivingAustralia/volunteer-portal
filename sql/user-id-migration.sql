@@ -25,9 +25,9 @@ UPDATE news_item SET created_by = 'paul.flemons@austmus.gov.au' WHERE created_by
 UPDATE template SET author = 'Nick.dosRemedios@csiro.au' WHERE author = 'nick.dosremedios@csiro.au';
 UPDATE template SET author = 'Nick.dosRemedios@csiro.au' WHERE author = 'webmaster@ala.org.au';
 
-DELETE from achievement WHERE user_id = (SELECT id FROM vp_user WHERE email = 'twentyjazzfunkgreats@hotmail.com'); -- just in case
+DELETE from achievement WHERE user_id = (SELECT id FROM vp_user WHERE user_id = 'twentyjazzfunkgreats@hotmail.com'); -- just in case
 DELETE FROM vp_user WHERE user_id = 'twentyjazzfunkgreats@hotmail.com'; -- Unknown user with no activity
-DELETE from achievement WHERE user_id = (SELECT id FROM vp_user WHERE email = 'Donald.Hobern@csiro.au'); -- for test
+DELETE from achievement WHERE user_id = (SELECT id FROM vp_user WHERE user_id = 'Donald.Hobern@csiro.au'); -- for test
 DELETE FROM vp_user WHERE user_id = 'Donald.Hobern@csiro.au'; -- Remove old record because this email no longer exists in ALA
 
 ALTER TABLE vp_user

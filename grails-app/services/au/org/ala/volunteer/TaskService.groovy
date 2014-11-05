@@ -75,12 +75,34 @@ class TaskService {
         projectTaskCounts.toMap()
     }
 
-    Map getProjectVolunteerCounts() {
+    Map getProjectTranscriberCounts() {
         def volunteerCounts = Task.executeQuery(
             """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
                from Task t where t.fullyTranscribedBy is not null group by t.project.id"""
         )
         volunteerCounts.toMap()
+    }
+
+    Map getProjectValidatorCounts() {
+        def volunteerCounts = Task.executeQuery(
+                """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount
+               from Task t where t.fullyValidatedBy is not null group by t.project.id"""
+        )
+        volunteerCounts.toMap()
+    }
+
+    Map getProjectDates() {
+        def dates = Task.executeQuery(
+            """select t.project.id as projectId, min(t.dateFullyTranscribed), max(t.dateFullyTranscribed), min(t.dateFullyValidated), max(t.dateFullyValidated)
+               from Task t group by t.project.id order by t.project.id"""
+        )
+
+        def map =[:]
+
+        dates.each {
+            map[it[0]] = [transcribeStartDate: it[1], transcribeEndDate: it[2], validateStartDate: it[3], validateEndDate: it[4]]
+        }
+        map
     }
 
     /**

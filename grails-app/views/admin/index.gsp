@@ -74,6 +74,7 @@
                             <button class="btn" title="Display a list of email address for all volunteers" onclick="location.href = '${createLink(controller:'admin', action:'mailingList')}'">Global mailing List</button>
                             <button class="btn" title="Users and their various counts and last activity etc..." onclick="location.href = '${createLink(controller:'ajax', action:'userReport', params: [wt: 'csv'])}'">User report</button>
                             <button class="btn" title="A summary of recent user activity" onclick="location.href = '${createLink(controller:'admin', action:'currentUsers')}'">Current users</button>
+                            <button class="btn" title="List of all expeditions and their statistics" onclick="location.href = '${createLink(controller:'admin', action:'projectSummaryReport')}'">Expedition Summary Report</button>
                         </td>
                     </tr>
 
