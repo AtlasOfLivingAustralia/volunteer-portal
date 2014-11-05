@@ -121,6 +121,7 @@ class ProjectService {
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
         def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
         def volunteerCounts = taskService.getProjectTranscriberCounts()
+        def validatorCounts = taskService.getProjectValidatorCounts()
 
         List results = []
         for (Project project : projectList) {
@@ -130,8 +131,9 @@ class ProjectService {
                 long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
                 long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
                 def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
+                def validatorCount = (Integer) validatorCounts[project.id] ?: 0
                 if (transcribedCount < taskCount) {
-                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, volunteerCount)
+                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, volunteerCount, validatorCount)
                 }
             }
         }
