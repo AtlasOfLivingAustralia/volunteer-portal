@@ -310,14 +310,14 @@ class VolunteerTagLib {
         def taskInstance = attrs.task as Task
 
         if (taskInstance) {
-            User validator = null;
-            User transcriber = null;
+            def validator = null;
+            def transcriber = null;
             if (taskInstance.fullyValidatedBy) {
-                validator = User.findByUserId(taskInstance?.fullyValidatedBy)
+                validator = userService.detailsForUserId(taskInstance?.fullyValidatedBy)
             }
 
             if (taskInstance.fullyTranscribedBy) {
-                transcriber = User.findByUserId(taskInstance?.fullyTranscribedBy)
+                transcriber = userService.detailsForUserId(taskInstance?.fullyTranscribedBy)
             }
             def mb = new MarkupBuilder(out)
 
@@ -350,7 +350,7 @@ class VolunteerTagLib {
      */
     def userDisplayName = { attrs, body ->
         if (attrs.userId) {
-            def user = authService.getUserForUserId(attrs.userId)
+            def user = userService.detailsForUserId(attrs.userId)
             def mb = new MarkupBuilder(out)
             mb.span(class:'userDisplayName') {
                 if (user) {
@@ -577,10 +577,20 @@ class VolunteerTagLib {
         }
     }
 
+    /**
+     * Gets the email address for a user as an object instead of writing it directly to the outputstream
+     *
+     * @attr id REQUIRED The userId to get the email address for
+     */
     def emailForUserId = { attrs, body ->
         propForUserId(attrs, 'email')
     }
 
+    /**
+     * Gets the display name for a user as an object instead of writing it directly to the outputstream
+     *
+     * @attr id REQUIRED The userId to get the display name address for
+     */
     def displayNameForUserId = { attrs, body ->
         propForUserId(attrs, 'displayName')
     }
@@ -588,7 +598,7 @@ class VolunteerTagLib {
     private def propForUserId(def attrs, String prop) {
         def id = attrs.remove('id')
 
-        userService.propForUserId(id, prop)
+        userService.propertyForUserId(id, prop)
     }
 
     /**
@@ -603,19 +613,24 @@ class VolunteerTagLib {
         def displayName = attrs.remove('displayName')?.asBoolean() ?: false
         def email = attrs.remove('email')?.asBoolean() ?: false
 
+
         if (displayName && email) {
             log.error("Both display name and email specified, select only one!")
             throw new RuntimeException("Both display name and email specified, select only one!")
         }
 
-        def user = authService.getUserForUserId(attrs.userId)
+        def user = userService.detailsForUserId(id)
         if (user) {
-            out << email ? user.userName : displayName ? user.displayName : ''
+            out << (email ? user.email : displayName ? user.displayName : 'NEITHER_EMAIL_OR_DISPLAY_NAME_SPECIFIED').encodeAsHTML()
+        } else {
+            out << 'FAILED_TO_FIND_USER' // TODO Change this before commit
         }
     }
 
     /**
-     * Output a users email or display name, fetched from userdetails.
+     * Output a users display name and email, fetched from userdetails unless it's unavailable.  If the user can't
+     * be found a not found string is used instead.  The not found string can optionally be wrapped in a
+     * &lt;span class="muted" /> if the muted attribute is set to true
      *
      * @attr id REQUIRED The user id to get the user details for
      * @attr notFound value to use if the user is not found
@@ -627,11 +642,11 @@ class VolunteerTagLib {
         def muted = attrs.remove('muted')?.asBoolean()
 
         def user
-        if (id) user = authService.getUserForUserId(id)
+        if (id) user = userService.detailsForUserId(id)
         else user = null
 
         if (user) {
-            out << "${user.displayName.encodeAsHTML()} (${user.userName.encodeAsHTML()})"
+            out << "${user.displayName.encodeAsHTML()} (${user.email.encodeAsHTML()})"
         } else if (muted) {
             out << "<span class='muted'>${notFound ?: id}</span>"
         } else {

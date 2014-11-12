@@ -55,7 +55,7 @@
                 <H3>Friends</H3>
                 <ul>
                 <g:each in="${friends}" var="friend">
-                    <li><a href="${createLink(controller:"user", action:"show", id: friend.id)}">${friend.displayName}</a></li>
+                    <li><a href="${createLink(controller:"user", action:"show", id: friend.id)}"><cl:userDetails id="${friend.userId}" displayName="true" /></a></li>
                 </g:each>
                 </ul>
             </div>

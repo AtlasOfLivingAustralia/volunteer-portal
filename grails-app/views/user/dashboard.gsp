@@ -28,7 +28,7 @@
 </head>
 
 <body>
-    <cl:headerContent title="My Dashboard" crumbLabel="${userInstance.displayName}" selectedNavItem="userDashboard">
+    <cl:headerContent title="My Dashboard" crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
         <%
             pageScope.crumbs = [
             ]

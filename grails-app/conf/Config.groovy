@@ -234,6 +234,32 @@ grails {
     }
 }
 
+grails {
+    cache {
+        enabled = true
+        ehcache {
+            //ehcacheXmlLocation = 'classpath:ehcache.xml' // conf/ehcache.xml
+            //reloadable = false
+        }
+        config = {
+            cache {
+                name 'userDetailsCache'
+                eternal false
+                timeToLiveSeconds 1800
+                timeToIdleSeconds 300
+                maxElementsInMemory 200000 // TODO Derive from a property?
+                memoryStoreEvictionPolicy 'LRU'
+                overflowToDisk true
+                diskPersistent false
+                diskExpiryThreadIntervalSeconds 120
+            }
+            diskStore {
+                temp true
+            }
+        }
+    }
+}
+
 //hibernate.SQL="trace,stdout"
 //hibernate.type="trace,stdout"
 

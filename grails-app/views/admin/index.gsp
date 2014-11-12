@@ -25,56 +25,56 @@
                     </thead>
                     <tr>
                         <td>
-                            <button class="btn" onclick="location.href = '${createLink(controller:'project', action:'createNewProject')}'">Create New Expedition</button>
+                            <a class="btn" href="${createLink(controller:'project', action:'createNewProject')}">Create New Expedition</a>
                         </td>
                         <td>Create a new ${message(code:'default.application.name')} Expedition</td>
                     </tr>
                     <tr>
                         <td>
-                            <button class="btn" onclick="location.href = '${createLink(controller:'template', action:'list')}'">Templates</button>
+                            <a class="btn" href="${createLink(controller:'template', action:'list')}">Templates</a>
                         </td>
                         <td>Manage expedition templates and their fields</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'picklist', action:'manage')}'">Bulk manage picklists</button></td>
+                        <td><a class="btn" href="${createLink(controller:'picklist', action:'manage')}">Bulk manage picklists</a></td>
                         <td>Allows modification to the values held in various picklists</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'validationRule', action:'list')}'">Validation Rules</button></td>
+                        <td><a class="btn" href="${createLink(controller:'validationRule', action:'list')}">Validation Rules</a></td>
                         <td>Manage transcription validation rules</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'frontPage', action:'edit')}'">Configure front page</button></td>
+                        <td><a class="btn" href="${createLink(controller:'frontPage', action:'edit')}">Configure front page</a></td>
                         <td>Configure the appearance of the front page</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'stats', action:'index')}'">Stats</button></td>
+                        <td><a class="btn" href="${createLink(controller:'stats', action:'index')}">Stats</a></td>
                         <td>Various Statistics (Experimental!)</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'tutorialManagement')}'">Tutorial files</button></td>
+                        <td><a class="btn" href="${createLink(controller:'admin', action:'tutorialManagement')}">Tutorial files</a></td>
                         <td>Manage tutorial files</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'admin', action:'tools')}'">Tools</button></td>
+                        <td><a class="btn" href="${createLink(controller:'admin', action:'tools')}">Tools</a></td>
                         <td>Tools</td>
                     </tr>
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'institutionAdmin', action:'index')}'">Manage Institutions</button></td>
+                        <td><a class="btn" href="${createLink(controller:'institutionAdmin', action:'index')}">Manage Institutions</a></td>
                         <td>Manage Institutions</td>
                     </tr>
 
                     <tr>
-                        <td><button class="btn" onclick="location.href = '${createLink(controller:'setting', action:'index')}'">Advanced Settings</button></td>
+                        <td><a class="btn" href="${createLink(controller:'setting', action:'index')}">Advanced Settings</a></td>
                         <td>Advanced Settings</td>
                     </tr>
                     <tr>
                         <td>Admin reports</td>
                         <td>
-                            <button class="btn" title="Display a list of email address for all volunteers" onclick="location.href = '${createLink(controller:'admin', action:'mailingList')}'">Global mailing List</button>
-                            <button class="btn" title="Users and their various counts and last activity etc..." onclick="location.href = '${createLink(controller:'ajax', action:'userReport', params: [wt: 'csv'])}'">User report</button>
-                            <button class="btn" title="A summary of recent user activity" onclick="location.href = '${createLink(controller:'admin', action:'currentUsers')}'">Current users</button>
-                            <button class="btn" title="List of all expeditions and their statistics" onclick="location.href = '${createLink(controller:'admin', action:'projectSummaryReport')}'">Expedition Summary Report</button>
+                            <a class="btn" title="Display a list of email address for all volunteers" href="${createLink(controller:'admin', action:'mailingList')}">Global mailing List</a>
+                            <a class="btn" title="Users and their various counts and last activity etc..." href="${createLink(controller:'ajax', action:'userReport', params: [wt: 'csv'])}">User report</a>
+                            <a class="btn" title="A summary of recent user activity" href="${createLink(controller:'admin', action:'currentUsers')}">Current users</a>
+                            <a class="btn" title="List of all expeditions and their statistics" href="${createLink(controller:'admin', action:'projectSummaryReport')}">Expedition Summary Report</a>
                         </td>
                     </tr>
 

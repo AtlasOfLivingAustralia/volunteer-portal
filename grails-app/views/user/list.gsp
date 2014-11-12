@@ -101,7 +101,7 @@
                                 <td><img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=80" class="avatar"/>
                                 </td>
                                 <td style="width:300px;">
-                                    <g:link controller="user" action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "displayName")}</g:link>
+                                    <g:link controller="user" action="show" id="${userInstance.id}"><cl:displayNameForUserId id="${userInstance.userId}" /></g:link>
                                     <g:if test="${userInstance.userId == currentUser}">(that's you!)</g:if>
                                 </td>
                                 <td class="bold centertext">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>

@@ -15,7 +15,7 @@
                     <g:set var="user" value="${User.findByUserId(userScore.username)}"/>
                     <td>
                         <g:if test="${user}">
-                            <g:link controller="user" action="show" id="${user?.id}">${user.displayName}</g:link></td>
+                            <g:link controller="user" action="show" id="${user?.id}"><cl:userDetails id="${user?.userId}" displayName="true"/></g:link></td>
                         </g:if>
                         <g:else>
                             &nbsp;

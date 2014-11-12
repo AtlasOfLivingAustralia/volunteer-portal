@@ -157,8 +157,9 @@ class LeaderBoardController {
         scoreMap.each { kvp ->
             if (kvp.key) {
                 def user = User.findByUserId(kvp.key)
+                def details = userService.detailsForUserId(user?.userId)
                 if (user) {
-                    list << [name: user?.displayName, score: kvp?.value ?: 0, userId: user?.id]
+                    list << [name: details?.displayName, score: kvp?.value ?: 0, userId: user?.id]
                 } else {
                     println "Failed to find user with key: ${kvp.key}"
                 }
@@ -193,8 +194,9 @@ class LeaderBoardController {
         def list = []
         scoreMap.each { kvp ->
             def user = User.findByUserId(kvp.key)
+            def details = userService.detailsForUserId(user?.userId)
             if (user) {
-                list << [name: user?.displayName, score: kvp?.value ?: 0, userId: user?.id]
+                list << [name: details?.displayName, score: kvp?.value ?: 0, userId: user?.id]
             } else {
                 println "Failed to find user with key: ${kvp.key}"
             }

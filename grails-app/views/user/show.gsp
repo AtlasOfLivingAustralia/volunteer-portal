@@ -79,7 +79,7 @@
 </head>
 
 <body>
-    <cl:headerContent title="${fieldValue(bean: userInstance, field: "displayName")} ${userInstance.userId == currentUser ? "(that's you!)" : ''}" crumbLabel="${userInstance.displayName}">
+    <cl:headerContent title="${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? "(that's you!)" : ''}" crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}">
         <%
             pageScope.crumbs = [
                 [link: createLink(controller: 'user', action: 'list'), label: 'Volunteers']

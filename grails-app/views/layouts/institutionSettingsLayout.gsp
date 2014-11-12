@@ -64,14 +64,14 @@
                 <div class="span9">
                     <legend>
                         ${institutionInstance.name} - <g:pageProperty name="page.pageTitle"/>
-                        <div class="btn-group pull-right">
-                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="icon-cog"></i>&nbsp;Actions
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                            </ul>
-                        </div>
+                        %{--<div class="btn-group pull-right">--}%
+                            %{--<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">--}%
+                                %{--<i class="icon-cog"></i>&nbsp;Actions--}%
+                                %{--<span class="caret"></span>--}%
+                            %{--</a>--}%
+                            %{--<ul class="dropdown-menu">--}%
+                            %{--</ul>--}%
+                        %{--</div>--}%
                         <div class="btn-group pull-right" style="margin-left: 5px;margin-right: 5px">
                             <g:pageProperty name="page.adminButtonBar"/>
                         </div>

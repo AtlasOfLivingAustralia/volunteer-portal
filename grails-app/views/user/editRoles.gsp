@@ -38,10 +38,10 @@
     </head>
 
     <body>
-        <cl:headerContent crumbLabel="Volunteers" title="Edit Roles for ${userInstance.displayName}">
+        <cl:headerContent crumbLabel="Volunteers" title="Edit Roles for ${cl.displayNameForUserId(id: userInstance.userId)}">
             <%
                 pageScope.crumbs = []
-                pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: userInstance.displayName]
+                pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: cl.displayNameForUserId(id: userInstance.userId)]
             %>
         </cl:headerContent>
 
