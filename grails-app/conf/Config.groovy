@@ -54,6 +54,8 @@ if (!ala.baseURL) {
 // server.url = "http://localhost" // moved further down
 images.urlPrefix = "/data/volunteer/"
 
+elasticsearch.location="/data/volunteer/elasticsearch"
+
 grails.databinding.convertEmptyStringsToNull = false
 
 // Mappings for expedition labels, icons, etc

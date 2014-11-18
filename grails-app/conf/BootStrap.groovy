@@ -14,6 +14,7 @@ class BootStrap {
     def sessionFactory
     def authService
     def dataSource
+    def fullTextIndexService
 
     def init = { servletContext ->
 
@@ -41,6 +42,8 @@ class BootStrap {
         internalRoles.each { role ->
             ensureRoleExists(role)
         }
+
+        fullTextIndexService.ping()
 
     }
 

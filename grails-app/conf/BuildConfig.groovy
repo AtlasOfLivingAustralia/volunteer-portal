@@ -67,5 +67,6 @@ grails.project.dependency.resolution = {
         compile 'org.imgscalr:imgscalr-lib:4.2'
         compile 'com.squareup.retrofit:retrofit:1.6.1'
         compile 'com.google.guava:guava:17.0'
+        compile 'org.elasticsearch:elasticsearch:1.3.5'
     }
 }

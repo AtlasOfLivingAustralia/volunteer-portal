@@ -30,5 +30,34 @@
                 <a href="${createLink(action:'migrateProjectsToInstitutions')}" class="btn">Expedition-Institution migration tool</a>
             </div>
         </div>
+
+        <div class="row">
+            <div class="span12">
+                <div class="well" style="margin-top: 10px">
+                <h3>Full Text Index</h3>
+                    <a href="${createLink(action:'reindexAllTasks')}" class="btn">Reindex all tasks</a>
+                    <a href="${createLink(action:'rebuildIndex')}" class="btn">Recreate index</a>
+                    <div>
+                        Background queue length: <span id="queueLength"><cl:spinner /></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </body>
+    <r:script>
+
+
+        $(document).ready(function() {
+            updateQueueLength();
+            setInterval(updateQueueLength, 5000);
+        });
+
+        function updateQueueLength() {
+            $.ajax("${createLink(controller:'ajax', action:'getIndexerQueueLength')}").done(function(results) {
+                $("#queueLength").html(results.queueLength);
+            });
+        }
+
+    </r:script>
 </html>

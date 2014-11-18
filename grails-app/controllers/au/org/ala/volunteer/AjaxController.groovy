@@ -23,7 +23,7 @@ class AjaxController {
     DataSource dataSource
     def multimediaService
     def institutionService
-
+    def fullTextIndexService
 
     static responseFormats = ['json', 'xml']
 
@@ -41,7 +41,6 @@ class AjaxController {
         def projectTypes = ProjectType.list()
 
         projectTypes.each {
-            def c = Task.createCriteria()
             def projects = Project.findAllByProjectType(it)
             stats[it.description ?: it.name] = Task.countByProjectInList(projects)
         }
@@ -332,6 +331,12 @@ class AjaxController {
             def inst = instById[it]
             [id: it, name: inst.name]
         }
+        respond results
+    }
+
+    def getIndexerQueueLength() {
+        def length = fullTextIndexService.getIndexerQueueLength()
+        def results = ['success': true, 'queueLength': length]
         respond results
     }
 

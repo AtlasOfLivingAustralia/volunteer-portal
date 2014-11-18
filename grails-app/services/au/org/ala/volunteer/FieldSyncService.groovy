@@ -7,6 +7,7 @@ class FieldSyncService {
     static transactional = true
 
     def logService
+    def fullTextIndexService
 
     Map retrieveFieldsForTask(Task taskInstance) {
         Map recordValues = new LinkedHashMap()
@@ -195,6 +196,8 @@ class FieldSyncService {
         task.viewed++; // increment view count
 
         task.save(flush: true, failOnError: true)
+
+        fullTextIndexService.scheduleTaskIndex(task)
     }
 
 }

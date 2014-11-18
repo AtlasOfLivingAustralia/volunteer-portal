@@ -16,6 +16,7 @@ class AdminController {
     def sessionFactory
     def userService
     def projectService
+    def fullTextIndexService
 
     def index = {
         checkAdmin()
@@ -311,6 +312,32 @@ class AdminController {
             }
             response.flushBuffer()
         }
+    }
+
+    def reindexAllTasks() {
+        if (checkAdmin()) {
+
+            def c = Task.createCriteria()
+            def results = c.list() {
+                projections {
+                    property("id")
+                }
+            }
+
+            results?.each { long taskId ->
+                fullTextIndexService.scheduleTaskIndex(taskId)
+            }
+
+        }
+        redirect(action:'tools')
+    }
+
+    def rebuildIndex() {
+        if (checkAdmin()) {
+            fullTextIndexService.reinitialiseIndex()
+        }
+
+        redirect(action:'tools')
     }
 
 }

@@ -113,7 +113,9 @@
                                 <a href="${createLink(controller:'projectTools', action:'matchRecordedByIdFromPicklist', id:projectInstance.id)}"><i class="icon-wrench"></i>&nbsp;Update empty recordedByID values from picklist match</a>
                             </li>
                             </g:if>
-
+                            <li>
+                                <a href="${createLink(controller:'projectTools', action:'reindexProjectTasks', id:projectInstance.id)}"><i class="icon-flag"></i>&nbsp;Reindex tasks</a>
+                            </li>
                         </ul>
                     </div>
                 </cl:ifAdmin>
