@@ -98,7 +98,9 @@ class FullTextIndexService {
     }
 
     def indexTask(Task task) {
-        def ct = new CodeTimer("Index task ${task.id}")
+
+        def ct = new CodeTimer("Indexing task ${task.id}")
+
 
         def data = [
             id: task.id,
@@ -108,10 +110,10 @@ class FullTextIndexService {
             fullyTranscribedBy: task.fullyTranscribedBy,
             dateFullyTranscribed: task.dateFullyTranscribed,
             fullyValidatedBy: task.fullyValidatedBy,
-            dateFullyValidated:task.dateFullyValidated,
+            dateFullyValidated: task.dateFullyValidated,
             isValid: task.isValid,
             created: task.created,
-            lastViewed: new Date(task.lastViewed),
+            lastViewed: task.lastViewed ? new Date(task.lastViewed) : null,
             lastViewedBy: task.lastViewedBy,
             fields: [],
             project:[
@@ -122,22 +124,20 @@ class FullTextIndexService {
         ]
 
         def c = Field.createCriteria()
-        def fields = c.list {
+        def fields = c {
             eq("task", task)
             eq("superceded", false)
-            and {
-                isNotNull("value")
-                notEqual("value", "")
+        }
+
+        fields.each { field ->
+            if (field.value) {
+                data.fields << [fieldid: field.id, name: field.name, recordIdx: field.recordIdx, value: field.value, transcribedByUserId: field.transcribedByUserId, validatedByUserId: field.validatedByUserId, updated: field.updated, created: field.created]
             }
         }
 
-        fields.each {
-            data.fields << [fieldid: it.id, name: it.name, index: it.recordIdx, value: it.value, transcribedByUserId: it.transcribedByUserId, validatedByUserId: it.validatedByUserId, updated: it.updated, created: it.created]
-        }
-
         def json = (data as JSON).toString()
-
         IndexResponse response = client.prepareIndex(INDEX_NAME, TASK_TYPE, task.id.toString()).setSource(json).execute().actionGet();
+
         ct.stop(true)
     }
 
