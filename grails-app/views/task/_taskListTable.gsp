@@ -37,14 +37,14 @@
                 <td>
                     <g:if test="${taskInstance.fullyTranscribedBy}">
                         <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                        <g:link controller="user" action="show" id="${thisUser.id}">${thisUser.displayName}</g:link>
+                        <g:link controller="user" action="show" id="${thisUser.id}"><cl:userDetails id="${thisUser.userId}" displayName="true"/></g:link>
                     </g:if>
                 </td>
 
                 <td>
                     <g:if test="${taskInstance.fullyValidatedBy}">
                         <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyValidatedBy)}"/>
-                        <g:link controller="user" action="show" id="${thisUser.id}">${thisUser.displayName}</g:link>
+                        <g:link controller="user" action="show" id="${thisUser.id}"><cl:userDetails id="${thisUser.userId}" displayName="true"/></g:link>
                     </g:if>
                 </td>
 

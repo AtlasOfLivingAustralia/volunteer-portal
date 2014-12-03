@@ -29,18 +29,22 @@ grails.project.dependency.resolution = {
         // from public Maven repositories
         //mavenLocal()
         mavenCentral()
+        mavenRepo "http://nexus.ala.org.au/content/repositories/releases/"
+        mavenRepo "http://maven.ala.org.au/repository/"
         mavenRepo "http://snapshots.repository.codehaus.org"
         mavenRepo "http://repository.codehaus.org"
         mavenRepo "http://download.java.net/maven/2/"
         mavenRepo "http://repository.jboss.com/maven2/"
-        mavenRepo "http://maven.ala.org.au/repository/"
         mavenRepo "http://maven.tmatesoft.com/content/repositories/releases/"
     }
     plugins {
         build ":release:3.0.1"
-        compile ":cache:1.1.7"
+        compile ":cache:1.1.8"
+        runtime ":cache-ehcache:1.0.4"
         build ':tomcat:7.0.54'
-        runtime ':hibernate:3.6.10.16'
+        runtime (':hibernate:3.6.10.16') {
+            excludes 'net.sf.ehcache:ehcache-core'
+        }
         runtime ":jquery:1.8.3"
         runtime ":jquery-ui:1.10.4"
         runtime ':resources:1.2.8'
@@ -52,7 +56,7 @@ grails.project.dependency.resolution = {
         runtime ":quartz:1.0.1"
         runtime ":tiny-mce:3.4.9"
         runtime ":webxml:1.4.1"
-        runtime ":ala-web-theme:0.8.1"
+        runtime ":ala-web-theme:0.8.4"
         runtime ":lesscss-resources:1.3.3"
         compile ':scaffolding:2.0.3'
         runtime ':database-migration:1.4.0'

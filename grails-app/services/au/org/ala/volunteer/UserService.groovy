@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
+import au.org.ala.web.UserDetails
 import grails.transaction.NotTransactional
-import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -50,17 +50,22 @@ class UserService {
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
 
         interestedUsers.each {
-            emailService.pushMessageOnQueue(it.email, "A new user has been registered to ${appName}", message)
+            emailService.pushMessageOnQueue(detailsForUserId(it.userId).email, "A new user has been registered to ${appName}", message)
         }
     }
 
     def getUserCounts() {
-        User.executeQuery("""
-            select displayName, (transcribedCount + validatedCount) as score, id
+        def users = User.executeQuery("""
+            select displayName, (transcribedCount + validatedCount) as score, id, userId
             from User
             where (transcribedCount + validatedCount) > 0
             order by (transcribedCount + validatedCount) desc
         """)
+        def deets = authService.getUserDetailsById(users.collect { it[3] })
+        if (deets) {
+            users.each { it[0] = deets.users.get(it[3]).displayName }
+        }
+        return users;
     }
 
     def getUserScore(User user) {
@@ -322,22 +327,91 @@ class UserService {
         }
     }
 
-    List<String> getEmailAddressesForIds(List<String> userIds) {
-        userIds.collect { authService.getUserForUserId(it).userName }
-    }
-
-    def propForUserId(String userid, String prop) {
-        if (!userid) return ''
-        else if ('system' == userid) return userid
-
-        def values = User.withCriteria {
-            eq 'userId', userid
-            projections {
-                property(prop)
-            }
+    /**
+     * Get the user details for a list of user ids
+     */
+    def detailsForUserIds(List<String> userIds) {
+        def serviceResults
+        try {
+            serviceResults = authService.getUserDetailsById(userIds)
+        } catch (Exception e) {
+            log.warn("couldn't get user details from web service", e)
         }
 
-        values.size() > 0 ? values[0] : 'unknown'
+        def results
+        def missingIds
+
+        if (serviceResults) {
+            results = serviceResults.users*.value
+            missingIds = serviceResults.invalidIds.collect { String.valueOf(it) }
+        } else {
+            results = []
+            missingIds = userIds
+        }
+
+        if (missingIds) {
+            results.addAll(getMissingUserIdsAsUserDetails(missingIds))
+        }
+
+        results.sort { it.userId }
+
+        results
+    }
+
+    private def getMissingUserIdsAsUserDetails(List<String> ids) {
+        User.withCriteria {
+            'in' 'userId', ids
+            projections {
+                property 'userId'
+                property 'displayName'
+                property 'email'
+            }
+        }.collect { new UserDetails( displayName: it[1], userId: it[0], userName: it[2] ) }
+    }
+
+    List<String> getEmailAddressesForIds(List<String> userIds) {
+        detailsForUserIds(userIds)*.userName
+    }
+
+    List<String> getDisplayNamesForIds(List<String> userIds) {
+        detailsForUserIds(userIds)*.displayName
+    }
+
+    /**
+     * Get either an email and displayName for a numeric user id.  This method prefers to use the auth service
+     * unless it's unavailable, then it falls back to a database query.
+     *
+     * @param userid The ALA userid to lookup
+     * @param prop The property to get (either 'email' or 'displayName']
+     */
+    def propertyForUserId(String userid, String prop) {
+        if (prop != 'email' && prop != 'displayName') log.warn("propertyForUserId: Unknown property requested \"${prop}\"")
+        detailsForUserId(userid)[prop]
+    }
+
+    /**
+     * Get both email and displayName for a numeric user id.  Preferring to use the auth service
+     * unless it's unavailable, then fall back to database
+     *
+     * @param userid The ALA userid to lookup
+     */
+    def detailsForUserId(String userid) {
+        if (!userid) return [displayName: '', email: '']
+        else if ('system' == userid) return [displayName: userid, email: userid]
+
+        def details = null
+
+        try {
+            details = authService.getUserForUserId(userid)
+        } catch (Exception e) {
+            log.warn("couldn't get user details from web service", e)
+        }
+
+        if (details) return [displayName: details?.displayName ?: '', email: details?.userName ?: '']
+        else {
+            def user = User.findByUserId(userid)
+            return user ? [displayName: user.displayName ?: '', email: user.email ?: ''] : [displayName: '', email: '']
+        }
     }
 
     def idForUserProperty(String propertyName, String propertyValue) {
@@ -348,5 +422,35 @@ class UserService {
             }
         }
         values.size() > 0 ? values[0] : ''
+    }
+
+    void updateAllUsers() {
+        def updates = []
+        def users = User.all
+
+        def ids = users*.userId
+        def results
+        try {
+            results = authService.getUserDetailsById(ids)
+        } catch (Exception e) {
+            log.warn("couldn't get user details from web service", e)
+        }
+
+
+        if (results) {
+            users.each {
+                def result = results.users[it.userId]
+                if (result && (result.displayName != it.displayName || result.userName != it.email)) {
+                    it.displayName = result.displayName
+                    it.email = result.userName
+                    updates << it
+                }
+            }
+        }
+
+        if (updates) {
+            def dbIds = User.saveAll(updates)
+            log.debug("Updated ids ${dbIds}")
+        }
     }
 }

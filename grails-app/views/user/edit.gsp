@@ -62,7 +62,7 @@
                                       <label for="userId"><g:message code="user.userId.label" default="User Id" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: userInstance, field: 'userId', 'errors')}">
-                                        <g:textField name="userId" maxlength="200" value="${userInstance?.userId}" />
+                                        <g:textField readonly="true" name="userId" maxlength="200" value="${userInstance?.userId}" />
                                     </td>
                                 </tr>
 

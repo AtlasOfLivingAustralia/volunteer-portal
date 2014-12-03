@@ -172,7 +172,7 @@
                                         <ul>
                                         <g:each in="${taskInstance.comments}" var="comment">
                                             <li>
-                                                <i>${comment.user?.displayName}</i> on ${comment.date?.format("yyyy-MM-dd HH:mm:ss")}
+                                                <i><cl:userDetails id="${comment.user?.userId}" displayName="true" /></i> on ${comment.date?.format("yyyy-MM-dd HH:mm:ss")}
                                                 <br/>
                                                 ${comment.comment}
                                             </li>

@@ -15,13 +15,10 @@ class ExportService {
     def taskService
     def multimediaService
     def messageSource
+    def userService
 
     private String getUserDisplayName(userId) {
-        def user = User.findByUserId(userId)
-        if (user) {
-            return user.displayName
-        }
-        return userId
+        return userService.propertyForUserId(userId, 'displayName')
     }
 
     private String getTaskField(Task task, String fieldName, Range indexRange = 0..0) {
@@ -251,7 +248,8 @@ class ExportService {
             }
             for (TaskComment comment : comments) {
                 // TODO Get email from userdetails service
-                String[] outputValues = [task.id.toString(), task.externalIdentifier, comment.user.email, comment.user.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
+                def props = userService.detailsForUserId(comment.user.userId)
+                String[] outputValues = [task.id.toString(), task.externalIdentifier, props.email, props.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
                 writer.writeNext(outputValues)
             }
         }

@@ -85,10 +85,12 @@ class ForumTagLib {
                             rowClasses << 'author-is-moderator-row'
                         }
 
+                        def userProps = userService.propertyForUserId(reply.user.userId)
+
                         tr(class: rowClasses.join(" "), messageId: reply.id) {
                             td(class: "forumNameColumn") {
                                 a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: reply.user.id), name:'message_' + reply.id) {
-                                    mkp.yield(reply.user.displayName)
+                                    mkp.yield(userProps.displayName)
                                 }
                                 if (authorIsModerator) {
                                     i(class:'icon-star-empty') { mkp.yieldUnescaped("&nbsp;") }
@@ -201,6 +203,7 @@ class ForumTagLib {
                     } else {
                         for (ForumTopic topic : topics) {
 
+                            def userProps = userService.detailsForUserId(topic.creator?.userId)
                             def authorIsModerator = userService.isUserForumModerator(topic.creator, projectInstance)
                             def rowClasses= []
                             rowClasses << topic.priority
@@ -242,7 +245,7 @@ class ForumTagLib {
                                 }
                                 td {
                                     span() {
-                                        mkp.yield(topic.creator?.displayName)
+                                        mkp.yield(userProps.displayName)
                                         if (authorIsModerator) {
                                             i(class:'icon-star-empty') { mkp.yieldUnescaped("&nbsp;") }
                                         }
@@ -452,6 +455,7 @@ class ForumTagLib {
                     ForumTopic lastTopic = null
 
                     for (ForumMessage message : messages) {
+                        def userProps = userService.detailsForUserId(message.user?.userId)
                         Project projectInstance = null
                         Task taskInstance = null
                         if (message.topic.instanceOf(ProjectForumTopic)) {
@@ -499,7 +503,7 @@ class ForumTagLib {
                             td(class: "forumNameColumn") {
                                 if (!attrs.hideUsername) {
                                     a(class: 'forumUsername', href: createLink(controller: 'user', action: 'show', id: message.user.id)) {
-                                        mkp.yield(message.user.displayName)
+                                        mkp.yield(userProps.displayName)
                                     }
                                 }
                                 br {}

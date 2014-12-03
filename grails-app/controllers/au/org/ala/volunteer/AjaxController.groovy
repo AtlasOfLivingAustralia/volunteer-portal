@@ -24,6 +24,7 @@ class AjaxController {
     def multimediaService
     def institutionService
     def fullTextIndexService
+    def authService
 
     static responseFormats = ['json', 'xml']
 
@@ -90,6 +91,13 @@ class AjaxController {
         def report = []
         def users = User.list()
 
+        def serviceResults = [:]
+        try {
+            serviceResults = authService.getUserDetailsById(users*.userId)
+        } catch (Exception e) {
+            log.warn("couldn't get user details from web service", e)
+        }
+
         for (User user : users) {
             def transcribedCount = Task.countByFullyTranscribedBy(user.userId)
             def validatedCount = Task.countByFullyValidatedBy(user.userId)
@@ -97,8 +105,9 @@ class AjaxController {
 
             def projectCount = ViewedTask.executeQuery("select distinct t.project from Task t where t.fullyTranscribedBy = :userId", [userId:  user.userId]).size()
 
-            // TODO Get email from userdetails service
-            report.add([user.email, user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
+            //def props = userService.detailsForUserId(user.userId)
+            def serviceResult = serviceResults?.users?.get(user.userId)
+            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
         }
 
         // Sort by the transcribed count

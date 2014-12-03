@@ -6,7 +6,7 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 
 class TaskCommentController {
 
-    def authService
+    def authService, userService
 
     def index = {
     }
@@ -72,10 +72,12 @@ class TaskCommentController {
                     }
                 }
 
+                def details = userService.detailsForUserId(comment.user.userId)
+
                 div(class: "task-comment-container") {
                     div(class:"task-comment-header") {
                         div(class:"task-comment-username") {
-                            mkp.yield(comment.user.displayName)
+                            mkp.yield(details.displayName)
                         }
                         div(class:"task-comment-date") {
                             mkp.yield(formatDate(date: comment.date, format:"d MMM yyyy HH:mm:ss"))

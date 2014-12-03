@@ -24,8 +24,13 @@ class AdminController {
 
     def mailingList = {
         if (checkAdmin()) {
-            def userIds = User.all.collect{ it.email }
-            def list = userIds.join(";\n")
+            def userIds = User.withCriteria {
+                projections {
+                    property('userId', 'userId')
+                }
+            }
+            def emails = userService.getEmailAddressesForIds(userIds)
+            def list = emails.join(";\n")
             render(text:list, contentType: "text/plain")
         }
     }
@@ -190,13 +195,13 @@ class AdminController {
             def validatedCount = Task.countByFullyValidatedBy(user.userId)
 
             if (user.transcribedCount < transcribedCount) {
-                // TODO Get email from userdetails service
+                // Don't hit network to get email address here as it's only logging
                 println "Updating transcribed count for ${user.userId} (${user.email}) from ${user.transcribedCount} to ${transcribedCount}"
                 user.transcribedCount = transcribedCount
             }
 
             if (user.validatedCount < validatedCount) {
-                // TODO Get email from userdetails service
+                // Don't hit network to get email address here as it's only logging
                 println "Updating validated count for ${user.userId} (${user.email}) from ${user.validatedCount} to ${validatedCount}"
                 user.validatedCount = validatedCount
             }

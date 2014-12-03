@@ -24,6 +24,7 @@ class ProjectController {
     def picklistService
     def projectStagingService
     def projectTypeService
+    def authService
 
     /**
      * Project home page - shows stats, etc.
@@ -33,7 +34,8 @@ class ProjectController {
 
         String currentUserId = null
 
-        currentUserId = AuthenticationCookieUtils.getUserName(request)
+        def username = AuthenticationCookieUtils.getUserName(request)
+        if (username) currentUserId = authService.getUserForEmailAddress(username)?.userId
 
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -62,8 +64,8 @@ class ProjectController {
                     roles.eachWithIndex { role, i ->
                         if (count >= role.threshold && role.members.size() < role.max && !assigned) {
                             // assign role
-                            // TODO Get displayName from userdetails service
-                            def userMap = [name: user.displayName, id: user.id, count: count, userId: user.userId]
+                            def details = userService.detailsForUserId(userId)
+                            def userMap = [name: details.displayName, id: user.id, count: count, userId: user.userId]
                             role.get("members").add(userMap)
                             assigned = true
                             log.debug("assigned: " + userId)
