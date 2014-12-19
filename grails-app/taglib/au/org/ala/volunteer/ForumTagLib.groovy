@@ -85,7 +85,7 @@ class ForumTagLib {
                             rowClasses << 'author-is-moderator-row'
                         }
 
-                        def userProps = userService.propertyForUserId(reply.user.userId)
+                        def userProps = userService.detailsForUserId(reply.user.userId)
 
                         tr(class: rowClasses.join(" "), messageId: reply.id) {
                             td(class: "forumNameColumn") {
