@@ -4,6 +4,10 @@ import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
 
+    private static final String HEADER_PRAGMA = "Pragma";
+    private static final String HEADER_EXPIRES = "Expires";
+    private static final String HEADER_CACHE_CONTROL = "Cache-Control";
+
     def grailsApplication
     def fieldSyncService
     def auditService
@@ -59,6 +63,18 @@ class TranscribeController {
             if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUserId && !userService.isAdmin()) {
                 isReadonly = "readonly"
             }
+
+            // Disable browser caching of this page, to force it to reload from server always
+            // This, in turn, ensures that there is always an active http session when the page
+            // is loaded and that all the page JS is run when the back button is clicked.
+            // If this is not done and the back button is used to return to the page, the
+            // JS on the page is not run and there may be no active session when the form is
+            // submitted.  There is code to detect this condition and restore data from
+            // the web brower's local storage but it may not work correctly with all templates.
+            response.setHeader(HEADER_PRAGMA, "no-cache");
+            response.setDateHeader(HEADER_EXPIRES, 1L);
+            response.setHeader(HEADER_CACHE_CONTROL, "no-cache");
+            response.addHeader(HEADER_CACHE_CONTROL, "no-store");
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
@@ -137,7 +153,8 @@ class TranscribeController {
                 def msg = "Task save failed: " + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
-                render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: params.recordValues])
+                redirect(action:'task', id: params.id)
+                //render(view: 'task', model: [taskInstance: taskInstance, recordValues: params.recordValues])
             }
         } else {
             redirect(view: '../index')

@@ -839,89 +839,89 @@
             $('[id*="recordValues\\."]').each(function (index, widget) {
                 var field = { id: $(widget).attr("id"), value: $(widget).val() };
                 taskState.fields.push(field);
-            });
+        });
 
-            amplify.store("bvp_task_${taskInstance.id ?: 0}", taskState);
-        }
+        amplify.store("bvp_task_${taskInstance.id ?: 0}", taskState);
+    }
 
-        function checkAndRecoverFromFailedSubmit() {
-            var lastState = amplify.store("bvp_task_${taskInstance.id ?: 0}");
-            if (lastState && lastState.fields) {
-                alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
+    function checkAndRecoverFromFailedSubmit() {
+        var lastState = amplify.store("bvp_task_${taskInstance.id ?: 0}");
+        if (lastState && lastState.fields) {
+            alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
 
-                // If the form uses the dynamicDataSet template (observation diaries etc), we need to render them correctly first.
+            // If the form uses the dynamicDataSet template (observation diaries etc), we need to render them correctly first.
 
-                if (lastState.dynamicDataSetFieldId) {
-                    var numRows = 0;
-                    for (var fieldIdx in lastState.fields) {
-                        var field = lastState.fields[fieldIdx];
-                        if (field.id == lastState.dynamicDataSetFieldId) {
-                            numRows = parseInt(field.value);
-                        }
-                    }
-
-                    if (numRows && addEntry) {
-                        for (var i = 0; i < numRows; ++i) {
-                            addEntry();
-                        }
+            if (lastState.dynamicDataSetFieldId) {
+                var numRows = 0;
+                for (var fieldIdx in lastState.fields) {
+                    var field = lastState.fields[fieldIdx];
+                    if (field.id == lastState.dynamicDataSetFieldId) {
+                        numRows = parseInt(field.value);
                     }
                 }
 
-                for (var i = 0; i < lastState.fields.length; ++i) {
-                    var field = lastState.fields[i];
-                    if (field.id) {
-                        var key = "#" + field.id.replace(/\./g, '\\.');
-                        $(key).val(field.value);
-                        $(key).change();
+                if (numRows && addEntry) {
+                    for (var i = 0; i < numRows; ++i) {
+                        addEntry();
                     }
                 }
-                // Now clear our local store so this message doesn't happen again if the user chooses not to save this time.
-                amplify.store("bvp_task_${taskInstance.id ?: 0}", null);
-            }
-        }
-
-        function submitFormWithAction(action) {
-            try {
-                disableSubmitButtons();
-                var form = $(".transcribeForm");
-                // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
-                saveFormState(action);
-                // Now we can attempt the submission
-                form.get(0).setAttribute('action', action);
-                form.submit();
-            } catch(error) {
-                enableSubmitButtons();
-            }
-        }
-
-        function disableSubmitButtons() {
-            $(".bvp-submit-button").attr('disabled', 'disabled');
-        }
-
-        function enableSubmitButtons() {
-            $(".bvp-submit-button").removeAttr('disabled');
-        }
-
-        function checkValidation() {
-
-            if (typeof(transcribeBeforeValidation) === "function") {
-                transcribeBeforeValidation();
             }
 
-            transcribeWidgets.prepareFieldWidgetsForSubmission();
-            var validationResults = transcribeValidation.validateFields()
-
-            if (validationResults.hasErrors) {
-                $("#submitButtons").css("display", "none");
-                $('#warningMessagesContainer').css("display", "none");
-                $('#errorMessagesContainer').css("display", "block");
-            } else if (validationResults.hasWarnings) {
-                $("#submitButtons").css("display", "none");
-                $('#warningMessagesContainer').css("display", "block");
-                $('#errorMessagesContainer').css("display", "none");
+            for (var i = 0; i < lastState.fields.length; ++i) {
+                var field = lastState.fields[i];
+                if (field.id) {
+                    var key = "#" + field.id.replace(/\./g, '\\.');
+                    $(key).val(field.value);
+                    $(key).change();
+                }
             }
-            return !validationResults.hasWarnings && !validationResults.hasErrors;
+            // Now clear our local store so this message doesn't happen again if the user chooses not to save this time.
+            amplify.store("bvp_task_${taskInstance.id ?: 0}", null);
         }
+    }
+
+    function submitFormWithAction(action) {
+        try {
+            disableSubmitButtons();
+            var form = $(".transcribeForm");
+            // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
+            saveFormState(action);
+            // Now we can attempt the submission
+            form.get(0).setAttribute('action', action);
+            form.submit();
+        } catch(error) {
+            enableSubmitButtons();
+        }
+    }
+
+    function disableSubmitButtons() {
+        $(".bvp-submit-button").attr('disabled', 'disabled');
+    }
+
+    function enableSubmitButtons() {
+        $(".bvp-submit-button").removeAttr('disabled');
+    }
+
+    function checkValidation() {
+
+        if (typeof(transcribeBeforeValidation) === "function") {
+            transcribeBeforeValidation();
+        }
+
+        transcribeWidgets.prepareFieldWidgetsForSubmission();
+        var validationResults = transcribeValidation.validateFields()
+
+        if (validationResults.hasErrors) {
+            $("#submitButtons").css("display", "none");
+            $('#warningMessagesContainer').css("display", "none");
+            $('#errorMessagesContainer').css("display", "block");
+        } else if (validationResults.hasWarnings) {
+            $("#submitButtons").css("display", "none");
+            $('#warningMessagesContainer').css("display", "block");
+            $('#errorMessagesContainer').css("display", "none");
+        }
+        return !validationResults.hasWarnings && !validationResults.hasErrors;
+    }
 
 
     </r:script>

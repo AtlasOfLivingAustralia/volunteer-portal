@@ -27,7 +27,7 @@
         <r:require module="qtip" />
         <r:require module="bvp-js" />
 
-        <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>
+        %{--<link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>--}%
         <link href="http://www.ala.org.au/wp-content/themes/ala2011/css/jquery.autocomplete.css" type="text/css" rel="stylesheet" media="screen, projection" />
 
         <r:require module="bootstrap-js" />
