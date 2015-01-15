@@ -357,6 +357,7 @@ class ForumService {
 
         watchLists?.each {
             it.removeFromTopics(topic)
+            it.topics.remove(topic)
             it.save(flush: true, failOnError: true)
         }
 
@@ -368,6 +369,20 @@ class ForumService {
 
         // finally delete the topic
         topic.delete(flush: true, failOnError: true)
+    }
+
+    def deleteProjectForumWatchlist(Project project) {
+        def pfwl = ProjectForumWatchList.findByProject(project)
+
+        // copy users set
+        def users = pfwl.users.toList()
+        users.each { user ->
+            pfwl.removeFromUsers(user)
+            pfwl.users.remove(user)
+        }
+
+        pfwl.save(flush: true, failOnError: true)
+        pfwl.delete(flush: true, failOnError: true)
     }
 
     def deleteMessage(ForumMessage message) {
