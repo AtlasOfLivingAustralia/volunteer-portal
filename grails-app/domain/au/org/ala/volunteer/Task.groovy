@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 class Task implements Serializable {
 
-    Project project
+    //Project project
     String externalIdentifier
     String externalUrl
     String fullyTranscribedBy
@@ -16,6 +16,7 @@ class Task implements Serializable {
     Long lastViewed
     String lastViewedBy
 
+    static belongsTo = [project: Project]
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
 
     static mapping = {

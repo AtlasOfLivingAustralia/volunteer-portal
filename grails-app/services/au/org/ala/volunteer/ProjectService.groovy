@@ -56,23 +56,32 @@ class ProjectService {
             profile.delete(flush: true, failOnError: true)
         }
 
-        // Also need to delete forum topics/posts that might be associated with this project
-        logService.log("Delete Project ${projectInstance.id}: Delete Project Forum Topics...")
-        def topics = ProjectForumTopic.findByProject(projectInstance)
+        // Load all related forum topics
+        // Need to load them all first before querying for the UserForumWatchLists otherwise they can't be removed from
+        // the UserForumWatchLists topics set as of Hibernate plugin v3.6.10.16.
+        def taskTopics = TaskForumTopic.findAllByTaskInList(projectInstance.tasks.toList())
+        def topics = ProjectForumTopic.findAllByProject(projectInstance)
         def topicCount = 0
-        topics?.each { topic ->
-            forumService.deleteTopic(topic)
-            topicCount++
-        }
 
+        // Also need to delete forum topics/posts that might be associated with this project
         logService.log("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
-        topics = TaskForumTopic.executeQuery("from TaskForumTopic where id in (select TT.id from TaskForumTopic TT where TT.task.project = :project)", [project: projectInstance])
-        topics?.each { topic ->
+        taskTopics?.each { topic ->
             logService.log("Deleting topic ${topic.id}...")
             forumService.deleteTopic(topic)
             topicCount++
         }
+
+        logService.log("Delete Project ${projectInstance.id}: Delete Project Forum Topics...")
+        topics?.each { topic ->
+            forumService.deleteTopic(topic)
+            topicCount++
+        }
         logService.log("Delete Project ${projectInstance.id}: ${topicCount} forum topics deleted")
+
+        logService.log("Project ${projectInstance.id}: Delete Project Forum Watchlist...")
+        forumService.deleteProjectForumWatchlist(projectInstance)
+        //def projectForumWatchListCount = ProjectForumWatchList.executeUpdate("delete from ProjectForumWatchList where project = :project", [project: projectInstance])
+        logService.log("Delete Project ${projectInstance.id}: project forum watch list deleted")
 
         // Delete Multimedia
         logService.log("Delete Project ${projectInstance.id}: Delete multimedia...")
@@ -94,9 +103,7 @@ class ProjectService {
         logService.log("Delete Project ${projectInstance.id}: ${commentCount} task comments deleted")
 
         // Delete Tasks
-        logService.log("Project ${projectInstance.id}: Delete Tasks...")
-        def taskCount = Task.executeUpdate("delete from Task t where t.id in (select tt.id from Task tt where project = :project)", [project: projectInstance])
-        logService.log("Delete Project ${projectInstance.id}: ${taskCount} tasks deleted")
+        // Tasks are deleted automatically because they're owned by the project
 
         // now we can delete the project itself
         logService.log("Project ${projectInstance.id}: Delete Project...")
