@@ -28,7 +28,7 @@
             <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
             <div class="control-group">
-                <label class="control-label" for="featuredOwner">Expedition sponsor</label>
+                <label class="control-label" for="featuredOwner">Expedition institution</label>
                 <div class="controls">
                     <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}" />
                     <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}" />
