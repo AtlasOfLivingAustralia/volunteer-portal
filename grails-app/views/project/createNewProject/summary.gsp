@@ -97,7 +97,7 @@
 
         <table class="table table-bordered table-striped">
             <tr>
-                <td class="prop-name">Expedition sponsor</td>
+                <td class="prop-name">Expedition institution</td>
                 <td class="prop-value">${project.featuredOwner}</td>
             </tr>
             <tr>
