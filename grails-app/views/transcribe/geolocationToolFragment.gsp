@@ -21,7 +21,7 @@
 
             <h4>Coordinate Uncertainty</h4>
 
-            <div>Adjust Uncertainty (in metres):
+            <div>Adjust Uncertainty:
                 <select class="input-medium" id="infoUncert">
                     <g:set var="coordinateUncertaintyPL" value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
                     <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">

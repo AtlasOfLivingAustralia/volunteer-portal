@@ -34,6 +34,7 @@
 
     <body>
 
+        <r:require module="url"/>
         <r:script type="text/javascript">
 
             $(document).ready(function () {
@@ -56,23 +57,11 @@
                 });
 
                 $('a[data-toggle="tab"]').on('click', function (e) {
-                    var tabIndex = $(this).attr("tabIndex");
-                    if (tabIndex) {
-                        var tabIndex = $(this).attr("tabIndex");
-                        if (tabIndex) {
-                            $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
-                            $.ajax("${createLink(controller: 'forum',action:'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}").done(function(content) {
-                                $("#tabTaskTopics").html(content);
-                                $("th > a").addClass("btn btn-small")
-                                $("th.sorted > a").addClass("btn btn-small")
-                            });
-
-                        }
-                    }
+                    activateTaskTopics($(this));
                 });
 
-                $("th > a").addClass("btn")
-                $("th.sorted > a").addClass("active")
+                $("th > a").addClass("btn");
+                $("th.sorted > a").addClass("active");
 
                 $("#watchProjectCheckbox").change(function(e) {
                     e.preventDefault();
@@ -83,6 +72,62 @@
                         }
                     });
                 })
+
+                var url = "${createLink(controller: 'forum',action:'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}";
+
+                function displayTaskTopicsSpinner() {
+                    $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
+                }
+
+                function activateTaskTopics(jqElem, params) {
+                    params = params || {};
+                    var tabIndex = jqElem.attr("tabIndex");
+                    if (tabIndex) {
+                        displayTaskTopicsSpinner();
+
+                        var b = URI(url);
+                        for (var property in params) {
+                            if (params.hasOwnProperty(property)) {
+                                b.addSearch(property, params[property]);
+                            }
+                        }
+                        $.ajax(b.toString()).done(updateTaskTopicsContent);
+
+                    }
+                }
+
+                function updateTaskTopicsContent(content) {
+                    $("#tabTaskTopics").html(content);
+                    $("th > a").addClass("btn btn-small");
+                    $("th.sorted > a").addClass("btn btn-small")
+                    $("div.topicTable > div.pagination > a").on('click', function(e) {
+                        e.preventDefault();
+                        ajaxUpdateTaskTopics($(this));
+                    });
+                }
+
+                function ajaxUpdateTaskTopics(jqElem) {
+                    var b = new URI(url);
+                    var r = new URI(jqElem.attr('href'));
+
+                    b.search(r.search());
+
+                    $("div.topicTable > div.pagination > a").off('click');
+                    displayTaskTopicsSpinner();
+
+                    $.ajax(b.toString()).done(updateTaskTopicsContent);
+                }
+
+            <g:if test="params.selectedTab == 1">
+                var params = {};
+                <g:if test="${params.max || params.offset}">
+                    var max = parseInt("${params.max.encodeAsJavaScript()}");
+                    var offset = parseInt("${params.offset.encodeAsJavaScript()}");
+                    if (!isNaN(max)) params.max = max;
+                    if (!isNaN(offset)) params.offset = offset;
+                </g:if>
+                activateTaskTopics($('#tabTasks'), params);
+            </g:if>
 
             });
 
@@ -123,8 +168,8 @@
 
                 <div id="projectForumTabs" class="tabbable">
                     <ul class="nav nav-tabs">
-                        <li class="${!params.selectedTab ? 'active' : ''}"><a href="#tabProjectTopics" class="forum-tab-title" data-toggle="tab" tabIndex="0">Expedition Topics</a></li>
-                        <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabTaskTopics" class="forum-tab-title" data-toggle="tab" tabIndex="1">Task Topics</a></li>
+                        <li class="${!params.selectedTab ? 'active' : ''}"><a id="tabProject" href="#tabProjectTopics" class="forum-tab-title" data-toggle="tab" tabIndex="0">Expedition Topics</a></li>
+                        <li class="${params.selectedTab == '1' ? 'active' : ''}"><a id="tabTasks" href="#tabTaskTopics" class="forum-tab-title" data-toggle="tab" tabIndex="1">Task Topics</a></li>
                     </ul>
                     <div class="tab-content">
                         <div id="tabProjectTopics" class="tabContent tab-pane ${!params.selectedTab ? 'active' : ''}">

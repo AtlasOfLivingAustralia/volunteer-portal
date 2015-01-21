@@ -53,6 +53,8 @@ class ExportService {
             case "datevalidated":
                 result = task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
                 break;
+            case "validated":
+                result = (task.dateFullyValidated != null) || (task.fullyTranscribedBy != null)
         }
         return result
     }
@@ -345,6 +347,9 @@ class ExportService {
                         break;
                     case "datevalidated":
                         fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        break;
+                    case "validated":
+                        fieldValues.add(((task.dateFullyValidated != null) || (task.fullyTranscribedBy != null)).toString())
                         break;
                     default:
                         if (fieldMap.containsKey(fieldName)) {
