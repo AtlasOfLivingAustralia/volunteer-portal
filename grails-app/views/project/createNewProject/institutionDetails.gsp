@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>Create a new Expedition - Expedition sponsor</title>
+    <title>Create a new Expedition - Expedition institution</title>
 
     <r:require module="institution-dropdown" />
     <r:script type="text/javascript">
@@ -31,7 +31,7 @@
 </head>
 <body>
 
-<cl:headerContent title="Create a new Expedition - Expedition sponsor" selectedNavItem="expeditions">
+<cl:headerContent title="Create a new Expedition - Expedition institution" selectedNavItem="expeditions">
     <% pageScope.crumbs = [] %>
 </cl:headerContent>
 
@@ -53,7 +53,7 @@
     <g:uploadForm name="detailsForm">
         <div class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="featuredOwner">Expedition sponsor</label>
+                <label class="control-label" for="featuredOwner">Expedition institution</label>
                 <div class="controls">
                     <g:textField name="featuredOwner" value="${project.featuredOwner}" />
                     <cl:helpText>This may be the name of an institution, or a specific department or collection within an institution</cl:helpText>

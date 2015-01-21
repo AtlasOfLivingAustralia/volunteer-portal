@@ -29,7 +29,8 @@ class ForumController {
         if (projectId) {
             def projectInstance = Project.get(projectId)
             if (projectInstance) {
-                def topics = forumService.getProjectForumTopics(projectInstance, false, params)
+                def cleanedParams = params - [max: params.max, offset: params.offset]
+                def topics = forumService.getProjectForumTopics(projectInstance, false, params.int('selectedTab') == 1 ? cleanedParams : params)
 
                 def userInstance = userService.currentUser
                 def isWatching = false
@@ -445,7 +446,9 @@ class ForumController {
 
     def ajaxProjectTaskTopicList() {
         def projectInstance = Project.get(params.int("projectId"))
-        [projectInstance: projectInstance]
+        def topics = projectInstance ? forumService.getTaskTopicsForProject(projectInstance, params) : []
+
+        [projectInstance: projectInstance, topics: topics]
     }
 
     def searchForums() {
