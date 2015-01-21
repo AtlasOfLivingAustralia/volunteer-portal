@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.gorm.PagedResultList
+import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
 
 class ForumTagLib {
@@ -146,7 +146,9 @@ class ForumTagLib {
         def hidePageButtons = attrs.hidePageButtons
 
         def totalCount = attrs.totalCount
-        if (!totalCount && (topics instanceof PagedResultList)) {
+        // TODO Fix grails.orm.PagedResultList vs grails.gorm.PagedResultList after upgrade to Grails 2.4.4
+        // see https://jira.grails.org/browse/GRAILS-8413
+        if (!totalCount && (topics instanceof PagedResultList || topics instanceof grails.gorm.PagedResultList)) {
             totalCount = topics?.totalCount
         }
 
@@ -157,19 +159,6 @@ class ForumTagLib {
                 mkp.yield("No topics found")
             }
             return
-        }
-
-        if (topics.size() > 0 && !paginateAction) {
-            def first = topics[0] as ForumTopic
-            if (first) {
-                if (first.instanceOf(ProjectForumTopic)) {
-                    projectInstance = (first as ProjectForumTopic).project
-                    paginateAction = 'projectForum'
-                } else if (first.instanceOf(TaskForumTopic)) {
-                    projectInstance = (first as TaskForumTopic).task?.project
-                    paginateAction = 'projectForum'
-                }
-            }
         }
 
         def topicCounts = [:]
@@ -286,7 +275,7 @@ class ForumTagLib {
             }
             if (!hidePageButtons) {
                 div(class: 'pagination') {
-                    mkp.yieldUnescaped(paginate(total: totalCount, action: paginateAction, params: params))
+                    mkp.yieldUnescaped(paginate(total: totalCount, action: paginateAction, params: params + [selectedTab: 1]))
                 }
             }
         }
@@ -430,11 +419,10 @@ class ForumTagLib {
      * @attrs project
      */
     def taskTopicsTable = { attrs, body ->
-        def projectInstance = attrs.project as Project
+        def topics = attrs.topics as PagedResultList
 
-        if (projectInstance) {
-            def topics = forumService.getTaskTopicsForProject(projectInstance)
-            out << topicTable([topics: topics, totalCount: topics?.totalCount], body)
+        if (topics) {
+            out << topicTable([topics: topics, totalCount: topics?.totalCount, paginateAction: 'projectForum'], body)
         }
     }
 

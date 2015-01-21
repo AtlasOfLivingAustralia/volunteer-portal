@@ -77,6 +77,10 @@ modules = {
         resource url: 'css/institution-dropdown.css'
     }
 
+    "url" {
+        resource url: 'js/uri.js'
+    }
+
     "slickgrid" {
         dependsOn "jquery, jquery-ui"
         resource url: 'js/slickgrid/jquery.event.drag-2.2.js'

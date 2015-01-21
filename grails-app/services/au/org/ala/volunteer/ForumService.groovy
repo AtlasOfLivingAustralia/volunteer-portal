@@ -107,28 +107,11 @@ class ForumService {
     }
 
     PagedResultList getTaskTopicsForProject(Project projectInstance, Map params = null) {
-
-//        def c = TaskForumTopic.where {
-//            task.project == projectInstance
-//        }
-//
-//        def results = c.list(max: params?.max ?: 10, offset: params?.offset ?: 0)
-
-        // This is not the best - because of a bug in Grails (2.2.0) using a criteria builder that queries an associated property
-        // (i.e. Task.Project == projectInstance), the results are not being returned in a PageResultList, which is what we need
-        // So instead we have to return the list of tasks (which could be huge!), and use that list in a query
-        // Hopefully this will be corrected soon!
-        def tasks = Task.findAllByProject(projectInstance)
-        def c = TaskForumTopic.createCriteria()
-
-
-        if (tasks) {
-            def results = c.list(max: params?.max ?: 10, offset: params?.offset ?: 0 ) {
-                inList('task', tasks)
+        TaskForumTopic.createCriteria().list(max: params?.max ?: 10, offset: params?.offset ?: 0) {
+            task {
+                eq("project", projectInstance)
             }
-            return results
         }
-        return null
     }
 
     PagedResultList getTopicMessages(ForumTopic topic, Map params = null) {
