@@ -31,8 +31,8 @@ Deploying to a server can be done similarly, though you will need to define an a
 
 ##Contributing
 
-DigiVol is a [Grails] v2.3.11 based web application.  It uses a [PostgreSQL] for data
-storage.  Development follows the [git flow] workflow.
+DigiVol is a [Grails] v2.3.11 based web application.  It uses [PostgreSQL] for data storage.  Development follows the 
+[git flow] workflow.
 
 For git flow operations you may like to use the `git-flow` command line tools.  Either install [Atlassian SourceTree]
 which bundles its own version or install them via:
