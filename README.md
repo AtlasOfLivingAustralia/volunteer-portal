@@ -7,8 +7,9 @@ in biodiversity collections, field notebooks and survey sheets.
 ##Running
 
 To run up a vagrant instance of DigiVol you can use the volunteer_portal_instance ansible playbook from the
-[AtlasOfLivingAustralia/ala-install] repository.  This will
-deploy a pre-compiled version from the ALA Maven repository.  Requires vagrant and ansible to be installed.
+[AtlasOfLivingAustralia/ala-install] repository.  This will deploy a pre-compiled version from the ALA Maven repository.
+
+*NOTE: Both [vagrant] and [ansible] must be installed first.*
 
 First, setup an extra variables file with the database password, eg `nano ~/digivol-password.yml`:
 
@@ -50,3 +51,6 @@ apt-get install git-flow
 [Grails]: http://www.grails.org/
 [git flow]: https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow "Gitflow Workflow"
 [Atlassian SourceTree]: http://www.sourcetreeapp.com/
+[AtlasOfLivingAustralia/ala-install]: https://github.com/AtlasOfLivingAustralia/ala-install
+[vagrant]: https://www.vagrantup.com/
+[ansible]: http://www.ansible.com/home
