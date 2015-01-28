@@ -4,7 +4,7 @@ class UrlMappings {
 
         "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin') {
             constraints {
-				
+
             }
         }
 

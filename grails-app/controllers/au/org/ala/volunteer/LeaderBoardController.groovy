@@ -5,6 +5,7 @@ import grails.converters.JSON
 class LeaderBoardController {
 
     def userService
+    def settingsService
 
     def leaderBoardFragment() {
         def institutionInstance = Institution.get(params.int("institutionId"))
@@ -31,18 +32,20 @@ class LeaderBoardController {
         def institution = Institution.get(params.int("institutionId"))
 
         def today = todaysDate
+        
+        def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
 
         def result = [name: '', score: 0]
         switch (category) {
             case LeaderBoardCategory.daily:
-                result = getLeaderboardWinner(today, today, institution)
+                result = getLeaderboardWinner(today, today, institution, ineligibleUsers)
                 break;
             case LeaderBoardCategory.weekly:
                 def startDate = (Date) today.clone()
                 while (startDate.getAt(Calendar.DAY_OF_WEEK) != 1) {
                     startDate--;
                 }
-                result = getLeaderboardWinner(startDate, today, institution)
+                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers)
                 break;
             case LeaderBoardCategory.monthly:
                 def startDate = (Date) today.clone()
@@ -50,17 +53,17 @@ class LeaderBoardController {
                     startDate--;
                 }
 
-                result = getLeaderboardWinner(startDate, today, institution)
+                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers)
                 break;
             case LeaderBoardCategory.alltime:
 
                 if (institution) {
-                    def tmp = getTopNForInstitution(1, institution )
+                    def tmp = getTopNForInstitution(1, institution, ineligibleUsers)
                     if (tmp) {
                         result = tmp[0]
                     }
                 } else {
-                    def userScores = userService.getUserCounts();
+                    def userScores = userService.getUserCounts(ineligibleUsers);
                     if (userScores) {
                         result = [name: userScores[0][0], score: userScores[0][1]]
                     }
@@ -82,6 +85,8 @@ class LeaderBoardController {
 
         def today = todaysDate
 
+        def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
+        
         def headingPrefix = "Top 20 volunteers for "
         def heading =  headingPrefix + category?.toString()?.toTitleCase()
         def maxRows = 20
@@ -89,7 +94,7 @@ class LeaderBoardController {
         switch (category) {
             case LeaderBoardCategory.daily:
                 heading = "${headingPrefix} ${today.format('d MMMM yyyy')}"
-                results = getTopNForPeriod(today, today, maxRows, institution)
+                results = getTopNForPeriod(today, today, maxRows, institution, ineligibleUsers)
                 break;
             case LeaderBoardCategory.weekly:
                 def startDate = (Date) today.clone()
@@ -97,7 +102,7 @@ class LeaderBoardController {
                     startDate--;
                 }
                 heading = "${headingPrefix} week starting ${startDate.format('dd MMMM yyy')}"
-                results = getTopNForPeriod(startDate, today, maxRows, institution)
+                results = getTopNForPeriod(startDate, today, maxRows, institution, ineligibleUsers)
                 break;
             case LeaderBoardCategory.monthly:
                 def startDate = (Date) today.clone()
@@ -105,13 +110,13 @@ class LeaderBoardController {
                     startDate--;
                 }
                 heading = "${headingPrefix} ${startDate.format('MMMM yyyy')}"
-                results = getTopNForPeriod(startDate, today, maxRows, institution)
+                results = getTopNForPeriod(startDate, today, maxRows, institution, ineligibleUsers)
                 break;
             case LeaderBoardCategory.alltime:
                 if (institution) {
-                    results = getTopNForInstitution(maxRows, institution)
+                    results = getTopNForInstitution(maxRows, institution, ineligibleUsers)
                 } else {
-                    def userScores = userService.getUserCounts();
+                    def userScores = userService.getUserCounts(ineligibleUsers);
                     heading = "${headingPrefix} All Time"
                     for (int i = 0; i < userScores.size(); ++i) {
                         if (i >= maxRows) {
@@ -128,8 +133,8 @@ class LeaderBoardController {
         [category: category, results: results, heading: heading]
     }
 
-    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution) {
-        def results = getTopNForPeriod(startDate, endDate, 5, institution)
+    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution, List<String> ineligbleUsers = []) {
+        def results = getTopNForPeriod(startDate, endDate, 5, institution, ineligbleUsers)
         if (results) {
             return results[0]
         }
@@ -137,7 +142,7 @@ class LeaderBoardController {
         return [name:'', score:0]
     }
 
-    private List getTopNForInstitution(int count, Institution institution) {
+    private List getTopNForInstitution(int count, Institution institution, List<String> ineligibleUsers = []) {
 
         def scoreMap = getUserCountsForInstitution(institution, ActivityType.Transcribed)
         def validatedMap = getUserCountsForInstitution(institution, ActivityType.Validated)
@@ -173,12 +178,12 @@ class LeaderBoardController {
 
     }
 
-    private List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution) {
-
+    private List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = []) {
+        
         // Get a map of users who transcribed tasks during this period, along with the count
-        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institution)
+        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institution, ineligibleUsers)
         // Get a map of user who validated tasks during this periodn, along with the count
-        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institution)
+        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institution, ineligibleUsers)
 
         // merge the validated map into the transcribed map, forming a total activity score for the superset of users
         validatedMap.each { kvp ->
@@ -208,7 +213,7 @@ class LeaderBoardController {
         return list.subList(0, Math.min(list.size(), count))
     }
 
-    private Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution) {
+    private Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds) {
         def c = Task.createCriteria()
 
         def results = c {
@@ -217,6 +222,11 @@ class LeaderBoardController {
             if (institution) {
                 project {
                     eq("institution", institution)
+                }
+            }
+            if (ineligibleUserIds) {
+                not {
+                    inList "fully${activityType}By", ineligibleUserIds
                 }
             }
 
