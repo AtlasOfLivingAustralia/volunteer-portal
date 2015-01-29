@@ -53,8 +53,8 @@ class ExportService {
             case "datevalidated":
                 result = task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
                 break;
-            case "validated":
-                result = (task.dateFullyValidated != null) || (task.fullyTranscribedBy != null)
+            case "validationstatus":
+                result = taskValidationStatus(task)
         }
         return result
     }
@@ -143,7 +143,7 @@ class ExportService {
 
                 String value
                 if (fieldIndexMap.containsKey(fieldName)) {
-                    def valueMap = fieldMap[fieldName]
+                    def valueMap = fieldMap?.getAt(fieldName)
                     value = valueMap?.getAt(recordIndex) ?: ""
                 } else {
                     value = getTaskField(task, fieldName)
@@ -348,8 +348,8 @@ class ExportService {
                     case "datevalidated":
                         fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
                         break;
-                    case "validated":
-                        fieldValues.add(((task.dateFullyValidated != null) || (task.fullyTranscribedBy != null)).toString())
+                    case "validationstatus":
+                        fieldValues.add(taskValidationStatus(task))
                         break;
                     default:
                         if (fieldMap.containsKey(fieldName)) {
@@ -363,6 +363,17 @@ class ExportService {
         }
 
         return fieldValues.toArray(new String[0]) // String array
+    }
+
+    private def taskValidationStatus(Task task) {
+        switch (task.isValid) {
+            case true:
+                return "Valid"
+            case false:
+                return "Invalid"
+            default:
+                return ""
+        }
     }
 
 }
