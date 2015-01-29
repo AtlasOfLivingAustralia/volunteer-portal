@@ -110,7 +110,7 @@ var bvp = {};
             }
             var tipPosition = $(this).attr("tipPosition");
             if (!tipPosition) {
-                tipPosition = "bottomRight";
+                tipPosition = true;  // auto position the speech bubble marker
             }
 
             var elemWidth = $(this).attr("width");

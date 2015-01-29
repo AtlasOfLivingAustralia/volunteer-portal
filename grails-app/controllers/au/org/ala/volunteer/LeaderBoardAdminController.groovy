@@ -34,8 +34,7 @@ class LeaderBoardAdminController {
             maxResults 20
             order "displayName", "desc"
         }
-//        def users = User.findAllByDisplayNameIlikeOrEmailIlikeAndUserIdNotInList(search, search, ineligible
-//                ,[max: 20, sort: 'displayName'])
+
         render users as JSON
     }
     

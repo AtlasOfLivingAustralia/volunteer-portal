@@ -66,6 +66,7 @@
                 if (entryIndex > 0) {
                     htmlStr += "<hr/>";
                 }
+                var fieldCount = 0;
                 for (fieldIndex in entries[entryIndex]) {
                     var e = entries[entryIndex][fieldIndex];
                     var name = "recordValues." + entryIndex + "." + e.name;
@@ -75,7 +76,7 @@
                     }
                     htmlStr += e.label;
                     if (e.helpText) {
-                        htmlStr += '<a href="#" class="fieldHelp" title="' + e.helpText + '"><span class="help-container">&nbsp;</span></a>';
+                        htmlStr += '<a href="#" class="fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><span class="help-container">&nbsp;</span></a>';
                     }
 
                     htmlStr += '</span>';
@@ -89,6 +90,7 @@
                     }
 
                     htmlStr += "</span>";
+                    fieldCount++;
                 }
                 if (entryIndex > 0) {
                     htmlStr += '<span class="deleteButton"><button class="btn btn-small btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><i class="icon-remove icon-white"></i>&nbsp;Delete</button></span>';

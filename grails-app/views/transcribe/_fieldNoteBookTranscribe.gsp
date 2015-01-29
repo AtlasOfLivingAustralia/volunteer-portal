@@ -40,7 +40,7 @@
                 <div class="well well-small">
                     <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
                     <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the left hand page into this box as it appears</span>
-                    <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><span class="help-container">&nbsp;</span></a>
+                    <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}' tooltipPosition="bottomLeft" targetPosition="topRight"><span class="help-container">&nbsp;</span></a>
                     <button class="btn btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i class="icon icon-resize-full"></i></button>
                     <g:textArea class="span12 occurrenceRemarks" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="${numberOfTextRows}" cols="42"/>
                 </div>
@@ -62,7 +62,7 @@
                 <div class="well well-small">
                     <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
                     <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
-                    <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><span class="help-container">&nbsp;</span></a>
+                    <a href="#" class="fieldHelp" title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}' tooltipPosition="bottomLeft" targetPosition="topRight"><span class="help-container">&nbsp;</span></a>
                     <g:textArea class="span12 occurrenceRemarks" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="${numberOfTextRows}" cols="42"/>
                 </div>
             </div>
