@@ -358,14 +358,16 @@ class ForumService {
         def pfwl = ProjectForumWatchList.findByProject(project)
 
         // copy users set
-        def users = pfwl.users.toList()
-        users.each { user ->
-            pfwl.removeFromUsers(user)
-            pfwl.users.remove(user)
-        }
+        if (pfwl) {
+            def users = pfwl.users.toList()
+            users.each { user ->
+                pfwl.removeFromUsers(user)
+                pfwl.users.remove(user)
+            }
 
-        pfwl.save(flush: true, failOnError: true)
-        pfwl.delete(flush: true, failOnError: true)
+            pfwl.save(flush: true, failOnError: true)
+            pfwl.delete(flush: true, failOnError: true)
+        }
     }
 
     def deleteMessage(ForumMessage message) {
