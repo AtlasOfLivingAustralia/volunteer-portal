@@ -222,17 +222,24 @@ environments {
 
 }
 
-grails {
-    mail {
-        host = "localhost"
-        port = 25
-        username = ""
-        password = ""
-        props = [
-            "mail.smtp.auth":"false",
+environments {
+    development {
+        grails.mail.disabled = true
+        grails.mail.host = "fake.ala.org.au"
+        grails.mail.overrideAddress = "your.email@here.com"
+    }
+    production {
+        grails.mail.host = "localhost"
+        grails.mail.port = 25
+        grails.mail.username = ""
+        grails.mail.password = ""
+        grails.mail.props = [
+                "mail.smtp.auth": "false",
         ]
     }
 }
+grails.mail.default.from="support@ala.org.au"
+
 
 grails {
     cache {
