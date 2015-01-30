@@ -24,4 +24,19 @@ class User {
     email maxSize: 200
   }
 
+  boolean equals(o) {
+    if (this.is(o)) return true
+    if ( !DomainUtils.instanceOf(o, User) ) return false
+
+    // We would cast here, but there is no guarantee that o isn't a gorm proxy, so it might throw a classcastexception
+    def that = o
+
+    if (userId != that.userId) return false
+
+    return true
+  }
+
+  int hashCode() {
+    Objects.hash(userId)
+  }
 }
