@@ -1,5 +1,3 @@
-import au.org.ala.volunteer.Institution
-
 class UrlMappings {
 
 	static mappings = {
@@ -9,6 +7,8 @@ class UrlMappings {
 
             }
         }
+
+		"/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
 
         "/$controller/$action?/$id?"{
 			constraints {

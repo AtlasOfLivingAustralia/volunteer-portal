@@ -48,6 +48,10 @@
                         <td>Configure the appearance of the front page</td>
                     </tr>
                     <tr>
+                        <td><a class="btn" href="${createLink(controller:'leaderBoardAdmin', action:'index')}">Configure leaderboard</a></td>
+                        <td>Configure the appearance of the leader board</td>
+                    </tr>
+                    <tr>
                         <td><a class="btn" href="${createLink(controller:'stats', action:'index')}">Stats</a></td>
                         <td>Various Statistics (Experimental!)</td>
                     </tr>

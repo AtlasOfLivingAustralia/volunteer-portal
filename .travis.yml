@@ -4,7 +4,7 @@ jdk:
 branches:
   only:
   - master
-  - deploy
+  - develop
 before_install:
 - rm -rf ~/.gvm
 - curl -s get.gvmtool.net > ~/install_gvm.sh

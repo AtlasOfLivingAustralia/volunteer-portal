@@ -99,7 +99,6 @@ class ForumNotifierService {
                 def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: lastMessage])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { user ->
-                    // TODO Get email from userdetails service
                     emailService.sendMail(userService.detailsForUserId(user.userId).email, "${appName} Forum notification", message)
                 }
             }
@@ -116,7 +115,6 @@ class ForumNotifierService {
                 def message = customPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { user ->
-                    // TODO Get email from userdetails service
                     emailService.sendMail(userService.detailsForUserId(user.userId).email, "${appName} Forum new topic notification", message)
                 }
             }
