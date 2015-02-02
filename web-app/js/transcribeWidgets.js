@@ -27,8 +27,8 @@ var transcribeWidgets = {};
     var DECIMAL_DEGREE_PATTERN = /^\d+[.]\d+$/;
     var DEGREE_DECIMAL_MINUTES_PATTERN = /^(\d+)[°](\d+[.]\d+)[']{0,1}([NnEeWwSs]?)$/;
     var DEGREE_PATTERN = /^(\d+)[°]([NnEeWwSs]?)$/
-    var DEGREE_MINUTES_PATTERN = /^(\d+)[°](\d+)[']([NnEeWwSs]?)$/;
-    var DEGREE_MINUTES_SECONDS_PATTERN = /^(\d+)[°](\d+)['](\d+)["]([NnEeWwSs]?)$/;
+    var DEGREE_MINUTES_PATTERN = /^(\d+)[°](\d+(?:[.]\d+)?)[']([NnEeWwSs]?)$/;
+    var DEGREE_MINUTES_SECONDS_PATTERN = /^(\d+)[°](\d+)['](\d+(?:[.]\d+)?)["]([NnEeWwSs]?)$/;
 
     var UNIT_RANGE_PATTERN = /^\s*([^\s:]+)(?::([^\s]+))*(?:\s+([^\s]+))*\s*$/;
 
@@ -180,8 +180,17 @@ var transcribeWidgets = {};
     };
 
     var initLatLongWidgets = function () {
-
         $(".latLongWidget").each(function(index, widget) {
+            var values = getLatLongStringFromWidget(widget);
+
+            if (values && values.isDefined) {
+                if (values.decimalDegrees) {
+                    switchLatLongFormat("DD");
+                } else {
+                    switchLatLongFormat("DMS");
+                }
+            }
+
             hookTargetFieldChangeEvent(widget, renderLatLongFromTargetValue);
             var selector = $(widget).find(".latLongFormatSelector").first();
             if (selector) {
@@ -194,16 +203,20 @@ var transcribeWidgets = {};
 
     };
 
-    function renderLatLongFromTargetValue(widget) {
+    function getLatLongStringFromWidget(widget) {
         var targetField = $(widget).attr("targetField");
         var hiddenField = $("#recordValues\\.0\\." + targetField);
-        var values = parseLatLongString(hiddenField.val());
-        if (values) {
+        return parseLatLongString(hiddenField.val());
+    }
+
+    function renderLatLongFromTargetValue(widget) {
+        var values = getLatLongStringFromWidget(widget);
+        if (values && values.isDefined) {
             if (values.decimalDegrees) {
-                switchLatLongFormat("DD");
+                //switchLatLongFormat("DD");
                 $(widget).find(".decimalDegrees").val(values.decimalDegrees);
             } else {
-                switchLatLongFormat("DMS");
+                //switchLatLongFormat("DMS");
                 $(widget).find(".degrees").val(values.degrees);
                 $(widget).find(".minutes").val(values.minutes);
                 $(widget).find(".seconds").val(values.seconds);
@@ -215,28 +228,30 @@ var transcribeWidgets = {};
     // Parse out a lat/long string value into component parts. Will detect decimal degrees, and variations of DMS.
     var parseLatLongString = function(value) {
 
+        if (!value) return { isDefined: false, decimalDegrees: "" };
+
         var results = DECIMAL_DEGREE_PATTERN.exec(value);
         if (results) {
-            return { decimalDegrees: value };
+            return { isDefined: true, decimalDegrees: value };
         }
         results = DEGREE_DECIMAL_MINUTES_PATTERN.exec(value)
         if (results) {
-            return { degrees: results[1], minutes: results[2], direction: results[3] };
+            return { isDefined: true, degrees: results[1], minutes: results[2], direction: results[3] };
         }
         results = DEGREE_MINUTES_SECONDS_PATTERN.exec(value);
         if (results) {
-            return { degrees:results[1], minutes: results[2], seconds: results[3], direction: results[4], decimalDegrees: "" };
+            return { isDefined: true, degrees:results[1], minutes: results[2], seconds: results[3], direction: results[4], decimalDegrees: "" };
         }
         results = DEGREE_MINUTES_PATTERN.exec(value);
         if (results) {
-            return { degrees:results[1], minutes: results[2], seconds: "", direction: results[3], decimalDegrees: "" };
+            return { isDefined: true, degrees:results[1], minutes: results[2], seconds: "", direction: results[3], decimalDegrees: "" };
         }
         results = DEGREE_PATTERN.exec(value);
         if (results) {
-            return { degrees:results[1], minutes: "", seconds: "", direction: results[2], decimalDegrees: "" };
+            return { isDefined: true, degrees:results[1], minutes: "", seconds: "", direction: results[2], decimalDegrees: "" };
         }
 
-        return { decimalDegrees: value };
+        return { isDefined: true, decimalDegrees: value };
     }
 
     function parseUnitRangeString(value) {
