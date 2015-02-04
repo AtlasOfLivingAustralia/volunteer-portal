@@ -57,15 +57,15 @@ class UserService {
     def getUserCounts(List<String> ineligibleUsers = []) {
         def args = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
         def users = User.executeQuery("""
-            select displayName, (transcribedCount + validatedCount) as score, id, userId
+            select new map(displayName as displayName, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId)
             from User
             where (transcribedCount + validatedCount) > 0
             ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
             order by (transcribedCount + validatedCount) desc
         """, args)
-        def deets = authService.getUserDetailsById(users.collect { it[3] })
+        def deets = authService.getUserDetailsById(users.collect { it['userId'] })
         if (deets) {
-            users.each { it[0] = deets.users.get(it[3]).displayName }
+            users.each { it['displayName'] = deets.users.get(it['userId']).displayName }
         }
         return users;
     }
