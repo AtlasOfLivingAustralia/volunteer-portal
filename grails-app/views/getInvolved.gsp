@@ -50,7 +50,7 @@
         When an expedition is finished, the data is returned to the institution, checked and processed, and if relevant to Australia is uploaded to the Atlas of Living Australia (ALA), where it can be used by the general public and the research community. Expedition data from non-Australian institutions are uploaded to sites like the <a href="http://www.gbif.org/">Global Biodiversity Information Facility</a> (which also receives the data from the ALA) from where it is available to scientists around the world.
         </p>
         <p>
-        If you encounter any problems, you can visit the discussion forums or contact us by <a href="mailto:bvp@austmus.gov.au">email</a>.
+        If you encounter any problems, you can visit the discussion forums or contact us by <a href="mailto:DigiVol@austmus.gov.au">email</a>.
         </p>
         <p>
         Thank you for joining our team. ALA online volunteers have transcribed tens of thousands of records to date, and have made a valuable contribution to many institutions’ datasets and the science that they underpin.
