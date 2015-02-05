@@ -46,10 +46,8 @@ class AjaxController {
             def projects = Project.findAllByProjectType(it)
             stats[it.description ?: it.name] = Task.countByProjectInList(projects)
         }
-
-        def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
         
-        def volunteerCounts = userService.getUserCounts(ineligibleUsers)
+        def volunteerCounts = userService.userCounts
         stats.volunteerCount = volunteerCounts?.size()
         if (volunteerCounts?.size() >= 10) {
             stats.topTenVolunteers = volunteerCounts[0..9]
