@@ -3,8 +3,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="app.version" content="${g.meta(name:'app.version')}"/>
-        <meta name="app.build" content="${g.meta(name:'app.build')}"/>
+        <cl:addApplicationMetaTags/>
         <meta name="description" content="Atlas of Living Australia"/>
         <meta name="author" content="Atlas of Living Australia">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +15,7 @@
 
         <link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'bootstrap.css', plugin:'ala-web-theme')}">
         <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'css', file: 'bootstrap-responsive.css', plugin:'ala-web-theme')}">
-        %{--<link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/css/jquery.autocomplete.css" />--}%
-        <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'css', file: 'bvp-bootstrap.css')}" de>
+        <link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'css', file: 'bvp-bootstrap.css')}">
 
         <script type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/html5.js"></script>
 
@@ -27,7 +25,6 @@
         <r:require module="qtip" />
         <r:require module="bvp-js" />
 
-        %{--<link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>--}%
         <link href="http://www.ala.org.au/wp-content/themes/ala2011/css/jquery.autocomplete.css" type="text/css" rel="stylesheet" media="screen, projection" />
 
         <r:require module="bootstrap-js" />

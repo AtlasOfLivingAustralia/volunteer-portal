@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import grails.util.Environment
 import groovy.time.TimeCategory
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
@@ -654,4 +655,23 @@ class VolunteerTagLib {
         }
     }
 
+
+    /**
+     * Output the meta tags (HTML head section) for the build meta data in application.properties
+     * E.g.
+     * <meta name="svn.revision" content="${g.meta(name:'svn.revision')}"/>
+     * etc.
+     *
+     * Updated to use properties provided by build-info plugin
+     */
+    def addApplicationMetaTags = { attrs ->
+        def metaList = ['app.version', 'app.grails.version', 'build.date', 'scm.version', 'environment.TRAVIS_JDK_VERSION', 'environment.TRAVIS_REPO_SLUG', 'environment.TRAVIS_BUILD_NUMBER', 'environment.TRAVIS_BUILD_ID', 'environment.TRAVIS_TAG', 'environment.TRAVIS_BRANCH', 'environment.TRAVIS_COMMIT']
+        def mb = new MarkupBuilder(out)
+
+        mb.meta(name:'grails.env', content: "${Environment.current}")
+        metaList.each {
+            mb.meta(name:it, content: g.meta(name:it))
+        }
+        mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
+    }
 }
