@@ -9,7 +9,7 @@
     <body>
 
         <cl:headerContent title="${message(code:'default.admin.label', default:'Admin')}">
-            <small class="muted">Version ${grailsApplication.metadata['app.version']}&nbsp;(built ${grailsApplication.metadata['app.buildDate']}&nbsp;${grailsApplication.metadata['app.buildProfile']})</small>
+            <small class="muted">Version ${grailsApplication.metadata['app.version']}&nbsp;(built ${grailsApplication.metadata['app.buildDate']}&nbsp;${grailsApplication.metadata['app.buildProfile']}&nbsp;sha:&nbsp;<a href="https://github.com/AtlasOfLivingAustralia/volunteer-portal/commit/${grailsApplication.metadata['environment.TRAVIS_COMMIT']}">${grailsApplication.metadata['environment.TRAVIS_COMMIT']}</a>)</small>
         </cl:headerContent>
 
 
