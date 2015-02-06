@@ -17,17 +17,17 @@ before_install:
 - gvm install grails $GRAILS_VERSION || true
 before_script:
 - mkdir -p ~/.grails; wget -q -O ~/.grails/settings.groovy https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_settings_new.groovy
-- APP_VERSION=`grep '^app\.version=' ./application.properties | sed -e
-  's/^app\.version=//g'`
+- APP_VERSION=`grep '^app\.version=' ./application.properties | sed -e 's/^app\.version=//g'`
 - MAVEN_REPO="ala-repo-snapshot"; grep '^app\.version=' ./application.properties |
   grep -q "\-SNAPSHOT"; if [ "$?" = "1" ]; then MAVEN_REPO="ala-repo-release"; fi;
 script:
-- grails clean && grails refresh-dependencies --non-interactive && grails prod war --non-interactive
+- grails clean && grails refresh-dependencies --non-interactive && grails prod war
+  --non-interactive
 after_success:
-- '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && 
-  travis_retry grails prod maven-deploy --repository=$MAVEN_REPO --non-interactive' 
--  '[ "${TRAVIS_BRANCH}" = "develop" ] &&
-  travis_retry curl -X POST --header "X-DEPLOY-KEY: ${DEPLOY_KEY}" https://volunteer-dev.ala.org.au/deploy/${APP_VERSION}'
+- '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry grails prod maven-deploy
+  --repository=$MAVEN_REPO --non-interactive'
+- '[ "${TRAVIS_BRANCH}" = "develop" ] && travis_retry curl -X POST --header "X-DEPLOY-KEY:
+  ${DEPLOY_KEY}" https://volunteer-dev.ala.org.au/deploy/${APP_VERSION}'
 env:
   global:
   - secure: 2MEDHHQ3nxNwf+YGgtC/GXx6kb0y4ixYA7Ia50pZHaN8xMHYdQ8EymKZJ8F9SXw0Feg9FsDc5I90lBJB8URYZZ4hPZN9+uj9crOvnOFMByvJpPikrQ6Yw8IdUjmYxHO/zv+kmOkqVnu6zCtS42olSM7ljeZs0PzW484Ci9w5eM4=
@@ -36,4 +36,4 @@ env:
 notifications:
   hipchat:
     rooms:
-      secure: sDlS+sml/E9Za249d7zYsTy0UPAS0nkR8ozWeyG6cRgyNeFmB2QMmQRBwAttmyK/u71JrO8pIMSe+uW7Sbh0J1S+UNfOKo0Tx69vBsXpzEyY5LJuBmz85LdMEIRoqB9n7FYcIRzFpuwTaNMqMDFAPZzCeB14bJv6F+zpfubNBKo=
+      secure: GV/Ckk/00dAExEE4A2bb/6yuwIdTn6EQ63cdKOH0CSLYiUspolHbueuB/2bGVy1ErmL3+l6A/bwZidnGoiR6N3Id/SWRbXBnxn9s7VRFVPsoKLviJ1Xku2rMf/fFW+/PTm2FtEeGiGlvFcbzuIv+b6Vplm8ixIyosFdsEIB2mqc=
