@@ -180,7 +180,7 @@ class ForumService {
             if (settingsService.getSetting(SettingDefinition.BatchForumNotificationMessages)) {
                 // Do the notifications asynchronously
                 def interestedUsers = forumNotifierService.getUsersInterestedInTopic(topic)
-                logService.log("Interested users in topic ${topic.id}: " + interestedUsers.collect { it.userId })
+                log.info("Interested users in topic ${topic.id}: " + interestedUsers.collect { it.userId })
                 interestedUsers.each { user ->
                     def message = new ForumTopicNotificationMessage(user:  user, topic: topic, message: lastMessage)
                     message.save(failOnError: true)
@@ -199,7 +199,7 @@ class ForumService {
             if (settingsService.getSetting(SettingDefinition.BatchForumNotificationMessages)) {
                 // Do the notifications asynchronously
                 def interestedUsers = forumNotifierService.getModeratorsForTopic(topic)
-                logService.log("Interested users in topic ${topic.id}: " + interestedUsers.collect { it.userId })
+                log.info("Interested users in topic ${topic.id}: " + interestedUsers.collect { it.userId })
                 interestedUsers.each { user ->
                     def message = new ForumTopicNotificationMessage(user:  user, topic: topic, message: firstMessage)
                     message.save(failOnError: true)

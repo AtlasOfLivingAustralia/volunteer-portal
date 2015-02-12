@@ -28,5 +28,8 @@
             </g:each>
         </ul>
     </g:if>
+    <g:else>
+        <p>You don't seem to have any badges :(</p>
+    </g:else>
 
 </div>

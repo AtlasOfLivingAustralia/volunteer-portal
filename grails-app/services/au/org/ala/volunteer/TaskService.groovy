@@ -520,7 +520,7 @@ class TaskService {
         try {
             def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
             if (!dir.exists()) {
-                logService.log "Creating dir ${dir.absolutePath}"
+                log.info "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
             }
             fileMap.dir = dir.absolutePath
@@ -533,7 +533,7 @@ class TaskService {
             return fileMap
             //file.close()
         } catch (Exception e) {
-            logService.log "Failed to load URL: ${imageUrl} : ${e}"
+            log.error("Failed to load URL: ${imageUrl}", e)
         }
     }
 
@@ -673,7 +673,7 @@ class TaskService {
         try {
             image = ImageIO.read(file)
         } catch (Exception ex) {
-            logService.log("Exception trying to read image path: ${file.getAbsolutePath()} - ${ex}")
+            log.error("Exception trying to read image path: ${file.getAbsolutePath()}", ex)
         }
 
         if (image) {
@@ -685,7 +685,7 @@ class TaskService {
             }
             return new ImageMetaData(width: width, height: height, url: imageUrl)
         } else {
-            logService.log("Could not read image file: ${file?.getAbsolutePath()} - could not get image metadata")
+            log.info("Could not read image file: ${file?.getAbsolutePath()} - could not get image metadata")
         }
 
     }

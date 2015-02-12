@@ -22,7 +22,7 @@ class UserController {
     }
 
     def logout = {
-        logService.log "Invalidating Session (UserController.logout): ${session.id}"
+        log.info "Invalidating Session (UserController.logout): ${session.id}"
         session.invalidate()
         redirect(url:"${params.casUrl}?url=${params.appUrl}")
     }

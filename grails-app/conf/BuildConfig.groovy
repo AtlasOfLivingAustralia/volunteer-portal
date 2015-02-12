@@ -56,6 +56,8 @@ grails.project.dependency.resolution = {
         }
         compile ':scaffolding:2.0.3'
         compile ':build-info:1.2.8'
+        compile ":yammer-metrics:3.0.1-2"
+        compile ":grails-melody:1.55.0"
     }
 
     dependencies {

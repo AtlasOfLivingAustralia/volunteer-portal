@@ -316,7 +316,7 @@ class TaskController {
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
                 def isValidator = userService.isValidator(project)
-                logService.log currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
+                log.info currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
 
                 def imageMetaData = taskService.getImageMetaData(taskInstance)
 

@@ -222,6 +222,11 @@ environments {
 
 }
 
+metrics {
+    // servletUrlPattern = '/admin/metrics/*'
+    servletEnabled = true
+}
+
 environments {
     development {
         grails.mail.disabled = true
@@ -271,32 +276,57 @@ grails {
 //hibernate.type="trace,stdout"
 
 // log4j configuration
+def loggingDir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs' : './logs')
 log4j = {
     // Example of changing the log pattern for the default console
     // appender:
     //
     appenders {
-        console name:'stdout', layout:pattern(conversionPattern: '%-5p [%c{2}] %m%n')
+        environments {
+            production {
+                rollingFile name: "tomcatLog", maxFileSize: '10MB', file: "${loggingDir}/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.WARN
+                rollingFile name: "access", maxFileSize: '10MB', file: "${loggingDir}/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")
+            }
+            development {
+                console name: "tomcatLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
+                console name: "access", layout: pattern(conversionPattern: "%d %m%n"), threshold: Level.WARN
+            }
+            test {
+                rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
+                rollingFile name: "access", maxFileSize: '10MB', file: "/tmp/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")
+            }
+        }
     }
 
-    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-           'org.codehaus.groovy.grails.web.pages', //  GSP
-           'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping', // URL mapping
-           'org.codehaus.groovy.grails.commons', // core / classloading
-           'org.codehaus.groovy.grails.plugins', // plugins
-           'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-           'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate',
-           'grails.app'
-    warn   'org.mortbay.log',
-           'grails.app'
-    info   'grails.app'
-    warn  'grails.plugin.mail'
+    root {
+        error 'tomcatLog'
+    }
 
-    warn   'au.org.ala.cas.client','au.org.ala.cas.util'
+    info    additivity: false,
+            access: ["au.org.ala.volunteer.BVPServletFilter",
+                   "au.org.ala.volunteer.BVPSessionListener"]
+
+    
+    error   'org.codehaus.groovy.grails.web.servlet',  //  controllers
+            'org.codehaus.groovy.grails.web.pages', //  GSP
+            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+            'org.codehaus.groovy.grails.web.mapping', // URL mapping
+            'org.codehaus.groovy.grails.commons', // core / classloading
+            'org.codehaus.groovy.grails.plugins', // plugins
+            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+            'org.springframework',
+            'org.hibernate',
+            'net.sf.ehcache.hibernate'
+            
+    warn    'org.mortbay.log',
+            'grails.plugin.mail',
+            'au.org.ala.cas.client',
+            'au.org.ala.cas.util'
+            
+    info    'grails.app',
+            'au.org.ala'
+
 }
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements

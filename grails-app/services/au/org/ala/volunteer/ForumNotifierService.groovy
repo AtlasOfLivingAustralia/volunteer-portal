@@ -95,7 +95,7 @@ class ForumNotifierService {
         try {
             if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
                 def interestedUsers = getUsersInterestedInTopic(topic)
-                logService.log("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { userService.detailsForUserId(it.userId).email })
+                log.info("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { userService.detailsForUserId(it.userId).email })
                 def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: lastMessage])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { user ->
@@ -103,7 +103,7 @@ class ForumNotifierService {
                 }
             }
         } catch (Throwable ex) {
-            logService?.log("Exception occurred sending notifications: " + ex.message)
+            log.error("Exception occurred sending notifications: ", e)
         }
     }
 
@@ -111,7 +111,7 @@ class ForumNotifierService {
         try {
             if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
                 def interestedUsers = getModeratorsForTopic(topic)
-                logService.log("Sending notifications to moderators for new topic ${topic.id}: " + userService.getEmailAddressesForIds(interestedUsers*.userId))
+                log.info("Sending notifications to moderators for new topic ${topic.id}: " + userService.getEmailAddressesForIds(interestedUsers*.userId))
                 def message = customPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { user ->
@@ -119,34 +119,35 @@ class ForumNotifierService {
                 }
             }
         } catch (Throwable ex) {
-            logService?.log("Exception occurred sending notifications: " + ex.message)
+            log.error("Exception occurred sending notifications: ", e)
         }
     }
 
     def processPendingNotifications() {
         // Only process notifications if the forum is enabled...
         if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
-            logService.log("Processing Forum Message Notifications")
+            log.info("Processing Forum Message Notifications")
             def messageList = ForumTopicNotificationMessage.list()
             if (messageList) {
                 def userMap = messageList.groupBy { it.user }
-                logService.log("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
+                log.info("Forum Topic Notification Sender: ${messageList.size()} message(s) found across ${userMap.keySet().size()} user(s).")
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 userMap.keySet().each { user ->
-                    // TODO Get email from userdetails service
-                    logService.log("Processing messages for ${user.userId} (${userService.detailsForUserId(user.userId).email}) ...")
+                    def email = user.email
                     try {
+                        email = userService.detailsForUserId(user.userId).email
+                        log.info("Processing messages for ${user.userId} (${email}) ...")
                         def messages = userMap[user]?.sort { it.message.date }
                         def message = customPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: messages])
-                        emailService.sendMail(userService.detailsForUserId(user.userId).email, "${appName} Forum notification", message)
+                        emailService.sendMail(email, "${appName} Forum notification", message)
                     } catch (Exception ex) {
                         // TODO Get email from userdetails service
-                        logService.log("Failed to send email to ${user.userId} (${user.email}): " + ex.message)
+                        log.error("Failed to send email to ${user.userId} (${email}): ", e)
                     }
                 }
 
                 // now clean up the notification list
-                logService.log("Purging notification list")
+                log.debug("Purging notification list")
                 messageList.each {
                     it.delete()
                 }

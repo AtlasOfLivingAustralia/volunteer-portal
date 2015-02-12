@@ -13,7 +13,7 @@ class PublicController {
      * @param appUrl the url to redirect back to after the logout
      */
     def logout = {
-        logService.log "Invalidating Session (PublicController.logout): ${session.id}"
+        log.info "Invalidating Session (PublicController.logout): ${session.id}"
         session.invalidate()
         redirect(url: "${params.casUrl}?url=${params.appUrl}")
     }

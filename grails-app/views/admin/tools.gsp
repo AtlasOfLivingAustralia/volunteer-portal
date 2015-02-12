@@ -41,6 +41,13 @@
                         Background queue length: <span id="queueLength"><cl:spinner /></span>
                     </div>
                 </div>
+                <div class="well" style="margin-top: 10px">
+                    <h3>Index tester</h3>
+                    <g:form action="testQuery">
+                        <label for="query">Query text</label><textarea id="query" name="query"></textarea>
+                        <g:submitButton name="submitQuery">Run query</g:submitButton>
+                    </g:form>
+                </div>
             </div>
         </div>
 

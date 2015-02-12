@@ -37,13 +37,13 @@ class PicklistService {
         def picklist = Picklist.get(picklistId)
         // First delete the existing items...
         if (picklist) {
-            logService.log "Deleting existing items..."
+            log.info "Deleting existing items..."
             int itemsDeleted = 0;
             PicklistItem.findAllByPicklistAndInstitutionCode(picklist, institutionCode ?: null).each {
                 it.delete();
                 itemsDeleted++;
             }
-            logService.log "${itemsDeleted} existing items deleted from picklist '${picklist.name}' and institutionCode '${institutionCode}'"
+            log.info "${itemsDeleted} existing items deleted from picklist '${picklist.name}' and institutionCode '${institutionCode}'"
         }
 
         def pattern = ~/^(['"])(.*)(\1)$/
@@ -68,7 +68,7 @@ class PicklistService {
                     sessionFactory.currentSession.flush()
                     sessionFactory.currentSession.clear()
                     propertyInstanceMap.get().clear()
-                    logService.log "${rowsProcessed} picklist items imported (${picklist.name})"
+                    log.info "${rowsProcessed} picklist items imported (${picklist.name})"
                 }
             }
         } finally {

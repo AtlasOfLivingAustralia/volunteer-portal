@@ -4,7 +4,10 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 
 class ActivityFilters {
 
+    def achievementService
     def userService
+    def securityPrimitives
+    def fullTextIndexService
 
     def filters = {
         allButAjax(controller:'*', controllerExclude:'ajax', action:'*') {
@@ -26,6 +29,24 @@ class ActivityFilters {
 
             afterView = { Exception e ->
 
+            }
+        }
+
+        buildInfo(controller: 'buildInfo', action: '*') {
+            before = {
+                log.debug("Build Info controller")
+                securityPrimitives.isAnyGranted([au.org.ala.web.CASRoles.ROLE_ADMIN])
+            }
+        }
+        
+        achievements(controller:'*', action:'*') {
+            after = { Map model ->
+                log.debug("achievements filter")
+                def taskSet = GormEventDebouncer.taskSet
+                def fieldSet = GormEventDebouncer.fieldSet
+                if (taskSet) {
+                    fullTextIndexService.indexTasks(taskSet)
+                }
             }
         }
     }

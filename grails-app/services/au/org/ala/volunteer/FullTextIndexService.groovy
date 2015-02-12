@@ -13,6 +13,7 @@ import org.elasticsearch.client.Client
 import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.index.query.FilterBuilder
 import org.elasticsearch.search.sort.SortOrder
+import org.grails.plugins.metrics.groovy.Timed
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -38,13 +39,13 @@ class FullTextIndexService {
     @NotTransactional
     @PostConstruct
     def initialize() {
-        logService.log("ElasticSearch service starting...")
+        log.info("ElasticSearch service starting...")
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
         settings.put("path.home", grailsApplication.config.elasticsearch.location);
         node = nodeBuilder().local(true).settings(settings).node();
         client = node.client();
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
-        logService.log("ElasticSearch service initialisation complete.")
+        log.info("ElasticSearch service initialisation complete.")
     }
 
     @PreDestroy
@@ -97,10 +98,10 @@ class FullTextIndexService {
 
     }
 
+    @Timed
     def indexTask(Task task) {
 
-        def ct = new CodeTimer("Indexing task ${task.id}")
-
+        //def ct = new CodeTimer("Indexing task ${task.id}")
 
         def data = [
             id: task.id,
@@ -138,7 +139,7 @@ class FullTextIndexService {
         def json = (data as JSON).toString()
         IndexResponse response = client.prepareIndex(INDEX_NAME, TASK_TYPE, task.id.toString()).setSource(json).execute().actionGet();
 
-        ct.stop(true)
+        //ct.stop(true)
     }
 
     def deleteTask(Task task) {
@@ -241,7 +242,17 @@ class FullTextIndexService {
     }
 
     def ping() {
-        logService.log("ElasticSearch Service is ${node ? '' : 'NOT' } alive.")
+        log.info("ElasticSearch Service is ${node ? '' : 'NOT' } alive.")
+    }
+
+    @Timed
+    def indexTasks(Set<Long> ids) {
+        Task.findByIdInList(taskSet.toList()).each { fullTextIndexService.indexTask(it) }
+        achievementService.calculateAchievements(userService.currentUser)
+    }
+
+    def evaluateAchievement(Task task, User user, String achievementQuery) {
+        return client.prepareCount().get().count > 1
     }
 }
 

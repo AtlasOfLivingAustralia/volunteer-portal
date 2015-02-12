@@ -344,5 +344,9 @@ class AdminController {
 
         redirect(action:'tools')
     }
+    
+    def testQuery(String query) {
+
+    }
 
 }

@@ -26,4 +26,26 @@ class Field implements Serializable {
     value nullable: true
     superceded nullable: true
   }
+
+  // These events use a static method rather than an injected service
+  // to prevent issues with serialisation in webflows
+    
+  // Executed after an object is persisted to the database
+  def afterInsert() {
+    GormEventDebouncer.debounceField(this.id)
+    def taskId = this.task?.id
+    if (taskId) GormEventDebouncer.debounceTask()
+  }
+  // Executed after an object has been updated
+  def afterUpdate() {
+    GormEventDebouncer.debounceField(this.id)
+      def taskId = this.task?.id
+      if (taskId) GormEventDebouncer.debounceTask()
+  }
+  // Executed after an object has been deleted
+  def afterDelete() {
+    GormEventDebouncer.debounceField(this.id)
+    def taskId = this.task?.id
+    if (taskId) GormEventDebouncer.debounceTask()
+  }
 }

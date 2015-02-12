@@ -5,8 +5,8 @@ class AchievementService {
     static transactional = true
 
     def taskService
-    def logService
     def grailsApplication
+    def fullTextIndexService
 
     def getAllAchievements() {
         def achievements = grailsApplication.config.achievements;
@@ -32,18 +32,17 @@ class AchievementService {
                 def rule = this.metaClass.properties.find() { it.name == desc.name + "_rule" }
 
                 if (rule) {
-                    logService.log "Checking rule for achievement ${desc.name}"
+                    log.debug "Checking rule for achievement ${desc.name}"
                     AchievementRuleResult result = rule.getProperty(this)(user, tasks);
                     if (result && result.success) {
-                        // TODO Get email from user details service
-                        logService.log "${user.userId} (${user.email}) just achieved ${desc.name}!"
+                        log.info "${user.userId} (${user.email}) just achieved ${desc.name}!"
                         Date dateAchieved = result.dateAchieved ?: new Date();
                         def newAchievement = new Achievement( name: desc.name, user: user, dateAchieved: dateAchieved)
                         newAchievement.save(flush: true, failOnError: true)
                         ach = newAchievement
                     }
                 } else {
-                    logService.log "Rule for achievement ${desc.name} not found!"
+                    log.warn "Rule for achievement ${desc.name} not found!"
                 }
             }
 

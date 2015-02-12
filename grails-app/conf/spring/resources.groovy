@@ -1,3 +1,5 @@
+import au.org.ala.volunteer.ApplicationContextHolder
+import au.org.ala.volunteer.BVPSecurePluginFilter
 import au.org.ala.volunteer.collectory.CollectoryClientFactoryBean
 
 // Place your Spring DSL code here
@@ -8,5 +10,13 @@ beans = {
 
     collectoryClient(CollectoryClientFactoryBean) {
         endpoint = 'http://collections.ala.org.au/ws/'
+    }
+
+//    bvpSecurePluginFilter(BVPSecurePluginFilter) {
+//        securityPrimitives = ref("securityPrimitives")
+//    }
+
+    applicationContextHolder(ApplicationContextHolder) { bean ->
+        bean.factoryMethod = 'getInstance'
     }
 }
