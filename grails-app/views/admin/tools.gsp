@@ -40,12 +40,52 @@
                     <div>
                         Background queue length: <span id="queueLength"><cl:spinner /></span>
                     </div>
-                </div>
-                <div class="well" style="margin-top: 10px">
-                    <h3>Index tester</h3>
-                    <g:form action="testQuery">
-                        <label for="query">Query text</label><textarea id="query" name="query"></textarea>
-                        <g:submitButton name="submitQuery">Run query</g:submitButton>
+                    <g:form method="GET" action="testQuery" class="form-horizontal">
+                        <fieldset>
+                            <legend>Raw Search Query</legend>
+                            <div class="control-group">
+                                <label class="control-label" for="query">Query text</label>
+                                <div class="controls">
+                                    <textarea class="input-block-level" id="query" name="query" rows="10">{
+    "query_string": {
+        "query": "query string"
+    }
+}</textarea>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="searchType">Search Type</label>
+                                <div class="controls">
+                                    <select id="searchType" name="searchType">
+                                        <option value="dfs_query_then_fetch">DFS Query then Fetch</option>
+                                        <option value="dfs_query_and_fetch">DFS Query and Fetch</option>
+                                        <option value="query_then_fetch" selected>Query then Fetch</option>
+                                        <option value="query_and_fetch">Query and Fetch</option>
+                                        <option value="scan">Scan</option>
+                                        <option value="count">Count</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="aggregation">Aggregation</label>
+                                <div class="controls">
+                                    <textarea class="input-block-level" id="aggregation" name="aggregation" rows="10">{
+    "&lt;aggregation_name>" : {
+        "&lt;aggregation_type>" : {
+            &lt;aggregation_body>
+        }
+        [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
+    }
+    [,"&lt;aggregation_name_2>" : { ... } ]*
+}</textarea>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <g:submitButton class="btn" name="submitQuery" value="Run Query" />
+                                </div>
+                            </div>
+                        </fieldset>
                     </g:form>
                 </div>
             </div>

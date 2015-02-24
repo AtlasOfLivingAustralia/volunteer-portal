@@ -17,8 +17,9 @@ class VolunteerTagLib {
     def markdownService
     def institutionService
     def authService
+    def achievementService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase']
 
     def isLoggedIn = { attrs, body ->
 
@@ -560,6 +561,35 @@ class VolunteerTagLib {
         }
     }
 
+    /**
+     *
+     */
+    def achievementBadgeBase = { attrs, body ->
+        achievementService.badgeImageUrlPrefix
+    }
+
+    /**
+     * @achievement The AchievementDescription
+     * @id The id of the institution
+     */
+    def achievementBadgeUrl = { attrs, body ->
+        def achievementDesc = attrs.achievement ?: AchievementDescription.get(attrs.id as Long)
+        out << achievementService.getBadgeImageUrl(achievementDesc)
+    }
+
+    /**
+     * @attr achievementDescription
+     */
+    def ifAchievementHasBadge = { attrs, body ->
+        def achievementDescription = attrs.achievementDescription as AchievementDescription
+        if (!achievementDescription) {
+            def id = (attrs.achievementDescription ?: attrs.id) as Long
+            achievementDescription = AchievementDescription.get(id)
+        }
+        if (achievementService.hasBadgeImage(achievementDescription)) {
+            out << body()
+        }
+    }
 
     /**
      * @attr email

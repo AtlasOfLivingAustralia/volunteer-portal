@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta name="layout" content="${grailsApplication.config.ala.skin}">
+		<meta name="layout" content="\${grailsApplication.config.ala.skin}">
 		<g:set var="entityName" value="\${message(code: '${domainClass.propertyName}.label', default: '${className}')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
@@ -18,14 +18,14 @@
 		<div id="list-${domainClass.propertyName}" class="content scaffold-list" role="main">
 			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 			<g:if test="\${flash.message}">
-			<div class="message" role="status">\${flash.message}</div>
+				<div class="message" role="status">\${flash.message}</div>
 			</g:if>
 			<table>
-				<thead>
+			<thead>
 					<tr>
 					<%  excludedProps = Event.allEvents.toList() << 'id' << 'version'
 						allowedNames = domainClass.persistentProperties*.name << 'dateCreated' << 'lastUpdated'
-						props = domainClass.properties.findAll { allowedNames.contains(it.name) && !excludedProps.contains(it.name) && it.type != null && !Collection.isAssignableFrom(it.type) }
+						props = domainClass.properties.findAll { allowedNames.contains(it.name) && !excludedProps.contains(it.name) && it.type != null && !Collection.isAssignableFrom(it.type) && (domainClass.constrainedProperties[it.name] ? domainClass.constrainedProperties[it.name].display : true) }
 						Collections.sort(props, comparator.constructors[0].newInstance([domainClass] as Object[]))
 						props.eachWithIndex { p, i ->
 							if (i < 6) {
@@ -55,7 +55,7 @@
 				</tbody>
 			</table>
 			<div class="pagination">
-				<g:paginate total="\${${propertyName}Total}" />
+				<g:paginate total="\${${propertyName}Count ?: 0}" />
 			</div>
 		</div>
 	</body>

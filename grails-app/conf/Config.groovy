@@ -150,7 +150,7 @@ bie.searchPath = "/search"
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
-grails.mime.use.accept.header = false
+grails.mime.use.accept.header = true
 grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
                       xml: ['text/xml', 'application/xml'],
                       text: 'text/plain',
@@ -284,16 +284,16 @@ log4j = {
     appenders {
         environments {
             production {
-                rollingFile name: "tomcatLog", maxFileSize: '10MB', file: "${loggingDir}/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.WARN
-                rollingFile name: "access", maxFileSize: '10MB', file: "${loggingDir}/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")
+                rollingFile name: "tomcatLog", maxFileSize: '10MB', file: "${loggingDir}/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.INFO
+                rollingFile name: "access", maxFileSize: '10MB', file: "${loggingDir}/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.INFO
             }
             development {
                 console name: "tomcatLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
-                console name: "access", layout: pattern(conversionPattern: "%d %m%n"), threshold: Level.WARN
+                console name: "access", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
             }
             test {
                 rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
-                rollingFile name: "access", maxFileSize: '10MB', file: "/tmp/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")
+                rollingFile name: "access", maxFileSize: '10MB', file: "/tmp/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
             }
         }
     }

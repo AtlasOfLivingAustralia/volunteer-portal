@@ -43,9 +43,14 @@ class ActivityFilters {
             after = { Map model ->
                 log.debug("achievements filter")
                 def taskSet = GormEventDebouncer.taskSet
-                def fieldSet = GormEventDebouncer.fieldSet
+                def deletedTasks = GormEventDebouncer.deletedTaskSet
+                //def fieldSet = GormEventDebouncer.fieldSet
+                if (deletedTasks) {
+                    fullTextIndexService.deleteTasks(deletedTasks)
+                }
                 if (taskSet) {
                     fullTextIndexService.indexTasks(taskSet)
+                    taskSet.each { achievementService.evaluateAchievements(userService.currentUser, it) }
                 }
             }
         }

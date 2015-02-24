@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import groovy.time.TimeCategory
+import org.elasticsearch.action.search.SearchType
 import org.grails.plugins.csv.CSVWriter
 import org.hibernate.FlushMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -345,8 +346,17 @@ class AdminController {
         redirect(action:'tools')
     }
     
-    def testQuery(String query) {
+    def testQuery(String query, String searchType, String aggregation) {
+        def searchTypeVal = searchType ? SearchType.fromString(searchType) : SearchType.DEFAULT
+        log.error("SearchType: $searchType, $searchTypeVal")
 
+//        def offset = params.offset
+//        def
+
+        def result = fullTextIndexService.rawSearch(query, searchTypeVal, aggregation, fullTextIndexService.elasticSearchToJsonString)
+        
+        response.setContentType("application/json")
+        render result
     }
 
 }
