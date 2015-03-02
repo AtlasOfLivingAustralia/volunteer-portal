@@ -42,10 +42,10 @@
                 pageScope.crumbs = [
                         [link: createLink(controller: 'admin', action: 'index'), label: 'Admin'],
                         [link: createLink(controller: 'achievementDescription', action: 'index'), label: 'Manage Achievements' ],
-                        [link: createLink(controller: 'achievementDescription', action: 'edit', id:achievementDescriptionInstance.id), label: achievementDescriptionInstance.name ]
+                        [link: createLink(controller: 'achievementDescription', action: 'edit', id:achievementDescriptionInstance?.id), label: achievementDescriptionInstance.name ]
                 ]
             %>
-            <h1>Achievement Settings - ${achievementDescriptionInstance.name}</h1>
+            <h1>Achievement Settings - ${achievementDescriptionInstance?.name}</h1>
         </cl:headerContent>
 
         <div class="container-fluid">
@@ -53,8 +53,9 @@
             <div class="row-fluid">
                 <div class="span3">
                     <ul class="nav nav-list nav-stacked nav-tabs">
-                        <cl:settingsMenuItem href="${createLink(controller: 'achievementDescription', action: 'edit', id:achievementDescriptionInstance.id)}" title="General Settings" />
-                        <cl:settingsMenuItem href="${createLink(controller: 'achievementDescription', action: 'testAchievement', id:achievementDescriptionInstance.id)}" title="Tester" />
+                        <cl:settingsMenuItem href="${createLink(controller: 'achievementDescription', action: 'edit', id:achievementDescriptionInstance?.id)}" title="General Settings" />
+                        <cl:settingsMenuItem href="${createLink(controller: 'achievementDescription', action: 'awards', id:achievementDescriptionInstance?.id)}" title="Awards" />
+                        <cl:settingsMenuItem href="${createLink(controller: 'achievementDescription', action: 'editTest', id:achievementDescriptionInstance?.id)}" title="Tester" />
                     </ul>
                 </div>
 

@@ -8,6 +8,7 @@ class ActivityFilters {
     def userService
     def securityPrimitives
     def fullTextIndexService
+    def settingsService
 
     def filters = {
         allButAjax(controller:'*', controllerExclude:'ajax', action:'*') {
@@ -45,12 +46,29 @@ class ActivityFilters {
                 def taskSet = GormEventDebouncer.taskSet
                 def deletedTasks = GormEventDebouncer.deletedTaskSet
                 //def fieldSet = GormEventDebouncer.fieldSet
-                if (deletedTasks) {
-                    fullTextIndexService.deleteTasks(deletedTasks)
-                }
-                if (taskSet) {
-                    fullTextIndexService.indexTasks(taskSet)
-                    taskSet.each { achievementService.evaluateAchievements(userService.currentUser, it) }
+                try {
+                    if (deletedTasks) {
+                        fullTextIndexService.deleteTasks(deletedTasks)
+                    }
+                    if (taskSet) {
+                        fullTextIndexService.indexTasks(taskSet)
+                        if (settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
+                            // TODO Replace with withCriteria
+                            def involvedUserIds =
+                                    Task.findAllByIdInList(taskSet.toList())
+                                            .collect { [it.fullyTranscribedBy, it.fullyValidatedBy] }
+                                            .flatten().findAll { it != null }
+                                            .toSet()
+                            def cheevs = taskSet.collect {
+                                achievementService.evalAndRecordAchievements(involvedUserIds + userService.currentUserId, it)
+                            }.flatten()
+//                            if (cheevs) {
+//                                flash.message = "You have just achieved ${cheevs.collect { it.achievement.name }.join(", ")}!"
+//                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Exception while performing post request actions", e)
                 }
             }
         }

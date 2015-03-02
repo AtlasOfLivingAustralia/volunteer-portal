@@ -9,7 +9,8 @@
     }
 
     .recentAcheivement img {
-        width: 150px;
+        width: 140px;
+        height: 140px;
     }
 
     .recentAchievementDate {
@@ -33,12 +34,12 @@
         <br />
         <strong>${expeditionCount}</strong> Expeditions
         <g:if test="${recentAchievement}">
-            <h3>Recent Achievements</h3>
+            <h3>Latest Achievement</h3>
             <div class="recentAcheivement">
-                <img src='<g:resource file="${recentAchievement.icon}"/>' alt="${recentAchievement.label}" title="${recentAchievement.description}"/>
-                <div class="recentAcheivementLabel">${recentAchievement.label}</div>
-                <div class="achievmentDescription">${recentAchievement.description}</div>
-                <div class="recentAchievementDate">Awarded on ${recentAchievement.date?.format("dd MMM, yyyy")}</div>
+                <img src='${cl.achievementBadgeUrl(achievement: recentAchievement.achievement)}' alt="${recentAchievement.achievement.name}" title="${recentAchievement.achievement.description}"/>
+                <div class="recentAcheivementLabel">${recentAchievement.achievement.name}</div>
+                <div class="achievmentDescription">${recentAchievement.achievement.description}</div>
+                <div class="recentAchievementDate">Awarded on ${recentAchievement.awarded?.format("dd MMM, yyyy")}</div>
 
             </div>
         </g:if>

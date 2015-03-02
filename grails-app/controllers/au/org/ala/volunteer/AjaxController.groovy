@@ -26,6 +26,7 @@ class AjaxController {
     def fullTextIndexService
     def authService
     def settingsService
+    def achievementService
 
     static responseFormats = ['json', 'xml']
 
@@ -348,6 +349,16 @@ class AjaxController {
         def length = fullTextIndexService.getIndexerQueueLength()
         def results = ['success': true, 'queueLength': length]
         respond results
+    }
+
+    def acceptAchievements() {
+        def ids = params.list('ids[]') ?: []
+        def longIds = ids*.toLong()
+        if (!longIds) render status: 204
+        def cu = userService.currentUser
+        def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
+        if (validAwards) achievementService.markAchievementsViewed(validAwards*.id)
+        render status: 204
     }
 
 }

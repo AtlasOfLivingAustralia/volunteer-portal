@@ -6,6 +6,7 @@ public class SettingDefinition<T> {
     public static def ForumNotificationsEnabled = new SettingDefinition("forum.notifications.enabled", true, "Whether or not notifications are sent out")
     public static def BatchForumNotificationMessages = new SettingDefinition("forum.notifications.batched", false, "Whether or not notifications are batch sent periodically or sent out directly on posting")
     public static def EnableMyDashboard = new SettingDefinition("dashboard.enabled", false, "Enable the user dashboard tab")
+    public static def EnableAchievementCalculations = new SettingDefinition("achievements.enabled", false, "Enable calculating achievements after each task change")
     public static def PicklistCollectionCodes = new SettingDefinition("picklist.collection.codes", new ArrayList<String>(), "List of collection codes used to partition picklist items")
     public static def InstitutionsEnabled = new SettingDefinition("institutions.enabled", true, "Whether or not the institutions tab is displayed")
     public static def IneligibleLeaderBoardUsers = new SettingDefinition<List<String>>("leaderboard.ineligibleUsers", new ArrayList<String>(), "The list of users not eligible for the leaderboard")

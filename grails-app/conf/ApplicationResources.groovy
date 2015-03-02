@@ -93,4 +93,9 @@ modules = {
         resource url: 'js/slickgrid/slick.grid.css'
     }
 
+    "greyscale" {
+        dependsOn "jquery"
+        resource url: 'css/grey/1.4.2/gray.min.css'
+        resource url: 'js/grey/1.4.2/jquery.gray.min.js'
+    }
 }

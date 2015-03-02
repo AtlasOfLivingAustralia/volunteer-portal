@@ -491,18 +491,7 @@ class UserController {
 
         def score = userService.getUserScore(userInstance)
 
-        def achievements = achievementService.calculateAchievements(userInstance)
-        def userAchievements = Achievement.findAllByUser(userInstance, [sort:'dateAchieved', order:'desc'])
-
-        def recentAchievement
-        if (userAchievements) {
-            def top = userAchievements[0]
-
-            recentAchievement = achievements.find { it.name == top.name }
-            if (recentAchievement) {
-                recentAchievement.date = top.dateAchieved
-            }
-        }
+        def recentAchievement = AchievementAward.findByUser(userInstance, [sort:'awarded', order:'desc'])
 
         def speciesCriteria = Field.createCriteria()
         def species = speciesCriteria.list(max: 5) {
@@ -526,11 +515,12 @@ class UserController {
 
     def badgesFragment() {
         def userInstance = User.get(params.int("id"))
-        def achievements = achievementService.calculateAchievements(userInstance)
+        //def achievements = achievementService.calculateAchievements(userInstance)
+        def achievements = userInstance.achievementAwards
         def score = userService.getUserScore(userInstance)
-        def allAchievements = achievementService.getAllAchievements()
+        def otherAchievements = AchievementDescription.findAllByIdNotInListAndEnabled(achievements*.achievement*.id.toList(), true)
 
-        [userInstance: userInstance, achievements: achievements, score: score, allAchievements: allAchievements]
+        [userInstance: userInstance, achievements: achievements, score: score, allAchievements: otherAchievements]
     }
 
     def recentTasksFragment() {

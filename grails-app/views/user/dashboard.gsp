@@ -24,6 +24,7 @@
         }
 
     </style>
+    <r:require module="greyscale" />
 
 </head>
 

@@ -1,8 +1,15 @@
 package au.org.ala.volunteer
 
+import com.google.common.io.Closer
+import grails.gorm.DetachedCriteria
 import groovy.text.SimpleTemplateEngine
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
+
+import java.nio.file.DirectoryStream
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class AchievementService {
 
@@ -13,19 +20,30 @@ class AchievementService {
     def fullTextIndexService
     def grailsLinkGenerator
 
-    def evaluateAchievements(User user, Long taskId) {
+    def evalAndRecordAchievements(User user, Long taskId) {
         def alreadyAwarded = AchievementAward.withCriteria {
             eq 'user', user
             projections {
-                property 'achievementId'
+                property 'achievement.id'
             }
         }
-        AchievementDescription.findAllByIdNotInList(alreadyAwarded)
+        AchievementDescription.findAllByIdNotInListAndEnabled(alreadyAwarded, true)
                 .find { evaluateAchievement(it, user, taskId)}
                 .collect {
-                    log.info("${user.id} (${user.email} achieved ${it.name}")
-                    new AchievementAward(achievement: it, user: user, awarded: new Date())
-                }*.save(true)
+            log.info("${user.id} (${user.email} achieved ${it.name}")
+            new AchievementAward(achievement: it, user: user, awarded: new Date())
+        }*.save(true)
+    }
+
+    def evalAndRecordAchievements(Set<String> userIds, Long taskId) {
+        evalAndRecordAchievements(User.findAllByUserIdInList(userIds.toList()), taskId)
+    }
+
+    def evalAndRecordAchievements(List<User> users, Long taskId) {
+        users.collectEntries { user ->
+            def cheevs = evalAndRecordAchievements(user, taskId)
+            [(user.userId): cheevs]
+        }
     }
     
     def evaluateAchievement(AchievementDescription cheev, User user, Long taskId) {
@@ -35,11 +53,11 @@ class AchievementService {
             case AchievementType.GROOVY_SCRIPT:
                 return evaluateGroovyAchievement(cheev, user, taskId)
             case AchievementType.ELASTIC_SEARCH_AGGREGATION_QUERY:
-                return evaluateElasticSearchAggregatuibAchievement(cheev, user, taskId)
+                return evaluateElasticSearchAggregationAchievement(cheev, user, taskId)
         }
     }
 
-    def evaluateElasticSearchAggregatuibAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
+    def evaluateElasticSearchAggregationAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
         final template = achievementDescription.searchQuery
         final aggTemplate = achievementDescription.aggregationQuery
 
@@ -48,7 +66,7 @@ class AchievementService {
         final count = achievementDescription.count
         final aggType = achievementDescription.aggregationType
 
-        final binding = ["userId":user.id, "taskId":taskId]
+        final binding = ["userId":user.userId, "taskId":taskId]
 
         def engine = new SimpleTemplateEngine()
         def query = engine.createTemplate(template).make(binding)
@@ -79,7 +97,7 @@ class AchievementService {
         final template = achievementDescription.searchQuery
         final count = achievementDescription.count
 
-        final binding = ["userId":user.id, "taskId":taskId]
+        final binding = ["userId":user.userId, "taskId":taskId]
 
         def engine = new SimpleTemplateEngine()
         def query = engine.createTemplate(template).make(binding)
@@ -177,7 +195,7 @@ class AchievementService {
 
     String getBadgeImagePath(AchievementDescription achievementDescription) {
         def prefix = badgeImageFilePrefix
-        return "${}${achievementDescription.badge}"
+        return "${prefix}${achievementDescription.badge}"
     }
 
     boolean hasBadgeImage(AchievementDescription achievementDescription) {
@@ -192,5 +210,35 @@ class AchievementService {
         } else {
             return grailsLinkGenerator.resource([dir: '/images/achievements', file: 'blank.png'])
         }
+    }
+
+    def cleanImageDir(List<String> badges) {
+
+
+        def stream
+        def c = Closer.create()
+        try {
+            stream = c.register(Files.newDirectoryStream(Paths.get(badgeImageFilePrefix), { Path path -> !badges.contains(path.fileName.toString()) } as DirectoryStream.Filter))
+
+            for (Path path : stream) {
+                try { Files.delete(path) } catch (e) { log.warn("Couldn't delete ${path}", e) }
+            }
+        } catch (e) {
+            log.error("Error with deleting unused achievement badges", e)
+        } finally {
+            c.close()
+        }
+    }
+
+    List<AchievementAward> newAchievementsForUser(User user) {
+        AchievementAward.findAllByUserAndUserNotified(user, false)
+    }
+
+    def markAchievementsViewed(List<Long> ids) {
+        def criteria = new DetachedCriteria(AchievementAward).build {
+            inList 'id', ids
+        }
+        int total = criteria.updateAll(userNotified:true)
+        log.info("Marked ${total} achievements as seen")
     }
 }

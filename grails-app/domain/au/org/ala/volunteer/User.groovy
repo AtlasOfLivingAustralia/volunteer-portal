@@ -58,4 +58,8 @@ class User {
   int hashCode() {
     Objects.hash(userId)
   }
+
+    public String toString() {
+        "User (id: $id, userId: ${userId}, displayName: ${displayName})"
+    }
 }

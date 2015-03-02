@@ -5,6 +5,7 @@ import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
+import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
@@ -12,7 +13,7 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 class AchievementDescriptionController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", uploadBadgeImage: "POST"]
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", uploadBadgeImage: "POST", award: "POST", awardAll: "POST", enable: "POST"]
 
     def achievementService
     def userService
@@ -23,7 +24,7 @@ class AchievementDescriptionController {
     }
 
     def show(AchievementDescription achievementDescriptionInstance) {
-        respond achievementDescriptionInstance
+        redirect action: 'edit', id: achievementDescriptionInstance.id
     }
     
     def create() {
@@ -44,6 +45,8 @@ class AchievementDescriptionController {
 
         achievementDescriptionInstance.save flush: true
 
+        cleanBadges()
+
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'achievementDescription.label', default: 'AchievementDescription'), achievementDescriptionInstance.id])
@@ -55,6 +58,21 @@ class AchievementDescriptionController {
 
     def edit(AchievementDescription achievementDescriptionInstance) {
         respond achievementDescriptionInstance
+    }
+
+    def editTest(AchievementDescription achievementDescriptionInstance) {
+
+        def userId = params.userId ?: userService.currentUserId
+        def user = User.findByUserId(userId)
+        def eval = achievementService.evaluateAchievement(achievementDescriptionInstance, user, null)
+        def cheevMap = ["$user.displayName": eval]
+
+        request.withFormat {
+            form html {
+                render view: 'editTest', model: [achievementDescriptionInstance: achievementDescriptionInstance, cheevMap: cheevMap, displayName: user?.displayName, userId: userId]
+            }
+            '*' { respond((Object)cheevMap, status: OK) }
+        }
     }
 
     @Transactional
@@ -71,10 +89,12 @@ class AchievementDescriptionController {
 
         achievementDescriptionInstance.save flush: true
 
+        cleanBadges()
+
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'achievementDescription.label', default: 'AchievementDescription'), achievementDescriptionInstance.id])
-                redirect achievementDescriptionInstance
+                redirect action: 'edit', id: achievementDescriptionInstance.id
             }
             '*' { respond achievementDescriptionInstance, [status: OK] }
         }
@@ -113,6 +133,7 @@ class AchievementDescriptionController {
         achievementService.evaluateAchievement(AchievementDescription.get(achievementId), User.get(userId), taskId)
     }
 
+    @Transactional
     def uploadBadgeImage() {
         def id = params.long("id");
         def achievement = id ? AchievementDescription.get(id) : null
@@ -137,7 +158,7 @@ class AchievementDescriptionController {
                         json.put('filename', filename)
                         if (achievement) {
                             achievement.badge = filename
-                            achievement.save()
+                            achievement.save(flush: true)
                         }
                     } else {
                         json.put('error', "Failed to upload image. Unknown error!")
@@ -154,6 +175,111 @@ class AchievementDescriptionController {
         }
 
         respond((Object)json, status: status.value())
+    }
+
+    def awards(AchievementDescription achievementDescriptionInstance) {
+        //def evals = achievementDescriptionInstance.awards*.user.collectEntries { [ (it.userId) : achievementService.evaluateAchievement(achievementDescriptionInstance, it, null)] }
+        respond achievementDescriptionInstance//, [model: [evals: evals]]
+    }
+
+    def checkAward(AchievementDescription achievementDescriptionInstance) {
+        def ids = (params.list('ids[]') ?: [])*.toLong()
+        def users = User.findAllByIdInList(ids)
+        def result = users.collectEntries { [ (it.userId) : achievementService.evaluateAchievement(achievementDescriptionInstance, it, null) ] }
+        render result as JSON
+    }
+
+    @Transactional
+    def awardAll(AchievementDescription achievementDescriptionInstance) {
+
+        def awardedUsers = achievementDescriptionInstance.awards*.user*.id.toList()
+        def eligibleUsers = awardedUsers ? User.findAllByIdNotInList(awardedUsers) : User.all
+
+        def awards = eligibleUsers
+                        .findAll { achievementService.evaluateAchievement(achievementDescriptionInstance, it, null) }
+                        .collect { new AchievementAward(user: it, achievement: achievementDescriptionInstance, awarded: new Date()) }
+
+        AchievementAward.saveAll(awards)
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, it.user.displayName]) }.join('<br/>')
+                redirect action: 'awards', id: achievementDescriptionInstance.id
+            }
+            '*' { respond awards, [status: OK] }
+        }
+    }
+
+    @Transactional
+    def award(AchievementDescription achievementDescriptionInstance) {
+
+        def userId = params.userId
+        def user = User.findByUserId(userId)
+
+        if (!user) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), userId])
+            redirect action: 'awards', id: achievementDescriptionInstance.id
+            return
+        }
+
+        def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
+        award.save flush: true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, user.displayName])
+                redirect action: 'awards', id: achievementDescriptionInstance.id
+            }
+            '*' { respond award, [status: OK] }
+        }
+    }
+
+    @Transactional
+    def unaward(AchievementDescription achievementDescriptionInstance) {
+        def awardIds = params.list('ids[]')*.toLong()
+        def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
+        log.info("Removing awarded achievements: ${awards.join('\n')}")
+        AchievementAward.deleteAll(awards)
+
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                redirect action: 'awards', id: achievementDescriptionInstance.id
+            }
+            '*' { render status: NO_CONTENT.value() }
+        }
+    }
+
+    def findEligibleUsers(AchievementDescription achievementDescriptionInstance) {
+        // todo search Atlas User Details
+        def term = params.term
+        def filter = params.boolean('filter', true)
+        def ineligible = filter ? achievementDescriptionInstance.awards*.user*.userId : []
+        def search = "%${term}%"
+        def users = User.withCriteria {
+            or {
+                ilike 'displayName', search
+                ilike 'email', search
+            }
+            if (ineligible) {
+                not {
+                    inList 'userId', ineligible
+                }
+            }
+            maxResults 20
+            order "displayName", "desc"
+        }
+
+        render users as JSON
+    }
+
+    @Transactional
+    def enable(AchievementDescription achievementDescriptionInstance) {
+        def enabledParam = params.boolean('enabled') ?: false
+        achievementDescriptionInstance.enabled = enabledParam
+        achievementDescriptionInstance.save(flush: true)
+        render status: NO_CONTENT.value()
     }
 
     private static String contentTypeToExtension(String contentType) {
@@ -192,6 +318,17 @@ class AchievementDescriptionController {
         } catch (Exception ex) {
             log.error("Failed to upload achievement badge", ex)
             return false
+        }
+    }
+
+    private void cleanBadges() {
+        def badges = AchievementDescription.withCriteria {
+            projections {
+                property("badge")
+            }
+        }
+        task {
+            achievementService.cleanImageDir(badges)
         }
     }
 }

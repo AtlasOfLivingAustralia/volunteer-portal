@@ -19,7 +19,7 @@ class VolunteerTagLib {
     def authService
     def achievementService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled']
 
     def isLoggedIn = { attrs, body ->
 
@@ -703,5 +703,23 @@ class VolunteerTagLib {
             mb.meta(name:it, content: g.meta(name:it))
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
+    }
+
+    /**
+     * Gets the list of new achievements for the current user
+     */
+    def newAchievements = { attrs ->
+        if (settingsService.getSetting(SettingDefinition.EnableMyDashboard) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
+            achievementService.newAchievementsForUser(userService.currentUser)
+        } else {
+            []
+        }
+    }
+
+    /**
+     * Returns true if achievements are enabled, false otherwise
+     */
+    def achievementsEnabled = { attrs ->
+        settingsService.getSetting(SettingDefinition.EnableMyDashboard) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)
     }
 }

@@ -31,7 +31,7 @@
             </g:eachError>
         </ul>
     </g:hasErrors>
-    <g:form url="[resource: achievementDescriptionInstance, action: 'save']">
+    <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal">
         <fieldset class="form">
             <g:render template="form"/>
         </fieldset>

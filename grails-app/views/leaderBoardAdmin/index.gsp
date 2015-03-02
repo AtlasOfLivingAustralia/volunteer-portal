@@ -65,7 +65,7 @@ jQuery(function ($) {
         .done(function(data) {
             var toString = function() {
                 return JSON.stringify(this);
-            }
+            };
             for (var i = 0; i < data.length; ++i) {
                 data[i].toString = toString;
             }

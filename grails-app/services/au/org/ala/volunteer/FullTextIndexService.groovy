@@ -167,6 +167,7 @@ class FullTextIndexService {
         return search(qmap, offset, max, sortBy, sortOrder)
     }
 
+    @Timed
     public QueryResults<Task> search(Map query, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
         Map qmap = null
         Map fmap = null
@@ -191,7 +192,8 @@ class FullTextIndexService {
 
         return executeSearch(b, offset, max, sortBy, sortOrder)
     }
-    
+
+    @Timed
     public <V> V rawSearch(String json, SearchType searchType, String aggregation = null, Integer offset = null, Integer max = null, String sortBy = null, SortOrder sortOrder = null, Closure<V> resultClosure) {
         
         def queryMap = jsonStringToJSONObject(json)
@@ -271,6 +273,7 @@ class FullTextIndexService {
     }
 
 
+    @Timed
     private QueryResults<Task> executeFilterSearch(FilterBuilder filterBuilder, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
         def searchRequestBuilder = client.prepareSearch(INDEX_NAME).setSearchType(SearchType.QUERY_THEN_FETCH)
         searchRequestBuilder.setPostFilter(filterBuilder)
@@ -291,10 +294,11 @@ class FullTextIndexService {
             searchRequestBuilder.addSort(sortBy, order)
         }
 
-        def ct = new CodeTimer("Index search")
+        // TODO Create a Yammer metrics meter
+        //def ct = new CodeTimer("Index search")
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-        ct.stop(true)
-        
+        //ct.stop(true)
+
         closure(searchResponse)
     }
 

@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import groovy.transform.ToString
 import org.codehaus.groovy.control.CompilationFailedException
 
 class AchievementDescription {
@@ -33,7 +34,7 @@ class AchievementDescription {
     Integer count
 
     String aggregationQuery
-    AggregationType aggregationType = AggregationType.ANY_MATCH
+    AggregationType aggregationType = AggregationType.CODE
 
 
     // Should return boolean?
@@ -51,7 +52,7 @@ class AchievementDescription {
         description maxSize: 1000
         code nullable: true, minSize: 0, maxSize: 10000, widget: 'textArea', validator: { val, obj, errors ->
             if (obj.type != AchievementType.GROOVY_SCRIPT
-                    && (aggregationType != AchievementType.CODE) || type != AchievementType.ELASTIC_SEARCH_AGGREGATION_QUERY)
+                    && (obj.aggregationType != AggregationType.CODE) || obj.type != AchievementType.ELASTIC_SEARCH_AGGREGATION_QUERY)
                 return true
 
             if (!val || obj.count == null) return false
@@ -79,5 +80,9 @@ class AchievementDescription {
             if (obj.type != AchievementType.ELASTIC_SEARCH_AGGREGATION_QUERY) return true
             if (val == null) return false
         }
+    }
+
+    public String toString() {
+        "AchievementDescription (id: $id, name: ${name})"
     }
 }

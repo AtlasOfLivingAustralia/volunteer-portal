@@ -19,6 +19,8 @@
 
         <script type="text/javascript" src="${grailsApplication.config.ala.baseURL?:'http://www.ala.org.au'}/wp-content/themes/ala2011/scripts/html5.js"></script>
 
+        <g:set var="cheevs" value="${cl.newAchievements()}" />
+
         <g:javascript library="jquery" />
 
         <r:require module="jquery-ui" />
@@ -114,6 +116,49 @@
         </div><!--/.container-->
 
     <hf:footer/>
+
+    <g:if test="${cl.achievementsEnabled() && cheevs.size() > 0}">
+        <g:if test="${cheevs.size() < 3}">
+            <g:set var="itemgridStyle" value="margin-left:auto; margin-right:auto; width: ${cheevs.size() * 160}px" />
+        </g:if>
+        <g:else>
+            <g:set var="itemgridStyle" value="" />
+        </g:else>
+        <div id="achievement-notifier" class="modal hide fade">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" data-target="#achievement-notifier" aria-hidden="true">&times;</button>
+                <h3>Congratulations!  You just achieved...</h3>
+            </div>
+            <div class="modal-body">
+                <div class="itemgrid" style="${itemgridStyle}">
+                    <g:each in="${cheevs}" var="ach">
+                        <div class="item bvpBadge">
+                            <img src="${cl.achievementBadgeUrl(achievement: ach.achievement)}" title="${ach.achievement.description}" alt="${ach.achievement.name}"/>
+                            <div>${ach.achievement.name}</div>
+                            <div>Awarded <prettytime:display date="${ach.awarded}" /></div>
+                        </div>
+                    </g:each>
+                </div>
+                <p>Visit <g:link controller="user" action="dashboard">your dashboard</g:link> to see all your achievements.</p>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" data-target="#achievement-notifier" class="btn">Close</button>
+            </div>
+        </div>
+<r:script>
+jQuery(function($) {
+    var cheevs = <cl:json value="${cheevs*.id}" />;
+    var acceptUrl = "${g.createLink(controller: 'ajax', action: 'acceptAchievements')}";
+    $('#achievement-notifier').on('show', function () {
+        $.ajax(acceptUrl, {
+            type: 'post',
+            data: { ids : cheevs },
+            dataType: 'json'
+        });
+    }).modal('show');
+});
+</r:script>
+    </g:if>
 
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

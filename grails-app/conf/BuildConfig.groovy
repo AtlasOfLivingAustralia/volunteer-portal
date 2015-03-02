@@ -43,7 +43,7 @@ grails.project.dependency.resolution = {
         runtime ":csv:0.3.1"
         runtime ":executor:0.3"
         compile ":markdown:1.1.1"
-        runtime ":pretty-time:0.3"
+        runtime ":pretty-time:2.1.3.Final-1.0.1"
         runtime ":quartz:1.0.1"
         runtime ":tiny-mce:3.4.9"
         runtime ":webxml:1.4.1"
