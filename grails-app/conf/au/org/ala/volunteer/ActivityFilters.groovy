@@ -66,6 +66,7 @@ class ActivityFilters {
 //                                flash.message = "You have just achieved ${cheevs.collect { it.achievement.name }.join(", ")}!"
 //                            }
                         }
+                        taskSet.clear()
                     }
                 } catch (Exception e) {
                     log.error("Exception while performing post request actions", e)

@@ -21,8 +21,11 @@
         <content tag="pageTitle">Awards</content>
 
         <content tag="adminButtonBar">
-            <g:form class="form-inline" action="awardAll" id="${achievementDescriptionInstance?.id}" method="post">
+            <g:form class="form-inline" style="display: inline-block; padding-right: 10px;" action="awardAll" id="${achievementDescriptionInstance?.id}" method="post">
                 <input type="submit" class="btn" value="${message(code: 'default.button.awardAll.label', default: 'Award All Eligible')}"/>
+            </g:form>
+            <g:form class="form-inline" style="display: inline-block" action="unawardAll" id="${achievementDescriptionInstance?.id}" method="post">
+                <input type="submit" class="btn btn-danger" value="${message(code: 'default.button.unawardAll.label', default: 'Remove all awards')}"/>
             </g:form>
         </content>
 		<div id="edit-achievementDescription" class="content scaffold-edit" role="main">

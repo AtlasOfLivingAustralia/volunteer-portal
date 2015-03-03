@@ -25,7 +25,7 @@
             <div class="item bvpBadge">
                 <img src="${cl.achievementBadgeUrl(achievement: ach)}" title="${ach.description}" alt="${ach.name}" class="grayscale"/>
                 <div>${ach.name}</div>
-                <div>Locked</div>
+                <div>Not yet awarded</div>
             </div>
         </g:each>
     </div>

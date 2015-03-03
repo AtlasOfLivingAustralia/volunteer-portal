@@ -13,6 +13,7 @@ class AchievementAward {
     Date lastUpdated
     
     static constraints = {
+        achievement unique: 'user'
     }
 
     public String toString() {

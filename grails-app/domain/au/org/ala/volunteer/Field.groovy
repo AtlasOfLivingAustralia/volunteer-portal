@@ -34,18 +34,18 @@ class Field implements Serializable {
   def afterInsert() {
     GormEventDebouncer.debounceField(this.id)
     def taskId = this.task?.id
-    if (taskId) GormEventDebouncer.debounceTask()
+    if (taskId) GormEventDebouncer.debounceTask(taskId)
   }
   // Executed after an object has been updated
   def afterUpdate() {
     GormEventDebouncer.debounceField(this.id)
       def taskId = this.task?.id
-      if (taskId) GormEventDebouncer.debounceTask()
+      if (taskId) GormEventDebouncer.debounceTask(taskId)
   }
   // Executed after an object has been deleted
   def afterDelete() {
     GormEventDebouncer.debounceField(this.id)
     def taskId = this.task?.id
-    if (taskId) GormEventDebouncer.debounceTask()
+    if (taskId) GormEventDebouncer.debounceTask(taskId)
   }
 }

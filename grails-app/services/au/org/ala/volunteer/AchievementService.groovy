@@ -5,6 +5,7 @@ import grails.gorm.DetachedCriteria
 import groovy.text.SimpleTemplateEngine
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
+import org.grails.plugins.metrics.groovy.Timed
 
 import java.nio.file.DirectoryStream
 import java.nio.file.Files
@@ -20,7 +21,8 @@ class AchievementService {
     def fullTextIndexService
     def grailsLinkGenerator
 
-    def evalAndRecordAchievements(User user, Long taskId) {
+    @Timed
+    def evalAndRecordAchievementsForUser(User user, Long taskId) {
         def alreadyAwarded = AchievementAward.withCriteria {
             eq 'user', user
             projections {
@@ -35,17 +37,19 @@ class AchievementService {
         }*.save(true)
     }
 
+    @Timed
     def evalAndRecordAchievements(Set<String> userIds, Long taskId) {
         evalAndRecordAchievements(User.findAllByUserIdInList(userIds.toList()), taskId)
     }
 
     def evalAndRecordAchievements(List<User> users, Long taskId) {
         users.collectEntries { user ->
-            def cheevs = evalAndRecordAchievements(user, taskId)
+            def cheevs = evalAndRecordAchievementsForUser(user, taskId)
             [(user.userId): cheevs]
         }
     }
-    
+
+    @Timed
     def evaluateAchievement(AchievementDescription cheev, User user, Long taskId) {
         switch (cheev.type) {
             case AchievementType.ELASTIC_SEARCH_QUERY:
@@ -57,6 +61,7 @@ class AchievementService {
         }
     }
 
+    @Timed
     def evaluateElasticSearchAggregationAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
         final template = achievementDescription.searchQuery
         final aggTemplate = achievementDescription.aggregationQuery
@@ -86,6 +91,7 @@ class AchievementService {
         fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, agg.toString(), closure)
     }
 
+    @Timed
     private def evaluateGroovyAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
         final code = achievementDescription.code
         def script = new GroovyShell().parse(code)
@@ -93,6 +99,7 @@ class AchievementService {
         return script.run()
     }
 
+    @Timed
     private def evaluateElasticSearchAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
         final template = achievementDescription.searchQuery
         final count = achievementDescription.count
@@ -230,6 +237,7 @@ class AchievementService {
         }
     }
 
+    @Timed
     List<AchievementAward> newAchievementsForUser(User user) {
         AchievementAward.findAllByUserAndUserNotified(user, false)
     }

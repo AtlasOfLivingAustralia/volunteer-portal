@@ -235,12 +235,28 @@ class AchievementDescriptionController {
     }
 
     @Transactional
+    def unawardAll(AchievementDescription achievementDescriptionInstance) {
+        def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
+        log.info("Removing awarded achievements: ${awards.join('\n')}")
+
+        AchievementAward.deleteAll(awards)
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                redirect action: 'awards', id: achievementDescriptionInstance.id
+            }
+            '*' { render status: NO_CONTENT.value() }
+        }
+    }
+
+    @Transactional
     def unaward(AchievementDescription achievementDescriptionInstance) {
         def awardIds = params.list('ids[]')*.toLong()
         def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
         log.info("Removing awarded achievements: ${awards.join('\n')}")
-        AchievementAward.deleteAll(awards)
 
+        AchievementAward.deleteAll(awards)
 
         request.withFormat {
             form multipartForm {
