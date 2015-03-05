@@ -139,7 +139,7 @@
                         </div>
                     </g:each>
                 </div>
-                <p>Visit <g:link controller="user" action="dashboard">your dashboard</g:link> to see all your achievements.</p>
+                <p>Visit <g:link controller="user" action="notebook">your notebook</g:link> to see all your achievements.</p>
             </div>
             <div class="modal-footer">
                 <button data-dismiss="modal" data-target="#achievement-notifier" class="btn">Close</button>

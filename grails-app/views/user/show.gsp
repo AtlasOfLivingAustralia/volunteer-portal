@@ -141,7 +141,7 @@
                                         <td>
                                             <g:each in="${achievements}" var="ach" status="i">
                                                 <div style="float:left;margin: 10px">
-                                                    <img src='<g:resource file="${ach.icon}"/>' width="50px" alt="${ach.label}" title="${ach.description}"/>
+                                                    <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>' width="50px" alt="${ach.achievement.name}" title="${ach.achievement.description}"/>
                                                     %{--<div style="font:0.6em">${ach.label}</div>--}%
                                                 </div>
                                             </g:each>

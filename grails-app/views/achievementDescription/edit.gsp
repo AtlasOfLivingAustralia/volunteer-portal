@@ -10,7 +10,8 @@
         <content tag="pageTitle">General Settings</content>
 
         <content tag="adminButtonBar">
-            <form class="form-inline"><g:checkBox name="enabled" checked="${achievementDescriptionInstance?.enabled}"/></form>
+            <g:form class="form-inline" style="display: inline-block; padding-right:10px;" action="delete" id="${achievementDescriptionInstance?.id}" method="delete"><g:submitButton class="btn btn-danger" name="Delete"/></g:form>
+            <form class="form-inline" style="display: inline-block;"><g:checkBox name="enabled" checked="${achievementDescriptionInstance?.enabled}"/></form>
         </content>
 		<div id="edit-achievementDescription" class="content scaffold-edit" role="main">
 			%{--<g:if test="${flash.message}">--}%

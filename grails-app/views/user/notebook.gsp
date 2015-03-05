@@ -29,7 +29,7 @@
 </head>
 
 <body>
-    <cl:headerContent title="My Dashboard" crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
+    <cl:headerContent title="My Notebook" crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userNotebook">
         <%
             pageScope.crumbs = [
             ]
@@ -107,7 +107,7 @@
     });
 
     function loadMainTab() {
-        $.ajax("${createLink(controller:'user', action:'dashboardMainFragment', id: userInstance.id)}").done(function(content) {
+        $.ajax("${createLink(controller:'user', action:'notebookMainFragment', id: userInstance.id)}").done(function(content) {
             $("#mainTab").html(content);
         });
     }

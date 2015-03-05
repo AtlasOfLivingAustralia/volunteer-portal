@@ -162,11 +162,11 @@ class VolunteerTagLib {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
 
-        def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyDashboard)
+        def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyNotebook)
         if (dashboardEnabled) {
             def isLoggedIn = AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)
             if (isLoggedIn || userService.currentUser) {
-                items << [userDashboard: [link: createLink(controller:'user', action:'dashboard'), title:"My Dashboard"]]
+                items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:"My Notebook"]]
             }
         }
 
@@ -709,7 +709,7 @@ class VolunteerTagLib {
      * Gets the list of new achievements for the current user
      */
     def newAchievements = { attrs ->
-        if (settingsService.getSetting(SettingDefinition.EnableMyDashboard) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
+        if (settingsService.getSetting(SettingDefinition.EnableMyNotebook) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
             achievementService.newAchievementsForUser(userService.currentUser)
         } else {
             []
@@ -720,6 +720,6 @@ class VolunteerTagLib {
      * Returns true if achievements are enabled, false otherwise
      */
     def achievementsEnabled = { attrs ->
-        settingsService.getSetting(SettingDefinition.EnableMyDashboard) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)
+        settingsService.getSetting(SettingDefinition.EnableMyNotebook) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)
     }
 }

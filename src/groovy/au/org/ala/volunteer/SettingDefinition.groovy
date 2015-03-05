@@ -5,7 +5,7 @@ public class SettingDefinition<T> {
     public static def ForumMessageEditWindow = new SettingDefinition("forum.messageEditWindowSeconds", 15 * 60, "(Seconds) The amount of time someone has to edit their forum messages from the time they posted")
     public static def ForumNotificationsEnabled = new SettingDefinition("forum.notifications.enabled", true, "Whether or not notifications are sent out")
     public static def BatchForumNotificationMessages = new SettingDefinition("forum.notifications.batched", false, "Whether or not notifications are batch sent periodically or sent out directly on posting")
-    public static def EnableMyDashboard = new SettingDefinition("dashboard.enabled", false, "Enable the user dashboard tab")
+    public static def EnableMyNotebook = new SettingDefinition("dashboard.enabled", false, "Enable the user notebook tab")
     public static def EnableAchievementCalculations = new SettingDefinition("achievements.enabled", false, "Enable calculating achievements after each task change")
     public static def PicklistCollectionCodes = new SettingDefinition("picklist.collection.codes", new ArrayList<String>(), "List of collection codes used to partition picklist items")
     public static def InstitutionsEnabled = new SettingDefinition("institutions.enabled", true, "Whether or not the institutions tab is displayed")

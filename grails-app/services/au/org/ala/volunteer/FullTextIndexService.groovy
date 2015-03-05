@@ -124,9 +124,17 @@ class FullTextIndexService {
             project:[
                 projectType: task.project.projectType.toString(),
                 institution: task.project.institution ? task.project.institution.name : task.project.featuredOwner,
-                name: task.project.featuredLabel
+                institutionCollectoryId: task.project.institution?.collectoryUid,
+                harvestableByAla: task.project.harvestableByAla,
+                name: task.project.featuredLabel,
+                templateName: task.project.template?.name,
+                templateViewName: task.project.template?.viewName,
             ]
         ]
+
+        if (task.project.mapInitLatitude && task.project.mapInitLongitude) {
+            data.project.put('mapRef', [ lat : task.project.mapInitLatitude, lon: task.project.mapInitLongitude ])
+        }
 
         def c = Field.createCriteria()
         def fields = c {
@@ -248,21 +256,88 @@ class FullTextIndexService {
     Closure<SearchResponse> identity = { it }
 
     def addMappings() {
+
         def mappingJson = '''
-        {
-            "mappings": {
-                "task": {
-                    "dynamic_templates": [
-                    ],
-                    "_all": {
-                        "enabled": true,
-                        "store": "yes"
-                    },
-                    "properties": {
-                    }
+{
+  "mappings": {
+    "task": {
+      "dynamic_templates": [
+      ],
+      "_all": {
+        "enabled": true,
+        "store": "yes"
+      },
+      "properties": {
+        "id" : {"type" : "long"},
+        "projectId" : {"type" : "long"},
+        "externalIdentifier" : {"type" : "string", "index": "not_analyzed" },
+        "externalUrl" : {"type" : "string", "index": "not_analyzed"},
+        "fullyTranscribedBy" : {"type" : "string", "index": "not_analyzed"},
+        "dateFullyTranscribed" : {"type" : "date"},
+        "fullyValidatedBy" : {"type" : "string", "index": "not_analyzed"},
+        "dateFullyValidated" : {"type" : "date"},
+        "isValid" : {"type" : "boolean"},
+        "created" : {"type" : "date"},
+        "lastViewed" : {"type" : "date"},
+        "lastViewedBy" : {"type" : "string", "index": "not_analyzed"},
+        "fields" : {
+          "type" : "nested",
+          "include_in_parent": true,
+          "properties": {
+            "fieldid" : {"type": "long" },
+            "name"  : { "type": "string", "index": "not_analyzed" },
+            "recordIdx" : {"type": "integer" },
+            "value"  : {
+              "type": "string",
+              "index": "not_analyzed",
+              "fields": {
+                "analyzed": {
+                  "type": "string",
+                  "index": "analyzed"
                 }
-            }
+              }
+            },
+            "transcribedByUserId": {"type": "string", "index": "not_analyzed" },
+            "validatedByUserId": {"type": "string", "index": "not_analyzed" },
+            "updated" : {"type" : "date"},
+            "created" : {"type" : "date"}
+          }
+        },
+        "project" : {
+          "type" : "object",
+          "properties" : {
+            "name" : {
+              "type": "string",
+              "index": "not_analyzed",
+              "fields": {
+                "analyzed": {
+                  "type": "string",
+                  "index": "analyzed"
+                }
+              }
+            },
+            "projectType" : { "type" : "string", "index": "not_analyzed" },
+            "institution" : {
+              "type": "string",
+              "index": "not_analyzed",
+              "fields": {
+                "analyzed": {
+                  "type": "string",
+                  "index": "analyzed"
+                }
+              }
+            },
+            "institutionCollectoryId": { "type" : "string", "index": "not_analyzed" },
+            "harvestableByAla": { "type" : "boolean" },
+            "mapRef": { "type": "geo_point", "lat_lon": true },
+            "templateName" : { "type" : "string", "index": "not_analyzed"},
+            "templateViewName" : { "type" : "string", "index": "not_analyzed"},
+          }
         }
+      }
+    }
+  }
+}
         '''
 
         def parsedJson = new JsonSlurper().parseText(mappingJson)
