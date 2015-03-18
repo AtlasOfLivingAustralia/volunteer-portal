@@ -32,7 +32,7 @@ class FullTextIndexService {
     public static final String INDEX_NAME = "digivol"
     public static final String TASK_TYPE = "task"
 
-    private static Queue<IndexTaskTask> _backgroundQueue = new ConcurrentLinkedQueue<IndexTaskTask>()
+    private static Queue<TaskTask> _backgroundQueue = new ConcurrentLinkedQueue<TaskTask>()
 
     def logService
     def grailsApplication
@@ -72,13 +72,18 @@ class FullTextIndexService {
         addMappings()
     }
 
-    def scheduleTaskIndex(Task task) {
+    def static scheduleTaskIndex(Task task) {
         def job = new IndexTaskTask(taskId: task.id)
         _backgroundQueue.add(job)
     }
 
-    def scheduleTaskIndex(long taskId) {
+    def static scheduleTaskIndex(long taskId) {
         def job = new IndexTaskTask(taskId: taskId)
+        _backgroundQueue.add(job)
+    }
+
+    static def scheduleTaskDeleteIndex(long taskId) {
+        def job = new DeleteTaskTask(taskId: taskId)
         _backgroundQueue.add(job)
     }
 
@@ -88,13 +93,20 @@ class FullTextIndexService {
 
     def processIndexTaskQueue(int maxTasks = 10000) {
         int taskCount = 0
-        IndexTaskTask jobDescriptor = null
+        TaskTask jobDescriptor = null
 
         while (taskCount < maxTasks && (jobDescriptor = _backgroundQueue.poll()) != null) {
             if (jobDescriptor) {
-                Task t = Task.get(jobDescriptor.taskId)
-                if (t) {
-                    indexTask(t)
+                switch (jobDescriptor) {
+                    case DeleteTaskTask:
+                        deleteTask(jobDescriptor.taskId)
+                        break
+                    case IndexTaskTask:
+                        Task t = Task.get(jobDescriptor.taskId)
+                        if (t) {
+                            indexTask(t)
+                        }
+                        break
                 }
                 taskCount++
             }
@@ -129,6 +141,7 @@ class FullTextIndexService {
                 name: task.project.featuredLabel,
                 templateName: task.project.template?.name,
                 templateViewName: task.project.template?.viewName,
+                labels: task.project.labels?.collect { [ category: it.category, value: it.value ] } ?: []
             ]
         ]
 
@@ -332,6 +345,14 @@ class FullTextIndexService {
             "mapRef": { "type": "geo_point", "lat_lon": true },
             "templateName" : { "type" : "string", "index": "not_analyzed"},
             "templateViewName" : { "type" : "string", "index": "not_analyzed"},
+            "labels" : {
+              "type" : "nested",
+              "include_in_parent": true,
+              "properties": {
+                "category" : { "type": "string", "index": "not_analyzed" },
+                "value"  : { "type": "string", "index": "not_analyzed" }
+              }
+            }
           }
         }
       }
@@ -415,8 +436,8 @@ public class QueryResults <T> {
     public int totalCount = 0
 }
 
-public class IndexTaskTask {
+public abstract class TaskTask { public long taskId }
 
-    public long taskId
+public class DeleteTaskTask extends TaskTask { }
 
-}
+public class IndexTaskTask extends TaskTask{ }

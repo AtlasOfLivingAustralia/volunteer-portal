@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.collect.Lists
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import org.apache.commons.io.FileUtils
@@ -54,6 +55,14 @@ class TaskLoadService {
             errorCount: errorCount
         ]
 
+    }
+
+    /**
+     * Returns a defensive copy of the current queue
+     * @return
+     */
+    List<TaskDescriptor> currentQueue() {
+        Lists.newArrayList(_loadQueue.iterator())
     }
 
     def loadTaskFromCSV(Project project, String csv, boolean replaceDuplicates) {
@@ -432,6 +441,12 @@ class TaskLoadService {
 
     public def cancelLoad() {
         _cancel = true;
+    }
+
+    List<TaskDescriptor> clearQueue() {
+        def tasks = []
+        _loadQueue.drainTo(tasks)
+        tasks
     }
 
     def List<TaskLoadStatus> getLastReport() {

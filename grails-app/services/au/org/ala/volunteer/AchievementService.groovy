@@ -29,7 +29,11 @@ class AchievementService {
                 property 'achievement.id'
             }
         }
-        AchievementDescription.findAllByIdNotInListAndEnabled(alreadyAwarded, true)
+        final achievements = alreadyAwarded ?
+                AchievementDescription.findAllByIdNotInListAndEnabled(alreadyAwarded, true)
+                : AchievementDescription.findAllByEnabled(true)
+
+        achievements
                 .find { evaluateAchievement(it, user, taskId)}
                 .collect {
             log.info("${user.id} (${user.email} achieved ${it.name}")

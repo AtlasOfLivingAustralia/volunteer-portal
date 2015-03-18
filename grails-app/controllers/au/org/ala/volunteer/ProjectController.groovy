@@ -369,7 +369,12 @@ class ProjectController {
             final insts = Institution.list()
             final names = insts*.name
             final nameToId = insts.collectEntries { ["${it.name}": it.id] }
-            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId]
+            final labelCats = Label.withCriteria { projections { distinct 'category' } }
+            final colours = ["", "label-success", "label-warning", "label-important", "label-info", "label-inverse"]
+            final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
+            def counter = 0
+            final catColourMap = labelCats.collectEntries { [(it): colours[counter++ % colours.size()]] }
+            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId, labelColourMap: catColourMap, sortedLabels: sortedLabels]
         }
     }
 
@@ -906,4 +911,51 @@ class ProjectController {
 
     }
 
+    def addLabel(Project projectInstance) {
+        def labelId = params.labelId
+        def label = Label.get(labelId)
+        if (!label) {
+            render status: 404
+            return
+        }
+
+        projectInstance.addToLabels(label)
+        render status: 204
+    }
+
+    def removeLabel(Project projectInstance) {
+        def labelId = params.labelId
+        def label = Label.get(labelId)
+        if (!label) {
+            render status: 404
+            return
+        }
+
+        projectInstance.removeFromLabels(label)
+        render status: 204
+    }
+
+    def newLabels(Project projectInstance) {
+        def term = params.term ?: ''
+        def ilikeTerm = "%${term.replace('%','')}%"
+        def existing = projectInstance.labels
+        def labels
+
+        if (existing) {
+            def existingIds = existing*.id.toList()
+            labels = Label.withCriteria {
+                or {
+                    ilike 'category', ilikeTerm
+                    ilike 'value', ilikeTerm
+                }
+                not {
+                    inList 'id', existingIds
+                }
+            }
+        } else {
+            labels = Label.findAllByCategoryIlikeOrValueIlike(ilikeTerm, ilikeTerm)
+        }
+
+        render labels as JSON
+    }
 }

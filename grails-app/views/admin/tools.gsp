@@ -3,13 +3,23 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <title><g:message code="admin.label" default="Administration - Tools"/></title>
+        <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
         <style type="text/css">
         </style>
+        <r:require module="bootbox"/>
         <r:script type='text/javascript'>
 
-            $(document).ready(function() {
-            });
+            jQuery(function($) {
+                $('button.confirmation-required').click(function(e) {
+                    var confirm = e.target.dataset.confirm || 'Confirm';
+                    var cancel = e.target.dataset.cancel || 'Cancel';
+                    bootbox.confirm("Are you sure you want to " + e.target.dataset.message, cancel, confirm, function(result) {
+                        if (result) {
+                            window.open(e.target.dataset.href, "_self");
+                        }
+                    })
+                })
+            })
 
         </r:script>
     </head>
@@ -28,6 +38,17 @@
             <div class="span12">
                 <a href="${createLink(action:'mappingTool')}" class="btn">Mapping tool</a>
                 <a href="${createLink(action:'migrateProjectsToInstitutions')}" class="btn">Expedition-Institution migration tool</a>
+                <a href="${createLink(action:'stagingTasks')}" class="btn">Manage staging queue</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <div class="well well-small" style="margin-top: 10px">
+                    <h3>Caches</h3>
+                    <a href="${createLink(action:'clearPageCaches')}" class="btn">Clear page caches</a>
+                    <a href="${createLink(action:'clearAllCaches')}" class="btn">Clear entity caches</a>
+                </div>
             </div>
         </div>
 
@@ -35,8 +56,8 @@
             <div class="span12">
                 <div class="well" style="margin-top: 10px">
                 <h3>Full Text Index</h3>
-                    <a href="${createLink(action:'reindexAllTasks')}" class="btn">Reindex all tasks</a>
-                    <a href="${createLink(action:'rebuildIndex')}" class="btn">Recreate index</a>
+                    <button class="confirmation-required btn btn-warning" data-href="${createLink(action:'reindexAllTasks')}" data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
+                    <button class="confirmation-required btn btn-danger" data-href="${createLink(action:'rebuildIndex')}" data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
                     <div>
                         Background queue length: <span id="queueLength"><cl:spinner /></span>
                     </div>

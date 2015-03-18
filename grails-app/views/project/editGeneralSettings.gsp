@@ -2,18 +2,69 @@
 <html>
     <head>
         <meta name="layout" content="projectSettingsLayout"/>
-        <r:require module="institution-dropdown" />
+        <r:require modules="institution-dropdown,labelAutocomplete" />
         <r:script type="text/javascript">
         jQuery(function($) {
             var institutions = <cl:json value="${institutions}" />;
             var nameToId = <cl:json value="${institutionsMap}" />;
+            var labelColourMap = <cl:json value="${labelColourMap}" />;
             var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
             setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
+            labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
+                var obj = JSON.parse(item);
+                var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
+                //showSpinner();
+                $.ajax(updateUrl, {type: 'POST', data: { labelId: obj.id }})
+                    .done(function(data) {
+                        $( "<span>" )
+                            .addClass("label")
+                            .addClass(labelColourMap[obj.category])
+                            .attr("title", obj.category)
+                            .text(obj.value)
+                            .append(
+                            $( "<i>" )
+                                .attr("data-user-id", obj.id)
+                                .addClass("icon-remove")
+                                .addClass("icon-white")
+                            )
+                            .appendTo(
+                                $( "#labels" )
+                            );
+                    })
+                    .fail(function() { alert("Couldn't add label")});
+                    //.always(hideSpinner);
+                return null;
+            });
 
+            function onDeleteClick(e) {
+                var deleteUrl = "${createLink(controller: 'project', action: 'removeLabel', id: projectInstance.id)}";
+            //    showSpinner();
+                $.ajax(deleteUrl, {type: 'POST', data: { labelId: e.target.dataset.labelId }})
+                    .done(function (data) {
+                        var t = $(e.target);
+                        var p = t.parent("span");
+                        p.remove();
+                    })
+                    .fail(function() { alert("Couldn't remove label")});
+                    //.always(hideSpinner);
+            }
+
+            $('#labels').on('click', 'span.label i.icon-remove', onDeleteClick);
         });
         </r:script>
-
+        <r:style>
+        div#labels {
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+        div#labels > span.label {
+            margin: 2px;
+        }
+        i.icon-remove {
+            cursor: pointer;
+        }
+        </r:style>
     </head>
 
     <body>
@@ -70,7 +121,13 @@
                     <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}" optionValue="label" optionKey="id" />
                 </div>
             </div>
-
+            <div class="control-group">
+                <label class="control-label" for="label">Labels</label>
+                <div class="controls">
+                    <div id="labels"><g:each in="${sortedLabels}" var="l"><span class="label ${labelColourMap[l.category]}" title="${l.category}">${l.value} <i class="icon-remove icon-white" data-label-id="${l.id}"></i></span></g:each></div>
+                </div>
+                <div class="controls"><input autocomplete="off" type="text" id="label" class="input-small" /></div>
+            </div>
             <div class="control-group">
                 <div class="controls">
                     <label for="harvestableByAla" class="checkbox">

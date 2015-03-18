@@ -197,7 +197,7 @@ class FieldSyncService {
 
         task.save(flush: true, failOnError: true)
 
-        fullTextIndexService.scheduleTaskIndex(task)
+        FullTextIndexService.scheduleTaskIndex(task)
     }
 
 }

@@ -98,4 +98,14 @@ modules = {
         resource url: 'css/grey/1.4.2/gray.min.css'
         resource url: 'js/grey/1.4.2/jquery.gray.min.js'
     }
+
+    "bootbox" {
+        dependsOn "bootstrap-js, jquery"
+        resource url: 'js/bootbox/3.3.0/bootbox.js'
+    }
+
+    "labelAutocomplete" {
+        dependsOn "bootstrap-js, jquery"
+        resource url: 'js/label.autocomplete.js'
+    }
 }

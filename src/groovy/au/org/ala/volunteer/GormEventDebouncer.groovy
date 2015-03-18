@@ -4,17 +4,32 @@ import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
 class GormEventDebouncer {
-    
+
     static def debounceField(long id) {
         getFieldSet()?.add(id)
     }
-    
+
     static def debounceTask(long id) {
-        getTaskSet()?.add(id)
+        def ts = getTaskSet()
+        if (ts != null) {
+            // we have an active request
+            ts.add(id)
+        } else {
+            // otherwise drop it on the task queue
+            FullTextIndexService.scheduleTaskIndex(id)
+        }
+
     }
 
     static def debounceDeleteTask(long id) {
-        getDeletedTaskSet()?.add(id)
+        def ts = getDeletedTaskSet()
+        if (ts != null) {
+            // we have an active request
+            ts.add(id)
+        } else {
+            // otherwise drop it on the task queue
+            FullTextIndexService.scheduleTaskDeleteIndex(id)
+        }
     }
     
     static Set<Long> getFieldSet() { getRequestSet("updatedFields") }
