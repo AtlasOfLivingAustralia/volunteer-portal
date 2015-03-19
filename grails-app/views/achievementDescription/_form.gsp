@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.volunteer.AggregationType; au.org.ala.volunteer.AchievementType; au.org.ala.volunteer.AchievementDescription" %>
-
+<r:require modules="codemirror-json, codemirror-groovy, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>
 
 <div class="control-group fieldcontain ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'error')} required">
     <label class="control-label" for="name">
@@ -73,7 +73,7 @@
 
 <div class="control-group fieldcontain grType ${hasErrors(bean: achievementDescriptionInstance, field: 'code', 'error')}">
     <label class="control-label" for="code">
-        <g:message code="achievementDescri  ption.badge.label" default="Code" />
+        <g:message code="achievementDescription.badge.label" default="Code" />
         <span class="hidden required-indicator">*</span>
     </label>
     <div class="controls">
@@ -93,7 +93,7 @@
     </div>
 </div>
 
-<div id="upload-progress"   class="fieldcontain hidden">
+<div id="upload-progress" class="fieldcontain hidden">
     <div class="progress progress-striped active">
         <div class="bar" style="width: 0%;"></div>
     </div>
@@ -145,6 +145,28 @@ jQuery(function($) {
         $(selector + ' input, ' + selector + ' textarea').prop('required', on);
         //else $(selector + ' input').removeProp('required');
     }
+
+    var searchEditor = CodeMirror.fromTextArea(document.getElementById("searchQuery"), {
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        mode: "application/json",
+        lineWrapping: true,
+        theme: 'monokai'
+    });
+    var aggEditor = CodeMirror.fromTextArea(document.getElementById("aggregationQuery"), {
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        mode: "application/json",
+        lineWrapping: true,
+        theme: 'monokai'
+    });
+    var codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        mode: "text/x-groovy",
+        lineWrapping: true,
+        theme: 'monokai'
+    });
 
     toggleTypeFields();
     $('#type').change(function(e) { toggleTypeFields(); });
@@ -216,5 +238,6 @@ jQuery(function($) {
         var src = i ? badgeBase + i : noBadgeUrl;
         $('#badge-image').attr('src',src);
     });
+
 });
 </r:script>

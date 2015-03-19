@@ -108,4 +108,36 @@ modules = {
         dependsOn "bootstrap-js, jquery"
         resource url: 'js/label.autocomplete.js'
     }
+
+    "codemirror" {
+        resource url: 'js/codemirror/5.0/codemirror.css'
+        resource url: 'js/codemirror/5.0/codemirror.js'
+    }
+
+    "codemirror-codeedit" {
+        dependsOn "codemirror"
+        resource url: "js/codemirror/5.0/addon/edit/matchbrackets.js"
+        resource url: "js/codemirror/5.0/addon/comment/continuecomment.js"
+        resource url: "js/codemirror/5.0/addon/comment/comment.js"
+    }
+
+    "codemirror-json" {
+        dependsOn "codemirror"
+        resource url: 'js/codemirror/5.0/mode/javascript/javascript.js'
+    }
+
+    "codemirror-groovy" {
+        dependsOn "codemirror"
+        resource url: 'js/codemirror/5.0/mode/groovy/groovy.js'
+    }
+
+    "codemirror-sublime" {
+        dependsOn "codemirror"
+        resource url: 'js/codemirror/5.0/keymap/sublime.js'
+    }
+
+    "codemirror-monokai" {
+        dependsOn "codemirror"
+        resource url: 'js/codemirror/5.0/theme/monokai.css'
+    }
 }

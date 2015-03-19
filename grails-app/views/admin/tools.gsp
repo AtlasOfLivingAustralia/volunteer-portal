@@ -7,6 +7,7 @@
         <style type="text/css">
         </style>
         <r:require module="bootbox"/>
+        <r:require modules="codemirror-json, codemirror-codeedit, codemirror-sublime, codemirror-monokai" />
         <r:script type='text/javascript'>
 
             jQuery(function($) {
@@ -126,6 +127,21 @@
                 $("#queueLength").html(results.queueLength);
             });
         }
+
+        var qEditor = CodeMirror.fromTextArea(document.getElementById("query"), {
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            mode: "application/json",
+            lineWrapping: true,
+            theme: 'monokai'
+        });
+        var aEditor = CodeMirror.fromTextArea(document.getElementById("aggregation"), {
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            mode: "application/json",
+            lineWrapping: true,
+            theme: 'monokai'
+        });
 
     </r:script>
 </html>
