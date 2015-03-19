@@ -34,6 +34,7 @@ bvp.user.activity.monitor.enabled = true // can turn off activity monitoring
 bvp.user.activity.monitor.timeout = 3600 // seconds
 
 bvp.users.migrateIds = false
+bvp.labels.ensureDefault = true
 
 /******************************************************************************\
  *  EXTERNAL SERVERS

@@ -1,8 +1,13 @@
 import au.org.ala.volunteer.*
+import com.google.common.io.Resources
+import grails.converters.JSON
+import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang3.time.StopWatch
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import org.codehaus.groovy.grails.web.json.JSONArray
+import org.codehaus.groovy.grails.web.json.JSONObject
 import org.hibernate.FlushMode
 
 class BootStrap {
@@ -31,6 +36,8 @@ class BootStrap {
         prepareProjectTypes();
 
         fixTaskLastViews();
+
+        prepareDefaultLabels();
 
         // add system user
         if (!User.findByUserId('system')) {
@@ -331,6 +338,27 @@ class BootStrap {
             }
         }
 
+    }
+
+    private void prepareDefaultLabels() {
+        log.info("Preparing default labels")
+        final prop = grailsApplication.config.bvp.labels.ensureDefault
+        final shouldInstall = prop.asBoolean()
+        if (shouldInstall) {
+            log.info("Installing default labels")
+            final defaults = (JSONObject)JSON.parse(Resources.getResource('default-labels.json').newReader())
+            //final defaultsSet = defaults.keySet().collectEntries { [(it): defaults[it].toSet() ] }
+            final labels = Label.all // TODO scroll?
+            final labelSet = labels.toSet()
+            final newLabels = defaults.keySet().collect { k ->
+                final a = (JSONArray)defaults[k]
+                a.collect { new Label(category: k, value: it) }.findAll { !labelSet.contains(it) }
+            }.flatten()
+            log.debug("Adding ${newLabels.join('\n')}")
+            Label.saveAll(newLabels)
+        } else {
+            log.debug("Skipping default labels")
+        }
     }
 
 }
