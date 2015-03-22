@@ -3,7 +3,6 @@ package au.org.ala.volunteer
 class ProjectToolsController {
 
     def projectToolsService
-    def fullTextIndexService
 
     def matchRecordedByIdFromPicklist() {
         def projectInstance = Project.get(params.id)
@@ -25,7 +24,7 @@ class ProjectToolsController {
                 }
             }
             taskList.each { long taskId ->
-                fullTextIndexService.scheduleTaskIndex(taskId)
+                DomainUpdateService.scheduleTaskIndex(taskId)
             }
             flash.message = "${taskList.size()} tasks scheduled for indexing."
         }

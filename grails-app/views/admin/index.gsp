@@ -72,6 +72,10 @@
                         <td>Manage Achievements</td>
                     </tr>
                     <tr>
+                        <td><a class="btn" href="${createLink(controller:'label', action:'index')}">Manage Labels</a></td>
+                        <td>Manage Project Labels</td>
+                    </tr>
+                    <tr>
                         <td><a class="btn" href="${createLink(controller:'setting', action:'index')}">Advanced Settings</a></td>
                         <td>Advanced Settings</td>
                     </tr>

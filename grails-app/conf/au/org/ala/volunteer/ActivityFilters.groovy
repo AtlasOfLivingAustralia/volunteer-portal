@@ -9,6 +9,7 @@ class ActivityFilters {
     def securityPrimitives
     def fullTextIndexService
     def settingsService
+    def domainUpdateService
 
     def filters = {
         allButAjax(controller:'*', controllerExclude:'ajax', action:'*') {
@@ -43,31 +44,13 @@ class ActivityFilters {
         achievements(controller:'*', action:'*') {
             after = { Map model ->
                 log.debug("achievements filter")
+                //def projectSet = GormEventDebouncer.projectSet
                 def taskSet = GormEventDebouncer.taskSet
                 def deletedTasks = GormEventDebouncer.deletedTaskSet
                 //def fieldSet = GormEventDebouncer.fieldSet
                 try {
-                    if (deletedTasks) {
-                        fullTextIndexService.deleteTasks(deletedTasks)
-                    }
-                    if (taskSet) {
-                        fullTextIndexService.indexTasks(taskSet)
-                        if (settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
-                            // TODO Replace with withCriteria
-                            def involvedUserIds =
-                                    Task.findAllByIdInList(taskSet.toList())
-                                            .collect { [it.fullyTranscribedBy, it.fullyValidatedBy] }
-                                            .flatten().findAll { it != null }
-                                            .toSet()
-                            def cheevs = taskSet.collect {
-                                achievementService.evalAndRecordAchievements(involvedUserIds + userService.currentUserId, it)
-                            }.flatten()
-//                            if (cheevs) {
-//                                flash.message = "You have just achieved ${cheevs.collect { it.achievement.name }.join(", ")}!"
-//                            }
-                        }
-                        taskSet.clear()
-                    }
+                    domainUpdateService.onTasksDeleted(deletedTasks)
+                    domainUpdateService.onTasksUpdated(taskSet)
                 } catch (Exception e) {
                     log.error("Exception while performing post request actions", e)
                 }

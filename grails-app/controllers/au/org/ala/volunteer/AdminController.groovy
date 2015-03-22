@@ -19,6 +19,7 @@ class AdminController {
     def userService
     def projectService
     def fullTextIndexService
+    def domainUpdateService
     def taskLoadService
 
     def index = {
@@ -333,7 +334,7 @@ class AdminController {
             }
 
             results?.each { long taskId ->
-                fullTextIndexService.scheduleTaskIndex(taskId)
+                DomainUpdateService.scheduleTaskIndex(taskId)
             }
 
         }

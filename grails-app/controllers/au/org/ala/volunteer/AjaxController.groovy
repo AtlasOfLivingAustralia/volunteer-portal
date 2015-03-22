@@ -23,7 +23,7 @@ class AjaxController {
     DataSource dataSource
     def multimediaService
     def institutionService
-    def fullTextIndexService
+    def domainUpdateService
     def authService
     def settingsService
     def achievementService
@@ -345,8 +345,8 @@ class AjaxController {
         respond results
     }
 
-    def getIndexerQueueLength() {
-        def length = fullTextIndexService.getIndexerQueueLength()
+    def getUpdateQueueLength() {
+        def length = domainUpdateService.getQueueLength()
         def results = ['success': true, 'queueLength': length]
         respond results
     }

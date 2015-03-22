@@ -3,8 +3,9 @@ package au.org.ala.volunteer
 import groovy.transform.ToString
 
 @ToString()
-class Label {
+class Label implements Serializable {
 
+    Long id
     String category
     String value
 
@@ -32,5 +33,9 @@ class Label {
         result = (category != null ? category.hashCode() : 0)
         result = 31 * result + value.hashCode()
         return result
+    }
+
+    LinkedHashMap<String,Object> toMap() {
+        [id: id, category: category, value: value]
     }
 }

@@ -1,0 +1,153 @@
+package au.org.ala.volunteer
+
+import groovy.transform.ToString
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicInteger
+
+//@Transactional(readOnly = true)
+class DomainUpdateService {
+
+    def grailsApplication
+    def fullTextIndexService
+    def achievementService
+    def settingsService
+    def userService
+
+    private static ConcurrentLinkedQueue<QueueTask> _backgroundQueue = new ConcurrentLinkedQueue<QueueTask>()
+    // Used to show the currently processing size, which is the size of the background queue + the number of
+    // tasks that have been removed from the queue but not yet completed
+    private AtomicInteger currentlyProcessing = new AtomicInteger(0)
+
+    def onTasksDeleted(Set<Long> deletedTasks) {
+        if (deletedTasks) {
+            fullTextIndexService.deleteTasks(deletedTasks)
+        }
+    }
+
+    def onTasksUpdated(Set<Long> taskSet) {
+        def cheevs = []
+        if (taskSet) {
+            fullTextIndexService.indexTasks(taskSet)
+            postIndexTaskActions(taskSet)
+        }
+        return cheevs
+    }
+
+    private def postIndexTaskActions(Set<Long> taskSet) {
+        def cheevs = []
+        if (settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
+            // TODO Replace with withCriteria
+            def involvedUserIds =
+                    Task.findAllByIdInList(taskSet.toList())
+                            .collect { [it.fullyTranscribedBy, it.fullyValidatedBy] }
+                            .flatten().findAll { it != null }
+                            .toSet()
+            def currentUserId = userService.currentUserId
+            if (currentUserId) {
+                involvedUserIds.add(currentUserId)
+            }
+            cheevs = taskSet.collect {
+                achievementService.evalAndRecordAchievements(involvedUserIds, it)
+            }.flatten()
+        }
+        taskSet.clear()
+        cheevs
+    }
+
+    def static scheduleProjectUpdate(long id) {
+        _backgroundQueue.add(new UpdateProjectTask(projectId: id))
+    }
+
+    def static scheduleTaskUpdate(long id) {
+        _backgroundQueue.add(new UpdateTaskTask(taskId: id))
+    }
+
+    def static scheduleTaskIndex(Task task) {
+        _backgroundQueue.add(new IndexTaskTask(taskId: task.id))
+    }
+
+    def static scheduleTaskIndex(long taskId) {
+        _backgroundQueue.add(new IndexTaskTask(taskId: taskId))
+    }
+
+    static def scheduleTaskDeleteIndex(long taskId) {
+        _backgroundQueue.add(new DeleteTaskTask(taskId: taskId))
+    }
+
+
+    def getQueueLength() {
+        return _backgroundQueue.size() + currentlyProcessing.get()
+    }
+
+    def processTaskQueue(int maxTasks = 10000) {
+        int taskCount = 0
+        QueueTask jobDescriptor = null
+
+        Set<Long> deletes = new HashSet<>()
+        Set<Long> updates = new HashSet<>()
+        Set<Long> indexes = new HashSet<>()
+
+        while (taskCount < maxTasks && (jobDescriptor = _backgroundQueue.poll()) != null) {
+            if (jobDescriptor) {
+                switch (jobDescriptor) {
+                    case DeleteTaskTask:
+                        deletes.add(jobDescriptor.taskId)
+                        //fullTextIndexService.deleteTask(jobDescriptor.taskId)
+                        //taskCount++ // deletes for free
+                        break
+                    case UpdateTaskTask:
+                        updates.add(jobDescriptor.taskId)
+                        indexes.add(jobDescriptor.taskId)
+                        taskCount++
+                        break
+                    case IndexTaskTask:
+                        indexes.add(jobDescriptor.taskId)
+                        taskCount++
+                        //Task t = Task.get(jobDescriptor.taskId)
+                        //if (t) {
+                            //fullTextIndexService.indexTask(t)
+                        //}
+                        break
+                    case UpdateProjectTask:
+                        def tasks = //Task.findAllByProjectId(jobDescriptor.projectId)
+                                Task.withCriteria {
+                                    project {
+                                        eq 'id', jobDescriptor.projectId
+                                    }
+                                    projections {
+                                        property 'id'
+                                    }
+                                }
+                        updates.addAll(tasks)
+                        indexes.addAll(tasks)
+                        taskCount+= tasks.size
+                        break
+                    default:
+                        log.warn("Unrecognised object ${jobDescriptor} on queue")
+                }
+            }
+        }
+
+        currentlyProcessing.set(indexes.size())
+
+        if (deletes) fullTextIndexService.deleteTasks(deletes)
+        if (indexes) fullTextIndexService.indexTasks(indexes) { currentlyProcessing.decrementAndGet() }
+        if (updates) postIndexTaskActions(updates)
+    }
+}
+
+public abstract class QueueTask { }
+
+@ToString
+public class UpdateProjectTask extends QueueTask { public long projectId }
+
+public abstract class QueueTaskTask extends QueueTask { public long taskId }
+
+@ToString
+public class DeleteTaskTask extends QueueTaskTask { }
+
+@ToString
+public class UpdateTaskTask extends QueueTaskTask{ }
+
+@ToString
+public class IndexTaskTask extends QueueTaskTask { }

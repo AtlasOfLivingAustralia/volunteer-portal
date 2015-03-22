@@ -114,14 +114,14 @@
             </tr>
             <tr>
                 <td class="prop-name">Template</td>
-                <td class="prop-value">${Template.get(project.templateId)?.name}</td>
+                <td class="prop-value">${templateName}</td>
             </tr>
             <tr>
                 <td class="prop-name">Expedition type</td>
                 <td class="prop-value">
-                    <g:set var="projectType" value="${ProjectType.get(project.projectTypeId)}" />
+
                     <span style="vertical-align: middle">
-                        ${projectType.label}
+                        ${projectTypeLabel}
                     </span>
                     <g:if test="${projectTypeImageUrl}">
                         <img style="margin-left: 10px; vertical-align: middle" src="${projectTypeImageUrl}" />
@@ -163,6 +163,25 @@
                     </td>
                 </tr>
             </g:if>
+
+            <tr>
+                <td class="prop-name">
+                    <g:message code="project.picklistInstitutionCode.label" default="Picklist Collection Code"/>
+                </td>
+                <td class="prop-value">
+                    ${project.picklistId}
+                </td>
+            </tr>
+            <tr>
+                <td class="prop-name">Labels</td>
+                <td class="prop-value">
+                    <div id="labels">
+                        <g:each in="${labels}" var="l">
+                            <span class="label ${labelColourMap[l.category]}" title="${l.category}">${l.value}</span>
+                        </g:each>
+                    </div>
+                </td>
+            </tr>
 
         </table>
 

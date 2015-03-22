@@ -190,6 +190,8 @@ grails.spring.bean.packages = []
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
+bvp.tmpdir="/data/${appName}/config/"
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     development {
@@ -245,7 +247,6 @@ environments {
     }
 }
 grails.mail.default.from="support@ala.org.au"
-
 
 grails {
     cache {

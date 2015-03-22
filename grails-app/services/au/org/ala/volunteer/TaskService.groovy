@@ -250,7 +250,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.get(0)
-            println "getNextTask(project ${project.id}) found a task with no views: ${task.id}"
+            log.info("getNextTask(project ${project.id}) found a task with no views: ${task.id}")
             return task
         }
 
@@ -268,7 +268,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.get(0)
-            println "getNextTask(project ${project.id}) found a task: ${task.id}"
+            log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
             return task
         }
 
@@ -285,7 +285,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.get(0)
-            println "getNextTask(project ${project.id}) found a task: ${task.id}"
+            log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
             return task
         }
 

@@ -19,8 +19,8 @@
                             window.open(e.target.dataset.href, "_self");
                         }
                     })
-                })
-            })
+                });
+            });
 
         </r:script>
     </head>
@@ -65,6 +65,14 @@
                     <g:form method="GET" action="testQuery" class="form-horizontal">
                         <fieldset>
                             <legend>Raw Search Query</legend>
+                            <div class="control-group">
+                                <div id="set-query" class="controls">
+                                    <button id="match_all" class="btn btn-small" data-query="matchAll">Match All</button>
+                                    <button id="project_name" class="btn btn-small" data-query="projectName">Project Name</button>
+                                    <button id="project_id" class="btn btn-small" data-query="projectId">Project Id</button>
+                                    <button id="task_id" class="btn btn-small" data-query="taskId">Task Id</button>
+                                </div>
+                            </div>
                             <div class="control-group">
                                 <label class="control-label" for="query">Query text</label>
                                 <div class="controls">
@@ -123,7 +131,7 @@
         });
 
         function updateQueueLength() {
-            $.ajax("${createLink(controller:'ajax', action:'getIndexerQueueLength')}").done(function(results) {
+            $.ajax("${createLink(controller:'ajax', action:'getUpdateQueueLength')}").done(function(results) {
                 $("#queueLength").html(results.queueLength);
             });
         }
@@ -141,6 +149,21 @@
             mode: "application/json",
             lineWrapping: true,
             theme: 'monokai'
+        });
+
+
+        var queries = {
+            matchAll: { q: { "match_all": { } }, a: null },
+            projectId: { q: { "constant_score": { "filter": { "term" : { "projectid" : 0 } } } } },
+            projectName: { q: { "constant_score": { "filter": { "term" : { "project.name" : "<project name>" } } } } },
+            taskId: { q: { "constant_score": { "filter": { "term" : { "id" : 0 } } } } }
+        }
+
+        $('#set-query').click('button', function(e) {
+            e.preventDefault();
+            var q = queries[e.target.dataset.query];
+            qEditor.getDoc().setValue(JSON.stringify(q.q, null, 2));
+            aEditor.getDoc().setValue(q.a ? JSON.stringify(q.a, null, 2) : "");
         });
 
     </r:script>

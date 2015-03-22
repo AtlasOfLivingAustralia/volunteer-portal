@@ -354,8 +354,9 @@ class BootStrap {
                 final a = (JSONArray)defaults[k]
                 a.collect { new Label(category: k, value: it) }.findAll { !labelSet.contains(it) }
             }.flatten()
+            log.info("Adding ${newLabels.size()} new labels")
             log.debug("Adding ${newLabels.join('\n')}")
-            Label.saveAll(newLabels)
+            if (newLabels) Label.saveAll(newLabels)
         } else {
             log.debug("Skipping default labels")
         }

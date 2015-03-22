@@ -197,7 +197,8 @@ class FieldSyncService {
 
         task.save(flush: true, failOnError: true)
 
-        FullTextIndexService.scheduleTaskIndex(task)
+        // Should be dealt with by GORM event
+        //DomainUpdateService.scheduleTaskIndex(task)
     }
 
 }

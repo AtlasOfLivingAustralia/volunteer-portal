@@ -17,4 +17,7 @@ class NewProjectDescriptor implements Serializable {
     double mapInitLatitude
     double mapInitLongitude
 
+    String picklistId
+    List<Long> labelIds = []
+
 }

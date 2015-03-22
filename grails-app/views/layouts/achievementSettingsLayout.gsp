@@ -17,21 +17,16 @@
     <head>
         <style type="text/css">
 
-        .icon-chevron-right {
-            float: right;
-            margin-top: 2px;
-            margin-right: -6px;
-            opacity: .25;
-        }
+            .icon-chevron-right {
+                float: right;
+                margin-top: 2px;
+                margin-right: -6px;
+                opacity: .25;
+            }
 
-        %{--<cl:ifInstitutionHasBanner institution="${institutionInstance}">--}%
-            %{--#page-header {--}%
-                %{--background-image: url(<cl:institutionBannerUrl id="${institutionInstance.id}" />);--}%
-            %{--}--}%
-        %{--</cl:ifInstitutionHasBanner>--}%
-
-    </style>
-    <title>Edit Institution ${achievementDescriptionInstance?.name}</title>
+        </style>
+        <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}" />
+        <title><g:message code="default.edit.label" args="[entityName]" /></title>
         <r:require module="bootstrap-switch" />
     </head>
 

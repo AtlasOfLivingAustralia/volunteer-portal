@@ -2,7 +2,8 @@ package au.org.ala.volunteer
 
 class TaskIndexerJob {
 
-    def fullTextIndexService
+    def domainUpdateService
+    //def fullTextIndexService
     def grailsApplication
     def concurrent = false
 
@@ -12,9 +13,10 @@ class TaskIndexerJob {
 
     def execute() {
         try {
-            fullTextIndexService.processIndexTaskQueue()
+            domainUpdateService.processTaskQueue()
+            //fullTextIndexService.processIndexTaskQueue()
         } catch (Exception ex) {
-            ex.printStackTrace()
+            log.error("Exception while processing task queue!", ex)
         }
     }
 

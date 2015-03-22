@@ -1,8 +1,11 @@
 package au.org.ala.volunteer
 
+import grails.async.Promises
 import grails.converters.JSON
 import grails.transaction.NotTransactional
+import grails.transaction.Transactional
 import groovy.json.JsonSlurper
+import org.codehaus.groovy.grails.orm.hibernate.HibernateSession
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.action.index.IndexResponse
@@ -18,23 +21,22 @@ import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.index.query.FilterBuilder
 import org.elasticsearch.search.sort.SortOrder
 import org.grails.plugins.metrics.groovy.Timed
+import org.hibernate.FetchMode
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
-import java.util.concurrent.ConcurrentLinkedQueue
+import javax.persistence.FlushModeType
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder
 import org.elasticsearch.node.Node
 
 
+@Transactional(readOnly = true)
 class FullTextIndexService {
 
     public static final String INDEX_NAME = "digivol"
     public static final String TASK_TYPE = "task"
 
-    private static Queue<TaskTask> _backgroundQueue = new ConcurrentLinkedQueue<TaskTask>()
-
-    def logService
     def grailsApplication
 
     private Node node
@@ -59,6 +61,14 @@ class FullTextIndexService {
         }
     }
 
+    def getIndexerQueueLength() {
+        return _backgroundQueue.size()
+    }
+
+    def processIndexTaskQueue(int maxTasks = 10000) {
+
+    }
+
     public reinitialiseIndex() {
         try {
             def ct = new CodeTimer("Index deletion")
@@ -72,81 +82,49 @@ class FullTextIndexService {
         addMappings()
     }
 
-    def static scheduleTaskIndex(Task task) {
-        def job = new IndexTaskTask(taskId: task.id)
-        _backgroundQueue.add(job)
-    }
-
-    def static scheduleTaskIndex(long taskId) {
-        def job = new IndexTaskTask(taskId: taskId)
-        _backgroundQueue.add(job)
-    }
-
-    static def scheduleTaskDeleteIndex(long taskId) {
-        def job = new DeleteTaskTask(taskId: taskId)
-        _backgroundQueue.add(job)
-    }
-
-    def getIndexerQueueLength() {
-        return _backgroundQueue.size()
-    }
-
-    def processIndexTaskQueue(int maxTasks = 10000) {
-        int taskCount = 0
-        TaskTask jobDescriptor = null
-
-        while (taskCount < maxTasks && (jobDescriptor = _backgroundQueue.poll()) != null) {
-            if (jobDescriptor) {
-                switch (jobDescriptor) {
-                    case DeleteTaskTask:
-                        deleteTask(jobDescriptor.taskId)
-                        break
-                    case IndexTaskTask:
-                        Task t = Task.get(jobDescriptor.taskId)
-                        if (t) {
-                            indexTask(t)
-                        }
-                        break
-                }
-                taskCount++
-            }
-        }
-
-    }
-
     @Timed
     def indexTask(Task task) {
 
         //def ct = new CodeTimer("Indexing task ${task.id}")
 
+        LinkedHashMap<String, Serializable> data = esObjectFromTask(task)
+
+        return indexEsObject(data)
+        //ct.stop(true)
+    }
+
+    private LinkedHashMap<String, Serializable> esObjectFromTask(Task task) {
         def data = [
-            id: task.id,
-            projectid: task.project.id,
-            externalIdentifier: task.externalIdentifier,
-            externalUrl: task.externalUrl,
-            fullyTranscribedBy: task.fullyTranscribedBy,
-            dateFullyTranscribed: task.dateFullyTranscribed,
-            fullyValidatedBy: task.fullyValidatedBy,
-            dateFullyValidated: task.dateFullyValidated,
-            isValid: task.isValid,
-            created: task.created,
-            lastViewed: task.lastViewed ? new Date(task.lastViewed) : null,
-            lastViewedBy: task.lastViewedBy,
-            fields: [],
-            project:[
-                projectType: task.project.projectType.toString(),
-                institution: task.project.institution ? task.project.institution.name : task.project.featuredOwner,
-                institutionCollectoryId: task.project.institution?.collectoryUid,
-                harvestableByAla: task.project.harvestableByAla,
-                name: task.project.featuredLabel,
-                templateName: task.project.template?.name,
-                templateViewName: task.project.template?.viewName,
-                labels: task.project.labels?.collect { [ category: it.category, value: it.value ] } ?: []
-            ]
+                id                  : task.id,
+                projectid           : task.project.id,
+                externalIdentifier  : task.externalIdentifier,
+                externalUrl         : task.externalUrl,
+                fullyTranscribedBy  : task.fullyTranscribedBy,
+                dateFullyTranscribed: task.dateFullyTranscribed,
+                fullyValidatedBy    : task.fullyValidatedBy,
+                dateFullyValidated  : task.dateFullyValidated,
+                isValid             : task.isValid,
+                created             : task.created,
+                lastViewed          : task.lastViewed ? new Date(task.lastViewed) : null,
+                lastViewedBy        : task.lastViewedBy,
+                version             : task.version,
+                fields              : [],
+                project             : [
+                        projectType            : task.project.projectType.toString(),
+                        institution            : task.project.institution ? task.project?.institution?.name : task.project.featuredOwner,
+                        institutionCollectoryId: task.project.institution?.collectoryUid,
+                        harvestableByAla       : task.project.harvestableByAla,
+                        name                   : task.project.featuredLabel,
+                        templateName           : task.project.template?.name,
+                        templateViewName       : task.project.template?.viewName,
+                        labels                 : task.project.labels?.collect {
+                            [category: it.category, value: it.value]
+                        } ?: []
+                ]
         ]
 
         if (task.project.mapInitLatitude && task.project.mapInitLongitude) {
-            data.project.put('mapRef', [ lat : task.project.mapInitLatitude, lon: task.project.mapInitLongitude ])
+            data.project.put('mapRef', [lat: task.project.mapInitLatitude, lon: task.project.mapInitLongitude])
         }
 
         def c = Field.createCriteria()
@@ -160,15 +138,18 @@ class FullTextIndexService {
                 data.fields << [fieldid: field.id, name: field.name, recordIdx: field.recordIdx, value: field.value, transcribedByUserId: field.transcribedByUserId, validatedByUserId: field.validatedByUserId, updated: field.updated, created: field.created]
             }
         }
-
-        def json = (data as JSON).toString()
-        def indexBuilder = client.prepareIndex(INDEX_NAME, TASK_TYPE, task.id.toString()).setSource(json)
-        if (task.version) indexBuilder.setVersion(task.version)
-        IndexResponse response = indexBuilder.execute().actionGet();
-
-        //ct.stop(true)
+        return data
     }
 
+    private IndexResponse indexEsObject(LinkedHashMap<String, Serializable> data) {
+        def json = (data as JSON).toString()
+        def indexBuilder = client.prepareIndex(INDEX_NAME, TASK_TYPE, data.id.toString()).setSource(json)
+        if (data.version) indexBuilder.setVersion(data.version)
+        IndexResponse response = indexBuilder.execute().actionGet();
+        return response
+    }
+
+    @Timed
     List<DeleteResponse> deleteTasks(Collection<Long> taskIds) {
         taskIds.collect {
             def dr = deleteTask(it)
@@ -418,9 +399,39 @@ class FullTextIndexService {
     }
 
     @Timed
-    def indexTasks(Set<Long> ids) {
-        Task.findByIdInList(ids.toList()).each { indexTask(it) }
-        //achievementService.calculateAchievements(userService.currentUser)
+    @Transactional(readOnly = true)
+    def indexTasks(Set<Long> ids, Closure cb = null) {
+        if (ids) {
+
+            final numBuckets = (int)(ids.size() / Runtime.runtime.availableProcessors()) + 1
+
+            def promises = ids.toList()
+                .collate(numBuckets)
+                .findAll { !it.empty }
+                .collect { bucket ->
+                    Task.async.task {
+                        withStatelessSession { HibernateSession session ->
+                            //session.setSessionProperty('defaultReadOnly', true)
+                            withCriteria {
+                                'in'('id', bucket)
+                                fetchMode 'project', FetchMode.JOIN
+                                fetchMode 'project.labels', FetchMode.JOIN
+                                fetchMode 'project.institution', FetchMode.JOIN
+                            }.collect { task ->
+                                IndexResponse r = null
+                                try {
+                                    r = indexTask(task)
+                                    if (cb) cb.call(task.id)
+                                } catch (e) {
+                                    log.error("exception trying to index task $task.id", e)
+                                }
+                                r
+                            }
+                        }
+                    }
+                }
+            Promises.waitAll(promises).flatten()
+        } else { [] }
     }
 
 }
@@ -435,9 +446,3 @@ public class QueryResults <T> {
     public List<T> list = []
     public int totalCount = 0
 }
-
-public abstract class TaskTask { public long taskId }
-
-public class DeleteTaskTask extends TaskTask { }
-
-public class IndexTaskTask extends TaskTask{ }

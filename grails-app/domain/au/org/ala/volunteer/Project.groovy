@@ -85,4 +85,9 @@ class Project implements Serializable {
     public void setFeaturedImage(String image) {
         // do nothing
     }
+
+    // Executed after an object has been updated
+    def afterUpdate() {
+        GormEventDebouncer.debounceProject(this.id)
+    }
 }

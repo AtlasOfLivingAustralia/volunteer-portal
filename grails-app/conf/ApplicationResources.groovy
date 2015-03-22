@@ -107,6 +107,7 @@ modules = {
     "labelAutocomplete" {
         dependsOn "bootstrap-js, jquery"
         resource url: 'js/label.autocomplete.js'
+        resource url: 'css/label.autocomplete.css'
     }
 
     "codemirror" {
@@ -117,6 +118,7 @@ modules = {
     "codemirror-codeedit" {
         dependsOn "codemirror"
         resource url: "js/codemirror/5.0/addon/edit/matchbrackets.js"
+        resource url: "js/codemirror/5.0/addon/edit/closebrackets.js"
         resource url: "js/codemirror/5.0/addon/comment/continuecomment.js"
         resource url: "js/codemirror/5.0/addon/comment/comment.js"
     }
@@ -140,4 +142,5 @@ modules = {
         dependsOn "codemirror"
         resource url: 'js/codemirror/5.0/theme/monokai.css'
     }
+
 }

@@ -142,7 +142,7 @@ jQuery(function($) {
     function toggleFields(selector, on) {
         $(selector).toggleClass('required', on).toggleClass('hidden', !on);
         $(selector + ' span.required-indicator').toggleClass('hidden', !on);
-        $(selector + ' input, ' + selector + ' textarea').prop('required', on);
+        //$(selector + ' input, ' + selector + ' textarea').prop('required', on);
         //else $(selector + ' input').removeProp('required');
     }
 
@@ -167,6 +167,17 @@ jQuery(function($) {
         lineWrapping: true,
         theme: 'monokai'
     });
+
+    function updateTextArea(editor, event) {
+        var ta = editor.getTextArea();
+        var val = editor.getValue();
+        ta.value = val;
+        //editor.getTextArea().value = editor.getValue()
+    }
+
+    searchEditor.on('change', updateTextArea);
+    aggEditor.on('change', updateTextArea);
+    codeEditor.on('change', updateTextArea);
 
     toggleTypeFields();
     $('#type').change(function(e) { toggleTypeFields(); });

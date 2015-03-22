@@ -1,12 +1,20 @@
 package au.org.ala.volunteer
 
+import org.apache.log4j.Logger
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
 class GormEventDebouncer {
 
-    static def debounceField(long id) {
-        getFieldSet()?.add(id)
+    private static final Logger log = Logger.getLogger(GormEventDebouncer.class)
+
+    static def debounceProject(long id) {
+//        def ps = getProjectSet()
+//        if (ps != null) {
+//            ps.add(id)
+//        } else {
+            DomainUpdateService.scheduleProjectUpdate(id)
+//        }
     }
 
     static def debounceTask(long id) {
@@ -16,7 +24,7 @@ class GormEventDebouncer {
             ts.add(id)
         } else {
             // otherwise drop it on the task queue
-            FullTextIndexService.scheduleTaskIndex(id)
+            DomainUpdateService.scheduleTaskUpdate(id)
         }
 
     }
@@ -28,12 +36,12 @@ class GormEventDebouncer {
             ts.add(id)
         } else {
             // otherwise drop it on the task queue
-            FullTextIndexService.scheduleTaskDeleteIndex(id)
+            DomainUpdateService.scheduleTaskDeleteIndex(id)
         }
     }
     
-    static Set<Long> getFieldSet() { getRequestSet("updatedFields") }
     static Set<Long> getTaskSet() { getRequestSet("updatedTasks") }
+    //static Set<Long> getProjectSet() { getRequestSet("updatedProjects") }
     static Set<Long> getDeletedTaskSet() { getRequestSet("deletedTasks") }
 
     static Set<Long> getRequestSet(String name) {
@@ -48,7 +56,7 @@ class GormEventDebouncer {
             }
             return (Set<Long>)updateSet
         } catch (Exception e) {
-            // no request context, return nothing
+            log.error("Exception while getting request set", e)
             return null
         }
 

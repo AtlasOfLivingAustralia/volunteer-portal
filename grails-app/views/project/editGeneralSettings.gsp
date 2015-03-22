@@ -24,7 +24,7 @@
                             .text(obj.value)
                             .append(
                             $( "<i>" )
-                                .attr("data-user-id", obj.id)
+                                .attr("data-label-id", obj.id)
                                 .addClass("icon-remove")
                                 .addClass("icon-white")
                             )
