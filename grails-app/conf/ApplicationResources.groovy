@@ -142,5 +142,4 @@ modules = {
         dependsOn "codemirror"
         resource url: 'js/codemirror/5.0/theme/monokai.css'
     }
-
 }

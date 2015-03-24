@@ -25,7 +25,7 @@ class LabelController {
             render status: FORBIDDEN
             return
         }
-        params.max = Math.min(max ?: 10, 100)
+        params.max = Math.min(max ?: 25, 100)
         respond Label.list(params), model: [labelInstanceCount: Label.count()]
     }
 

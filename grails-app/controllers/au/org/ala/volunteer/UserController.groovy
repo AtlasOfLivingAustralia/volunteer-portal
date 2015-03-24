@@ -6,8 +6,11 @@ import groovy.text.SimpleTemplateEngine
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms
 
 import java.text.SimpleDateFormat
+
+import static au.org.ala.volunteer.FullTextIndexService.*
 
 class UserController {
 
@@ -16,17 +19,21 @@ class UserController {
     def grailsApplication
     def taskService
     def userService
-    def achievementService
     def logService
     def fieldService
     def forumService
     def authService
     def fullTextIndexService
 
-    static final SPECIES_QUERY_TEMPLATE = '''{
-    "constant_score" : {
-        "filter" : { "term": { "fullyTranscribedBy": "${userId}" } }
+    static final ALA_HARVESTABLE = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "project.harvestableByAla": true } },
+        { "term": { "fullyTranscribedBy": "${userId}" } }
+      ]
     }
+  }
 }'''
 
     static final SPECIES_AGG_TEMPLATE = '''
@@ -40,7 +47,7 @@ class UserController {
         "filter" : { "term" : { "fields.name" : "scientificName" } },
         "aggs" : {
           "species" : {
-            "terms" : { "field" : "fields.value", "size": 5 }
+            "terms" : { "field" : "fields.value", "size": 0 }
           }
         }
       }
@@ -48,6 +55,30 @@ class UserController {
   }
 }
 '''
+
+    static final MATCH_ALL = '{ "constant_score" : { "query": { "match_all": { } } } }'
+
+    static final FIELD_OBSERVATIONS = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "project.projectType": "fieldnotes" } },
+        { "term": { "fullyTranscribedBy": "${userId}" } }
+      ]
+    }
+  }
+}'''
+
+    static final VALIDATED_TASKS_FOR_USER = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "isValid": true } },
+        { "term": { "fullyTranscribedBy": "${userId}" } }
+      ]
+    }
+  }
+}'''
 
     def index = {
         redirect(action: "list", params: params)
@@ -511,6 +542,7 @@ class UserController {
     def notebookMainFragment() {
         Stopwatch sw = new Stopwatch();
         def userInstance = User.get(params.int("id"))
+        def simpleTemplateEngine = new SimpleTemplateEngine()
         def c = Task.createCriteria()
         sw.start()
         def expeditions = c {
@@ -529,46 +561,50 @@ class UserController {
         log.info("notebookMainFragment.getUserScore ${sw.toString()}")
 
         sw.reset().start()
-        def recentAchievement = AchievementAward.findByUser(userInstance, [sort:'awarded', order:'desc'])
+        def recentAchievements = AchievementAward.findAllByUser(userInstance, [sort:'awarded', order:'desc', max: 3])
         sw.stop()
         log.info("notebookMainFragment.recentAchievements ${sw.toString()}")
 
         sw.reset().start()
-        def speciesCriteria = Field.createCriteria()
-
-        def species = speciesCriteria.list(max: 5) {
-            and {
-                eq("transcribedByUserId", userInstance.userId)
-                eq("superceded", false)
-                ilike("name", "scientificName")
-                isNotNull("value")
-                ne("value", "")
-            }
-            projections {
-                groupProperty("value")
-                count("value","count")
-                order("count", "desc")
-            }
-
-        }
-        sw.stop()
-        log.info("notebookMainFragment.species ${sw.toString()}")
-
-        sw.reset().start()
-        final query = new SimpleTemplateEngine().createTemplate(SPECIES_QUERY_TEMPLATE).make([userId: userInstance.userId]).toString()
+        final query = simpleTemplateEngine.createTemplate(ALA_HARVESTABLE).make([userId: userInstance.userId]).toString()
         final agg = SPECIES_AGG_TEMPLATE
 
-        //log.info("Query: $query")
-        //log.info("Agg: $agg")
-
         def speciesList2 = fullTextIndexService.rawSearch(query, SearchType.COUNT, agg) { SearchResponse searchResponse ->
-            searchResponse.aggregations.get('fields').aggregations.get('speciesfields').aggregations.get('species').buckets.collect { [ key: it.key, count: it.docCount ] }
-        }
+            searchResponse.aggregations.get('fields').aggregations.get('speciesfields').aggregations.get('species').buckets.collect { [ it.key, it.docCount ] }
+        }.sort { m -> m[1] }
+        def totalSpeciesCount = speciesList2.size()
         sw.stop()
         log.info("notebookMainFragment.speciesList2 ${sw.toString()}")
         log.info("specieslist2: ${speciesList2}")
 
-        [userInstance: userInstance, expeditionCount: expeditions ? expeditions[0] : 0, score: score, recentAchievement: recentAchievement, topSpecies: species ]
+        sw.reset().start()
+
+        final matchAllQuery = MATCH_ALL
+
+        def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, hitsCount)
+        def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, hitsCount)
+        def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
+
+        sw.stop()
+        log.info("notbookMainFragment.percentage ${sw.toString()}")
+
+        sw.reset().start()
+        def fieldObservationQuery = simpleTemplateEngine.createTemplate(FIELD_OBSERVATIONS).make([userId: userInstance.userId]).toString()
+        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, hitsCount)
+
+        sw.stop()
+        log.info("notbookMainFragment.fieldObservationCount ${sw.toString()}")
+
+        sw.reset().start()
+        final validatedQuery = simpleTemplateEngine.createTemplate(VALIDATED_TASKS_FOR_USER).make([userId: userInstance.userId]).toString()
+        def validatedCount = fullTextIndexService.rawSearch(validatedQuery, SearchType.COUNT, hitsCount)
+        sw.stop()
+        log.info("notbookMainFragment.validatedCount ${sw.toString()}")
+
+        [userInstance: userInstance, expeditionCount: expeditions ? expeditions[0] : 0, score: score,
+         recentAchievements: recentAchievements, speciesList: speciesList2, fieldObservationCount: fieldObservationCount,
+         validatedCount: validatedCount, userPercent: userPercent, totalSpeciesCount: totalSpeciesCount
+        ]
     }
 
     def badgesFragment() {

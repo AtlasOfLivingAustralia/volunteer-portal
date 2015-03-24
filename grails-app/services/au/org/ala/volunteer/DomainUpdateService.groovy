@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
 import groovy.transform.ToString
+import org.springframework.web.context.request.RequestContextHolder
+
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -42,7 +44,12 @@ class DomainUpdateService {
                             .collect { [it.fullyTranscribedBy, it.fullyValidatedBy] }
                             .flatten().findAll { it != null }
                             .toSet()
-            def currentUserId = userService.currentUserId
+            def currentUserId
+            if (RequestContextHolder.requestAttributes) {
+                currentUserId = userService.currentUserId
+            } else {
+                log.info("Not currently in a request context, there is no current user to add to achivement evaluation.")
+            }
             if (currentUserId) {
                 involvedUserIds.add(currentUserId)
             }

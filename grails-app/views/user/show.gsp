@@ -134,7 +134,7 @@
                         <g:if test="${achievements.size() > 0}">
                             <table class="bvp-expeditions" style="margin:10px; border: 1px solid #d3d3d3;text-align: center; border-collapse: separate;" width="400px">
                                 <thead>
-                                    <tr><td colspan="5" style="border:none"><h3>Achievements</h3></td></tr>
+                                    <tr><td colspan="5" style="border:none"><h3>Badges</h3></td></tr>
                                 </thead>
                                 <tbody>
                                     <tr>

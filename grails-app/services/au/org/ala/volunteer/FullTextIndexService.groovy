@@ -25,7 +25,6 @@ import org.hibernate.FetchMode
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
-import javax.persistence.FlushModeType
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder
 import org.elasticsearch.node.Node
@@ -195,8 +194,17 @@ class FullTextIndexService {
         return executeSearch(b, offset, max, sortBy, sortOrder)
     }
 
+    public <V> V rawSearch(String json, SearchType searchType, Closure<V> resultClosure) {
+        rawSearch(json, searchType, null, null, null, null, null, resultClosure)
+    }
+
+
+    public <V> V rawSearch(String json, SearchType searchType, String aggregation, Closure<V> resultClosure) {
+        rawSearch(json, searchType, aggregation, null, null, null, null, resultClosure)
+    }
+
     @Timed
-    public <V> V rawSearch(String json, SearchType searchType, String aggregation = null, Integer offset = null, Integer max = null, String sortBy = null, SortOrder sortOrder = null, Closure<V> resultClosure) {
+    public <V> V rawSearch(String json, SearchType searchType, String aggregation, Integer offset, Integer max, String sortBy, SortOrder sortOrder, Closure<V> resultClosure) {
         
         def queryMap = jsonStringToJSONObject(json)
 
@@ -246,8 +254,12 @@ class FullTextIndexService {
         }
         return closure
     }
+
+    static Closure<Long> hitsCount = {
+        SearchResponse searchResponse -> searchResponse.hits.totalHits
+    }
     
-    Closure<SearchResponse> identity = { it }
+    static Closure<SearchResponse> identity = { it }
 
     def addMappings() {
 
@@ -287,7 +299,8 @@ class FullTextIndexService {
               "fields": {
                 "analyzed": {
                   "type": "string",
-                  "index": "analyzed"
+                  "index": "analyzed",
+                  "analyzer": "snowball"
                 }
               }
             },
@@ -306,7 +319,8 @@ class FullTextIndexService {
               "fields": {
                 "analyzed": {
                   "type": "string",
-                  "index": "analyzed"
+                  "index": "analyzed",
+                  "analyzer": "snowball"
                 }
               }
             },

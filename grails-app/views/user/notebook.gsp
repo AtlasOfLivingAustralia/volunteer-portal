@@ -23,9 +23,16 @@
             max-width: none !important;
         }
 
-    </style>
-    <r:require module="greyscale" />
+        #mainTab dt, #mainTab dd {
+            padding-bottom: 15px;
+        }
 
+    </style>
+    <r:require modules="greyscale" />
+    <script type="application/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="application/javascript">
+        google.load("visualization", "1", {packages:["corechart"]});
+    </script>
 </head>
 
 <body>
@@ -42,24 +49,33 @@
             <div class="tabbable">
 
                 <ul class="nav nav-tabs" style="margin-bottom: 0px">
-                    <li class="active"><a href="#mainTab" data-toggle="tab">Stats</a></li>
-                    <li><a href="#mapTab" data-toggle="tab">Maps</a></li>
+                    <li class="active"><a href="#mainTab" data-toggle="tab">My Achievements</a></li>
                     <li><a href="#badgesTab" data-toggle="tab">Badges</a></li>
+                    %{--<li><a href="#stats" data-toggle="tab">Stats</a></li>--}%
+                    <li><a href="#mapTab" data-toggle="tab">Maps</a></li>
                     <li><a href="#socialTab" data-toggle="tab">Social</a></li>
                     <li><a href="#transcribedTab" data-toggle="tab">Tasks Transcribed</a></li>
+                    <li><a href="#savedTab" data-toggle="tab">Saved Tasks</a></li>
+                    <cl:ifValidator><li><a href="#validatedTab" data-toggle="tab">Tasks Validated</a></li></cl:ifValidator>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="mainTab">
                     </div>
+                    <div class="tab-pane" id="badgesTab">
+                    </div>
+                    <div class="tab-pane" id="statsTab">
+                    </div>
                     <div class="tab-pane" id="mapTab">
                         <div id="localityMap"></div>
-                    </div>
-                    <div class="tab-pane" id="badgesTab">
                     </div>
                     <div class="tab-pane" id="socialTab">
                     </div>
                     <div class="tab-pane" id="transcribedTab">
+                    </div>
+                    <div class="tab-pane" id="savedTab">
+                    </div>
+                    <div class="tab-pane" id="validatedTab">
                     </div>
                 </div>
             </div>
