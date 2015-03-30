@@ -100,7 +100,7 @@
         </div>
       </div>
       <div class="control-group">
-        <label class="control-label" for="label">Labels</label>
+        <label class="control-label" for="label">Tags</label>
         <div class="controls">
           <div id="labels">
             <g:each in="${labels}" var="l">
@@ -111,7 +111,7 @@
         </div>
         <div class="controls">
           <input autocomplete="off" type="text" id="label" class="input-small" />
-          <cl:helpText>Select all appropriate labels for the expedition.</cl:helpText>
+          <cl:helpText>Select all appropriate tags for the expedition.</cl:helpText>
         </div>
       </div>
 

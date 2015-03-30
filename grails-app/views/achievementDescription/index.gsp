@@ -4,11 +4,11 @@
 <html>
 	<head>
 		<meta name="layout" content="${grailsApplication.config.ala.skin}">
-		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'AchievementDescription')}" />
+		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-        <cl:headerContent title="${message(code:'default.achievementDescription.label', default:'Manage Achievements')}">
+        <cl:headerContent title="${message(code:'default.achievementDescription.label', default:'Manage Badges')}">
             <%
                 pageScope.crumbs = [
                         [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
@@ -16,7 +16,7 @@
 
             %>
 
-            <a class="btn btn-success" href="${createLink(action:"create")}"><i class="icon-plus icon-white"></i>&nbsp;Add Achievement</a>
+            <a class="btn btn-success" href="${createLink(action:"create")}"><i class="icon-plus icon-white"></i>&nbsp;Add Badge</a>
         </cl:headerContent>
 		<div id="list-achievementDescription" class="content scaffold-list" role="main">
 			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
@@ -30,7 +30,7 @@
 
                         <g:sortableColumn width="10%" property="enabled" title="${message(code: 'achievementDescription.enabled.label', default: 'Enabled')}" />
 
-                        <g:sortableColumn width="15%" property="badge" title="${message(code: 'achievementDescription.badge.label', default: 'Badge')}" />
+                        <g:sortableColumn width="15%" property="badge" title="${message(code: 'achievementDescription.badge.label', default: 'Icon')}" />
 
                         <g:sortableColumn width="15%" property="dateCreated" title="${message(code: 'achievementDescription.dateCreated.label', default: 'Date Created')}" />
 

@@ -3,7 +3,7 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.ala.skin}">
     <g:set var="entityName"
-           value="${message(code: 'achievementDescription.label', default: 'AchievementDescription')}"/>
+           value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
 </head>
 

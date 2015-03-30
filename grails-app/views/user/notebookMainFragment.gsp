@@ -1,27 +1,26 @@
 <style>
 
-    .userScore {
-        font-size: 2em;
-    }
-
-    .recentAcheivement {
-        text-align: center;
-    }
-
     .recentAcheivement img {
         width: 140px;
         height: 140px;
     }
 
-    .recentAchievementDate {
-        font-style: italic;
+    @media (max-width: 979px) and (min-width: 768px) {
+        #gravatar {
+            height: 50px;
+            width: 50px;
+        }
     }
 
-    .achievmentDescription {
+    @media (min-width: 768px) {
+        #my-difference {
+            min-height: 363px;
+        }
     }
 
-    .recentAcheivementLabel {
-        font-weight: bold;
+    #piechart {
+        width: 100%;
+        height: 250px;
     }
 
 </style>
@@ -29,8 +28,8 @@
     <div class="row">
         <div class="span6">
             <div class="media">
-                <a class="pull-left" href="#">
-                    <img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" class="img-polaroid media-object"/> %{-- style="width:150px;" class="avatar" --}%
+                <a class="pull-left" href="http://en.gravatar.com/" class="external" target="_blank" id="gravitarLink" title="To customise this avatar, register your email address at gravatar.com...">
+                    <img id="gravatar" src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=125" class="img-polaroid media-object"/> %{-- style="width:150px;" class="avatar" --}%
                 </a>
 
                 %{--<g:if test="${userInstance.userId == currentUser}">--}%
@@ -56,12 +55,12 @@
     <div class="row">
         <div class="span6">
             <section>
-                <h3>Badges</h3>
+                <h3>Recent Badges</h3>
                 <g:if test="${recentAchievements}">
                     <ul class="thumbnails">
                         <g:each in="${recentAchievements}" var="ach" status="i">
                             <li class="span2">
-                                <a href="#badgesTab" class="thumbnail">
+                                <a href="javascript:void(0)" class="thumbnail" data-switch-tab="badgesTab">
                                     <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>' alt="${ach.achievement.name}" title="${ach.achievement.description}"/>
                                 </a>
                             </li>
@@ -69,20 +68,20 @@
                     </ul>
                 </g:if>
                 <g:else>
-                    <span>You haven't been awarded any <a href="#badgesTab">badges</a> yet.</span>
+                    <span>You haven't been awarded any <a href="javascript:void(0)" data-switch-tab="badgesTab">badges</a> yet.</span>
                 </g:else>
             </section>
         </div>
     </div>
 </div>
 <div class="span5 pull-right">
-    <section class="well">
+    <section id="my-difference" class="well">
         <h1>How you're making a difference!</h1>
         <ul>
             <g:if test="${totalSpeciesCount > 0}">
                 <li>
                     <span>You have added ${totalSpeciesCount} species to the ALA</span>
-                    <div id="piechart" style="width: 400px; height: 200px;"></div>
+                    <div id="piechart" ></div>
                 </li>
             </g:if>
             <g:if test="${fieldObservationCount > 0}">
@@ -121,7 +120,10 @@
 
 //        var data = google.visualization.arrayToDataTable(table);
         var options = {
-            title: 'Your species',
+//            'width': 245,
+//            'height': 250,
+            'chartArea': {'width': '100%', 'height': '80%'},
+            'legend': {'position': 'bottom'},
             is3D: true,
             backgroundColor: { fill: 'transparent' }
         };
@@ -130,6 +132,10 @@
         chart.draw(data, options);
     }
     drawChart();
+
+    $(window).resize(function(){
+        drawChart();
+    });
 
     %{--$.ajax("${createLink(controller:'user', action:'recentTasksFragment', id:userInstance.id)}").done(function(content) {--}%
         %{--$("#recentTranscriptions").html(content);--}%

@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="achievementSettingsLayout">
-		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}" />
+		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
         <r:style>
             #ajax-spinner.disabled {

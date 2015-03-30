@@ -351,7 +351,7 @@ class AdminController {
     
     def testQuery(String query, String searchType, String aggregation) {
         def searchTypeVal = searchType ? SearchType.fromString(searchType) : SearchType.DEFAULT
-        log.error("SearchType: $searchType, $searchTypeVal")
+        log.debug("SearchType: $searchType, $searchTypeVal")
 
 //        def offset = params.offset
 //        def

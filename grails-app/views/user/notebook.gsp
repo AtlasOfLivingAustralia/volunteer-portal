@@ -115,11 +115,25 @@
                 $.ajax("${createLink(controller:'user', action:'transcribedTasksFragment', id: userInstance.id)}").done(function(content) {
                     $("#transcribedTab").html(content);
                 });
+            } else if (tabHref == "#savedTab") {
+                $.ajax("${createLink(controller:'user', action:'savedTasksFragment', id: userInstance.id)}").done(function(content) {
+                    $("#savedTab").html(content);
+                });
+            } else if (tabHref == "#validatedTab") {
+                $.ajax("${createLink(controller:'user', action:'validatedTasksFragment', id: userInstance.id)}").done(function(content) {
+                    $("#validatedTab").html(content);
+                });
             }
         });
 
         loadMainTab();
 
+      $('body').click('a[data-switch-tab]', function(e) {
+        var jTarget = $(e.target);
+        var cA = jTarget.closest('a');
+        var tab = cA.attr("data-switch-tab");
+        $('a[href="#'+tab+'"]').tab('show');
+      });
     });
 
     function loadMainTab() {
@@ -186,7 +200,7 @@
         }
 
         function load_content(marker, id) {
-            $.ajax("${createLink(controller: 'task', action:'details')}/" + id + ".json").done(function(data) {
+            $.ajax("${createLink(controller: 'task', action:'details')}/" + id).done(function(data) {
                 var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber + "</div>";
                 infowindow.close();
                 infowindow.setContent(content);

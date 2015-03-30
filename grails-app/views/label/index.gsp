@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="${grailsApplication.config.ala.skin}">
-		<g:set var="entityName" value="${message(code: 'label.label', default: 'Label')}" />
+		<g:set var="entityName" value="${message(code: 'label.label', default: 'Tag')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
         <style>
         .vptable { display: table; }

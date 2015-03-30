@@ -203,6 +203,10 @@ class FullTextIndexService {
         rawSearch(json, searchType, aggregation, null, null, null, null, resultClosure)
     }
 
+    public <V> V rawSearch(String json, SearchType searchType, Integer max, Closure<V> resultClosure) {
+        rawSearch(json, searchType, null, null, max, null, null, resultClosure)
+    }
+
     @Timed
     public <V> V rawSearch(String json, SearchType searchType, String aggregation, Integer offset, Integer max, String sortBy, SortOrder sortOrder, Closure<V> resultClosure) {
         
@@ -259,7 +263,7 @@ class FullTextIndexService {
         SearchResponse searchResponse -> searchResponse.hits.totalHits
     }
     
-    static Closure<SearchResponse> identity = { it }
+    static Closure<SearchResponse> rawResponse = { it }
 
     def addMappings() {
 

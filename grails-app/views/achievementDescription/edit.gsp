@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="achievementSettingsLayout">
-		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}" />
+		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -53,7 +53,7 @@
         });
 
         p.fail(function ( jqXHR, textStatus, errorThrown ) {
-            alert("Could not enable achievement :(  Please refresh and try again.");
+            alert("Could not enable badge :(  Please refresh and try again.");
             $(event.target).bootstrapSwitch('state', !state, true);
             console.log(errorThrown);
         });

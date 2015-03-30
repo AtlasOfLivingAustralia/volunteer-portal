@@ -524,17 +524,86 @@ class UserController {
     }
 
     def ajaxGetPoints() {
-
+        Stopwatch sw = new Stopwatch();
+        sw.start()
         def userInstance = User.get(params.int("id"))
-        def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
+        sw.stop()
+        log.info("ajaxGetPoints| User.get(): ${sw.toString()}")
+        sw.reset().start()
 
-        def data = []
-        tasks.each { task ->
-            def point = fieldService.getPointForTask(task)
-            if (point) {
-                data << [lat:point.lat, lng:point.lng, taskId: task.id]
-            }
+        Long taskCount = Task.countByFullyTranscribedBy(userInstance.userId)
+        sw.stop()
+        log.info("ajaxGetPoints| Task.countByFullyTranscribedBy(): ${sw.toString()}")
+        sw.reset().start()
+
+        final q = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "fullyTranscribedBy": "${userId}" } },
+        { "nested" :
+          {
+            "path" : "fields",
+            "filter" : { "term" : { "name": "decimalLongitude"}}
+          }
+        },
+        { "nested" :
+          {
+            "path" : "fields",
+            "filter" : { "term" : { "name": "decimalLongitude"}}
+          }
         }
+      ]
+    }
+  }
+}'''
+        final simpleTemplateEngine = new SimpleTemplateEngine();
+        final query = simpleTemplateEngine.createTemplate(q).make([userId: userInstance.userId]).toString()
+
+        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, taskCount.intValue(), rawResponse)
+        sw.stop()
+        log.info("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
+        sw.reset().start()
+
+        def data = searchResponse.hits.hits.collect { hit ->
+            def field = hit.source['fields']
+
+            //log.error("Keys ${field}")
+            def pt = field.findAll { value ->
+                value['name'] == 'decimalLongitude' || value['name'] == 'decimalLatitude'
+            }.collectEntries { value ->
+                def dVal = value['value']
+//                    try {
+//                        dVal = Double.valueOf(value['value'])
+//                    } catch (NumberFormatException e) {
+//                        log.warn("Got invalid lat/lon value ${value['value']}")
+//                        dVal = 0.0
+//                    }
+                if (value['name'] == 'decimalLongitude') {
+                    [lng: dVal]
+                } else {
+                    [lat: dVal]
+                }
+            }
+            pt.put('taskId', hit.source['id'])
+            pt
+        }
+
+        sw.stop()
+        log.info("ajaxGetPoints| generateResults: ${sw.toString()}")
+        //sw.reset().start()
+
+        //def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
+
+        //def data = []
+        //tasks.each { task ->
+//            def point = fieldService.getPointForTask(task)
+        //    if (point) {
+        //        data << [lat:point.lat, lng:point.lng, taskId: task.id]
+        //    }
+        //}
+
+
 
         render(data as JSON)
     }
@@ -611,13 +680,14 @@ class UserController {
         def userInstance = User.get(params.int("id"))
         //def achievements = achievementService.calculateAchievements(userInstance)
         def achievements = userInstance.achievementAwards
+        def sortedAchievements = achievements.sort { a,b -> b.awarded.compareTo(a.awarded) }
         def score = userService.getUserScore(userInstance)
         def awardedIds = achievements*.achievement*.id.toList()
         def otherAchievements
-        if (awardedIds) otherAchievements = AchievementDescription.findAllByIdNotInListAndEnabled(awardedIds, true)
-        else otherAchievements = AchievementDescription.findAllByEnabled(true)
+        if (awardedIds) otherAchievements = AchievementDescription.findAllByIdNotInListAndEnabled(awardedIds, true, [sort: 'name'])
+        else otherAchievements = AchievementDescription.findAllByEnabled(true, [sort: 'name'])
 
-        [userInstance: userInstance, achievements: achievements, score: score, allAchievements: otherAchievements]
+        [userInstance: userInstance, achievements: sortedAchievements, score: score, allAchievements: otherAchievements]
     }
 
     def recentTasksFragment() {
@@ -644,6 +714,18 @@ class UserController {
     }
 
     def transcribedTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        [userInstance: userInstance]
+    }
+
+    def savedTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        [userInstance: userInstance]
+    }
+
+    def validatedTasksFragment() {
         def userInstance = User.get(params.int("id"))
 
         [userInstance: userInstance]

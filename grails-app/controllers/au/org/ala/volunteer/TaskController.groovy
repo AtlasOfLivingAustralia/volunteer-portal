@@ -157,7 +157,9 @@ class TaskController {
      * Webservice for Google Maps to display task details in infowindow
      */
     def details() {
-        def taskInstance = Task.get(params.id)
+        def id = params.int('id')
+        def sid = params.id
+        def taskInstance = Task.get(params.int('id'))
         Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
         def jsonObj = [:]
         jsonObj.put("cat", recordValues?.get(0)?.catalogNumber)

@@ -173,7 +173,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="prop-name">Labels</td>
+                <td class="prop-name">Tags</td>
                 <td class="prop-value">
                     <div id="labels">
                         <g:each in="${labels}" var="l">

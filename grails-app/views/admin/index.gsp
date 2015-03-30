@@ -68,12 +68,12 @@
                         <td>Manage Institutions</td>
                     </tr>
                     <tr>
-                        <td><a class="btn" href="${createLink(controller:'achievementDescription', action:'index')}">Manage Achievements</a></td>
+                        <td><a class="btn" href="${createLink(controller:'achievementDescription', action:'index')}">Manage Badges</a></td>
                         <td>Manage Achievements</td>
                     </tr>
                     <tr>
-                        <td><a class="btn" href="${createLink(controller:'label', action:'index')}">Manage Labels</a></td>
-                        <td>Manage Project Labels</td>
+                        <td><a class="btn" href="${createLink(controller:'label', action:'index')}">Manage Tags</a></td>
+                        <td>Manage Project Tags</td>
                     </tr>
                     <tr>
                         <td><a class="btn" href="${createLink(controller:'setting', action:'index')}">Advanced Settings</a></td>

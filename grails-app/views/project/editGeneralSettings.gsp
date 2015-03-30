@@ -122,7 +122,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="label">Labels</label>
+                <label class="control-label" for="label">Tags</label>
                 <div class="controls">
                     <div id="labels"><g:each in="${sortedLabels}" var="l"><span class="label ${labelColourMap[l.category]}" title="${l.category}">${l.value} <i class="icon-remove icon-white" data-label-id="${l.id}"></i></span></g:each></div>
                 </div>
