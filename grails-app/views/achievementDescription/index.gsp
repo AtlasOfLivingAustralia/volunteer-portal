@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="${grailsApplication.config.ala.skin}">
-		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}" />
+		<g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>

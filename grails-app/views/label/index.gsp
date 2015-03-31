@@ -23,7 +23,7 @@
 	</head>
 	<body>
         <a href="#list-label" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-        <cl:headerContent title="${message(code:'default.tools.label', default:'Labels')}">
+        <cl:headerContent title="${message(code:'default.tools.label', default:'Tags')}">
             <%
                 pageScope.crumbs = [
                         [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
