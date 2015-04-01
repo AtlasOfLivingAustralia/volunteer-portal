@@ -354,7 +354,10 @@ class AjaxController {
     def acceptAchievements() {
         def ids = params.list('ids[]') ?: []
         def longIds = ids*.toLong()
-        if (!longIds) render status: 204
+        if (!longIds) {
+            render status: 204
+            return
+        }
         def cu = userService.currentUser
         def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
         if (validAwards) achievementService.markAchievementsViewed(validAwards*.id)

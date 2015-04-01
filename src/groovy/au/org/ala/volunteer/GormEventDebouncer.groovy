@@ -46,7 +46,7 @@ class GormEventDebouncer {
 
     static Set<Long> getRequestSet(String name) {
         try {
-            def cr = RequestContextHolder.currentRequestAttributes()
+            def cr = RequestContextHolder.getRequestAttributes()
             if (!cr) return null
             
             def updateSet = cr.getAttribute(name, RequestAttributes.SCOPE_REQUEST)
