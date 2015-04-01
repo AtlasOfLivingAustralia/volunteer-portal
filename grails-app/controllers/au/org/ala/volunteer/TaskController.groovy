@@ -157,7 +157,9 @@ class TaskController {
      * Webservice for Google Maps to display task details in infowindow
      */
     def details() {
-        def taskInstance = Task.get(params.id)
+        def id = params.int('id')
+        def sid = params.id
+        def taskInstance = Task.get(params.int('id'))
         Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
         def jsonObj = [:]
         jsonObj.put("cat", recordValues?.get(0)?.catalogNumber)
@@ -316,7 +318,7 @@ class TaskController {
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
                 def isValidator = userService.isValidator(project)
-                logService.log currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
+                log.info currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
 
                 def imageMetaData = taskService.getImageMetaData(taskInstance)
 

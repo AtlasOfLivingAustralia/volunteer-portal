@@ -17,8 +17,9 @@ class VolunteerTagLib {
     def markdownService
     def institutionService
     def authService
+    def achievementService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled']
 
     def isLoggedIn = { attrs, body ->
 
@@ -161,11 +162,11 @@ class VolunteerTagLib {
             items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
         }
 
-        def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyDashboard)
+        def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyNotebook)
         if (dashboardEnabled) {
             def isLoggedIn = AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)
             if (isLoggedIn || userService.currentUser) {
-                items << [userDashboard: [link: createLink(controller:'user', action:'dashboard'), title:"My Dashboard"]]
+                items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:"My Notebook"]]
             }
         }
 
@@ -560,6 +561,35 @@ class VolunteerTagLib {
         }
     }
 
+    /**
+     *
+     */
+    def achievementBadgeBase = { attrs, body ->
+        achievementService.badgeImageUrlPrefix
+    }
+
+    /**
+     * @achievement The AchievementDescription
+     * @id The id of the institution
+     */
+    def achievementBadgeUrl = { attrs, body ->
+        def achievementDesc = attrs.achievement ?: AchievementDescription.get(attrs.id as Long)
+        out << achievementService.getBadgeImageUrl(achievementDesc)
+    }
+
+    /**
+     * @attr achievementDescription
+     */
+    def ifAchievementHasBadge = { attrs, body ->
+        def achievementDescription = attrs.achievementDescription as AchievementDescription
+        if (!achievementDescription) {
+            def id = (attrs.achievementDescription ?: attrs.id) as Long
+            achievementDescription = AchievementDescription.get(id)
+        }
+        if (achievementService.hasBadgeImage(achievementDescription)) {
+            out << body()
+        }
+    }
 
     /**
      * @attr email
@@ -673,5 +703,23 @@ class VolunteerTagLib {
             mb.meta(name:it, content: g.meta(name:it))
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
+    }
+
+    /**
+     * Gets the list of new achievements for the current user
+     */
+    def newAchievements = { attrs ->
+        if (settingsService.getSetting(SettingDefinition.EnableMyNotebook) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
+            achievementService.newAchievementsForUser(userService.currentUser)
+        } else {
+            []
+        }
+    }
+
+    /**
+     * Returns true if achievements are enabled, false otherwise
+     */
+    def achievementsEnabled = { attrs ->
+        settingsService.getSetting(SettingDefinition.EnableMyNotebook) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)
     }
 }

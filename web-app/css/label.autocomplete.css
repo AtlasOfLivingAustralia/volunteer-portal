@@ -1,0 +1,10 @@
+div#labels {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+div#labels > span.label {
+    margin: 2px;
+}
+i.icon-remove {
+    cursor: pointer;
+}

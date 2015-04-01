@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
-import java.util.logging.Filter
+import org.apache.log4j.Logger
+
 import javax.servlet.Filter
 import javax.servlet.FilterConfig
 import javax.servlet.ServletRequest
@@ -10,13 +11,11 @@ import javax.servlet.http.HttpServletRequest
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import java.util.regex.Pattern
 import java.util.regex.Matcher
-import org.springframework.context.ApplicationContext
-import org.codehaus.groovy.grails.commons.ApplicationHolder
-import org.springframework.web.context.support.WebApplicationContextUtils
-import org.springframework.web.context.WebApplicationContext
 
 class BVPServletFilter implements Filter  {
 
+    private static final Logger logger = Logger.getLogger(BVPServletFilter.class)
+    
     private List<Pattern> _filterPatterns;
 
     void init(FilterConfig filterConfig) {
@@ -25,6 +24,7 @@ class BVPServletFilter implements Filter  {
         addPattern(".*/js/.*")
         addPattern(".*/css/.*")
         addPattern(".*/images/.*")
+        addPattern(".*/monitoring")
     }
 
     private void addPattern(String pattern) {
@@ -49,8 +49,7 @@ class BVPServletFilter implements Filter  {
                 if (doLog) {
                     def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
                     def userAgent = request.getHeader("user-agent")
-                    def logService = new LogService()
-                    logService.log "Session: ${request.session.id} User: ${username} UA: ${userAgent} URI: ${requestUri}"
+                    logger.info "Session: ${request.session.id} User: ${username} UA: ${userAgent} URI: ${requestUri}"
                 }
 //                request.getHeaderNames().each {
 //                    println it + " = " + request.getHeader(it)

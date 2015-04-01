@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class Picklist {
+class Picklist implements Serializable {
 
     String name
     static mapping = {

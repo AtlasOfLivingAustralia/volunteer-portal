@@ -8,7 +8,9 @@ class UrlMappings {
             }
         }
 
+        "/admin/label/$action?" (controller: 'label')
 		"/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
+        "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
 
         "/$controller/$action?/$id?"{
 			constraints {

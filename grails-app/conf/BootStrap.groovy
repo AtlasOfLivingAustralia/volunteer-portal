@@ -1,8 +1,13 @@
 import au.org.ala.volunteer.*
+import com.google.common.io.Resources
+import grails.converters.JSON
+import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang3.time.StopWatch
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import org.codehaus.groovy.grails.web.json.JSONArray
+import org.codehaus.groovy.grails.web.json.JSONObject
 import org.hibernate.FlushMode
 
 class BootStrap {
@@ -31,6 +36,8 @@ class BootStrap {
         prepareProjectTypes();
 
         fixTaskLastViews();
+
+        prepareDefaultLabels();
 
         // add system user
         if (!User.findByUserId('system')) {
@@ -164,12 +171,12 @@ class BootStrap {
     }
 
     private void fixTaskLastViews() {
-        logService.log("Checking task last views...")
+        log.info("Checking task last views...")
 
         def taskIds = Task.executeQuery("select t.id, count(vt.id) from Task t left outer join t.viewedTasks vt where t.lastViewed is null group by t.id having count(vt.id) > 0")
 
         if (taskIds) {
-            logService.log("Fixing last view for ${taskIds.size()} tasks...")
+            log.info("Fixing last view for ${taskIds.size()} tasks...")
             sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
             try {
                 int count = 0
@@ -186,7 +193,7 @@ class BootStrap {
                         task.lastViewed = lastView.lastView
                         task.lastViewedBy = lastView.userId
                     } else {
-                        logService.log("Problem fixing last view for task ${task.id} - no last view found.")
+                        log.info("Problem fixing last view for task ${task.id} - no last view found.")
                     }
                     count++
                     if (count % 1000 == 0) {
@@ -195,22 +202,22 @@ class BootStrap {
                         sessionFactory.currentSession.clear()
                     }
                 }
-                logService.log("${count} tasks processed (complete).")
+                log.info("${count} tasks processed (complete).")
             } finally {
                 sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
             }
         } else {
-            logService.log("No tasks with inconsistent last view details.")
+            log.info("No tasks with inconsistent last view details.")
         }
     }
 
     private void prepareProjectTypes() {
-        logService.log("Checking project types...")
+        log.info("Checking project types...")
         def builtIns = [[name:'specimens', label:'Specimens', icon:'/images/icon_specimens.png'], [name:'fieldnotes', label: 'Field notes', icon:'/images/icon_fieldnotes.png']]
         builtIns.each {
             def projectType = ProjectType.findByName(it.name)
             if (!projectType) {
-                logService.log("Creating project type ${it.name}")
+                log.info("Creating project type ${it.name}")
                 projectType = new ProjectType(name: it.name, label: it.label)
             }
 
@@ -224,7 +231,7 @@ class BootStrap {
     }
 
     private void prepareValidationRules() {
-        logService.log("Initialising validation rules")
+        log.info("Initialising validation rules")
         checkOrCreateRule('mandatory', '.+', 'This field value is mandatory', "Mandatory fields must have a value supplied to them", true)
         checkOrCreateRule('numeric', '^[-+]?[0-9]*\\.?[0-9]+$', 'This field must be a number', "Field values must be numeric (floating point or otherwise)", false)
         checkOrCreateRule('integer', '^[-+]?[0-9]+$', 'This field must be a integer', "Field values must be integers", false)
@@ -235,11 +242,11 @@ class BootStrap {
     private void checkOrCreateRule(String name, String expression, String message, String description, Boolean testEmptyValues = false) {
         def rule = ValidationRule.findByName(name)
         if (!rule) {
-            logService.log("Creating default validation rule '${name}'.")
+            log.info("Creating default validation rule '${name}'.")
             rule = new ValidationRule(name:name, regularExpression: expression, message: message, description: description, testEmptyValues: testEmptyValues)
             rule.save(failOnError: true)
         } else {
-            logService.log("Validation rule '${name}' exists.")
+            log.info("Validation rule '${name}' exists.")
         }
     }
 
@@ -309,12 +316,12 @@ class BootStrap {
 
     private void preparePickLists() {
         // add some picklist values if not already loaded
-        logService.log "creating picklists..."
+        log.info "creating picklists..."
         def items = ["country", "stateProvince", "typeStatus", "institutionCode", "recordedBy", "verbatimLocality", "coordinateUncertaintyInMeters"]
         items.each {
-            logService.log("checking picklist: " + it)
+            log.info("checking picklist: " + it)
             if (!Picklist.findByName(it)) {
-                logService.log("creating new picklist " + it)
+                log.info("creating new picklist " + it)
                 Picklist picklist = new Picklist(name: it).save(flush: true, failOnError: true)
                 def csvText = ApplicationHolder.application.parentContext.getResource("classpath:resources/" + it + ".csv").inputStream.text
                 csvText.eachCsvLine { tokens ->
@@ -331,6 +338,28 @@ class BootStrap {
             }
         }
 
+    }
+
+    private void prepareDefaultLabels() {
+        log.info("Preparing default labels")
+        final prop = grailsApplication.config.bvp.labels.ensureDefault
+        final shouldInstall = prop.asBoolean()
+        if (shouldInstall) {
+            log.info("Installing default labels")
+            final defaults = (JSONObject)JSON.parse(Resources.getResource('default-labels.json').newReader())
+            //final defaultsSet = defaults.keySet().collectEntries { [(it): defaults[it].toSet() ] }
+            final labels = Label.all // TODO scroll?
+            final labelSet = labels.toSet()
+            final newLabels = defaults.keySet().collect { k ->
+                final a = (JSONArray)defaults[k]
+                a.collect { new Label(category: k, value: it) }.findAll { !labelSet.contains(it) }
+            }.flatten()
+            log.info("Adding ${newLabels.size()} new labels")
+            log.debug("Adding ${newLabels.join('\n')}")
+            if (newLabels) Label.saveAll(newLabels)
+        } else {
+            log.debug("Skipping default labels")
+        }
     }
 
 }

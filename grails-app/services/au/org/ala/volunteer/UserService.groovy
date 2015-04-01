@@ -27,10 +27,10 @@ class UserService {
     def registerCurrentUser() {
         def userId = currentUserId
         def displayName = authService.displayName
-        logService.log("Checking user is registered: ${displayName} (UserId=${userId})")
+        log.info("Checking user is registered: ${displayName} (UserId=${userId})")
         if (userId) {
             if (User.findByUserId(userId) == null) {
-                logService.log("Registering new user: ${displayName} (UserId=${userId})")
+                log.info("Registering new user: ${displayName} (UserId=${userId})")
                 User user = new User()
                 user.userId = userId
                 user.email = currentUserEmail
@@ -57,7 +57,7 @@ class UserService {
     def getUserCounts(List<String> ineligibleUsers = []) {
         def args = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
         def users = User.executeQuery("""
-            select new map(displayName as displayName, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId)
+            select new map(displayName as displayName, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
             from User
             where (transcribedCount + validatedCount) > 0
             ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
@@ -325,7 +325,7 @@ class UserService {
             userActivity.delete(flush: true)
         }
         if (purgeCount) {
-            logService.log("${purgeCount} activity records purged from database")
+            log.info("${purgeCount} activity records purged from database")
         }
     }
 

@@ -9,7 +9,7 @@ class User {
   Integer validatedCount = 0     // the number of task completed by this user and then validated by a validator
   Date created               //set to the date when the user first contributed
 
-  static hasMany = [userRoles:UserRole]
+  static hasMany = [userRoles:UserRole, achievementAwards: AchievementAward]
 
   static mapping = {
     table 'vp_user'
@@ -58,4 +58,8 @@ class User {
   int hashCode() {
     Objects.hash(userId)
   }
+
+    public String toString() {
+        "User (id: $id, userId: ${userId}, displayName: ${displayName})"
+    }
 }

@@ -27,6 +27,13 @@ class ProjectStagingService {
         project.featuredImageCopyright = projectDescriptor.imageCopyright
         project.inactive = true
 
+        if (projectDescriptor.labelIds) {
+            Label.findAllByIdInList(projectDescriptor.labelIds).each { project.addToLabels(it) }
+        }
+        if (projectDescriptor.picklistId) {
+            project.picklistInstitutionCode = projectDescriptor.picklistId
+        }
+
         project.save(failOnError: true, flush: true)
 
         // Now we have a project id we can copy over the file system artifacts

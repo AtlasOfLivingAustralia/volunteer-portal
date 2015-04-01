@@ -19,7 +19,7 @@ class EmailService {
      * @return The mail message
      */
     def sendMail(String emailAddress, String subj, String message) {
-        logService.log("Sending email to ${emailAddress} - ${subj}")
+        log.info("Sending email to ${emailAddress} - ${subj}")
         mailService.sendMail {
             to emailAddress
             from "noreply@volunteer.ala.org.au"
@@ -38,7 +38,7 @@ class EmailService {
      * @param message The message body
      */
     def pushMessageOnQueue(String emailAddress, String subject, String message) {
-        logService.log("Queuing email message to ${emailAddress} - ${subject}")
+        log.info("Queuing email message to ${emailAddress} - ${subject}")
         def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message)
         _queuedMessages.add(qmsg)
     }

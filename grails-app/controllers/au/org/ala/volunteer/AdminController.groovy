@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import groovy.time.TimeCategory
+import org.elasticsearch.action.search.SearchType
 import org.grails.plugins.csv.CSVWriter
 import org.hibernate.FlushMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -12,11 +13,14 @@ class AdminController {
 
     def taskService
     def grailsApplication
+    def grailsCacheAdminService
     def tutorialService
     def sessionFactory
     def userService
     def projectService
     def fullTextIndexService
+    def domainUpdateService
+    def taskLoadService
 
     def index = {
         checkAdmin()
@@ -330,7 +334,7 @@ class AdminController {
             }
 
             results?.each { long taskId ->
-                fullTextIndexService.scheduleTaskIndex(taskId)
+                DomainUpdateService.scheduleTaskIndex(taskId)
             }
 
         }
@@ -343,6 +347,73 @@ class AdminController {
         }
 
         redirect(action:'tools')
+    }
+    
+    def testQuery(String query, String searchType, String aggregation) {
+        def searchTypeVal = searchType ? SearchType.fromString(searchType) : SearchType.DEFAULT
+        log.debug("SearchType: $searchType, $searchTypeVal")
+
+//        def offset = params.offset
+//        def
+
+        def result = fullTextIndexService.rawSearch(query, searchTypeVal, aggregation, fullTextIndexService.elasticSearchToJsonString)
+        
+        response.setContentType("application/json")
+        render result
+    }
+
+    // clear the grails gsp caches
+    def clearPageCaches() {
+        if (!checkAdmin()) {
+            render status: 403
+        }
+        grailsCacheAdminService.clearTemplatesCache()
+        grailsCacheAdminService.clearBlocksCache()
+        flash.message = "Template and blocks caches cleared"
+        redirect action: 'tools'
+    }
+
+    def clearAllCaches() {
+        if (!checkAdmin()) {
+            render status: 403
+        }
+        grailsCacheAdminService.clearAllCaches()
+        flash.message = "All caches cleared"
+        redirect action: 'tools'
+    }
+
+    def stagingTasks() {
+        if (!checkAdmin()) {
+            render status: 403
+        }
+
+        def status = taskLoadService.status()
+        def queueItems = taskLoadService.currentQueue()
+
+        respond queueItems, model: [status: status]
+    }
+
+    def cancelStagingQueue() {
+        if (!checkAdmin()) {
+            render status: 403
+        }
+
+        taskLoadService.cancelLoad()
+        flash.message = "Task Load Cancel message sent"
+
+        redirect action: 'stagingTasks'
+    }
+
+    def clearStagingQueue() {
+        if (!checkAdmin()) {
+            render status: 403
+        }
+
+        def items = taskLoadService.clearQueue()
+        flash.message = "Task Load queue cleared, remaining items: ${items.join(', ')}"
+
+
+        redirect action: 'stagingTasks'
     }
 
 }

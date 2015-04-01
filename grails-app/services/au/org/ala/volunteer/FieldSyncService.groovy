@@ -61,7 +61,7 @@ class FieldSyncService {
         }
 
         def value = distinctValues.join(",")
-        logService.log("WARNING: Duplicate field values detected for task: ${task?.id} field: ${fieldname} values: ${value}")
+        log.warn("WARNING: Duplicate field values detected for task: ${task?.id} field: ${fieldname} values: ${value}")
         return value
     }
 
@@ -197,7 +197,8 @@ class FieldSyncService {
 
         task.save(flush: true, failOnError: true)
 
-        fullTextIndexService.scheduleTaskIndex(task)
+        // Should be dealt with by GORM event
+        //DomainUpdateService.scheduleTaskIndex(task)
     }
 
 }

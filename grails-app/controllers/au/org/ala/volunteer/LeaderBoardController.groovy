@@ -122,7 +122,7 @@ class LeaderBoardController {
                         if (i >= maxRows) {
                             break;
                         }
-                        results << [name: userScores[i]['displayName'], score: userScores[i]['total'], userId: userScores[i]['userId']]
+                        results << [name: userScores[i]['displayName'], score: userScores[i]['total'], userId: userScores[i]['id']]
                     }
                 }
                 break;

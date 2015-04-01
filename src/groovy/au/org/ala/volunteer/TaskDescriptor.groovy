@@ -9,6 +9,10 @@ public class TaskDescriptor {
     ArrayList<MediaLoadDescriptor> media = new ArrayList<MediaLoadDescriptor>();
     Closure afterLoad
 
+    @Override
+    String toString() {
+        "{ project.name:'$project.name', externalIdentifier:'$externalIdentifier', imageUrl:$imageUrl }"
+    }
 }
 
 public class MediaLoadDescriptor {

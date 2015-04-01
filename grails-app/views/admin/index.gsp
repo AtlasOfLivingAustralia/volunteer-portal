@@ -67,7 +67,14 @@
                         <td><a class="btn" href="${createLink(controller:'institutionAdmin', action:'index')}">Manage Institutions</a></td>
                         <td>Manage Institutions</td>
                     </tr>
-
+                    <tr>
+                        <td><a class="btn" href="${createLink(controller:'achievementDescription', action:'index')}">Manage Badges</a></td>
+                        <td>Manage Achievements</td>
+                    </tr>
+                    <tr>
+                        <td><a class="btn" href="${createLink(controller:'label', action:'index')}">Manage Tags</a></td>
+                        <td>Manage Project Tags</td>
+                    </tr>
                     <tr>
                         <td><a class="btn" href="${createLink(controller:'setting', action:'index')}">Advanced Settings</a></td>
                         <td>Advanced Settings</td>
