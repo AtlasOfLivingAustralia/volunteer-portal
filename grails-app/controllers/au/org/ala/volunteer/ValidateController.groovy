@@ -36,7 +36,7 @@ class ValidateController {
             def template = Template.findById(project.template.id)
 
             def isValidator = userService.isValidator(project)
-            logService.log(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
+            log.info(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
 
             if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(userService.isAdmin() || isValidator)) {
                 isReadonly = "readonly"

@@ -23,9 +23,10 @@ class AjaxController {
     DataSource dataSource
     def multimediaService
     def institutionService
-    def fullTextIndexService
+    def domainUpdateService
     def authService
     def settingsService
+    def achievementService
 
     static responseFormats = ['json', 'xml']
 
@@ -46,10 +47,8 @@ class AjaxController {
             def projects = Project.findAllByProjectType(it)
             stats[it.description ?: it.name] = Task.countByProjectInList(projects)
         }
-
-        def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
         
-        def volunteerCounts = userService.getUserCounts(ineligibleUsers)
+        def volunteerCounts = userService.userCounts
         stats.volunteerCount = volunteerCounts?.size()
         if (volunteerCounts?.size() >= 10) {
             stats.topTenVolunteers = volunteerCounts[0..9]
@@ -346,10 +345,23 @@ class AjaxController {
         respond results
     }
 
-    def getIndexerQueueLength() {
-        def length = fullTextIndexService.getIndexerQueueLength()
+    def getUpdateQueueLength() {
+        def length = domainUpdateService.getQueueLength()
         def results = ['success': true, 'queueLength': length]
         respond results
+    }
+
+    def acceptAchievements() {
+        def ids = params.list('ids[]') ?: []
+        def longIds = ids*.toLong()
+        if (!longIds) {
+            render status: 204
+            return
+        }
+        def cu = userService.currentUser
+        def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
+        if (validAwards) achievementService.markAchievementsViewed(validAwards*.id)
+        render status: 204
     }
 
 }

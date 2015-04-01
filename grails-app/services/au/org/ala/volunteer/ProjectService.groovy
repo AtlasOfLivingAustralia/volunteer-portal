@@ -28,13 +28,13 @@ class ProjectService {
                             try {
                                 multimediaService.deleteMultimedia(image)
                             } catch (IOException ex) {
-                                logService.log("Failed to delete multimedia: " + ex.message)
+                                log.error("Failed to delete multimedia: ", e)
                             }
                         }
                     }
                     t.delete()
                 } catch (Exception ex) {
-                    logService.log("Failed to delete task ${t.id}: " + ex.message)
+                    log.error("Failed to delete task ${t.id}: ", e)
                 }
             }
         }
@@ -50,7 +50,7 @@ class ProjectService {
 
         // First need to delete the staging profile, if it exists, and to do that you need to delete all its items first
         def profile = ProjectStagingProfile.findByProject(projectInstance)
-        logService.log("Delete Project ${projectInstance.id}: Delete staging profile...")
+        log.info("Delete Project ${projectInstance.id}: Delete staging profile...")
         if (profile) {
             StagingFieldDefinition.executeUpdate("delete from StagingFieldDefinition f where f.id in (select ff.id from StagingFieldDefinition ff where ff.profile = :profile)", [profile: profile])
             profile.delete(flush: true, failOnError: true)
@@ -64,59 +64,59 @@ class ProjectService {
         def topicCount = 0
 
         // Also need to delete forum topics/posts that might be associated with this project
-        logService.log("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
+        log.info("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
         taskTopics?.each { topic ->
-            logService.log("Deleting topic ${topic.id}...")
+            log.info("Deleting topic ${topic.id}...")
             forumService.deleteTopic(topic)
             topicCount++
         }
 
-        logService.log("Delete Project ${projectInstance.id}: Delete Project Forum Topics...")
+        log.info("Delete Project ${projectInstance.id}: Delete Project Forum Topics...")
         topics?.each { topic ->
             forumService.deleteTopic(topic)
             topicCount++
         }
-        logService.log("Delete Project ${projectInstance.id}: ${topicCount} forum topics deleted")
+        log.info("Delete Project ${projectInstance.id}: ${topicCount} forum topics deleted")
 
-        logService.log("Project ${projectInstance.id}: Delete Project Forum Watchlist...")
+        log.info("Project ${projectInstance.id}: Delete Project Forum Watchlist...")
         forumService.deleteProjectForumWatchlist(projectInstance)
         //def projectForumWatchListCount = ProjectForumWatchList.executeUpdate("delete from ProjectForumWatchList where project = :project", [project: projectInstance])
-        logService.log("Delete Project ${projectInstance.id}: project forum watch list deleted")
+        log.info("Delete Project ${projectInstance.id}: project forum watch list deleted")
 
         // Delete Multimedia
-        logService.log("Delete Project ${projectInstance.id}: Delete multimedia...")
+        log.info("Delete Project ${projectInstance.id}: Delete multimedia...")
         def mmCount = Multimedia.executeUpdate("delete from Multimedia m where m.id in (select mm.id from Multimedia mm where mm.task.project = :project)", [project: projectInstance])
-        logService.log("Delete Project ${projectInstance.id}: ${mmCount} multimedia items deleted")
+        log.info("Delete Project ${projectInstance.id}: ${mmCount} multimedia items deleted")
         // Delete Fields
-        logService.log("Project ${projectInstance.id}: Delete Fields...")
+        log.info("Project ${projectInstance.id}: Delete Fields...")
         def fieldCount = Field.executeUpdate("delete from Field f where f.id in (select ff.id from Field ff where ff.task.project = :project)", [project: projectInstance])
-        logService.log("Delete Project ${projectInstance.id}: ${fieldCount} fields deleted")
+        log.info("Delete Project ${projectInstance.id}: ${fieldCount} fields deleted")
 
         // Viewed Tasks
-        logService.log("Project ${projectInstance.id}: Delete Viewed Tasks...")
+        log.info("Project ${projectInstance.id}: Delete Viewed Tasks...")
         def viewedTaskCount = ViewedTask.executeUpdate("delete from ViewedTask vt where vt.id in (select vt2.id from ViewedTask vt2 where vt2.task.project = :project)", [project: projectInstance])
-        logService.log("Delete Project ${projectInstance.id}: ${viewedTaskCount} viewed tasks deleted")
+        log.info("Delete Project ${projectInstance.id}: ${viewedTaskCount} viewed tasks deleted")
 
         // Viewed Tasks
-        logService.log("Project ${projectInstance.id}: Delete Task comments...")
+        log.info("Project ${projectInstance.id}: Delete Task comments...")
         def commentCount = TaskComment.executeUpdate("delete from TaskComment tc where tc.id in (select tc2.id from TaskComment tc2 where tc2.task.project = :project)", [project: projectInstance])
-        logService.log("Delete Project ${projectInstance.id}: ${commentCount} task comments deleted")
+        log.info("Delete Project ${projectInstance.id}: ${commentCount} task comments deleted")
 
         // Delete Tasks
         // Tasks are deleted automatically because they're owned by the project
 
         // now we can delete the project itself
-        logService.log("Project ${projectInstance.id}: Delete Project...")
+        log.info("Project ${projectInstance.id}: Delete Project...")
         projectInstance.delete(flush: true, failOnError: true)
 
         // if we get here we can delete the project directory on the disk
-        logService.log("Project ${projectInstance.id}: Removing folder from disk...")
+        log.info("Project ${projectInstance.id}: Removing folder from disk...")
         def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id )
         if (dir.exists()) {
-            logService.log("DeleteProject: Preparing to remove project directory ${dir.absolutePath}")
+            log.info("DeleteProject: Preparing to remove project directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
         } else {
-            logService.log("DeleteProject: Directory ${dir.absolutePath} does not exist!")
+            log.warn("DeleteProject: Directory ${dir.absolutePath} does not exist!")
         }
 
     }
@@ -340,20 +340,19 @@ class ProjectService {
 
             // Now check image size...
             def image = ImageIO.read(file)
-            logService.log("Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}")
+            log.info("Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}")
             if (image.width != 254 || image.height != 158) {
-                logService.log "Image is not the correct size. Scaling to 254 x 158..."
+                log.info "Image is not the correct size. Scaling to 254 x 158..."
                 image = ImageUtils.scale(image, 254, 158)
-                logService.log "Saving new dimensions ${image.width} x ${image.height}"
+                log.info "Saving new dimensions ${image.width} x ${image.height}"
                 ImageIO.write(image, "jpg", file)
-                logService.log "Done."
+                log.info "Done."
             } else {
-                logService.log "Image Ok. No scaling required."
+                log.info "Image Ok. No scaling required."
             }
             return true
         } catch (Exception ex) {
-            println ex
-            ex.printStackTrace()
+            log.error("Could not check and resize expedition image for $projectInstance", ex)
             return false
         }
     }

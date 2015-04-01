@@ -61,7 +61,7 @@
     %>
 
     <div class="well well-small transcribeSection">
-        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Specimen details</span>
+        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Details</span>
         <div class="row-fluid">
             <g:set var="spanClass" value="${"span${12 / columnCount}"}" />
             <g:each in="${columns}" var="column">

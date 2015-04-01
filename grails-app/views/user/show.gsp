@@ -134,14 +134,14 @@
                         <g:if test="${achievements.size() > 0}">
                             <table class="bvp-expeditions" style="margin:10px; border: 1px solid #d3d3d3;text-align: center; border-collapse: separate;" width="400px">
                                 <thead>
-                                    <tr><td colspan="5" style="border:none"><h3>Achievements</h3></td></tr>
+                                    <tr><td colspan="5" style="border:none"><h3>Badges</h3></td></tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>
                                             <g:each in="${achievements}" var="ach" status="i">
                                                 <div style="float:left;margin: 10px">
-                                                    <img src='<g:resource file="${ach.icon}"/>' width="50px" alt="${ach.label}" title="${ach.description}"/>
+                                                    <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>' width="50px" alt="${ach.achievement.name}" title="${ach.achievement.description}"/>
                                                     %{--<div style="font:0.6em">${ach.label}</div>--}%
                                                 </div>
                                             </g:each>

@@ -27,7 +27,7 @@ class Project implements Serializable {
     def grailsLinkGenerator
 
     static belongsTo = [template: Template, projectType: ProjectType]
-    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem]
+    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label]
     static transients = ['featuredImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {
@@ -84,5 +84,10 @@ class Project implements Serializable {
 
     public void setFeaturedImage(String image) {
         // do nothing
+    }
+
+    // Executed after an object has been updated
+    def afterUpdate() {
+        GormEventDebouncer.debounceProject(this.id)
     }
 }

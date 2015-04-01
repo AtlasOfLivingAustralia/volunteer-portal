@@ -369,7 +369,12 @@ class ProjectController {
             final insts = Institution.list()
             final names = insts*.name
             final nameToId = insts.collectEntries { ["${it.name}": it.id] }
-            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId]
+            final labelCats = Label.withCriteria { projections { distinct 'category' } }
+            final colours = ["", "label-success", "label-warning", "label-important", "label-info", "label-inverse"]
+            final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
+            def counter = 0
+            final catColourMap = labelCats.collectEntries { [(it): colours[counter++ % colours.size()]] }
+            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId, labelColourMap: catColourMap, sortedLabels: sortedLabels]
         }
     }
 
@@ -809,9 +814,48 @@ class ProjectController {
                     flow.project.mapInitLongitude = Double.parseDouble(params.mapLongitude)
                 }
 
-            }.to "summary"
+            }.to "projectExtras"
             on("cancel").to "cancel"
             on("back").to "projectImage"
+        }
+
+        projectExtras {
+            onEntry {
+                def c = PicklistItem.createCriteria();
+                def picklistInstitutionCodes = c {
+                    isNotNull("institutionCode")
+                    projections {
+                        distinct("institutionCode")
+                    }
+                    order('institutionCode')
+                }
+
+                flow.picklists = picklistInstitutionCodes
+                final labelCats = Label.withCriteria { projections { distinct 'category' } }
+                final colours = ["", "label-success", "label-warning", "label-important", "label-info", "label-inverse"]
+                def counter = 0
+                final catColourMap = labelCats.collectEntries { [(it): colours[counter++ % colours.size()]] }
+                flow.labelColourMap = catColourMap
+            }
+            on("continue") {
+                flow.project.picklistId = params.picklistId
+                def labelIdArr = params.getList('labelId[]')
+                flow.project.labelIds = labelIdArr.collect { Long.valueOf(it) }
+
+
+                def flowLabels
+                if (flow.project.labelIds) {
+                    def labelIds = flow.project.labelIds
+                    def labels = Label.withCriteria { inList 'id', labelIds }
+                    def labelMap = labels*.toMap()
+                    flowLabels = labelMap
+                } else { flowLabels  = [] }
+
+                flow.labels = flowLabels
+
+            }.to "summary"
+            on("cancel").to "cancel"
+            on("back").to "projectMap"
         }
 
         summary {
@@ -822,10 +866,13 @@ class ProjectController {
                     flow.projectImageUrl = null
                 }
                 flow.projectTypeImageUrl = projectTypeService.getIconURL(ProjectType.get(flow.project.projectTypeId))
+
+                flow.templateName = Template.get(flow.project.templateId)?.name
+                flow.projectTypeLabel = ProjectType.get(flow.project.projectTypeId)?.label
             }
             on("continue").to "createProject"
             on("cancel").to "cancel"
-            on("back").to "projectMap"
+            on("back").to "projectExtras"
         }
 
         createProject {
@@ -906,4 +953,55 @@ class ProjectController {
 
     }
 
+    def addLabel(Project projectInstance) {
+        def labelId = params.labelId
+        def label = Label.get(labelId)
+        if (!label) {
+            render status: 404
+            return
+        }
+
+        projectInstance.addToLabels(label)
+        // Just adding a label won't trigger the GORM update event, so force a project update
+        DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
+        render status: 204
+    }
+
+    def removeLabel(Project projectInstance) {
+        def labelId = params.labelId
+        def label = Label.get(labelId)
+        if (!label) {
+            render status: 404
+            return
+        }
+
+        projectInstance.removeFromLabels(label)
+        // Just adding a label won't trigger the GORM update event, so force a project update
+        DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
+        render status: 204
+    }
+
+    def newLabels(Project projectInstance) {
+        def term = params.term ?: ''
+        def ilikeTerm = "%${term.replace('%','')}%"
+        def existing = projectInstance?.labels
+        def labels
+
+        if (existing) {
+            def existingIds = existing*.id.toList()
+            labels = Label.withCriteria {
+                or {
+                    ilike 'category', ilikeTerm
+                    ilike 'value', ilikeTerm
+                }
+                not {
+                    inList 'id', existingIds
+                }
+            }
+        } else {
+            labels = Label.findAllByCategoryIlikeOrValueIlike(ilikeTerm, ilikeTerm)
+        }
+
+        render labels as JSON
+    }
 }

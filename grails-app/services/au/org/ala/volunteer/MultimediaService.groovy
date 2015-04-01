@@ -12,10 +12,10 @@ class MultimediaService {
     def deleteMultimedia(Multimedia media) {
         def dir = new File(grailsApplication.config.images.home + '/' + media.task?.projectId + '/' + media.task?.id + "/" + media.id)
         if (dir.exists()) {
-            logService.log("DeleteMultimedia: Preparing to remove multimedia directory ${dir.absolutePath}")
+            log.info("DeleteMultimedia: Preparing to remove multimedia directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
         } else {
-            logService.log("DeleteMultimedia: Directory ${dir.absolutePath} does not exist!")
+            log.info("DeleteMultimedia: Directory ${dir.absolutePath} does not exist!")
         }
     }
 

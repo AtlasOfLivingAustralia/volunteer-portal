@@ -42,7 +42,7 @@ class LocalityService {
                 def rowsProcessed = 0;
 
                 def rowsDeleted = Locality.executeUpdate("delete Locality where institutionCode = '${institutionCode}'")
-                logService.log "${rowsDeleted} rows deleted from Locality table"
+                log.info "${rowsDeleted} rows deleted from Locality table"
 
                 Map<String, Integer> col =[:]
 
@@ -96,7 +96,7 @@ class LocalityService {
                         sessionFactory.currentSession.flush()
                         sessionFactory.currentSession.clear()
                         propertyInstanceMap.get().clear()
-                        logService.log "${rowsProcessed} rows processed, ${count} rows imported..."
+                        log.info "${rowsProcessed} rows processed, ${count} rows imported..."
                     }
 
                 }
@@ -180,7 +180,7 @@ class LocalityService {
             sql.eachRow("SELECT DISTINCT(LOWER(State)) from locality") { row ->
                 def state = row[0] as String
                 if (state) {
-                    logService.log("Adding state to cache: ${state}")
+                    log.info("Adding state to cache: ${state}")
                     _allStates.add(state)
                 }
             }
@@ -203,7 +203,7 @@ class LocalityService {
 
         // need to strip out the state from the query...
         query = query.replaceAll(state, "").trim()
-        logService.log("Found state: ${state}, modified query is now ${query}")
+        log.info("Found state: ${state}, modified query is now ${query}")
 
         def wildcardChar = (wildcard ? "%" : "")
         def c  = Locality.createCriteria();
@@ -239,7 +239,7 @@ class LocalityService {
 
         // need to strip out the state from the query...
         query = query.replaceAll(state, "").trim()
-        logService.log("Found state: ${state}, modified query is now ${query}")
+        log.info("Found state: ${state}, modified query is now ${query}")
 
         def wildcardChar = (wildcard ? "%" : "")
         def c  = Locality.createCriteria();

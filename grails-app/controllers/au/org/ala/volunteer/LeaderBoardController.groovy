@@ -65,7 +65,7 @@ class LeaderBoardController {
                 } else {
                     def userScores = userService.getUserCounts(ineligibleUsers);
                     if (userScores) {
-                        result = [name: userScores[0][0], score: userScores[0][1]]
+                        result = [name: userScores[0]['displayName'], score: userScores[0]['total']]
                     }
                 }
 
@@ -122,7 +122,7 @@ class LeaderBoardController {
                         if (i >= maxRows) {
                             break;
                         }
-                        results << [name: userScores[i][0], score: userScores[i][1], userId: userScores[i][2]]
+                        results << [name: userScores[i]['displayName'], score: userScores[i]['total'], userId: userScores[i]['id']]
                     }
                 }
                 break;

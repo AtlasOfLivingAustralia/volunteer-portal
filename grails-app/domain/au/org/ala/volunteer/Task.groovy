@@ -42,4 +42,19 @@ class Task implements Serializable {
         lastViewedBy nullable: true
     }
 
+    // These events use a static method rather than an injected service
+    // to prevent issues with serialisation in webflows
+    
+    // Executed after an object is persisted to the database
+    def afterInsert() {
+        GormEventDebouncer.debounceTask(this.id)
+    }
+    // Executed after an object has been updated
+    def afterUpdate() {
+        GormEventDebouncer.debounceTask(this.id)
+    }
+    // Executed after an object has been deleted
+    def afterDelete() {
+        GormEventDebouncer.debounceDeleteTask(this.id)
+    }
 }

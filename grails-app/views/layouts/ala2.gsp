@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="app.version" content="${g.meta(name:'app.version')}"/>
-    <meta name="app.build" content="${g.meta(name:'app.build')}"/>
+    <cl:addApplicationMetaTags/>
     <g:if test="${instance}">
         <meta name="description" content="The Atlas of Living Australia's description of the ${instance?.name}. ${instance?.makeAbstract(200)}"/>
     </g:if>
@@ -22,10 +21,6 @@
     <link rel="stylesheet" type="text/css" media="screen" href="http://www.ala.org.au/wp-content/themes/ala2011/css/sf-blue.css" />
 
     <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
-
-    %{--<script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-1.8.2.js')}"></script>--}%
-    %{--<script type="text/javascript" src="${resource(dir:'js/jquery-ui-1.9.1.custom/js', file:'jquery-ui-1.9.1.custom.min.js')}"></script>--}%
-    %{--<link rel="stylesheet" type="text/css" media="screen" href="${resource(dir: 'js/jquery-ui-1.9.1.custom/css/smoothness', file: 'jquery-ui-1.9.1.custom.min.css')}"/>--}%
 
     <g:javascript library="application" />
     %{--<g:javascript library="jquery.tools.min"/>--}%

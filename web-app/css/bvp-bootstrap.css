@@ -371,3 +371,15 @@ h2, h3, h4, h5 {
 .dropdown-menu a {
     text-decoration: none;
 }
+
+.bvpBadge {
+    text-align: center;
+}
+
+.bvpBadge img {
+    width: 150px;
+    height: 150px;
+}
+
+.itemgrid { overflow: hidden; margin-bottom: 10px; }
+.itemgrid .item { float: left; width: 160px; margin: 5px 10px; }

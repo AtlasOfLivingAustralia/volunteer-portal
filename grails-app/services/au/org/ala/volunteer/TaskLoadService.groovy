@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.collect.Lists
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import org.apache.commons.io.FileUtils
@@ -56,6 +57,14 @@ class TaskLoadService {
 
     }
 
+    /**
+     * Returns a defensive copy of the current queue
+     * @return
+     */
+    List<TaskDescriptor> currentQueue() {
+        Lists.newArrayList(_loadQueue.iterator())
+    }
+
     def loadTaskFromCSV(Project project, String csv, boolean replaceDuplicates) {
 
         if (_loadQueue.size() > 0) {
@@ -64,14 +73,14 @@ class TaskLoadService {
 
         Closure importClosure = default_csv_import
 
-        logService.log "Looking for import function for template: ${project.template.name}"
+        log.info "Looking for import function for template: ${project.template.name}"
 
         MetaProperty importClosureProperty = this.metaClass.properties.find() { it.name == "import_" + project.template.name }
         if (importClosureProperty) {
-            logService.log("Using 'import_${project.template.name} for import")
+            log.info("Using 'import_${project.template.name} for import")
             importClosure = importClosureProperty.getProperty(this) as Closure
         } else {
-            logService.log "Using default CSV import routine"
+            log.info "Using default CSV import routine"
         }
 
         try {
@@ -84,7 +93,7 @@ class TaskLoadService {
                         _loadQueue.put(taskDesc)
                     }
                 } else {
-                    logService.log 'Skipping empty line'
+                    log.info 'Skipping empty line'
                 }
             }
         } catch (Exception ex) {
@@ -130,7 +139,7 @@ class TaskLoadService {
                 try {
                     // Add shadow file contents...
                     imgData.shadowFiles?.each { shadowFile ->
-                        logService.log("Processing shadow files post task import ${task.id}: ${shadowFile.stagedFile.file}")
+                        log.info("Processing shadow files post task import ${task.id}: ${shadowFile.stagedFile.file}")
                         def file = new File(shadowFile.stagedFile.file as String)
                         if (file && file.exists()) {
                             def fieldValue = FileUtils.readFileToString(file)
@@ -338,7 +347,7 @@ class TaskLoadService {
                     try {
                         md.afterDownload(t, multimedia, filePath)
                     } catch (Exception ex) {
-                        logService.log "Error calling after media download hook: ${ex.message}"
+                        log.info "Error calling after media download hook: ${ex.message}"
                     }
                 }
             }
@@ -432,6 +441,12 @@ class TaskLoadService {
 
     public def cancelLoad() {
         _cancel = true;
+    }
+
+    List<TaskDescriptor> clearQueue() {
+        def tasks = []
+        _loadQueue.drainTo(tasks)
+        tasks
     }
 
     def List<TaskLoadStatus> getLastReport() {

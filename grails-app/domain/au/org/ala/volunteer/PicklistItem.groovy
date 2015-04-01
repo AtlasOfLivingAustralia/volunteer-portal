@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class PicklistItem {
+class PicklistItem implements Serializable {
 
     Picklist picklist
     String key

@@ -72,7 +72,7 @@ class CollectionEventService {
                 def rowsProcessed = 0;
 
                 def rowsDeleted = CollectionEvent.executeUpdate("delete CollectionEvent where institutionCode = '${institutionCode}'")
-                logService.log "${rowsDeleted} rows deleted from CollectionEvent table"
+                log.info "${rowsDeleted} rows deleted from CollectionEvent table"
 
                 Map<String, Integer> col =[:]
 
@@ -132,7 +132,7 @@ class CollectionEventService {
                         sessionFactory.currentSession.flush()
                         sessionFactory.currentSession.clear()
                         propertyInstanceMap.get().clear()
-                        logService.log "${rowsProcessed} rows processed, ${count} rows imported..."
+                        log.info "${rowsProcessed} rows processed, ${count} rows imported..."
                     }
 
                 }

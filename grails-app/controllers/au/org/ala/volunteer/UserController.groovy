@@ -1,8 +1,16 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import grails.converters.JSON
+import groovy.text.SimpleTemplateEngine
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.action.search.SearchType
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms
+
 import java.text.SimpleDateFormat
+
+import static au.org.ala.volunteer.FullTextIndexService.*
 
 class UserController {
 
@@ -11,18 +19,73 @@ class UserController {
     def grailsApplication
     def taskService
     def userService
-    def achievementService
     def logService
     def fieldService
     def forumService
     def authService
+    def fullTextIndexService
+
+    static final ALA_HARVESTABLE = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "project.harvestableByAla": true } },
+        { "term": { "fullyTranscribedBy": "${userId}" } }
+      ]
+    }
+  }
+}'''
+
+    static final SPECIES_AGG_TEMPLATE = '''
+{
+  "fields": {
+    "nested": {
+      "path": "fields"
+    },
+    "aggs": {
+      "speciesfields" : {
+        "filter" : { "term" : { "fields.name" : "scientificName" } },
+        "aggs" : {
+          "species" : {
+            "terms" : { "field" : "fields.value", "size": 0 }
+          }
+        }
+      }
+    }
+  }
+}
+'''
+
+    static final MATCH_ALL = '{ "constant_score" : { "query": { "match_all": { } } } }'
+
+    static final FIELD_OBSERVATIONS = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "project.projectType": "fieldnotes" } },
+        { "term": { "fullyTranscribedBy": "${userId}" } }
+      ]
+    }
+  }
+}'''
+
+    static final VALIDATED_TASKS_FOR_USER = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "isValid": true } },
+        { "term": { "fullyTranscribedBy": "${userId}" } }
+      ]
+    }
+  }
+}'''
 
     def index = {
         redirect(action: "list", params: params)
     }
 
     def logout = {
-        logService.log "Invalidating Session (UserController.logout): ${session.id}"
+        log.info "Invalidating Session (UserController.logout): ${session.id}"
         session.invalidate()
         redirect(url:"${params.casUrl}?url=${params.appUrl}")
     }
@@ -285,10 +348,7 @@ class UserController {
             totalTranscribedTasks = userInstance.transcribedCount
         }
 
-        def achievements = []
-        if (FrontPage.instance().showAchievements) {
-            achievements = achievementService.calculateAchievements(userInstance)
-        }
+        def achievements = userInstance.achievementAwards
 
         def score = userService.getUserScore(userInstance)
 
@@ -447,7 +507,7 @@ class UserController {
 
     }
 
-    def dashboard() {
+    def notebook() {
 
         def userInstance = userService.currentUser
         if (params.int("id")) {
@@ -464,73 +524,170 @@ class UserController {
     }
 
     def ajaxGetPoints() {
-
+        Stopwatch sw = new Stopwatch();
+        sw.start()
         def userInstance = User.get(params.int("id"))
-        def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
+        sw.stop()
+        log.info("ajaxGetPoints| User.get(): ${sw.toString()}")
+        sw.reset().start()
 
-        def data = []
-        tasks.each { task ->
-            def point = fieldService.getPointForTask(task)
-            if (point) {
-                data << [lat:point.lat, lng:point.lng, taskId: task.id]
-            }
+        Long taskCount = Task.countByFullyTranscribedBy(userInstance.userId)
+        sw.stop()
+        log.info("ajaxGetPoints| Task.countByFullyTranscribedBy(): ${sw.toString()}")
+        sw.reset().start()
+
+        final q = '''{
+  "constant_score": {
+    "filter": {
+      "and": [
+        { "term": { "fullyTranscribedBy": "${userId}" } },
+        { "nested" :
+          {
+            "path" : "fields",
+            "filter" : { "term" : { "name": "decimalLongitude"}}
+          }
+        },
+        { "nested" :
+          {
+            "path" : "fields",
+            "filter" : { "term" : { "name": "decimalLongitude"}}
+          }
         }
+      ]
+    }
+  }
+}'''
+        final simpleTemplateEngine = new SimpleTemplateEngine();
+        final query = simpleTemplateEngine.createTemplate(q).make([userId: userInstance.userId]).toString()
+
+        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, taskCount.intValue(), rawResponse)
+        sw.stop()
+        log.info("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
+        sw.reset().start()
+
+        def data = searchResponse.hits.hits.collect { hit ->
+            def field = hit.source['fields']
+
+            //log.error("Keys ${field}")
+            def pt = field.findAll { value ->
+                value['name'] == 'decimalLongitude' || value['name'] == 'decimalLatitude'
+            }.collectEntries { value ->
+                def dVal = value['value']
+//                    try {
+//                        dVal = Double.valueOf(value['value'])
+//                    } catch (NumberFormatException e) {
+//                        log.warn("Got invalid lat/lon value ${value['value']}")
+//                        dVal = 0.0
+//                    }
+                if (value['name'] == 'decimalLongitude') {
+                    [lng: dVal]
+                } else {
+                    [lat: dVal]
+                }
+            }
+            pt.put('taskId', hit.source['id'])
+            pt
+        }
+
+        sw.stop()
+        log.info("ajaxGetPoints| generateResults: ${sw.toString()}")
+        //sw.reset().start()
+
+        //def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
+
+        //def data = []
+        //tasks.each { task ->
+//            def point = fieldService.getPointForTask(task)
+        //    if (point) {
+        //        data << [lat:point.lat, lng:point.lng, taskId: task.id]
+        //    }
+        //}
+
+
 
         render(data as JSON)
     }
 
-    def dashboardMainFragment() {
+    def notebookMainFragment() {
+        Stopwatch sw = new Stopwatch();
         def userInstance = User.get(params.int("id"))
+        def simpleTemplateEngine = new SimpleTemplateEngine()
         def c = Task.createCriteria()
+        sw.start()
         def expeditions = c {
             eq("fullyTranscribedBy", userInstance.userId)
             projections {
                 countDistinct("project")
             }
         }
+        sw.stop()
 
+        log.info("notebookMainFragment.projectCount ${sw.toString()}")
+
+        sw.reset().start()
         def score = userService.getUserScore(userInstance)
+        sw.stop()
+        log.info("notebookMainFragment.getUserScore ${sw.toString()}")
 
-        def achievements = achievementService.calculateAchievements(userInstance)
-        def userAchievements = Achievement.findAllByUser(userInstance, [sort:'dateAchieved', order:'desc'])
+        sw.reset().start()
+        def recentAchievements = AchievementAward.findAllByUser(userInstance, [sort:'awarded', order:'desc', max: 3])
+        sw.stop()
+        log.info("notebookMainFragment.recentAchievements ${sw.toString()}")
 
-        def recentAchievement
-        if (userAchievements) {
-            def top = userAchievements[0]
+        sw.reset().start()
+        final query = simpleTemplateEngine.createTemplate(ALA_HARVESTABLE).make([userId: userInstance.userId]).toString()
+        final agg = SPECIES_AGG_TEMPLATE
 
-            recentAchievement = achievements.find { it.name == top.name }
-            if (recentAchievement) {
-                recentAchievement.date = top.dateAchieved
-            }
-        }
+        def speciesList2 = fullTextIndexService.rawSearch(query, SearchType.COUNT, agg) { SearchResponse searchResponse ->
+            searchResponse.aggregations.get('fields').aggregations.get('speciesfields').aggregations.get('species').buckets.collect { [ it.key, it.docCount ] }
+        }.sort { m -> m[1] }
+        def totalSpeciesCount = speciesList2.size()
+        sw.stop()
+        log.info("notebookMainFragment.speciesList2 ${sw.toString()}")
+        log.info("specieslist2: ${speciesList2}")
 
-        def speciesCriteria = Field.createCriteria()
-        def species = speciesCriteria.list(max: 5) {
-            and {
-                eq("transcribedByUserId", userInstance.userId)
-                eq("superceded", false)
-                ilike("name", "scientificName")
-                isNotNull("value")
-                ne("value", "")
-            }
-            projections {
-                groupProperty("value")
-                count("value","count")
-                order("count", "desc")
-            }
+        sw.reset().start()
 
-        }
+        final matchAllQuery = MATCH_ALL
 
-        [userInstance: userInstance, expeditionCount: expeditions ? expeditions[0] : 0, score: score, recentAchievement: recentAchievement, topSpecies: species ]
+        def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, hitsCount)
+        def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, hitsCount)
+        def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
+
+        sw.stop()
+        log.info("notbookMainFragment.percentage ${sw.toString()}")
+
+        sw.reset().start()
+        def fieldObservationQuery = simpleTemplateEngine.createTemplate(FIELD_OBSERVATIONS).make([userId: userInstance.userId]).toString()
+        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, hitsCount)
+
+        sw.stop()
+        log.info("notbookMainFragment.fieldObservationCount ${sw.toString()}")
+
+        sw.reset().start()
+        final validatedQuery = simpleTemplateEngine.createTemplate(VALIDATED_TASKS_FOR_USER).make([userId: userInstance.userId]).toString()
+        def validatedCount = fullTextIndexService.rawSearch(validatedQuery, SearchType.COUNT, hitsCount)
+        sw.stop()
+        log.info("notbookMainFragment.validatedCount ${sw.toString()}")
+
+        [userInstance: userInstance, expeditionCount: expeditions ? expeditions[0] : 0, score: score,
+         recentAchievements: recentAchievements, speciesList: speciesList2, fieldObservationCount: fieldObservationCount,
+         validatedCount: validatedCount, userPercent: userPercent, totalSpeciesCount: totalSpeciesCount
+        ]
     }
 
     def badgesFragment() {
         def userInstance = User.get(params.int("id"))
-        def achievements = achievementService.calculateAchievements(userInstance)
+        //def achievements = achievementService.calculateAchievements(userInstance)
+        def achievements = userInstance.achievementAwards
+        def sortedAchievements = achievements.sort { a,b -> b.awarded.compareTo(a.awarded) }
         def score = userService.getUserScore(userInstance)
-        def allAchievements = achievementService.getAllAchievements()
+        def awardedIds = achievements*.achievement*.id.toList()
+        def otherAchievements
+        if (awardedIds) otherAchievements = AchievementDescription.findAllByIdNotInListAndEnabled(awardedIds, true, [sort: 'name'])
+        else otherAchievements = AchievementDescription.findAllByEnabled(true, [sort: 'name'])
 
-        [userInstance: userInstance, achievements: achievements, score: score, allAchievements: allAchievements]
+        [userInstance: userInstance, achievements: sortedAchievements, score: score, allAchievements: otherAchievements]
     }
 
     def recentTasksFragment() {
@@ -557,6 +714,18 @@ class UserController {
     }
 
     def transcribedTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        [userInstance: userInstance]
+    }
+
+    def savedTasksFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        [userInstance: userInstance]
+    }
+
+    def validatedTasksFragment() {
         def userInstance = User.get(params.int("id"))
 
         [userInstance: userInstance]

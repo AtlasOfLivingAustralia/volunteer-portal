@@ -185,7 +185,7 @@
 
                     <cl:isLoggedIn>
                         <scetion id="user-stats">
-                            <a class="btn btn-small" href="${createLink(controller:'user', action:'myStats')}">View my tasks</a>
+                            <a class="btn btn-small" href="${createLink(controller:'user', action:'notebook')}">View my notebook</a>
                         </scetion>
                     </cl:isLoggedIn>
 
