@@ -47,7 +47,9 @@ grails.project.dependency.resolution = {
         runtime ":quartz:1.0.1"
         runtime ":tiny-mce:3.4.9"
         runtime ":webxml:1.4.1"
-        runtime ":ala-web-theme:0.8.5"
+        //runtime ":ala-web-theme:0.8.5"
+        runtime ":ala-auth:1.2"
+        runtime ":ala-bootstrap2:1.4"
         runtime ":lesscss-resources:1.3.3"
         compile ':scaffolding:2.0.3'
         runtime ':database-migration:1.4.0'
