@@ -2,11 +2,13 @@ package au.org.ala.volunteer
 
 import grails.converters.JSON
 import grails.util.Environment
+import grails.util.Metadata
 import groovy.time.TimeCategory
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
 
 import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 class VolunteerTagLib {
 
@@ -21,7 +23,7 @@ class VolunteerTagLib {
     def authService
     def achievementService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate']
 
     def isLoggedIn = { attrs, body ->
 
@@ -726,11 +728,13 @@ class VolunteerTagLib {
     }
 
     def buildDate = { attrs ->
-        def bd = grailsApplication.metadata['build.date']
+        def bd = Metadata.current['build.date']
+        log.info("Build Date type is ${bd?.class?.name}")
+        def df = new SimpleDateFormat('MMM d, yyyy')
         if (bd) {
-            bd
+            df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
         } else {
-            ""
+            df.format(new Date())
         }
     }
 }
