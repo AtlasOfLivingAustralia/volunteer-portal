@@ -83,10 +83,10 @@
                 <h3>Conversation history:</h3>
                 <div style="height: 300px; overflow-y: scroll; border: 1px solid #a9a9a9" >
                     <g:each in="${topic.messages?.sort { it.date } }" var="reply">
-                        <div class="messageReply" author="<cl:userDetails id="${replyTo?.user?.userId}" displayName="true"/>" style="border: 1px solid #a9a9a9; margin: 3px; padding: 3px; background: white">
+                        <div class="messageReply" author="<cl:userDetails id="${reply?.user?.userId}" displayName="true"/>" style="border: 1px solid #a9a9a9; margin: 3px; padding: 3px; background: white">
                             <div style="background-color: #3a5c83; color: white">
                                 <img src="${resource(dir:'/images', file:'reply.png')}" style="vertical-align: bottom"/>
-                                On ${formatDate(date: reply.date, format: 'dd MMM yyyy')} at ${formatDate(date: reply.date, format: 'HH:mm:ss')} <strong><cl:userDetails id="${replyTo?.user?.userId}" displayName="true"/></strong> wrote:
+                                On ${formatDate(date: reply.date, format: 'dd MMM yyyy')} at ${formatDate(date: reply.date, format: 'HH:mm:ss')} <strong><cl:userDetails id="${reply?.user?.userId}" displayName="true"/></strong> wrote:
                             </div>
                             <markdown:renderHtml>${reply.text}</markdown:renderHtml>
                         </div>
