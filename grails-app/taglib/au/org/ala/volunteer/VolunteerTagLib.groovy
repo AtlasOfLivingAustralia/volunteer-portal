@@ -6,6 +6,8 @@ import groovy.time.TimeCategory
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
 
+import java.text.DateFormat
+
 class VolunteerTagLib {
 
     static namespace = 'cl'
@@ -721,5 +723,14 @@ class VolunteerTagLib {
      */
     def achievementsEnabled = { attrs ->
         settingsService.getSetting(SettingDefinition.EnableMyNotebook) && settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)
+    }
+
+    def buildDate = { attrs ->
+        def bd = grailsApplication.metadata['build.date']
+        if (bd) {
+            DateFormat.getDateInstance(DateFormat.MEDIUM).format(bd)
+        } else {
+            ""
+        }
     }
 }

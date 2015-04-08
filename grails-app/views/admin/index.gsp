@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.Project" %>
+<%@ page import="java.text.DateFormat; au.org.ala.volunteer.Project" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -9,7 +9,7 @@
     <body>
 
         <cl:headerContent title="${message(code:'default.admin.label', default:'Admin')}">
-            <small class="muted">Version ${grailsApplication.metadata['app.version']}&nbsp;(built ${grailsApplication.metadata['app.buildDate']}&nbsp;${grailsApplication.metadata['app.buildProfile']}&nbsp;sha:&nbsp;<a href="https://github.com/AtlasOfLivingAustralia/volunteer-portal/commit/${grailsApplication.metadata['environment.TRAVIS_COMMIT']}">${grailsApplication.metadata['environment.TRAVIS_COMMIT']}</a>)</small>
+            <small class="muted">Version ${grailsApplication.metadata['app.version']}&nbsp;(built <cl:buildDate />&nbsp;${grails.util.Environment.current}&nbsp;sha:&nbsp;<a href="https://github.com/AtlasOfLivingAustralia/volunteer-portal/commit/${grailsApplication.metadata['environment.TRAVIS_COMMIT']}">${grailsApplication.metadata['environment.TRAVIS_COMMIT']}</a>)</small>
         </cl:headerContent>
 
 

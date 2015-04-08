@@ -130,6 +130,7 @@ expedition = [
 ]
 
 // TODO Remove this after ala-auth plugin is updated
+userDetails.url = "https://auth.ala.org.au/userdetails/userDetails/"
 userDetailsById.bulkPath = 'getUserDetailsFromIdList'
 
 volunteer.defaultProjectId = 6306
