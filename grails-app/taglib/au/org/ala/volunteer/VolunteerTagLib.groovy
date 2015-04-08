@@ -728,7 +728,7 @@ class VolunteerTagLib {
     def buildDate = { attrs ->
         def bd = grailsApplication.metadata['build.date']
         if (bd) {
-            DateFormat.getDateInstance(DateFormat.MEDIUM).format(bd)
+            bd
         } else {
             ""
         }
