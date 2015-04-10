@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
+import com.google.common.base.Stopwatch
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -13,6 +14,8 @@ import javax.sql.DataSource
 import java.sql.ResultSet
 import org.grails.plugins.csv.CSVWriter
 import org.grails.plugins.csv.CSVWriterColumnsBuilder
+
+import static grails.async.Promises.*
 
 class AjaxController {
 
@@ -27,6 +30,7 @@ class AjaxController {
     def authService
     def settingsService
     def achievementService
+    def sessionFactory
 
     static responseFormats = ['json', 'xml']
 
@@ -90,38 +94,15 @@ class AjaxController {
             return;
         }
 
-        def report = []
-        def users = User.list()
 
-        def serviceResults = [:]
-        try {
-            serviceResults = authService.getUserDetailsById(users*.userId)
-        } catch (Exception e) {
-            log.warn("couldn't get user details from web service", e)
-        }
-
-        for (User user : users) {
-            def transcribedCount = Task.countByFullyTranscribedBy(user.userId)
-            def validatedCount = Task.countByFullyValidatedBy(user.userId)
-            def lastActivity = ViewedTask.executeQuery("select to_timestamp(max(vt.lastView)/1000) from ViewedTask vt where vt.userId = :userId", [userId: user.userId])[0]
-
-            def projectCount = ViewedTask.executeQuery("select distinct t.project from Task t where t.fullyTranscribedBy = :userId", [userId:  user.userId]).size()
-
-            //def props = userService.detailsForUserId(user.userId)
-            def serviceResult = serviceResults?.users?.get(user.userId)
-            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
-        }
-
-        // Sort by the transcribed count
-        report.sort({ row1, row2 -> row2[2] - row1[2]})
-
-        def nodata = params.nodata ?: 'nodata'
-
+        // Pre-create the writer and writer the headings straight away to prevent a read timeout.
+        def writer
         if (params.wt && params.wt == 'csv') {
+            def nodata = params.nodata ?: 'nodata'
 
             response.addHeader("Content-type", "text/plain")
 
-            def writer = new CSVWriter((Writer) response.writer,  {
+            writer = new CSVHeadingsWriter((Writer) response.writer, {
                 'user_id' { it[0] }
                 'display_name' { it[1] }
                 'transcribed_count' { it[2] }
@@ -130,6 +111,97 @@ class AjaxController {
                 'projects_count' { it[5] }
                 'volunteer_since' { it[6] }
             })
+            writer.writeHeadings()
+            response.flushBuffer()
+        }
+
+
+        def asyncCounts = Task.async.withStatelessSession {
+            def sw1 = new Stopwatch().start()
+            def vs = (Task.withCriteria {
+                projections {
+                    groupProperty('fullyValidatedBy')
+                    count('id')
+                }
+            }).collectEntries { [(it[0]): it[1]] }
+            def ts = (Task.withCriteria {
+                projections {
+                    groupProperty('fullyTranscribedBy')
+                    count('id')
+                }
+            }).collectEntries { [(it[0]): it[1]] }
+            sw1.stop()
+            log.info("UserReport counts took ${sw1.toString()}")
+            [vs: vs, ts: ts]
+        }
+
+        def asyncLastActivities = ViewedTask.async.withStatelessSession {
+            def sw2 = new Stopwatch().start()
+            def lastActivities = ViewedTask.executeQuery("select vt.userId, to_timestamp(max(vt.lastView)/1000) from ViewedTask vt group by vt.userId").collectEntries { [(it[0]): it[1]] }
+            sw2.stop()
+            log.info("UserReport viewedTasks took ${sw2.toString()}")
+            lastActivities
+        }
+
+        def asyncProjectCounts = Task.async.withStatelessSession {
+            def sw4 = new Stopwatch().start()
+            def projectCounts = Task.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Task t group by t.fullyTranscribedBy ").collectEntries { [(it[0]): it[1]] }
+            sw4.stop()
+            log.info("UserReport projectCounts took ${sw4.toString()}")
+            projectCounts
+        }
+
+        def sw3 = new Stopwatch().start()
+        def asyncUserDetails = User.async.list().then { users ->
+            def serviceResults = [:]
+            try {
+                serviceResults = authService.getUserDetailsById(users*.userId)
+            } catch (Exception e) {
+                log.warn("couldn't get user details from web service", e)
+            }
+            sw3.stop()
+            log.info("UserReport user details took ${sw3.toString()}")
+
+            [users: users, results: serviceResults]
+        }
+
+        def asyncResults = waitAll(asyncCounts, asyncLastActivities, asyncProjectCounts, asyncUserDetails)
+
+        // transform raw results into map(id -> count)
+        def validateds = asyncResults[0].vs
+        def transcribeds = asyncResults[0].ts
+
+        def lastActivities = asyncResults[1]
+        def projectCounts = asyncResults[2]
+
+        def users = asyncResults[3].users
+        def serviceResults = asyncResults[3].results
+
+        def report = []
+
+        def sw5 = new Stopwatch().start()
+        for (User user: users) {
+            def id = user.userId
+            def transcribedCount = transcribeds[id] ?: 0
+            def validatedCount = validateds[id] ?: 0
+            def lastActivity = lastActivities[id]
+            def projectCount = projectCounts[id]?: 0
+
+            def serviceResult = serviceResults?.users?.get(id)
+            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
+        }
+        sw5.stop()
+        log.info("UserReport generate report took ${sw5}")
+
+        sw5.reset().start()
+        // Sort by the transcribed count
+        report.sort({ row1, row2 -> row2[2] - row1[2]})
+        sw5.stop()
+        log.info("UserReport sort took ${sw5.toString()}")
+
+
+        if (params.wt && params.wt == 'csv') {
+
             for (def row : report) {
                 writer << row
             }
