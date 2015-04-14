@@ -729,7 +729,7 @@ class VolunteerTagLib {
 
     def buildDate = { attrs ->
         def bd = Metadata.current['build.date']
-        log.info("Build Date type is ${bd?.class?.name}")
+        log.debug("Build Date type is ${bd?.class?.name}")
         def df = new SimpleDateFormat('MMM d, yyyy')
         if (bd) {
             df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))

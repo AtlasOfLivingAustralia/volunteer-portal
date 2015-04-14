@@ -95,7 +95,7 @@ class AjaxController {
         }
 
 
-        // Pre-create the writer and writer the headings straight away to prevent a read timeout.
+        // Pre-create the writer and write the headings straight away to prevent a read timeout.
         def writer
         if (params.wt && params.wt == 'csv') {
             def nodata = params.nodata ?: 'nodata'
@@ -131,7 +131,7 @@ class AjaxController {
                 }
             }).collectEntries { [(it[0]): it[1]] }
             sw1.stop()
-            log.info("UserReport counts took ${sw1.toString()}")
+            log.debug("UserReport counts took ${sw1.toString()}")
             [vs: vs, ts: ts]
         }
 
@@ -139,7 +139,7 @@ class AjaxController {
             def sw2 = new Stopwatch().start()
             def lastActivities = ViewedTask.executeQuery("select vt.userId, to_timestamp(max(vt.lastView)/1000) from ViewedTask vt group by vt.userId").collectEntries { [(it[0]): it[1]] }
             sw2.stop()
-            log.info("UserReport viewedTasks took ${sw2.toString()}")
+            log.debug("UserReport viewedTasks took ${sw2.toString()}")
             lastActivities
         }
 
@@ -147,7 +147,7 @@ class AjaxController {
             def sw4 = new Stopwatch().start()
             def projectCounts = Task.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Task t group by t.fullyTranscribedBy ").collectEntries { [(it[0]): it[1]] }
             sw4.stop()
-            log.info("UserReport projectCounts took ${sw4.toString()}")
+            log.debug("UserReport projectCounts took ${sw4.toString()}")
             projectCounts
         }
 
@@ -160,7 +160,7 @@ class AjaxController {
                 log.warn("couldn't get user details from web service", e)
             }
             sw3.stop()
-            log.info("UserReport user details took ${sw3.toString()}")
+            log.debug("UserReport user details took ${sw3.toString()}")
 
             [users: users, results: serviceResults]
         }
@@ -191,13 +191,13 @@ class AjaxController {
             report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
         }
         sw5.stop()
-        log.info("UserReport generate report took ${sw5}")
+        log.debug("UserReport generate report took ${sw5}")
 
         sw5.reset().start()
         // Sort by the transcribed count
         report.sort({ row1, row2 -> row2[2] - row1[2]})
         sw5.stop()
-        log.info("UserReport sort took ${sw5.toString()}")
+        log.debug("UserReport sort took ${sw5.toString()}")
 
 
         if (params.wt && params.wt == 'csv') {
