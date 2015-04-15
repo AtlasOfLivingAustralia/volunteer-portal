@@ -49,7 +49,7 @@
 
         <div class="flightDetails row-fluid" >
             <div class="span2">
-                <g:renderFieldBootstrap fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" hideLabel="${true}" valueClass="span12" />
+                <g:renderFieldBootstrap fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}" task="${taskInstance}" hideLabel="${true}" valueClass="span12" helpTooltipPosition="bottomLeft"/>
             </div>
             <div class="span1"></div>
             <div class="span2">

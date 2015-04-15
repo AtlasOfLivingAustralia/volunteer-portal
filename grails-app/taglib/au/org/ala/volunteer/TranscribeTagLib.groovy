@@ -66,6 +66,8 @@ class TranscribeTagLib {
      * @attr labelClass
      * @attr valueClass
      * @attr field Optional, if the template already has the field object, no need to look up from it's name.
+     * @attr helpTargetPosition Optional, the target position for the qtip help pop up
+     * @attr helpTooltipPosition Optional, the tooltip position for the qtip help pop up
      */
     def renderFieldBootstrap = { attrs, body ->
 
@@ -75,6 +77,8 @@ class TranscribeTagLib {
         def valueClass = attrs.valueClass ?: "span12"
         def rowClass = attrs.rowClass ?: "row-fluid"
         def recordIdx = attrs.recordIdx ?: 0
+        def helpTargetPosition = attrs.helpTargetPosition
+        def helpTooltipPosition = attrs.helpTooltipPosition
 
         if (!task) {
             return
@@ -87,7 +91,7 @@ class TranscribeTagLib {
         }
 
         def mb = new MarkupBuilder(out)
-        renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass)
+        renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass, helpTargetPosition, helpTooltipPosition)
     }
 
     private String getFieldLabel(TemplateField field) {
@@ -98,7 +102,7 @@ class TranscribeTagLib {
         }
     }
 
-    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row-fluid") {
+    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row-fluid", String helpTargetPosition = null, String helpTooltipPosition = null) {
 
         if (!task || !field) {
             return
@@ -134,7 +138,7 @@ class TranscribeTagLib {
                         mkp.yieldUnescaped(widgetHtml)
                     }
                     div(class:'span2') {
-                        renderFieldHelp(mb, field)
+                        renderFieldHelp(mb, field, helpTargetPosition, helpTooltipPosition)
                     }
                 }
             }
@@ -518,13 +522,15 @@ class TranscribeTagLib {
 
     def fieldHelp = { attrs, body ->
         def field = attrs.field as TemplateField
-        renderFieldHelp(new MarkupBuilder(out), field)
+        def tooltipPosition = attrs.tooltipPosition
+        def targetPosition = attrs.targetPosition
+        renderFieldHelp(new MarkupBuilder(out), field, targetPosition, tooltipPosition)
     }
 
-    private renderFieldHelp(MarkupBuilder mb, TemplateField field) {
+    private renderFieldHelp(MarkupBuilder mb, TemplateField field, String targetPosition = null, String tooltipPosition = null) {
         if (field && field.helpText) {
             def helpText = markdownService.markdown(field.helpText)
-            mb.a(href:'#', class:'fieldHelp', title:helpText, tabindex: "-1") {
+            mb.a(href:'#', class:'fieldHelp', title:helpText, tabindex: "-1", targetPosition: targetPosition, tooltipPosition: tooltipPosition) {
                 span(class:'help-container') {
                     mkp.yieldUnescaped('&nbsp;')
                 }
