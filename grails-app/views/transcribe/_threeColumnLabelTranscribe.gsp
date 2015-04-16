@@ -56,7 +56,7 @@
                         <div class="control-group">
                             <g:set var="allTextField" value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}" />
                             <span class="pull-right">
-                                <g:fieldHelp field="${allTextField}" />
+                                <g:fieldHelp field="${allTextField}" tooltipPosition="bottomLeft" />
                             </span>
                             <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
                             <g:textArea class="span12" validationRule="${allTextField?.validationRule}" name="recordValues.0.occurrenceRemarks" value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks" rows="12" cols="42"/>
@@ -75,7 +75,7 @@
                         <button type="button" class="btn btnCopyFromPreviousTask" href="#task_selector" style="">Copy values from a previous task</button>
                     </div>
                     <div class="span2">
-                        <a href="#" class="fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
+                        <a href="#" class="fieldHelp" tooltipPosition="bottomLeft" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span class="help-container">&nbsp;</span></a>
                     </div>
                 </div>
             </div>

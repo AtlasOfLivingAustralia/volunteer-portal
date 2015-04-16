@@ -21,7 +21,13 @@ class PicklistController {
     }
     
     def uploadCsvData = {
-        picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist, params.institutionCode)
+        picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist.toCsvReader(), params.institutionCode)
+        redirect(action: "manage")
+    }
+
+    def uploadCsvFile() {
+        def f = request.getFile('picklistFile')
+        picklistService.replaceItems(Long.parseLong(params.picklistId), f.inputStream.toCsvReader(['charset':'UTF-8']), params.institutionCode)
         redirect(action: "manage")
     }
 

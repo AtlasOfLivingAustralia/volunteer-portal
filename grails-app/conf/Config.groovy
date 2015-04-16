@@ -129,15 +129,9 @@ expedition = [
 
 ]
 
-achievements = [
-        [ name: 'tenth_transcription', label:"10th transcription", description:'Submit ten transcription tasks for validation', icon: 'images/achievements/bronze_lens.png' ],
-        [ name: 'hundredth_transcription', label:"100th transcription", description:'Submit one hundred transcription tasks for validation', icon: 'images/achievements/silver_telescope.png' ],
-        [ name: 'fivehundredth_transcription', label:"500th transcription", description:'Submit five hundred transcription tasks for validation', icon: 'images/achievements/gold_microscope.png' ],
-        [ name: 'three_projects', label:"Three expeditions", description:'Transcribe tasks across three different expeditions', icon: 'images/achievements/bronze_net.png' ],
-        [ name: 'five_projects', label:"Five expeditions", description:'Transcribe tasks across five different expeditions', icon: 'images/achievements/silver_binoculars.png' ],
-        [ name: 'seven_projects', label:"Seven expeditions", description:'Transcribe tasks across seven different expeditions', icon: 'images/achievements/gold_telescope.png' ],
-
-]
+// TODO Remove this after ala-auth plugin is updated
+userDetails.url = "https://auth.ala.org.au/userdetails/userDetails/"
+userDetailsById.bulkPath = 'getUserDetailsFromIdList'
 
 volunteer.defaultProjectId = 6306
 viewedTask.timeout = 2 * 60 * 60 * 1000

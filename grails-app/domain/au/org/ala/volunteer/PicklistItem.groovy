@@ -9,6 +9,8 @@ class PicklistItem implements Serializable {
 
     static mapping = {
       version false
+        picklist index: 'picklist_item_picklist_id_institution_code_idx'
+        institutionCode index: 'picklist_item_picklist_id_institution_code_idx'
     }
 
     static constraints = {

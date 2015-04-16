@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import au.com.bytecode.opencsv.CSVReader
+import org.grails.plugins.csv.CSVReaderUtils
 import org.hibernate.FlushMode
 
 class PicklistService {
@@ -33,7 +35,7 @@ class PicklistService {
         }
     }
 
-    def replaceItems(long picklistId, String csvdata, String institutionCode) {
+    def replaceItems(long picklistId, CSVReader csvdata, String institutionCode) {
         def picklist = Picklist.get(picklistId)
         // First delete the existing items...
         if (picklist) {
@@ -50,7 +52,7 @@ class PicklistService {
         int rowsProcessed = 0;
         try {
             sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
-            csvdata.eachCsvLine { tokens ->
+            csvdata.eachLine { tokens ->
                 def value = tokens[0]
                 def m = pattern.matcher(value)
                 if (m.find()) {
