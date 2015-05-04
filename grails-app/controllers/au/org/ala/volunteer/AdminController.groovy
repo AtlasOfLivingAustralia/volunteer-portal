@@ -366,6 +366,7 @@ class AdminController {
     def clearPageCaches() {
         if (!checkAdmin()) {
             render status: 403
+            return
         }
         grailsCacheAdminService.clearTemplatesCache()
         grailsCacheAdminService.clearBlocksCache()
@@ -376,6 +377,7 @@ class AdminController {
     def clearAllCaches() {
         if (!checkAdmin()) {
             render status: 403
+            return
         }
         grailsCacheAdminService.clearAllCaches()
         flash.message = "All caches cleared"
@@ -385,6 +387,7 @@ class AdminController {
     def stagingTasks() {
         if (!checkAdmin()) {
             render status: 403
+            return
         }
 
         def status = taskLoadService.status()
@@ -396,6 +399,7 @@ class AdminController {
     def cancelStagingQueue() {
         if (!checkAdmin()) {
             render status: 403
+            return
         }
 
         taskLoadService.cancelLoad()
@@ -407,6 +411,7 @@ class AdminController {
     def clearStagingQueue() {
         if (!checkAdmin()) {
             render status: 403
+            return
         }
 
         def items = taskLoadService.clearQueue()
@@ -414,6 +419,17 @@ class AdminController {
 
 
         redirect action: 'stagingTasks'
+    }
+
+    def updateUsers() {
+        if (!checkAdmin()) {
+            render status: 403
+            return
+        }
+
+        userService.updateAllUsers()
+
+        redirect(controller: 'user', action: 'list')
     }
 
 }

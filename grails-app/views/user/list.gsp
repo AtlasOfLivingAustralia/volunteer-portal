@@ -74,6 +74,9 @@
                     <thead>
                         <tr>
                             <th colspan="5" style="text-align: right">
+                                <cl:ifAdmin>
+                                    <g:link controller="admin" action="updateUsers" class="btn">Update Users</g:link>
+                                </cl:ifAdmin>
                                 <span>
                                     <a style="vertical-align: middle;" href="#" class="fieldHelp" title="Enter search text here to show only members with matching names"><span class="help-container">&nbsp;</span>
                                     </a>

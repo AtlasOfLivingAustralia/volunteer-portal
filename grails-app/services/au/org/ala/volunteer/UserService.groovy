@@ -387,7 +387,7 @@ class UserService {
      * @param prop The property to get (either 'email' or 'displayName']
      */
     def propertyForUserId(String userid, String prop) {
-        if (prop != 'email' && prop != 'displayName') log.warn("propertyForUserId: Unknown property requested \"${prop}\"")
+        if (prop != 'email' && prop != 'displayName' && prop != 'organisation') log.warn("propertyForUserId: Unknown property requested \"${prop}\"")
         detailsForUserId(userid)[prop]
     }
 
@@ -433,7 +433,7 @@ class UserService {
         def ids = users*.userId
         def results
         try {
-            results = authService.getUserDetailsById(ids)
+            results = authService.getUserDetailsById(ids, true)
         } catch (Exception e) {
             log.warn("couldn't get user details from web service", e)
         }
@@ -442,9 +442,10 @@ class UserService {
         if (results) {
             users.each {
                 def result = results.users[it.userId]
-                if (result && (result.displayName != it.displayName || result.userName != it.email)) {
+                if (result && (result.displayName != it.displayName || result.userName != it.email || result.organisation != it.organisation)) {
                     it.displayName = result.displayName
                     it.email = result.userName
+                    it.organisation = result.organisation
                     updates << it
                 }
             }
