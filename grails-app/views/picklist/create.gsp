@@ -31,6 +31,12 @@
                             <g:select name="name" from="${DarwinCoreField.values().sort({ it.name() })}"/>
                         </div>
                     </div>
+                    <div class="control-group">
+                        <label class="control-label" for="clazz"><g:message code="picklist.clazz.label" default="Class" /></label>
+                        <div class="controls" ${hasErrors(bean: picklistInstance, field: 'clazz', 'errors')}>
+                            <g:input name="clazz" />
+                        </div>
+                    </div>
                     <div class="controls">
                         <g:submitButton class="btn btn-primary save" name="create" value="${message(code: 'default.button.create.label', default: 'Create')}" />
                     </div>

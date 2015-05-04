@@ -58,6 +58,7 @@ grails.project.dependency.resolution = {
         compile ':build-info:1.2.8'
         compile ":yammer-metrics:3.0.1-2"
         compile ":grails-melody:1.55.0"
+        compile ":images-client-plugin:0.3"
     }
 
     dependencies {
