@@ -105,11 +105,12 @@ class AjaxController {
             writer = new CSVHeadingsWriter((Writer) response.writer, {
                 'user_id' { it[0] }
                 'display_name' { it[1] }
-                'transcribed_count' { it[2] }
-                'validated_count' { it[3] }
-                'last_activity' { it[4] ?: nodata }
-                'projects_count' { it[5] }
-                'volunteer_since' { it[6] }
+                'organisation' { it[2] }
+                'transcribed_count' { it[3] }
+                'validated_count' { it[4] }
+                'last_activity' { it[5] ?: nodata }
+                'projects_count' { it[6] }
+                'volunteer_since' { it[7] }
             })
             writer.writeHeadings()
             response.flushBuffer()
@@ -155,7 +156,7 @@ class AjaxController {
         def asyncUserDetails = User.async.list().then { users ->
             def serviceResults = [:]
             try {
-                serviceResults = authService.getUserDetailsById(users*.userId)
+                serviceResults = authService.getUserDetailsById(users*.userId, true)
             } catch (Exception e) {
                 log.warn("couldn't get user details from web service", e)
             }
@@ -188,14 +189,15 @@ class AjaxController {
             def projectCount = projectCounts[id]?: 0
 
             def serviceResult = serviceResults?.users?.get(id)
-            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
+
+            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', transcribedCount, validatedCount, lastActivity, projectCount, user.created])
         }
         sw5.stop()
         log.debug("UserReport generate report took ${sw5}")
 
         sw5.reset().start()
         // Sort by the transcribed count
-        report.sort({ row1, row2 -> row2[2] - row1[2]})
+        report.sort({ row1, row2 -> row2[3] - row1[3]})
         sw5.stop()
         log.debug("UserReport sort took ${sw5.toString()}")
 
