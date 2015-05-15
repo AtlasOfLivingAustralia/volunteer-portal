@@ -8,6 +8,7 @@ var transcribeWidgets = {};
         initUnitRangeWidgets();
         initDateWidgets();
         initSheetNumberWidgets();
+        initImageSelectWidgets();
     };
 
     lib.prepareFieldWidgetsForSubmission = function() {
@@ -55,7 +56,7 @@ var transcribeWidgets = {};
         $(".sheetNumberWidget").each(function(index, widget) {
             hookTargetFieldChangeEvent(widget, renderSheetNumberWidgetFromTargetField);
         });
-    }
+    };
 
     var renderSheetNumberWidgetFromTargetField = function(widget) {
         var targetField = $(widget).attr("targetField");
@@ -145,7 +146,20 @@ var transcribeWidgets = {};
                 $(widget).find(".endDay").val(values.endDate.day);
             }
         }
-    }
+    };
+
+
+    var initImageSelectWidgets = function() {
+        $(".imageSelectWidget").each(function(index, widget) {
+            var jw = $(widget);
+            jw.on('click', 'a.thumbnail', function(e) {
+                var ct = $(e.currentTarget);
+                jw.find('a.thumbnail.selected').removeClass('selected');
+                ct.addClass('selected');
+                $('[id=\''+jw.attr('targetField')+'\']').val(ct.attr('data-image-select-value'))
+            });
+        });
+    };
 
     var renderUnitRangeFromTargetField = function(widget) {
         var targetField = $(widget).attr("targetField");

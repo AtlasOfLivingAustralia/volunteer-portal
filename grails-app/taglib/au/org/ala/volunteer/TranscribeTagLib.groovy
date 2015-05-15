@@ -27,6 +27,10 @@ class TranscribeTagLib {
     def taskService
     def picklistService
     def markdownService
+    def imageServiceService
+
+    static returnObjectForTags = ['imageInfos', 'templateFields']
+
 
     /**
      * @attr var
@@ -146,6 +150,19 @@ class TranscribeTagLib {
 
     }
 
+    def renderWidgetHtml = { attrs, body ->
+        Task taskInstance = attrs.taskInstance
+        TemplateField field = attrs.field
+        Map recordValues = attrs.recordValues
+        int recordIdx = attrs.recordIdx ?: 0
+        String auxClass = attrs.auxClass
+
+        //def mb = new MarkupBuilder(out)
+        def html = getWidgetHtml(taskInstance, field, recordValues, recordIdx, attrs, auxClass)
+        //mb.mkp.yieldUnescaped(html)
+        out << html
+    }
+
     private String getWidgetHtml(Task taskInstance, TemplateField field, recordValues, recordIdx, attrs, String auxClass) {
 
         if (!field) {
@@ -157,6 +174,7 @@ class TranscribeTagLib {
         }
 
         def name = field.fieldType.name()
+        def widgetName = "recordValues.${recordIdx}.${name}"
         def cssClass = name
 
         if (field.mandatory) {
@@ -175,10 +193,14 @@ class TranscribeTagLib {
         }
 
         def tabindex = attrs.tabindex ? attrs.tabindex * 10 : null
+        def existingValue = recordValues?.get(recordIdx)?.get(name)
 
-        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance, tabindex: tabindex]
+        def widgetModel = [field:field, value: existingValue, cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance, tabindex: tabindex, recordIdx: recordIdx, widgetName: widgetName]
 
         switch (field.type) {
+            case FieldType.imageSelect:
+                w = render(template: '/transcribe/imageSelectWidget', model: widgetModel)
+                break
             case FieldType.latLong:
                 w = render(template: '/transcribe/latLongWidget', model: widgetModel)
                 break
@@ -208,9 +230,9 @@ class TranscribeTagLib {
                     rows = Integer.parseInt(attrs.rows);
                 }
                 w = g.textArea(
-                    name:"recordValues.${recordIdx}.${name}",
+                    name: widgetName,
                     rows: rows,
-                    value:recordValues?.get(0)?.get(name),
+                    value: existingValue,
                     'class':cssClass,
                     validationRule: validationRule?.name,
                     tabindex: tabindex
@@ -218,15 +240,15 @@ class TranscribeTagLib {
                 break
             case FieldType.hidden:
                 w = g.hiddenField(
-                    name:"recordValues.${recordIdx}.${name}",
-                    value:recordValues?.get(0)?.get(name),
+                    name: widgetName,
+                    value: existingValue,
                     'class':cssClass
                 )
                 break;
             case FieldType.checkbox:
-                def checked = Boolean.parseBoolean(recordValues?.get(0)?.get(name)?:field?.defaultValue)
+                def checked = Boolean.parseBoolean(existingValue ?: field?.defaultValue)
                 w = g.checkBox(
-                    name: "recordValues.${recordIdx}.${name}",
+                    name: widgetName,
                     value: checked,
                     validationRule: validationRule?.name,
                     tabindex: tabindex
@@ -236,11 +258,11 @@ class TranscribeTagLib {
                 def options = picklistService.getPicklistItemsForProject(field.fieldType, taskInstance.project)
                 if (options) {
                     w = g.select(
-                        name:"recordValues.${recordIdx}.${name}",
+                        name: widgetName,
                         from: options,
                         optionValue:'value',
                         optionKey:'value',
-                        value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                        value: existingValue ?: field?.defaultValue,
                         noSelection:['':''],
                         'class':cssClass,
                         validationRule: validationRule?.name,
@@ -253,8 +275,8 @@ class TranscribeTagLib {
                 def labels = options*.value
                 if (options) {
                     w = g.radioGroup(
-                        name:"recordValues.${recordIdx}.${name}",
-                        value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                        name: widgetName,
+                        value: existingValue ?:field?.defaultValue,
                         values: labels,
                         labels: labels,
                         // 'class':cssClass,
@@ -275,9 +297,9 @@ class TranscribeTagLib {
                 }
 
                 w = g.textField(
-                    name:"recordValues.${recordIdx}.${name}",
+                    name: widgetName,
                     maxLength:200,
-                    value:recordValues?.get(0)?.get(name),
+                    value: existingValue,
                     'class':cssClass,
                     validationRule: validationRule?.name,
                     tabindex: tabindex
@@ -538,6 +560,31 @@ class TranscribeTagLib {
         } else {
             mb.mkp.yieldUnescaped("&nbsp;")
         }
+    }
+
+    def imageInfos = { attrs, body ->
+        //List<TemplateField> fields = attrs.fields
+        TemplateField field = attrs.field
+
+        //def pls = fields.collect { Picklist.findByNameAndClazz(it.fieldType.name(), field.layoutClass) }
+        def pl = Picklist.findByNameAndClazz(field.fieldType.name(), field.layoutClass)
+        //def items = []
+        //if (pls) {
+        //    items = PicklistItem.findAllByPicklistInList(pls)
+        //}
+        def items = PicklistItem.findAllByPicklist(pl)
+        def imageIds = items*.key
+        def imageInfos = imageServiceService.getImageInfoForIds(imageIds)
+
+        [picklist: pl, items: items, infos: imageInfos]
+    }
+
+    def templateFields = { attrs, body ->
+        def category = attrs.category ?: FieldCategory.dataset
+        def template = attrs.template
+        def fields = TemplateField.findAllByCategoryAndTemplate(category, template, [sort:'displayOrder'])
+        def groupedFields = fields.groupBy { it.fieldType }
+        fields.collect { [field: it, recordIdx: groupedFields[it.fieldType].findIndexOf { it2 -> it == it2 }] }
     }
 
 }

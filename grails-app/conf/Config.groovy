@@ -194,6 +194,7 @@ environments {
         security.cas.appServerName = "http://devt.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer-portal'
+        ala.image.service.url = "http://devt.ala.org.au:8090/ala-images"
     }
     test {
         grails.serverURL = "http://volunteer-dev.ala.org.au"

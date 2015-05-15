@@ -34,7 +34,7 @@
                     <div class="control-group">
                         <label class="control-label" for="clazz"><g:message code="picklist.clazz.label" default="Class" /></label>
                         <div class="controls" ${hasErrors(bean: picklistInstance, field: 'clazz', 'errors')}>
-                            <g:input name="clazz" />
+                            <g:textField name="clazz" />
                         </div>
                     </div>
                     <div class="controls">
