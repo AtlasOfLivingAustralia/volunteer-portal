@@ -6,6 +6,13 @@
     box-shadow: 0 1px 4px rgba(211, 66, 26, 0.25);
 }
 
+.imageSelectWidget a.thumbnail.selected {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
 .qt-row {
     min-height: 200px;
 }

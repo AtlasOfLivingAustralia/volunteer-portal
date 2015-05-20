@@ -105,8 +105,9 @@
         var interview = true;
         var i = 0;
         var n = ${fieldList.size()};
+        var carousel = $('#qaCarousel');
 
-        $('#qaCarousel').carousel({
+        carousel.carousel({
           interval: false
         });
 
@@ -138,7 +139,6 @@
           }
         });
 
-
         $('#qa-interview').click(function(e) {
             if (!interview) {
                 $('#qaCarousel').addClass('carousel slide');
@@ -150,6 +150,13 @@
                 $('#qa-list').removeClass('active');
                 $('#qa-interview').addClass('active');
                 interview = true;
+            }
+        });
+        carousel.on('slide', function(e) {
+            var inner = carousel.find('.carousel-inner');
+            var active = $(document.activeElement);
+            if ($.contains(inner, active)) {
+                active.blur();
             }
         });
         $(document).not('input,textarea').keydown(function(e) {

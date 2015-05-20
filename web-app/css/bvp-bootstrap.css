@@ -382,4 +382,9 @@ h2, h3, h4, h5 {
 }
 
 .itemgrid { overflow: hidden; margin-bottom: 10px; }
-.itemgrid .item { float: left; width: 160px; margin: 5px 10px; }
+.itemgrid .item,
+.itemgrid .griditem {
+    float: left;
+    width: 160px;
+    margin: 5px 10px;
+}
