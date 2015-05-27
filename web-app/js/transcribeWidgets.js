@@ -156,7 +156,7 @@ var transcribeWidgets = {};
                 var ct = $(e.currentTarget);
                 jw.find('a.thumbnail.selected').removeClass('selected');
                 ct.addClass('selected');
-                $('[id=\''+jw.attr('targetField')+'\']').val(ct.attr('data-image-select-value'))
+                $('[id=\''+jw.attr('targetField')+'\']').val(ct.attr('data-image-select-value')).trigger('change');
             });
         });
     };

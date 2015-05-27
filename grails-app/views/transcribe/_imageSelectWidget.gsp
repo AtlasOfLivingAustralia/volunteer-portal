@@ -1,6 +1,6 @@
 <g:set var="picklistInfo" value="${g.imageInfos(field: field)}" />
 <div class="imageSelectWidget ${cssClass}" targetField="${widgetName}">
-    <div class="itemgrid span12">
+    <div class="itemgrid">
         <g:each in="${picklistInfo.items}" var="piItem">
         <g:set var="aclass" value="${piItem.value == value ? 'selected' : ''}" />
         <div class="griditem bvpBadge">
@@ -13,6 +13,3 @@
     </div>
     <g:hiddenField id="${widgetName}" name="${widgetName}" value="${value}" class="${field.fieldType}" />
 </div>
-<!--
-    Unfocus the element if its a child of the carousel before sliding
--->

@@ -6,11 +6,77 @@
     box-shadow: 0 1px 4px rgba(211, 66, 26, 0.25);
 }
 
-.imageSelectWidget a.thumbnail.selected {
+
+/* Disable focus transitions inside the qa carousel because
+   they interfere with the carousel slide transitions */
+#qaCarousel.carousel a.thumbnail.selected {
     -webkit-transition: none;
     -moz-transition: none;
     -o-transition: none;
     transition: none;
+}
+
+#qaCarousel.carousel textarea,
+#qaCarousel.carousel input[type="text"],
+#qaCarousel.carousel input[type="password"],
+#qaCarousel.carousel input[type="datetime"],
+#qaCarousel.carousel input[type="datetime-local"],
+#qaCarousel.carousel input[type="date"],
+#qaCarousel.carousel input[type="month"],
+#qaCarousel.carousel input[type="time"],
+#qaCarousel.carousel input[type="week"],
+#qaCarousel.carousel input[type="number"],
+#qaCarousel.carousel input[type="email"],
+#qaCarousel.carousel input[type="url"],
+#qaCarousel.carousel input[type="search"],
+#qaCarousel.carousel input[type="tel"],
+#qaCarousel.carousel input[type="color"],
+#qaCarousel.carousel .uneditable-input {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+#qaCarousel.carousel {
+    margin-bottom: 30px;
+}
+
+/* Move the QA template paging indicators to the bottom and darken the colour */
+#qaCarousel.carousel .carousel-indicators-container {
+    position: absolute;
+    left: 50%;
+    right: unset;
+    bottom: -10px;
+}
+
+#qaCarousel.carousel .carousel-indicators-container > .carousel-indicators {
+    top: inherit;
+    top: initial;
+    top: unset;
+    right: inherit;
+    right: initial;
+    position: relative;
+    margin-left: -50%;
+}
+
+#qaCarousel .carousel-indicators .active {
+    background-color: #000;
+}
+
+/* Make image viewer bigger for QA transcribe */
+.qa-transcribe #image-container {
+    height: 500px;
+}
+
+#qaCarousel .carousel-indicators li {
+    background-color: #333;
+    background-color: rgba(30, 30, 30, 0.25);
+    cursor: pointer;
+}
+
+.carousel-control {
+    text-decoration: none;
 }
 
 .qt-row {
@@ -18,11 +84,38 @@
 }
 
 #qaCarousel.carousel .carousel-inner {
-    width: 80%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
 }
 
-#qaCarousel.carousel .carousel-inner .item {
-    min-height: 200px;
+#qaCarousel.carousel .carousel-inner > .item {
+    /*min-height: 200px;*/
+    height: 500px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding-bottom:5px;
+    -webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(255,254,247,1)), to(rgba(0,0,0,0.3)))
+    /*#ff fe f7*/
+}
+
+#qaCarousel.carousel .carousel-control {
+    top: inherit;
+    top: initial;
+    top: unset;
+    left: 30%;
+}
+
+#qaCarousel.carousel .carousel-control.right {
+    left: auto;
+    right: 30%;
+}
+
+.btn, #qaCarousel {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

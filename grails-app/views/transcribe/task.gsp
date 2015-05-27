@@ -592,6 +592,7 @@
 
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
+                <g:hiddenField name="id" value="${taskInstance?.id}"/>
 
                 <g:set var="sectionNumber" value="${1}" />
 
@@ -669,9 +670,9 @@
                                 </div>
                             </div>
                         </div>
+                        <g:if test="${!template.viewParams.hideDefaultButtons}">
                         <div id="submitButtons" class="row-fluid">
                             <div class="span12">
-                                <g:hiddenField name="id" value="${taskInstance?.id}"/>
                                 <g:if test="${validator}">
                                     <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
                                     <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
@@ -687,9 +688,9 @@
                                     <button type="button" class="btn bvp-submit-button" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
-
                             </div>
                         </div>
+                        </g:if>
 
                     </div>
                 </g:if>

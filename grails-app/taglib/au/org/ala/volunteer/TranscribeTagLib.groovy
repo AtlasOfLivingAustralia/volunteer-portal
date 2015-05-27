@@ -29,7 +29,7 @@ class TranscribeTagLib {
     def markdownService
     def imageServiceService
 
-    static returnObjectForTags = ['imageInfos', 'templateFields']
+    static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName']
 
 
     /**
@@ -163,6 +163,24 @@ class TranscribeTagLib {
         out << html
     }
 
+    /**
+     * Gets the id/name for a HTML widget as a String
+     *
+     * @attr field The field
+     * @attr recordIdx The record index
+     */
+    def widgetName = { attrs, body ->
+        TemplateField field = attrs.field
+        int recordIdx = attrs.recordIdx ?: 0
+
+        genWidgetName(field, recordIdx)
+    }
+
+    String genWidgetName(TemplateField field, int recordIdx) {
+        def name = field.fieldType.name()
+        "recordValues.${recordIdx}.${name}"
+    }
+
     private String getWidgetHtml(Task taskInstance, TemplateField field, recordValues, recordIdx, attrs, String auxClass) {
 
         if (!field) {
@@ -174,7 +192,7 @@ class TranscribeTagLib {
         }
 
         def name = field.fieldType.name()
-        def widgetName = "recordValues.${recordIdx}.${name}"
+        def widgetName = genWidgetName(field, recordIdx)
         def cssClass = name
 
         if (field.mandatory) {
@@ -581,8 +599,11 @@ class TranscribeTagLib {
 
     def templateFields = { attrs, body ->
         def category = attrs.category ?: FieldCategory.dataset
+        def hiddenFields = attrs.hidden ?: false
         def template = attrs.template
-        def fields = TemplateField.findAllByCategoryAndTemplate(category, template, [sort:'displayOrder'])
+        def fields
+        if (hiddenFields) fields = TemplateField.findAllByCategoryAndTemplateAndType(category, template, FieldType.hidden, [sort:'displayOrder'])
+        else fields = TemplateField.findAllByCategoryAndTemplateAndTypeNotEqual(category, template, FieldType.hidden, [sort:'displayOrder'])
         def groupedFields = fields.groupBy { it.fieldType }
         fields.collect { [field: it, recordIdx: groupedFields[it.fieldType].findIndexOf { it2 -> it == it2 }] }
     }
