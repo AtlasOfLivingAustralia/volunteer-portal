@@ -217,6 +217,7 @@ class TranscribeTagLib {
 
         switch (field.type) {
             case FieldType.imageSelect:
+            case FieldType.imageMultiSelect:
                 w = render(template: '/transcribe/imageSelectWidget', model: widgetModel)
                 break
             case FieldType.latLong:
@@ -582,15 +583,18 @@ class TranscribeTagLib {
 
     def imageInfos = { attrs, body ->
         //List<TemplateField> fields = attrs.fields
+        Project project = attrs.project
+        Picklist pl = attrs.picklist
         TemplateField field = attrs.field
 
         //def pls = fields.collect { Picklist.findByNameAndClazz(it.fieldType.name(), field.layoutClass) }
-        def pl = Picklist.findByNameAndClazz(field.fieldType.name(), field.layoutClass)
+        if (!pl)
+            pl = Picklist.findByNameAndClazz(field.fieldType.name(), field.layoutClass)
         //def items = []
         //if (pls) {
         //    items = PicklistItem.findAllByPicklistInList(pls)
         //}
-        def items = PicklistItem.findAllByPicklist(pl)
+        def items = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project?.picklistInstitutionCode)
         def imageIds = items*.key
         def imageInfos = imageServiceService.getImageInfoForIds(imageIds)
 

@@ -1,5 +1,5 @@
-<g:set var="picklistInfo" value="${g.imageInfos(field: field)}" />
-<div class="imageSelectWidget ${cssClass}" targetField="${widgetName}">
+<g:set var="picklistInfo" value="${g.imageInfos(field: field, project: taskInstance?.project)}" />
+<div class="imageSelectWidget ${cssClass} ${field.type.name()}" targetField="${widgetName}">
     <div class="itemgrid">
         <g:each in="${picklistInfo.items}" var="piItem">
         <g:set var="aclass" value="${piItem.value == value ? 'selected' : ''}" />

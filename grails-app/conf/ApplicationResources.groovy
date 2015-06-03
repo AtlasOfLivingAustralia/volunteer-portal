@@ -143,4 +143,8 @@ modules = {
         dependsOn "codemirror"
         resource url: 'js/codemirror/5.0/theme/monokai.css'
     }
+
+    "mustache" {
+        resource url: 'js/mustache/2.0.0/mustache.min.js'
+    }
 }

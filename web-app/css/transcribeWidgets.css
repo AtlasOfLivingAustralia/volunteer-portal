@@ -65,7 +65,7 @@
 }
 
 /* Make image viewer bigger for QA transcribe */
-.qa-transcribe #image-container {
+.tall-image #image-container {
     height: 500px;
 }
 
@@ -119,3 +119,52 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+#camera-trap-questions {
+    position: relative;
+
+}
+
+#camera-trap-questions .item {
+    opacity: 0.0;
+    transition: opacity .25s ease-in-out;
+    -moz-transition: opacity .25s ease-in-out;
+    -webkit-transition: opacity .25s ease-in-out;
+    z-index: 0;
+    display: none;
+}
+
+#camera-trap-questions .item.active {
+    opacity: 1.0;
+    z-index: 1;
+    visibility: visible;
+    display: initial;
+}
+
+#camera-trap-questions .item.fading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    visibility: visible;
+    display: initial;
+}
+
+#ct-landing .btn-ct-landing {
+    margin: 0 auto;
+}
+
+#ct-landing .btn-group.btn-group-vertical {
+    display: block;
+}
+
+.ct-badge {
+    cursor: pointer;
+    transition: background-color .25s ease-in-out;
+}
+
+/*#camera-trap-questions .item.active div {*/
+    /*position: static;*/
+    /*height: 500px;*/
+/*}*/

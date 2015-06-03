@@ -150,15 +150,42 @@ var transcribeWidgets = {};
 
 
     var initImageSelectWidgets = function() {
-        $(".imageSelectWidget").each(function(index, widget) {
+
+        var widgets = $(".imageSelectWidget");
+
+        widgets.filter('.imageSelect').each(function(index, widget) {
             var jw = $(widget);
             jw.on('click', 'a.thumbnail', function(e) {
                 var ct = $(e.currentTarget);
                 jw.find('a.thumbnail.selected').removeClass('selected');
-                ct.addClass('selected');
-                $('[id=\''+jw.attr('targetField')+'\']').val(ct.attr('data-image-select-value')).trigger('change');
+                selectThumbnail(ct,jw);
+                //ct.addClass('selected');
+                //$('[id=\''+jw.attr('targetField')+'\']').val(ct.attr('data-image-select-value')).trigger('change');
             });
         });
+
+        widgets.filter('.imageMultiSelect').each(function(index, widget) {
+            var jw = $(widget);
+            jw.on('click', 'a.thumbnail', function(e) {
+                var ct = $(e.currentTarget);
+                if (ct.hasClass('selected')) {
+                    ct.removeClass('selected');
+                    syncInputField(ct,jw);
+                } else {
+                    selectThumbnail(ct, jw);
+                }
+            });
+        });
+
+        function selectThumbnail(ct, jw) {
+            ct.addClass('selected');
+            syncInputField(ct,jw);
+        }
+
+        function syncInputField(ct, jw) {
+            var val = ct.parent().siblings().addBack().find('.selected').map(function() { return $(this).attr('data-image-select-value') }).toArray().join(',');
+            $('[id=\''+jw.attr('targetField')+'\']').val(val).trigger('change');
+        }
     };
 
     var renderUnitRangeFromTargetField = function(widget) {

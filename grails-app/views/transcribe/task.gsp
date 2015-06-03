@@ -820,7 +820,7 @@
                 };
             </g:each>
 
-            enableSubmitButtons();
+            //enableSubmitButtons();
 
             // Now check if we are have to restore from a save gone wrong...
             checkAndRecoverFromFailedSubmit();

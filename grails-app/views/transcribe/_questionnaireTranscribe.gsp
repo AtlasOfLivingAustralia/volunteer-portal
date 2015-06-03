@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 
-<div class="container-fluid qa-transcribe">
+<div class="container-fluid qa-transcribe tall-image">
 
     <div class="row-fluid">
         <div class="span12">
