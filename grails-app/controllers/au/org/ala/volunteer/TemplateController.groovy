@@ -215,10 +215,11 @@ class TemplateController {
     def addField() {
         def templateInstance = Template.get(params.int("id"))
         def fieldType = params.fieldType
+        def classifier = params.fieldTypeClassifier
 
         if (templateInstance && fieldType) {
 
-            def existing = TemplateField.findAllByTemplateAndFieldType(templateInstance, fieldType)
+            def existing = TemplateField.findAllByTemplateAndFieldType(templateInstance, fieldType, classifier)
             if (existing && fieldType != DarwinCoreField.spacer.toString() && fieldType != DarwinCoreField.widgetPlaceholder.toString()) {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {
@@ -226,7 +227,7 @@ class TemplateController {
                 FieldCategory category = params.category ?: FieldCategory.none
                 FieldType type = params.type ?: FieldType.text
                 def label = params.label ?: ""
-                def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
+                def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
                 field.save(failOnError: true)
             }
         }
