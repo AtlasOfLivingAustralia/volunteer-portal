@@ -586,11 +586,10 @@ class TranscribeTagLib {
         Project project = attrs.project
         Picklist pl = attrs.picklist
         TemplateField field = attrs.field
-
-        //def pls = fields.collect { Picklist.findByNameAndClazz(it.fieldType.name(), field.layoutClass) }
+        
         if (!pl && !field) return [error: "No valid picklist or field provided"]
         if (!pl)
-            pl = Picklist.findByNameAndClazz(field.fieldType.name(), field.layoutClass)
+            pl = Picklist.findByNameAndFieldTypeClassifier(field.fieldType.name(), field.fieldTypeClassifier)
         if (!pl)
             pl = Picklist.findByName(field.fieldType.name())
 
