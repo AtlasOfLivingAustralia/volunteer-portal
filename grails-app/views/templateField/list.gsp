@@ -40,7 +40,7 @@
                         
                             <td><g:link action="show" id="${templateFieldInstance.id}">${fieldValue(bean: templateFieldInstance, field: "id")}</g:link></td>
                         
-                            <td>${fieldValue(bean: templateFieldInstance, field: "fieldType")}</td>
+                            <td>${fieldValue(bean: templateFieldInstance, field: "fieldType")} ${fieldValue(bean: templateFieldInstance, field: "fieldTypeClassifier")}</td>
                         
                             <td>${fieldValue(bean: templateFieldInstance, field: "label")}</td>
 

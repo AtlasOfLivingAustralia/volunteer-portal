@@ -35,7 +35,7 @@
             <div id="camera-trap-questions" class="" data-interval="">
                 <div id="ct-landing" class="item clearfix active">
                     <h3>Step 1</h3>
-                    <p>Are there any specimens visible in the image?</p>
+                    <p>Are there any animals visible in the image?</p>
                     <div class="btn-group btn-group-vertical" data-toggle="buttons-radio">
                         <button class="btn input-medium btn-ct-landing">Setup</button>
                         <button class="btn btn-warning input-medium btn-ct-landing">Unsure</button>
@@ -45,7 +45,7 @@
                 </div>
                 <div id="ct-animals-present" class="item clearfix">
                     <h3>Step 2</h3>
-                    <p>Select all specimens present in the image.  If you a certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>
+                    <p>Select all animals present in the image.  If you a certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>
                     <div>
                         <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="lmImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.largeMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
