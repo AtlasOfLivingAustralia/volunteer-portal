@@ -586,18 +586,18 @@ class TranscribeTagLib {
         Project project = attrs.project
         Picklist pl = attrs.picklist
         TemplateField field = attrs.field
-        
+
         if (!pl && !field) return [error: "No valid picklist or field provided"]
         if (!pl)
             pl = Picklist.findByNameAndFieldTypeClassifier(field.fieldType.name(), field.fieldTypeClassifier)
         if (!pl)
             pl = Picklist.findByName(field.fieldType.name())
 
-        if (!pl) return [error: "No picklist found for ${field.fieldType.name()} (${field.layoutClass}"]
+        if (!pl) return [error: "No picklist found for ${field.fieldType.name()} (${field.fieldTypeClassifier}"]
 
         def items = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project?.picklistInstitutionCode)
 
-        if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} (${pl.clazz}) and picklist institution code ${project?.picklistInstitutionCode}"]
+        if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
         def imageIds = items*.key
         def imageInfos
         try {
