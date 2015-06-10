@@ -176,7 +176,7 @@
       var value = t.closest('.thumbnail').attr('data-image-select-value');
       var imageKey = t.closest('.thumbnail').attr('data-image-select-key');
       badge.siblings('.badge').removeClass(badges.join(" ") + " selected");
-      if (selections.hasOwnProperty(value) && selections[value] == selectionCertainty) {
+      if (selections.hasOwnProperty(value) && selections[value].certainty == selectionCertainty) {
         badge.removeClass(badges[badgeClass] + ' selected');
         delete selections[value];
       } else {

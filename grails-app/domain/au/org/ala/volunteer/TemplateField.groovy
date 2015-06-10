@@ -22,6 +22,7 @@ class TemplateField {
 
     static constraints = {
         fieldType maxSize: 200
+        fieldTypeClassifier nullable: true
         label nullable: true
         defaultValue maxSize: 200, nullable: true
         mandatory nullable: true
