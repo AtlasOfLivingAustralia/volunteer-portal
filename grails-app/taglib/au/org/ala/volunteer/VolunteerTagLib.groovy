@@ -503,7 +503,7 @@ class VolunteerTagLib {
      * @attr value the object to convert to JSON
      */
     def json = { attrs, body ->
-        final val = attrs.value as JSON
+        final val = (attrs.value as JSON) ?: "null"
         out << val
     }
 

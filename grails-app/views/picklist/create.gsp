@@ -32,9 +32,9 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label" for="clazz"><g:message code="picklist.clazz.label" default="Class" /></label>
-                        <div class="controls" ${hasErrors(bean: picklistInstance, field: 'clazz', 'errors')}>
-                            <g:textField name="clazz" />
+                        <label class="control-label" for="fieldTypeClassifier"><g:message code="picklist.fieldTypeClassifier.label" default="Classifier" /></label>
+                        <div class="controls" ${hasErrors(bean: picklistInstance, field: 'fieldTypeClassifier', 'errors')}>
+                            <g:textField name="fieldTypeClassifier" />
                         </div>
                     </div>
                     <div class="controls">

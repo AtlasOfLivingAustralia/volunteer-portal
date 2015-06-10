@@ -177,7 +177,7 @@ class TranscribeTagLib {
     }
 
     String genWidgetName(TemplateField field, int recordIdx) {
-        def name = field.fieldType.name()
+        def name = field.fieldType.name() //+ (field.fieldTypeClassifier ? ".${field.fieldTypeClassifier}" : "")
         "recordValues.${recordIdx}.${name}"
     }
 
@@ -588,15 +588,28 @@ class TranscribeTagLib {
         TemplateField field = attrs.field
 
         //def pls = fields.collect { Picklist.findByNameAndClazz(it.fieldType.name(), field.layoutClass) }
+        if (!pl && !field) return [error: "No valid picklist or field provided"]
         if (!pl)
             pl = Picklist.findByNameAndClazz(field.fieldType.name(), field.layoutClass)
-        //def items = []
-        //if (pls) {
-        //    items = PicklistItem.findAllByPicklistInList(pls)
-        //}
+        if (!pl)
+            pl = Picklist.findByName(field.fieldType.name())
+
+        if (!pl) return [error: "No picklist found for ${field.fieldType.name()} (${field.layoutClass}"]
+
         def items = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project?.picklistInstitutionCode)
+
+        if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} (${pl.clazz}) and picklist institution code ${project?.picklistInstitutionCode}"]
         def imageIds = items*.key
-        def imageInfos = imageServiceService.getImageInfoForIds(imageIds)
+        def imageInfos
+        try {
+            imageInfos = imageServiceService.getImageInfoForIds(imageIds)
+        } catch (e) {
+            log.error("Error calling image service for ${imageIds}", e)
+            return [error: "Error contacting image service: ${e.message}"]
+        }
+
+        if (!imageInfos)
+            return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
 
         [picklist: pl, items: items, infos: imageInfos]
     }

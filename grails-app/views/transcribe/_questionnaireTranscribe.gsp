@@ -54,7 +54,7 @@
                         <g:set var="isActive" value="${st == 0 ? 'active' : ''}" />
                         <div class="${isActive} item">
                             <div style="margin-bottom: 10px;">
-                                <h3>Q ${st+1}/${fieldList.size()}: <g:fieldValue bean="${f.field}" field="label" />?</h3>
+                                <h3>${st+1}/${fieldList.size()}: <g:fieldValue bean="${f.field}" field="label" /></h3>
                                 <span><g:fieldValue bean="${f.field}" field="helpText" /></span>
                             </div>
                             <div>

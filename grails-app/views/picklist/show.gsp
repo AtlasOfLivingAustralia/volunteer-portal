@@ -22,7 +22,7 @@
                 });
 
                 function doSearch() {
-                    var query = $("#q").val()
+                    var query = $("#q").val();
                     location.href="?q=" + query;
                 }
 
@@ -34,7 +34,7 @@
     </head>
     <body class="">
 
-        <cl:headerContent title="${message(code:"default.show.label", args:[entityName])} - ${picklistInstance.name}">
+        <cl:headerContent title="${message(code:"default.show.label", args:[entityName])} - ${picklistInstance.uiLabel}">
             <%
                 pageScope.crumbs = [
                     [link: createLink(controller: 'picklist', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]

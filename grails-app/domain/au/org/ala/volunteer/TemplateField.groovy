@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 class TemplateField {
 
     DarwinCoreField fieldType
+    String fieldTypeClassifier
     String label
     String defaultValue
     FieldCategory category

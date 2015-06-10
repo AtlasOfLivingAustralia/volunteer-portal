@@ -71,7 +71,7 @@
                 <div class="control-group">
                     <label class="control-label" for="upPicklistId">Picklist</label>
                     <div class="controls">
-                        <g:select id="upPicklistId" name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${params.picklistId}"/>
+                        <g:select id="upPicklistId" name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="uiLabel" value="${params.picklistId}"/>
                     </div>
                 </div>
                 <div class="control-group">

@@ -3,11 +3,11 @@ package au.org.ala.volunteer
 class Picklist implements Serializable {
 
     String name
-    String clazz
+    String fieldTypeClassifier
 
     String getUiLabel() {
-        if (clazz) {
-            "$name ($clazz)"
+        if (fieldTypeClassifier) {
+            "$name ($fieldTypeClassifier)"
         } else {
             name
         }
@@ -17,6 +17,6 @@ class Picklist implements Serializable {
       version false
     }
     static constraints = {
-        clazz nullable: true
+        fieldTypeClassifier nullable: true
     }
 }

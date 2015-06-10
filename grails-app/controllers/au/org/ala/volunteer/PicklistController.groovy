@@ -92,8 +92,8 @@ class PicklistController {
         def picklistInstance = new Picklist(params)
 
         def existing
-        if (params.clazz) {
-            existing = Picklist.findByNameAndClazz(params.name, params.clazz)
+        if (params.fieldTypeClassifier) {
+            existing = Picklist.findByNameAndFieldTypeClassifier(params.name, params.fieldTypeClassifier)
         } else {
             existing = Picklist.findByName(params.name)
         }

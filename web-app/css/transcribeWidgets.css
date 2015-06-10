@@ -69,6 +69,10 @@
     height: 500px;
 }
 
+.extra-tall-image #image-container {
+    height: 520px;
+}
+
 #qaCarousel .carousel-indicators li {
     background-color: #333;
     background-color: rgba(30, 30, 30, 0.25);
@@ -159,9 +163,39 @@
     display: block;
 }
 
+.ct-thumbnail {
+    position: relative;
+}
+
+.ct-thumbnail .ct-badge {
+    position: absolute;
+    top: 4px;
+    opacity: 0.8;
+}
+
+.ct-thumbnail .ct-badge.selected {
+    opacity: 1;
+}
+
+.ct-thumbnail .ct-badge-sure {
+    left: 4px;
+}
+
+.ct-thumbnail .ct-badge-sure:hover {
+    background-color: green;
+}
+
+.ct-thumbnail .ct-badge-uncertain:hover {
+    background-color: orange;
+}
+
+.ct-thumbnail .ct-badge-uncertain {
+    right: 4px;
+}
+
 .ct-badge {
     cursor: pointer;
-    transition: background-color .25s ease-in-out;
+    transition: all .25s ease-in-out;
 }
 
 /*#camera-trap-questions .item.active div {*/
