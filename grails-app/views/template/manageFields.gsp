@@ -219,7 +219,7 @@
                         <g:each in="${fields}" var="field">
                             <tr fieldId="${field.id}" fieldOrder="${field.displayOrder}">
                                 <td>${field.displayOrder}</td>
-                                <td><a href="${createLink(controller: 'templateField', action:'edit', id:field.id)}"><strong>${field.fieldType}</strong></a></td>
+                                <td><a href="${createLink(controller: 'templateField', action:'edit', id:field.id)}"><strong>${field.fieldType} (${field.fieldTypeClassifier})</strong></a></td>
                                 <td>${field.type}</td>
                                 <td>${field.label}</td>
                                 <td>${field.layoutClass}</td>

@@ -586,6 +586,7 @@ class TranscribeTagLib {
         Project project = attrs.project
         Picklist pl = attrs.picklist
         TemplateField field = attrs.field
+        def warnings = []
 
         if (!pl && !field) return [error: "No valid picklist or field provided"]
         if (!pl)
@@ -609,8 +610,12 @@ class TranscribeTagLib {
 
         if (!imageInfos)
             return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
+        else {
+            def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            if (missing) warnings.add("The following ids can not be found: ${missing.join(', ')}")
+        }
 
-        [picklist: pl, items: items, infos: imageInfos]
+        [picklist: pl, items: items, infos: imageInfos, warnings: warnings]
     }
 
     def templateFields = { attrs, body ->
