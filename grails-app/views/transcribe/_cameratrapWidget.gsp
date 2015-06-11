@@ -5,6 +5,16 @@
         </div>
     </g:if>
     <g:else>
+        <g:if test="${picklistInfo.warnings}">
+            <div class="alert alert-block">
+                Warnings:
+                <ul>
+                    <g:each in="${picklistInfo.warnings}" var="w">
+                        <li>${w}</li>
+                    </g:each>
+                </ul>
+            </div>
+        </g:if>
         <g:each in="${imageInfos.items}" var="piItem">
             <div class="griditem bvpBadge">
                 <div class="thumbnail ct-thumbnail" data-image-select-key="${piItem.key}" data-image-select-value="${piItem.value}">

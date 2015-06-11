@@ -612,7 +612,7 @@ class TranscribeTagLib {
             return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
         else {
             def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
-            if (missing) warnings.add("The following ids can not be found: ${missing.join(', ')}")
+            if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
         }
 
         [picklist: pl, items: items, infos: imageInfos, warnings: warnings]

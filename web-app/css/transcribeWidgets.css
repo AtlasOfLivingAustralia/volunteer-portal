@@ -115,7 +115,7 @@
     right: 30%;
 }
 
-.btn, #qaCarousel {
+.btn, #qaCarousel .carousel-control, #qaCarousel .carousel-indicators {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;

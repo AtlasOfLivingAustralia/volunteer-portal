@@ -324,6 +324,9 @@ log4j = {
     info    'grails.app',
             'au.org.ala'
 
+    debug   'org.apache.http.headers',
+            'org.apache.http.wire'
+
 }
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
