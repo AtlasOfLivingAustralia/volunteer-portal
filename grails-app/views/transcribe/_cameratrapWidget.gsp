@@ -5,11 +5,11 @@
         </div>
     </g:if>
     <g:else>
-        <g:if test="${picklistInfo.warnings}">
+        <g:if test="${imageInfos.warnings}">
             <div class="alert alert-block">
                 Warnings:
                 <ul>
-                    <g:each in="${picklistInfo.warnings}" var="w">
+                    <g:each in="${imageInfos.warnings}" var="w">
                         <li>${w}</li>
                     </g:each>
                 </ul>

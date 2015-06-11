@@ -324,8 +324,8 @@ log4j = {
     info    'grails.app',
             'au.org.ala'
 
-    debug   'org.apache.http.headers',
-            'org.apache.http.wire'
+//    debug   'org.apache.http.headers',
+//            'org.apache.http.wire'
 
 }
 
