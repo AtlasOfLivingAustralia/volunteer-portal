@@ -1,8 +1,8 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require module="mustache" />
+<r:require modules="mustache, underscore, dotdotdot" />
 
-<div class="container-fluid extra-tall-image">
+<div id="ct-container" class="container-fluid extra-tall-image">
 
     <div class="row-fluid">
         <div class="span12">
@@ -27,9 +27,6 @@
                 </g:each>
             </div>
         </div>
-
-        %{--<g:set var="fieldList" value="${g.templateFields(category: FieldCategory.dataset, template:  template)}" />--}%
-        %{--<g:set var="hiddenList" value="${g.templateFields(category: FieldCategory.dataset, template:  template, hidden: true)}" />--}%
 
         <div class="span6" style="max-height: 580px; overflow-y: auto;">
             <div id="camera-trap-questions" class="" data-interval="">
@@ -107,16 +104,18 @@
 
 <script id="selected-item-template" type="x-tmpl-mustache">
 <div class="griditem bvpBadge">
-    <div class="thumbnail ct-thumbnail">
-        <img src="{{squareThumbUrl}}" alt="{{value}}">
+    <div class="thumbnail ct-thumbnail" data-image-select-key="{{key}}" data-image-select-value="{{value}}">
         {{#success}}
-        <span class="badge badge-success pull-left"><i class="icon-white icon-ok-sign"></i></span>
+        <span class="ct-badge ct-badge-sure badge badge-success selected"><i class="icon-white icon-ok-sign"></i></span>
+        <span class="ct-badge ct-badge-uncertain badge"><i class="icon-white icon-question-sign"></i></span>
         {{/success}}
         {{#uncertain}}
-        <span class="badge badge-warning pull-right"><i class="icon-white icon-question-sign"></i></span>
+        <span class="ct-badge ct-badge-sure badge"><i class="icon-white icon-ok-sign"></i></span>
+        <span class="ct-badge ct-badge-uncertain badge badge-warning selected"><i class="icon-white icon-question-sign"></i></span>
         {{/uncertain}}
+        <img src="{{squareThumbUrl}}" alt="{{value}}">
         <div>
-            <span>{{value}}</span>
+            <span class="ct-caption" title="{{value}}">{{value}}</span>
         </div>
     </div>
 </div>
@@ -125,13 +124,19 @@
 <r:script>
   jQuery(function($) {
     var active = 0;
-    var interview = true;
-    var i = 0;
-    var smImageInfos = <cl:json value="${smImageInfos.infos}" />;
-    var lmImageInfos = <cl:json value="${lmImageInfos.infos}" />;
-    var reptilesImageInfos = <cl:json value="${reptilesImageInfos.infos}" />;
-    var birdsImageInfos = <cl:json value="${birdsImageInfos.infos}" />;
-    var otherImageInfos = <cl:json value="${otherImageInfos.infos}" />;
+    var smImageInfos = <cl:json value="${smImageInfos.infos}" />
+        ,lmImageInfos = <cl:json value="${lmImageInfos.infos}" />
+        ,reptilesImageInfos = <cl:json value="${reptilesImageInfos.infos}" />
+        ,birdsImageInfos = <cl:json value="${birdsImageInfos.infos}" />
+        ,otherImageInfos = <cl:json value="${otherImageInfos.infos}" />;
+
+    var smItems = <cl:json value="${smImageInfos.items}" />
+        ,lmItems = <cl:json value="${lmImageInfos.items}" />
+        ,reptilesItems = <cl:json value="${reptilesImageInfos.items}" />
+        ,birdsItems = <cl:json value="${birdsImageInfos.items}" />
+        ,otherItems = <cl:json value="${otherImageInfos.items}" />;
+
+    var values = [].concat(_.pluck(smItems, 'value'), _.pluck(lmItems, 'value'), _.pluck(reptilesItems, 'value'), _.pluck(birdsItems, 'value'), _.pluck(otherItems, 'value'));
 
     var template = $('#selected-item-template').html();
     Mustache.parse(template);   // optional, speeds up future uses
@@ -145,6 +150,12 @@
     if (history.replaceState)
       history.replaceState(page('ct-landing'), window.document.title);
 
+    $('a[data-toggle="pill"]').on('shown', function (e) {
+      $('.ct-caption').dotdotdot();
+      //e.target // activated tab
+      //e.relatedTarget // previous tab
+    });
+
     $('#btn-animals-present').click(function(e) {
       e.preventDefault();
       $('#ct-landing').removeClass('active').addClass('fading');
@@ -155,55 +166,77 @@
 
     $('#camera-trap-questions').on('transitionend', '.item.fading', function(e) {
       $(e.target).removeClass('fading');
+      $('.ct-caption').dotdotdot();
     });
 
     $('.btn-ct-landing').click(function(e) {
       e.preventDefault();
     });
 
-    var badges = ['badge-success', 'badge-warning'];
-    $('.ct-badge-sure').click(function(e) {
-      ctBadgeClick(e, 0, 1);
-    });
-    $('.ct-badge-uncertain').click(function(e) {
-      ctBadgeClick(e, 1, 0.5);
+    var ctBadges = {1: 'ct-badge-sure', 0.5: 'ct-badge-uncertain'};
+    var badges = {1: 'badge-success', 0.5: 'badge-warning'};
+    $('#ct-container')
+    .on('click', '.ct-badge-sure', function(e) {
+      ctBadgeClick(e, 1);
+    })
+    .on('click', '.ct-badge-uncertain', function(e) {
+      ctBadgeClick(e, 0.5);
     });
 
-    function ctBadgeClick(e, badgeClass, selectionCertainty) {
+    function ctBadgeClick(e, selectionCertainty) {
       var t = $(e.target);
       var badge = t.closest('.badge');
 
-      var value = t.closest('.thumbnail').attr('data-image-select-value');
-      var imageKey = t.closest('.thumbnail').attr('data-image-select-key');
-      badge.siblings('.badge').removeClass(badges.join(" ") + " selected");
+      var selectedThumbnail = t.closest('.thumbnail');
+      var value = selectedThumbnail.attr('data-image-select-value');
+      var imageKey = selectedThumbnail.attr('data-image-select-key');
       if (selections.hasOwnProperty(value) && selections[value].certainty == selectionCertainty) {
-        badge.removeClass(badges[badgeClass] + ' selected');
         delete selections[value];
       } else {
-        badge.addClass(badges[badgeClass] + ' selected');
-        selections[value] = {certainty: selectionCertainty, key: imageKey};
+        selections[value] = { certainty: selectionCertainty, key: imageKey };
       }
       syncSelectionState();
     }
 
+    function valueToBadgeSelector(v, i, a) { return '.thumbnail[data-image-select-value="'+v+'"] .badge.' + ctBadges[selections[v].certainty] }
+    function valueToSelector(v, i, a) { return '.thumbnail[data-image-select-value="'+v+'"]' }
+
+    function addSelectionToContainer(sel, selElem) {
+      var certainty = selections[sel].certainty;
+      var imageKey = selections[sel].key;
+      var imageUrl = (smImageInfos[imageKey] || lmImageInfos[imageKey] || reptilesImageInfos[imageKey] || birdsImageInfos[imageKey] || otherImageInfos[imageKey]).squareThumbUrl;
+      var opts = {
+        squareThumbUrl: imageUrl,
+        value: sel,
+        key: imageKey,
+        success: certainty == 1,
+        uncertain: certainty < 1
+      };
+      var rendered = Mustache.render(template, opts);
+      var jqRendered = $(rendered);
+      jqRendered.appendTo(selElem);
+      //jqRendered.dotdotdot();
+      $('.ct-caption').dotdotdot();
+    }
+
     function syncSelectionState() {
+      var ctContainer = $('#ct-container');
+      var selectedValues = _.keys(selections);
+      var badgeSelector = _.map(selectedValues, valueToBadgeSelector).join(', ');
+      var nonSelector = _.map(_.difference(values, selectedValues), valueToSelector).join(', ');
+
       var selElem = $('#ct-selection-grid');
-      selElem.empty(); // TODO just the diffs ma'am
-      for (var sel in selections) {
-        if( selections.hasOwnProperty( sel ) ) {
-          var certainty = selections[sel].certainty;
-          var imageKey = selections[sel].key;
-          var imageUrl = (smImageInfos[imageKey] || lmImageInfos[imageKey] || reptilesImageInfos[imageKey] || birdsImageInfos[imageKey] || otherImageInfos[imageKey]).squareThumbUrl;
-          var opts = {
-            squareThumbUrl: imageUrl,
-            value: sel,
-            success: certainty == 1,
-            uncertain: certainty < 1
-          };
-          var rendered = Mustache.render(template, opts);
-          $(rendered).appendTo(selElem);
-        }
+      var uiSelectedValues = selElem.find('.thumbnail').map(function(i,e) { return $(e).data('image-select-value'); }).toArray();
+
+      var add = _.difference(selectedValues, uiSelectedValues);
+
+      for (var i = 0; i < add.length; ++i) {
+        addSelectionToContainer(add[i], selElem);
       }
+      selElem.find(nonSelector).parent().remove();
+
+      ctContainer.find('.thumbnail[data-image-select-value] .badge').removeClass('selected ' + _.values(badges).join(' '));
+      ctContainer.find(badgeSelector).addClass('selected');
     }
 
     window.onpopstate = function(e) {

@@ -20,9 +20,9 @@
                 <div class="thumbnail ct-thumbnail" data-image-select-key="${piItem.key}" data-image-select-value="${piItem.value}">
                     <span class="ct-badge ct-badge-sure badge"><i class="icon-white icon-ok-sign"></i></span>
                     <span class="ct-badge ct-badge-uncertain badge"><i class="icon-white icon-question-sign"></i></span>
-                    <img src="${imageInfos.infos[piItem.key].squareThumbUrl}" alt="${piItem.value}">
+                    <img src="${imageInfos.infos[piItem.key]?.squareThumbUrl}" alt="${piItem.value}">
                     <div>
-                        <span>${piItem.value}</span>
+                        <span class="ct-caption" title="${piItem.value}">${piItem.value}</span>
                     </div>
                 </div>
             </div>

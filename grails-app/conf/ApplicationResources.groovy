@@ -147,4 +147,12 @@ modules = {
     "mustache" {
         resource url: 'js/mustache/2.0.0/mustache.min.js'
     }
+
+    "underscore" {
+        resource url: 'js/underscore/1.8.3/underscore-min.js'
+    }
+
+    "dotdotdot" {
+        resource url: 'js/dotdotdot/1.7.3/jquery.dotdotdot.min.js'
+    }
 }
