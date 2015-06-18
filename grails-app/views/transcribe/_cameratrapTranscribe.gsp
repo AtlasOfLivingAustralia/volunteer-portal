@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="span6" style="max-height: 580px; overflow-y: auto;">
+        <div class="span6" style="max-height: 580px; overflow-y: hidden;">
             <div id="camera-trap-questions" class="" data-interval="">
                 <div id="ct-landing" class="item clearfix active">
                     <h3>Step 1</h3>
@@ -42,8 +42,8 @@
                 </div>
                 <div id="ct-animals-present" class="item clearfix">
                     <h3>Step 2</h3>
-                    <p>Select all animals present in the image.  If you a certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>
-                    <div>
+                    %{--<p>Select all animals present in the image.  If you a certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>--}%
+                    <div class="well well-small" style="padding-bottom: 0;">
                         <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="lmImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.largeMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="reptilesImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.reptilesPicklistId?.toLong()), project: taskInstance?.project)}" />
@@ -56,7 +56,7 @@
                             <li><a href="#bird" data-toggle="pill">Birds</a></li>
                             <li><a href="#other" data-toggle="pill">Others</a></li>
                         </ul>
-                        <div class="pill-content">
+                        <div class="pill-content" style="overflow-y: auto; height: 455px;">
                             <div class="pill-pane fade in active" id="small-mammal">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
                             </div>
@@ -74,6 +74,9 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div id="ct-full-image-container" class="item clearfix" style="height:580px;overflow-x: hidden;overflow-y: auto;display:flex;justify-content:center;align-items:center;">
+                    <img id="ct-full-image" src="" />
                 </div>
             </div>
         </div>
@@ -114,12 +117,18 @@
         <span class="ct-badge ct-badge-uncertain badge badge-warning selected"><i class="icon-white icon-question-sign"></i></span>
         {{/uncertain}}
         <img src="{{squareThumbUrl}}" alt="{{value}}">
-        <div>
-            <span class="ct-caption" title="{{value}}">{{value}}</span>
+        <div class="ct-caption-table">
+            <div class="ct-caption-cell">
+                <div class="ct-caption dotdotdot" title="{{value}}">{{value}}</div>
+            </div>
         </div>
     </div>
 </div>
 </script>
+
+<g:each in="${smImageInfos.infos}">
+    <link rel="prefetch" href="${it.value.imageUrl}" />
+</g:each>
 
 <r:script>
   jQuery(function($) {
@@ -167,6 +176,18 @@
     $('#camera-trap-questions').on('transitionend', '.item.fading', function(e) {
       $(e.target).removeClass('fading');
       $('.ct-caption').dotdotdot();
+    });
+
+    $('.ct-thumbnail-image').click(function(e) {
+      var key = $(e.target).closest('[data-image-select-key]').data('image-select-key');
+      $('#ct-full-image').attr('src', (smImageInfos[key] || lmImageInfos[key] || reptilesImageInfos[key] || birdsImageInfos[key] || otherImageInfos[key]).imageUrl);
+      $('#ct-animals-present').removeClass('active').addClass('fading');
+      $('#ct-full-image-container').addClass('active');
+    });
+
+    $('#ct-full-image').click(function(e) {
+      $('#ct-full-image-container').removeClass('active').addClass('fading');
+      $('#ct-animals-present').addClass('active');
     });
 
     $('.btn-ct-landing').click(function(e) {

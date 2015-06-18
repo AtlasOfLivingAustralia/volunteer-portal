@@ -20,10 +20,15 @@
                 <div class="thumbnail ct-thumbnail" data-image-select-key="${piItem.key}" data-image-select-value="${piItem.value}">
                     <span class="ct-badge ct-badge-sure badge"><i class="icon-white icon-ok-sign"></i></span>
                     <span class="ct-badge ct-badge-uncertain badge"><i class="icon-white icon-question-sign"></i></span>
-                    <img src="${imageInfos.infos[piItem.key]?.squareThumbUrl}" alt="${piItem.value}">
-                    <div>
-                        <span class="ct-caption" title="${piItem.value}">${piItem.value}</span>
+                    <img class="ct-thumbnail-image" src="${imageInfos.infos[piItem.key]?.squareThumbUrl}" alt="${piItem.value}">
+                    <div class="ct-caption-table" style="display:table;height:40px;line-height:0;">
+                        <div class="ct-caption-cell" style="display:table-cell;vertical-align:middle;">
+                            <div style="text-align:center;" class="ct-caption dotdotdot" title="${piItem.value}">${piItem.value}</div>
+                        </div>
                     </div>
+                    %{--<div>--}%
+                        %{--<span class="ct-caption" title="${piItem.value}">${piItem.value}</span>--}%
+                    %{--</div>--}%
                 </div>
             </div>
         </g:each>
