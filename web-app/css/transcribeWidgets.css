@@ -231,7 +231,16 @@
     cursor: zoom-in;
 }
 
-#ct-full-image {
+#ct-full-image-container.item.active, #ct-full-image-container.item.fading {
+    height: 590px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#ct-full-image-container img {
     /*height: 100%;*/
     /*width: 100%;*/
     cursor: zoom-out;

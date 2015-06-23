@@ -25,25 +25,36 @@
                         <g:imageViewer multimedia="${multimedia}" />
                     </g:if>
                 </g:each>
+                <div class="form-horizontal">
+                    %{--<div class="control-group">--}%
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox"> This image is particularly interesting – alert the WildCount team
+                            </label>
+                        </div>
+                    %{--</div>--}%
+                </div>
             </div>
         </div>
 
-        <div class="span6" style="max-height: 580px; overflow-y: hidden;">
+        <div class="span6" style="max-height: 590px; overflow-y: hidden;">
             <div id="camera-trap-questions" class="" data-interval="">
                 <div id="ct-landing" class="item clearfix active">
-                    <h3>Step 1</h3>
-                    <p>Are there any animals visible in the image?</p>
-                    <div class="btn-group btn-group-vertical" data-toggle="buttons-radio">
-                        <button class="btn input-medium btn-ct-landing">Setup</button>
-                        <button class="btn btn-warning input-medium btn-ct-landing">Unsure</button>
-                        <button class="btn btn-danger input-medium btn-ct-landing">No animals present</button>
-                        <button id="btn-animals-present" class="btn btn-primary input-medium btn-ct-landing">Animals present</button>
+                    <div class="well well-small">
+                        <h3>Step 1</h3>
+                        <p>Are there any animals visible in the image?</p>
+                        <div class="btn-group btn-group-vertical" data-toggle="buttons-radio">
+                            <button class="btn input-medium btn-ct-landing">Setup</button>
+                            <button class="btn btn-warning input-medium btn-ct-landing">Unsure</button>
+                            <button class="btn btn-danger input-medium btn-ct-landing">No animals present</button>
+                            <button id="btn-animals-present" class="btn btn-primary input-medium btn-ct-landing">Animals present</button>
+                        </div>
                     </div>
                 </div>
                 <div id="ct-animals-present" class="item clearfix">
-                    <h3>Step 2</h3>
                     %{--<p>Select all animals present in the image.  If you a certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>--}%
                     <div class="well well-small" style="padding-bottom: 0;">
+                        <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Step 2</h3>
                         <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="lmImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.largeMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="reptilesImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.reptilesPicklistId?.toLong()), project: taskInstance?.project)}" />
@@ -55,8 +66,9 @@
                             <li><a href="#reptile" data-toggle="pill">Reptiles</a></li>
                             <li><a href="#bird" data-toggle="pill">Birds</a></li>
                             <li><a href="#other" data-toggle="pill">Others</a></li>
+                            <li><a href="#unlisted" data-toggle="pill">Unlisted</a></li>
                         </ul>
-                        <div class="pill-content" style="overflow-y: auto; height: 455px;">
+                        <div class="pill-content" style="overflow-y: auto; height: 463px;">
                             <div class="pill-pane fade in active" id="small-mammal">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
                             </div>
@@ -72,10 +84,33 @@
                             <div class="pill-pane fade" id="other">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: otherImageInfos, picklistId: template.viewParams.otherPicklistId?.toLong()]}" />
                             </div>
+                            <div class="pill-pane fade form-horizontal" id="unlisted">
+                                <div class="control-group">
+                                    <label class="control-label" for="speciesName">Species name</label>
+                                    <div class="controls">
+                                        <input type="text" class="speciesName" name="recordValues.0.speciesName" placeholder="Quokka" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div id="ct-full-image-container" class="item clearfix" style="height:580px;overflow-x: hidden;overflow-y: auto;display:flex;justify-content:center;align-items:center;">
+                <div id="ct-full-image-container" class="item clearfix">
+                    %{--<g:each in="${smImageInfos?.infos}">--}%
+                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
+                    %{--</g:each>--}%
+                    %{--<g:each in="${lmImageInfos?.infos}">--}%
+                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
+                    %{--</g:each>--}%
+                    %{--<g:each in="${reptilesImageInfos?.infos}">--}%
+                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
+                    %{--</g:each>--}%
+                    %{--<g:each in="${birdsImageInfos?.infos}">--}%
+                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
+                    %{--</g:each>--}%
+                    %{--<g:each in="${otherImageInfos?.infos}">--}%
+                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
+                    %{--</g:each>--}%
                     <img id="ct-full-image" src="" />
                 </div>
             </div>
@@ -105,6 +140,22 @@
 
 </div>
 
+<g:each in="${smImageInfos?.infos}">
+    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
+</g:each>
+<g:each in="${lmImageInfos?.infos}">
+    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
+</g:each>
+<g:each in="${reptilesImageInfos?.infos}">
+    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
+</g:each>
+<g:each in="${birdsImageInfos?.infos}">
+    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
+</g:each>
+<g:each in="${otherImageInfos?.infos}">
+    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
+</g:each>
+
 <script id="selected-item-template" type="x-tmpl-mustache">
 <div class="griditem bvpBadge">
     <div class="thumbnail ct-thumbnail" data-image-select-key="{{key}}" data-image-select-value="{{value}}">
@@ -125,10 +176,6 @@
     </div>
 </div>
 </script>
-
-<g:each in="${smImageInfos.infos}">
-    <link rel="prefetch" href="${it.value.imageUrl}" />
-</g:each>
 
 <r:script>
   jQuery(function($) {
@@ -159,6 +206,27 @@
     if (history.replaceState)
       history.replaceState(page('ct-landing'), window.document.title);
 
+    function switchCtPage(to) {
+      var $ctq = $('#camera-trap-questions');
+      // kill any existing transition
+      $ctq.children('.fading').removeClass('fading');
+      $ctq.children('.active:not('+to+')').removeClass('active').addClass('fading');
+      $(to).addClass('active');
+    }
+
+    $('#camera-trap-questions').on('transitionend', '.item', function(e) {
+        $(e.target).removeClass('fading');
+        $('.ct-caption').dotdotdot();
+      });
+
+    $('#ct-step2-back').click(function(e) {
+      if (history.pushState) {
+        history.back();
+      } else {
+        switchCtPage('ct-animals-present');
+      }
+    });
+
     $('a[data-toggle="pill"]').on('shown', function (e) {
       $('.ct-caption').dotdotdot();
       //e.target // activated tab
@@ -167,27 +235,25 @@
 
     $('#btn-animals-present').click(function(e) {
       e.preventDefault();
-      $('#ct-landing').removeClass('active').addClass('fading');
-      $('#ct-animals-present').addClass('active');
+      switchCtPage('#ct-animals-present');
       if (history.pushState)
         history.pushState(page('ct-animals-present'), window.document.title);
     });
 
-    $('#camera-trap-questions').on('transitionend', '.item.fading', function(e) {
-      $(e.target).removeClass('fading');
-      $('.ct-caption').dotdotdot();
-    });
-
     $('.ct-thumbnail-image').click(function(e) {
       var key = $(e.target).closest('[data-image-select-key]').data('image-select-key');
-      $('#ct-full-image').attr('src', (smImageInfos[key] || lmImageInfos[key] || reptilesImageInfos[key] || birdsImageInfos[key] || otherImageInfos[key]).imageUrl);
-      $('#ct-animals-present').removeClass('active').addClass('fading');
-      $('#ct-full-image-container').addClass('active');
+      //var $fullImageContainer = $('#ct-full-image-container');
+      //$fullImageContainer.find('img').addClass('hidden');
+      //$fullImageContainer.find('[data-key="'+key+'"]').removeClass('hidden');
+      $('#ct-full-image').attr('src', firstInfoWithKey(key).imageUrl);
+
+      %{--$('#ct-animals-present').removeClass('active').addClass('fading');--}%
+      %{--$fullImageContainer.addClass('active');--}%
+      switchCtPage('#ct-full-image-container');
     });
 
-    $('#ct-full-image').click(function(e) {
-      $('#ct-full-image-container').removeClass('active').addClass('fading');
-      $('#ct-animals-present').addClass('active');
+    $('#ct-full-image-container').find('img').click(function(e) {
+      switchCtPage('#ct-animals-present');
     });
 
     $('.btn-ct-landing').click(function(e) {
@@ -225,7 +291,7 @@
     function addSelectionToContainer(sel, selElem) {
       var certainty = selections[sel].certainty;
       var imageKey = selections[sel].key;
-      var imageUrl = (smImageInfos[imageKey] || lmImageInfos[imageKey] || reptilesImageInfos[imageKey] || birdsImageInfos[imageKey] || otherImageInfos[imageKey]).squareThumbUrl;
+      var imageUrl = firstInfoWithKey(imageKey).squareThumbUrl;
       var opts = {
         squareThumbUrl: imageUrl,
         value: sel,
@@ -234,9 +300,8 @@
         uncertain: certainty < 1
       };
       var rendered = Mustache.render(template, opts);
-      var jqRendered = $(rendered);
-      jqRendered.appendTo(selElem);
-      //jqRendered.dotdotdot();
+      var $rendered = $(rendered);
+      $rendered.appendTo(selElem);
       $('.ct-caption').dotdotdot();
     }
 
@@ -260,11 +325,14 @@
       ctContainer.find(badgeSelector).addClass('selected');
     }
 
+    function firstInfoWithKey(key) {
+      return (smImageInfos || {})[key] || (lmImageInfos || {})[key] || (reptilesImageInfos || {})[key] || (birdsImageInfos || {})[key] || (otherImageInfos || {})[key]
+    }
+
     window.onpopstate = function(e) {
       var state = window.history.state;
       if (state.page) {
-        $('#camera-trap-questions').children('.active').removeClass('active').addClass('fading');
-        $('#'+state.page).addClass('active');
+        switchCtPage('#'+state.page);
       }
     }
   });
