@@ -404,11 +404,11 @@
       var sortFn;
       if (sorted) {
         sortFn = function(a,b) {
-           return $(a).find('[data-image-select-value]').data('image-select-value') > $(b).find('[data-image-select-value]').data('image-select-value');
+           return ($(a).find('[data-image-select-value]').data('image-select-value')||"").localeCompare($(b).find('[data-image-select-value]').data('image-select-value'));
         }
       } else {
         sortFn = function(a,b) {
-           return $(a).data('item-index') > $(b).data('item-index');
+           return parseInt($(a).data('item-index')) - parseInt($(b).data('item-index'));
         }
       }
       $('.pill-pane.sortable').each(function() {
