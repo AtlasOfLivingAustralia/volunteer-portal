@@ -15,8 +15,8 @@
                 </ul>
             </div>
         </g:if>
-        <g:each in="${imageInfos.items}" var="piItem">
-            <div class="griditem bvpBadge">
+        <g:each in="${imageInfos.items}" var="piItem" status="st">
+            <div class="griditem bvpBadge" data-item-index="${st}">
                 <div class="thumbnail ct-thumbnail" data-image-select-key="${piItem.key}" data-image-select-value="${piItem.value}">
                     <span class="ct-badge ct-badge-sure badge"><i class="icon-white icon-ok-sign"></i></span>
                     <span class="ct-badge ct-badge-uncertain badge"><i class="icon-white icon-question-sign"></i></span>

@@ -29,7 +29,7 @@
                     %{--<div class="control-group">--}%
                         <div class="controls">
                             <label class="checkbox">
-                                <g:checkBox name="interesting" value="${taskInstance.interesting}" /> This image is particularly interesting – alert the WildCount team
+                                <g:checkBox name="recordValues.0.interesting" value="${recordValues[0]?.interesting}" /> This image is particularly interesting – alert the WildCount team
                             </label>
                         </div>
                     %{--</div>--}%
@@ -63,6 +63,7 @@
                         <g:set var="reptilesImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.reptilesPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="birdsImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.birdsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="otherImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.otherPicklistId?.toLong()), project: taskInstance?.project)}" />
+                        <button id="button-sort-items" type="button" class="btn btn-small pull-right" data-toggle="button">A<i class="icon-resize-vertical"></i></button>
                         <ul class="nav nav-pills">
                             <li class="active"><a href="#small-mammal" data-toggle="pill">Small Mammals</a></li>
                             <li><a href="#large-mammal" data-toggle="pill">Large Mammals</a></li>
@@ -72,19 +73,19 @@
                             <li><a href="#unlisted" data-toggle="pill">Unlisted</a></li>
                         </ul>
                         <div class="pill-content" style="overflow-y: auto; height: 463px;">
-                            <div class="pill-pane fade in active" id="small-mammal">
+                            <div class="pill-pane fade in active sortable" id="small-mammal">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
                             </div>
-                            <div class="pill-pane fade" id="large-mammal">
+                            <div class="pill-pane fade sortable" id="large-mammal">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: lmImageInfos, picklistId: template.viewParams.largeMammalsPicklistId?.toLong()]}" />
                             </div>
-                            <div class="pill-pane fade" id="reptile">
+                            <div class="pill-pane fade sortable" id="reptile">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: reptilesImageInfos, picklistId: template.viewParams.reptilesPicklistId?.toLong()]}" />
                             </div>
-                            <div class="pill-pane fade" id="bird">
+                            <div class="pill-pane fade sortable" id="bird">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: birdsImageInfos, picklistId: template.viewParams.birdsPicklistId?.toLong()]}" />
                             </div>
-                            <div class="pill-pane fade" id="other">
+                            <div class="pill-pane fade sortable" id="other">
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: otherImageInfos, picklistId: template.viewParams.otherPicklistId?.toLong()]}" />
                             </div>
                             <div class="pill-pane fade form-horizontal" id="unlisted">
@@ -367,7 +368,6 @@
     }
 
     var $unlisted = $('#unlisted');
-    //var placeholders = _.shuffle(['Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']);
     var placeholders = <cl:json value="${placeholders}" />;
 
     $unlisted.on('change keyup paste input propertychange', '.speciesName:last', function(e) {
@@ -397,6 +397,26 @@
         $this.find('label').attr('for', attrVal);
       });
     }
+
+    var sorted = false;
+    $('#button-sort-items').click(function(e) {
+      sorted = !sorted;
+      var sortFn;
+      if (sorted) {
+        sortFn = function(a,b) {
+           return $(a).find('[data-image-select-value]').data('image-select-value') > $(b).find('[data-image-select-value]').data('image-select-value');
+        }
+      } else {
+        sortFn = function(a,b) {
+           return $(a).data('item-index') > $(b).data('item-index');
+        }
+      }
+      $('.pill-pane.sortable').each(function() {
+        var $this = $(this);
+        var parent = $this.find('.itemgrid');
+        parent.find('.griditem.bvpBadge').sort(sortFn).appendTo(parent);
+      });
+    });
 
     window.onpopstate = function(e) {
       var state = window.history.state;
