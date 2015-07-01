@@ -33,6 +33,10 @@
                 isValid: ${(taskInstance?.isValid) ? "true" : "false"}
             };
 
+            <g:if test="${complete}">
+                amplify.store("bvp_task_${complete}", null);
+            </g:if>
+
             $(document).ready(function () {
 
                 jQuery.fn.extend({
@@ -65,9 +69,8 @@
                 });
 
                 $(".transcribeForm").submit(function(eventObj) {
-
-                    if (typeof(transcribeBeforeSubmit) === "function") {
-                        transcribeBeforeSubmit();
+                    if (!transcribeWidgets.evaluateBeforeSubmitHooks(eventObj)) {
+                      return false;
                     }
 
                     transcribeWidgets.prepareFieldWidgetsForSubmission();

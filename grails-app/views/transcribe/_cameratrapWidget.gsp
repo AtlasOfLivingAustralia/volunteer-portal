@@ -32,5 +32,8 @@
                 </div>
             </div>
         </g:each>
+        <g:each in="${imageInfos.infos}">
+            <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
+        </g:each>
     </g:else>
 </div>

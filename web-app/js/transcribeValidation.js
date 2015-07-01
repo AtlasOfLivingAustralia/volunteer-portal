@@ -31,8 +31,16 @@ var transcribeValidation = {};
     vlib.validateFields = function() {
 
         // first clear any error visualisations...
-        vlib.clearMessages();
+        errorClearer();
 
+        var validationResult = vlib.validate();
+
+        errorRenderer(validationResult.errorList);
+
+        return validationResult;
+    };
+
+    vlib.validate = function() {
         // The error list will hold a reference to each element in error, along with a message
         var errorList = [];
         // test each input element that has a validation rule attached to it...
@@ -75,11 +83,21 @@ var transcribeValidation = {};
             }
         });
 
+        return { hasWarnings : hasWarnings, hasErrors: hasErrors, errorList: errorList }
+    };
+
+    var defaultErrorRenderer = function(errorList) {
         $.each(errorList, function(index, error) {
             vlib.markFieldInvalid(error.element, error.message, error.type);
         });
+    };
 
-        return { hasWarnings : hasWarnings, hasErrors: hasErrors, errorList: errorList }
+    var errorClearer = vlib.clearMessages;
+    var errorRenderer = defaultErrorRenderer;
+
+    vlib.setErrorRenderFunctions = function(errorRenderFn, errorClearFn) {
+        errorRenderer = errorRenderFn;
+        errorClearer = errorClearFn;
     };
 
     vlib.validateTranscribeWidgets = function(messages) {

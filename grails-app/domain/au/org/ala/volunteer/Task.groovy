@@ -15,6 +15,7 @@ class Task implements Serializable {
     Date dateLastUpdated
     Long lastViewed
     String lastViewedBy
+    Boolean interesting = false
 
     static belongsTo = [project: Project]
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
@@ -25,6 +26,7 @@ class Task implements Serializable {
         viewedTasks cascade: 'all,delete-orphan'
         fields cascade: 'all,delete-orphan'
         comments cascade: 'all,delete-orphan'
+        interesting defaultValue: "false"
     }
 
     static constraints = {

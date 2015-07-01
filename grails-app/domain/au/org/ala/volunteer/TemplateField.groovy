@@ -16,6 +16,10 @@ class TemplateField {
     Integer displayOrder
     String layoutClass
 
+    def getUiLabel() {
+        label ?: fieldType.label
+    }
+
     static mapping = {
         version false
     }

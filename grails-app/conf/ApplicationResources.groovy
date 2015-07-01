@@ -148,6 +148,12 @@ modules = {
         resource url: 'js/mustache/2.0.0/mustache.min.js'
     }
 
+    "mustache-util" {
+        dependsOn "jquery", "mustache"
+        resource url: 'js/mustache-util.js'
+
+    }
+
     "underscore" {
         resource url: 'js/underscore/1.8.3/underscore-min.js'
     }

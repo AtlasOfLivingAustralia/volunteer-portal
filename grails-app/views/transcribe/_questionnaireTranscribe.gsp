@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require module="dotdotdot" />
+<r:require modules="dotdotdot, mustache-util" />
 <div class="container-fluid qa-transcribe tall-image">
 
     <div class="row-fluid">
@@ -52,11 +52,13 @@
                 <!-- Carousel items -->
                 <div class="carousel-inner">
                     <g:each in="${fieldList}" var="f" status="st">
+                        <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
                         <g:set var="isActive" value="${st == 0 ? 'active' : ''}" />
-                        <div class="${isActive} item">
+                        <div id="item-${name}" class="${isActive} item" data-item-index="${st}">
                             <div style="margin-bottom: 10px;">
-                                <h3>${st+1}/${fieldList.size()}: <g:fieldValue bean="${f.field}" field="label" /></h3>
+                                <h3>${st+1}/${fieldList.size()}: <g:fieldValue bean="${f.field}" field="uiLabel" /></h3>
                                 <span><g:fieldValue bean="${f.field}" field="helpText" /></span>
+                                <div id="inline-validation-${name}" class="alert alert-block inline-validation" style="display: none;"><span></span></div>
                             </div>
                             <div>
                                 <g:renderWidgetHtml taskInstance="${taskInstance}" field="${f.field}" recordValues="${recordValues}" recordIdx="${f.recordIdx}" auxClass="" />
@@ -82,12 +84,12 @@
                         <th class="span4">Answer</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tbody-answer-summary">
                     <g:each in="${fieldList}" var="f" status="st">
                     <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
                     <tr>
-                        <td><g:fieldValue bean="${f.field}" field="label" /></td>
-                        <td><span id="display.${name}"></span></td>
+                        <td><g:fieldValue bean="${f.field}" field="uiLabel" /></td>
+                        <td><span id="validation-${name}" class="pull-right validation pointer" data-target-field="${name}"></span><span id="display-${name}"></span></td>
                     </tr>
                     </g:each>
                 </tbody>
@@ -103,6 +105,10 @@
 
 </div>
 
+<script id="template-validation-badge" type="x-tmpl-mustache">
+    <span class="badge badge-{{badgeType}}" title="{{title}}"><i class="icon-{{iconType}} icon-white"></i></span>
+</script>
+
 <r:script>
     jQuery(function($) {
         var active = 0;
@@ -115,9 +121,18 @@
           interval: false
         });
 
-        $("input[id^='recordValues'").change(function(e) {
-          var v = $(e.target).val();
-          $(bvp.escapeId('display.'+e.target.id)).text(v);
+        $("input[name^='recordValues'], textarea[name^='recordValues']").change(function(e) {
+          var $target = $(e.target);
+          var v;
+          if ($target.attr('type') === 'checkbox') {
+            v = e.target.checked;
+          } else {
+            v = $target.val();
+          }
+
+          $(bvp.escapeId('display-'+e.target.name)).text(v);
+
+          transcribeValidation.validateFields();
         });
 
         $('.qt-previous').click(function(e) {
@@ -185,16 +200,57 @@
         $('.dotdotdot').dotdotdot();
         $(document).not('input,textarea').keydown(function(e) {
             if (!interview || $(document.activeElement).is(":input,[contenteditable]")) return;
+            var $qaCarousel = $('#qaCarousel');
             switch(e.which) {
                 case 37: // left
-                    $('#qaCarousel').carousel('prev');
+                    $qaCarousel.carousel('prev');
                     break;
                 case 39: // right
-                    $('#qaCarousel').carousel('next');
+                    $qaCarousel.carousel('next');
                     break;
                 default: return; // exit this handler for other keys
             }
             e.preventDefault(); // prevent the default action (scroll / move caret)
         });
+
+        // validation
+        transcribeValidation.setErrorRenderFunctions(
+          function(errorList) {
+            $.each(errorList, function(index, error) {
+              var id = bvp.escapeIdPart(error.element.id);
+              var $parent = $('#validation-'+id);
+              var isError = error.Type === 'Error';
+              var badgeType =  isError ? 'important' : 'warning';
+              var iconType = "remove";
+              mu.appendTemplate($parent, "template-validation-badge", {
+                title: error.message,
+                badgeType: badgeType,
+                iconType: iconType
+              });
+
+              var $inline = $('#inline-validation-'+id);
+              $inline.css('display', 'block');
+              if (isError) {
+                $inline.addClass('alert-error');
+              } else {
+                $inline.removeClass('alert-error');
+              }
+              $inline.find('span').text(error.message);
+            });
+          },
+          function() {
+            $('#tbody-answer-summary').find('span.validation').empty();
+            $('.inline-validation').css('display','none');
+          }
+        );
+
+        $('#tbody-answer-summary').on('click', 'span.validation, span.validation > i', function(e) {
+          var $this = $(this).closest('span.validation');
+          var id = $this.attr('data-target-field');
+          var idx = parseInt($('#item-' + bvp.escapeIdPart(id)).attr('data-item-index'));
+          $('#qaCarousel').carousel(idx);
+        });
+
+        transcribeValidation.validateFields();
     });
 </r:script>

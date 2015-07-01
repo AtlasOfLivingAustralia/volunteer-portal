@@ -219,7 +219,7 @@ class TemplateController {
 
         if (templateInstance && fieldType) {
 
-            def existing = TemplateField.findAllByTemplateAndFieldType(templateInstance, fieldType, classifier)
+            def existing = TemplateField.findAllByTemplateAndFieldTypeAndFieldTypeClassifier(templateInstance, fieldType, classifier)
             if (existing && fieldType != DarwinCoreField.spacer.toString() && fieldType != DarwinCoreField.widgetPlaceholder.toString()) {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {

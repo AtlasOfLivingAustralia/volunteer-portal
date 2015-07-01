@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require modules="mustache, underscore, dotdotdot" />
+<r:require modules="mustache-util, underscore, dotdotdot" />
 
 <div id="ct-container" class="container-fluid extra-tall-image">
 
@@ -10,9 +10,9 @@
                 <button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> previous image</button>
                 <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>next image <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
                 <button type="button" class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
-                <button type="button" class="btn btn-small" id="skip" title="Skip">Skip</button>
-                <button type="button" class="btn btn-small" id="saveDraft" title="Save Draft">Save draft</button>
-                <button type="button" class="btn btn-small" id="quit" title="Quit without saving">Quit without saving</button>
+                <button type="button" class="btn btn-small" id="showNextFromProject" title="Skip">Skip</button>
+                <button type="button" class="btn btn-small" id="btnSavePartial" title="Save Draft">Save draft</button>
+                <g:link controller="transcribe" action="discard" id="${taskInstance?.id}" class="btn btn-small btn-warning" title="Discard">Discard</g:link>
             </span>
         </div>
     </div>
@@ -29,7 +29,7 @@
                     %{--<div class="control-group">--}%
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox"> This image is particularly interesting – alert the WildCount team
+                                <g:checkBox name="interesting" value="${taskInstance.interesting}" /> This image is particularly interesting – alert the WildCount team
                             </label>
                         </div>
                     %{--</div>--}%
@@ -43,12 +43,15 @@
                     <div class="well well-small">
                         <h3>Step 1</h3>
                         <p>Are there any animals visible in the image?</p>
-                        <div class="btn-group btn-group-vertical" data-toggle="buttons-radio">
-                            <button class="btn input-medium btn-ct-landing">Setup</button>
-                            <button class="btn btn-warning input-medium btn-ct-landing">Unsure</button>
-                            <button class="btn btn-danger input-medium btn-ct-landing">No animals present</button>
-                            <button id="btn-animals-present" class="btn btn-primary input-medium btn-ct-landing">Animals present</button>
+                        <g:set var="step1" value="${recordValues[0]?.animalsVisible}" />
+                        <div id="ct-step1" class="btn-group btn-group-vertical" data-toggle="buttons-radio">
+                            <button class="btn input-medium btn-ct-landing ${step1 == 'setup' ? 'active' : ''}" data-value="setup">Setup</button>
+                            <button class="btn btn-warning input-medium btn-ct-landing ${step1 == 'unsure' ? 'active' : ''}" data-value="unsure">Unsure</button>
+                            <button class="btn btn-danger input-medium btn-ct-landing ${step1 == 'none' ? 'active' : ''}" data-value="none">No animals present</button>
+                            <button id="btn-animals-present" class="btn btn-primary input-medium btn-ct-landing ${step1 == 'some' ? 'active' : ''}" data-value="some">Animals present</button>
                         </div>
+                        <g:hiddenField name="skipNextAction" value="true" />
+                        <g:hiddenField name="recordValues.0.animalsVisible" value="${recordValues[0]?.animalsVisible}" />
                     </div>
                 </div>
                 <div id="ct-animals-present" class="item clearfix">
@@ -85,10 +88,21 @@
                                 <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: otherImageInfos, picklistId: template.viewParams.otherPicklistId?.toLong()]}" />
                             </div>
                             <div class="pill-pane fade form-horizontal" id="unlisted">
+                                <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
+                                ${Collections.shuffle(placeholders)}
+                                <g:set var="unlisteds" value="${recordValues.findAll { it.value?.unlisted != null }.collect{  [i: it.key, v: it.value.unlisted] }.sort { it.i }.collect { it.v }}" />
+                                <g:each in="${unlisteds}" var="u" status="s">
+                                    <div class="control-group">
+                                        <label class="control-label" for="recordValues.${s}.unlisted">Species name</label>
+                                        <div class="controls">
+                                            <g:textField class="speciesName input-xlarge" name="recordValues.${s}.unlisted" placeholder="${placeholders[s % placeholders.size()]}" value="${recordValues[s]?.unlisted}" />
+                                        </div>
+                                    </div>
+                                </g:each>
                                 <div class="control-group">
-                                    <label class="control-label" for="speciesName">Species name</label>
+                                    <label class="control-label" for="recordValues.${unlisteds.size()}.unlisted">Species name</label>
                                     <div class="controls">
-                                        <input type="text" class="speciesName" name="recordValues.0.speciesName" placeholder="Quokka" />
+                                        <g:textField class="speciesName input-xlarge" name="recordValues.${unlisteds.size()}.unlisted" placeholder="${placeholders[unlisteds.size() % placeholders.size()]}" />
                                     </div>
                                 </div>
                             </div>
@@ -96,21 +110,6 @@
                     </div>
                 </div>
                 <div id="ct-full-image-container" class="item clearfix">
-                    %{--<g:each in="${smImageInfos?.infos}">--}%
-                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
-                    %{--</g:each>--}%
-                    %{--<g:each in="${lmImageInfos?.infos}">--}%
-                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
-                    %{--</g:each>--}%
-                    %{--<g:each in="${reptilesImageInfos?.infos}">--}%
-                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
-                    %{--</g:each>--}%
-                    %{--<g:each in="${birdsImageInfos?.infos}">--}%
-                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
-                    %{--</g:each>--}%
-                    %{--<g:each in="${otherImageInfos?.infos}">--}%
-                        %{--<img class="hidden" src="${it.value.imageUrl}" data-key="${it.key}"/>--}%
-                    %{--</g:each>--}%
                     <img id="ct-full-image" src="" />
                 </div>
             </div>
@@ -123,7 +122,14 @@
         </div>
         <div class="span1">
             <div style="margin: 10px 0; line-height: 40px;">
-                <button class="btn btn-primary">Submit</button>
+                <g:if test="${validator}">
+                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
+                </g:if>
+                <g:else>
+                    <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
+                </g:else>
+                %{--<button class="btn btn-primary">Submit</button>--}%
             </div>
         </div>
     </div>
@@ -138,23 +144,8 @@
         </div>
     </div>
 
+    <div id="ct-fields" style="display: none;"></div>
 </div>
-
-<g:each in="${smImageInfos?.infos}">
-    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
-</g:each>
-<g:each in="${lmImageInfos?.infos}">
-    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
-</g:each>
-<g:each in="${reptilesImageInfos?.infos}">
-    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
-</g:each>
-<g:each in="${birdsImageInfos?.infos}">
-    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
-</g:each>
-<g:each in="${otherImageInfos?.infos}">
-    <link rel="prefetch" href="${it.value.imageUrl}" data-key="${it.key}"/>
-</g:each>
 
 <script id="selected-item-template" type="x-tmpl-mustache">
 <div class="griditem bvpBadge">
@@ -177,6 +168,19 @@
 </div>
 </script>
 
+<script id="new-unlisted-template" type="x-tmpl-mustache">
+    <div class="control-group">
+        <label class="control-label" for="recordValues.{{index}}.unlisted">Species name</label>
+        <div class="controls">
+            <input type="text" class="speciesName input-xlarge" id="recordValues.{{index}}.unlisted" name="recordValues.{{index}}.unlisted" placeholder="{{placeholder}}" />
+        </div>
+    </div>
+</script>
+
+<script id="input-template" type="x-tmpl-mustache">
+    <input id="{{id}}" name="{{id}}" type="hidden" value="{{value}}" />
+</script>
+
 <r:script>
   jQuery(function($) {
     var active = 0;
@@ -192,19 +196,34 @@
         ,birdsItems = <cl:json value="${birdsImageInfos.items}" />
         ,otherItems = <cl:json value="${otherImageInfos.items}" />;
 
+    var recordValues = <cl:json value="${recordValues}" />;
+
     var values = [].concat(_.pluck(smItems, 'value'), _.pluck(lmItems, 'value'), _.pluck(reptilesItems, 'value'), _.pluck(birdsItems, 'value'), _.pluck(otherItems, 'value'));
 
-    var template = $('#selected-item-template').html();
-    Mustache.parse(template);   // optional, speeds up future uses
+    var itemValueMap = _.reduce(_.filter([].concat(smItems,lmItems,reptilesItems,birdsItems,otherItems), function(it) { return it != null }), function(memo, it) { memo[it.value] = it; return memo; }, {});
+
+    var unlisted = [];
 
     var selections = {};
+
+    // setup initial selection state from recordValues
+    for (var index in recordValues) {
+      if( recordValues.hasOwnProperty( index ) ) {
+        var vn = recordValues[index].vernacularName;
+        var certainty = recordValues[index].certainty || 1;
+        if (vn && itemValueMap[vn]) {
+          selections[vn] = {certainty: certainty, key: itemValueMap[vn].key}
+        }
+      }
+    }
 
     function page(id) {
       return {'page': id};
     }
 
-    if (history.replaceState)
+    if (history.replaceState) {
       history.replaceState(page('ct-landing'), window.document.title);
+    }
 
     function switchCtPage(to) {
       var $ctq = $('#camera-trap-questions');
@@ -213,6 +232,12 @@
       $ctq.children('.active:not('+to+')').removeClass('active').addClass('fading');
       $(to).addClass('active');
     }
+
+    $('#ct-step1').find('.btn').click(function(e) {
+      var $this = $(this);
+      var value = $this.attr('data-value');
+      $('#recordValues\\.0\\.animalsVisible').val(value);
+    });
 
     $('#camera-trap-questions').on('transitionend', '.item', function(e) {
         $(e.target).removeClass('fading');
@@ -229,26 +254,23 @@
 
     $('a[data-toggle="pill"]').on('shown', function (e) {
       $('.ct-caption').dotdotdot();
-      //e.target // activated tab
-      //e.relatedTarget // previous tab
     });
 
-    $('#btn-animals-present').click(function(e) {
-      e.preventDefault();
+    function animalsPresent() {
       switchCtPage('#ct-animals-present');
       if (history.pushState)
         history.pushState(page('ct-animals-present'), window.document.title);
+    }
+
+    $('#btn-animals-present').click(function(e) {
+      e.preventDefault();
+      animalsPresent();
     });
 
     $('.ct-thumbnail-image').click(function(e) {
       var key = $(e.target).closest('[data-image-select-key]').data('image-select-key');
-      //var $fullImageContainer = $('#ct-full-image-container');
-      //$fullImageContainer.find('img').addClass('hidden');
-      //$fullImageContainer.find('[data-key="'+key+'"]').removeClass('hidden');
       $('#ct-full-image').attr('src', firstInfoWithKey(key).imageUrl);
 
-      %{--$('#ct-animals-present').removeClass('active').addClass('fading');--}%
-      %{--$fullImageContainer.addClass('active');--}%
       switchCtPage('#ct-full-image-container');
     });
 
@@ -299,9 +321,7 @@
         success: certainty == 1,
         uncertain: certainty < 1
       };
-      var rendered = Mustache.render(template, opts);
-      var $rendered = $(rendered);
-      $rendered.appendTo(selElem);
+      mu.appendTemplate(selElem, 'selected-item-template', opts);
       $('.ct-caption').dotdotdot();
     }
 
@@ -323,10 +343,59 @@
 
       ctContainer.find('.thumbnail[data-image-select-value] .badge').removeClass('selected ' + _.values(badges).join(' '));
       ctContainer.find(badgeSelector).addClass('selected');
+
+      generateInputFields();
+    }
+
+    function generateInputFields() {
+      var $ctFields = $('#ct-fields');
+      $ctFields.empty();
+      var i = 0;
+      _.each(selections, function(value, key, list) {
+        mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.'+i+'.vernacularName', value: key});
+        mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.'+i+'.certainty', value: value.certainty});
+        ++i;
+      });
+    }
+
+    function firstItemWithValue(value) {
+      return _.find([].concat(smItems, lmItems, reptilesItems, birdsItems, otherItems), function(it) { return it.value === value });
     }
 
     function firstInfoWithKey(key) {
       return (smImageInfos || {})[key] || (lmImageInfos || {})[key] || (reptilesImageInfos || {})[key] || (birdsImageInfos || {})[key] || (otherImageInfos || {})[key]
+    }
+
+    var $unlisted = $('#unlisted');
+    //var placeholders = _.shuffle(['Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']);
+    var placeholders = <cl:json value="${placeholders}" />;
+
+    $unlisted.on('change keyup paste input propertychange', '.speciesName:last', function(e) {
+      var $this = $(this);
+      if ($this.val()) {
+        var index = $unlisted.children().length;
+        mu.appendTemplate($unlisted, 'new-unlisted-template', {placeholder: placeholders[index % placeholders.length], index: index});
+        fixUnlisted();
+      }
+    });
+
+    $unlisted.on('blur', '.speciesName:not(:last)', function(e) {
+      var $this = $(this);
+      if (!$this.val()) {
+        $this.closest('.control-group').remove();
+        fixUnlisted();
+      }
+    });
+
+    function fixUnlisted() {
+      var $unlisted = $('#unlisted');
+      $unlisted.find('.control-group').each(function(i, e) {
+        var $this = $(this);
+        var attrVal = 'recordValues.'+i+'.unlisted';
+        $this.find('input').attr('name', attrVal)
+                           .attr('id', attrVal);
+        $this.find('label').attr('for', attrVal);
+      });
     }
 
     window.onpopstate = function(e) {
@@ -334,6 +403,16 @@
       if (state.page) {
         switchCtPage('#'+state.page);
       }
-    }
+    };
+
+    transcribeWidgets.addBeforeSubmitHook(function(e) {
+      generateInputFields();
+      return true;
+    });
+
+    if (recordValues && recordValues['0'] && ('some' === recordValues['0'].animalsVisible)) animalsPresent();
+
+    // force intial sync of saved values
+    syncSelectionState();
   });
 </r:script>

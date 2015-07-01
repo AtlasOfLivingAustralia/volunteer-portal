@@ -91,6 +91,10 @@ var bvp = {};
         return "#" + id.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
     };
 
+    lib.escapeIdPart = function(id) {
+        return id.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
+    };
+
     lib.bindTooltips = function(selector, width) {
 
         if (!selector) {

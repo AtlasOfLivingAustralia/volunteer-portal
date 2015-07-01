@@ -18,6 +18,18 @@ var transcribeWidgets = {};
         preSubmitUnitRangeWidgets();
     };
 
+    lib.evaluateBeforeSubmitHooks = function(e) {
+        return _.every(beforeSubmitHooks, function(f) {
+            return !(typeof(f) === 'function') || f(e);
+        });
+    };
+
+    lib.addBeforeSubmitHook = function(f) {
+        beforeSubmitHooks.push(f);
+    };
+
+    var beforeSubmitHooks = [];
+
     // REGEX patterns
     var YEAR_PATTERN = /^(\d{2,4})$/;
     var YEAR_MONTH_PATTERN = /^(\d{2,4})-(\d{1,2})$/;

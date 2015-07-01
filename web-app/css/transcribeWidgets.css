@@ -79,7 +79,7 @@
 }
 
 .extra-tall-image #image-container {
-    height: 520px;
+    height: 540px;
 }
 
 #qaCarousel .carousel-indicators li {
@@ -274,4 +274,8 @@
 
 #ct-selection-grid {
     min-height: 210px;
+}
+
+.pointer {
+    cursor: pointer;
 }

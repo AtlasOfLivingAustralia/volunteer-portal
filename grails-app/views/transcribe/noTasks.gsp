@@ -10,6 +10,9 @@
             $(document).ready(function () {
                 // clear the temporarily saved state, now that it is known that the task was saved
                 amplify.store("bvp_task_${taskInstance?.id}", null);
+                <g:if test="${complete}">
+                amplify.store("bvp_task_${complete}", null);
+                </g:if>
             });
         </r:script>
 
