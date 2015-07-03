@@ -76,12 +76,12 @@
 
     <div class="row-fluid">
         <div class="span6">
-            <h4>Answer summary</h4>
+            <h4>Data summary</h4>
             <table class="table table-condensed">
                 <thead>
                     <tr>
-                        <th class="span2">Question</th>
-                        <th class="span4">Answer</th>
+                        <th class="span2">Category</th>
+                        <th class="span4">Your choices</th>
                     </tr>
                 </thead>
                 <tbody id="tbody-answer-summary">

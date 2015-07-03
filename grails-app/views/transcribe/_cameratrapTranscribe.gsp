@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require modules="mustache-util, underscore, dotdotdot" />
+<r:require modules="mustache-util, underscore, dotdotdot, bootbox" />
 
 <div id="ct-container" class="container-fluid extra-tall-image">
 
@@ -41,8 +41,7 @@
             <div id="camera-trap-questions" class="" data-interval="">
                 <div id="ct-landing" class="item clearfix active">
                     <div class="well well-small">
-                        <h3>Step 1</h3>
-                        <p>Are there any animals visible in the image?</p>
+                        <h3>Are there any animals visible in the image?</h3>
                         <g:set var="step1" value="${recordValues[0]?.animalsVisible}" />
                         <div id="ct-step1" class="btn-group btn-group-vertical" data-toggle="buttons-radio">
                             <button class="btn input-medium btn-ct-landing ${step1 == 'setup' ? 'active' : ''}" data-value="setup">Setup</button>
@@ -57,7 +56,7 @@
                 <div id="ct-animals-present" class="item clearfix">
                     %{--<p>Select all animals present in the image.  If you a certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>--}%
                     <div class="well well-small" style="padding-bottom: 0;">
-                        <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Step 2</h3>
+                        <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Select animals below</h3>
                         <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="lmImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.largeMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="reptilesImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.reptilesPicklistId?.toLong()), project: taskInstance?.project)}" />
@@ -235,9 +234,19 @@
     }
 
     $('#ct-step1').find('.btn').click(function(e) {
+      e.preventDefault();
       var $this = $(this);
       var value = $this.attr('data-value');
+      var label = $this.text();
       $('#recordValues\\.0\\.animalsVisible').val(value);
+
+      if (value != $('#btn-animals-present').data('value')) {
+        bootbox.confirm('Are you sure you wish to record "'+label+'" as your answer?', function(result) {
+          if (result) {
+            $('#btnSave').click();
+          }
+        });
+      }
     });
 
     $('#camera-trap-questions').on('transitionend', '.item', function(e) {

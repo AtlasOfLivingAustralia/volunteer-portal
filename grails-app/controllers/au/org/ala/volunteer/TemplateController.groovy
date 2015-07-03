@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
@@ -338,4 +339,21 @@ class TemplateController {
         [templateInstance: template]
     }
 
+    def viewParamsForm() {
+        def view = (params?.view ?: '') + 'Params'
+        if (resExists(view)) {
+            render template: view
+        } else {
+            render status: 404
+        }
+    }
+
+    private def resExists(resName) {
+        //Not needed : def grailsAttributes = new DefaultGrailsApplicationAttributes(request.servletContext)
+        def engine = grailsAttributes.pagesTemplateEngine
+        def resUri = grailsAttributes.getTemplateUri(resName, request)
+        def resource = engine.getResourceForUri(resUri)
+        log.debug "resource=${resource}; exists=${resource?.file && resource?.exists()};"
+        return resource?.file && resource?.exists()
+    }
 }
