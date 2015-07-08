@@ -98,7 +98,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
         return {
           key: keyAndInfo[0],
           url: keyAndInfo[1].imageUrl,
-          index: i,
+          idx: i,
           active: function() {
             return i == 0 ? 'active' : '';
           }
@@ -112,6 +112,8 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     $('#ct-full-image-container').on('click', 'img', function (e) {
       switchCtPage('#ct-animals-present');
+      var $container = $('#ct-full-image-container');
+      $container.empty();
     });
 
     $('.btn-ct-landing').click(function (e) {
@@ -244,10 +246,11 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       var $this = $(this);
       if ($this.val()) {
         var index = $unlisted.children().length;
-        mu.appendTemplate($unlisted, 'new-unlisted-template', {
+        var input = mu.appendTemplate($unlisted, 'new-unlisted-template', {
           placeholder: placeholders[index % placeholders.length],
           index: index
         });
+        bindAutocompleteToElement(input); // task.gsp
         fixUnlisted();
       }
     });

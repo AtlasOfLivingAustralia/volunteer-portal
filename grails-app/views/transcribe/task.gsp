@@ -242,57 +242,61 @@
 
             }
 
+            function bindAutocompleteToElement(inputElement) {
+                var picklistId = inputElement.data('picklist-id');
+                var matches = $(inputElement).attr("id").match(/^recordValues[.](\d+)[.](\w+)$/);
+                if (picklistId || matches.length > 1) {
+                    var fieldName = matches[2];
+                    var fieldIndex = matches[1];
+
+                    var picklist = picklistId ? "&picklistId=" + picklistId : "&picklist=" + fieldName;
+
+                    var autoCompleteOptions = {
+                        disabled: false,
+                        minLength: 2,
+                        delay: 200,
+                        select: function(event, ui) {
+                            var item = ui.item.data;
+
+                            if (fieldName == 'recordedBy') {
+                                var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                                if (matches.length > 0) {
+                                    var recordIdx = matches[1];
+                                    var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
+                                    $(elemSelector).val(item.key).attr('collector_name', item.name);;
+                                }
+                            }
+                        },
+                        source: function(request, response) {
+                            var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}" + picklist + "&q=" + request.term;
+                            $.ajax(url).done(function(data) {
+                                var rows = new Array();
+                                if (data.autoCompleteList) {
+                                    var list = data.autoCompleteList;
+                                    for (var i = 0; i < list.length; i++) {
+                                        rows[i] = {
+                                            value: list[i].name,
+                                            label: list[i].name,
+                                            data: list[i]
+                                        };
+                                    }
+                                }
+                                if (response) {
+                                    response(rows);
+                                }
+                            });
+                        }
+                    };
+                    inputElement.autocomplete(autoCompleteOptions);
+                }
+            }
+
             function bindAutocomplete() {
 
                 $("input.autocomplete,textarea.autocomplete").not('.noAutoComplete').each(function(index) {
 
                     var inputElement = $(this);
-                    var picklistId = inputElement.data('picklist-id');
-                    var matches = $(inputElement).attr("id").match(/^recordValues[.](\d+)[.](\w+)$/);
-                    if (picklistId || matches.length > 1) {
-                        var fieldName = matches[2];
-                        var fieldIndex = matches[1];
-
-                        var picklist = picklistId ? "&picklistId=" + picklistId : "&picklist=" + fieldName
-
-                        var autoCompleteOptions = {
-                            disabled: false,
-                            minLength: 2,
-                            delay: 200,
-                            select: function(event, ui) {
-                                var item = ui.item.data;
-
-                                if (fieldName == 'recordedBy') {
-                                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
-                                    if (matches.length > 0) {
-                                        var recordIdx = matches[1];
-                                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
-                                        $(elemSelector).val(item.key).attr('collector_name', item.name);;
-                                    }
-                                }
-                            },
-                            source: function(request, response) {
-                                var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}" + picklist + "&q=" + request.term;
-                                $.ajax(url).done(function(data) {
-                                    var rows = new Array();
-                                    if (data.autoCompleteList) {
-                                        var list = data.autoCompleteList;
-                                        for (var i = 0; i < list.length; i++) {
-                                            rows[i] = {
-                                                value: list[i].name,
-                                                label: list[i].name,
-                                                data: list[i]
-                                            };
-                                        }
-                                    }
-                                    if (response) {
-                                        response(rows);
-                                    }
-                                });
-                            }
-                        };
-                        inputElement.autocomplete(autoCompleteOptions);
-                    }
+                    bindAutocompleteToElement(inputElement);
                 });
 
                 $("input.recordedBy").blur(function(e) {

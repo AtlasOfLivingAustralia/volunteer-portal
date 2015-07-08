@@ -56,66 +56,78 @@
                 <div id="ct-animals-present" class="ct-item clearfix">
                     %{--<p>Select all animals present in the image.  If you are certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>--}%
                     <div class="well well-small" style="padding-bottom: 0;">
-                        <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Select animals below</h3>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Select animals below</h3>
+                            </div>
+                        </div>
                         <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="lmImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.largeMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="reptilesImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.reptilesPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="birdsImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.birdsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="otherImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.otherPicklistId?.toLong()), project: taskInstance?.project)}" />
-                        <div id="ct-nav-toolbar" class="btn-group pull-right">
-                            <button id="button-filter" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.filter.label', default: 'Filter')}" data-container="#ct-nav-toolbar"><i class="icon-search"></i></button>
-                            <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left">A<i class="icon-resize-vertical"></i></button>
-                        </div>
-                        <div>
-                            <ul class="nav nav-pills">
-                                <li class="active"><a href="#small-mammal" data-toggle="pill">Small Mammals</a></li>
-                                <li><a href="#large-mammal" data-toggle="pill">Large Mammals</a></li>
-                                <li><a href="#reptile" data-toggle="pill">Reptiles</a></li>
-                                <li><a href="#bird" data-toggle="pill">Birds</a></li>
-                                <li><a href="#other" data-toggle="pill">Others</a></li>
-                                <li><a href="#unlisted" data-toggle="pill">Unlisted</a></li>
-                            </ul>
-                            <div id="ct-search" class="ct-search pull-right hidden">
-                                <input id="ct-search-input" type="text" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
+                        <div class="row-fluid">
+                            <div class="span10">
+                                <ul class="nav nav-pills">
+                                    <li class="active"><a href="#small-mammal" data-toggle="pill">Small Mammals</a></li>
+                                    <li><a href="#large-mammal" data-toggle="pill">Large Mammals</a></li>
+                                    <li><a href="#reptile" data-toggle="pill">Reptiles</a></li>
+                                    <li><a href="#bird" data-toggle="pill">Birds</a></li>
+                                    <li><a href="#unlisted" data-toggle="pill">Others</a></li>
+                                    %{--<li><a href="#unlisted" data-toggle="pill">Unlisted</a></li>--}%
+                                </ul>
                             </div>
-                        </div>
-                        <div class="pill-content" style="overflow-y: auto; height: 463px;">
-                            <div class="pill-pane fade in active sortable" id="small-mammal">
-                                <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
-                            </div>
-                            <div class="pill-pane fade sortable" id="large-mammal">
-                                <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: lmImageInfos, picklistId: template.viewParams.largeMammalsPicklistId?.toLong()]}" />
-                            </div>
-                            <div class="pill-pane fade sortable" id="reptile">
-                                <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: reptilesImageInfos, picklistId: template.viewParams.reptilesPicklistId?.toLong()]}" />
-                            </div>
-                            <div class="pill-pane fade sortable" id="bird">
-                                <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: birdsImageInfos, picklistId: template.viewParams.birdsPicklistId?.toLong()]}" />
-                            </div>
-                            <div class="pill-pane fade sortable" id="other">
-                                <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: otherImageInfos, picklistId: template.viewParams.otherPicklistId?.toLong()]}" />
-                            </div>
-                            <div class="pill-pane fade form-horizontal" id="unlisted">
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <label class="checkbox" for="recordValues.0.unknown"><g:checkBox name="recordValues.0.unknown" value="${recordValues[0]?.unknown}"/>Unknown</label>
-                                    </div>
+                            <div class="span2">
+                                <div id="ct-nav-toolbar" class="btn-group pull-right">
+                                    <button id="button-filter" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.filter.label', default: 'Filter')}" data-container="#ct-nav-toolbar"><i class="icon-search"></i></button>
+                                    <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left">A<i class="icon-resize-vertical"></i></button>
                                 </div>
-                                <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
-                                ${Collections.shuffle(placeholders)}
-                                <g:set var="unlisteds" value="${recordValues.findAll { it.value?.unlisted != null }.collect{  [i: it.key, v: it.value.unlisted] }.sort { it.i }.collect { it.v }}" />
-                                <g:each in="${unlisteds}" var="u" status="s">
-                                    <div class="control-group">
-                                        <label class="control-label" for="recordValues.${s}.unlisted">Species name</label>
-                                        <div class="controls">
-                                            <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${s}.unlisted" placeholder="${placeholders[s % placeholders.size()]}" value="${recordValues[s]?.unlisted}" />
-                                        </div>
+                                <div id="ct-search" class="ct-search pull-right hidden">
+                                    <input id="ct-search-input" type="text" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="pill-content" style="overflow-y: auto; height: 463px;">
+                                    <div class="pill-pane fade in active sortable" id="small-mammal">
+                                        <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
                                     </div>
-                                </g:each>
-                                <div class="control-group">
-                                    <label class="control-label" for="recordValues.${unlisteds.size()}.unlisted">Species name</label>
-                                    <div class="controls">
-                                        <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${unlisteds.size()}.unlisted" placeholder="${placeholders[unlisteds.size() % placeholders.size()]}" />
+                                    <div class="pill-pane fade sortable" id="large-mammal">
+                                        <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: lmImageInfos, picklistId: template.viewParams.largeMammalsPicklistId?.toLong()]}" />
+                                    </div>
+                                    <div class="pill-pane fade sortable" id="reptile">
+                                        <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: reptilesImageInfos, picklistId: template.viewParams.reptilesPicklistId?.toLong()]}" />
+                                    </div>
+                                    <div class="pill-pane fade sortable" id="bird">
+                                        <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: birdsImageInfos, picklistId: template.viewParams.birdsPicklistId?.toLong()]}" />
+                                    </div>
+                                    %{--<div class="pill-pane fade sortable" id="other">--}%
+                                        %{--<g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: otherImageInfos, picklistId: template.viewParams.otherPicklistId?.toLong()]}" />--}%
+                                    %{--</div>--}%
+                                    <div class="pill-pane fade form-horizontal" id="unlisted">
+                                        <div class="control-group">
+                                            <div class="controls">
+                                                <label style="display: inline-block" class="checkbox" for="recordValues.0.unknown" title="Check this if there are animals present in the photo that you do not recognise"><g:checkBox name="recordValues.0.unknown" value="${recordValues[0]?.unknown}"/>Unknown</label>
+                                            </div>
+                                        </div>
+                                        <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
+                                        ${Collections.shuffle(placeholders)}
+                                        <g:set var="unlisteds" value="${recordValues.findAll { it.value?.unlisted != null }.collect{  [i: it.key, v: it.value.unlisted] }.sort { it.i }.collect { it.v }}" />
+                                        <g:each in="${unlisteds}" var="u" status="s">
+                                            <div class="control-group">
+                                                <label class="control-label" for="recordValues.${s}.unlisted">Species name</label>
+                                                <div class="controls">
+                                                    <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${s}.unlisted" placeholder="${placeholders[s % placeholders.size()]}" value="${recordValues[s]?.unlisted}" />
+                                                </div>
+                                            </div>
+                                        </g:each>
+                                        <div class="control-group">
+                                            <label class="control-label" for="recordValues.${unlisteds.size()}.unlisted">Species name</label>
+                                            <div class="controls">
+                                                <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${unlisteds.size()}.unlisted" placeholder="${placeholders[unlisteds.size() % placeholders.size()]}" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -150,7 +162,7 @@
                     <span></span>
                 </div>
                 <div id="ct-unknown-selections">
-                    <label style="font-weight: bold; display: inline-block;">${message(code: 'cameratrap.transcribe.unlisted.label', default: 'Unlisted:')}</label> <span></span>
+                    <label style="font-weight: bold; display: inline-block;">${message(code: 'cameratrap.transcribe.unlisted.label', default: 'Others:')}</label> <span></span>
                 </div>
             </div>
         </div>
@@ -225,19 +237,19 @@
 var smImageInfos = <cl:json value="${smImageInfos.infos}" />
     ,lmImageInfos = <cl:json value="${lmImageInfos.infos}" />
     ,reptilesImageInfos = <cl:json value="${reptilesImageInfos.infos}" />
-    ,birdsImageInfos = <cl:json value="${birdsImageInfos.infos}" />
-    ,otherImageInfos = <cl:json value="${otherImageInfos.infos}" />;
+    ,birdsImageInfos = <cl:json value="${birdsImageInfos.infos}" />;
+    //,otherImageInfos = <cl:json value="${otherImageInfos.infos}" />;
 
 var smItems = <cl:json value="${smImageInfos.items}" />
     ,lmItems = <cl:json value="${lmImageInfos.items}" />
     ,reptilesItems = <cl:json value="${reptilesImageInfos.items}" />
-    ,birdsItems = <cl:json value="${birdsImageInfos.items}" />
-    ,otherItems = <cl:json value="${otherImageInfos.items}" />;
+    ,birdsItems = <cl:json value="${birdsImageInfos.items}" />;
+    //,otherItems = <cl:json value="${otherImageInfos.items}" />;
 
 var recordValues = <cl:json value="${recordValues}" />;
 
 var placeholders = <cl:json value="${placeholders}" />;
 
-cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageInfos, otherImageInfos, smItems, lmItems,
-           reptilesItems, birdsItems, otherItems, recordValues, placeholders);
+cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageInfos, null, smItems, lmItems,
+           reptilesItems, birdsItems, null, recordValues, placeholders);
 </r:script>
