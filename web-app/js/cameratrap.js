@@ -88,33 +88,25 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     $('.ct-thumbnail-image').click(function (e) {
       var key = $(e.target).closest('[data-image-select-key]').data('image-select-key');
       var keys = keyToArray(key);
-      var carousel = $('#ct-full-image-carousel');
-      var indicators = carousel.find('.carousel-indicators');
-      var inner = carousel.find('.carousel-inner');
-      indicators.empty();
-      inner.empty();
+      var $container = $('#ct-full-image-container');
+      $container.empty();
+
       var urls = _.zip(keys, _.map(keys, function(key, i) { return firstInfoWithKey(key); })).filter(function(keyAndInfo, i) {
         if (keyAndInfo[1] == null && window.console) console.warn('Missing info ' + keyAndInfo[0]);
         return keyAndInfo[1] != null;
-      });
-      _.each(urls, function (keyAndInfo, i) {
-        var key = keyAndInfo[0];
-        var info = keyAndInfo[1];
-        var url = info.imageUrl;
-        //<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        var li = $('<li>').data('target', '#ct-full-image-carousel').data('slide-to', i);
-        //<div class="active item">…</div>
-        var div = $('<div>').addClass('item').append($('<img>').prop('src', url));
-        if (i == 0) {
-          li.addClass('active');
-          div.addClass('active');
+      }).map(function(keyAndInfo, i) {
+        return {
+          key: keyAndInfo[0],
+          url: keyAndInfo[1].imageUrl,
+          index: i,
+          active: function() {
+            return i == 0 ? 'active' : '';
+          }
         }
-        li.appendTo(indicators);
-        div.appendTo(inner);
-        carousel.carousel();
       });
-      //$('#ct-full-image').attr('src', firstInfoWithKey(key).imageUrl);
-
+      mu.appendTemplate($container, 'carousel-template', {imgs: urls});
+      var carousel = $('#ct-full-image-carousel');
+      carousel.carousel({interval: false});
       switchCtPage('#ct-full-image-container');
     });
 
@@ -200,7 +192,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     }
 
     function syncUnlistedTray() {
-      var checked = $('#recordValues\\.0\\.unknown').prop('checked'); //.map(function(i,e) { return e.checked ? "Unknown checked" : "" }).toArray().join('');
+      var checked = $('#recordValues\\.0\\.unknown').prop('checked');
       $('#ct-unknown-selections-unknown').find('span').text(checked ? "Unknown checked" : "");
       var unlisted = _.filter($('#unlisted').find('input[type="text"]').map(function (i, e) {
         return $(this).val()
@@ -223,12 +215,6 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
           value: value.certainty
         });
         ++i;
-      });
-    }
-
-    function firstItemWithValue(value) {
-      return _.find([].concat(smItems, lmItems, reptilesItems, birdsItems, otherItems), function (it) {
-        return it.value === value
       });
     }
 
@@ -317,6 +303,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       return true;
     });
 
+    // Cycling Thumbnails
     function cycleImages() {
       $('.cycler').each(function (e) {
         var $this = $(this);
@@ -324,19 +311,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
         var $next = ($active.next().length > 0) ? $active.next() : $this.find('img:first');
         $active.removeClass('active');
         $next.addClass('active');
-
       });
-      //$next.css('z-index',2);//move the next image up the pile
-      //$active.fadeOut(1500,function(){//fade out the top image
-      //  $active.css('z-index',1).show().removeClass('active');//reset the z-index and unhide the image
-      //  $next.css('z-index',3).addClass('active');//make the next image the top one
-      //});
     }
 
-    //$(document).ready(function(){
-    // run every 7s
     setInterval(cycleImages, 7000);
-    //});
 
     if (recordValues && recordValues['0'] && ('some' === recordValues['0'].animalsVisible)) animalsPresent();
 

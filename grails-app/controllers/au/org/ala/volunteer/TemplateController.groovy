@@ -341,9 +341,9 @@ class TemplateController {
 
     def viewParamsForm() {
         def view = (params?.view ?: '') + 'Params'
-        if (resExists(view)) {
+        try { //if (resExists(view)) {
             render template: view
-        } else {
+        } catch (e) { //} else {
             render status: 404
         }
     }
@@ -353,7 +353,7 @@ class TemplateController {
         def engine = grailsAttributes.pagesTemplateEngine
         def resUri = grailsAttributes.getTemplateUri(resName, request)
         def resource = engine.getResourceForUri(resUri)
-        log.debug "resource=${resource}; exists=${resource?.file && resource?.exists()};"
-        return resource?.file && resource?.exists()
+        log.debug "resUri=${resUri}; resource=${resource}; exists=${resource?.exists()}; readable=${resource?.readable}"
+        return resource?.readable
     }
 }

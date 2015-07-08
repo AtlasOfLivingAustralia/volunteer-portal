@@ -122,17 +122,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="ct-full-image-container" class="ct-item clearfix">
-                    <div id="ct-full-image-carousel" class="carousel slide" style="margin-bottom: 0;">
-                        <ol class="carousel-indicators"></ol>
-                        <!-- Carousel items -->
-                        <div class="carousel-inner"></div>
-                        <!-- Carousel nav -->
-                        <a class="carousel-control left" href="#ct-full-image-carousel" data-slide="prev">&lsaquo;</a>
-                        <a class="carousel-control right" href="#ct-full-image-carousel" data-slide="next">&rsaquo;</a>
-                    </div>
-                    %{--<img id="ct-full-image" src="" />--}%
-                </div>
+                <div id="ct-full-image-container" class="ct-item clearfix"></div>
             </div>
         </div>
     </div>
@@ -146,7 +136,6 @@
                 <g:if test="${!validator}">
                     <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
                 </g:if>
-                %{--<button class="btn btn-primary">Submit</button>--}%
             </div>
         </div>
     </div>
@@ -211,6 +200,25 @@
 
 <script id="input-template" type="x-tmpl-mustache">
     <input id="{{id}}" name="{{id}}" type="hidden" value="{{value}}" />
+</script>
+
+<script id="carousel-template" type="x-tmpl-mustache">
+    <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" style="margin-bottom: 0;">
+        <ol class="carousel-indicators">
+            {{#imgs}}
+                <li class="{{active}}" data-target="#ct-full-image-carousel" data-slide-to="{{idx}}"></li>
+            {{/imgs}}
+        </ol>
+        <div class="carousel-inner">
+            {{#imgs}}
+            <div class="item {{active}}">
+                <img src="{{url}}" />
+            </div>
+            {{/imgs}}
+        </div>
+        <a class="carousel-control left" href="#ct-full-image-carousel" data-slide="prev">&lsaquo;</a>
+        <a class="carousel-control right" href="#ct-full-image-carousel" data-slide="next">&rsaquo;</a>
+    </div>
 </script>
 
 <r:script>

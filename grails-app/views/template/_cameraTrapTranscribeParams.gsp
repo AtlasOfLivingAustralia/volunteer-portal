@@ -9,6 +9,14 @@
     </div>
 </div>
 <div class="control-group">
+    <div class="controls">
+        <label class="checkbox" for="hideDefaultButtons">
+            <g:checkBox name="exportGroupByIndex" value="${true}"/>
+            <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export" />
+        </label>
+    </div>
+</div>
+<div class="control-group">
     <label class="control-label" for="smallMammalsPicklistId"><g:message code="template.cameratrap.smallmammalspicklist.label" default="Small Mammals Picklist" /></label>
     <div class="controls">
         <g:select from="${picklists}" name="smallMammalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
