@@ -152,9 +152,7 @@ class TranscribeController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
-            def interesting = params.interesting == 'on'
             def skipNextAction = params.getBoolean('skipNextAction', false)
-            if (taskInstance.interesting != interesting) taskInstance.interesting = interesting
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null)
             if (!taskInstance.hasErrors()) {

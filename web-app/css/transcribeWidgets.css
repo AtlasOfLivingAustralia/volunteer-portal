@@ -228,6 +228,9 @@
 }
 
 .ct-thumbnail .ct-thumbnail-image {
+    cursor: pointer;
+    cursor: -moz-zoom-in;
+    cursor: -webkit-zoom-in;
     cursor: zoom-in;
 }
 
@@ -243,6 +246,9 @@
 #ct-full-image-container img {
     /*height: 100%;*/
     /*width: 100%;*/
+    cursor: pointer;
+    cursor: -moz-zoom-out;
+    cursor: -webkit-zoom-out;
     cursor: zoom-out;
 }
 

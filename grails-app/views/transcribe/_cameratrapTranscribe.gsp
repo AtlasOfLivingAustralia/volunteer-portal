@@ -9,10 +9,12 @@
             <span id="journalPageButtons">
                 <button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> previous image</button>
                 <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>next image <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
-                <button type="button" class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
-                <button type="button" class="btn btn-small" id="showNextFromProject">Skip</button>
-                <button type="button" class="btn btn-small" id="btnSavePartial">Save draft</button>
-                <g:link controller="transcribe" action="discard" id="${taskInstance?.id}" class="btn btn-small btn-warning">Discard</g:link>
+                <div id="ct-task-image-toolbar" class="btn-group">
+                    <button type="button" class="btn btn-small" id="rotateImage" data-container="body" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
+                    <button type="button" class="btn btn-small" id="showNextFromProject" data-container="body" title="Skip the to next image">Skip</button>
+                    %{--<button type="button" class="btn btn-small" id="btnSavePartial">Save draft</button>--}%
+                    <g:link controller="transcribe" action="discard" id="${taskInstance?.id}" class="btn btn-small btn-warning" data-container="body" title="Release your lock on this image and return to the expedition page">Quit</g:link>
+                </div>
             </span>
         </div>
     </div>
@@ -44,7 +46,7 @@
                         <h3>Are there any animals visible in the image?</h3>
                         <g:set var="step1" value="${recordValues[0]?.animalsVisible}" />
                         <div id="ct-step1" class="btn-group btn-group-vertical" data-toggle="buttons-radio">
-                            <button class="btn input-medium btn-ct-landing ${step1 == 'setup' ? 'active' : ''}" data-value="setup">Setup</button>
+                            %{--<button class="btn input-medium btn-ct-landing ${step1 == 'setup' ? 'active' : ''}" data-value="setup">Setup</button>--}%
                             <button class="btn btn-warning input-medium btn-ct-landing ${step1 == 'unsure' ? 'active' : ''}" data-value="unsure">Unsure</button>
                             <button class="btn btn-danger input-medium btn-ct-landing ${step1 == 'none' ? 'active' : ''}" data-value="none">No animals present</button>
                             <button id="btn-animals-present" class="btn btn-primary input-medium btn-ct-landing ${step1 == 'some' ? 'active' : ''}" data-value="some">Animals present</button>
@@ -58,7 +60,7 @@
                     <div class="well well-small" style="padding-bottom: 0;">
                         <div class="row-fluid">
                             <div class="span12">
-                                <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Select animals below</h3>
+                                <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Select all animals present in image</h3>
                             </div>
                         </div>
                         <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
@@ -89,7 +91,7 @@
                         </div>
                         <div class="row-fluid">
                             <div class="span12">
-                                <div class="pill-content" style="overflow-y: auto; height: 463px;">
+                                <div id="ct-animals-pill-content" class="pill-content" style="overflow-y: auto; height: 463px;">
                                     <div class="pill-pane fade in active sortable" id="small-mammal">
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
                                     </div>
