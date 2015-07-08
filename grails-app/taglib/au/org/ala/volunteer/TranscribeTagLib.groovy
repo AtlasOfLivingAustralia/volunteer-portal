@@ -598,8 +598,15 @@ class TranscribeTagLib {
 
         def items = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project?.picklistInstitutionCode)
 
+        // fallback to default picklist if institution code given and no items found
+        if (project?.picklistInstitutionCode && !items) items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(pl)
+
         if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
-        def imageIds = items*.key
+        def items2 = items.collectEntries {
+            def key = it.key.split(',').toList().collect { it?.trim() }
+            [ (key) : it.value ]
+        }
+        def imageIds = items2*.key.flatten()
         def imageInfos
         try {
             imageInfos = imageServiceService.getImageInfoForIds(imageIds)
@@ -611,11 +618,12 @@ class TranscribeTagLib {
         if (!imageInfos)
             return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
         else {
-            def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            def missing = imageIds.findAll { imageInfos[it] == null }
             if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
         }
 
-        [picklist: pl, items: items, infos: imageInfos, warnings: warnings]
+        [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]
     }
 
     def templateFields = { attrs, body ->

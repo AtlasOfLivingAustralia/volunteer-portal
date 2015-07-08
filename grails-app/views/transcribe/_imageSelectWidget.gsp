@@ -21,7 +21,7 @@
             <g:set var="aclass" value="${piItem.value == value ? 'selected' : ''}" />
             <div class="griditem bvpBadge">
                 <a href="javascript:void(0)" class="thumbnail ${aclass}" data-image-select-value="${piItem.value}">
-                    <img src="${picklistInfo.infos[piItem.key]?.squareThumbUrl}" alt="${piItem.value}">
+                    <img src="${picklistInfo.infos[piItem.key[0]]?.squareThumbUrl}" alt="${piItem.value}">
                     <div class="caption-table">
                         <div class="caption-cell">
                             <div class="is-caption dotdotdot" title="${piItem.value}">${piItem.value}</div>

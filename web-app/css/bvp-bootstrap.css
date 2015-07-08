@@ -376,7 +376,7 @@ h2, h3, h4, h5 {
     text-align: center;
 }
 
-.bvpBadge img {
+.bvpBadge img, .bvpBadge .bvpBadgeMain {
     width: 150px;
     height: 150px;
 }

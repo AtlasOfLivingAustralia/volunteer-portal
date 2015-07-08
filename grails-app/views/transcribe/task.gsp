@@ -247,10 +247,13 @@
                 $("input.autocomplete,textarea.autocomplete").not('.noAutoComplete').each(function(index) {
 
                     var inputElement = $(this);
+                    var picklistId = inputElement.data('picklist-id');
                     var matches = $(inputElement).attr("id").match(/^recordValues[.](\d+)[.](\w+)$/);
-                    if (matches.length > 1) {
+                    if (picklistId || matches.length > 1) {
                         var fieldName = matches[2];
                         var fieldIndex = matches[1];
+
+                        var picklist = picklistId ? "&picklistId=" + picklistId : "&picklist=" + fieldName
 
                         var autoCompleteOptions = {
                             disabled: false,
@@ -262,14 +265,14 @@
                                 if (fieldName == 'recordedBy') {
                                     var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
                                     if (matches.length > 0) {
-                                        var recordIdx = matches[1]
-                                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
+                                        var recordIdx = matches[1];
+                                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
                                         $(elemSelector).val(item.key).attr('collector_name', item.name);;
                                     }
                                 }
                             },
                             source: function(request, response) {
-                                var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=" + fieldName + "&q=" + request.term;
+                                var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}" + picklist + "&q=" + request.term;
                                 $.ajax(url).done(function(data) {
                                     var rows = new Array();
                                     if (data.autoCompleteList) {
@@ -287,7 +290,7 @@
                                     }
                                 });
                             }
-                        }
+                        };
                         inputElement.autocomplete(autoCompleteOptions);
                     }
                 });

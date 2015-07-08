@@ -12,6 +12,7 @@ class ExportService {
     static transactional = true
 
     def grailsApplication
+    def grailsLinkGenerator
     def taskService
     def multimediaService
     def messageSource
@@ -28,6 +29,9 @@ class ExportService {
             case "taskid":
                 result = task.id
                 break;
+            case "taskurl":
+                result = grailsLinkGenerator.link(absolute: true, controller: 'validate', action: 'task', id: task.id)
+                break
             case "transcriberid":
                 result = getUserDisplayName(task.fullyTranscribedBy)
                 break;
@@ -104,17 +108,29 @@ class ExportService {
 
         List<String> columnNames = []
 
-        fieldNames.each {
-            if (fieldIndexMap.containsKey(it)) {
-                if (fieldIndexMap[it]) {
-                    for (int i = 0; i <= fieldIndexMap[it]; ++i) {
-                        columnNames << "${it}_${i}"
+        if (project.template.viewParams.exportGroupByIndex) {
+            fieldNames.each {
+                if (!(fieldIndexMap.containsKey(it) && fieldIndexMap[it])) columnNames << it
+            }
+            def maxIdx = fieldIndexMap.values().max()
+            for (int i = 0 ; i < maxIdx; ++i) {
+                fieldNames.each {
+                    if (fieldIndexMap.containsKey(it) && fieldIndexMap[it] && fieldIndexMap[it] >= i) columnNames << "${it}_$i"
+                }
+            }
+        } else {
+            fieldNames.each {
+                if (fieldIndexMap.containsKey(it)) {
+                    if (fieldIndexMap[it]) {
+                        for (int i = 0; i <= fieldIndexMap[it]; ++i) {
+                            columnNames << "${it}_${i}"
+                        }
+                    } else {
+                        columnNames << it
                     }
                 } else {
                     columnNames << it
                 }
-            } else {
-                columnNames << it
             }
         }
 

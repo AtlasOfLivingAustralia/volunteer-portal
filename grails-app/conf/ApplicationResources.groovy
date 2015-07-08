@@ -161,4 +161,9 @@ modules = {
     "dotdotdot" {
         resource url: 'js/dotdotdot/1.7.3/jquery.dotdotdot.min.js'
     }
+
+    "cameratrap" {
+        dependsOn 'jquery', 'mustache-util', 'underscore', 'dotdotdot', 'bootbox'
+        resource url: 'js/cameratrap.js'
+    }
 }
