@@ -27,9 +27,9 @@
                         <g:imageViewer multimedia="${multimedia}" />
                     </g:if>
                 </g:each>
-                <div class="form-horizontal">
+                <div class="form-horizontal" style="text-align: center;">
                     %{--<div class="control-group">--}%
-                        <div class="controls">
+                        <div class="controls" style="margin-left: initial; display: inline-block;">
                             <label class="checkbox">
                                 <g:checkBox name="recordValues.0.interesting" value="${recordValues[0]?.interesting}" /> This image is particularly interesting – alert the WildCount team
                             </label>
@@ -47,9 +47,9 @@
                         <g:set var="step1" value="${recordValues[0]?.animalsVisible}" />
                         <div id="ct-step1" class="btn-group btn-group-vertical" data-toggle="buttons-radio">
                             %{--<button class="btn input-medium btn-ct-landing ${step1 == 'setup' ? 'active' : ''}" data-value="setup">Setup</button>--}%
-                            <button class="btn btn-warning input-medium btn-ct-landing ${step1 == 'unsure' ? 'active' : ''}" data-value="unsure">Unsure</button>
-                            <button class="btn btn-danger input-medium btn-ct-landing ${step1 == 'none' ? 'active' : ''}" data-value="none">No animals present</button>
-                            <button id="btn-animals-present" class="btn btn-primary input-medium btn-ct-landing ${step1 == 'some' ? 'active' : ''}" data-value="some">Animals present</button>
+                            <button class="btn btn-warning input-medium btn-ct-landing ${step1 == 'unsure' ? 'active' : ''}" data-value="unsure" type="button">Unsure</button>
+                            <button class="btn btn-danger input-medium btn-ct-landing ${step1 == 'none' ? 'active' : ''}" data-value="none" type="button">No animals present</button>
+                            <button id="btn-animals-present" class="btn btn-primary input-medium btn-ct-landing ${step1 == 'some' ? 'active' : ''}" data-value="some" type="button">Animals present</button>
                         </div>
                         <g:hiddenField name="skipNextAction" value="true" />
                         <g:hiddenField name="recordValues.0.animalsVisible" value="${recordValues[0]?.animalsVisible}" />

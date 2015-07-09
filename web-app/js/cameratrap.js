@@ -260,7 +260,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
           index: index
         });
         fixUnlisted();
-        bindAutocompleteToElement(input); // task.gsp
+        bindAutocompleteToElement(input.find('input.autocomplete')); // task.gsp
       }
     });
 
