@@ -58,8 +58,11 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     });
 
     $('#camera-trap-questions').on('transitionend', '.ct-item', function (e) {
-      $(e.target).removeClass('fading');
-      $('.ct-caption').dotdotdot();
+      // only handle the ct-item transition
+      if ($(e.target).hasClass('ct-item')) {
+        $(e.target).removeClass('fading');
+        $('.active .ct-caption').dotdotdot();
+      }
     });
 
     $('#ct-step2-back').click(function (e) {
@@ -71,7 +74,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     });
 
     $('a[data-toggle="pill"]').on('shown', function (e) {
-      $('.ct-caption').dotdotdot();
+      $('.ct-caption', this).dotdotdot();
     });
 
     function animalsPresent() {
@@ -104,10 +107,17 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
           }
         }
       });
-      mu.appendTemplate($container, 'carousel-template', {imgs: urls});
-      var carousel = $('#ct-full-image-carousel');
-      carousel.carousel({interval: false});
-      switchCtPage('#ct-full-image-container');
+      var change = false;
+      if (urls.length > 1) {
+        mu.appendTemplate($container, 'carousel-template', {imgs: urls});
+        var carousel = $('#ct-full-image-carousel');
+        carousel.carousel({interval: false});
+        change = true;
+      } else if (urls.length == 1) {
+        $('<img>').prop('src', urls[0].url).appendTo($container);
+        change = true;
+      }
+      if (change) switchCtPage('#ct-full-image-container');
     });
 
     $('#ct-full-image-container').on('click', 'img', function (e) {
@@ -223,7 +233,6 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     function keyToArray(key) {
       var r = new RegExp('([^\\[\\]\\,]+)', 'g');
       var matches = [];
-      var match;
       while (match = r.exec(key)) {
         var match = match[0];
         if (match) match = match.trim();
@@ -250,8 +259,8 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
           placeholder: placeholders[index % placeholders.length],
           index: index
         });
-        bindAutocompleteToElement(input); // task.gsp
         fixUnlisted();
+        bindAutocompleteToElement(input); // task.gsp
       }
     });
 
@@ -308,12 +317,14 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     // Cycling Thumbnails
     function cycleImages() {
-      $('.cycler').each(function (e) {
+      $('.pill-pane.active .cycler').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
         var $this = $(this);
         var $active = $this.find('.active');
         var $next = ($active.next().length > 0) ? $active.next() : $this.find('img:first');
-        $active.removeClass('active');
-        $next.addClass('active');
+        //if (!$active.is($next)) {
+          $active.removeClass('active');
+          $next.addClass('active');
+        //}
       });
     }
 
@@ -333,7 +344,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     var $searchInput = $('#ct-search-input');
 
     function filterAnimals() {
-      var valueElems = $('#ct-animals-present').find('[data-image-select-value]');
+      var valueElems = $('#ct-animals-present').find('.active [data-image-select-value]');
       valueElems.filter(function (i, e) {
         return $(this).data('image-select-value').toLocaleLowerCase().indexOf(filterText) == -1;
       }).parent().hide(100);

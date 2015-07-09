@@ -244,7 +244,13 @@
 
             function bindAutocompleteToElement(inputElement) {
                 var picklistId = inputElement.data('picklist-id');
-                var matches = $(inputElement).attr("id").match(/^recordValues[.](\d+)[.](\w+)$/);
+                var matches = [];
+                var inputElementId = inputElement.attr('id');
+                if (inputElementId) {
+                    matches = inputElementId.match(/^recordValues[.](\d+)[.](\w+)$/);
+                } else if (window.console) {
+                    console.warn("Element doesn't have id: ", inputElement);
+                }
                 if (picklistId || matches.length > 1) {
                     var fieldName = matches[2];
                     var fieldIndex = matches[1];
