@@ -19,9 +19,14 @@ var transcribeWidgets = {};
     };
 
     lib.evaluateBeforeSubmitHooks = function(e) {
-        return _.every(beforeSubmitHooks, function(f) {
-            return !(typeof(f) === 'function') || f(e);
-        });
+        try {
+            return _.every(beforeSubmitHooks, function(f) {
+                return !(typeof(f) === 'function') || f(e);
+            });
+        } catch(e) {
+            if (window.console) console.error("error running before submit hooks",e);
+            return false;
+        }
     };
 
     lib.addBeforeSubmitHook = function(f) {

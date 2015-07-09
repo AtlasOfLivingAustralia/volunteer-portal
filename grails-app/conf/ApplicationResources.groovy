@@ -47,6 +47,7 @@ modules = {
     }
 
     'transcribeWidgets' {
+        dependsOn 'underscore'
         resource url: '/js/transcribeWidgets.js'
         resource url: '/js/transcribeValidation.js'
         resource url: '/css/transcribeWidgets.css'
