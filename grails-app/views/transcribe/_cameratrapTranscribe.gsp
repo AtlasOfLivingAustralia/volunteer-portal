@@ -69,7 +69,7 @@
                         <g:set var="birdsImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.birdsPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <g:set var="otherImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.otherPicklistId?.toLong()), project: taskInstance?.project)}" />
                         <div class="row-fluid">
-                            <div class="span10">
+                            <div class="span11">
                                 <ul class="nav nav-pills">
                                     <li class="active"><a href="#small-mammal" data-toggle="pill">Small Mammals</a></li>
                                     <li><a href="#large-mammal" data-toggle="pill">Large Mammals</a></li>
@@ -79,12 +79,12 @@
                                     %{--<li><a href="#unlisted" data-toggle="pill">Unlisted</a></li>--}%
                                 </ul>
                             </div>
-                            <div class="span2">
+                            <div class="span1">
                                 <div id="ct-nav-toolbar" class="btn-group pull-right">
-                                    <button id="button-filter" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.filter.label', default: 'Filter')}" data-container="#ct-nav-toolbar"><i class="icon-search"></i></button>
+                                    %{--<button id="button-filter" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.filter.label', default: 'Filter')}" data-container="#ct-nav-toolbar"><i class="icon-search"></i></button>--}%
                                     <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left">A<i class="icon-resize-vertical"></i></button>
                                 </div>
-                                <div id="ct-search" class="ct-search pull-right hidden">
+                                <div id="ct-search" class="ct-search pull-right">
                                     <input id="ct-search-input" type="text" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
                                 </div>
                             </div>

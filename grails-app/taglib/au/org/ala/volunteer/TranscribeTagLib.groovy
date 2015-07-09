@@ -376,14 +376,14 @@ class TranscribeTagLib {
 
                         if (!attrs.hidePinImage) {
                             div(class:'pin-image-control') {
-                                a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window') {
+                                a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window', ('data-container'): 'body') {
                                     mkp.yield('Pin image in place')
                                 }
                             }
                         }
                         if (!attrs.hideShowInOtherWindow) {
                             div(class:'show-image-control') {
-                                a(id:'showImageWindow', href:'#', title:'Show image in a separate window') {
+                                a(id:'showImageWindow', href:'#', title:'Show image in a separate window', ('data-container'): 'body') {
                                     mkp.yield('Show image in a separate window')
                                 }
                             }

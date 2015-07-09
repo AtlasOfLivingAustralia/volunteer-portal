@@ -344,7 +344,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     var $searchInput = $('#ct-search-input');
 
     function filterAnimals() {
-      var valueElems = $('#ct-animals-present').find('.active [data-image-select-value]');
+      var valueElems = $('#ct-animals-present').find('[data-image-select-value]');
       valueElems.filter(function (i, e) {
         return $(this).data('image-select-value').toLocaleLowerCase().indexOf(filterText) == -1;
       }).parent().hide(100);
