@@ -246,6 +246,10 @@
     border-bottom-right-radius: 0;
 }
 
+.bvpBadge .ct-thumbnail .bvpBadgeMain {
+    border-radius: 4px;
+}
+
 .ct-thumbnail .ct-caption-container {
     line-height: 0;
 }
