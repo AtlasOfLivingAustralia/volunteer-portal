@@ -7,8 +7,8 @@
     <div class="row-fluid">
         <div class="span12">
             <span id="journalPageButtons">
-                <button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> previous image</button>
-                <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>next image <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
+                <button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" data-container="body" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> previous image</button>
+                <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" data-container="body" ${nextTask ? '' : 'disabled="true"'}>next image <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
                 <div id="ct-task-image-toolbar" class="btn-group">
                     <button type="button" class="btn btn-small" id="rotateImage" data-container="body" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
                     <button type="button" class="btn btn-small" id="showNextFromProject" data-container="body" title="Skip the to next image">Skip</button>
@@ -20,8 +20,8 @@
     </div>
 
     <div class="row-fluid">
-        <div class="span6">
-            <div class="well well-small">
+        <div id="ct-image-span" class="span6">
+            <div id="ct-image-well" class="well well-small">
                 <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                     <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
                         <g:imageViewer multimedia="${multimedia}" />
@@ -39,10 +39,10 @@
             </div>
         </div>
 
-        <div class="span6" style="max-height: 590px; overflow-y: hidden;">
+        <div id="ct-question-span" class="span6" style="">
             <div id="camera-trap-questions" class="" data-interval="">
                 <div id="ct-landing" class="ct-item clearfix active">
-                    <div class="well well-small">
+                    <div id="ct-q1-well" class="well well-small">
                         <h3>Are there any animals visible in the image?</h3>
                         <g:set var="step1" value="${recordValues[0]?.animalsVisible}" />
                         <div id="ct-step1" class="btn-group btn-group-vertical" data-toggle="buttons-radio">
@@ -57,10 +57,10 @@
                 </div>
                 <div id="ct-animals-present" class="ct-item clearfix">
                     %{--<p>Select all animals present in the image.  If you are certain that a specimen is present, select the tick for the corresponding icon. If you think the specimen is present in the image but you are not sure then select the question mark icon instead.</p>--}%
-                    <div class="well well-small" style="padding-bottom: 0;">
+                    <div id="ct-q2-well" class="well well-small" style="padding-bottom: 0;">
                         <div class="row-fluid">
                             <div class="span12">
-                                <h3><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Select all animals present in image</h3>
+                                <h3 class="h3-small"><a id="ct-step2-back" style="vertical-align: middle;" href="javascript:void(0)"><i class="icon icon-chevron-left"></i> </a>Select all animals present in image</h3>
                             </div>
                         </div>
                         <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
@@ -91,7 +91,7 @@
                         </div>
                         <div class="row-fluid">
                             <div class="span12">
-                                <div id="ct-animals-pill-content" class="pill-content" style="overflow-y: auto; height: 463px;">
+                                <div id="ct-animals-pill-content" class="pill-content">
                                     <div class="pill-pane fade in active sortable" id="small-mammal">
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
                                     </div>
@@ -143,10 +143,10 @@
 
     <div class="row-fluid">
         <div class="span11">
-            <h3>My selections</h3>
+            <h3 class="h3-small">My selections</h3>
         </div>
         <div class="span1">
-            <div style="margin: 10px 0; line-height: 40px;">
+            <div class="h3-small" style="line-height: 40px;">
                 <g:if test="${!validator}">
                     <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
                 </g:if>
@@ -218,12 +218,13 @@
 
 <script id="carousel-template" type="x-tmpl-mustache">
     <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" style="margin-bottom: 0;">
+        <span class="ct-full-image-carousel-close">&times;</span>
         <ol class="carousel-indicators">
             {{#imgs}}
                 <li class="{{active}}" data-target="#ct-full-image-carousel" data-slide-to="{{idx}}"></li>
             {{/imgs}}
         </ol>
-        <div class="carousel-inner">
+        <div class="carousel-inner" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}">
             {{#imgs}}
             <div class="item {{active}}">
                 <img src="{{url}}" />

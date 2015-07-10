@@ -133,6 +133,28 @@
     user-select: none;
 }
 
+
+#ct-question-span {
+    max-height: 570px;
+    overflow-y: hidden;
+}
+
+#ct-animals-pill-content {
+    height: 457px;
+    overflow-y: auto;
+}
+
+#ct-container .itemgrid {
+    margin-bottom: initial;
+}
+
+#ct-container .itemgrid .griditem {
+    width: 150px;
+    margin: 3px 4px;
+    border-radius: 4px;
+    background-color: rgba(15,15,15,0.8);
+}
+
 #camera-trap-questions {
     position: relative;
     /*border: 1px solid rgb(226,226,210);*/
@@ -175,11 +197,18 @@
 
 .ct-thumbnail {
     position: relative;
+    padding: 0;
+    border: initial;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .ct-thumbnail .ct-badge {
     position: absolute;
-    top: 4px;
+    top: 0;
     opacity: 0.8;
 }
 
@@ -196,7 +225,10 @@
 }
 
 .ct-thumbnail .ct-badge-sure {
-    left: 4px;
+    left: 0;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .ct-thumbnail .ct-badge-sure:hover {
@@ -208,7 +240,10 @@
 }
 
 .ct-thumbnail .ct-badge-uncertain {
-    right: 4px;
+    right: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 0;
 }
 
 .ct-thumbnail .ct-caption-container {
@@ -220,6 +255,12 @@
     height:40px;
     line-height:0;
     width: 100%;
+    margin-top: -40px;
+    position: relative;
+    background-color: rgba(15,15,15,0.3);
+    color: #ddd;
+    -webkit-border-radius: 0 0 4px 4px;
+    border-radius: 0 0 4px 4px;
 }
 
 .ct-caption-cell, .caption-cell {
@@ -228,7 +269,7 @@
 }
 
 .ct-thumbnail .ct-thumbnail-image {
-    cursor: pointer;
+    cursor: url('/css/zoom-in.cur'), url('zoom-in.cur'), pointer;
     cursor: -moz-zoom-in;
     cursor: -webkit-zoom-in;
     cursor: zoom-in;
@@ -246,7 +287,7 @@
 #ct-full-image-container img {
     /*height: 100%;*/
     /*width: 100%;*/
-    cursor: pointer;
+    cursor: url('/css/zoom-out.cur'), url('zoom-out.cur'), pointer;
     cursor: -moz-zoom-out;
     cursor: -webkit-zoom-out;
     cursor: zoom-out;
@@ -280,7 +321,7 @@
 }
 
 #ct-selection-grid {
-    min-height: 210px;
+    min-height: 155px;
 }
 
 .pointer {
@@ -307,7 +348,7 @@
     right: 0;
     height: 20px;
     max-height: 20px;
-    margin-top: -1px;
+    margin-top: 0;
     background-color: #c8c8aa;
     border: 1px solid #baba94;
     border-radius: 4px 0 4px 4px;
@@ -323,4 +364,49 @@
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
     box-shadow: none !important;
+}
+
+#ct-image-well, #ct-q1-well, #ct-q2-well {
+    margin-bottom: 0;
+}
+
+.ct-full-image-carousel-close {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    font-size: 20px;
+    font-weight: bolder;
+    height: 20px;
+    width: 20px;
+    display: block;
+    z-index: 5;
+    color: white;
+    opacity: 0.5;
+    border: solid white 2px;
+    border-radius: 12px;
+    line-height: 15px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.ct-full-image-carousel-close:hover {
+    opacity: 0.9;
+}
+
+#ct-full-image-carousel .carousel-indicators {
+    top: initial;
+    bottom: -12px;
+}
+
+#ct-full-image-carousel .carousel-indicators li {
+    background-color: #444;
+    background-color: rgba(0,0,0,0.25);
+}
+
+#ct-full-image-carousel .carousel-indicators .active {
+    background-color: #000;
+}
+
+.h3-small {
+    margin: 3px 0;
 }

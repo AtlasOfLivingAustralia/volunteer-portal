@@ -356,8 +356,13 @@ class TranscribeTagLib {
 
                 def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
                 imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
-                mb.dev(class:'alert alert-danger') {
-                    mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                mb.div(class:'alert alert-danger') {
+                    button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
+                        mkp.yieldUnescaped('&times;')
+                    }
+                    span() {
+                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                    }
                 }
             }
 

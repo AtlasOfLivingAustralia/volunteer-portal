@@ -25,9 +25,9 @@
                             <img class="ct-thumbnail-image${j == 0 ? ' active': ' '}" src="${imageInfos.infos[key]?.squareThumbUrl}" alt="${piItem.value}">
                         </g:each>
                     </div>
-                    <div class="ct-caption-table" style="display:table;height:40px;line-height:0;">
-                        <div class="ct-caption-cell" style="display:table-cell;vertical-align:middle;">
-                            <div style="text-align:center;" class="ct-caption dotdotdot" title="${piItem.value}">${piItem.value}</div>
+                    <div class="ct-caption-table">
+                        <div class="ct-caption-cell" >
+                            <div class="ct-caption dotdotdot" title="${piItem.value}">${piItem.value}</div>
                         </div>
                     </div>
                     %{--<div>--}%

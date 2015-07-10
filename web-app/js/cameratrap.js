@@ -112,15 +112,18 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
         mu.appendTemplate($container, 'carousel-template', {imgs: urls});
         var carousel = $('#ct-full-image-carousel');
         carousel.carousel({interval: false});
+        carousel.tooltip();
         change = true;
       } else if (urls.length == 1) {
-        $('<img>').prop('src', urls[0].url).appendTo($container);
+        var $img = $('<img>').prop('src', urls[0].url).attr('title', 'Click the image to dismiss');
+        $img.appendTo($container);
+        $img.tooltip();
         change = true;
       }
       if (change) switchCtPage('#ct-full-image-container');
     });
 
-    $('#ct-full-image-container').on('click', 'img', function (e) {
+    $('#ct-full-image-container').on('click', 'img, .ct-full-image-carousel-close', function (e) {
       switchCtPage('#ct-animals-present');
       var $container = $('#ct-full-image-container');
       $container.empty();
