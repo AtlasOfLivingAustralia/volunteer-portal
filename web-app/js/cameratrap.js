@@ -109,15 +109,14 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       });
       var change = false;
       if (urls.length > 1) {
-        mu.appendTemplate($container, 'carousel-template', {imgs: urls});
-        var carousel = $('#ct-full-image-carousel');
+        var carousel = mu.appendTemplate($container, 'carousel-template', {imgs: urls});
+        //var carousel = $('#ct-full-image-carousel');
         carousel.carousel({interval: false});
-        carousel.tooltip();
+        carousel.find('[title]').tooltip();
         change = true;
       } else if (urls.length == 1) {
-        var $img = $('<img>').prop('src', urls[0].url).attr('title', 'Click the image to dismiss');
-        $img.appendTo($container);
-        $img.tooltip();
+        var $img = mu.appendTemplate($container, 'single-image-template', {url: urls[0].url});
+        $img.find('[title]').tooltip();
         change = true;
       }
       if (change) switchCtPage('#ct-full-image-container');

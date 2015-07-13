@@ -78,8 +78,9 @@
     height: 500px;
 }
 
-.extra-tall-image #image-container {
-    height: 520px;
+.fourthree-image #image-container {
+    height: 476px;
+    height: 476px;
 }
 
 #qaCarousel .carousel-indicators li {
@@ -140,7 +141,7 @@
 }
 
 #ct-animals-pill-content {
-    height: 457px;
+    height: 413px;
     overflow-y: auto;
 }
 
@@ -385,6 +386,7 @@
     display: block;
     z-index: 5;
     color: white;
+    background-color: #222;
     opacity: 0.5;
     border: solid white 2px;
     border-radius: 12px;

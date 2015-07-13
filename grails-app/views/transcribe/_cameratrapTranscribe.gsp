@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 <r:require modules="cameratrap" />
 
-<div id="ct-container" class="container-fluid extra-tall-image">
+<div id="ct-container" class="container-fluid fourthree-image">
 
     <div class="row-fluid">
         <div class="span12">
@@ -85,7 +85,7 @@
                                     <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left">A<i class="icon-resize-vertical"></i></button>
                                 </div>
                                 <div id="ct-search" class="ct-search pull-right">
-                                    <input id="ct-search-input" type="text" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
+                                    <input id="ct-search-input" type="text" class="input-medium" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
                                 </div>
                             </div>
                         </div>
@@ -214,6 +214,13 @@
 
 <script id="input-template" type="x-tmpl-mustache">
     <input id="{{id}}" name="{{id}}" type="hidden" value="{{value}}" />
+</script>
+
+<script id="single-image-template" type="x-tmpl-mustache">
+    <div style="position:relative;">
+        <span class="ct-full-image-carousel-close">&times;</span>
+        <img src="{{url}}" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}" />
+    </div>
 </script>
 
 <script id="carousel-template" type="x-tmpl-mustache">
