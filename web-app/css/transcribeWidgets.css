@@ -143,15 +143,17 @@
 #ct-animals-pill-content {
     height: 413px;
     overflow-y: auto;
+    margin-right: -10px; /* put scroll bar in well padding */
 }
 
 #ct-container .itemgrid {
-    margin-bottom: initial;
+    margin-bottom: 0;
+    margin-left: -3px; /* remove left margin from first item in grid "rows" */
 }
 
 #ct-container .itemgrid .griditem {
     width: 150px;
-    margin: 3px 4px;
+    margin: 4px 3px;
     border-radius: 4px;
     background-color: rgba(15,15,15,0.8);
 }
