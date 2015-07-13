@@ -33,14 +33,6 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       history.replaceState(page('ct-landing'), window.document.title);
     }
 
-    function switchCtPage(to) {
-      var $ctq = $('#camera-trap-questions');
-      // kill any existing transition
-      $ctq.children('.fading').removeClass('fading');
-      $ctq.children('.active:not(' + to + ')').removeClass('active').addClass('fading');
-      $(to).addClass('active');
-    }
-
     $('#ct-step1').find('.btn').click(function (e) {
       e.preventDefault();
       var $this = $(this);
@@ -57,13 +49,29 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       }
     });
 
-    $('#camera-trap-questions').on('transitionend', '.ct-item', function (e) {
-      // only handle the ct-item transition
-      if ($(e.target).hasClass('ct-item')) {
-        $(e.target).removeClass('fading');
-        $('.active .ct-caption').dotdotdot();
-      }
-    });
+    var $ctq = $('#camera-trap-questions');
+    var transitionendname = transitionEnd($ctq).whichTransitionEnd()
+
+    function switchCtPage(to) {
+      var $ctq = $('#camera-trap-questions');
+      // kill any existing transition
+      $ctq.children('.fading').removeClass('fading');
+      var otherActives = $ctq.children('.active:not(' + to + ')');
+      otherActives.removeClass('active');
+      if (transitionendname) otherActives.addClass('fading');
+      $(to).addClass('active');
+    }
+
+
+    if (transitionendname) {
+      $ctq.on(transitionendname, '.ct-item', function (e) {
+        // only handle the ct-item transition
+        if ($(e.target).hasClass('ct-item')) {
+          $(e.target).removeClass('fading');
+          $('.active .ct-caption').dotdotdot();
+        }
+      });
+    }
 
     $('#ct-step2-back').click(function (e) {
       if (history.pushState) {
@@ -94,10 +102,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       var $container = $('#ct-full-image-container');
       $container.empty();
 
-      var urls = _.zip(keys, _.map(keys, function(key, i) { return firstInfoWithKey(key); })).filter(function(keyAndInfo, i) {
+      var urls = _.map(_.filter(_.zip(keys, _.map(keys, function(key, i) { return firstInfoWithKey(key); })), function(keyAndInfo, i) {
         if (keyAndInfo[1] == null && window.console) console.warn('Missing info ' + keyAndInfo[0]);
         return keyAndInfo[1] != null;
-      }).map(function(keyAndInfo, i) {
+      }), function(keyAndInfo, i) {
         return {
           key: keyAndInfo[0],
           url: keyAndInfo[1].imageUrl,
@@ -371,4 +379,15 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       filterAnimals();
     });
   });
+
+}
+
+if (!String.prototype.trim) {
+  (function() {
+    // Make sure we trim BOM and NBSP
+    var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+    String.prototype.trim = function() {
+      return this.replace(rtrim, '');
+    };
+  })();
 }

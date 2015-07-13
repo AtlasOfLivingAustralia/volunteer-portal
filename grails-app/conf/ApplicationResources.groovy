@@ -163,8 +163,12 @@ modules = {
         resource url: 'js/dotdotdot/1.7.3/jquery.dotdotdot.min.js'
     }
 
+    "transitionend" {
+        resource url: 'js/transitionend/1.0.2/transition-end.min.js';
+    }
+
     "cameratrap" {
-        dependsOn 'jquery', 'mustache-util', 'underscore', 'dotdotdot', 'bootbox'
+        dependsOn 'jquery', 'mustache-util', 'underscore', 'dotdotdot', 'bootbox', 'transitionend'
         resource url: 'js/cameratrap.js'
     }
 }
