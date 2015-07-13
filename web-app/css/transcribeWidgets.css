@@ -278,6 +278,7 @@
     cursor: -moz-zoom-in;
     cursor: -webkit-zoom-in;
     cursor: zoom-in;
+    border-radius: 4px;
 }
 
 #ct-full-image-container.ct-item.active, #ct-full-image-container.ct-item.fading {
