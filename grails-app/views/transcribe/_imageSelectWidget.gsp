@@ -7,6 +7,7 @@
 <g:else>
     <g:if test="${picklistInfo.warnings}">
         <div class="alert alert-block">
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
             Warnings:
             <ul>
                 <g:each in="${picklistInfo.warnings}" var="w">

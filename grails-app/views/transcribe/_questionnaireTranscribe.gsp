@@ -40,62 +40,70 @@
         <g:set var="hiddenList" value="${g.templateFields(category: FieldCategory.dataset, template:  template, hidden: true)}" />
 
         <div class="span6">
-            <div id="qaCarousel" class="carousel slide" data-interval="">
-                <div class="carousel-indicators-container">
-                    <ol class="carousel-indicators">
+            <div class="well well-small">
+                <div id="qaCarousel" class="carousel slide" data-interval="">
+                    <div class="carousel-inner">
                         <g:each in="${fieldList}" var="f" status="st">
-                            <g:set var="isActive" value="${st == 0 ? 'active' : ''}" />
-                            <li data-target="#qaCarousel" data-slide-to="${st}" class="${isActive}"></li>
+                            <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
+                            <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}" />
+                            <div id="item-${name}" class="${isActive} item" data-item-index="${st}">
+                                <div style="margin-bottom: 10px;">
+                                    <h3><g:if test="${!template.viewParams.hideQuestionNumbers}">${st+1}/${fieldList.size()}: </g:if><g:fieldValue bean="${f.field}" field="uiLabel" /></h3>
+                                    <span><g:fieldValue bean="${f.field}" field="helpText" /></span>
+                                    <div id="inline-validation-${name}" class="alert alert-block inline-validation" style="display: none;"><span></span></div>
+                                </div>
+                                <div>
+                                    <g:renderWidgetHtml taskInstance="${taskInstance}" field="${f.field}" recordValues="${recordValues}" recordIdx="${f.recordIdx}" auxClass="" />
+                                </div>
+                            </div>
                         </g:each>
-                    </ol>
-                </div>
-                <!-- Carousel items -->
-                <div class="carousel-inner">
-                    <g:each in="${fieldList}" var="f" status="st">
-                        <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
-                        <g:set var="isActive" value="${st == 0 ? 'active' : ''}" />
-                        <div id="item-${name}" class="${isActive} item" data-item-index="${st}">
-                            <div style="margin-bottom: 10px;">
-                                <h3>${st+1}/${fieldList.size()}: <g:fieldValue bean="${f.field}" field="uiLabel" /></h3>
-                                <span><g:fieldValue bean="${f.field}" field="helpText" /></span>
-                                <div id="inline-validation-${name}" class="alert alert-block inline-validation" style="display: none;"><span></span></div>
-                            </div>
-                            <div>
-                                <g:renderWidgetHtml taskInstance="${taskInstance}" field="${f.field}" recordValues="${recordValues}" recordIdx="${f.recordIdx}" auxClass="" />
-                            </div>
+                        %{-- summary page last --}%
+                        <div id="item-summary" class="item ${validator ? 'active' : ''}" data-item-index="${fieldList.size()}">
+                            <h4>Data summary</h4>
+                            <table class="table table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="span2">Category</th>
+                                    <th class="span4">Your choices</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tbody-answer-summary">
+                                <g:each in="${fieldList}" var="f" status="st">
+                                    <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
+                                    <tr>
+                                        <td><g:fieldValue bean="${f.field}" field="uiLabel" /></td>
+                                        <td><span id="validation-${name}" class="pull-right validation pointer" data-target-field="${name}"></span><span id="display-${name}"></span></td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
                         </div>
-                    </g:each>
+                    </div>
                 </div>
-                <!-- Carousel nav -->
-                <a class="carousel-control left" href="#qaCarousel" data-slide="prev">&lsaquo;</a>
-                <a class="carousel-control right" href="#qaCarousel" data-slide="next">&rsaquo;</a>
-                <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="position: absolute; bottom: -25px; right: 10%; line-height: 30px;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
             </div>
+                <div class="pagination text-center" style="height:36px;">
+                    <ul style="margin-bottom: 6px;">
+                        <li><a href="#qaCarousel" data-slide="prev" style="width:69px;">&larr; Previous</a></li>
+                        <g:each in="${fieldList}" var="f" status="st">
+                            <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}" />
+                            <li class="${isActive}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${st}">${st+1}</a></li>
+                        </g:each>
+                        <li class="${validator ? 'active' : ''}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${fieldList.size()}">Summary</a></li>
+                        %{--${fieldList.size()+1}--}%
+                        <li>
+                            <a id="carousel-control-right" href="#qaCarousel" data-slide="next" style="width:69px;">Next &rarr;</a>
+                            <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:93px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
+                        </li>
+                    </ul>
+                </div>
+
         </div>
     </div>
 
-    <div class="row-fluid">
+    %{--<div class="row-fluid">
         <div class="span6">
-            <h4>Data summary</h4>
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th class="span2">Category</th>
-                        <th class="span4">Your choices</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-answer-summary">
-                    <g:each in="${fieldList}" var="f" status="st">
-                    <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
-                    <tr>
-                        <td><g:fieldValue bean="${f.field}" field="uiLabel" /></td>
-                        <td><span id="validation-${name}" class="pull-right validation pointer" data-target-field="${name}"></span><span id="display-${name}"></span></td>
-                    </tr>
-                    </g:each>
-                </tbody>
-            </table>
         </div>
-    </div>
+    </div>--}%
 
     <div style="display: none;">
         <g:each in="${hiddenList}" var="f" status="st">
@@ -107,6 +115,10 @@
 
 <script id="template-validation-badge" type="x-tmpl-mustache">
     <span class="badge badge-{{badgeType}}" title="{{title}}"><i class="icon-{{iconType}} icon-white"></i></span>
+</script>
+
+<script id="image-select-display" type="x-tmpl-mustache">
+    {{#selected}}<span><img src="{{src}}" style="height:20px;width:20px;vertical-align:baseline;"></img> {{value}}</span>{{^last}}, {{/last}}{{/selected}}
 </script>
 
 <r:script>
@@ -123,14 +135,31 @@
 
         $("input[name^='recordValues'], textarea[name^='recordValues']").change(function(e) {
           var $target = $(e.target);
-          var v;
-          if ($target.attr('type') === 'checkbox') {
-            v = e.target.checked;
-          } else {
-            v = $target.val();
-          }
+          var $parent = $target.parent();
+          var $display = $(bvp.escapeId('display-'+e.target.name));
 
-          $(bvp.escapeId('display-'+e.target.name)).text(v);
+          if ($parent.hasClass('imageSelectWidget') || $parent.hasClass('imageMultiSelectWidget')) {
+            var $selected = $parent.find('.selected');
+            var selected = $selected.map(function(i,e) {
+                var $this = $(this);
+                var src = $this.find('img').attr('src');
+                var value = $this.data('image-select-value');
+                var last = $selected.length - 1 == i;
+                return {src: src, value: value, last: last};
+            }).toArray();
+
+            $display.empty();
+            mu.appendTemplate($display, 'image-select-display', {selected: selected});
+          } else {
+            var v;
+            if ($target.attr('type') === 'checkbox') {
+              v = e.target.checked;
+            } else {
+              v = $target.val();
+            }
+
+            $display.text(v);
+          }
 
           transcribeValidation.validateFields();
         });
@@ -187,11 +216,23 @@
                 active.blur();
             }
         });
+        carousel.on('slide', function(e) {
+            $('.qa-transcribe .pagination').find('li.active').removeClass('active');
+        });
         carousel.on('slid', function(e) {
-            var t = $('.carousel-inner .item.active');
+            var t = $(e.target).find('.carousel-inner > .item.active');
+            var idx = t.data('item-index');
+            $('.qa-transcribe .pagination').find('[data-slide-to='+idx+']').closest('li').addClass('active');
             var lastitem = $('.carousel-inner .item:last');
+            var ccr = $('#carousel-control-right');
+            var save = $('#btnSave');
             if (t.is(lastitem)) {
-                $('#btnSave').removeAttr('disabled');
+                save.removeAttr('disabled');
+                ccr.hide();
+                save.show();
+            } else {
+                save.hide();
+                ccr.show();
             }
         });
         carousel.on('slid', function(e) {

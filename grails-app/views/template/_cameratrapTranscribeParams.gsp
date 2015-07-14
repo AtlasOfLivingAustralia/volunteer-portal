@@ -10,6 +10,14 @@
 </div>
 <div class="control-group">
     <div class="controls">
+        <label class="checkbox" for="hideSectionNumbers">
+            <g:checkBox name="hideSectionNumbers" value="${true}"/>
+            <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers" />
+        </label>
+    </div>
+</div>
+<div class="control-group">
+    <div class="controls">
         <label class="checkbox" for="hideDefaultButtons">
             <g:checkBox name="exportGroupByIndex" value="${true}"/>
             <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export" />

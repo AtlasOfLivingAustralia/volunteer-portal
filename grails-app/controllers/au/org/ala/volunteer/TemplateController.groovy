@@ -344,6 +344,7 @@ class TemplateController {
         try { //if (resExists(view)) {
             render template: view
         } catch (e) { //} else {
+            log.trace("Could not render template $view", e)
             render status: 404
         }
     }
