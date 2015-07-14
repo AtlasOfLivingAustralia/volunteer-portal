@@ -81,8 +81,14 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       }
     });
 
-    $('a[data-toggle="pill"]').on('shown', function (e) {
+    $('a[data-toggle="pill"], a[data-toggle="tab"]').on('shown', function (e) {
       $('.ct-caption', this).dotdotdot();
+    });
+
+    $('a[data-toggle="pill"], a[data-toggle="tab"]').on('show', function(e) {
+      var $toolbar = $('#ct-animals-pill-content').find('.ct-toolbar');
+      if ($(this).hasClass('ct-no-toolbar')) $toolbar.hide();
+      else $toolbar.show();
     });
 
     function animalsPresent() {
@@ -321,13 +327,28 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     };
 
     transcribeWidgets.addBeforeSubmitHook(function (e) {
+      var q1 = $('#recordValues\\.0\\.animalsVisible').val();
+
+
+      if (q1 == $('#btn-animals-present').data('value')) {
+        var count = selections.length < 1;
+        count += $unlisted.find('input.speciesName').filter(function(i,e) { return $(this).val() }).length;
+
+        bootbox.alert('You must select at least one animal or add one unlisted animal');
+      }
+
+
       generateInputFields();
+      $unlisted.find('input.speciesName').each(function() {
+        var $this = $(this);
+        if (!$this.val()) $this.remove();
+      });
       return true;
     });
 
     // Cycling Thumbnails
     function cycleImages() {
-      $('.pill-pane.active .cycler').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
+      $('.pill-pane.active .cycler, .tab-pane.active .cyclera').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
         var $this = $(this);
         var $active = $this.find('.active');
         var $next = ($active.next().length > 0) ? $active.next() : $this.find('img:first');
