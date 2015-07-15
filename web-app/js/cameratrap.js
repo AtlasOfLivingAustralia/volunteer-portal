@@ -326,7 +326,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       }
     };
 
-    transcribeWidgets.addBeforeSubmitHook(function (e) {
+    transcribeValidation.addCustomValidator(function(errorList) {
       var q1 = $('#recordValues\\.0\\.animalsVisible').val();
 
 
@@ -334,10 +334,19 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
         var count = selections.length < 1;
         count += $unlisted.find('input.speciesName').filter(function(i,e) { return $(this).val() }).length;
 
-        bootbox.alert('You must select at least one animal or add one unlisted animal');
+        if (count < 1) {
+          errorList.push({element: null, message: "You must select at least one animal", type: "Error" });
+        }
       }
+    });
+    transcribeValidation.setErrorRenderFunctions(function (errorList) {
+      bootbox.alert(_.pluck(errorList, 'message').join('.  '));
+    },
+    function() {
 
+    });
 
+    transcribeWidgets.addBeforeSubmitHook(function (e) {
       generateInputFields();
       $unlisted.find('input.speciesName').each(function() {
         var $this = $(this);
@@ -348,7 +357,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     // Cycling Thumbnails
     function cycleImages() {
-      $('.pill-pane.active .cycler, .tab-pane.active .cyclera').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
+      $('.pill-pane.active .cycler, .tab-pane.active .cycler').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
         var $this = $(this);
         var $active = $this.find('.active');
         var $next = ($active.next().length > 0) ? $active.next() : $this.find('img:first');

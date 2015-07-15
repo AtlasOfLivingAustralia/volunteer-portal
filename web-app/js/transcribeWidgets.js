@@ -174,8 +174,13 @@ var transcribeWidgets = {};
             var jw = $(widget);
             jw.on('click', 'a.thumbnail', function(e) {
                 var ct = $(e.currentTarget);
-                jw.find('a.thumbnail.selected').removeClass('selected');
-                selectThumbnail(ct,jw);
+                if (ct.hasClass('selected')) {
+                    ct.removeClass('selected');
+                    syncInputField(ct,jw);
+                } else {
+                    jw.find('a.thumbnail.selected').removeClass('selected');
+                    selectThumbnail(ct,jw);
+                }
                 //ct.addClass('selected');
                 //$('[id=\''+jw.attr('targetField')+'\']').val(ct.attr('data-image-select-value')).trigger('change');
             });

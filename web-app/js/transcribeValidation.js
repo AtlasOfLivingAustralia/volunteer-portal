@@ -72,6 +72,7 @@ var transcribeValidation = {};
 
         // now validate special widgets
         vlib.validateTranscribeWidgets(errorList);
+        vlib.evaluateCustomValidators(errorList);
         var hasErrors = false;
         var hasWarnings = false;
 
@@ -98,6 +99,27 @@ var transcribeValidation = {};
     vlib.setErrorRenderFunctions = function(errorRenderFn, errorClearFn) {
         errorRenderer = errorRenderFn;
         errorClearer = errorClearFn;
+    };
+
+    var customValidators = [];
+
+    vlib.evaluateCustomValidators = function(errorList) {
+        try {
+            return _.each(customValidators, function(f) {
+                if (typeof(f) === 'function') {
+                    f(errorList);
+                } else if (window.console) {
+                    console.warn("Got invalid custom validator", f);
+                }
+            });
+        } catch(e) {
+            if (window.console) console.error("error running custom validators",e);
+            return false;
+        }
+    };
+
+    vlib.addCustomValidator = function(f) {
+        customValidators.push(f);
     };
 
     vlib.validateTranscribeWidgets = function(messages) {

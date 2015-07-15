@@ -16,10 +16,11 @@
             </ul>
         </div>
     </g:if>
+    <g:set var="values" value="${(value ?: '').split(',')}" />
     <div class="imageSelectWidget ${cssClass} ${field.type.name()}" targetField="${widgetName}">
         <div class="itemgrid">
             <g:each in="${picklistInfo.items}" var="piItem">
-            <g:set var="aclass" value="${piItem.value == value ? 'selected' : ''}" />
+            <g:set var="aclass" value="${values.contains(piItem.value) ? 'selected' : ''}" />
             <div class="griditem bvpBadge">
                 <a href="javascript:void(0)" class="thumbnail ${aclass}" data-image-select-value="${piItem.value}">
                     <img src="${picklistInfo.infos[piItem.key[0]]?.squareThumbUrl}" alt="${piItem.value}">
@@ -33,6 +34,6 @@
             </div>
             </g:each>
         </div>
-        <g:hiddenField id="${widgetName}" name="${widgetName}" value="${value}" class="${field.fieldType}" />
+        <g:hiddenField id="${widgetName}" name="${widgetName}" value="${value}" class="${field.fieldType}" validationRule="${field.validationRule}" />
     </div>
 </g:else>

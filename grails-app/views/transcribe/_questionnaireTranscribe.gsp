@@ -92,7 +92,13 @@
                         %{--${fieldList.size()+1}--}%
                         <li>
                             <a id="carousel-control-right" href="#qaCarousel" data-slide="next" style="width:69px;">Next &rarr;</a>
-                            <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:93px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
+                            <g:if test="${validator}">
+                                <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                                <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
+                            </g:if>
+                            <g:else>
+                                <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:93px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
+                            </g:else>
                         </li>
                     </ul>
                 </div>
@@ -125,6 +131,7 @@
     jQuery(function($) {
         var active = 0;
         var interview = true;
+        var fieldsSeen = {};
         var i = 0;
         var n = ${fieldList.size()};
         var carousel = $('#qaCarousel');
@@ -133,10 +140,9 @@
           interval: false
         });
 
-        $("input[name^='recordValues'], textarea[name^='recordValues']").change(function(e) {
-          var $target = $(e.target);
+        function syncSummary($target) {
           var $parent = $target.parent();
-          var $display = $(bvp.escapeId('display-'+e.target.name));
+          var $display = $(bvp.escapeId('display-'+$target.prop('name')));
 
           if ($parent.hasClass('imageSelectWidget') || $parent.hasClass('imageMultiSelectWidget')) {
             var $selected = $parent.find('.selected');
@@ -160,8 +166,14 @@
 
             $display.text(v);
           }
+        }
 
+        $("input[name^='recordValues'], textarea[name^='recordValues']").change(function(e) {
+          var $target = $(e.target);
+          syncSummary($target);
           transcribeValidation.validateFields();
+        }).each(function () {
+          syncSummary($(this));
         });
 
         $('.qt-previous').click(function(e) {
@@ -220,7 +232,8 @@
             $('.qa-transcribe .pagination').find('li.active').removeClass('active');
         });
         carousel.on('slid', function(e) {
-            var t = $(e.target).find('.carousel-inner > .item.active');
+            var $c = $(e.target);
+            var t = $c.find('.carousel-inner > .item.active');
             var idx = t.data('item-index');
             $('.qa-transcribe .pagination').find('[data-slide-to='+idx+']').closest('li').addClass('active');
             var lastitem = $('.carousel-inner .item:last');
@@ -234,6 +247,7 @@
                 save.hide();
                 ccr.show();
             }
+            markSeenFields($c);
         });
         carousel.on('slid', function(e) {
             $('.dotdotdot').dotdotdot();
@@ -245,14 +259,20 @@
             switch(e.which) {
                 case 37: // left
                     $qaCarousel.carousel('prev');
+                    e.preventDefault(); // prevent the default action (scroll / move caret)
                     break;
                 case 39: // right
                     $qaCarousel.carousel('next');
+                    e.preventDefault(); // prevent the default action (scroll / move caret)
                     break;
                 default: return; // exit this handler for other keys
             }
-            e.preventDefault(); // prevent the default action (scroll / move caret)
         });
+
+        function markSeenFields(carousel) {
+          if (!carousel) carousel = $('#qaCarousel');
+          carousel.find('.carousel-inner > .item.active input[name^="recordValues."]').each(function() { fieldsSeen[bvp.escapeIdPart($(this).prop('name'))] = true; });
+        }
 
         // validation
         transcribeValidation.setErrorRenderFunctions(
@@ -260,23 +280,27 @@
             $.each(errorList, function(index, error) {
               var id = bvp.escapeIdPart(error.element.id);
               var $parent = $('#validation-'+id);
-              var isError = error.Type === 'Error';
+              var isError = error.type === 'Error';
               var badgeType =  isError ? 'important' : 'warning';
               var iconType = "remove";
-              mu.appendTemplate($parent, "template-validation-badge", {
+              var $badge = mu.appendTemplate($parent, "template-validation-badge", {
                 title: error.message,
                 badgeType: badgeType,
                 iconType: iconType
               });
+              $badge.tooltip();
 
-              var $inline = $('#inline-validation-'+id);
-              $inline.css('display', 'block');
-              if (isError) {
-                $inline.addClass('alert-error');
-              } else {
-                $inline.removeClass('alert-error');
+              if (fieldsSeen[id]) {
+                var $inline = $('#inline-validation-'+id);
+                $inline.css('display', 'block');
+                if (isError) {
+                  $inline.addClass('alert-error');
+                } else {
+                  $inline.removeClass('alert-error');
+                }
+                $inline.find('span').text(error.message);
               }
-              $inline.find('span').text(error.message);
+
             });
           },
           function() {
@@ -292,6 +316,10 @@
           $('#qaCarousel').carousel(idx);
         });
 
+        // enable tooltips
+        $('[title]').tooltip();
+
         transcribeValidation.validateFields();
+        markSeenFields();
     });
 </r:script>

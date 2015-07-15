@@ -732,6 +732,24 @@
     </body>
     <r:script>
 
+        <g:each in="${ValidationRule.list()}" var="rule">
+        transcribeValidation.rules.${rule.name} = {
+            test: function(value, element) {
+                <g:if test="${!rule.testEmptyValues}">
+                if (value) {
+                </g:if>
+                    var pattern = /${rule.regularExpression}/;
+                    return pattern.test(value);
+                <g:if test="${!rule.testEmptyValues}">
+                }
+                return true;
+                </g:if>
+            },
+            message: "${rule.message}",
+            type: "${rule.validationType ?: ValidationType.Warning}"
+        };
+        </g:each>
+
         $(document).ready(function() {
 
             // prompt user to save if page has been open for too long
@@ -817,24 +835,6 @@
                 e.preventDefault();
                 window.location = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
             });
-
-            <g:each in="${ValidationRule.list()}" var="rule">
-                transcribeValidation.rules.${rule.name} = {
-                    test: function(value, element) {
-                        <g:if test="${!rule.testEmptyValues}">
-                        if (value) {
-                        </g:if>
-                            var pattern = /${rule.regularExpression}/;
-                            return pattern.test(value);
-                        <g:if test="${!rule.testEmptyValues}">
-                        }
-                        return true;
-                        </g:if>
-                    },
-                    message: "${rule.message}",
-                    type: "${rule.validationType ?: ValidationType.Warning}"
-                };
-            </g:each>
 
             //enableSubmitButtons();
 
