@@ -340,11 +340,13 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       }
     });
     transcribeValidation.setErrorRenderFunctions(function (errorList) {
-      bootbox.alert(_.pluck(errorList, 'message').join('.  '));
+      //bootbox.alert(_.pluck(errorList, 'message').join('.  '));
     },
     function() {
 
     });
+
+
 
     transcribeWidgets.addBeforeSubmitHook(function (e) {
       generateInputFields();
@@ -408,6 +410,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       filterText = $searchInput.val().toLocaleLowerCase();
       filterAnimals();
     });
+
+    postValidationFunction = function(validationResults) {
+      bootbox.alert(_.pluck(validationResults.errorList, 'message').join('.  ') + ".");
+    };
   });
 
 }
