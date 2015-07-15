@@ -822,13 +822,7 @@
 
             $("#btnValidateSubmitInvalid").click(function(e) {
                 e.preventDefault();
-                <g:if test="${validator}">
-                    submitFormWithAction("${createLink(controller:'validate', action:'validate')}");
-                </g:if>
-                <g:else>
-                    submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
-                </g:else>
-
+                submitInvalid();
             });
 
             $("#showNextFromProject").click(function(e) {
@@ -897,6 +891,15 @@
         }
     }
 
+    function submitInvalid() {
+        <g:if test="${validator}">
+            submitFormWithAction("${createLink(controller:'validate', action:'validate')}");
+        </g:if>
+        <g:else>
+            submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
+        </g:else>
+    }
+
     function submitFormWithAction(action) {
         try {
             disableSubmitButtons();
@@ -919,15 +922,7 @@
         $(".bvp-submit-button").removeAttr('disabled');
     }
 
-    function checkValidation() {
-
-        if (typeof(transcribeBeforeValidation) === "function") {
-            transcribeBeforeValidation();
-        }
-
-        transcribeWidgets.prepareFieldWidgetsForSubmission();
-        var validationResults = transcribeValidation.validateFields()
-
+    var postValidationFunction = function(validationResults) {
         if (validationResults.hasErrors) {
             $("#submitButtons").css("display", "none");
             $('#warningMessagesContainer').css("display", "none");
@@ -937,6 +932,19 @@
             $('#warningMessagesContainer').css("display", "block");
             $('#errorMessagesContainer').css("display", "none");
         }
+    };
+
+    function checkValidation() {
+
+        if (typeof(transcribeBeforeValidation) === "function") {
+            transcribeBeforeValidation();
+        }
+
+        transcribeWidgets.prepareFieldWidgetsForSubmission();
+        var validationResults = transcribeValidation.validateFields()
+
+        postValidationFunction(validationResults);
+
         return !validationResults.hasWarnings && !validationResults.hasErrors;
     }
 

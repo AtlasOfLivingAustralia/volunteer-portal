@@ -1,15 +1,15 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require modules="dotdotdot, mustache-util" />
+<r:require modules="dotdotdot, mustache-util, bootbox" />
 <div class="container-fluid qa-transcribe tall-image">
 
     <div class="row-fluid">
         <div class="span12">
             <span id="journalPageButtons">
 
-                <button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous</button>
-                <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
-                <button type="button" class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
+                <button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" data-container="body" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous</button>
+                <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" data-container="body" ${nextTask ? '' : 'disabled="true"'}>show next <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
+                <button type="button" class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees" data-container="body">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
                 <button type="button" class="btn btn-small bvp-submit-button" id="showNextFromProject">Skip</button>
                 <g:if test="${validator}">
                     <g:if test="${validator}">
@@ -81,28 +81,29 @@
                     </div>
                 </div>
             </div>
-                <div class="pagination text-center" style="height:36px;">
-                    <ul style="margin-bottom: 6px;">
-                        <li><a href="#qaCarousel" data-slide="prev" style="width:69px;">&larr; Previous</a></li>
-                        <g:each in="${fieldList}" var="f" status="st">
-                            <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}" />
-                            <li class="${isActive}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${st}">${st+1}</a></li>
-                        </g:each>
-                        <li class="${validator ? 'active' : ''}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${fieldList.size()}">Summary</a></li>
-                        %{--${fieldList.size()+1}--}%
-                        <li>
-                            <a id="carousel-control-right" href="#qaCarousel" data-slide="next" style="width:69px;">Next &rarr;</a>
-                            <g:if test="${validator}">
-                                <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
-                                <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
-                            </g:if>
-                            <g:else>
-                                <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:93px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
-                            </g:else>
-                        </li>
-                    </ul>
+            <g:if test="${validator}">
+                <div class="btn-group pull-right">
+                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
                 </div>
-
+            </g:if>
+            <div class="pagination text-center" style="height:36px;">
+                <ul style="margin-bottom: 6px;">
+                    <li><a href="#qaCarousel" data-slide="prev" style="width:69px;">&larr; Previous</a></li>
+                    <g:each in="${fieldList}" var="f" status="st">
+                        <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}" />
+                        <li class="${isActive}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${st}">${st+1}</a></li>
+                    </g:each>
+                    <li class="${validator ? 'active' : ''}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${fieldList.size()}">Summary</a></li>
+                    %{--${fieldList.size()+1}--}%
+                    <li>
+                        <a id="carousel-control-right" href="#qaCarousel" data-slide="next" style="width:69px;">Next &rarr;</a>
+                        <g:if test="${!validator}">
+                            <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:93px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
+                        </g:if>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -239,13 +240,15 @@
             var lastitem = $('.carousel-inner .item:last');
             var ccr = $('#carousel-control-right');
             var save = $('#btnSave');
-            if (t.is(lastitem)) {
-                save.removeAttr('disabled');
-                ccr.hide();
-                save.show();
-            } else {
-                save.hide();
-                ccr.show();
+            if (save.length > 0) {
+                if (t.is(lastitem)) {
+                    save.removeAttr('disabled');
+                    ccr.hide();
+                    save.show();
+                } else {
+                    save.hide();
+                    ccr.show();
+                }
             }
             markSeenFields($c);
         });
@@ -318,6 +321,20 @@
 
         // enable tooltips
         $('[title]').tooltip();
+
+    <g:set var="okCaption" value="Submit for validation anyway" />
+    <g:set var="cancelCaption" value="Let me fix the marked fields" />
+    <g:if test="${validator}">
+        <g:set var="okCaption" value="Mark valid anyway" />
+        <g:set var="cancelCaption" value="Let me fix the marked fields" />
+    </g:if>
+        postValidationFunction = function(validationResult) {
+            bootbox.confirm(
+                "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
+                "${cancelCaption}", "${okCaption}", function(answer) {
+                    if (answer) submitInvalid();
+                });
+        };
 
         transcribeValidation.validateFields();
         markSeenFields();
