@@ -214,44 +214,56 @@
     box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-.ct-thumbnail .ct-badge {
+.ct-badge {
     position: absolute;
     top: 0;
     opacity: 0.8;
 }
 
-.ct-thumbnail .ct-badge.selected {
+.ct-badge.selected {
     opacity: 1;
 }
 
-.ct-thumbnail .ct-badge-sure.selected {
+.ct-badge-sure.selected {
     background-color: #468847;
 }
 
-.ct-thumbnail .ct-badge-uncertain.selected {
+.ct-badge-uncertain.selected {
     background-color: #f89406;
 }
 
-.ct-thumbnail .ct-badge-sure {
+.ct-badge-sure {
     left: 0;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
 }
 
-.ct-thumbnail .ct-badge-sure:hover {
+.ct-badge-sure:hover {
     background-color: #468847;
 }
 
-.ct-thumbnail .ct-badge-uncertain:hover {
+.ct-badge-uncertain:hover {
     background-color: #f89406;
 }
 
-.ct-thumbnail .ct-badge-uncertain {
+.ct-badge-uncertain {
     right: 0;
     border-top-left-radius: 0;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 0;
+}
+
+#ct-full-image-container .ct-badge {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    text-align: center;
+    width: 2.5em;
+    height:2.5em;
+}
+
+#ct-full-image-container .ct-badge i {
+    font-size: 2em;
 }
 
 .bvpBadge .ct-thumbnail .bvpBadgeMain {
@@ -286,7 +298,12 @@
     cursor: -moz-zoom-in;
     cursor: -webkit-zoom-in;
     cursor: zoom-in;
-    border-radius: 4px;
+}
+
+.ct-thumbnail img {
+    -webkit-border-radius: inherit;
+    -moz-border-radius: inherit;
+    border-radius: inherit;
 }
 
 #ct-full-image-container.ct-item.active, #ct-full-image-container.ct-item.fading {
@@ -404,7 +421,7 @@
 
 .ct-full-image-carousel-close {
     position: absolute;
-    right: 5px;
+    right: -25px;
     top: 5px;
     font-size: 20px;
     font-weight: bolder;

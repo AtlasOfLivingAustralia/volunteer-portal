@@ -50,7 +50,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     });
 
     var $ctq = $('#camera-trap-questions');
-    var transitionendname = transitionEnd($ctq).whichTransitionEnd()
+    var transitionendname = transitionEnd($ctq).whichTransitionEnd();
 
     function switchCtPage(to) {
       var $ctq = $('#camera-trap-questions');
@@ -102,11 +102,18 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       animalsPresent();
     });
 
+    // zoom in
     $('.ct-thumbnail-image').click(function (e) {
       var key = $(e.target).closest('[data-image-select-key]').data('image-select-key');
+      var value = $(e.target).closest('[data-image-select-value]').data('image-select-value');
       var keys = keyToArray(key);
       var $container = $('#ct-full-image-container');
       $container.empty();
+
+      var selectionCertainty = (selections.hasOwnProperty(value) && selections[value].certainty) || 0;
+      var sureSelected = selectionCertainty == 1 ? 'selected' : '';
+      var uncertainSelected = selectionCertainty == 0.5 ? 'selected' : '';
+      var templateObj = {value: value, key: key, sureSelected: sureSelected, uncertainSelected: uncertainSelected};
 
       var urls = _.map(_.filter(_.zip(keys, _.map(keys, function(key, i) { return firstInfoWithKey(key); })), function(keyAndInfo, i) {
         if (keyAndInfo[1] == null && window.console) console.warn('Missing info ' + keyAndInfo[0]);
@@ -123,22 +130,24 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       });
       var change = false;
       if (urls.length > 1) {
-        var carousel = mu.appendTemplate($container, 'carousel-template', {imgs: urls});
+        var carousel = mu.appendTemplate($container, 'carousel-template', _.extend({imgs: urls}, templateObj));
         //var carousel = $('#ct-full-image-carousel');
         carousel.carousel({interval: false});
         carousel.find('[title]').tooltip();
         change = true;
       } else if (urls.length == 1) {
-        var $img = mu.appendTemplate($container, 'single-image-template', {url: urls[0].url});
+        var $img = mu.appendTemplate($container, 'single-image-template', _.extend({url: urls[0].url}, templateObj));
         $img.find('[title]').tooltip();
         change = true;
       }
       if (change) switchCtPage('#ct-full-image-container');
     });
 
+    // zoom out
     $('#ct-full-image-container').on('click', 'img, .ct-full-image-carousel-close', function (e) {
       switchCtPage('#ct-animals-present');
       var $container = $('#ct-full-image-container');
+      $container.find('[title]').tooltip('hide');
       $container.empty();
     });
 
@@ -160,9 +169,9 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       var t = $(e.target);
       var badge = t.closest('.badge');
 
-      var selectedThumbnail = t.closest('.thumbnail');
-      var value = selectedThumbnail.attr('data-image-select-value');
-      var imageKey = selectedThumbnail.attr('data-image-select-key');
+      var selectedThumbnail = t.closest('[data-image-select-value]');//.closest('.thumbnail');
+      var value = selectedThumbnail.data('image-select-value');
+      var imageKey = selectedThumbnail.data('image-select-key');
       if (selections.hasOwnProperty(value) && selections[value].certainty == selectionCertainty) {
         delete selections[value];
       } else {
@@ -172,11 +181,11 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     }
 
     function valueToBadgeSelector(v, i, a) {
-      return '.thumbnail[data-image-select-value="' + v + '"] .badge.' + ctBadges[selections[v].certainty]
+      return '[data-image-select-value="' + v + '"] .badge.' + ctBadges[selections[v].certainty]
     }
 
     function valueToSelector(v, i, a) {
-      return '.thumbnail[data-image-select-value="' + v + '"]'
+      return '[data-image-select-value="' + v + '"]'
     }
 
     function addSelectionToContainer(sel, selElem) {
@@ -213,7 +222,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       }
       selElem.find(nonSelector).parent().remove();
 
-      ctContainer.find('.thumbnail[data-image-select-value] .badge').removeClass('selected ' + _.values(badges).join(' '));
+      ctContainer.find('[data-image-select-value] .badge').removeClass('selected ' + _.values(badges).join(' '));
       ctContainer.find(badgeSelector).addClass('selected');
 
       generateInputFields();
@@ -249,8 +258,9 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     function keyToArray(key) {
       var r = new RegExp('([^\\[\\]\\,]+)', 'g');
       var matches = [];
+      var match;
       while (match = r.exec(key)) {
-        var match = match[0];
+        match = match[0];
         if (match) match = match.trim();
         matches.push(match);
       }
@@ -331,8 +341,9 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
 
       if (q1 == $('#btn-animals-present').data('value')) {
-        var count = selections.length < 1;
+        var count = _.keys(selections).length;
         count += $unlisted.find('input.speciesName').filter(function(i,e) { return $(this).val() }).length;
+        count += $unlisted.find(bvp.escapeId('recordValues.0.unknown')).prop('checked') ? 1 : 0;
 
         if (count < 1) {
           errorList.push({element: null, message: "You must select at least one animal", type: "Error" });

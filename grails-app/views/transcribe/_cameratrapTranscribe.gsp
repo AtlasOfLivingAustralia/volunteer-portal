@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require modules="cameratrap" />
+<r:require modules="cameratrap, fontawesome" />
 
 <div id="ct-container" class="container-fluid fourthree-image">
 
@@ -88,7 +88,7 @@
                                             <input id="ct-search-input" type="text" class="input-medium" style="margin-bottom: 0;" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
                                             <span class="add-on" style="height:18px;"><i class="icon-search"></i></span>
                                         </div>
-                                        <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left">A<i class="icon-resize-vertical"></i></button>
+                                        <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left"><i class="fa fa-sort-alpha-asc"></i></button>
                                     </div>
                                     <div class="tab-pane fade in active sortable" id="small-mammal">
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
@@ -184,12 +184,12 @@
 <div class="griditem bvpBadge">
     <div class="thumbnail ct-thumbnail" data-image-select-key="{{key}}" data-image-select-value="{{value}}">
         {{#success}}
-        <span class="ct-badge ct-badge-sure badge badge-success selected"><i class="icon-white icon-ok-sign"></i></span>
-        <span class="ct-badge ct-badge-uncertain badge"><i class="icon-white icon-question-sign"></i></span>
+        <span class="ct-badge ct-badge-sure badge badge-success selected"><i class="fa fa-check-circle"></i></span>
+        <span class="ct-badge ct-badge-uncertain badge"><i class="fa fa-question-circle"></i></span>
         {{/success}}
         {{#uncertain}}
-        <span class="ct-badge ct-badge-sure badge"><i class="icon-white icon-ok-sign"></i></span>
-        <span class="ct-badge ct-badge-uncertain badge badge-warning selected"><i class="icon-white icon-question-sign"></i></span>
+        <span class="ct-badge ct-badge-sure badge"><i class="fa fa-check-circle"></i></span>
+        <span class="ct-badge ct-badge-uncertain badge badge-warning selected"><i class="fa fa-question-circle"></i></span>
         {{/uncertain}}
         <img src="{{squareThumbUrl}}" alt="{{value}}">
         <div class="ct-caption-table">
@@ -215,21 +215,25 @@
 </script>
 
 <script id="single-image-template" type="x-tmpl-mustache">
-    <div style="position:relative;">
+    <div id="ct-full-image" style="position:relative;" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
+        <span class="ct-badge ct-badge-sure badge {{sureSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {{value}} in the image')}"><i class="fa fa-check-circle"></i></span>
+        <span class="ct-badge ct-badge-uncertain badge {{uncertainSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {{value}} in the image')}"><i class="fa fa-question-circle"></i></span>
         <span class="ct-full-image-carousel-close">&times;</span>
-        <img src="{{url}}" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}" />
+        <img src="{{url}}" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}" data-container="body"/>
     </div>
 </script>
 
 <script id="carousel-template" type="x-tmpl-mustache">
-    <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" style="margin-bottom: 0;">
+    <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" style="margin-bottom: 0;" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
+        <span class="ct-badge ct-badge-sure badge {{sureSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {{value}} in the image')}"><i class="fa fa-check-circle"></i></span>
+        <span class="ct-badge ct-badge-uncertain badge {{uncertainSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {{value}} in the image')}"><i class="fa fa-question-circle"></i></span>
         <span class="ct-full-image-carousel-close">&times;</span>
         <ol class="carousel-indicators">
             {{#imgs}}
                 <li class="{{active}}" data-target="#ct-full-image-carousel" data-slide-to="{{idx}}"></li>
             {{/imgs}}
         </ol>
-        <div class="carousel-inner" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}">
+        <div class="carousel-inner" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}" data-container="body">
             {{#imgs}}
             <div class="item {{active}}">
                 <img src="{{url}}" />

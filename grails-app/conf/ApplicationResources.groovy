@@ -171,4 +171,8 @@ modules = {
         dependsOn 'jquery', 'mustache-util', 'underscore', 'dotdotdot', 'bootbox', 'transitionend'
         resource url: 'js/cameratrap.js'
     }
+
+    "fontawesome" {
+        resource url: 'css/font-awesome/4.3.0/css/font-awesome.min.css'
+    }
 }

@@ -18,8 +18,8 @@
         <g:each in="${imageInfos.items}" var="piItem" status="st">
             <div class="griditem bvpBadge" data-item-index="${st}">
                 <div class="thumbnail ct-thumbnail" data-image-select-key="${piItem.key}" data-image-select-value="${piItem.value}">
-                    <span class="ct-badge ct-badge-sure badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: "There is definitely a ${piItem.value} in the image")}"><i class="icon-white icon-ok-sign"></i></span>
-                    <span class="ct-badge ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: "There could possibly be a ${piItem.value} in the image")}"><i class="icon-white icon-question-sign"></i></span>
+                    <span class="ct-badge ct-badge-sure badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: "There is definitely a ${piItem.value} in the image")}"><i class="fa fa-check-circle"></i></span>
+                    <span class="ct-badge ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: "There could possibly be a ${piItem.value} in the image")}"><i class="fa fa-check-circle"></i></span>
                     <div class="bvpBadgeMain cycler">
                         <g:each in="${piItem.key}" var="key" status="j">
                             <img class="ct-thumbnail-image${j == 0 ? ' active': ' '}" src="${imageInfos.infos[key]?.squareThumbUrl}" alt="${piItem.value}">
