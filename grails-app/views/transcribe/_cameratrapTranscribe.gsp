@@ -90,19 +90,19 @@
                                         </div>
                                         <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left"><i class="fa fa-sort-alpha-asc"></i></button>
                                     </div>
-                                    <div class="tab-pane fade in active sortable" id="small-mammal">
+                                    <div class="tab-pane fade in active sortable text-center" id="small-mammal">
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
                                     </div>
-                                    <div class="tab-pane fade sortable" id="large-mammal">
+                                    <div class="tab-pane fade sortable text-center" id="large-mammal">
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: lmImageInfos, picklistId: template.viewParams.largeMammalsPicklistId?.toLong()]}" />
                                     </div>
-                                    <div class="tab-pane fade sortable" id="reptile">
+                                    <div class="tab-pane fade sortable text-center" id="reptile">
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: reptilesImageInfos, picklistId: template.viewParams.reptilesPicklistId?.toLong()]}" />
                                     </div>
-                                    <div class="tab-pane fade sortable" id="bird">
+                                    <div class="tab-pane fade sortable text-center" id="bird">
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: birdsImageInfos, picklistId: template.viewParams.birdsPicklistId?.toLong()]}" />
                                     </div>
-                                    %{--<div class="pill-pane fade sortable" id="other">--}%
+                                    %{--<div class="pill-pane fade sortable text-center" id="other">--}%
                                         %{--<g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: otherImageInfos, picklistId: template.viewParams.otherPicklistId?.toLong()]}" />--}%
                                     %{--</div>--}%
                                     <div class="tab-pane fade form-horizontal ct-no-toolbar" id="unlisted">
