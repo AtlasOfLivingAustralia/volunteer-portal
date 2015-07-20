@@ -1,6 +1,16 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 <r:require modules="dotdotdot, mustache-util, bootbox" />
+<r:style disposition="head">
+#qa-questions-pager.pagination ul a.summary, #qa-questions-pager.pagination ul  span.summary {
+    background-color: #d7edd7;
+}
+#qa-questions-pager.pagination ul > .active > a.summary, #qa-questions-pager.pagination ul > .active > span.summary,
+#qa-questions-pager.pagination ul a.summary:hover, #qa-questions-pager.pagination ul span.summary:hover {
+    background-color: #cce4cc;
+}
+
+</r:style>
 <div class="container-fluid qa-transcribe tall-image">
 
     <div class="row-fluid">
@@ -87,19 +97,19 @@
                     <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
                 </div>
             </g:if>
-            <div class="pagination text-center" style="height:36px;">
+            <div id="qa-questions-pager" class="pagination text-center" style="height:36px;">
                 <ul style="margin-bottom: 6px;">
                     <li><a href="#qaCarousel" data-slide="prev" style="width:69px;">&larr; Previous</a></li>
                     <g:each in="${fieldList}" var="f" status="st">
                         <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}" />
                         <li class="${isActive}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${st}">${st+1}</a></li>
                     </g:each>
-                    <li class="${validator ? 'active' : ''}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${fieldList.size()}">Summary</a></li>
+                    <li class="${validator ? 'active' : ''}"><a href="#qaCarousel" class="summary" title="${message(code: 'questionnarie.summary.button.tooltip', default: 'Click any time to view and submit your choices')}" data-container="body" data-target="#qaCarousel" data-slide-to="${fieldList.size()}">Summary</a></li>
                     %{--${fieldList.size()+1}--}%
                     <li>
                         <a id="carousel-control-right" href="#qaCarousel" data-slide="next" style="width:69px;">Next &rarr;</a>
                         <g:if test="${!validator}">
-                            <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:93px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
+                            <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:94px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
                         </g:if>
                     </li>
                 </ul>
@@ -329,11 +339,13 @@
         <g:set var="cancelCaption" value="Let me fix the marked fields" />
     </g:if>
         postValidationFunction = function(validationResult) {
+          if (validationResults.hasErrors || validationResults.hasWarnings) {
             bootbox.confirm(
-                "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
-                "${cancelCaption}", "${okCaption}", function(answer) {
-                    if (answer) submitInvalid();
-                });
+              "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
+              "${cancelCaption}", "${okCaption}", function(answer) {
+                if (answer) submitInvalid();
+              });
+          }
         };
 
         transcribeValidation.validateFields();
