@@ -51,6 +51,16 @@ class PicklistController {
         }
     }
 
+    def images(Picklist picklistInstance) {
+        def inst = params.institution
+
+        def items
+        if (inst) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklistInstance, inst)
+        else items = PicklistItem.findAllByPicklist(picklistInstance)
+
+        respond picklistInstance, model: [picklistItems: items]
+    }
+
     def loadcsv = {
         def picklist = Picklist.get(params.picklistId)
         def institutionCode = params.institutionCode

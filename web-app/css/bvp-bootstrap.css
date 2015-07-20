@@ -388,3 +388,7 @@ h2, h3, h4, h5 {
     width: 160px;
     margin: 5px 10px;
 }
+
+.text-justify {
+    text-align: justify;
+}
