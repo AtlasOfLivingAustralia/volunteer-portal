@@ -24,10 +24,11 @@
 
 <body>
 
-<cl:headerContent title="${message(code:'default.picklists.label', default:'Manage Picklists')}">
+<cl:headerContent title="${message(code:'default.picklists.label', default:'Manage Image Picklists')}">
     <%
         pageScope.crumbs = [
-                [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
+                [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')],
+                [link:createLink(controller:'picklist', action: 'manage'),label:message(code:'default.picklist.manage.label', default:'Bulk manage picklists')]
         ]
     %>
 </cl:headerContent>

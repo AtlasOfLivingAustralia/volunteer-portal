@@ -57,7 +57,7 @@
                     <a href="#picklistModal" id="upload-picklist-file" role="button" class="btn" data-toggle="modal">${message(code: 'upload.bulkpicklist.label', default: 'Upload CSV File')}</a>
                     <button id="sort-button" type="button" class="btn" title="Sort list"><i class="icon-arrow-down"></i></button>
                     <button id="reverse-button" type="button" class="btn" title="Reverse list order"><i class="icon-refresh"></i></button>
-                    <g:link class="btn btn-link" controller="picklist" action="manage"><g:message code="picklist.button.view.as.images" default="View as images"/></g:link>
+                    %{--<g:link elementId="img-picklist-button" class="btn btn-link" controller="picklist" action="images"><g:message code="picklist.button.view.as.images" default="View as images"/></g:link>--}%
                 </g:form>
 
             </div>
@@ -129,11 +129,18 @@
                 });
 
                 var maxSize = ${grailsApplication.config.bvp.maxPostSize ?: 2097152};
+                var imageLink = "${createLink(controller: 'picklist', action: 'images')}";
                 $('#picklist').change(function(e) {
+                    var $this = $(this);
                     var pl = $('#upload-picklist-button');
                     var disabled = pl.prop('disabled');
                     var shouldDisable = byteLength($(e.target).val()) > maxSize;
                     if (disabled != shouldDisable) pl.prop('disabled', shouldDisable);
+                });
+
+                $('#picklistId').change(function(e) {
+                  var $this = $(this);
+                  $('#img-picklist-button').prop('href', imageLink+'/'+$this.val());
                 });
 
                 $('#sort-button').click(function() {

@@ -338,7 +338,7 @@
         <g:set var="okCaption" value="Mark valid anyway" />
         <g:set var="cancelCaption" value="Let me fix the marked fields" />
     </g:if>
-        postValidationFunction = function(validationResult) {
+        postValidationFunction = function(validationResults) {
           if (validationResults.hasErrors || validationResults.hasWarnings) {
             bootbox.confirm(
               "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
