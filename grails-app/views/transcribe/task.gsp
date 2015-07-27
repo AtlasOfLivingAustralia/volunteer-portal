@@ -84,7 +84,7 @@
                     e.preventDefault();
                     <g:if test="${prevTask}">
                         var uri = "${createLink(controller: 'task', action:'showImage', id: prevTask.id)}"
-                        newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
                         if (window.focus) {
                             newwindow.focus()
                         }
@@ -96,7 +96,7 @@
                     e.preventDefault();
                     <g:if test="${nextTask}">
                         var uri = "${createLink(controller: 'task', action:'showImage', id: nextTask.id)}"
-                        newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
                         if (window.focus) {
                             newwindow.focus()
                         }

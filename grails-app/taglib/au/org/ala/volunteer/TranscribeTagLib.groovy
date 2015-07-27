@@ -16,7 +16,8 @@
 package au.org.ala.volunteer
 
 import groovy.xml.MarkupBuilder
-import org.codehaus.groovy.grails.compiler.support.GrailsResourceLoader
+
+import static grails.async.Promises.*
 
 /**
  * Tag Lib for Transcribe page
@@ -29,7 +30,7 @@ class TranscribeTagLib {
     def markdownService
     def imageServiceService
 
-    static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName']
+    static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName', 'sequenceNumbers']
 
 
     /**
@@ -640,6 +641,24 @@ class TranscribeTagLib {
         else fields = TemplateField.findAllByCategoryAndTemplateAndTypeNotEqual(category, template, FieldType.hidden, [sort:'displayOrder'])
         def groupedFields = fields.groupBy { it.fieldType }
         fields.collect { [field: it, recordIdx: groupedFields[it.fieldType].findIndexOf { it2 -> it == it2 }] }
+    }
+
+    def sequenceNumbers = { attrs, body ->
+        def project = attrs.project
+        def number = attrs.number ?: 0
+        def count = attrs.count ?: 0
+
+        def max = taskService.findMaxSequenceNumber(project)
+        def results
+        if (max) {
+            def previous = (Math.max(0, number - count))..<number
+            def next = (number+1)..(number+count)
+            [previous: previous, next: next]
+        } else {
+            [previous:[], next:[]]
+        }
+
+        results
     }
 
 }

@@ -818,6 +818,16 @@ class TaskService {
         task.dateFullyValidated = null
     }
 
+    public int findMaxSequenceNumber(Project project) {
+        def select ="""
+            SELECT MAX(CAST(value as INT)) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
+        """
+
+        def sql = new Sql(dataSource: dataSource)
+
+        sql.firstRow(select)[0]
+    }
+
     public Map getAdjacentTasksBySequence(Task task) {
         def results = [:]
         if (!task) {

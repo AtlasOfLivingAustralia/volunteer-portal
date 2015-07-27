@@ -24,6 +24,7 @@
                         <g:each in="${piItem.key}" var="key" status="j">
                             <img class="ct-thumbnail-image${j == 0 ? ' active': ' '}" src="${imageInfos.infos[key]?.squareThumbUrl}" alt="${piItem.value}">
                         </g:each>
+                        <div class="wash"></div>
                     </div>
                     <div class="ct-caption-table">
                         <div class="ct-caption-cell" >

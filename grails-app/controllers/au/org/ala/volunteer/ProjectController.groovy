@@ -1004,4 +1004,15 @@ class ProjectController {
 
         render labels as JSON
     }
+
+    def image(Project projectInstance) {
+        def sequence = params.getLong('sequence', Long.MIN_VALUE)
+
+        if (Long.MIN_VALUE == sequence) {
+            render status: 404
+            return
+        }
+
+        Task.findBy
+    }
 }

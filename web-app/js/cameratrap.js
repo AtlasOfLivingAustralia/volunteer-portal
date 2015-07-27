@@ -25,28 +25,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       }
     }
 
-    function page(id) {
-      return {'page': id};
-    }
-
-    if (history.replaceState) {
-      history.replaceState(page('ct-landing'), window.document.title);
-    }
-
-    $('#ct-step1').find('.btn').click(function (e) {
+    $('#ct-questions-nav').find('a[data-toggle="nav"]').click(function(e) {
       e.preventDefault();
       var $this = $(this);
-      var value = $this.attr('data-value');
-      var label = $this.text();
-      $('#recordValues\\.0\\.animalsVisible').val(value);
-
-      if (value != $('#btn-animals-present').data('value')) {
-        bootbox.confirm('Are you sure you wish to record "' + label + '" as your answer?', function (result) {
-          if (result) {
-            $('#btnSave').click();
-          }
-        });
-      }
+      switchCtPage($this.attr('href'));
     });
 
     var $ctq = $('#camera-trap-questions');
@@ -55,11 +37,16 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     function switchCtPage(to) {
       var $ctq = $('#camera-trap-questions');
       // kill any existing transition
-      $ctq.children('.fading').removeClass('fading');
-      var otherActives = $ctq.children('.active:not(' + to + ')');
+      $ctq.find('.ct-item.fading').removeClass('fading');
+      var otherActives = $ctq.find('.ct-item.active')
+        .not(to);
       otherActives.removeClass('active');
       if (transitionendname) otherActives.addClass('fading');
       $(to).addClass('active');
+
+      var $ctqn = $('#ct-questions-nav');
+      $ctqn.find('li.active').removeClass('active');
+      $ctqn.find('a[href="'+to+'"]').parent().addClass('active');
     }
 
 
@@ -73,34 +60,21 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       });
     }
 
-    $('#ct-step2-back').click(function (e) {
-      if (history.pushState) {
-        history.back();
-      } else {
-        switchCtPage('ct-animals-present');
-      }
-    });
-
-    $('a[data-toggle="pill"], a[data-toggle="tab"]').on('shown', function (e) {
-      $('.ct-caption', this).dotdotdot();
-    });
-
-    $('a[data-toggle="pill"], a[data-toggle="tab"]').on('show', function(e) {
-      var $toolbar = $('#ct-animals-pill-content').find('.ct-toolbar');
-      if ($(this).hasClass('ct-no-toolbar')) $toolbar.hide();
-      else $toolbar.show();
-    });
+    $('a[data-toggle="pill"], a[data-toggle="tab"]')
+      .on('shown', function (e) {
+        $('.ct-caption', this).dotdotdot();
+      })
+      .on('show', function(e) {
+        var $toolbar = $('#ct-animals-pill-content').find('.ct-toolbar');
+        if ($(this).hasClass('ct-no-toolbar')) $toolbar.hide();
+        else $toolbar.show();
+      });
 
     function animalsPresent() {
       switchCtPage('#ct-animals-present');
-      if (history.pushState)
-        history.pushState(page('ct-animals-present'), window.document.title);
+      //if (history.pushState)
+      //  history.pushState(page('ct-animals-present'), window.document.title);
     }
-
-    $('#btn-animals-present').click(function (e) {
-      e.preventDefault();
-      animalsPresent();
-    });
 
     // zoom in
     $('.ct-thumbnail-image').click(function (e) {
@@ -193,12 +167,12 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       var imageKey = selections[sel].key;
       var firstKey = keyToArray(imageKey)[0];
       var imageUrl = firstInfoWithKey(firstKey).squareThumbUrl;
+      var selected = (certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
       var opts = {
         squareThumbUrl: imageUrl,
         value: sel,
         key: imageKey,
-        success: certainty == 1,
-        uncertain: certainty < 1
+        selected: selected
       };
       mu.appendTemplate(selElem, 'selected-item-template', opts);
       $('.ct-caption').dotdotdot();
@@ -207,10 +181,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     function syncSelectionState() {
       var ctContainer = $('#ct-container');
       var selectedValues = _.keys(selections);
-      var badgeSelector = _.map(selectedValues, valueToBadgeSelector).join(', ');
+      //var badgeSelector = _.map(selectedValues, valueToBadgeSelector).join(', ');
       var nonSelector = _.map(_.difference(values, selectedValues), valueToSelector).join(', ');
 
-      var selElem = $('#ct-selection-grid');
+      var selElem = $('.ct-selection-grid');
       var uiSelectedValues = selElem.find('.thumbnail').map(function (i, e) {
         return $(e).data('image-select-value');
       }).toArray();
@@ -222,26 +196,34 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       }
       selElem.find(nonSelector).parent().remove();
 
-      ctContainer.find('[data-image-select-value] .badge').removeClass('selected ' + _.values(badges).join(' '));
-      ctContainer.find(badgeSelector).addClass('selected');
+      //ctContainer.find('[data-image-select-value] .badge').removeClass('selected');
+      //ctContainer.find(badgeSelector).addClass('selected');
 
-      generateInputFields();
+      ctContainer.find(nonSelector).removeClass('ct-selected ct-uncertain-selected ct-certain-selected');
+      ctContainer.find(_.map(selectedValues, valueToSelector).join(', ')).each(function() {
+        var $this = $(this);
+        var certain = selections[$this.data('image-select-value')].certainty == 1;
+        $this.addClass('ct-selected ct-'+(certain ? 'certain' : 'uncertain') +'-selected');
+        $this.removeClass('ct-' + (certain ? 'uncertain' : 'certain') +'-selected');
+      });
+
+      generateFormFields();
     }
 
     function syncUnlistedTray() {
       var checked = $('#recordValues\\.0\\.unknown').prop('checked');
-      $('#ct-unknown-selections-unknown').find('span').text(checked ? "Unknown checked" : "");
+      $('.ct-unknown-selections-unknown').find('span').text(checked ? "Unknown checked" : "");
       var unlisted = _.filter($('#unlisted').find('input[type="text"]').map(function (i, e) {
         return $(this).val()
       }), function (o) {
         return o != null && o != "" && o.trim() != ""
       }).join(', ');
-      var $unknownSelections = $('#ct-unknown-selections');
+      var $unknownSelections = $('.ct-unknown-selections');
       $unknownSelections.find('label').css('display', unlisted ? 'inline-block' : 'none');
       $unknownSelections.find('span').text(unlisted);
     }
 
-    function generateInputFields() {
+    function generateFormFields() {
       var $ctFields = $('#ct-fields');
       $ctFields.empty();
       var i = 0;
@@ -322,19 +304,12 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
           return parseInt($(a).data('item-index')) - parseInt($(b).data('item-index'));
         }
       }
-      $('.pill-pane.sortable').each(function () {
+      $('.pill-pane.sortable, .tab-pane.sortable').each(function () {
         var $this = $(this);
         var parent = $this.find('.itemgrid');
         parent.find('.griditem.bvpBadge').sort(sortFn).appendTo(parent);
       });
     });
-
-    window.onpopstate = function (e) {
-      var state = window.history.state;
-      if (state.page) {
-        switchCtPage('#' + state.page);
-      }
-    };
 
     transcribeValidation.addCustomValidator(function(errorList) {
       var q1 = $('#recordValues\\.0\\.animalsVisible').val();
@@ -360,7 +335,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
 
     transcribeWidgets.addBeforeSubmitHook(function (e) {
-      generateInputFields();
+      generateFormFields();
       $unlisted.find('input.speciesName').each(function() {
         var $this = $(this);
         if (!$this.val()) $this.remove();
@@ -373,7 +348,8 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       $('.pill-pane.active .cycler, .tab-pane.active .cycler').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
         var $this = $(this);
         var $active = $this.find('.active');
-        var $next = ($active.next().length > 0) ? $active.next() : $this.find('img:first');
+        var nextImage = $active.next('img');
+        var $next = (nextImage.length > 0) ? nextImage : $this.find('img:first');
         //if (!$active.is($next)) {
           $active.removeClass('active');
           $next.addClass('active');
