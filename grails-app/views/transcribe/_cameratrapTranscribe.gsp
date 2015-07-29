@@ -14,6 +14,27 @@
     .faux-table > div > div {
         display: table-cell;
     }
+    .faux-img-cell {
+        border: solid grey 5px;
+        background-color: grey;
+        transition: all 0.5s ease-in-out;
+    }
+    .faux-img-cell.default {
+        border: solid #df4a21 5px;
+        background-color: #df4a21;
+    }
+    .faux-img-cell.active {
+        border: solid black 5px;
+        background-color: black;
+    }
+    .faux-img-cell:first-child {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+    }
+    .faux-img-cell:last-child {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
 </style>
 <div id="ct-container" class="container-fluid fourthree-image">
 
@@ -42,7 +63,7 @@
                     </g:if>
                 </g:each>
                 <div>
-                    <p>${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
+                    <p style="margin-top:10px" class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
                 </div>
                 <div id="ct-image-sequence" class="faux-table text-center">
                     <div>
@@ -54,8 +75,8 @@
                                 <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="$p" />
                             </div>
                         </g:each>
-                        <div class="faux-img-cell current">
-                            <cl:taskThumbnail task="${taskInstance}" />
+                        <div class="faux-img-cell active default">
+                            <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}"/>
                         </div>
                         <g:each in="${sequences.next}" var="n">
                             <div class="faux-img-cell">

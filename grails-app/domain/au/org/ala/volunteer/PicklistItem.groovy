@@ -17,6 +17,7 @@ class PicklistItem implements Serializable {
     }
 
     static constraints = {
+        key maxSize: 1024
         key nullable: true
         institutionCode nullable: true
     }

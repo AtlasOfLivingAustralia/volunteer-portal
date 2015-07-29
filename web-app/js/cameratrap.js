@@ -300,34 +300,41 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     // IMAGE SEQUENCE
     var $imgViewer = $("#image-container img");
     var $imgSeq = $('#ct-image-sequence');
-    var $defaultImg = $imgSeq.find('.current img');
+    var $defaultImg = $imgSeq.find('.default');
     var $clicked = $defaultImg;
 
-    $imgSeq.on('click', 'img', function(e) {
+    function loadImage($src) {
+      $imgSeq.find('.active').removeClass('active');
+      $imgViewer.prop('src', $src.find('img').data('full-src'));
+      $imgViewer.panZoom('loadImage');
+      $src.addClass('active');
+    }
+
+    $imgSeq.on('click', '.faux-img-cell', function(e) {
       var $this = $(this);
       if ($clicked == $defaultImg) {
         $clicked = $this;
-        $imgViewer.panZoom('loadImage', $this.data('full-src'));
+        loadImage($this);
       }
       else {
         $clicked = $defaultImg;
-        $imgViewer.panZoom('loadImage', $defaultImg.data('full-src'));
+        loadImage($defaultImg);
       }
     });
 
-    $imgSeq.on('mouseover', 'img', function(e) {
+    $imgSeq.on('mouseover', '.faux-img-cell', function(e) {
       var $this = $(this);
-      $imgViewer.panZoom('loadImage', $this.data('full-src'));
+      loadImage($this);
     });
 
-    $imgSeq.on('mouseout', 'img', function(e) {
+    $imgSeq.on('mouseout', '.faux-img-cell', function(e) {
       var $this = $(this);
-      $imgViewer.panZoom('loadImage', $clicked.data('full-src'));
+      loadImage($clicked);
     });
 
     $('#ct-question-span').click(function(e) {
       $clicked = $defaultImg;
-      $imgViewer.panZoom('loadImage', $defaultImg.data('full-src'));
+      loadImage($defaultImg);
     });
 
     // SORT BUTTONS

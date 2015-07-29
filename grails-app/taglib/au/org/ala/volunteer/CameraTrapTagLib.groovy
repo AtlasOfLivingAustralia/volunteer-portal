@@ -30,7 +30,7 @@ class CameraTrapTagLib {
             myLast = task { [] }
         } else {
             valueCounts = Field.async.executeQuery("select f.value, count(f.id) from Field f JOIN f.task t WHERE t.project.id = :projectId GROUP BY f.value", [projectId: project.id])
-            myLast = Field.async.executeQuery("select distinct f.value from Field f JOIN f.task t WHERE t.project.id = :projectId AND t.fullyTranscribedBy = :userId ORDER BY t.dateFullyTranscribed DESC", [projectId: project.id, userId: userId])
+            myLast = Field.async.executeQuery("select distinct f.value, t.dateFullyTranscribed from Field f JOIN f.task t WHERE t.project.id = :projectId AND t.fullyTranscribedBy = :userId ORDER BY t.dateFullyTranscribed DESC", [projectId: project.id, userId: userId])
         }
 
         def items = PicklistItem.findAllByPicklistAndInstitutionCode(picklist, project?.picklistInstitutionCode)

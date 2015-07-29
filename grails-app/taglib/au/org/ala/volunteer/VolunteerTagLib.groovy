@@ -475,6 +475,10 @@ class VolunteerTagLib {
 
     def taskThumbnail = { attrs, body ->
         def task = attrs.task as Task
+        def fixedHeight = attrs.fixedHeight
+
+        if (fixedHeight == null) fixedHeight = true
+
         if (task) {
             def url = "", fullUrl = ''
             def mm = task.multimedia?.first()
@@ -492,7 +496,7 @@ class VolunteerTagLib {
             }
 
             if (url) {
-                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\" style=\"height:100px\"/>"
+                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? ' style="height:100px"' : ''} />"
             }
 
         }

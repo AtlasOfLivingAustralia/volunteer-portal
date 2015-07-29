@@ -73,6 +73,9 @@ class PicklistService {
                     log.info "${rowsProcessed} picklist items imported (${picklist.name})"
                 }
             }
+        } catch (e) {
+            log.error(e)
+            throw e
         } finally {
             sessionFactory.currentSession.flush();
             sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
