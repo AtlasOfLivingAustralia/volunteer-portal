@@ -470,7 +470,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     setInterval(cycleImages, 7000);
 
-    if (recordValues && recordValues['0'] && ('some' === recordValues['0'].animalsVisible)) animalsPresent();
+    //if (recordValues && recordValues['0'] && ('some' === recordValues['0'].animalsVisible)) animalsPresent();
 
     // force intial sync of saved values
     syncSelectionState();
