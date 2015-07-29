@@ -15,6 +15,7 @@
         display: table-cell;
     }
     .faux-img-cell {
+        cursor: pointer;
         border: solid grey 5px;
         background-color: grey;
         transition: all 0.5s ease-in-out;
