@@ -14,10 +14,12 @@
     .faux-table > div > div {
         display: table-cell;
     }
-    .faux-img-cell {
-        cursor: pointer;
+    .faux-img-cell, .faux-empty-cell {
         border: solid grey 5px;
         background-color: grey;
+    }
+    .faux-img-cell {
+        cursor: pointer;
         transition: all 0.5s ease-in-out;
     }
     .faux-img-cell.default {
@@ -28,11 +30,11 @@
         border: solid black 5px;
         background-color: black;
     }
-    .faux-img-cell:first-child {
+    .faux-img-cell:first-child, .faux-empty-cell:first-child {
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
     }
-    .faux-img-cell:last-child {
+    .faux-img-cell:last-child, .faux-empty-cell:last-child {
         border-top-right-radius: 4px;
         border-bottom-right-radius: 4px;
     }
@@ -72,7 +74,7 @@
                             <div class="faux-empty-cell">&nbsp;</div>
                         </g:each>
                         <g:each in="${sequences.previous}" var="p">
-                            <div class="faux-img-cell">
+                            <div class="faux-img-cell" data-seq-no="${n}">
                                 <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="$p" />
                             </div>
                         </g:each>
@@ -80,7 +82,7 @@
                             <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}"/>
                         </div>
                         <g:each in="${sequences.next}" var="n">
-                            <div class="faux-img-cell">
+                            <div class="faux-img-cell" data-seq-no="${n}">
                                 <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="$n"/>
                             </div>
                         </g:each>
