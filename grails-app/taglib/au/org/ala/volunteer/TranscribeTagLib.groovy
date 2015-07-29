@@ -650,7 +650,7 @@ class TranscribeTagLib {
         def results
         if (max) {
             def previous = (Math.max(0, number - count))..<number
-            def next = (number+1)..(Math.min(max,number+count))
+            def next = number == max ? [] : (number+1)..(Math.min(max,number+count))
             results = [previous: previous, next: next]
         } else {
             results = [previous:[], next:[]]

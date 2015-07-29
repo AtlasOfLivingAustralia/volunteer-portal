@@ -74,7 +74,7 @@
                             <div class="faux-empty-cell">&nbsp;</div>
                         </g:each>
                         <g:each in="${sequences.previous}" var="p">
-                            <div class="faux-img-cell" data-seq-no="${n}">
+                            <div class="faux-img-cell" data-seq-no="${p}">
                                 <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="$p" />
                             </div>
                         </g:each>
