@@ -170,6 +170,7 @@ modules = {
     "cameratrap" {
         dependsOn 'jquery', 'mustache-util', 'underscore', 'dotdotdot', 'bootbox', 'transitionend'
         resource url: 'js/cameratrap.js'
+        resource url: 'css/cameratrap.css'
     }
 
     "fontawesome" {

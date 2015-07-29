@@ -1,7 +1,20 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 <r:require modules="cameratrap, fontawesome" />
+<style>
+    .faux-table {
+        display: table;
+        width: 100%;
+    }
 
+    .faux-table > div {
+        display: table-row;
+    }
+
+    .faux-table > div > div {
+        display: table-cell;
+    }
+</style>
 <div id="ct-container" class="container-fluid fourthree-image">
 
     <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}" />
@@ -28,11 +41,37 @@
                         <g:imageViewer multimedia="${multimedia}" />
                     </g:if>
                 </g:each>
+                <div>
+                    <p>${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
+                </div>
+                <div id="ct-image-sequence" class="faux-table text-center">
+                    <div>
+                        <g:each in="${0..<(3-sequences.previous.size())}">
+                            <div class="faux-empty-cell">&nbsp;</div>
+                        </g:each>
+                        <g:each in="${sequences.previous}" var="p">
+                            <div class="faux-img-cell">
+                                <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="$p" />
+                            </div>
+                        </g:each>
+                        <div class="faux-img-cell current">
+                            <cl:taskThumbnail task="${taskInstance}" />
+                        </div>
+                        <g:each in="${sequences.next}" var="n">
+                            <div class="faux-img-cell">
+                                <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="$n"/>
+                            </div>
+                        </g:each>
+                        <g:each in="${0..<(3-sequences.next.size())}">
+                            <div class="faux-empty-cell">&nbsp;</div>
+                        </g:each>
+                    </div>
+                </div>
                 <div class="form-horizontal" style="text-align: center;">
                     %{--<div class="control-group">--}%
                         <div class="controls" style="margin-left: initial; display: inline-block;">
                             <label class="checkbox" for="recordValues.0.interesting">
-                                <g:checkBox name="recordValues.0.interesting" value="${recordValues[0]?.interesting}" /> This image is particularly interesting – alert the WildCount team
+                                <g:checkBox name="recordValues.0.interesting" value="${recordValues[0]?.interesting}" /> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
                             </label>
                         </div>
                     %{--</div>--}%
@@ -100,7 +139,8 @@
         <g:set var="bnw" value="${recordValues[0]?.photoBlackAndWhite}" />
         <div id="ct-question-span" class="span6" style="">
             <div id="camera-trap-questions" class="" data-interval="">
-                <div class="well well-small" style="height: 506px;">
+                <div class="well well-small ct-well">
+                    %{--style="height: 506px;"--}%
                     <div class="well-navbar navbar">
                         <div class="well-navbar-inner">
                             <span class="brand">Steps</span>
@@ -111,10 +151,10 @@
                             </ul>
                         </div>
                     </div>
-                    <div id="ct-item-container" style="position: relative;">
-                        <div id="ct-landing" class="ct-item clearfix active">
+                    <div id="ct-item-container" class="ct-item-container">
+                        <div id="ct-landing" class="ct-item active">
                                 <p><strong>Are there any animals visible in the image?</strong></p>
-                                <div>
+                                <div id="ct-animals-question">
                                     <label class="radio inline">
                                         <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible" value="some" ${'some' == step1 ? 'checked': ''}>Yes
                                     </label>
@@ -127,7 +167,7 @@
                                 </div>
                                 <hr />
                                 <p><strong>Is the photo black and white?</strong></p>
-                                <div>
+                                <div id="ct-bnw-question">
                                     <label class="radio inline">
                                         <input type="radio" name="recordValues.0.photoBlackAndWhite" value="yes" ${'yes' == bnw ? 'checked': ''}>Yes
                                     </label>
@@ -137,77 +177,62 @@
                                 </div>
                                 <g:hiddenField name="skipNextAction" value="true" />
                         </div>
-                        <div id="ct-animals-present" class="ct-item clearfix">
+                        <div id="ct-animals-present" class="ct-item">
 
                             <div class="row-fluid">
                                 <div class="span12">
                                     <p><strong>Select animals that are present in the image</strong></p>
                                 </div>
                             </div>
-                            <g:set var="smImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.smallMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
-                            <g:set var="lmImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.largeMammalsPicklistId?.toLong()), project: taskInstance?.project)}" />
-                            <g:set var="reptilesImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.reptilesPicklistId?.toLong()), project: taskInstance?.project)}" />
-                            <g:set var="birdsImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.birdsPicklistId?.toLong()), project: taskInstance?.project)}" />
-                            <g:set var="otherImageInfos" value="${imageInfos(picklist: Picklist.get(template.viewParams.otherPicklistId?.toLong()), project: taskInstance?.project)}" />
+                            <g:set var="animalInfos" value="${ct.cameraTrapImageInfos(picklist: Picklist.get(template.viewParams.animalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                             <div class="row-fluid">
                                 <div class="span12">
-                                    <ul class="nav nav-tabs">
-                                        <li class="active"><a href="#small-mammal" data-toggle="tab">Small Mammals</a></li>
-                                        <li><a href="#large-mammal" data-toggle="tab">Large Mammals</a></li>
-                                        <li><a href="#reptile" data-toggle="tab">Reptiles</a></li>
-                                        <li><a href="#bird" data-toggle="tab">Birds</a></li>
-                                        <li><a href="#unlisted" data-toggle="tab" class="ct-no-toolbar">Others</a></li>
-                                        %{--<li><a href="#unlisted" data-toggle="pill">Unlisted</a></li>--}%
-                                    </ul>
+                                    <div class="btn-toolbar">
+                                        <div id="ct-animals-btn-group" class="btn-group" data-toggle="buttons-checkbox">
+                                            <button type="button" id="ct-sm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="smallMammal">Small Mammals</button>
+                                            <button type="button" id="ct-lm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="largeMammal">Large Mammals</button>
+                                            <button type="button" id="ct-reptiles-btn" class="btn btn-small btn-animal-filter" data-filter-tag="reptile">Reptiles</button>
+                                            <button type="button" id="ct-birds-btn" class="btn btn-small btn-animal-filter" data-filter-tag="bird">Birds</button>
+                                        </div>
+                                        <div class="btn-group">
+                                            <button type="button" id="ct-other-btn" class="btn btn-small" data-toggle="button">Other</button>
+                                        </div>
+                                        <input id="ct-search-input" type="text" class="input-small" style="margin-bottom: 0;" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
+                                        <div id="ct-sort-btn-group" class="btn-group" data-toggle="buttons-radio">
+                                            <button id="button-sort-initial" type="button" class="btn btn-small active" data-sort-fn="initial" title="${message(code: 'default.button.alpha.sort.label', default: 'Default order')}" data-container="body"><i class="fa fa-random"></i></button>
+                                            <button id="button-sort-alpha" type="button" class="btn btn-small" data-sort-fn="alpha" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-container="body"><i class="fa fa-sort-alpha-asc"></i></button>
+                                            <button id="button-sort-pop" type="button" class="btn btn-small" data-sort-fn="common" title="${message(code: 'default.button.popularity.sort.label', default: 'Sort by most common')}" data-container="body"><i class="fa fa-sort-numeric-asc"></i></button>
+                                            <button id="button-sort-mychoices" type="button" class="btn btn-small" data-sort-fn="previous" title="${message(code: 'default.button.mychoices.sort.label', default: 'Sort by my previous choices')}" data-container="body"><i class="fa fa-sort-amount-desc"></i></button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row-fluid">
-                                <div class="span12">
-                                    <div id="ct-animals-pill-content" class="tab-content">
-                                        <div class="ct-toolbar">
-                                            <div class="input-append" style="margin-bottom: 0;">
-                                                <input id="ct-search-input" type="text" class="input-medium" style="margin-bottom: 0;" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
-                                                <span class="add-on" style="height:18px;"><i class="icon-search"></i></span>
+                                <div class="span12 ct-sub-item-container">
+                                    <div class="ct-sub-item active sortable text-center" id="ct-animals-list">
+                                        <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: animalInfos, picklistId: template.viewParams.animalsPicklistId?.toLong()]}" />
+                                    </div>
+                                    <div class="ct-sub-item form-horizontal" id="ct-unlisted">
+                                        <div class="control-group">
+                                            <div class="controls">
+                                                <label style="display: inline-block" class="checkbox" for="recordValues.0.unknown" title="Check this if there are animals present in the photo that you do not recognise"><g:checkBox name="recordValues.0.unknown" value="${recordValues[0]?.unknown}"/>Unknown</label>
                                             </div>
-                                            <button id="button-sort-items" type="button" class="btn btn-small" data-toggle="button" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-placement="left"><i class="fa fa-sort-alpha-asc"></i></button>
                                         </div>
-                                        <div class="tab-pane fade in active sortable text-center" id="small-mammal">
-                                            <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: smImageInfos, picklistId: template.viewParams.smallMammalsPicklistId?.toLong()]}" />
-                                        </div>
-                                        <div class="tab-pane fade sortable text-center" id="large-mammal">
-                                            <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: lmImageInfos, picklistId: template.viewParams.largeMammalsPicklistId?.toLong()]}" />
-                                        </div>
-                                        <div class="tab-pane fade sortable text-center" id="reptile">
-                                            <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: reptilesImageInfos, picklistId: template.viewParams.reptilesPicklistId?.toLong()]}" />
-                                        </div>
-                                        <div class="tab-pane fade sortable text-center" id="bird">
-                                            <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: birdsImageInfos, picklistId: template.viewParams.birdsPicklistId?.toLong()]}" />
-                                        </div>
-                                        %{--<div class="pill-pane fade sortable text-center" id="other">--}%
-                                            %{--<g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: otherImageInfos, picklistId: template.viewParams.otherPicklistId?.toLong()]}" />--}%
-                                        %{--</div>--}%
-                                        <div class="tab-pane fade form-horizontal ct-no-toolbar" id="unlisted">
+                                        <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
+                                        ${Collections.shuffle(placeholders)}
+                                        <g:set var="unlisteds" value="${recordValues.findAll { it.value?.unlisted != null }.collect{  [i: it.key, v: it.value.unlisted] }.sort { it.i }.collect { it.v }}" />
+                                        <g:each in="${unlisteds}" var="u" status="s">
                                             <div class="control-group">
+                                                <label class="control-label" for="recordValues.${s}.unlisted">Species name</label>
                                                 <div class="controls">
-                                                    <label style="display: inline-block" class="checkbox" for="recordValues.0.unknown" title="Check this if there are animals present in the photo that you do not recognise"><g:checkBox name="recordValues.0.unknown" value="${recordValues[0]?.unknown}"/>Unknown</label>
+                                                    <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${s}.unlisted" placeholder="${placeholders[s % placeholders.size()]}" value="${recordValues[s]?.unlisted}" />
                                                 </div>
                                             </div>
-                                            <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
-                                            ${Collections.shuffle(placeholders)}
-                                            <g:set var="unlisteds" value="${recordValues.findAll { it.value?.unlisted != null }.collect{  [i: it.key, v: it.value.unlisted] }.sort { it.i }.collect { it.v }}" />
-                                            <g:each in="${unlisteds}" var="u" status="s">
-                                                <div class="control-group">
-                                                    <label class="control-label" for="recordValues.${s}.unlisted">Species name</label>
-                                                    <div class="controls">
-                                                        <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${s}.unlisted" placeholder="${placeholders[s % placeholders.size()]}" value="${recordValues[s]?.unlisted}" />
-                                                    </div>
-                                                </div>
-                                            </g:each>
-                                            <div class="control-group">
-                                                <label class="control-label" for="recordValues.${unlisteds.size()}.unlisted">Species name</label>
-                                                <div class="controls">
-                                                    <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${unlisteds.size()}.unlisted" placeholder="${placeholders[unlisteds.size() % placeholders.size()]}" />
-                                                </div>
+                                        </g:each>
+                                        <div class="control-group">
+                                            <label class="control-label" for="recordValues.${unlisteds.size()}.unlisted">Species name</label>
+                                            <div class="controls">
+                                                <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${unlisteds.size()}.unlisted" placeholder="${placeholders[unlisteds.size() % placeholders.size()]}" />
                                             </div>
                                         </div>
                                     </div>
@@ -216,7 +241,7 @@
 
                         </div>
                         <div id="ct-animals-summary" class="ct-item">
-                            <p><strong>Animals visible:</strong> <span>${step1}</span>.  <strong>Black and white:</strong> <span>${bnw}</span></p>
+                            <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.  <strong>Black and white:</strong> <span id="ct-bnw-question-summary">${bnw}</span></p>
                             <p><strong>Selected animals</strong></p>
                             <div class="itemgrid ct-selection-grid">
 
@@ -249,7 +274,7 @@
         </div>
     </div>
 
-    <div class="row-fluid">
+    <div class="row-fluid hidden">
         <div class="span12">
             <div class="well">
                 <div id="ct-selection-grid" class="itemgrid ct-selection-grid">
@@ -315,7 +340,7 @@
 </script>
 
 <script id="carousel-template" type="x-tmpl-mustache">
-    <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" style="margin-bottom: 0;" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
+    <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
         <span class="ct-badge ct-badge-sure badge {{sureSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {{value}} in the image')}"><i class="fa fa-check-circle"></i></span>
         <span class="ct-badge ct-badge-uncertain badge {{uncertainSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {{value}} in the image')}"><i class="fa fa-question-circle"></i></span>
         <span class="ct-full-image-carousel-close">&times;</span>
@@ -337,22 +362,22 @@
 </script>
 
 <r:script>
-var smImageInfos = <cl:json value="${smImageInfos.infos}" />
-    ,lmImageInfos = <cl:json value="${lmImageInfos.infos}" />
-    ,reptilesImageInfos = <cl:json value="${reptilesImageInfos.infos}" />
-    ,birdsImageInfos = <cl:json value="${birdsImageInfos.infos}" />;
-    //,otherImageInfos = <cl:json value="${otherImageInfos.infos}" />;
+%{--var smImageInfos = <cl:json value="${smImageInfos.infos}" />--}%
+    %{--,lmImageInfos = <cl:json value="${lmImageInfos.infos}" />--}%
+    %{--,reptilesImageInfos = <cl:json value="${reptilesImageInfos.infos}" />--}%
+    %{--,birdsImageInfos = <cl:json value="${birdsImageInfos.infos}" />;--}%
+var imageInfos = <cl:json value="${animalInfos.infos}" />;
 
-var smItems = <cl:json value="${smImageInfos.items}" />
-    ,lmItems = <cl:json value="${lmImageInfos.items}" />
-    ,reptilesItems = <cl:json value="${reptilesImageInfos.items}" />
-    ,birdsItems = <cl:json value="${birdsImageInfos.items}" />;
-    //,otherItems = <cl:json value="${otherImageInfos.items}" />;
+%{--var smItems = <cl:json value="${smImageInfos.items}" />--}%
+    %{--,lmItems = <cl:json value="${lmImageInfos.items}" />--}%
+    %{--,reptilesItems = <cl:json value="${reptilesImageInfos.items}" />--}%
+    %{--,birdsItems = <cl:json value="${birdsImageInfos.items}" />;--}%
+var items = <cl:json value="${animalInfos.items}" />;
 
 var recordValues = <cl:json value="${recordValues}" />;
 
 var placeholders = <cl:json value="${placeholders}" />;
 
-cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageInfos, null, smItems, lmItems,
-           reptilesItems, birdsItems, null, recordValues, placeholders);
+cameratrap(imageInfos, null, null, null, null, items, null,
+           null, null, null, recordValues, placeholders);
 </r:script>

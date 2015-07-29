@@ -25,6 +25,12 @@
     </div>
 </div>
 <div class="control-group">
+    <label class="control-label" for="animalsPicklistId"><g:message code="template.cameratrap.animals.label" default="All Animals Picklist" /></label>
+    <div class="controls">
+        <g:select from="${picklists}" name="animalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
+    </div>
+</div>
+<div class="control-group">
     <label class="control-label" for="smallMammalsPicklistId"><g:message code="template.cameratrap.smallmammalspicklist.label" default="Small Mammals Picklist" /></label>
     <div class="controls">
         <g:select from="${picklists}" name="smallMammalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />

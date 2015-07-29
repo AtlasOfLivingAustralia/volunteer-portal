@@ -17,8 +17,6 @@ package au.org.ala.volunteer
 
 import groovy.xml.MarkupBuilder
 
-import static grails.async.Promises.*
-
 /**
  * Tag Lib for Transcribe page
  *
@@ -652,13 +650,13 @@ class TranscribeTagLib {
         def results
         if (max) {
             def previous = (Math.max(0, number - count))..<number
-            def next = (number+1)..(number+count)
-            [previous: previous, next: next]
+            def next = (number+1)..(Math.min(max,number+count))
+            results = [previous: previous, next: next]
         } else {
-            [previous:[], next:[]]
+            results = [previous:[], next:[]]
         }
 
-        results
+        return results
     }
 
 }

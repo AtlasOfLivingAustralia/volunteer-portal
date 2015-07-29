@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import org.apache.commons.lang3.StringEscapeUtils
 import org.grails.plugins.csv.CSVWriter
 
 class PicklistController {
@@ -43,9 +44,9 @@ class PicklistController {
             def delim = ','
             def items = PicklistItem.findAllByPicklistAndInstitutionCode(picklist, institutionCode ?: null)
             items?.each { item ->
-                writer.write('"' + (item.value ?: '') + '"')
+                writer.write(item.value ? StringEscapeUtils.escapeCsv(item.value) : '')
                 writer.write(delim)
-                writer.write('"' + item.key + '"' ?: "")
+                writer.write(item.key ? StringEscapeUtils.escapeCsv(item.key) : '')
                 writer.write("\n")
             }
         }

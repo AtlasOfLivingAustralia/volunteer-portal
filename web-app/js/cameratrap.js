@@ -1,7 +1,7 @@
 function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageInfos, otherImageInfos, smItems, lmItems,
                     reptilesItems, birdsItems, otherItems, recordValues, placeholders) {
   jQuery(function ($) {
-    var values = [].concat(_.values(smItems), _.values(lmItems), _.values(reptilesItems), _.values(birdsItems), _.values(otherItems));
+    var values = _.pluck([].concat(_.values(smItems), _.values(lmItems), _.values(reptilesItems), _.values(birdsItems), _.values(otherItems)), 'value');
 
     var itemValueMap = _.reduce(_.filter([].concat(smItems, lmItems, reptilesItems, birdsItems, otherItems), function (it) {
       return it != null
@@ -49,31 +49,37 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       $ctqn.find('a[href="'+to+'"]').parent().addClass('active');
     }
 
+    $('#ct-other-btn').click(function(e) {
+      var $this = $(this);
+      var active = !$this.hasClass('active');
+      var to = active ? '#ct-unlisted' : '#ct-animals-list';
+
+      var $sic = $('.ct-sub-item-container');
+      $sic.find('.ct-sub-item.fading').removeClass('fading');
+      var otherActives = $sic.find('.ct-sub-item.active')
+        .not(to);
+      otherActives.removeClass('active');
+      if (transitionendname) otherActives.addClass('fading');
+      $(to).addClass('active');
+
+      var $btns = $('#ct-animals-btn-group, #ct-sort-btn-group').find('button');
+      $btns.toggleClass('diabled', active).prop('disabled', active);
+    });
 
     if (transitionendname) {
       $ctq.on(transitionendname, '.ct-item', function (e) {
         // only handle the ct-item transition
         if ($(e.target).hasClass('ct-item')) {
           $(e.target).removeClass('fading');
-          $('.active .ct-caption').dotdotdot();
+          $('.ct-item.active .ct-caption').dotdotdot();
         }
       });
-    }
-
-    $('a[data-toggle="pill"], a[data-toggle="tab"]')
-      .on('shown', function (e) {
-        $('.ct-caption', this).dotdotdot();
-      })
-      .on('show', function(e) {
-        var $toolbar = $('#ct-animals-pill-content').find('.ct-toolbar');
-        if ($(this).hasClass('ct-no-toolbar')) $toolbar.hide();
-        else $toolbar.show();
+      $ctq.on(transitionendname, '.ct-sub-item', function(e) {
+        if ($(e.target).hasClass('ct-sub-item')) {
+          $(e.target).removeClass('fading');
+          $('.ct-sub-item.active .ct-caption').dotdotdot();
+        }
       });
-
-    function animalsPresent() {
-      switchCtPage('#ct-animals-present');
-      //if (history.pushState)
-      //  history.pushState(page('ct-animals-present'), window.document.title);
     }
 
     // zoom in
@@ -129,8 +135,8 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       e.preventDefault();
     });
 
-    var ctBadges = {1: 'ct-badge-sure', 0.5: 'ct-badge-uncertain'};
-    var badges = {1: 'badge-success', 0.5: 'badge-warning'};
+    //var ctBadges = {1: 'ct-badge-sure', 0.5: 'ct-badge-uncertain'};
+    //var badges = {1: 'badge-success', 0.5: 'badge-warning'};
     $('#ct-container')
       .on('click', '.ct-badge-sure', function (e) {
         ctBadgeClick(e, 1);
@@ -154,9 +160,9 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       syncSelectionState();
     }
 
-    function valueToBadgeSelector(v, i, a) {
-      return '[data-image-select-value="' + v + '"] .badge.' + ctBadges[selections[v].certainty]
-    }
+    //function valueToBadgeSelector(v, i, a) {
+    //  return '[data-image-select-value="' + v + '"] .badge.' + ctBadges[selections[v].certainty]
+    //}
 
     function valueToSelector(v, i, a) {
       return '[data-image-select-value="' + v + '"]'
@@ -253,7 +259,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       return (smImageInfos || {})[key] || (lmImageInfos || {})[key] || (reptilesImageInfos || {})[key] || (birdsImageInfos || {})[key] || (otherImageInfos || {})[key];
     }
 
-    var $unlisted = $('#unlisted');
+    var $unlisted = $('#ct-unlisted');
 
     $unlisted.on('change keyup paste input propertychange', 'input', function (e) {
       syncUnlistedTray();
@@ -291,26 +297,126 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       });
     }
 
-    var sorted = false;
-    $('#button-sort-items').click(function (e) {
-      sorted = !sorted;
-      var sortFn;
-      if (sorted) {
-        sortFn = function (a, b) {
-          return ($(a).find('[data-image-select-value]').data('image-select-value') || "").localeCompare($(b).find('[data-image-select-value]').data('image-select-value'));
-        }
-      } else {
-        sortFn = function (a, b) {
-          return parseInt($(a).data('item-index')) - parseInt($(b).data('item-index'));
-        }
+    // IMAGE SEQUENCE
+    var $imgViewer = $("#image-container img");
+    var $imgSeq = $('#ct-image-sequence');
+    var $defaultImg = $imgSeq.find('.current img');
+    var $clicked = $defaultImg;
+
+    $imgSeq.on('click', 'img', function(e) {
+      var $this = $(this);
+      if ($clicked == $defaultImg) {
+        $clicked = $this;
+        $imgViewer.panZoom('loadImage', $this.data('full-src'));
       }
-      $('.pill-pane.sortable, .tab-pane.sortable').each(function () {
+      else {
+        $clicked = $defaultImg;
+        $imgViewer.panZoom('loadImage', $defaultImg.data('full-src'));
+      }
+    });
+
+    $imgSeq.on('mouseover', 'img', function(e) {
+      var $this = $(this);
+      $imgViewer.panZoom('loadImage', $this.data('full-src'));
+    });
+
+    $imgSeq.on('mouseout', 'img', function(e) {
+      var $this = $(this);
+      $imgViewer.panZoom('loadImage', $clicked.data('full-src'));
+    });
+
+    $('#ct-question-span').click(function(e) {
+      $clicked = $defaultImg;
+      $imgViewer.panZoom('loadImage', $defaultImg.data('full-src'));
+    });
+
+    // SORT BUTTONS
+    $('#ct-sort-btn-group').on('click', 'button', function (e) {
+      var $this = $(this);
+      var alreadyActive = $this.hasClass('active');
+      var sortType = $this.data('sort-fn');
+      var sortFn;
+      //if (alreadyActive) {
+      //  $this.removeClass('active');
+      //  sortFn = function (a, b) {
+      //    return parseInt($(a).data('item-index')) - parseInt($(b).data('item-index'));
+      //  }
+      //} else {
+        if (sortType == 'alpha') {
+          sortFn = function (a, b) {
+            return ($(a).find('[data-image-select-value]').data('image-select-value') || "").localeCompare($(b).find('[data-image-select-value]').data('image-select-value'));
+          }
+        } else if (sortType == 'common') {
+          sortFn = function (a, b) {
+            var aIdx = parseInt($(a).find('[data-image-select-value]').data('popularity'));
+            var bIdx = parseInt($(b).find('[data-image-select-value]').data('popularity'));
+            if (aIdx == bIdx) {
+              aIdx = parseInt($(a).data('item-index'));
+              bIdx = parseInt($(b).data('item-index'));
+            }
+            return (aIdx - bIdx);
+          }
+        } else if (sortType == 'previous') {
+          sortFn = function (a, b) {
+            var aIdx = parseInt($(a).find('[data-image-select-value]').data('last-used'));
+            var bIdx = parseInt($(b).find('[data-image-select-value]').data('last-used'));
+            if (aIdx == bIdx) {
+              aIdx = parseInt($(a).data('item-index'));
+              bIdx = parseInt($(b).data('item-index'));
+            }
+            return (aIdx - bIdx);
+          }
+        } else {
+          sortFn = function (a, b) {
+            return parseInt($(a).data('item-index')) - parseInt($(b).data('item-index'));
+          }
+        }
+      //}
+      $('.sortable').each(function () {
         var $this = $(this);
         var parent = $this.find('.itemgrid');
         parent.find('.griditem.bvpBadge').sort(sortFn).appendTo(parent);
       });
     });
 
+    // FILTERING
+    // text filtering
+    var filterText = '';
+    var filterTags = {};
+    var $searchInput = $('#ct-search-input');
+
+    function filterAnimals() {
+      var hasFilterTags = _.keys(filterTags).length > 0;
+      var valueElems = $('#ct-animals-present').find('[data-image-select-value]');
+      var parts = _.partition(valueElems, function (e,i) {
+        var $e = $(e);
+        var matchesText = $e.data('image-select-value').toLocaleLowerCase().indexOf(filterText) !== -1;
+        var matchesTags = !hasFilterTags || _.any(keyToArray($e.data('tags')), function(tag) { return filterTags.hasOwnProperty(tag); });
+        return matchesText && matchesTags;
+      });
+      $(parts[0]).parent().show(100);
+      $(parts[1]).parent().hide(100);
+    }
+
+    $searchInput.on('change keyup paste input propertychange', function () {
+      filterText = $searchInput.val().toLocaleLowerCase();
+      filterAnimals();
+    });
+
+    $('#ct-animals-btn-group').on('click', 'button', function(e) {
+      var $this = $(this);
+      var selectedTags = keyToArray($this.data('filter-tag'));
+      _.each(selectedTags, function(selectedTag) {
+        if (filterTags.hasOwnProperty(selectedTag)) {
+          delete filterTags[selectedTag];
+        } else {
+          filterTags[selectedTag] = true;
+        }
+      });
+      filterAnimals();
+    });
+
+    // VALIDATION
     transcribeValidation.addCustomValidator(function(errorList) {
       var q1 = $('#recordValues\\.0\\.animalsVisible').val();
 
@@ -332,8 +438,6 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     });
 
-
-
     transcribeWidgets.addBeforeSubmitHook(function (e) {
       generateFormFields();
       $unlisted.find('input.speciesName').each(function() {
@@ -345,7 +449,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     // Cycling Thumbnails
     function cycleImages() {
-      $('.pill-pane.active .cycler, .tab-pane.active .cycler').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
+      $('#ct-animals-list .cycler').filter(function(i) { return $("img", this).length > 1 }).each(function (e) {
         var $this = $(this);
         var $active = $this.find('.active');
         var nextImage = $active.next('img');
@@ -368,34 +472,13 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     // enable tooltips
     $('[title]').tooltip();
 
-    // enable filtering
-    var filterText = '';
-    var $searchInput = $('#ct-search-input');
-
-    function filterAnimals() {
-      var valueElems = $('#ct-animals-present').find('[data-image-select-value]');
-      valueElems.filter(function (i, e) {
-        return $(this).data('image-select-value').toLocaleLowerCase().indexOf(filterText) == -1;
-      }).parent().hide(100);
-      valueElems.filter(function (i, e) {
-        return $(this).data('image-select-value').toLocaleLowerCase().indexOf(filterText) > -1;
-      }).parent().show(100);
-    }
-
-    $('#button-filter').click(function () {
-      var $search = $('#ct-search');
-      $search.toggleClass('hidden');
-      if (!$search.hasClass('hidden')) {
-        filterText = $searchInput.val().toLocaleLowerCase();
-        $searchInput.focus();
-      } else {
-        filterText = '';
-      }
-      filterAnimals();
+    $('#ct-animals-question input').change(function(e) {
+      var $this = $(this);
+      $('#ct-animals-question-summary').text($this.val());
     });
-    $searchInput.on('change keyup paste input propertychange', function () {
-      filterText = $searchInput.val().toLocaleLowerCase();
-      filterAnimals();
+    $('#ct-bnw-question input').change(function(e) {
+      var $this = $(this);
+      $('#ct-bnw-question-summary').text($this.val());
     });
 
     postValidationFunction = function(validationResults) {
