@@ -31,6 +31,10 @@
     /*border-radius: 2px;*/
 }
 
+#ct-animals-list {
+    margin: 0 -9px -9px -9px;
+}
+
 .ct-item-container, .ct-sub-item-container {
     position: relative;
 }

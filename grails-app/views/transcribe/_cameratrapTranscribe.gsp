@@ -281,22 +281,32 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="row-fluid">
-        <div class="span11">
-            <h3 class="h3-small">My selections</h3>
-        </div>
-        <div class="span1">
-            <div class="h3-small" style="line-height: 40px;">
+            <div class="text-center">
+                <button type="button" id="btnNext" class="btn btn-primary btn-large">${message(code: 'default.button.next.label', default: 'Next')} <i class="fa fa-chevron-right"></i></button>
                 <g:if test="${!validator}">
-                    <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
+                    <button type="button" id="btnSave" class="btn btn-primary btn-large bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
                 </g:if>
-                <button type="button" id="btnNext" class="btn btn-primary">${message(code: 'default.button.next.label', default: 'Next')} <i class="fa fa-chevron-right"></i></button>
+                <g:else>
+                    <button type="button" id="btnValidate" class="btn btn-success btn-large bvp-submit-button hidden"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                    <button type="button" id="btnDontValidate" class="btn btn-danger btn-large bvp-submit-button hidden"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
+                </g:else>
             </div>
         </div>
     </div>
+
+    %{--<div class="row-fluid">--}%
+        %{--<div class="span11">--}%
+            %{--<h3 class="h3-small">My selections</h3>--}%
+        %{--</div>--}%
+        %{--<div class="span1">--}%
+            %{--<div class="h3-small" style="line-height: 40px;">--}%
+                %{--<g:if test="${!validator}">--}%
+                    %{--<button type="button" id="btnSave" class="btn btn-primary bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>--}%
+                %{--</g:if>--}%
+                %{--<button type="button" id="btnNext" class="btn btn-primary">${message(code: 'default.button.next.label', default: 'Next')} <i class="fa fa-chevron-right"></i></button>--}%
+            %{--</div>--}%
+        %{--</div>--}%
+    %{--</div>--}%
 
     <div class="row-fluid hidden">
         <div class="span12">
@@ -314,14 +324,14 @@
         </div>
     </div>
 
-    <g:if test="${validator}">
-    <div class="row-fluid">
-        <div class="offset10 span2">
-            <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
-            <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
-        </div>
-    </div>
-    </g:if>
+    %{--<g:if test="${validator}">--}%
+    %{--<div class="row-fluid">--}%
+        %{--<div class="offset10 span2">--}%
+            %{--<button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>--}%
+            %{--<button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>--}%
+        %{--</div>--}%
+    %{--</div>--}%
+    %{--</g:if>--}%
 
     <div id="ct-fields" style="display: none;"></div>
 </div>

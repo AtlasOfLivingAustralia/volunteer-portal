@@ -47,7 +47,16 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       var $ctqn = $('#ct-questions-nav');
       $ctqn.find('li.active').removeClass('active');
       $ctqn.find('a[href="'+to+'"]').parent().addClass('active');
+
+      var summary = to == '#ct-animals-summary';
+      $('#btnNext').toggleClass('hidden', summary);
+      $('.bvp-submit-button').toggleClass('hidden', !summary);
     }
+
+    $('#btnNext').click(function(e) {
+      var $ctqn = $('#ct-questions-nav');
+      switchCtPage($ctqn.find('li.active').next().find('a[href]').attr('href'));
+    });
 
     $('#ct-other-btn').click(function(e) {
       var $this = $(this);
@@ -219,7 +228,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     function syncUnlistedTray() {
       var checked = $('#recordValues\\.0\\.unknown').prop('checked');
       $('.ct-unknown-selections-unknown').find('span').text(checked ? "Unknown checked" : "");
-      var unlisted = _.filter($('#unlisted').find('input[type="text"]').map(function (i, e) {
+      var unlisted = _.filter($('#ct-unlisted').find('input[type="text"]').map(function (i, e) {
         return $(this).val()
       }), function (o) {
         return o != null && o != "" && o.trim() != ""
@@ -287,7 +296,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     });
 
     function fixUnlisted() {
-      var $unlisted = $('#unlisted');
+      var $unlisted = $('#ct-unlisted');
       $unlisted.find('.control-group:not(:first)').each(function (i, e) {
         var $this = $(this);
         var attrVal = 'recordValues.' + i + '.unlisted';
@@ -425,10 +434,13 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     // VALIDATION
     transcribeValidation.addCustomValidator(function(errorList) {
-      var q1 = $('#recordValues\\.0\\.animalsVisible').val();
+      var q1 = $('input[name=recordValues\\.0\\.animalsVisible]:checked').val();
+      var q2 = $('input[name=recordValues\\.0\\.photoBlackAndWhite]:checked').val()
 
+      if (!q1) errorList.push({element: null, message: "You must indicate whether animals are present on Step 1", type: "Error"});
+      if (!q2) errorList.push({element: null, message: "You must indicate whether the photo is black and white or not on Step 1", type: "Error"});
 
-      if (q1 == $('#btn-animals-present').data('value')) {
+      if (q1 == $('#btn-animals-present').val()) {
         var count = _.keys(selections).length;
         count += $unlisted.find('input.speciesName').filter(function(i,e) { return $(this).val() }).length;
         count += $unlisted.find(bvp.escapeId('recordValues.0.unknown')).prop('checked') ? 1 : 0;
@@ -444,6 +456,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     function() {
 
     });
+
+    postValidationFunction = function(validationResults) {
+      if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid choices</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
+    };
 
     transcribeWidgets.addBeforeSubmitHook(function (e) {
       generateFormFields();
@@ -488,9 +504,6 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       $('#ct-bnw-question-summary').text($this.val());
     });
 
-    postValidationFunction = function(validationResults) {
-      bootbox.alert(_.pluck(validationResults.errorList, 'message').join('.  ') + ".");
-    };
   });
 
 }
