@@ -16,7 +16,7 @@
 
 #ct-container .itemgrid .griditem {
     width: 150px;
-    margin: 3px 5px;
+    margin: 3px 4px;
     border-radius: 4px;
     background-color: #111;
     background-color: rgba(16,16,16,0.8);
@@ -33,6 +33,8 @@
 
 #ct-animals-list {
     margin: 0 -9px -9px -9px;
+    overflow-y: auto;
+    height: 500px;
 }
 
 .ct-item-container, .ct-sub-item-container {
@@ -353,10 +355,6 @@
 /*box-shadow: none !important;*/
 /*}*/
 
-#ct-image-well, #ct-q1-well, #ct-q2-well {
-    margin-bottom: 0;
-}
-
 .ct-full-image-carousel-close {
     position: absolute;
     right: -25px;
@@ -415,6 +413,10 @@
         /*padding-right: 8px;*/
     /*}*/
 /*}*/
+
+.ct-well {
+    min-height: 570px;
+}
 
 .ct-well .row-fluid .btn-toolbar input[type="text"] {
     height: auto;

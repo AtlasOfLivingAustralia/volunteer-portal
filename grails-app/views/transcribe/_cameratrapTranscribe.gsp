@@ -180,10 +180,10 @@
                                 <p><strong>Are there any animals visible in the image?</strong></p>
                                 <div id="ct-animals-question">
                                     <label class="radio inline">
-                                        <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible" value="some" ${'some' == step1 ? 'checked': ''}>Yes
+                                        <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible" value="yes" ${'some' == step1 ? 'checked': ''}>Yes
                                     </label>
                                     <label class="radio inline">
-                                        <input type="radio" name="recordValues.0.animalsVisible" value="none" ${'none' == step1 ? 'checked': ''}>No
+                                        <input type="radio" name="recordValues.0.animalsVisible" value="no" ${'none' == step1 ? 'checked': ''}>No
                                     </label>
                                     <label class="radio inline">
                                         <input type="radio" name="recordValues.0.animalsVisible" value="unsure" ${'unsure' == step1 ? 'checked': ''}>Unsure
@@ -281,8 +281,8 @@
                     </div>
                 </div>
             </div>
-            <div class="text-center">
-                <button type="button" id="btnNext" class="btn btn-primary btn-large">${message(code: 'default.button.next.label', default: 'Next')} <i class="fa fa-chevron-right"></i></button>
+            <div class="text-right" style="margin-bottom: 20px;">
+                <button type="button" id="btnNext" class="btn btn-primary btn-large">${message(code: 'default.button.next.label', default: 'Next Step')} <i class="fa fa-chevron-right"></i></button>
                 <g:if test="${!validator}">
                     <button type="button" id="btnSave" class="btn btn-primary btn-large bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
                 </g:if>
