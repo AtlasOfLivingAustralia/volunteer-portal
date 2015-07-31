@@ -469,6 +469,7 @@ class VolunteerTagLib {
 
             if (url) {
                 out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
+                out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             }
         }
     }
@@ -476,8 +477,10 @@ class VolunteerTagLib {
     def taskThumbnail = { attrs, body ->
         def task = attrs.task as Task
         def fixedHeight = attrs.fixedHeight
+        def withHidden = attrs.withHidden
 
         if (fixedHeight == null) fixedHeight = true
+        if (withHidden == null) withHidden = false
 
         if (task) {
             def url = "", fullUrl = ''
@@ -497,6 +500,7 @@ class VolunteerTagLib {
 
             if (url) {
                 out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? ' style="height:100px"' : ''} />"
+                if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             }
 
         }

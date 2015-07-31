@@ -228,6 +228,7 @@ metrics {
 
 environments {
     development {
+        //grails.resources.debug = true
         grails.mail.disabled = true
         grails.mail.host = "fake.ala.org.au"
         grails.mail.overrideAddress = "your.email@here.com"

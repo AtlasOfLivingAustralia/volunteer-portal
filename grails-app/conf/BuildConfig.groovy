@@ -39,6 +39,9 @@ grails.project.dependency.resolution = {
         runtime ":jquery:1.8.3"
         runtime ":jquery-ui:1.10.4"
         runtime ':resources:1.2.8'
+        runtime ":lesscss-resources:1.3.3"
+        compile ":cache-headers:1.1.7"
+        runtime ":cached-resources:1.0"
         runtime ":mail:1.0.6"
         runtime ":csv:0.3.1"
         runtime ":executor:0.3"
@@ -48,7 +51,6 @@ grails.project.dependency.resolution = {
         runtime ":tiny-mce:3.4.9"
         runtime ":webxml:1.4.1"
         runtime ":ala-web-theme:0.8.6"
-        runtime ":lesscss-resources:1.3.3"
         compile ':scaffolding:2.0.3'
         runtime ':database-migration:1.4.0'
         compile (':webflow:2.0.8.1') {

@@ -729,6 +729,26 @@
                 </div>
             </div>
         </g:else>
+        <div id="submitConfirmModal" class="modal hide fade">
+            <!-- dialog contents -->
+            <div class="modal-body">
+                <p><g:message code="transcribe.task.submit.confirm" default="Are you sure you wish to submit?"/></p>
+                <div class="form-horizontal">
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer">
+                <button id="submit-confirm-cancel" type="button" class="btn btn-link">Cancel</button>
+                <button id="submit-confirm-ok" type="button" class="btn btn-primary">OK</button>
+            </div>
+        </div>
     </body>
     <r:script>
 
@@ -900,7 +920,33 @@
         </g:else>
     }
 
+    var submitRequiresConfirmation = false;
+    var $submitConfirm = $("#submitConfirmModal");
+
+    $("#submit-confirm-cancel").on("click", function(e) {
+        $submitConfirm.modal('hide');     // dismiss the dialog
+    });
+    $submitConfirm.on("hide", function() {    // remove the event listeners when the dialog is dismissed
+        $("#submit-confirm-ok").off("click");
+    });
+
     function submitFormWithAction(action) {
+        var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
+        if (submitRequiresConfirmation && !dontConfirm) {
+          // capture action in closure so we can invoke the correct doSubmitWithAction
+          $("#submit-confirm-ok").on("click", function(e) {
+            amplify.store("bvp_transcribe_dontconfirm", $('#submit-dont-confirm').prop('checked'));
+            doSubmitWithAction(action);
+            $("#submitConfirmModal").modal('hide');     // dismiss the dialog
+          });
+
+          $('#submitConfirmModal').modal('show');
+        } else {
+          doSubmitWithAction(action);
+        }
+    }
+
+    function doSubmitWithAction(action) {
         try {
             disableSubmitButtons();
             var form = $(".transcribeForm");

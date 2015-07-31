@@ -321,11 +321,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     $imgSeq.on('click', '.faux-img-cell', function(e) {
       var $this = $(this);
-      if ($clicked == $defaultImg) {
+      if (!$clicked.is($this)) {
         $clicked = $this;
         loadImage($this);
-      }
-      else {
+      } else {
         $clicked = $defaultImg;
         loadImage($defaultImg);
       }
@@ -422,6 +421,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     $('#ct-animals-btn-group').on('click', 'button', function(e) {
       var $this = $(this);
       var selectedTags = keyToArray($this.data('filter-tag'));
+      filterTags = {}; // remove for checkbox style filter buttons
       _.each(selectedTags, function(selectedTag) {
         if (filterTags.hasOwnProperty(selectedTag)) {
           delete filterTags[selectedTag];
@@ -457,6 +457,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
 
     });
 
+    submitRequiresConfirmation = true;
     postValidationFunction = function(validationResults) {
       if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid choices</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
     };

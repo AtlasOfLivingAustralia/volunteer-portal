@@ -47,12 +47,14 @@
             <span id="journalPageButtons">
                 %{--<button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" data-container="body" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> previous image</button>--}%
                 %{--<button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" data-container="body" ${nextTask ? '' : 'disabled="true"'}>next image <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>--}%
+                <button type="button" class="btn btn-small" id="rotateImage" data-container="body" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
+                <vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-small"/>
                 <div id="ct-task-image-toolbar" class="btn-group">
-                    <button type="button" class="btn btn-small" id="rotateImage" data-container="body" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
                     <button type="button" class="btn btn-small" id="showNextFromProject" data-container="body" title="Skip the to next image">Skip</button>
                     %{--<button type="button" class="btn btn-small" id="btnSavePartial">Save draft</button>--}%
                     <g:link controller="transcribe" action="discard" id="${taskInstance?.id}" class="btn btn-small btn-warning" data-container="body" title="Release your lock on this image and return to the expedition page">Quit</g:link>
                 </div>
+
             </span>
         </div>
     </div>
@@ -79,7 +81,7 @@
                             </div>
                         </g:each>
                         <div class="faux-img-cell active default">
-                            <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}"/>
+                            <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
                         </div>
                         <g:each in="${sequences.next}" var="n">
                             <div class="faux-img-cell" data-seq-no="${n}">
@@ -212,8 +214,10 @@
                             <div class="row-fluid">
                                 <div class="span12">
                                     <div class="btn-toolbar">
-                                        <div id="ct-animals-btn-group" class="btn-group" data-toggle="buttons-checkbox">
+                                        <div id="ct-animals-btn-group" class="btn-group" data-toggle="buttons-radio">
+                                            <button type="button" id="ct-all-btn" class="btn btn-small btn-animal-filter" data-filter-tag="">All</button>
                                             <button type="button" id="ct-sm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="smallMammal">Small Mammals</button>
+                                            <button type="button" id="ct-mm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="mediumMammal">Medium Mammals</button>
                                             <button type="button" id="ct-lm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="largeMammal">Large Mammals</button>
                                             <button type="button" id="ct-reptiles-btn" class="btn btn-small btn-animal-filter" data-filter-tag="reptile">Reptiles</button>
                                             <button type="button" id="ct-birds-btn" class="btn btn-small btn-animal-filter" data-filter-tag="bird">Birds</button>
