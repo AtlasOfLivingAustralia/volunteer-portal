@@ -178,6 +178,7 @@ class TranscribeController {
     def showNextFromProject = {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
+        def skip = params.getInt('skip', 0)
 
         if (project == null) {
             log.error("Project not found for id: " + params.id)
@@ -191,7 +192,7 @@ class TranscribeController {
         }
         def previousId = params.prevId?:-1
         def prevUserId = params.prevUserId?:-1
-        def taskInstance = taskService.getNextTask(currentUser, project)
+        def taskInstance = taskService.getNextTask(currentUser, project, skip)
         //retrieve the details of the template
         if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {
             log.debug "1."

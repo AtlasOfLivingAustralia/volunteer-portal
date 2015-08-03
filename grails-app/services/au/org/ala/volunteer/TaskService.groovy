@@ -234,18 +234,31 @@ class TaskService {
      * @param userId
      * @return
      */
-    Task getNextTask(String userId, Project project) {
+    Task getNextTask(String userId, Project project, int skip = 0) {
 
         if (!project || !userId) {
             return null;
         }
 
+        def tasks = null
+
         // Look for tasks that have never been viewed before!
-        def tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNull("fullyTranscribedBy")
-            sizeLe("viewedTasks", 0)
-            order("id", "asc")
+        if (skip) {
+            tasks = Task.createCriteria().list([max:1, offset: skip]) {
+                eq("project", project)
+                isNull("fullyTranscribedBy")
+                sizeLe("viewedTasks", 0)
+                order("id", "asc")
+            }
+        }
+
+        if (!tasks) {
+            tasks = Task.createCriteria().list([max:1]) {
+                eq("project", project)
+                isNull("fullyTranscribedBy")
+                sizeLe("viewedTasks", 0)
+                order("id", "asc")
+            }
         }
 
         if (tasks) {
@@ -256,6 +269,7 @@ class TaskService {
 
         // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNull("fullyTranscribedBy")

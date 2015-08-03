@@ -51,6 +51,7 @@
                 <vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-small"/>
                 <div id="ct-task-image-toolbar" class="btn-group">
                     <button type="button" class="btn btn-small" id="showNextFromProject" data-container="body" title="Skip the to next image">Skip</button>
+                    <button type="button" class="btn btn-small" id="showNextFromProject" data-skip="10" data-container="body" title="Skip forward 10 images">Skip</button>
                     %{--<button type="button" class="btn btn-small" id="btnSavePartial">Save draft</button>--}%
                     <g:link controller="transcribe" action="discard" id="${taskInstance?.id}" class="btn btn-small btn-warning" data-container="body" title="Release your lock on this image and return to the expedition page">Quit</g:link>
                 </div>
@@ -216,11 +217,11 @@
                                     <div class="btn-toolbar">
                                         <div id="ct-animals-btn-group" class="btn-group" data-toggle="buttons-radio">
                                             <button type="button" id="ct-all-btn" class="btn btn-small btn-animal-filter" data-filter-tag="">All</button>
-                                            <button type="button" id="ct-sm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="smallMammal">Small Mammals</button>
-                                            <button type="button" id="ct-mm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="mediumMammal">Medium Mammals</button>
-                                            <button type="button" id="ct-lm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="largeMammal">Large Mammals</button>
-                                            <button type="button" id="ct-reptiles-btn" class="btn btn-small btn-animal-filter" data-filter-tag="reptile">Reptiles</button>
-                                            <button type="button" id="ct-birds-btn" class="btn btn-small btn-animal-filter" data-filter-tag="bird">Birds</button>
+                                            <button type="button" id="ct-sm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="small mammals (<500g)">Small Mammals</button>
+                                            <button type="button" id="ct-mm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="medium mammals (0.5-5kg)">Medium Mammals</button>
+                                            <button type="button" id="ct-lm-btn" class="btn btn-small btn-animal-filter" data-filter-tag="large mammals (>5kg)">Large Mammals</button>
+                                            <button type="button" id="ct-reptiles-btn" class="btn btn-small btn-animal-filter" data-filter-tag="reptiles">Reptiles</button>
+                                            <button type="button" id="ct-birds-btn" class="btn btn-small btn-animal-filter" data-filter-tag="birds">Birds</button>
                                         </div>
                                         <div class="btn-group">
                                             <button type="button" id="ct-other-btn" class="btn btn-small" data-toggle="button">Other</button>
@@ -253,14 +254,14 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="recordValues.${s}.unlisted">Species name</label>
                                                 <div class="controls">
-                                                    <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${s}.unlisted" placeholder="${placeholders[s % placeholders.size()]}" value="${recordValues[s]?.unlisted}" />
+                                                    <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.animalsPicklistId}" name="recordValues.${s}.unlisted" placeholder="${placeholders[s % placeholders.size()]}" value="${recordValues[s]?.unlisted}" />
                                                 </div>
                                             </div>
                                         </g:each>
                                         <div class="control-group">
                                             <label class="control-label" for="recordValues.${unlisteds.size()}.unlisted">Species name</label>
                                             <div class="controls">
-                                                <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" name="recordValues.${unlisteds.size()}.unlisted" placeholder="${placeholders[unlisteds.size() % placeholders.size()]}" />
+                                                <g:textField class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.animalsPicklistId}" name="recordValues.${unlisteds.size()}.unlisted" placeholder="${placeholders[unlisteds.size() % placeholders.size()]}" />
                                             </div>
                                         </div>
                                     </div>

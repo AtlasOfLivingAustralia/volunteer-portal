@@ -49,13 +49,17 @@ class CameraTrapTagLib {
             try {
                 def doc = JSON.parse(it.key)
 
-                def tags = doc.tags
-                def dayImageIds = doc.dayImages
-                def nightImageIds = doc.nightImages
-                def imageIds = (dayImageIds + nightImageIds).findAll { it?.trim() != null }.collect { it?.trim() }
-                def popularity = valueCountMap.get(it.value) ?: 0
-                def lastUsed = myLastMap.size() - (myLastMap.get(it.value) ?: myLastMap.size())
-                results = [ (imageIds): [value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), popularity: popularity, lastUsed: lastUsed ] ]
+                if ('n' != doc.reference) {
+                    def tags = doc.tags
+                    def dayImageIds = doc.dayImages
+                    def nightImageIds = doc.nightImages
+                    def imageIds = (dayImageIds + nightImageIds).findAll { it?.trim() != null }.collect { it?.trim() }
+                    def popularity = valueCountMap.get(it.value) ?: 0
+                    def lastUsed = myLastMap.size() - (myLastMap.get(it.value) ?: myLastMap.size())
+                    results = [ (imageIds): [value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), popularity: popularity, lastUsed: lastUsed ] ]
+                } else {
+                    results = [:]
+                }
 
             } catch (ConverterException e) {
                 warnings.add("Couldn't parse entry for ${it.value}")

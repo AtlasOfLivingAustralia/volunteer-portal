@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
+import au.com.bytecode.opencsv.CSVReader
 import grails.converters.JSON
+import groovy.json.JsonOutput
 import org.apache.commons.lang3.StringEscapeUtils
 import org.grails.plugins.csv.CSVWriter
 
@@ -9,6 +11,8 @@ class PicklistController {
     static allowedMethods = [upload: "POST", save: "POST", update: "POST", delete: "POST"]
 
     def picklistService
+    def imagesWebService
+    def imageServiceService
 
     def index = {
         redirect(action: "list", params: params)
@@ -62,6 +66,105 @@ class PicklistController {
         respond picklistInstance, model: [picklistItems: items]
     }
 
+    def wildcount(Picklist picklistInstance) {
+        def inst = params.institutionCode
+
+        def items
+        if (inst) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklistInstance, inst)
+        else items = PicklistItem.findAllByPicklist(picklistInstance)
+
+        def imageIds = items.collect {
+            def o = JSON.parse(it.key)
+            o.dayImages + o.nightImages
+        }.flatten()
+
+        def imageMap = imageServiceService.getImageInfoForIds(imageIds)
+
+        respond picklistInstance, model: [picklistItems: items, institutionCode: inst, imageMap: imageMap]
+    }
+
+    static final UUID_REGEX = /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    static final LIST_SEPARATOR_REGEX = /; | & |, /
+
+    def loadWildcount(Picklist picklistInstance) {
+        CSVReader reader = params.csv.toCsvReader()
+        String instCode = params.instCode ?: null
+        String type
+
+        def line
+        def headerLine = line = reader.readNext()
+        def headers = [:]
+        headerLine.eachWithIndex { String entry, int i ->
+            headers.put(entry.toLowerCase(), i)
+        }
+        int i = 0
+        def pis = []
+        def warnings = []
+        while (line = reader.readNext()) {
+            def species = getValueFromLine(line, headers, 'species')
+            def reference  = getValueFromLine(line, headers, 'reference').toLowerCase() == 'y' ? true : false
+            def (bnw, warnings2) = wildcountImageArrayLookup(getValueFromLine(line, headers, 'black and white'))
+            def (colour, warnings3) = wildcountImageArrayLookup(getValueFromLine(line, headers, 'colour'))
+            def group1 = getValueFromLine(line, headers, 'group 1')
+            def group2 = getValueFromLine(line, headers, 'group 2')
+            def group3 = getValueFromLine(line, headers, 'group 3')
+            def similarSpecies = wildcountLineToArray(getValueFromLine(line, headers, 'similar species'))
+
+            def tags = [group1, group2, group3].findAll { it }
+            def obj = [reference: reference, tags: tags, dayImages: colour ?: [], nightImages: bnw ?: [], similarSpecies: similarSpecies]
+            def pi = new PicklistItem(value: species, key: JsonOutput.toJson(obj), index: i++, institutionCode: instCode, picklist: picklistInstance)
+            warnings += warnings2
+            warnings += warnings3
+            pis << pi
+        }
+
+        def dc
+        if (instCode) dc = PicklistItem.where { picklist == picklistInstance && institutionCode == instCode }
+        else dc = PicklistItem.where { picklist == picklistInstance && institutionCode == null }
+
+        def n = dc.deleteAll()
+
+        log.debug("Deleted $n picklist items for $picklistInstance ($instCode)")
+
+        PicklistItem.saveAll(pis)
+
+        if (warnings) flash.message = "Couldn't find images for ${warnings.join(', ')}"
+
+        redirect action: 'wildcount', id: picklistInstance.id, params: [institutionCode: instCode]
+    }
+
+    private def wildcountLineToArray(line) {
+        line.split(LIST_SEPARATOR_REGEX).collect { it?.trim() }.findAll { 'none' != it?.toLowerCase() && 'nil' != it?.toLowerCase() && it }
+    }
+
+    private def wildcountImageArrayLookup(line) {
+        def arr = wildcountLineToArray(line)
+
+        def files = arr.findAll { !(it ==~ UUID_REGEX) }.collect { [sourceUrl: (it + '.jpg')] }
+
+        def warnings = []
+
+        log.debug("Fetching image info for $files")
+        def infos = imagesWebService.getImageInfo(files)
+
+        def results = arr.collect {
+            if (it ==~ UUID_REGEX) {
+                it
+            } else {
+                def result = infos[(it+'.jpg')]?.imageId
+                if (!result) warnings << it
+                result ?: null
+            }
+        }.findAll { it }
+
+        [results, warnings]
+    }
+
+    private def getValueFromLine(line, headers, value) {
+        def idx = headers.get(value.toLowerCase())
+        idx == null ? null : line[idx]
+    }
+
     def loadcsv = {
         def picklist = Picklist.get(params.picklistId)
         def institutionCode = params.institutionCode
@@ -75,7 +178,7 @@ class PicklistController {
         picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
         render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id, institutionCode: params.institutionCode, collectionCodes: picklistInstitutionCodes])
     }
-    
+
     def download = {
         def picklist = Picklist.get(params.picklistId)
         if (picklist) {

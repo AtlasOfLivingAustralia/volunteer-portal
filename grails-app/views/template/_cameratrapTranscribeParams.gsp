@@ -30,39 +30,39 @@
         <g:select from="${picklists}" name="animalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
     </div>
 </div>
-<div class="control-group">
-    <label class="control-label" for="smallMammalsPicklistId"><g:message code="template.cameratrap.smallmammalspicklist.label" default="Small Mammals Picklist" /></label>
-    <div class="controls">
-        <g:select from="${picklists}" name="smallMammalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
-    </div>
-</div>
-<div class="control-group">
-    <label class="control-label" for="largeMammalsPicklistId"><g:message code="template.cameratrap.largemammalspicklist.label" default="Large Mammals Picklist" /></label>
-    <div class="controls">
-        <g:select from="${picklists}" name="largeMammalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
-    </div>
-</div>
-<div class="control-group">
-    <label class="control-label" for="birdsPicklistId"><g:message code="template.cameratrap.birdspicklist.label" default="Birds Picklist" /></label>
-    <div class="controls">
-        <g:select from="${picklists}" name="birdsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
-    </div>
-</div>
-<div class="control-group">
-    <label class="control-label" for="reptilesPicklistId"><g:message code="template.cameratrap.reptilespicklist.label" default="Reptiles Picklist" /></label>
-    <div class="controls">
-        <g:select from="${picklists}" name="reptilesPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
-    </div>
-</div>
+%{--<div class="control-group">--}%
+    %{--<label class="control-label" for="smallMammalsPicklistId"><g:message code="template.cameratrap.smallmammalspicklist.label" default="Small Mammals Picklist" /></label>--}%
+    %{--<div class="controls">--}%
+        %{--<g:select from="${picklists}" name="smallMammalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />--}%
+    %{--</div>--}%
+%{--</div>--}%
+%{--<div class="control-group">--}%
+    %{--<label class="control-label" for="largeMammalsPicklistId"><g:message code="template.cameratrap.largemammalspicklist.label" default="Large Mammals Picklist" /></label>--}%
+    %{--<div class="controls">--}%
+        %{--<g:select from="${picklists}" name="largeMammalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />--}%
+    %{--</div>--}%
+%{--</div>--}%
+%{--<div class="control-group">--}%
+    %{--<label class="control-label" for="birdsPicklistId"><g:message code="template.cameratrap.birdspicklist.label" default="Birds Picklist" /></label>--}%
+    %{--<div class="controls">--}%
+        %{--<g:select from="${picklists}" name="birdsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />--}%
+    %{--</div>--}%
+%{--</div>--}%
+%{--<div class="control-group">--}%
+    %{--<label class="control-label" for="reptilesPicklistId"><g:message code="template.cameratrap.reptilespicklist.label" default="Reptiles Picklist" /></label>--}%
+    %{--<div class="controls">--}%
+        %{--<g:select from="${picklists}" name="reptilesPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />--}%
+    %{--</div>--}%
+%{--</div>--}%
 %{--<div class="control-group">--}%
     %{--<label class="control-label" for="othersPicklistId"><g:message code="template.cameratrap.otherspicklist.label" default="Others Picklist" /></label>--}%
     %{--<div class="controls">--}%
         %{--<g:select from="${picklists}" name="othersPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />--}%
     %{--</div>--}%
 %{--</div>--}%
-<div class="control-group">
-    <label class="control-label" for="unlistedPicklistId"><g:message code="template.cameratrap.otherspicklist.label" default="Others Picklist" /></label>
-    <div class="controls">
-        <g:select from="${picklists}" name="unlistedPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
-    </div>
-</div>
+%{--<div class="control-group">--}%
+    %{--<label class="control-label" for="unlistedPicklistId"><g:message code="template.cameratrap.otherspicklist.label" default="Others Picklist" /></label>--}%
+    %{--<div class="controls">--}%
+        %{--<g:select from="${picklists}" name="unlistedPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />--}%
+    %{--</div>--}%
+%{--</div>--}%

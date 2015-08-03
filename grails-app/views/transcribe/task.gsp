@@ -847,7 +847,10 @@
 
             $("#showNextFromProject").click(function(e) {
                 e.preventDefault();
-                window.location = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
+                var skip = $(this).data('skip');
+                var url = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
+                if (skip) url = url + '?skip='+skip;
+                window.location = url;
             });
 
             //enableSubmitButtons();
