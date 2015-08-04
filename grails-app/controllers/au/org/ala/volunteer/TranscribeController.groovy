@@ -180,6 +180,8 @@ class TranscribeController {
         def project = Project.get(params.id)
         def skip = params.getInt('skip', 0)
 
+        log.info("Got skip param: $skip")
+
         if (project == null) {
             log.error("Project not found for id: " + params.id)
             redirect(view: '/index')

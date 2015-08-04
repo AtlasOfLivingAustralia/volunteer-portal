@@ -44,19 +44,22 @@ class CameraTrapTagLib {
         def count = 0
         def myLastMap = myLast.get().collectEntries { [it: count++] }
 
+        def allImageIds = []
         def items2 = items.collectEntries {
             def results
             try {
                 def doc = JSON.parse(it.key)
 
-                if ('n' != doc.reference) {
+                if (doc.reference) {
                     def tags = doc.tags
                     def dayImageIds = doc.dayImages
                     def nightImageIds = doc.nightImages
                     def imageIds = (dayImageIds + nightImageIds).findAll { it?.trim() != null }.collect { it?.trim() }
+                    def similarSpecies = doc.similarSpecies
                     def popularity = valueCountMap.get(it.value) ?: 0
                     def lastUsed = myLastMap.size() - (myLastMap.get(it.value) ?: myLastMap.size())
-                    results = [ (imageIds): [value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), popularity: popularity, lastUsed: lastUsed ] ]
+                    results = [ (it.value): [imageIds: imageIds, value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), similarSpecies: similarSpecies.toList(), popularity: popularity, lastUsed: lastUsed ] ]
+                    allImageIds += imageIds
                 } else {
                     results = [:]
                 }
@@ -68,20 +71,20 @@ class CameraTrapTagLib {
             results
         }
 
-        def imageIds = items2*.key.flatten()
+        //def imageIds = items2*.key.flatten()
         def imageInfos
         try {
-            imageInfos = imageServiceService.getImageInfoForIds(imageIds)
+            imageInfos = imageServiceService.getImageInfoForIds(allImageIds)
         } catch (e) {
-            log.error("Error calling image service for ${imageIds}", e)
+            log.error("Error calling image service for ${allImageIds}", e)
             return [error: "Error contacting image service: ${e.message}"]
         }
 
         if (!imageInfos)
-            return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
+            return [error: "Could not retrieve image infos for keys ${allImageIds.join(", ")}"]
         else {
             //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
-            def missing = imageIds.findAll { imageInfos[it] == null }
+            def missing = allImageIds.findAll { imageInfos[it] == null }
             if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
         }
 

@@ -27,7 +27,7 @@
 <div class="control-group">
     <label class="control-label" for="animalsPicklistId"><g:message code="template.cameratrap.animals.label" default="All Animals Picklist" /></label>
     <div class="controls">
-        <g:select from="${picklists}" name="animalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />
+        <g:select from="${picklists}" name="animalsPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" /> <button type="button" class="btn btn-primary btn-view-ct-picklist"><i class="fa fa-eye"></i></button>
     </div>
 </div>
 %{--<div class="control-group">--}%
@@ -66,3 +66,10 @@
         %{--<g:select from="${picklists}" name="unlistedPicklistId" optionKey="id" optionValue="uiLabel" class="input-xlarge" />--}%
     %{--</div>--}%
 %{--</div>--}%
+
+<script>
+    $('.btn-view-ct-picklist').click(function() {
+        var url = '${g.createLink(controller: 'picklist', action: 'wildcount')}/' + $('#animalsPicklistId').val();
+        window.open(url);
+    });
+</script>

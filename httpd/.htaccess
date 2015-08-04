@@ -1,4 +1,5 @@
 # .htaccess for Apache served resources
+# Enable mod_deflate, mod_expires, mod_headers and mod_rewrite
 
 # ##############################################################################
 # # WEB PERFORMANCE                                                            #

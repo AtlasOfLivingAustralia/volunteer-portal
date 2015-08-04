@@ -1,14 +1,14 @@
-function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageInfos, otherImageInfos, smItems, lmItems,
-                    reptilesItems, birdsItems, otherItems, recordValues, placeholders) {
+function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
   jQuery(function ($) {
-    var values = _.pluck([].concat(_.values(smItems), _.values(lmItems), _.values(reptilesItems), _.values(birdsItems), _.values(otherItems)), 'value');
+    var values = _.pluck([].concat(_.values(smItems)), 'value');
 
-    var itemValueMap = _.reduce(_.filter([].concat(smItems, lmItems, reptilesItems, birdsItems, otherItems), function (it) {
-      return it != null
-    }), function (memo, it) {
-      memo[it.value] = it;
-      return memo;
-    }, {});
+    //var itemValueMap = _.reduce(_.filter([].concat(smItems), function (it) {
+    //  return it != null
+    //}), function (memo, it) {
+    //  memo[it.value] = it;
+    //  return memo;
+    //}, {});
+    var itemValueMap = smItems;
 
     var unlisted = [];
 
@@ -20,7 +20,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
         var vn = recordValues[index].vernacularName;
         var certainty = recordValues[index].certainty || 1;
         if (vn && itemValueMap[vn]) {
-          selections[vn] = {certainty: certainty, key: itemValueMap[vn].key}
+          selections[vn] = {certainty: certainty, key: itemValueMap[vn].imageIds}
         }
       }
     }
@@ -100,9 +100,9 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       $container.empty();
 
       var selectionCertainty = (selections.hasOwnProperty(value) && selections[value].certainty) || 0;
-      var sureSelected = selectionCertainty == 1 ? 'selected' : '';
-      var uncertainSelected = selectionCertainty == 0.5 ? 'selected' : '';
-      var templateObj = {value: value, key: key, sureSelected: sureSelected, uncertainSelected: uncertainSelected};
+      var selected = selectionCertainty == 1 ? 'ct-selected ct-certain-selected' : selectionCertainty == 0.5 ? 'ct-selected ct-uncertain-selected' : '';
+      var similarSpecies = itemValueMap[value].similarSpecies.join(', ');
+      var templateObj = {value: value, key: key, selected: selected, similarSpecies: similarSpecies};
 
       var urls = _.map(_.filter(_.zip(keys, _.map(keys, function(key, i) { return firstInfoWithKey(key); })), function(keyAndInfo, i) {
         if (keyAndInfo[1] == null && window.console) console.warn('Missing info ' + keyAndInfo[0]);
@@ -181,7 +181,8 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
       var certainty = selections[sel].certainty;
       var imageKey = selections[sel].key;
       var firstKey = keyToArray(imageKey)[0];
-      var imageUrl = firstInfoWithKey(firstKey).squareThumbUrl;
+      var imageInfo = firstInfoWithKey(firstKey);
+      var imageUrl = imageInfo ? imageInfo.squareThumbUrl : null;
       var selected = (certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
       var opts = {
         squareThumbUrl: imageUrl,
@@ -265,7 +266,7 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     }
 
     function firstInfoWithKey(key) {
-      return (smImageInfos || {})[key] || (lmImageInfos || {})[key] || (reptilesImageInfos || {})[key] || (birdsImageInfos || {})[key] || (otherImageInfos || {})[key];
+      return (smImageInfos || {})[key];
     }
 
     var $unlisted = $('#ct-unlisted');
@@ -363,8 +364,9 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
           }
         } else if (sortType == 'common') {
           sortFn = function (a, b) {
-            var aIdx = parseInt($(a).find('[data-image-select-value]').data('popularity'));
-            var bIdx = parseInt($(b).find('[data-image-select-value]').data('popularity'));
+            // reverse order in difference below, so popularity is sorted descending instead of ascending
+            var bIdx = parseInt($(a).find('[data-image-select-value]').data('popularity'));
+            var aIdx = parseInt($(b).find('[data-image-select-value]').data('popularity'));
             if (aIdx == bIdx) {
               aIdx = parseInt($(a).data('item-index'));
               bIdx = parseInt($(b).data('item-index'));
@@ -373,8 +375,9 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
           }
         } else if (sortType == 'previous') {
           sortFn = function (a, b) {
-            var aIdx = parseInt($(a).find('[data-image-select-value]').data('last-used'));
-            var bIdx = parseInt($(b).find('[data-image-select-value]').data('last-used'));
+            // reverse order in difference below, so last-used is sorted descending instead of ascending
+            var bIdx = parseInt($(a).find('[data-image-select-value]').data('last-used'));
+            var aIdx = parseInt($(b).find('[data-image-select-value]').data('last-used'));
             if (aIdx == bIdx) {
               aIdx = parseInt($(a).data('item-index'));
               bIdx = parseInt($(b).data('item-index'));
@@ -435,10 +438,10 @@ function cameratrap(smImageInfos, lmImageInfos, reptilesImageInfos, birdsImageIn
     // VALIDATION
     transcribeValidation.addCustomValidator(function(errorList) {
       var q1 = $('input[name=recordValues\\.0\\.animalsVisible]:checked').val();
-      var q2 = $('input[name=recordValues\\.0\\.photoBlackAndWhite]:checked').val()
+      //var q2 = $('input[name=recordValues\\.0\\.photoBlackAndWhite]:checked').val()
 
       if (!q1) errorList.push({element: null, message: "You must indicate whether animals are present on Step 1", type: "Error"});
-      if (!q2) errorList.push({element: null, message: "You must indicate whether the photo is black and white or not on Step 1", type: "Error"});
+      //if (!q2) errorList.push({element: null, message: "You must indicate whether the photo is black and white or not on Step 1", type: "Error"});
 
       if (q1 == $('#btn-animals-present').val()) {
         var count = _.keys(selections).length;

@@ -171,7 +171,7 @@
     border-bottom-right-radius: 9px;
 }
 
-#ct-full-image-container .ct-badge {
+.ct-badge.ct-badge-large, .ct-info.ct-info-large {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     text-align: center;
@@ -179,11 +179,11 @@
     height:2.5em;
 }
 
-#ct-full-image-container .ct-badge i {
+.ct-badge.ct-badge-large i, .ct-info.ct-info-large i {
     font-size: 2em;
 }
 
-#ct-full-image-container .ct-badge.ct-badge-uncertain {
+.ct-badge.ct-badge-uncertain.ct-badge-large {
     top: 54px;
 }
 

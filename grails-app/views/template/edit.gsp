@@ -6,7 +6,7 @@
         <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
 
-        <r:require module="underscore" />
+        <r:require modules="underscore, fontawesome" />
         <r:script>
 
             $(document).ready(function() {

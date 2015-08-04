@@ -51,7 +51,7 @@
                 <vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-small"/>
                 <div id="ct-task-image-toolbar" class="btn-group">
                     <button type="button" class="btn btn-small" id="showNextFromProject" data-container="body" title="Skip the to next image">Skip</button>
-                    <button type="button" class="btn btn-small" id="showNextFromProject" data-skip="10" data-container="body" title="Skip forward 10 images">Skip</button>
+                    <button type="button" class="btn btn-small btn-skip-n" data-skip="10" data-container="body" title="Skip forward 10 images (if possible)">Skip 10</button>
                     %{--<button type="button" class="btn btn-small" id="btnSavePartial">Save draft</button>--}%
                     <g:link controller="transcribe" action="discard" id="${taskInstance?.id}" class="btn btn-small btn-warning" data-container="body" title="Release your lock on this image and return to the expedition page">Quit</g:link>
                 </div>
@@ -183,25 +183,25 @@
                                 <p><strong>Are there any animals visible in the image?</strong></p>
                                 <div id="ct-animals-question">
                                     <label class="radio inline">
-                                        <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible" value="yes" ${'some' == step1 ? 'checked': ''}>Yes
+                                        <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible" value="yes" ${'yes' == step1 ? 'checked': ''}>Yes
                                     </label>
                                     <label class="radio inline">
-                                        <input type="radio" name="recordValues.0.animalsVisible" value="no" ${'none' == step1 ? 'checked': ''}>No
+                                        <input type="radio" name="recordValues.0.animalsVisible" value="no" ${'no' == step1 ? 'checked': ''}>No
                                     </label>
                                     <label class="radio inline">
                                         <input type="radio" name="recordValues.0.animalsVisible" value="unsure" ${'unsure' == step1 ? 'checked': ''}>Unsure
                                     </label>
                                 </div>
-                                <hr />
-                                <p><strong>Is the photo black and white?</strong></p>
-                                <div id="ct-bnw-question">
-                                    <label class="radio inline">
-                                        <input type="radio" name="recordValues.0.photoBlackAndWhite" value="yes" ${'yes' == bnw ? 'checked': ''}>Yes
-                                    </label>
-                                    <label class="radio inline">
-                                        <input type="radio" name="recordValues.0.photoBlackAndWhite" value="no" ${'no' == bnw ? 'checked': ''}>No
-                                    </label>
-                                </div>
+                                %{--<hr />--}%
+                                %{--<p><strong>Is the photo black and white?</strong></p>--}%
+                                %{--<div id="ct-bnw-question">--}%
+                                    %{--<label class="radio inline">--}%
+                                        %{--<input type="radio" name="recordValues.0.photoBlackAndWhite" value="yes" ${'yes' == bnw ? 'checked': ''}>Yes--}%
+                                    %{--</label>--}%
+                                    %{--<label class="radio inline">--}%
+                                        %{--<input type="radio" name="recordValues.0.photoBlackAndWhite" value="no" ${'no' == bnw ? 'checked': ''}>No--}%
+                                    %{--</label>--}%
+                                %{--</div>--}%
                                 <g:hiddenField name="skipNextAction" value="true" />
                         </div>
                         <div id="ct-animals-present" class="ct-item">
@@ -211,7 +211,6 @@
                                     <p><strong>Select animals that are present in the image</strong></p>
                                 </div>
                             </div>
-                            <g:set var="animalInfos" value="${ct.cameraTrapImageInfos(picklist: Picklist.get(template.viewParams.animalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                             <div class="row-fluid">
                                 <div class="span12">
                                     <div class="btn-toolbar">
@@ -226,7 +225,9 @@
                                         <div class="btn-group">
                                             <button type="button" id="ct-other-btn" class="btn btn-small" data-toggle="button">Other</button>
                                         </div>
-                                        <input id="ct-search-input" type="text" class="input-small" style="margin-bottom: 0;" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
+                                        <div class="btn-group">
+                                            <input id="ct-search-input" type="text" class="input-small" style="margin-bottom: 0;" placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
+                                        </div>
                                         <div id="ct-sort-btn-group" class="btn-group" data-toggle="buttons-radio">
                                             <button id="button-sort-initial" type="button" class="btn btn-small active" data-sort-fn="initial" title="${message(code: 'default.button.alpha.sort.label', default: 'Default order')}" data-container="body"><i class="fa fa-random"></i></button>
                                             <button id="button-sort-alpha" type="button" class="btn btn-small" data-sort-fn="alpha" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-container="body"><i class="fa fa-sort-alpha-asc"></i></button>
@@ -239,6 +240,7 @@
                             <div class="row-fluid">
                                 <div class="span12 ct-sub-item-container">
                                     <div class="ct-sub-item active sortable text-center" id="ct-animals-list">
+                                        <g:set var="animalInfos" value="${ct.cameraTrapImageInfos(picklist: Picklist.get(template.viewParams.animalsPicklistId?.toLong()), project: taskInstance?.project)}" />
                                         <g:render template="/transcribe/cameratrapWidget" model="${[imageInfos: animalInfos, picklistId: template.viewParams.animalsPicklistId?.toLong()]}" />
                                     </div>
                                     <div class="ct-sub-item form-horizontal" id="ct-unlisted">
@@ -270,7 +272,7 @@
 
                         </div>
                         <div id="ct-animals-summary" class="ct-item">
-                            <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.  <strong>Black and white:</strong> <span id="ct-bnw-question-summary">${bnw}</span></p>
+                            <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.%{--  <strong>Black and white:</strong> <span id="ct-bnw-question-summary">${bnw}</span></p>--}%
                             <p><strong>Selected animals</strong></p>
                             <div class="itemgrid ct-selection-grid">
 
@@ -360,7 +362,7 @@
     <div class="control-group">
         <label class="control-label" for="recordValues.{{index}}.unlisted">Species name</label>
         <div class="controls">
-            <input type="text" class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.unlistedPicklistId}" id="recordValues.{{index}}.unlisted" name="recordValues.{{index}}.unlisted" placeholder="{{placeholder}}" />
+            <input type="text" class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.animalsPicklistId}" id="recordValues.{{index}}.unlisted" name="recordValues.{{index}}.unlisted" placeholder="{{placeholder}}" />
         </div>
     </div>
 </script>
@@ -370,25 +372,31 @@
 </script>
 
 <script id="single-image-template" type="x-tmpl-mustache">
-    <div id="ct-full-image" style="position:relative;" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
-        <span class="ct-badge ct-badge-sure badge {{sureSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {{value}} in the image')}"><i class="fa fa-check-circle"></i></span>
-        <span class="ct-badge ct-badge-uncertain badge {{uncertainSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {{value}} in the image')}"><i class="fa fa-question-circle"></i></span>
+    <div id="ct-full-image" class="{{selected}}" style="position:relative;" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
+        <span class="ct-badge ct-badge-large ct-badge-sure badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
+        <span class="ct-badge ct-badge-large ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-question-circle"></i></span>
+        {{#similarSpecies}}
+            <span class="ct-info ct-info-large" data-container="body" title="${g.message(code: 'cameratrap.widget.similar.badge.title', default: "The {0} looks very similar to the {1}.  Please consider these other options before submitting your choices.", args: ['{{value}}', '{{similarSpecies}}'])}"><i class="fa fa-info-circle"></i></span>
+        {{/similarSpecies}}
         <span class="ct-full-image-carousel-close">&times;</span>
-        <img src="{{url}}" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}" data-container="body"/>
+        <img src="{{url}}" title="${message(code:'cameratrap.carousel.dismiss', default:'Click on the image to dismiss')}" data-container="body"/>
     </div>
 </script>
 
 <script id="carousel-template" type="x-tmpl-mustache">
-    <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
-        <span class="ct-badge ct-badge-sure badge {{sureSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {{value}} in the image')}"><i class="fa fa-check-circle"></i></span>
-        <span class="ct-badge ct-badge-uncertain badge {{uncertainSelected}}" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {{value}} in the image')}"><i class="fa fa-question-circle"></i></span>
+    <div id="ct-full-image-carousel" data-interval="0" class="carousel slide {{selected}}" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
+        <span class="ct-badge ct-badge-large ct-badge-sure badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
+        <span class="ct-badge ct-badge-large ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-question-circle"></i></span>
+        {{#similarSpecies}}
+            <span class="ct-info ct-info-large" data-container="body" title="${g.message(code: 'cameratrap.widget.similar.badge.title', default: "The {0} looks very similar to the {1}.  Please consider these other options before submitting your choices.", args: ['{{value}}', '{{similarSpecies}}'])}"><i class="fa fa-info-circle"></i></span>
+        {{/similarSpecies}}
         <span class="ct-full-image-carousel-close">&times;</span>
         <ol class="carousel-indicators">
             {{#imgs}}
                 <li class="{{active}}" data-target="#ct-full-image-carousel" data-slide-to="{{idx}}"></li>
             {{/imgs}}
         </ol>
-        <div class="carousel-inner" title="${message(code:'camera.trap.carousel.dismiss', default:'Click on the image to dismiss')}" data-container="body">
+        <div class="carousel-inner" title="${message(code:'cameratrap.carousel.dismiss', default:'Click on the image to dismiss')}" data-container="body">
             {{#imgs}}
             <div class="item {{active}}">
                 <img src="{{url}}" />
@@ -401,22 +409,13 @@
 </script>
 
 <r:script>
-%{--var smImageInfos = <cl:json value="${smImageInfos.infos}" />--}%
-    %{--,lmImageInfos = <cl:json value="${lmImageInfos.infos}" />--}%
-    %{--,reptilesImageInfos = <cl:json value="${reptilesImageInfos.infos}" />--}%
-    %{--,birdsImageInfos = <cl:json value="${birdsImageInfos.infos}" />;--}%
 var imageInfos = <cl:json value="${animalInfos.infos}" />;
 
-%{--var smItems = <cl:json value="${smImageInfos.items}" />--}%
-    %{--,lmItems = <cl:json value="${lmImageInfos.items}" />--}%
-    %{--,reptilesItems = <cl:json value="${reptilesImageInfos.items}" />--}%
-    %{--,birdsItems = <cl:json value="${birdsImageInfos.items}" />;--}%
 var items = <cl:json value="${animalInfos.items}" />;
 
 var recordValues = <cl:json value="${recordValues}" />;
 
 var placeholders = <cl:json value="${placeholders}" />;
 
-cameratrap(imageInfos, null, null, null, null, items, null,
-           null, null, null, recordValues, placeholders);
+cameratrap(imageInfos, items, recordValues, placeholders);
 </r:script>

@@ -845,7 +845,7 @@
                 submitInvalid();
             });
 
-            $("#showNextFromProject").click(function(e) {
+            $("#showNextFromProject, .btn-skip-n").click(function(e) {
                 e.preventDefault();
                 var skip = $(this).data('skip');
                 var url = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";

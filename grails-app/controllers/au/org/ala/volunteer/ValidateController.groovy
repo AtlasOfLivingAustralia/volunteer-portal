@@ -116,6 +116,10 @@ class ValidateController {
     def showNextFromProject = {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
+        def skip = params.getInt('skip', 0)
+
+        log.info("Got skip param: $skip")
+
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
         flash.message = params.msg
         def previousId = params.prevId?:-1
