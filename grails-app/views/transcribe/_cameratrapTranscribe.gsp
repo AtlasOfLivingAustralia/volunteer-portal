@@ -98,7 +98,7 @@
                     %{--<div class="control-group">--}%
                         <div class="controls" style="margin-left: initial; display: inline-block;">
                             <label class="checkbox" for="recordValues.0.interesting">
-                                <g:checkBox name="recordValues.0.interesting" value="${recordValues[0]?.interesting}" /> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
+                                <g:checkBox name="recordValues.0.interesting" checked="${recordValues[0]?.interesting == 'true'}" /> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
                             </label>
                         </div>
                     %{--</div>--}%
@@ -287,13 +287,13 @@
                 </div>
             </div>
             <div class="text-right" style="margin-bottom: 20px;">
-                <button type="button" id="btnNext" class="btn btn-primary btn-large">${message(code: 'default.button.next.label', default: 'Next Step')} <i class="fa fa-chevron-right"></i></button>
+                <button type="button" id="btnNext" class="btn btn-primary btn-large ${validator ? 'hidden' : ''}">${message(code: 'default.button.next.label', default: 'Next Step')} <i class="fa fa-chevron-right"></i></button>
                 <g:if test="${!validator}">
                     <button type="button" id="btnSave" class="btn btn-primary btn-large bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
                 </g:if>
                 <g:else>
-                    <button type="button" id="btnValidate" class="btn btn-success btn-large bvp-submit-button hidden"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
-                    <button type="button" id="btnDontValidate" class="btn btn-danger btn-large bvp-submit-button hidden"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
+                    <button type="button" id="btnValidate" class="btn btn-success btn-large bvp-submit-button ${validator ? '' : 'hidden'}"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
+                    <button type="button" id="btnDontValidate" class="btn btn-danger btn-large bvp-submit-button ${validator ? '' : 'hidden'}"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
                 </g:else>
             </div>
         </div>
