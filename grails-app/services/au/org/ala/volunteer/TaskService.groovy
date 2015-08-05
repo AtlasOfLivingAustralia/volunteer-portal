@@ -270,14 +270,28 @@ class TaskService {
         // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
 
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNull("fullyTranscribedBy")
-            and {
-                ne("lastViewedBy", userId)
-                le("lastViewed", timeoutWindow)
+        if (skip) {
+            tasks = Task.createCriteria().list([max:1, offset: skip]) {
+                eq("project", project)
+                isNull("fullyTranscribedBy")
+                and {
+                    ne("lastViewedBy", userId)
+                    le("lastViewed", timeoutWindow)
+                }
+                order("lastViewed", "asc")
             }
-            order("lastViewed", "asc")
+        }
+
+        if (!tasks) {
+            tasks = Task.createCriteria().list([max:1]) {
+                eq("project", project)
+                isNull("fullyTranscribedBy")
+                and {
+                    ne("lastViewedBy", userId)
+                    le("lastViewed", timeoutWindow)
+                }
+                order("lastViewed", "asc")
+            }
         }
 
         if (tasks) {
@@ -287,14 +301,28 @@ class TaskService {
         }
 
         // Finally, we'll have to serve up a task that this user has seen before
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNull("fullyTranscribedBy")
-            or {
-                le("lastViewed", timeoutWindow)
-                eq("lastViewedBy", userId)
+        if (skip) {
+            tasks = Task.createCriteria().list([max:1, offset: skip]) {
+                eq("project", project)
+                isNull("fullyTranscribedBy")
+                or {
+                    le("lastViewed", timeoutWindow)
+                    eq("lastViewedBy", userId)
+                }
+                order("lastViewed", "asc")
             }
-            order("lastViewed", "asc")
+        }
+
+        if (!tasks) {
+            tasks = Task.createCriteria().list([max:1]) {
+                eq("project", project)
+                isNull("fullyTranscribedBy")
+                or {
+                    le("lastViewed", timeoutWindow)
+                    eq("lastViewedBy", userId)
+                }
+                order("lastViewed", "asc")
+            }
         }
 
         if (tasks) {
