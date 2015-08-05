@@ -374,67 +374,78 @@ class TaskLoadService {
             }
             _cancel = false;
             runAsync {
-                TaskDescriptor taskDesc
-                while ((taskDesc = _loadQueue.poll()) && !_cancel) {
-                    _currentItemMessage = "${taskDesc.externalIdentifier}"
+                try {
+                    TaskDescriptor taskDesc
+                    while ((taskDesc = _loadQueue.poll()) && !_cancel) {
+                        _currentItemMessage = "${taskDesc.externalIdentifier}"
 
-                    def existing = Task.findAllByExternalIdentifierAndProject(taskDesc.externalIdentifier, taskDesc.project);
+                        def existing = Task.findAllByExternalIdentifierAndProject(taskDesc.externalIdentifier, taskDesc.project);
 
-                    if (existing && existing.size() > 0) {
-                        if (replaceDuplicates) {
-                            for (Task t : existing) {
-                                Task.withNewSession {
-                                    t.attach()
-                                    def fields = Field.findAllByTask(t)
-                                    fields?.each {
-                                        it.delete(flush: true)
+                        if (existing && existing.size() > 0) {
+                            if (replaceDuplicates) {
+                                for (Task t : existing) {
+                                    t.discard()
+                                    Task.withNewSession {
+                                        t.attach()
+                                        def fields = Field.findAllByTask(t)
+                                        fields?.each {
+                                            it.delete(flush: true)
+                                        }
+                                        def mm = Multimedia.findAllByTask(t)
+                                        mm.each {
+                                            it.delete(flush: true)
+                                        }
+                                        t.delete(flush: true);
                                     }
-                                    def mm = Multimedia.findAllByTask(t)
-                                    mm.each {
-                                        it.delete(flush:true)
-                                    }
-                                    t.delete(flush: true);
+                                }
+                            } else {
+                                synchronized (_report) {
+                                    _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: taskDesc, message: "Skipped because task id already exists", time: Calendar.instance.time))
+                                }
+                                continue
+                            }
+                        }
+
+                        Task.withNewTransaction { status ->
+
+                            try {
+
+                                def t = createTaskFromTaskDescriptor(taskDesc)
+
+                                // Attempt to predict when the import will complete
+                                def now = Calendar.instance.time;
+                                def remainingMillis = _loadQueue.size() * ((now.time - _currentBatchStart.time) / (_currentBatchSize - _loadQueue.size()))
+                                def expectedEndTime = new Date((long) (now.time + remainingMillis))
+                                _timeRemaining = formatDuration(TimeCategory.minus(expectedEndTime, now))
+                                synchronized (_report) {
+                                    _report.add(new TaskLoadStatus(succeeded: true, taskDescriptor: taskDesc, message: "", time: Calendar.instance.time))
+                                }
+
+                            } catch (Exception ex) {
+                                synchronized (_report) {
+                                    _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: taskDesc, message: ex.toString(), time: Calendar.instance.time))
                                 }
                             }
-                        } else {
-                            synchronized (_report) {
-                                _report.add(new TaskLoadStatus(succeeded:false, taskDescriptor: taskDesc, message: "Skipped because task id already exists", time: Calendar.instance.time))
-                            }
-                            continue
                         }
                     }
 
-                    Task.withNewTransaction { status ->
+                    if (_cancel) {
+                        _loadQueue.clear();
+                    }
 
-                        try {
-
-                            def t = createTaskFromTaskDescriptor(taskDesc)
-
-                            // Attempt to predict when the import will complete
-                            def now = Calendar.instance.time;
-                            def remainingMillis = _loadQueue.size() * ((now.time - _currentBatchStart.time) / (_currentBatchSize - _loadQueue.size()))
-                            def expectedEndTime = new Date((long) (now.time + remainingMillis))
-                            _timeRemaining = formatDuration(TimeCategory.minus(expectedEndTime, now))
-                            synchronized (_report) {
-                                _report.add(new TaskLoadStatus(succeeded:true, taskDescriptor: taskDesc, message: "", time: Calendar.instance.time))
-                            }
-
-                        } catch (Exception ex) {
-                            synchronized (_report) {
-                                _report.add(new TaskLoadStatus(succeeded:false, taskDescriptor: taskDesc, message: ex.toString(), time: Calendar.instance.time))
-                            }
-                        }
+                    _currentItemMessage = ""
+                    _currentBatchSize = 0;
+                    _currentBatchStart = null;
+                    _currentBatchInstigator = ""
+                } catch (Exception e) {
+                    log.error("Exception running task loading async job", e)
+                    def tl = []
+                    def drained = _loadQueue.drainTo(tl)
+                    log.debug("Drained ${drained} tasks")
+                    tl.each {
+                        _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: it, message: e.message, time: Calendar.instance.time))
                     }
                 }
-
-                if (_cancel) {
-                    _loadQueue.clear();
-                }
-
-                _currentItemMessage = ""
-                _currentBatchSize = 0;
-                _currentBatchStart = null;
-                _currentBatchInstigator = ""
             }
         }
     }
