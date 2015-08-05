@@ -18,7 +18,7 @@
 </div>
 <div class="control-group">
     <div class="controls">
-        <label class="checkbox" for="hideDefaultButtons">
+        <label class="checkbox" for="exportGroupByIndex">
             <g:checkBox name="exportGroupByIndex" value="${true}"/>
             <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export" />
         </label>

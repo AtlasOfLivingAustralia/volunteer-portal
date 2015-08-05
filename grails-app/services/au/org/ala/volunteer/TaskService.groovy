@@ -244,7 +244,7 @@ class TaskService {
 
         // Look for tasks that have never been viewed before!
         if (skip) {
-            tasks = Task.createCriteria().list([max:1, offset: skip]) {
+            tasks = Task.createCriteria().list(max:1, offset: skip) {
                 eq("project", project)
                 isNull("fullyTranscribedBy")
                 sizeLe("viewedTasks", 0)
@@ -253,7 +253,7 @@ class TaskService {
         }
 
         if (!tasks) {
-            tasks = Task.createCriteria().list([max:1]) {
+            tasks = Task.createCriteria().list(max:1) {
                 eq("project", project)
                 isNull("fullyTranscribedBy")
                 sizeLe("viewedTasks", 0)

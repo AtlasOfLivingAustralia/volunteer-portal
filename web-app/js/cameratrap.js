@@ -55,7 +55,30 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     $('#btnNext').click(function(e) {
       var $ctqn = $('#ct-questions-nav');
-      switchCtPage($ctqn.find('li.active').next().find('a[href]').attr('href'));
+      var nextPage = $ctqn.find('li.active').next().find('a[href]').attr('href') || '#ct-animals-present';
+      switchCtPage(nextPage);
+    });
+
+    var yes = $('#btn-animals-present').attr('value');
+    $('#ct-animals-question input').change(function(e) {
+      var $this = $(this);
+      var answer = $this.val();
+      var $btnSave = $('#btnSave');
+      if (answer != yes && $btnSave) {
+        // check if we're don't confirm and confirm
+        var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
+        if (dontConfirm) {
+          bootbox.confirm('Do you wish to record "' + answer + '" as your answer?', function(confirm) {
+            if (confirm) {
+              $btnSave.click();
+            }
+          });
+        } else {
+          $btnSave.click();
+        }
+      } else {
+        switchCtPage('#ct-animals-present');
+      }
     });
 
     $('#ct-other-btn').click(function(e) {
@@ -307,6 +330,15 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       });
     }
 
+    $('#ct-animals-question input').change(function(e) {
+      var $this = $(this);
+      $('#ct-animals-question-summary').text($this.val());
+    });
+    $('#ct-bnw-question input').change(function(e) {
+      var $this = $(this);
+      $('#ct-bnw-question-summary').text($this.val());
+    });
+
     // IMAGE SEQUENCE
     var $imgViewer = $("#image-container img");
     var $imgSeq = $('#ct-image-sequence');
@@ -498,15 +530,6 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     // enable tooltips
     $('[title]').tooltip();
-
-    $('#ct-animals-question input').change(function(e) {
-      var $this = $(this);
-      $('#ct-animals-question-summary').text($this.val());
-    });
-    $('#ct-bnw-question input').change(function(e) {
-      var $this = $(this);
-      $('#ct-bnw-question-summary').text($this.val());
-    });
 
   });
 

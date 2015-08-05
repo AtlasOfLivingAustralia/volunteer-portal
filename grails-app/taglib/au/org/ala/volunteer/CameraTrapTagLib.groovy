@@ -19,6 +19,7 @@ class CameraTrapTagLib {
         Project project = attrs.project
         Picklist picklist = attrs.picklist
         def userId = userService.currentUserId
+        log.info("Current userid = $userId")
         def warnings = []
 
         if (!picklist) return [error: "No valid picklist or field provided"]
@@ -30,7 +31,7 @@ class CameraTrapTagLib {
             myLast = task { [] }
         } else {
             valueCounts = Field.async.executeQuery("select f.value, count(f.id) from Field f JOIN f.task t WHERE t.project.id = :projectId GROUP BY f.value", [projectId: project.id])
-            myLast = Field.async.executeQuery("select distinct f.value, t.dateFullyTranscribed from Field f JOIN f.task t WHERE t.project.id = :projectId AND t.fullyTranscribedBy = :userId ORDER BY t.dateFullyTranscribed DESC", [projectId: project.id, userId: userId])
+            myLast = Field.async.executeQuery("select distinct f.value, max(t.dateFullyTranscribed) from Field f JOIN f.task t WHERE t.project.id = :projectId AND t.fullyTranscribedBy = :userId GROUP BY f.value ORDER BY max(t.dateFullyTranscribed) DESC", [projectId: project.id, userId: userId])
         }
 
         def items = PicklistItem.findAllByPicklistAndInstitutionCode(picklist, project?.picklistInstitutionCode)
@@ -41,8 +42,10 @@ class CameraTrapTagLib {
         if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
 
         def valueCountMap = valueCounts.get().collectEntries { [(it[0]): it[1]] }
+
+        def myLastList = myLast.get()
         def count = 0
-        def myLastMap = myLast.get().collectEntries { [it: count++] }
+        def myLastMap = myLastList.collectEntries { [(it[0]): count++] }
 
         def allImageIds = []
         def items2 = items.collectEntries {
@@ -57,7 +60,7 @@ class CameraTrapTagLib {
                     def imageIds = (dayImageIds + nightImageIds).findAll { it?.trim() != null }.collect { it?.trim() }
                     def similarSpecies = doc.similarSpecies
                     def popularity = valueCountMap.get(it.value) ?: 0
-                    def lastUsed = myLastMap.size() - (myLastMap.get(it.value) ?: myLastMap.size())
+                    def lastUsed = myLastList.size() - (myLastMap.get(it.value) ?: myLastList.size())
                     results = [ (it.value): [imageIds: imageIds, value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), similarSpecies: similarSpecies.toList(), popularity: popularity, lastUsed: lastUsed ] ]
                     allImageIds += imageIds
                 } else {

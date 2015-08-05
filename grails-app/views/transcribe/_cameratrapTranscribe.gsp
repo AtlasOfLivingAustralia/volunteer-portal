@@ -172,14 +172,14 @@
                         <div class="well-navbar-inner">
                             <span class="brand">Steps</span>
                             <ul id="ct-questions-nav" class="nav">
-                                <li class="active"><a href="#ct-landing" data-toggle="nav">1</a></li>
+                                <li class="${validator ? '' : 'active'}"><a href="#ct-landing" data-toggle="nav">1</a></li>
                                 <li><a href="#ct-animals-present" data-toggle="nav">2</a></li>
-                                <li><a href="#ct-animals-summary" data-toggle="nav">My Selections</a></li>
+                                <li class="${validator ? 'active' : ''}"><a href="#ct-animals-summary" data-toggle="nav">My Selections</a></li>
                             </ul>
                         </div>
                     </div>
                     <div id="ct-item-container" class="ct-item-container">
-                        <div id="ct-landing" class="ct-item active">
+                        <div id="ct-landing" class="ct-item ${validator ? '' : 'active'}">
                                 <p><strong>Are there any animals visible in the image?</strong></p>
                                 <div id="ct-animals-question">
                                     <label class="radio inline">
@@ -246,12 +246,12 @@
                                     <div class="ct-sub-item form-horizontal" id="ct-unlisted">
                                         <div class="control-group">
                                             <div class="controls">
-                                                <label style="display: inline-block" class="checkbox" for="recordValues.0.unknown" title="Check this if there are animals present in the photo that you do not recognise"><g:checkBox name="recordValues.0.unknown" value="${recordValues[0]?.unknown}"/>Unknown</label>
+                                                <label style="display: inline-block" class="checkbox" for="recordValues.0.unknown" title="Check this if there are animals present in the photo that you do not recognise"><g:checkBox name="recordValues.0.unknown" checked="${recordValues[0]?.unknown == 'true'}"/>Unknown</label>
                                             </div>
                                         </div>
                                         <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
                                         ${Collections.shuffle(placeholders)}
-                                        <g:set var="unlisteds" value="${recordValues.findAll { it.value?.unlisted != null }.collect{  [i: it.key, v: it.value.unlisted] }.sort { it.i }.collect { it.v }}" />
+                                        <g:set var="unlisteds" value="${recordValues.findAll { it.value?.unlisted != null }.findAll { it.value.unlisted }.collect{  [i: it.key, v: it.value.unlisted] }.sort { it.i }.collect { it.v }}" />
                                         <g:each in="${unlisteds}" var="u" status="s">
                                             <div class="control-group">
                                                 <label class="control-label" for="recordValues.${s}.unlisted">Species name</label>
@@ -271,12 +271,10 @@
                             </div>
 
                         </div>
-                        <div id="ct-animals-summary" class="ct-item">
+                        <div id="ct-animals-summary" class="ct-item ${validator ? 'active' : ''}">
                             <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.%{--  <strong>Black and white:</strong> <span id="ct-bnw-question-summary">${bnw}</span></p>--}%
                             <p><strong>Selected animals</strong></p>
-                            <div class="itemgrid ct-selection-grid">
-
-                            </div>
+                            <div class="itemgrid ct-selection-grid"></div>
                             <div class="ct-unknown-selections-unknown">
                                 <span></span>
                             </div>
@@ -315,21 +313,21 @@
         %{--</div>--}%
     %{--</div>--}%
 
-    <div class="row-fluid hidden">
-        <div class="span12">
-            <div class="well">
-                <div id="ct-selection-grid" class="itemgrid ct-selection-grid">
+    %{--<div class="row-fluid hidden">--}%
+        %{--<div class="span12">--}%
+            %{--<div class="well">--}%
+                %{--<div id="ct-selection-grid" class="itemgrid ct-selection-grid">--}%
 
-                </div>
-                <div class="ct-unknown-selections-unknown">
-                    <span></span>
-                </div>
-                <div class="ct-unknown-selections">
-                    <label style="font-weight: bold; display: inline-block;">${message(code: 'cameratrap.transcribe.unlisted.label', default: 'Others:')}</label> <span></span>
-                </div>
-            </div>
-        </div>
-    </div>
+                %{--</div>--}%
+                %{--<div class="ct-unknown-selections-unknown">--}%
+                    %{--<span></span>--}%
+                %{--</div>--}%
+                %{--<div class="ct-unknown-selections">--}%
+                    %{--<label style="font-weight: bold; display: inline-block;">${message(code: 'cameratrap.transcribe.unlisted.label', default: 'Others:')}</label> <span></span>--}%
+                %{--</div>--}%
+            %{--</div>--}%
+        %{--</div>--}%
+    %{--</div>--}%
 
     %{--<g:if test="${validator}">--}%
     %{--<div class="row-fluid">--}%

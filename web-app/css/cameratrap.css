@@ -274,10 +274,6 @@
     text-overflow: ellipsis;
 }
 
-.ct-selection-grid {
-    min-height: 155px;
-}
-
 .pointer {
     cursor: pointer;
 }
@@ -415,7 +411,7 @@
 /*}*/
 
 .ct-well {
-    min-height: 570px;
+    min-height: 624px;
 }
 
 .ct-well .row-fluid .btn-toolbar input[type="text"] {
