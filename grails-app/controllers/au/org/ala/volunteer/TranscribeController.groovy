@@ -157,7 +157,7 @@ class TranscribeController {
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null)
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
-                if (skipNextAction) redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [complete: params.id])
+                if (skipNextAction) redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])
                 else redirect(action: 'showNextAction', id: params.id)
             }
             else {
@@ -178,9 +178,6 @@ class TranscribeController {
     def showNextFromProject = {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
-        def skip = params.getInt('skip', 0)
-
-        log.info("Got skip param: $skip")
 
         if (project == null) {
             log.error("Project not found for id: " + params.id)
@@ -192,11 +189,11 @@ class TranscribeController {
         if (params.msg) {
             flash.message = params.msg
         }
-        def previousId = params.prevId?:-1
+        def previousId = params.long('prevId',-1)
         def prevUserId = params.prevUserId?:-1
-        def taskInstance = taskService.getNextTask(currentUser, project, skip)
+        def taskInstance = taskService.getNextTask(currentUser, project, previousId)
         //retrieve the details of the template
-        if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {
+        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
             log.debug "1."
             render(view: 'noTasks', model: [complete: params.complete])
         } else if (taskInstance) {

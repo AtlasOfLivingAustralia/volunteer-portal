@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.ViewedTask; au.org.ala.volunteer.Task" %>
+<%@ page import="au.org.ala.volunteer.UserService; au.org.ala.volunteer.ViewedTask; au.org.ala.volunteer.Task" %>
 
 <html>
     <head>
@@ -21,7 +21,7 @@
 
                 $("li#viewTask a").click(function (e) {
                     e.preventDefault();
-                    window.location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id)}";
+                    window.location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id, params: [prevId: taskInstance?.id, prevUserId: ])}";
                 });
 
                 $("li#viewStats a").click(function (e) {

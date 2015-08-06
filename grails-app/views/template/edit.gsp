@@ -42,6 +42,22 @@
                     $viewParamsJSON.val(jsonString);
                 });
 
+                function addDefaults() {
+                    var $viewParamsJSON = $('#viewParamsJSON');
+                    var str = $viewParamsJSON.val();
+                    var params = JSON.parse(str);
+                    $('#row-view-params-form').find('[data-default]').each(function() {
+                        var $this = $(this);
+                        var name = $this.attr('name');
+                        var p = params[name];
+                        if (p == undefined) {
+                            params[name] = $this.data('default');
+                        }
+                    });
+                    var jsonString = JSON.stringify(params);
+                    $viewParamsJSON.val(jsonString);
+                }
+
                 function syncParamsFields() {
                     var str = $('#viewParamsJSON').val();
                     var params = JSON.parse(str);
@@ -63,6 +79,7 @@
                     var p = $.ajax('${createLink(controller: 'template', action:'viewParamsForm')}?view=' + encodeURIComponent($this.val()));
                     p.done(function(data, textStatus, jqXHR) {
                         $('#row-view-params-form').css('display', 'initial').html(data);
+                        addDefaults();
                         syncParamsFields();
                     });
 

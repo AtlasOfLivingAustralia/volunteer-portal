@@ -347,7 +347,7 @@
             var imageRotation = 0;
 
             function rotateImage() {
-                var image = $("#image-container img")
+                var image = $("#image-container img");
                 if (image) {
                     imageRotation += 90;
                     if (imageRotation >= 360) {
@@ -692,7 +692,7 @@
                                 <g:if test="${validator}">
                                     <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
                                     <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
-                                    <button type="button" class="btn" id="showNextFromProject bvp-submit-button">Skip</button>
+                                    <button type="button" class="btn bvp-submit-button" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
                                         <a href="${createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone())}" />
@@ -848,8 +848,8 @@
             $("#showNextFromProject, .btn-skip-n").click(function(e) {
                 e.preventDefault();
                 var skip = $(this).data('skip');
-                var url = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
-                if (skip) url = url + '?skip='+skip;
+                var url = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
+                if (skip) url = url + '&skip='+skip;
                 window.location = url;
             });
 

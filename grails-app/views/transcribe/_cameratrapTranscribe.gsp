@@ -51,7 +51,6 @@
                 <vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-small"/>
                 <div id="ct-task-image-toolbar" class="btn-group">
                     <button type="button" class="btn btn-small" id="showNextFromProject" data-container="body" title="Skip the to next image">Skip</button>
-                    <button type="button" class="btn btn-small btn-skip-n" data-skip="10" data-container="body" title="Skip forward 10 images (if possible)">Skip 10</button>
                     %{--<button type="button" class="btn btn-small" id="btnSavePartial">Save draft</button>--}%
                     <g:link controller="transcribe" action="discard" id="${taskInstance?.id}" class="btn btn-small btn-warning" data-container="body" title="Release your lock on this image and return to the expedition page">Quit</g:link>
                 </div>
@@ -68,9 +67,6 @@
                         <g:imageViewer multimedia="${multimedia}" />
                     </g:if>
                 </g:each>
-                <div>
-                    <p style="margin-top:10px" class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
-                </div>
                 <div class="form-horizontal" style="text-align: center;">
                     %{--<div class="control-group">--}%
                     <div class="controls" style="margin-left: initial; display: inline-block;">
@@ -102,6 +98,9 @@
                             <div class="faux-empty-cell">&nbsp;</div>
                         </g:each>
                     </div>
+                </div>
+                <div>
+                    <p style="margin-top:10px" class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
                 </div>
             </div>
         </div>

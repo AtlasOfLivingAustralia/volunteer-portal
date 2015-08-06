@@ -3,7 +3,7 @@
 <div class="control-group">
     <div class="controls">
         <label class="checkbox" for="hideDefaultButtons">
-            <g:checkBox name="hideDefaultButtons" value="${true}"/>
+            <g:checkBox name="hideDefaultButtons" data-default="true" />
             <g:message code="template.hideDefaultButtons.label" default="Hide Default Buttons" />
         </label>
     </div>
@@ -11,7 +11,7 @@
 <div class="control-group">
     <div class="controls">
         <label class="checkbox" for="hideSectionNumbers">
-            <g:checkBox name="hideSectionNumbers" value="${true}"/>
+            <g:checkBox name="hideSectionNumbers" data-default="true" />
             <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers" />
         </label>
     </div>
@@ -19,9 +19,15 @@
 <div class="control-group">
     <div class="controls">
         <label class="checkbox" for="exportGroupByIndex">
-            <g:checkBox name="exportGroupByIndex" value="${true}"/>
+            <g:checkBox name="exportGroupByIndex" data-default="true"/>
             <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export" />
         </label>
+    </div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="jumpNTasks"><g:message code="template.cameratrap.jump.label" default="Number of tasks to jump on save / skip" /></label>
+    <div class="controls">
+        <g:field type="number" name="jumpNTasks" min="1" max="10" data-default="6"/>
     </div>
 </div>
 <div class="control-group">
