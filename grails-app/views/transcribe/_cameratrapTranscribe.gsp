@@ -71,6 +71,15 @@
                 <div>
                     <p style="margin-top:10px" class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
                 </div>
+                <div class="form-horizontal" style="text-align: center;">
+                    %{--<div class="control-group">--}%
+                    <div class="controls" style="margin-left: initial; display: inline-block;">
+                        <label class="checkbox" for="recordValues.0.interesting">
+                            <g:checkBox name="recordValues.0.interesting" checked="${recordValues[0]?.interesting == 'true'}" /> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
+                        </label>
+                    </div>
+                    %{--</div>--}%
+                </div>
                 <div id="ct-image-sequence" class="faux-table text-center">
                     <div>
                         <g:each in="${0..<(3-sequences.previous.size())}">
@@ -93,15 +102,6 @@
                             <div class="faux-empty-cell">&nbsp;</div>
                         </g:each>
                     </div>
-                </div>
-                <div class="form-horizontal" style="text-align: center;">
-                    %{--<div class="control-group">--}%
-                        <div class="controls" style="margin-left: initial; display: inline-block;">
-                            <label class="checkbox" for="recordValues.0.interesting">
-                                <g:checkBox name="recordValues.0.interesting" checked="${recordValues[0]?.interesting == 'true'}" /> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
-                            </label>
-                        </div>
-                    %{--</div>--}%
                 </div>
             </div>
         </div>
