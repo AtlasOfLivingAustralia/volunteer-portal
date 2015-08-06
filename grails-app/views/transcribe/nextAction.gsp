@@ -21,7 +21,7 @@
 
                 $("li#viewTask a").click(function (e) {
                     e.preventDefault();
-                    window.location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id, params: [prevId: taskInstance?.id, prevUserId: ])}";
+                    window.location.href = "${createLink(controller:'transcribe', action:'showNextFromProject', id:taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
                 });
 
                 $("li#viewStats a").click(function (e) {
