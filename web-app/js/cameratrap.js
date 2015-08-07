@@ -2,12 +2,6 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
   jQuery(function ($) {
     var values = _.pluck([].concat(_.values(smItems)), 'value');
 
-    //var itemValueMap = _.reduce(_.filter([].concat(smItems), function (it) {
-    //  return it != null
-    //}), function (memo, it) {
-    //  memo[it.value] = it;
-    //  return memo;
-    //}, {});
     var itemValueMap = smItems;
 
     var unlisted = [];
@@ -81,10 +75,11 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       }
     });
 
-    $('#ct-other-btn').click(function(e) {
-      var $this = $(this);
-      var active = !$this.hasClass('active');
-      var to = active ? '#ct-unlisted' : '#ct-animals-list';
+    // switch back to regular camera trap transcribing when clicking any button:
+    var $ctToolbarBtns = $('#ct-animals-btn-group, #ct-sort-btn-group').find('button');
+
+    function switchCtSubPage(isOther) {
+      var to = isOther ? '#ct-unlisted' : '#ct-animals-list';
 
       var $sic = $('.ct-sub-item-container');
       $sic.find('.ct-sub-item.fading').removeClass('fading');
@@ -94,8 +89,15 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       if (transitionendname) otherActives.addClass('fading');
       $(to).addClass('active');
 
-      var $btns = $('#ct-animals-btn-group, #ct-sort-btn-group').find('button');
-      $btns.toggleClass('diabled', active).prop('disabled', active);
+    }
+
+    $ctToolbarBtns.click(function(e) {
+      switchCtSubPage(false);
+      $('#ct-other-btn').toggleClass('active', false);
+    });
+
+    $('#ct-other-btn').click(function(e) {
+      switchCtSubPage(!$(this).hasClass('active'));
     });
 
     if (transitionendname) {
@@ -167,8 +169,6 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       e.preventDefault();
     });
 
-    //var ctBadges = {1: 'ct-badge-sure', 0.5: 'ct-badge-uncertain'};
-    //var badges = {1: 'badge-success', 0.5: 'badge-warning'};
     $('#ct-container')
       .on('click', '.ct-badge-sure', function (e) {
         ctBadgeClick(e, 1);
@@ -191,10 +191,6 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       }
       syncSelectionState();
     }
-
-    //function valueToBadgeSelector(v, i, a) {
-    //  return '[data-image-select-value="' + v + '"] .badge.' + ctBadges[selections[v].certainty]
-    //}
 
     function valueToSelector(v, i, a) {
       return '[data-image-select-value="' + v + '"]'
@@ -250,8 +246,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     }
 
     function syncUnlistedTray() {
-      var checked = $('#recordValues\\.0\\.unknown').prop('checked');
-      $('.ct-unknown-selections-unknown').find('span').text(checked ? "Unknown checked" : "");
+      var checked = $unlisted.find('input[name=recordValues\\.0\\.unknown]:checked').val();
+      $('.ct-unknown-selections-unknown').find('span').text(checked == 'yes' ? "Unknown animal in the image" : "");
       var unlisted = _.filter($('#ct-unlisted').find('input[type="text"]').map(function (i, e) {
         return $(this).val()
       }), function (o) {
@@ -296,6 +292,11 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     $unlisted.on('change keyup paste input propertychange', 'input', function (e) {
       syncUnlistedTray();
+    });
+
+    // update radio buttons to force into "known animals mode if typing"
+    $unlisted.on('change keyup paste input propertychange', 'input.speciesName', function() {
+      $unlisted.find('[name=recordValues\\.0\\.unknown][value=no]').prop('checked', true);
     });
 
     $unlisted.on('change keyup paste input propertychange', '.speciesName:last', function (e) {
@@ -379,17 +380,12 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     });
 
     // SORT BUTTONS
-    $('#ct-sort-btn-group').on('click', 'button', function (e) {
+    var $ctSortBtns = $('#ct-sort-btn-group');
+    $ctSortBtns.on('click', 'button', function (e) {
       var $this = $(this);
       var alreadyActive = $this.hasClass('active');
       var sortType = $this.data('sort-fn');
       var sortFn;
-      //if (alreadyActive) {
-      //  $this.removeClass('active');
-      //  sortFn = function (a, b) {
-      //    return parseInt($(a).data('item-index')) - parseInt($(b).data('item-index'));
-      //  }
-      //} else {
         if (sortType == 'alpha') {
           sortFn = function (a, b) {
             return ($(a).find('[data-image-select-value]').data('image-select-value') || "").localeCompare($(b).find('[data-image-select-value]').data('image-select-value'));
@@ -421,12 +417,17 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
             return parseInt($(a).data('item-index')) - parseInt($(b).data('item-index'));
           }
         }
-      //}
       $('.sortable').each(function () {
         var $this = $(this);
         var parent = $this.find('.itemgrid');
         parent.find('.griditem.bvpBadge').sort(sortFn).appendTo(parent);
       });
+    });
+
+    // Store last filter used
+    $ctSortBtns.on('click', 'button', function(e) {
+      var id = $(e.target).attr('id');
+      amplify.store('bvp_ct_last_filter', id);
     });
 
     // FILTERING
@@ -478,7 +479,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       if (q1 == $('#btn-animals-present').val()) {
         var count = _.keys(selections).length;
         count += $unlisted.find('input.speciesName').filter(function(i,e) { return $(this).val() }).length;
-        count += $unlisted.find(bvp.escapeId('recordValues.0.unknown')).prop('checked') ? 1 : 0;
+        count += $unlisted.find('input[name=recordValues\\.0\\.unknown]:checked').val() == 'yes' ? 1 : 0;
 
         if (count < 1) {
           errorList.push({element: null, message: "You must select at least one animal", type: "Error" });
@@ -486,10 +487,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       }
     });
     transcribeValidation.setErrorRenderFunctions(function (errorList) {
-      //bootbox.alert(_.pluck(errorList, 'message').join('.  '));
     },
     function() {
-
     });
 
     submitRequiresConfirmation = true;
@@ -513,16 +512,16 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
         var $active = $this.find('.active');
         var nextImage = $active.next('img');
         var $next = (nextImage.length > 0) ? nextImage : $this.find('img:first');
-        //if (!$active.is($next)) {
-          $active.removeClass('active');
-          $next.addClass('active');
-        //}
+        $active.removeClass('active');
+        $next.addClass('active');
       });
     }
 
     setInterval(cycleImages, 7000);
 
-    //if (recordValues && recordValues['0'] && ('some' === recordValues['0'].animalsVisible)) animalsPresent();
+    // restore filter
+    var lastFilter = amplify.store('bvp_ct_last_filter');
+    if (lastFilter) $('#'+lastFilter).click();
 
     // force intial sync of saved values
     syncSelectionState();

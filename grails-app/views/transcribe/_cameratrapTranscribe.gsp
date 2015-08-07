@@ -68,13 +68,13 @@
                     </g:if>
                 </g:each>
                 <div class="form-horizontal" style="text-align: center;">
-                    %{--<div class="control-group">--}%
-                    <div class="controls" style="margin-left: initial; display: inline-block;">
-                        <label class="checkbox" for="recordValues.0.interesting">
-                            <g:checkBox name="recordValues.0.interesting" checked="${recordValues[0]?.interesting == 'true'}" /> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
-                        </label>
+                    <div class="control-group">
+                        <div class="controls" style="margin-left: initial; display: inline-block;">
+                            <label class="checkbox" for="recordValues.0.interesting">
+                                <g:checkBox name="recordValues.0.interesting" checked="${recordValues[0]?.interesting == 'true'}" /> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
+                            </label>
+                        </div>
                     </div>
-                    %{--</div>--}%
                 </div>
                 <div id="ct-image-sequence" class="faux-table text-center">
                     <div>
@@ -166,7 +166,6 @@
         <div id="ct-question-span" class="span6" style="">
             <div id="camera-trap-questions" class="" data-interval="">
                 <div class="well well-small ct-well">
-                    %{--style="height: 506px;"--}%
                     <div class="well-navbar navbar">
                         <div class="well-navbar-inner">
                             <span class="brand">Steps</span>
@@ -245,7 +244,15 @@
                                     <div class="ct-sub-item form-horizontal" id="ct-unlisted">
                                         <div class="control-group">
                                             <div class="controls">
-                                                <label style="display: inline-block" class="checkbox" for="recordValues.0.unknown" title="Check this if there are animals present in the photo that you do not recognise"><g:checkBox name="recordValues.0.unknown" checked="${recordValues[0]?.unknown == 'true'}"/>Unknown</label>
+                                                <g:radioGroup name="recordValues.0.unknown"
+                                                              value="${recordValues[0]?.unknown}"
+                                                              labels="[
+                                                                      message(code: 'cameratrap.unknown.radio.yes.label', default: 'I don\'t know what the animal is'),
+                                                                      message(code: 'cameratrap.unknown.radio.no.label', default: 'I know what the animal is but it is not in the lists.  Enter details below:')
+                                                              ]"
+                                                              values="['yes','no']">
+                                                    <label class="radio">${it.radio} ${it.label}</label>
+                                                </g:radioGroup>
                                             </div>
                                         </div>
                                         <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
@@ -297,46 +304,6 @@
             </div>
         </div>
     </div>
-
-    %{--<div class="row-fluid">--}%
-        %{--<div class="span11">--}%
-            %{--<h3 class="h3-small">My selections</h3>--}%
-        %{--</div>--}%
-        %{--<div class="span1">--}%
-            %{--<div class="h3-small" style="line-height: 40px;">--}%
-                %{--<g:if test="${!validator}">--}%
-                    %{--<button type="button" id="btnSave" class="btn btn-primary bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>--}%
-                %{--</g:if>--}%
-                %{--<button type="button" id="btnNext" class="btn btn-primary">${message(code: 'default.button.next.label', default: 'Next')} <i class="fa fa-chevron-right"></i></button>--}%
-            %{--</div>--}%
-        %{--</div>--}%
-    %{--</div>--}%
-
-    %{--<div class="row-fluid hidden">--}%
-        %{--<div class="span12">--}%
-            %{--<div class="well">--}%
-                %{--<div id="ct-selection-grid" class="itemgrid ct-selection-grid">--}%
-
-                %{--</div>--}%
-                %{--<div class="ct-unknown-selections-unknown">--}%
-                    %{--<span></span>--}%
-                %{--</div>--}%
-                %{--<div class="ct-unknown-selections">--}%
-                    %{--<label style="font-weight: bold; display: inline-block;">${message(code: 'cameratrap.transcribe.unlisted.label', default: 'Others:')}</label> <span></span>--}%
-                %{--</div>--}%
-            %{--</div>--}%
-        %{--</div>--}%
-    %{--</div>--}%
-
-    %{--<g:if test="${validator}">--}%
-    %{--<div class="row-fluid">--}%
-        %{--<div class="offset10 span2">--}%
-            %{--<button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>--}%
-            %{--<button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>--}%
-        %{--</div>--}%
-    %{--</div>--}%
-    %{--</g:if>--}%
-
     <div id="ct-fields" style="display: none;"></div>
 </div>
 

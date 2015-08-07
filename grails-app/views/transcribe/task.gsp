@@ -732,21 +732,20 @@
         <div id="submitConfirmModal" class="modal hide fade">
             <!-- dialog contents -->
             <div class="modal-body">
-                <p><g:message code="transcribe.task.submit.confirm" default="Are you sure you wish to submit?"/></p>
                 <div class="form-horizontal">
-                    <div class="control-group">
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
-                            </label>
-                        </div>
+                    <span class="control-label"><g:message code="transcribe.task.submit.confirm" default="Submit your selections?"/></span>
+                    <div class="controls">
+                        <button id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
+                        <button id="submit-confirm-cancel" type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    </div>
+                    <div class="controls">
+                        <label class="checkbox">
+                            <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
+                        </label>
                     </div>
                 </div>
             </div>
-            <!-- dialog buttons -->
             <div class="modal-footer">
-                <button id="submit-confirm-cancel" type="button" class="btn btn-link">Cancel</button>
-                <button id="submit-confirm-ok" type="button" class="btn btn-primary">OK</button>
             </div>
         </div>
     </body>
@@ -926,9 +925,9 @@
     var submitRequiresConfirmation = false;
     var $submitConfirm = $("#submitConfirmModal");
 
-    $("#submit-confirm-cancel").on("click", function(e) {
-        $submitConfirm.modal('hide');     // dismiss the dialog
-    });
+    %{--$("#submit-confirm-cancel").on("click", function(e) {--}%
+        %{--$submitConfirm.modal('hide');     // dismiss the dialog--}%
+    %{--});--}%
     $submitConfirm.on("hide", function() {    // remove the event listeners when the dialog is dismissed
         $("#submit-confirm-ok").off("click");
     });
