@@ -246,8 +246,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     }
 
     function syncUnlistedTray() {
-      var checked = $unlisted.find('input[name=recordValues\\.0\\.unknown]:checked').val();
-      $('.ct-unknown-selections-unknown').find('span').text(checked == 'yes' ? "Unknown animal in the image" : "");
+      var checked = $unlisted.find('input[name=recordValues\\.0\\.unknown]').is(':checked');
+      $('.ct-unknown-selections-unknown').find('span').text(checked == true ? "Unknown animal in the image" : "");
       var unlisted = _.filter($('#ct-unlisted').find('input[type="text"]').map(function (i, e) {
         return $(this).val()
       }), function (o) {
@@ -290,16 +290,11 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     var $unlisted = $('#ct-unlisted');
 
-    $unlisted.on('change keyup paste input propertychange', 'input', function (e) {
+    $unlisted.on('change keyup paste input propertychange autocompletechange', 'input', function (e) {
       syncUnlistedTray();
     });
 
-    // update radio buttons to force into "known animals mode if typing"
-    $unlisted.on('change keyup paste input propertychange', 'input.speciesName', function() {
-      $unlisted.find('[name=recordValues\\.0\\.unknown][value=no]').prop('checked', true);
-    });
-
-    $unlisted.on('change keyup paste input propertychange', '.speciesName:last', function (e) {
+    $unlisted.on('change keyup paste input propertychange autocompletechange', '.speciesName:last', function (e) {
       var $this = $(this);
       if ($this.val()) {
         var index = $unlisted.children().length;

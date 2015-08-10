@@ -19,7 +19,6 @@ class CameraTrapTagLib {
         Project project = attrs.project
         Picklist picklist = attrs.picklist
         def userId = userService.currentUserId
-        log.info("Current userid = $userId")
         def warnings = []
 
         if (!picklist) return [error: "No valid picklist or field provided"]

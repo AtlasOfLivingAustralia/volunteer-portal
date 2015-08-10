@@ -139,15 +139,8 @@
                                     <div class="ct-sub-item form-horizontal" id="ct-unlisted">
                                         <div class="control-group">
                                             <div class="controls">
-                                                <g:radioGroup name="recordValues.0.unknown"
-                                                              value="${recordValues[0]?.unknown}"
-                                                              labels="[
-                                                                      message(code: 'cameratrap.unknown.radio.yes.label', default: 'I don\'t know what the animal is'),
-                                                                      message(code: 'cameratrap.unknown.radio.no.label', default: 'I know what the animal is but it is not in the lists.  Enter details below:')
-                                                              ]"
-                                                              values="['yes','no']">
-                                                    <label class="radio">${it.radio} ${it.label}</label>
-                                                </g:radioGroup>
+                                                <label class="checkbox" for="recordValues.0.unknown"><g:checkBox name="recordValues.0.unknown" checked="${recordValues[0]?.unknown}" /> ${message(code: 'cameratrap.unknown.radio.yes.label', default: 'I don\'t know what the animal is')}</label>
+                                                <label class="checkbox" for="recordValues.0.otherunlisted"><g:checkBox name="recordValues.0.otherunlisted" checked="${recordValues[0]?.unknown}" /> ${message(code: 'cameratrap.unknown.radio.no.label', default: 'I know what the animal is but it is not in the lists.  Enter details below:')}</label>
                                             </div>
                                         </div>
                                         <g:set var="placeholders" value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}" />
@@ -173,7 +166,7 @@
 
                         </div>
                         <div id="ct-animals-summary" class="ct-item ${validator ? 'active' : ''}">
-                            <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.%{--  <strong>Black and white:</strong> <span id="ct-bnw-question-summary">${bnw}</span></p>--}%
+                            <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.
                             <p><strong>Selected animals</strong></p>
                             <div class="itemgrid ct-selection-grid"></div>
                             <div class="ct-unknown-selections-unknown">
