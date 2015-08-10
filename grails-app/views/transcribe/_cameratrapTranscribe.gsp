@@ -1,44 +1,6 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
 <r:require modules="cameratrap, fontawesome" />
-<style>
-    .faux-table {
-        display: table;
-        width: 100%;
-    }
-
-    .faux-table > div {
-        display: table-row;
-    }
-
-    .faux-table > div > div {
-        display: table-cell;
-    }
-    .faux-img-cell, .faux-empty-cell {
-        border: solid grey 5px;
-        background-color: grey;
-    }
-    .faux-img-cell {
-        cursor: pointer;
-        transition: all 0.5s ease-in-out;
-    }
-    .faux-img-cell.default {
-        border: solid #df4a21 5px;
-        background-color: #df4a21;
-    }
-    .faux-img-cell.active {
-        border: solid black 5px;
-        background-color: black;
-    }
-    .faux-img-cell:first-child, .faux-empty-cell:first-child {
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px;
-    }
-    .faux-img-cell:last-child, .faux-empty-cell:last-child {
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-    }
-</style>
 <div id="ct-container" class="container-fluid fourthree-image">
 
     <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}" />
@@ -104,63 +66,6 @@
                 </div>
             </div>
         </div>
-
-        <style>
-            .well hr {
-                border-top-color: #e9eae0;
-                border-bottom-color: #d9dad0;
-            }
-
-            /* undo bootstrap well padding */
-            .well .well-navbar {
-                margin-top: -19px;
-                margin-left: -19px;
-                margin-right: -19px;
-            }
-
-            .well.well-small .well-navbar {
-                margin-top: -9px;
-                margin-left: -9px;
-                margin-right: -9px;
-            }
-
-            .well-navbar .well-navbar-inner {
-                min-height: 40px;
-                padding-left: 20px;
-                padding-right: 20px;
-                background-color: #d8dcc8;
-                background-image: unset;
-                background-repeat: unset;
-                filter: unset;
-                border-bottom: 1px solid #d7cac9;
-                -webkit-border-radius: unset;
-                -moz-border-radius: unset;
-                border-radius: unset;
-                -webkit-box-shadow: unset;
-                -moz-box-shadow: unset;
-                box-shadow: unset;
-            }
-
-            .well-navbar.navbar .brand {
-                text-shadow: none;
-                color: #7f826a;
-                font-weight: 100;
-            }
-
-            .well-navbar.navbar .nav > .active > a, .well-navbar.navbar .nav > .active > a:hover, .well-navbar.navbar .nav > .active > a:focus {
-                color: #222;
-                text-decoration: none;
-                background-color: white;
-                -webkit-box-shadow: none;
-                -moz-box-shadow: none;
-                box-shadow: none;
-            }
-
-            .well-navbar.navbar .nav > li > a {
-                color: #7f826a;
-                text-shadow: none;
-            }
-        </style>
         <g:set var="step1" value="${recordValues[0]?.animalsVisible}" />
         <g:set var="bnw" value="${recordValues[0]?.photoBlackAndWhite}" />
         <div id="ct-question-span" class="span6" style="">
@@ -190,16 +95,6 @@
                                         <input type="radio" name="recordValues.0.animalsVisible" value="unsure" ${'unsure' == step1 ? 'checked': ''}>Unsure
                                     </label>
                                 </div>
-                                %{--<hr />--}%
-                                %{--<p><strong>Is the photo black and white?</strong></p>--}%
-                                %{--<div id="ct-bnw-question">--}%
-                                    %{--<label class="radio inline">--}%
-                                        %{--<input type="radio" name="recordValues.0.photoBlackAndWhite" value="yes" ${'yes' == bnw ? 'checked': ''}>Yes--}%
-                                    %{--</label>--}%
-                                    %{--<label class="radio inline">--}%
-                                        %{--<input type="radio" name="recordValues.0.photoBlackAndWhite" value="no" ${'no' == bnw ? 'checked': ''}>No--}%
-                                    %{--</label>--}%
-                                %{--</div>--}%
                                 <g:hiddenField name="skipNextAction" value="true" />
                         </div>
                         <div id="ct-animals-present" class="ct-item">
@@ -229,7 +124,7 @@
                                         <div id="ct-sort-btn-group" class="btn-group" data-toggle="buttons-radio">
                                             <button id="button-sort-initial" type="button" class="btn btn-small active" data-sort-fn="initial" title="${message(code: 'default.button.alpha.sort.label', default: 'Default order')}" data-container="body"><i class="fa fa-random"></i></button>
                                             <button id="button-sort-alpha" type="button" class="btn btn-small" data-sort-fn="alpha" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-container="body"><i class="fa fa-sort-alpha-asc"></i></button>
-                                            <button id="button-sort-pop" type="button" class="btn btn-small" data-sort-fn="common" title="${message(code: 'default.button.popularity.sort.label', default: 'Sort by most common')}" data-container="body"><i class="fa fa-sort-numeric-asc"></i></button>
+                                            <button id="button-sort-pop" type="button" class="btn btn-small" data-sort-fn="common" title="${message(code: 'default.button.popularity.sort.label', default: 'Sort by most common in expedition')}" data-container="body"><i class="fa fa-sort-numeric-asc"></i></button>
                                             <button id="button-sort-mychoices" type="button" class="btn btn-small" data-sort-fn="previous" title="${message(code: 'default.button.mychoices.sort.label', default: 'Sort by my previous choices')}" data-container="body"><i class="fa fa-sort-amount-desc"></i></button>
                                         </div>
                                     </div>
