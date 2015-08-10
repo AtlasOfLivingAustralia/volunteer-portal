@@ -474,7 +474,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       if (q1 == $('#btn-animals-present').val()) {
         var count = _.keys(selections).length;
         count += $unlisted.find('input.speciesName').filter(function(i,e) { return $(this).val() }).length;
-        count += $unlisted.find('input[name=recordValues\\.0\\.unknown]:checked').val() == 'yes' ? 1 : 0;
+        count += $unlisted.find('input[name=recordValues\\.0\\.unknown]').is(':checked') == true ? 1 : 0;
 
         if (count < 1) {
           errorList.push({element: null, message: "You must select at least one animal", type: "Error" });
