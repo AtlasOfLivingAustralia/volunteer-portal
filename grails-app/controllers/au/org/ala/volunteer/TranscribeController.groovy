@@ -15,7 +15,7 @@ class TranscribeController {
     def userService
     def logService
 
-    static allowedMethods = [saveTranscription: "POST"]
+    static allowedMethods = [saveTranscription: "POST", save: "POST", savePartial: "POST"]
 
     def index = {
         if (params.id) {
@@ -79,7 +79,7 @@ class TranscribeController {
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
-            render(view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber])
+            render(view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -131,7 +131,18 @@ class TranscribeController {
      * Sync fields.
      * done in the form.
      */
-    def save = {
+    def save() {
+        commonSave(params, true)
+    }
+
+    /**
+     * Sync fields.
+     */
+    def savePartial() {
+        commonSave(params, false)
+    }
+
+    private def commonSave(params, markTranscribed) {
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
@@ -141,16 +152,16 @@ class TranscribeController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
-            def project = Project.findById(taskInstance.project.id)
-            def template = Template.findById(project.template.id)
+            def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, true, false, null)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null)
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
-                redirect(action: 'showNextAction', id: params.id)
+                if (skipNextAction) redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])
+                else redirect(action: 'showNextAction', id: params.id)
             }
             else {
-                def msg = "Task save failed: " + taskInstance.hasErrors()
+                def msg = "Task save ${markTranscribed ? ' ' : 'partial '}failed: " + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
                 redirect(action:'task', id: params.id)
@@ -158,36 +169,6 @@ class TranscribeController {
             }
         } else {
             redirect(view: '../index')
-        }
-    }
-
-    /**
-     * Sync fields.
-     */
-    def savePartial() {
-        def currentUser = userService.currentUserId
-        if (currentUser) {
-
-            if (!params.id && params.failoverTaskId) {
-                redirect(action:'task', id: params.failoverTaskId)
-                return
-            }
-
-            def taskInstance = Task.get(params.id)
-            WebUtils.cleanRecordValues(params.recordValues) // removes strange characters from UTF-8 pages
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, false, null)
-            if (!taskInstance.hasErrors()) {
-                updatePicklists(taskInstance)
-                redirect(action: 'showNextAction', id: params.id)
-            }
-            else {
-                def msg = "Task save partial failed: " + taskInstance.hasErrors()
-                log.error(msg)
-                flash.message = msg
-                render(view: template.viewName, model: [taskInstance: taskInstance, recordValues: params.recordValues])
-            }
-        } else {
-            redirect(view: '/index')
         }
     }
 
@@ -208,19 +189,19 @@ class TranscribeController {
         if (params.msg) {
             flash.message = params.msg
         }
-        def previousId = params.prevId?:-1
+        def previousId = params.long('prevId',-1)
         def prevUserId = params.prevUserId?:-1
-        def taskInstance = taskService.getNextTask(currentUser, project)
+        def taskInstance = taskService.getNextTask(currentUser, project, previousId)
         //retrieve the details of the template
-        if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {
+        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
             log.debug "1."
-            render(view: 'noTasks')
+            render(view: 'noTasks', model: [complete: params.complete])
         } else if (taskInstance) {
             log.debug "2."
-            redirect(action: 'task', id: taskInstance.id)
+            redirect(action: 'task', id: taskInstance.id, params: [complete: params.complete])
         } else {
             log.debug "4."
-            render(view: 'noTasks')
+            render(view: 'noTasks', model: [complete: params.complete])
         }
     }
 
@@ -243,4 +224,20 @@ class TranscribeController {
         [taskInstance: taskInstance, isValidator: validator]
     }
 
+    def discard() {
+        def taskInstance = Task.get(params.id)
+        if (!taskInstance) {
+            respond status: 404
+            return
+        }
+
+        if (taskInstance.lastViewedBy != userService.currentUserId) {
+            respond status: 403
+            return
+        }
+        // clear last viewed.
+        taskInstance.lastViewedBy = null
+        taskInstance.lastViewed = null
+        redirect controller: 'project', action: 'index', id: taskInstance.project.id
+    }
 }

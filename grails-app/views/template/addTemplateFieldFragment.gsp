@@ -9,6 +9,12 @@
         </div>
     </div>
     <div class="control-group">
+        <label class="control-label" for="fieldTypeClassifier">Classifier:</label>
+        <div class="controls">
+            <g:textField name="fieldTypeClassifier" value=""/>
+        </div>
+    </div>
+    <div class="control-group">
         <label class="control-label" for="label">Label (blank for default):</label>
         <div class="controls">
             <g:textField name="label" value="" />
@@ -42,6 +48,11 @@
         var fieldType = encodeURIComponent($("#fieldName").val());
         if (fieldType) {
             var url = "${createLink(controller:'template', action:'addField', id:templateInstance.id)}?fieldType=" + fieldType;
+
+            var classifier = $('#fieldTypeClassifier').val();
+            if (classifier) {
+                url += "&fieldTypeClassifier=" + encodeURIComponent(classifier);
+            }
 
             var label= $("#label").val();
             if (label) {

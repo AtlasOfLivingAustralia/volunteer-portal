@@ -376,10 +376,19 @@ h2, h3, h4, h5 {
     text-align: center;
 }
 
-.bvpBadge img {
+.bvpBadge img, .bvpBadge .bvpBadgeMain {
     width: 150px;
     height: 150px;
 }
 
 .itemgrid { overflow: hidden; margin-bottom: 10px; }
-.itemgrid .item { float: left; width: 160px; margin: 5px 10px; }
+.itemgrid .item,
+.itemgrid .griditem {
+    float: left;
+    width: 160px;
+    margin: 5px 10px;
+}
+
+.text-justify {
+    text-align: justify;
+}

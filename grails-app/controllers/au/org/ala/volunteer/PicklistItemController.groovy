@@ -8,18 +8,25 @@ class PicklistItemController {
     
     def autocomplete() {
 
+        def picklistId = params.picklistId
         def picklistName = params.picklist
         def task = Task.get(params.int('taskId'))
         def query = params.q
-        if (picklistName && query && task) {
-            def picklist = Picklist.findByName(picklistName)
+        if ((picklistId || picklistName) && query) {
+            def picklist = picklistId ? Picklist.get(picklistId) : Picklist.findByName(picklistName)
             if (picklist) {
                 // Check to see if there are institution specific values for this pick list.
                 // If there, we constrain our search to those items, otherwise we look in the general (null institution code) list
-                def instItemCount = PicklistItem.countByPicklistAndInstitutionCode(picklist, task.project?.picklistInstitutionCode)
                 def items
-                if (instItemCount > 0) {
-                    items = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%" + query + "%", picklist, task.project?.picklistInstitutionCode)
+                if (task) {
+                    def instItemCount = 0
+                    instItemCount = PicklistItem.countByPicklistAndInstitutionCode(picklist, task.project?.picklistInstitutionCode)
+
+                    if (instItemCount > 0) {
+                        items = PicklistItem.findAllByValueIlikeAndPicklistAndInstitutionCode("%" + query + "%", picklist, task.project?.picklistInstitutionCode)
+                    } else {
+                        items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNullAndValueIlike(picklist, "%" + query + "%")
+                    }
                 } else {
                     items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNullAndValueIlike(picklist, "%" + query + "%")
                 }

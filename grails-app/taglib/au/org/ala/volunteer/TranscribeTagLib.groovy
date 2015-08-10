@@ -16,7 +16,6 @@
 package au.org.ala.volunteer
 
 import groovy.xml.MarkupBuilder
-import org.codehaus.groovy.grails.compiler.support.GrailsResourceLoader
 
 /**
  * Tag Lib for Transcribe page
@@ -27,6 +26,10 @@ class TranscribeTagLib {
     def taskService
     def picklistService
     def markdownService
+    def imageServiceService
+
+    static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName', 'sequenceNumbers']
+
 
     /**
      * @attr var
@@ -146,6 +149,37 @@ class TranscribeTagLib {
 
     }
 
+    def renderWidgetHtml = { attrs, body ->
+        Task taskInstance = attrs.taskInstance
+        TemplateField field = attrs.field
+        Map recordValues = attrs.recordValues
+        int recordIdx = attrs.recordIdx ?: 0
+        String auxClass = attrs.auxClass
+
+        //def mb = new MarkupBuilder(out)
+        def html = getWidgetHtml(taskInstance, field, recordValues, recordIdx, attrs, auxClass)
+        //mb.mkp.yieldUnescaped(html)
+        out << html
+    }
+
+    /**
+     * Gets the id/name for a HTML widget as a String
+     *
+     * @attr field The field
+     * @attr recordIdx The record index
+     */
+    def widgetName = { attrs, body ->
+        TemplateField field = attrs.field
+        int recordIdx = attrs.recordIdx ?: 0
+
+        genWidgetName(field, recordIdx)
+    }
+
+    String genWidgetName(TemplateField field, int recordIdx) {
+        def name = field.fieldType.name() //+ (field.fieldTypeClassifier ? ".${field.fieldTypeClassifier}" : "")
+        "recordValues.${recordIdx}.${name}"
+    }
+
     private String getWidgetHtml(Task taskInstance, TemplateField field, recordValues, recordIdx, attrs, String auxClass) {
 
         if (!field) {
@@ -157,6 +191,7 @@ class TranscribeTagLib {
         }
 
         def name = field.fieldType.name()
+        def widgetName = genWidgetName(field, recordIdx)
         def cssClass = name
 
         if (field.mandatory) {
@@ -175,10 +210,15 @@ class TranscribeTagLib {
         }
 
         def tabindex = attrs.tabindex ? attrs.tabindex * 10 : null
+        def existingValue = recordValues?.get(recordIdx)?.get(name)
 
-        def widgetModel = [field:field, value: recordValues?.get(0)?.get(name), cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance, tabindex: tabindex]
+        def widgetModel = [field:field, value: existingValue, cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance, tabindex: tabindex, recordIdx: recordIdx, widgetName: widgetName]
 
         switch (field.type) {
+            case FieldType.imageSelect:
+            case FieldType.imageMultiSelect:
+                w = render(template: '/transcribe/imageSelectWidget', model: widgetModel)
+                break
             case FieldType.latLong:
                 w = render(template: '/transcribe/latLongWidget', model: widgetModel)
                 break
@@ -208,9 +248,9 @@ class TranscribeTagLib {
                     rows = Integer.parseInt(attrs.rows);
                 }
                 w = g.textArea(
-                    name:"recordValues.${recordIdx}.${name}",
+                    name: widgetName,
                     rows: rows,
-                    value:recordValues?.get(0)?.get(name),
+                    value: existingValue,
                     'class':cssClass,
                     validationRule: validationRule?.name,
                     tabindex: tabindex
@@ -218,15 +258,15 @@ class TranscribeTagLib {
                 break
             case FieldType.hidden:
                 w = g.hiddenField(
-                    name:"recordValues.${recordIdx}.${name}",
-                    value:recordValues?.get(0)?.get(name),
+                    name: widgetName,
+                    value: existingValue,
                     'class':cssClass
                 )
                 break;
             case FieldType.checkbox:
-                def checked = Boolean.parseBoolean(recordValues?.get(0)?.get(name)?:field?.defaultValue)
+                def checked = Boolean.parseBoolean(existingValue ?: field?.defaultValue)
                 w = g.checkBox(
-                    name: "recordValues.${recordIdx}.${name}",
+                    name: widgetName,
                     value: checked,
                     validationRule: validationRule?.name,
                     tabindex: tabindex
@@ -236,11 +276,11 @@ class TranscribeTagLib {
                 def options = picklistService.getPicklistItemsForProject(field.fieldType, taskInstance.project)
                 if (options) {
                     w = g.select(
-                        name:"recordValues.${recordIdx}.${name}",
+                        name: widgetName,
                         from: options,
                         optionValue:'value',
                         optionKey:'value',
-                        value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                        value: existingValue ?: field?.defaultValue,
                         noSelection:['':''],
                         'class':cssClass,
                         validationRule: validationRule?.name,
@@ -253,8 +293,8 @@ class TranscribeTagLib {
                 def labels = options*.value
                 if (options) {
                     w = g.radioGroup(
-                        name:"recordValues.${recordIdx}.${name}",
-                        value:recordValues?.get(0)?.get(name)?:field?.defaultValue,
+                        name: widgetName,
+                        value: existingValue ?:field?.defaultValue,
                         values: labels,
                         labels: labels,
                         // 'class':cssClass,
@@ -275,9 +315,9 @@ class TranscribeTagLib {
                 }
 
                 w = g.textField(
-                    name:"recordValues.${recordIdx}.${name}",
+                    name: widgetName,
                     maxLength:200,
-                    value:recordValues?.get(0)?.get(name),
+                    value: existingValue,
                     'class':cssClass,
                     validationRule: validationRule?.name,
                     tabindex: tabindex
@@ -315,8 +355,13 @@ class TranscribeTagLib {
 
                 def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
                 imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
-                mb.dev(class:'alert alert-danger') {
-                    mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                mb.div(class:'alert alert-danger') {
+                    button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
+                        mkp.yieldUnescaped('&times;')
+                    }
+                    span() {
+                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                    }
                 }
             }
 
@@ -335,14 +380,14 @@ class TranscribeTagLib {
 
                         if (!attrs.hidePinImage) {
                             div(class:'pin-image-control') {
-                                a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window') {
+                                a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window', ('data-container'): 'body') {
                                     mkp.yield('Pin image in place')
                                 }
                             }
                         }
                         if (!attrs.hideShowInOtherWindow) {
                             div(class:'show-image-control') {
-                                a(id:'showImageWindow', href:'#', title:'Show image in a separate window') {
+                                a(id:'showImageWindow', href:'#', title:'Show image in a separate window', ('data-container'): 'body') {
                                     mkp.yield('Show image in a separate window')
                                 }
                             }
@@ -538,6 +583,80 @@ class TranscribeTagLib {
         } else {
             mb.mkp.yieldUnescaped("&nbsp;")
         }
+    }
+
+    def imageInfos = { attrs, body ->
+        //List<TemplateField> fields = attrs.fields
+        Project project = attrs.project
+        Picklist pl = attrs.picklist
+        TemplateField field = attrs.field
+        def warnings = []
+
+        if (!pl && !field) return [error: "No valid picklist or field provided"]
+        if (!pl)
+            pl = Picklist.findByNameAndFieldTypeClassifier(field.fieldType.name(), field.fieldTypeClassifier)
+        if (!pl)
+            pl = Picklist.findByName(field.fieldType.name())
+
+        if (!pl) return [error: "No picklist found for ${field.fieldType.name()} (${field.fieldTypeClassifier}"]
+
+        def items = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project?.picklistInstitutionCode)
+
+        // fallback to default picklist if institution code given and no items found
+        if (project?.picklistInstitutionCode && !items) items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(pl)
+
+        if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
+        def items2 = items.collectEntries {
+            def key = it.key.split(',').toList().collect { it?.trim() }
+            [ (key) : it.value ]
+        }
+        def imageIds = items2*.key.flatten()
+        def imageInfos
+        try {
+            imageInfos = imageServiceService.getImageInfoForIds(imageIds)
+        } catch (e) {
+            log.error("Error calling image service for ${imageIds}", e)
+            return [error: "Error contacting image service: ${e.message}"]
+        }
+
+        if (!imageInfos)
+            return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
+        else {
+            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            def missing = imageIds.findAll { imageInfos[it] == null }
+            if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
+        }
+
+        [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]
+    }
+
+    def templateFields = { attrs, body ->
+        def category = attrs.category ?: FieldCategory.dataset
+        def hiddenFields = attrs.hidden ?: false
+        def template = attrs.template
+        def fields
+        if (hiddenFields) fields = TemplateField.findAllByCategoryAndTemplateAndType(category, template, FieldType.hidden, [sort:'displayOrder'])
+        else fields = TemplateField.findAllByCategoryAndTemplateAndTypeNotEqual(category, template, FieldType.hidden, [sort:'displayOrder'])
+        def groupedFields = fields.groupBy { it.fieldType }
+        fields.collect { [field: it, recordIdx: groupedFields[it.fieldType].findIndexOf { it2 -> it == it2 }] }
+    }
+
+    def sequenceNumbers = { attrs, body ->
+        def project = attrs.project
+        def number = attrs.number ?: 0
+        def count = attrs.count ?: 0
+
+        def max = taskService.findMaxSequenceNumber(project)
+        def results
+        if (max) {
+            def previous = (Math.max(0, number - count))..<number
+            def next = number == max ? [] : (number+1)..(Math.min(max,number+count))
+            results = [previous: previous, next: next]
+        } else {
+            results = [previous:[], next:[]]
+        }
+
+        return results
     }
 
 }

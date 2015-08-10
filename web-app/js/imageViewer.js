@@ -26,7 +26,7 @@ function setupPanZoom(target) {
 
 function setImageViewerHeight(height) {
     $("#image-container").css("height", "" + height + "px");
-    $(".imageviewer-controls").css("top", "" + (height - 70) + "px");
-    $(".pin-image-control").css("top", "" + (height - 30) + "px");
-    $(".show-image-control").css("top", "" + (height - 60) + "px");
+    //$(".imageviewer-controls").css("top", "" + (height - 70) + "px");
+    //$(".pin-image-control").css("top", "" + (height - 30) + "px");
+    //$(".show-image-control").css("top", "" + (height - 60) + "px");
 }

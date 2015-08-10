@@ -22,6 +22,7 @@ class VolunteerTagLib {
     def institutionService
     def authService
     def achievementService
+    def taskService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate']
 
@@ -446,17 +447,60 @@ class VolunteerTagLib {
         out << "<image src=\"${resource(dir:'images', file:'spinner.gif')}\" />"
     }
 
-    def taskThumbnail = { attrs, body ->
-        def task = attrs.task as Task
+    def sequenceThumbnail = { attrs, body ->
+        def project = attrs.project
+        def seq = attrs.seqNo
+        def task = taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)
         if (task) {
-            def url = ""
+            def url, fullUrl = ''
             def mm = task.multimedia?.first()
             if (mm) {
                 url = multimediaService.getImageThumbnailUrl(mm)
+                fullUrl = multimediaService.getImageUrl(mm)
+            }
+
+            if (!url) {
+                // sample
+                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+            }
+            if (!fullUrl) {
+                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
             }
 
             if (url) {
-                out << "<img src=\"${url}\" style=\"height:100px\"/>"
+                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
+                out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
+            }
+        }
+    }
+
+    def taskThumbnail = { attrs, body ->
+        def task = attrs.task as Task
+        def fixedHeight = attrs.fixedHeight
+        def withHidden = attrs.withHidden
+
+        if (fixedHeight == null) fixedHeight = true
+        if (withHidden == null) withHidden = false
+
+        if (task) {
+            def url = "", fullUrl = ''
+            def mm = task.multimedia?.first()
+            if (mm) {
+                url = multimediaService.getImageThumbnailUrl(mm)
+                fullUrl = multimediaService.getImageUrl(mm)
+            }
+
+            if (!url) {
+                // sample
+                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+            }
+            if (!fullUrl) {
+                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+            }
+
+            if (url) {
+                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? ' style="height:100px"' : ''} />"
+                if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             }
 
         }
@@ -503,7 +547,7 @@ class VolunteerTagLib {
      * @attr value the object to convert to JSON
      */
     def json = { attrs, body ->
-        final val = attrs.value as JSON
+        final val = (attrs.value as JSON) ?: "null"
         out << val
     }
 

@@ -58,7 +58,7 @@ class PicklistService {
                 if (m.find()) {
                     value = m.group(2);
                 }
-                def picklistItem = new PicklistItem(picklist: picklist, value: value, institutionCode: institutionCode ?: null)
+                def picklistItem = new PicklistItem(picklist: picklist, value: value, institutionCode: institutionCode ?: null, index: rowsProcessed)
 
                 if (tokens.size() > 1) {
                     picklistItem.key = tokens[1] // optional second value as "key"
@@ -73,6 +73,9 @@ class PicklistService {
                     log.info "${rowsProcessed} picklist items imported (${picklist.name})"
                 }
             }
+        } catch (e) {
+            log.error(e)
+            throw e
         } finally {
             sessionFactory.currentSession.flush();
             sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
