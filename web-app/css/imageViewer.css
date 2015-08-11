@@ -14,7 +14,7 @@
 
 .imageviewer-controls {
     position: absolute;
-    top: 330px;
+    bottom: 7px;
     left: 10px;
     background: url('../images/map-control.png') no-repeat;
     height: 63px;
@@ -73,7 +73,7 @@
 
 .pin-image-control {
     position: absolute;
-    top: 370px;
+    bottom: 7px;
     right: 7px;
     background: url('../images/pin-image.png') no-repeat;
     height: 24px;
@@ -98,7 +98,7 @@
 
 .show-image-control {
     position: absolute;
-    top: 340px;
+    bottom: 37px;
     right: 7px;
     background: url('../images/image-window.png') no-repeat;
     height: 24px;

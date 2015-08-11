@@ -33,6 +33,10 @@
                 isValid: ${(taskInstance?.isValid) ? "true" : "false"}
             };
 
+            <g:if test="${complete}">
+                amplify.store("bvp_task_${complete}", null);
+            </g:if>
+
             $(document).ready(function () {
 
                 jQuery.fn.extend({
@@ -65,9 +69,8 @@
                 });
 
                 $(".transcribeForm").submit(function(eventObj) {
-
-                    if (typeof(transcribeBeforeSubmit) === "function") {
-                        transcribeBeforeSubmit();
+                    if (!transcribeWidgets.evaluateBeforeSubmitHooks(eventObj)) {
+                      return false;
                     }
 
                     transcribeWidgets.prepareFieldWidgetsForSubmission();
@@ -81,7 +84,7 @@
                     e.preventDefault();
                     <g:if test="${prevTask}">
                         var uri = "${createLink(controller: 'task', action:'showImage', id: prevTask.id)}"
-                        newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
                         if (window.focus) {
                             newwindow.focus()
                         }
@@ -93,7 +96,7 @@
                     e.preventDefault();
                     <g:if test="${nextTask}">
                         var uri = "${createLink(controller: 'task', action:'showImage', id: nextTask.id)}"
-                        newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
                         if (window.focus) {
                             newwindow.focus()
                         }
@@ -239,54 +242,67 @@
 
             }
 
+            function bindAutocompleteToElement(inputElement) {
+                var picklistId = inputElement.data('picklist-id');
+                var matches = [];
+                var inputElementId = inputElement.attr('id');
+                if (inputElementId) {
+                    matches = inputElementId.match(/^recordValues[.](\d+)[.](\w+)$/);
+                } else if (window.console) {
+                    console.warn("Element doesn't have id: ", inputElement);
+                }
+                if (picklistId || matches.length > 1) {
+                    var fieldName = matches[2];
+                    var fieldIndex = matches[1];
+
+                    var picklist = picklistId ? "&picklistId=" + picklistId : "&picklist=" + fieldName;
+
+                    var autoCompleteOptions = {
+                        disabled: false,
+                        minLength: 2,
+                        delay: 200,
+                        select: function(event, ui) {
+                            var item = ui.item.data;
+
+                            if (fieldName == 'recordedBy') {
+                                var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                                if (matches.length > 0) {
+                                    var recordIdx = matches[1];
+                                    var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
+                                    $(elemSelector).val(item.key).attr('collector_name', item.name);;
+                                }
+                            }
+                        },
+                        source: function(request, response) {
+                            var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}" + picklist + "&q=" + request.term;
+                            $.ajax(url).done(function(data) {
+                                var rows = new Array();
+                                if (data.autoCompleteList) {
+                                    var list = data.autoCompleteList;
+                                    for (var i = 0; i < list.length; i++) {
+                                        rows[i] = {
+                                            value: list[i].name,
+                                            label: list[i].name,
+                                            data: list[i]
+                                        };
+                                    }
+                                }
+                                if (response) {
+                                    response(rows);
+                                }
+                            });
+                        }
+                    };
+                    inputElement.autocomplete(autoCompleteOptions);
+                }
+            }
+
             function bindAutocomplete() {
 
                 $("input.autocomplete,textarea.autocomplete").not('.noAutoComplete').each(function(index) {
 
                     var inputElement = $(this);
-                    var matches = $(inputElement).attr("id").match(/^recordValues[.](\d+)[.](\w+)$/);
-                    if (matches.length > 1) {
-                        var fieldName = matches[2];
-                        var fieldIndex = matches[1];
-
-                        var autoCompleteOptions = {
-                            disabled: false,
-                            minLength: 2,
-                            delay: 200,
-                            select: function(event, ui) {
-                                var item = ui.item.data;
-
-                                if (fieldName == 'recordedBy') {
-                                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
-                                    if (matches.length > 0) {
-                                        var recordIdx = matches[1]
-                                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
-                                        $(elemSelector).val(item.key).attr('collector_name', item.name);;
-                                    }
-                                }
-                            },
-                            source: function(request, response) {
-                                var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}&picklist=" + fieldName + "&q=" + request.term;
-                                $.ajax(url).done(function(data) {
-                                    var rows = new Array();
-                                    if (data.autoCompleteList) {
-                                        var list = data.autoCompleteList;
-                                        for (var i = 0; i < list.length; i++) {
-                                            rows[i] = {
-                                                value: list[i].name,
-                                                label: list[i].name,
-                                                data: list[i]
-                                            };
-                                        }
-                                    }
-                                    if (response) {
-                                        response(rows);
-                                    }
-                                });
-                            }
-                        }
-                        inputElement.autocomplete(autoCompleteOptions);
-                    }
+                    bindAutocompleteToElement(inputElement);
                 });
 
                 $("input.recordedBy").blur(function(e) {
@@ -331,7 +347,7 @@
             var imageRotation = 0;
 
             function rotateImage() {
-                var image = $("#image-container img")
+                var image = $("#image-container img");
                 if (image) {
                     imageRotation += 90;
                     if (imageRotation >= 360) {
@@ -592,6 +608,7 @@
 
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
+                <g:hiddenField name="id" value="${taskInstance?.id}"/>
 
                 <g:set var="sectionNumber" value="${1}" />
 
@@ -603,7 +620,7 @@
                     <div class="well well-small transcribeSection">
                         <div class="row-fluid transcribeSectionHeader">
                             <div class="span12">
-                                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Notes</span> &nbsp; Record any comments here that may assist in validating this task
+                                <span class="transcribeSectionHeaderLabel"><g:if test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}. </g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
                                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                             </div>
                         </div>
@@ -669,13 +686,13 @@
                                 </div>
                             </div>
                         </div>
+                        <g:if test="${!template.viewParams.hideDefaultButtons}">
                         <div id="submitButtons" class="row-fluid">
                             <div class="span12">
-                                <g:hiddenField name="id" value="${taskInstance?.id}"/>
                                 <g:if test="${validator}">
                                     <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
                                     <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
-                                    <button type="button" class="btn" id="showNextFromProject bvp-submit-button">Skip</button>
+                                    <button type="button" class="btn bvp-submit-button" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
                                         <a href="${createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone())}" />
@@ -687,9 +704,9 @@
                                     <button type="button" class="btn bvp-submit-button" id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
-
                             </div>
                         </div>
+                        </g:if>
 
                     </div>
                 </g:if>
@@ -712,8 +729,45 @@
                 </div>
             </div>
         </g:else>
+        <div id="submitConfirmModal" class="modal hide fade">
+            <!-- dialog contents -->
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <span class="control-label"><g:message code="transcribe.task.submit.confirm" default="Submit your selections?"/></span>
+                    <div class="controls">
+                        <button id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
+                        <button id="submit-confirm-cancel" type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    </div>
+                    <div class="controls">
+                        <label class="checkbox">
+                            <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
     </body>
     <r:script>
+
+        <g:each in="${ValidationRule.list()}" var="rule">
+        transcribeValidation.rules.${rule.name} = {
+            test: function(value, element) {
+                <g:if test="${!rule.testEmptyValues}">
+                if (value) {
+                </g:if>
+                    var pattern = /${rule.regularExpression}/;
+                    return pattern.test(value);
+                <g:if test="${!rule.testEmptyValues}">
+                }
+                return true;
+                </g:if>
+            },
+            message: "${rule.message}",
+            type: "${rule.validationType ?: ValidationType.Warning}"
+        };
+        </g:each>
 
         $(document).ready(function() {
 
@@ -787,39 +841,18 @@
 
             $("#btnValidateSubmitInvalid").click(function(e) {
                 e.preventDefault();
-                <g:if test="${validator}">
-                    submitFormWithAction("${createLink(controller:'validate', action:'validate')}");
-                </g:if>
-                <g:else>
-                    submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
-                </g:else>
-
+                submitInvalid();
             });
 
-            $("#showNextFromProject").click(function(e) {
+            $("#showNextFromProject, .btn-skip-n").click(function(e) {
                 e.preventDefault();
-                window.location = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id)}";
+                var skip = $(this).data('skip');
+                var url = "${createLink(controller:(validator) ? "validate" : "transcribe", action:'showNextFromProject', id:taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
+                if (skip) url = url + '&skip='+skip;
+                window.location = url;
             });
 
-            <g:each in="${ValidationRule.list()}" var="rule">
-                transcribeValidation.rules.${rule.name} = {
-                    test: function(value, element) {
-                        <g:if test="${!rule.testEmptyValues}">
-                        if (value) {
-                        </g:if>
-                            var pattern = /${rule.regularExpression}/;
-                            return pattern.test(value);
-                        <g:if test="${!rule.testEmptyValues}">
-                        }
-                        return true;
-                        </g:if>
-                    },
-                    message: "${rule.message}",
-                    type: "${rule.validationType ?: ValidationType.Warning}"
-                };
-            </g:each>
-
-            enableSubmitButtons();
+            //enableSubmitButtons();
 
             // Now check if we are have to restore from a save gone wrong...
             checkAndRecoverFromFailedSubmit();
@@ -880,7 +913,42 @@
         }
     }
 
+    function submitInvalid() {
+        <g:if test="${validator}">
+            submitFormWithAction("${createLink(controller:'validate', action:'validate')}");
+        </g:if>
+        <g:else>
+            submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
+        </g:else>
+    }
+
+    var submitRequiresConfirmation = false;
+    var $submitConfirm = $("#submitConfirmModal");
+
+    %{--$("#submit-confirm-cancel").on("click", function(e) {--}%
+        %{--$submitConfirm.modal('hide');     // dismiss the dialog--}%
+    %{--});--}%
+    $submitConfirm.on("hide", function() {    // remove the event listeners when the dialog is dismissed
+        $("#submit-confirm-ok").off("click");
+    });
+
     function submitFormWithAction(action) {
+        var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
+        if (submitRequiresConfirmation && !dontConfirm) {
+          // capture action in closure so we can invoke the correct doSubmitWithAction
+          $("#submit-confirm-ok").on("click", function(e) {
+            amplify.store("bvp_transcribe_dontconfirm", $('#submit-dont-confirm').prop('checked'));
+            doSubmitWithAction(action);
+            $("#submitConfirmModal").modal('hide');     // dismiss the dialog
+          });
+
+          $('#submitConfirmModal').modal('show');
+        } else {
+          doSubmitWithAction(action);
+        }
+    }
+
+    function doSubmitWithAction(action) {
         try {
             disableSubmitButtons();
             var form = $(".transcribeForm");
@@ -902,15 +970,7 @@
         $(".bvp-submit-button").removeAttr('disabled');
     }
 
-    function checkValidation() {
-
-        if (typeof(transcribeBeforeValidation) === "function") {
-            transcribeBeforeValidation();
-        }
-
-        transcribeWidgets.prepareFieldWidgetsForSubmission();
-        var validationResults = transcribeValidation.validateFields()
-
+    var postValidationFunction = function(validationResults) {
         if (validationResults.hasErrors) {
             $("#submitButtons").css("display", "none");
             $('#warningMessagesContainer').css("display", "none");
@@ -920,6 +980,19 @@
             $('#warningMessagesContainer').css("display", "block");
             $('#errorMessagesContainer').css("display", "none");
         }
+    };
+
+    function checkValidation() {
+
+        if (typeof(transcribeBeforeValidation) === "function") {
+            transcribeBeforeValidation();
+        }
+
+        transcribeWidgets.prepareFieldWidgetsForSubmission();
+        var validationResults = transcribeValidation.validateFields()
+
+        postValidationFunction(validationResults);
+
         return !validationResults.hasWarnings && !validationResults.hasErrors;
     }
 

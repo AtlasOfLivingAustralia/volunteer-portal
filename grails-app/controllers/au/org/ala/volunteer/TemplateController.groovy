@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
@@ -215,10 +216,11 @@ class TemplateController {
     def addField() {
         def templateInstance = Template.get(params.int("id"))
         def fieldType = params.fieldType
+        def classifier = params.fieldTypeClassifier
 
         if (templateInstance && fieldType) {
 
-            def existing = TemplateField.findAllByTemplateAndFieldType(templateInstance, fieldType)
+            def existing = TemplateField.findAllByTemplateAndFieldTypeAndFieldTypeClassifier(templateInstance, fieldType, classifier)
             if (existing && fieldType != DarwinCoreField.spacer.toString() && fieldType != DarwinCoreField.widgetPlaceholder.toString()) {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {
@@ -226,7 +228,7 @@ class TemplateController {
                 FieldCategory category = params.category ?: FieldCategory.none
                 FieldType type = params.type ?: FieldType.text
                 def label = params.label ?: ""
-                def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
+                def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
                 field.save(failOnError: true)
             }
         }
@@ -337,4 +339,22 @@ class TemplateController {
         [templateInstance: template]
     }
 
+    def viewParamsForm() {
+        def view = (params?.view ?: '') + 'Params'
+        try { //if (resExists(view)) {
+            render template: view
+        } catch (e) { //} else {
+            log.trace("Could not render template $view", e)
+            render status: 404
+        }
+    }
+
+    private def resExists(resName) {
+        //Not needed : def grailsAttributes = new DefaultGrailsApplicationAttributes(request.servletContext)
+        def engine = grailsAttributes.pagesTemplateEngine
+        def resUri = grailsAttributes.getTemplateUri(resName, request)
+        def resource = engine.getResourceForUri(resUri)
+        log.debug "resUri=${resUri}; resource=${resource}; exists=${resource?.exists()}; readable=${resource?.readable}"
+        return resource?.readable
+    }
 }

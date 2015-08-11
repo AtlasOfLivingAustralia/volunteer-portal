@@ -32,7 +32,7 @@
                         <g:each in="${picklistInstanceList}" var="picklistInstance">
                             <tr>
                                 <td><g:link action="show" id="${picklistInstance.id}">${fieldValue(bean: picklistInstance, field: "id")}</g:link></td>
-                                <td>${fieldValue(bean: picklistInstance, field: "name")}</td>
+                                <td>${fieldValue(bean: picklistInstance, field: "uiLabel")}</td>
                                 <td><g:link class="btn btn-small" controller="picklist" action="show" id="${picklistInstance.id}">View</g:link></td>
                             </tr>
                         </g:each>

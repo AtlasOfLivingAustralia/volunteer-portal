@@ -234,14 +234,66 @@ class TaskService {
      * @param userId
      * @return
      */
-    Task getNextTask(String userId, Project project) {
+    Task getNextTask(String userId, Project project, Long lastId = -1) {
 
         if (!project || !userId) {
             return null;
         }
 
-        // Look for tasks that have never been viewed before!
-        def tasks = Task.createCriteria().list([max:1]) {
+        def jump = project?.template?.viewParams?.jumpNTasks
+        // This is the earliest last viewed time for a task to be unlocked
+        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+
+        def tasks
+
+        // If the template calls for jumping forward n at a time and we have a jumping off point...
+        if (jump && lastId > 0) {
+            tasks = Task.createCriteria().list(max:jump) {
+                eq("project", project)
+                gt('id', lastId)
+                isNull('fullyTranscribedBy')
+                sizeLe('viewedTasks', 0)
+                order('id','asc')
+            }
+            if (tasks) {
+                def task = tasks.last()
+                log.info("getNextTask(project ${project.id}, lastId $lastId) found a task to jump to: ${task.id}")
+                return task
+            }
+
+            tasks = Task.createCriteria().list([max:jump]) {
+                eq("project", project)
+                gt('id', lastId)
+                isNull("fullyTranscribedBy")
+                and {
+                    ne("lastViewedBy", userId)
+                    le("lastViewed", timeoutWindow)
+                }
+                order('id','asc')
+            }
+            if (tasks) {
+                def task = tasks.last()
+                log.info("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
+                return task
+            }
+            tasks = Task.createCriteria().list([max:jump]) {
+                eq("project", project)
+                gt('id', lastId)
+                isNull("fullyTranscribedBy")
+                or {
+                    le("lastViewed", timeoutWindow)
+                    eq("lastViewedBy", userId)
+                }
+                order('id','asc')
+            }
+            if (tasks) {
+                def task = tasks.last()
+                log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+                return task
+            }
+        }
+
+        tasks = Task.createCriteria().list(max:1) {
             eq("project", project)
             isNull("fullyTranscribedBy")
             sizeLe("viewedTasks", 0)
@@ -249,13 +301,13 @@ class TaskService {
         }
 
         if (tasks) {
-            def task = tasks.get(0)
+            def task = tasks.last()
             log.info("getNextTask(project ${project.id}) found a task with no views: ${task.id}")
             return task
         }
 
         // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
-        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNull("fullyTranscribedBy")
@@ -267,12 +319,13 @@ class TaskService {
         }
 
         if (tasks) {
-            def task = tasks.get(0)
+            def task = tasks.last()
             log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
             return task
         }
 
         // Finally, we'll have to serve up a task that this user has seen before
+
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNull("fullyTranscribedBy")
@@ -284,7 +337,7 @@ class TaskService {
         }
 
         if (tasks) {
-            def task = tasks.get(0)
+            def task = tasks.last()
             log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
             return task
         }
@@ -307,7 +360,10 @@ class TaskService {
 
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
-        def tasks = Task.createCriteria().list([max:1]) {
+        def tasks
+
+
+        tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNotNull("fullyTranscribedBy")
             isNull("fullyValidatedBy")
@@ -319,7 +375,7 @@ class TaskService {
         }
 
         if (tasks) {
-            def task = tasks.get(0)
+            def task = tasks.last()
             println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
             return task
         }
@@ -337,7 +393,7 @@ class TaskService {
         }
 
         if (tasks) {
-            def task = tasks.get(0)
+            def task = tasks.last()
             println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
             return task
         }
@@ -816,6 +872,18 @@ class TaskService {
         task.isValid = null
         task.fullyValidatedBy = null
         task.dateFullyValidated = null
+    }
+
+    public Integer findMaxSequenceNumber(Project project) {
+        def select ="""
+            SELECT MAX(CAST(value as INT)) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
+        """
+
+        def sql = new Sql(dataSource: dataSource)
+
+        def row = sql.firstRow(select)
+
+        row ? row[0] : null
     }
 
     public Map getAdjacentTasksBySequence(Task task) {

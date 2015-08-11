@@ -8,6 +8,7 @@ var transcribeWidgets = {};
         initUnitRangeWidgets();
         initDateWidgets();
         initSheetNumberWidgets();
+        initImageSelectWidgets();
     };
 
     lib.prepareFieldWidgetsForSubmission = function() {
@@ -16,6 +17,23 @@ var transcribeWidgets = {};
         preSubmitSheetNumberWidgets();
         preSubmitUnitRangeWidgets();
     };
+
+    lib.evaluateBeforeSubmitHooks = function(e) {
+        try {
+            return _.every(beforeSubmitHooks, function(f) {
+                return !(typeof(f) === 'function') || f(e);
+            });
+        } catch(e) {
+            if (window.console) console.error("error running before submit hooks",e);
+            return false;
+        }
+    };
+
+    lib.addBeforeSubmitHook = function(f) {
+        beforeSubmitHooks.push(f);
+    };
+
+    var beforeSubmitHooks = [];
 
     // REGEX patterns
     var YEAR_PATTERN = /^(\d{2,4})$/;
@@ -55,7 +73,7 @@ var transcribeWidgets = {};
         $(".sheetNumberWidget").each(function(index, widget) {
             hookTargetFieldChangeEvent(widget, renderSheetNumberWidgetFromTargetField);
         });
-    }
+    };
 
     var renderSheetNumberWidgetFromTargetField = function(widget) {
         var targetField = $(widget).attr("targetField");
@@ -145,7 +163,52 @@ var transcribeWidgets = {};
                 $(widget).find(".endDay").val(values.endDate.day);
             }
         }
-    }
+    };
+
+
+    var initImageSelectWidgets = function() {
+
+        var widgets = $(".imageSelectWidget");
+
+        widgets.filter('.imageSelect').each(function(index, widget) {
+            var jw = $(widget);
+            jw.on('click', 'a.thumbnail', function(e) {
+                var ct = $(e.currentTarget);
+                if (ct.hasClass('selected')) {
+                    ct.removeClass('selected');
+                    syncInputField(ct,jw);
+                } else {
+                    jw.find('a.thumbnail.selected').removeClass('selected');
+                    selectThumbnail(ct,jw);
+                }
+                //ct.addClass('selected');
+                //$('[id=\''+jw.attr('targetField')+'\']').val(ct.attr('data-image-select-value')).trigger('change');
+            });
+        });
+
+        widgets.filter('.imageMultiSelect').each(function(index, widget) {
+            var jw = $(widget);
+            jw.on('click', 'a.thumbnail', function(e) {
+                var ct = $(e.currentTarget);
+                if (ct.hasClass('selected')) {
+                    ct.removeClass('selected');
+                    syncInputField(ct,jw);
+                } else {
+                    selectThumbnail(ct, jw);
+                }
+            });
+        });
+
+        function selectThumbnail(ct, jw) {
+            ct.addClass('selected');
+            syncInputField(ct,jw);
+        }
+
+        function syncInputField(ct, jw) {
+            var val = ct.parent().siblings().addBack().find('.selected').map(function() { return $(this).attr('data-image-select-value') }).toArray().join(',');
+            $('[id=\''+jw.attr('targetField')+'\']').val(val).trigger('change');
+        }
+    };
 
     var renderUnitRangeFromTargetField = function(widget) {
         var targetField = $(widget).attr("targetField");

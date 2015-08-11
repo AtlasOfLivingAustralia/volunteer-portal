@@ -6,6 +6,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}"/>
         <title><g:message code="default.list.label" args="[entityName]"/></title>
+        <r:require module="underscore" />
     </head>
 
     <body>
@@ -28,7 +29,7 @@
                         <div class="control-group">
                             <label class="control-label" for="picklistId">Picklist</label>
                             <div class="controls">
-                                <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${params.picklistId}"/>
+                                <g:select name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="uiLabel" value="${params.picklistId}"/>
                                 <a class="btn" href="${createLink(controller:'picklist', action:'create')}">Create new picklist</a>
                             </div>
                         </div>
@@ -50,10 +51,13 @@
                     <p>
                         <g:message code="picklist.paste.here.label" default="Paste csv list here. Each line should take the format '&lt;value&gt;'[,&lt;optional key&gt;]"/>
                     </p>
-                    <g:textArea class="input-xxlarge" name="picklist" rows="25" cols="40" value="${picklistData}"/>
+                    <g:textArea class="input-block-level" name="picklist" rows="25" cols="40" value="${picklistData}"/>
                     <br>
                     <g:actionSubmit id="upload-picklist-button" disabled="${(picklistData?.getBytes('UTF-8')?.length ?: 0)> (grailsApplication.config.bvp.maxPostSize ?: 2097152)}" class="btn btn-primary" name="upload.picklist" value="${message(code: 'upload.picklist.label', default: 'Upload')}" action="uploadCsvData"/>
                     <a href="#picklistModal" id="upload-picklist-file" role="button" class="btn" data-toggle="modal">${message(code: 'upload.bulkpicklist.label', default: 'Upload CSV File')}</a>
+                    <button id="sort-button" type="button" class="btn" title="Sort list"><i class="icon-arrow-down"></i></button>
+                    <button id="reverse-button" type="button" class="btn" title="Reverse list order"><i class="icon-refresh"></i></button>
+                    %{--<g:link elementId="img-picklist-button" class="btn btn-link" controller="picklist" action="images"><g:message code="picklist.button.view.as.images" default="View as images"/></g:link>--}%
                 </g:form>
 
             </div>
@@ -71,7 +75,7 @@
                 <div class="control-group">
                     <label class="control-label" for="upPicklistId">Picklist</label>
                     <div class="controls">
-                        <g:select id="upPicklistId" name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="name" value="${params.picklistId}"/>
+                        <g:select id="upPicklistId" name="picklistId" from="${picklistInstanceList}" optionKey="id" optionValue="uiLabel" value="${params.picklistId}"/>
                     </div>
                 </div>
                 <div class="control-group">
@@ -125,12 +129,34 @@
                 });
 
                 var maxSize = ${grailsApplication.config.bvp.maxPostSize ?: 2097152};
+                var imageLink = "${createLink(controller: 'picklist', action: 'images')}";
                 $('#picklist').change(function(e) {
+                    var $this = $(this);
                     var pl = $('#upload-picklist-button');
                     var disabled = pl.prop('disabled');
                     var shouldDisable = byteLength($(e.target).val()) > maxSize;
                     if (disabled != shouldDisable) pl.prop('disabled', shouldDisable);
-                })
+                });
+
+                $('#picklistId').change(function(e) {
+                  var $this = $(this);
+                  $('#img-picklist-button').prop('href', imageLink+'/'+$this.val());
+                });
+
+                $('#sort-button').click(function() {
+                    var $picklist = $('#picklist');
+                    // detect field char
+                    var fc = $picklist.val().trim().charAt(0);
+                    var ifn = (fc == '"' || fc == "'") ? function(s) { return s.indexOf(fc, 1); } : function(s) { return 0; };
+                    var lines = _.sortBy(_.compact($picklist.val().split(/\r?\n/)), function(v) { return v.substring(1, ifn(v)); });
+                    $picklist.val(lines.join('\n'));
+                });
+
+                $('#reverse-button').click(function() {
+                    var $picklist = $('#picklist');
+                    var lines = _.compact($picklist.val().split(/\r?\n/).reverse());
+                    $picklist.val(lines.join('\n'));
+                });
             });
 
             function byteLength(str) {

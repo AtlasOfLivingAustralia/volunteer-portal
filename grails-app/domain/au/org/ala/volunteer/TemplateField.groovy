@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 class TemplateField {
 
     DarwinCoreField fieldType
+    String fieldTypeClassifier
     String label
     String defaultValue
     FieldCategory category
@@ -15,12 +16,17 @@ class TemplateField {
     Integer displayOrder
     String layoutClass
 
+    def getUiLabel() {
+        label ?: fieldType.label
+    }
+
     static mapping = {
         version false
     }
 
     static constraints = {
         fieldType maxSize: 200
+        fieldTypeClassifier nullable: true
         label nullable: true
         defaultValue maxSize: 200, nullable: true
         mandatory nullable: true

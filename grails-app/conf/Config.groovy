@@ -194,6 +194,7 @@ environments {
         security.cas.appServerName = "http://devt.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer-portal'
+        ala.image.service.url = "http://images-dev.ala.org.au/"
     }
     test {
         grails.serverURL = "http://volunteer-dev.ala.org.au"
@@ -208,6 +209,7 @@ environments {
         security.cas.appServerName = server.url
         security.cas.contextPath = ""
         images.home = '/data/volunteer'
+        ala.image.service.url = "http://images.ala.org.au/"
     }
     uat {
         grails.serverURL = "http://volunteer-uat.ala.org.au/${appName}"
@@ -226,6 +228,7 @@ metrics {
 
 environments {
     development {
+        //grails.resources.debug = true
         grails.mail.disabled = true
         grails.mail.host = "fake.ala.org.au"
         grails.mail.overrideAddress = "your.email@here.com"
@@ -322,6 +325,9 @@ log4j = {
             
     info    'grails.app',
             'au.org.ala'
+
+//    debug   'org.apache.http.headers',
+//            'org.apache.http.wire'
 
 }
 

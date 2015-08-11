@@ -44,6 +44,15 @@
 
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                    <label for="fieldTypeClassifier"><g:message code="templateField.fieldTypeClassifier.label" default="Classifier" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'fieldTypeClassifier', 'errors')}">
+                                    <g:textField name="fieldTypeClassifier" value="${templateFieldInstance?.fieldTypeClassifier}"  />
+                                </td>
+                            </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                   <label for="label"><g:message code="templateField.label.label" default="Label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'label', 'errors')}">

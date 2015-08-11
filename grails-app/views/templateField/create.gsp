@@ -32,6 +32,15 @@
                                     <g:select name="fieldType" from="${au.org.ala.volunteer.DarwinCoreField?.values()}" keys="${au.org.ala.volunteer.DarwinCoreField?.values()*.name()}" value="${templateFieldInstance?.fieldType?.name()}"  />
                                 </td>
                             </tr>
+
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="fieldTypeClassifier"><g:message code="templateField.fieldTypeClassifier.label" default="Classifier" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: templateFieldInstance, field: 'fieldTypeClassifier', 'errors')}">
+                                    <g:textField name="fieldTypeClassifier" value="${templateFieldInstance?.fieldTypeClassifier}"  />
+                                </td>
+                            </tr>
                         
                             <tr class="prop">
                                 <td valign="top" class="name">

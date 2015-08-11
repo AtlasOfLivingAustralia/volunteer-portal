@@ -31,8 +31,16 @@ var transcribeValidation = {};
     vlib.validateFields = function() {
 
         // first clear any error visualisations...
-        vlib.clearMessages();
+        errorClearer();
 
+        var validationResult = vlib.validate();
+
+        errorRenderer(validationResult.errorList);
+
+        return validationResult;
+    };
+
+    vlib.validate = function() {
         // The error list will hold a reference to each element in error, along with a message
         var errorList = [];
         // test each input element that has a validation rule attached to it...
@@ -64,6 +72,7 @@ var transcribeValidation = {};
 
         // now validate special widgets
         vlib.validateTranscribeWidgets(errorList);
+        vlib.evaluateCustomValidators(errorList);
         var hasErrors = false;
         var hasWarnings = false;
 
@@ -75,11 +84,42 @@ var transcribeValidation = {};
             }
         });
 
+        return { hasWarnings : hasWarnings, hasErrors: hasErrors, errorList: errorList }
+    };
+
+    var defaultErrorRenderer = function(errorList) {
         $.each(errorList, function(index, error) {
             vlib.markFieldInvalid(error.element, error.message, error.type);
         });
+    };
 
-        return { hasWarnings : hasWarnings, hasErrors: hasErrors, errorList: errorList }
+    var errorClearer = vlib.clearMessages;
+    var errorRenderer = defaultErrorRenderer;
+
+    vlib.setErrorRenderFunctions = function(errorRenderFn, errorClearFn) {
+        errorRenderer = errorRenderFn;
+        errorClearer = errorClearFn;
+    };
+
+    var customValidators = [];
+
+    vlib.evaluateCustomValidators = function(errorList) {
+        try {
+            return _.each(customValidators, function(f) {
+                if (typeof(f) === 'function') {
+                    f(errorList);
+                } else if (window.console) {
+                    console.warn("Got invalid custom validator", f);
+                }
+            });
+        } catch(e) {
+            if (window.console) console.error("error running custom validators",e);
+            return false;
+        }
+    };
+
+    vlib.addCustomValidator = function(f) {
+        customValidators.push(f);
     };
 
     vlib.validateTranscribeWidgets = function(messages) {
