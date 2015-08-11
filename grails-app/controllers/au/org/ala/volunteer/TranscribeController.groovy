@@ -161,7 +161,7 @@ class TranscribeController {
                 else redirect(action: 'showNextAction', id: params.id)
             }
             else {
-                def msg = "Task save ${markTranscribed ? ' ' : 'partial '}failed: " + taskInstance.hasErrors()
+                def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: " + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
                 redirect(action:'task', id: params.id)
