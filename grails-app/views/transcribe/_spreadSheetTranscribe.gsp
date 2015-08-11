@@ -256,9 +256,9 @@
 
 
     // Gets called just before validation occurs. This gives us a chance to construct the form fields from the spreadsheet data...
-    var transcribeBeforeSubmit = function() {
+    transcribeWidgets.addBeforeSubmitHook(function() {
 
-        grid.getEditController().commitCurrentEdit()
+        grid.getEditController().commitCurrentEdit();
 
         var forEachProperty = function(obj, f) {
             if (typeof(f) === 'function') {
@@ -291,6 +291,8 @@
             }
             $("#recordValues\\.0\\.${entriesField?.fieldType}").attr('value', items.length);
         }
-    }
+
+        return true;
+    });
 
 </r:script>
