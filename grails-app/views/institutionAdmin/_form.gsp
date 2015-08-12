@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
-
+<tinyMce:resources />
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'name', 'error')} required">
     <label for="name">
         <g:message code="institution.name.label" default="Name" />

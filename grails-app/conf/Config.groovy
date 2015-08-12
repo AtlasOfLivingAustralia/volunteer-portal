@@ -184,6 +184,8 @@ grails.spring.bean.packages = []
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
+grails.resources.mappers.hashandcache.excludes= ['plugins/tiny-mce-3.4.9/**/*']
+
 bvp.tmpdir="/data/${appName}/config/"
 
 // set per-environment serverURL stem for creating absolute links
