@@ -38,7 +38,7 @@ class CameraTrapTagLib {
         // fallback to default picklist if institution code given and no items found
         if (project?.picklistInstitutionCode && !items) items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(picklist)
 
-        if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
+        if (!items) return [error: "No picklist items found for picklist ${picklist.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
 
         def valueCountMap = valueCounts.get().collectEntries { [(it[0]): it[1]] }
 

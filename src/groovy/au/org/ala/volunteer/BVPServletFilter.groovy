@@ -49,7 +49,7 @@ class BVPServletFilter implements Filter  {
                 if (doLog) {
                     def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
                     def userAgent = request.getHeader("user-agent")
-                    logger.info "Session: ${request.session.id} User: ${username} UA: ${userAgent} URI: ${requestUri}"
+                    logger.info "Session: ${request.session.id} User: ${username} IP: ${request.remoteAddr} UA: ${userAgent} URI: ${requestUri}"
                 }
 //                request.getHeaderNames().each {
 //                    println it + " = " + request.getHeader(it)
