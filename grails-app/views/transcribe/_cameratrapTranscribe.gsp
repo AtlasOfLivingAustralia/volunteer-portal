@@ -9,7 +9,7 @@
             <span id="journalPageButtons">
                 %{--<button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" data-container="body" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> previous image</button>--}%
                 %{--<button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" data-container="body" ${nextTask ? '' : 'disabled="true"'}>next image <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>--}%
-                <button type="button" class="btn btn-small" id="rotateImage" data-container="body" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
+                %{--<button type="button" class="btn btn-small" id="rotateImage" data-container="body" title="Rotate the page 180 degrees">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>--}%
                 <vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-small"/>
                 <div id="ct-task-image-toolbar" class="btn-group">
                     <button type="button" class="btn btn-small" id="showNextFromProject" data-container="body" title="Skip the to next image">Skip</button>
@@ -226,7 +226,7 @@
 <script id="single-image-template" type="x-tmpl-mustache">
     <div id="ct-full-image" class="{{selected}}" style="position:relative;" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
         <span class="ct-badge ct-badge-large ct-badge-sure badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
-        <span class="ct-badge ct-badge-large ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-question-circle"></i></span>
+        <span class="ct-badge ct-badge-large ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
         {{#similarSpecies}}
             <span class="ct-info ct-info-large" data-container="body" title="${g.message(code: 'cameratrap.widget.similar.badge.title', default: "The {0} looks very similar to the {1}.  Please consider these other options before submitting your choices.", args: ['{{value}}', '{{similarSpecies}}'])}"><i class="fa fa-info-circle"></i></span>
         {{/similarSpecies}}
@@ -238,7 +238,7 @@
 <script id="carousel-template" type="x-tmpl-mustache">
     <div id="ct-full-image-carousel" data-interval="0" class="carousel slide {{selected}}" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
         <span class="ct-badge ct-badge-large ct-badge-sure badge" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
-        <span class="ct-badge ct-badge-large ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-question-circle"></i></span>
+        <span class="ct-badge ct-badge-large ct-badge-uncertain badge" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
         {{#similarSpecies}}
             <span class="ct-info ct-info-large" data-container="body" title="${g.message(code: 'cameratrap.widget.similar.badge.title', default: "The {0} looks very similar to the {1}.  Please consider these other options before submitting your choices.", args: ['{{value}}', '{{similarSpecies}}'])}"><i class="fa fa-info-circle"></i></span>
         {{/similarSpecies}}
