@@ -86,12 +86,7 @@
         <servlet-name>gsp</servlet-name>
         <url-pattern>*.gsp</url-pattern>
     </servlet-mapping>
-
-    <session-config>
-        <!-- 120 minutes, or 2 hours -->
-        <session-timeout>240</session-timeout>
-    </session-config>
-
+    
     <welcome-file-list>
         <!--
         The order of the welcome pages is important.  JBoss deployment will
