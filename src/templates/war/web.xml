@@ -89,7 +89,7 @@
 
     <session-config>
         <!-- 120 minutes, or 2 hours -->
-        <session-timeout>120</session-timeout>
+        <session-timeout>240</session-timeout>
     </session-config>
 
     <welcome-file-list>

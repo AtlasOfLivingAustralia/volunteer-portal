@@ -607,7 +607,7 @@ class TranscribeTagLib {
 
         if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
         def items2 = items.collectEntries {
-            def key = it.key.split(',').toList().collect { it?.trim() }
+            def key = it.key?.split(',')?.toList()?.collect { it?.trim() } ?: []
             [ (key) : it.value ]
         }
         def imageIds = items2*.key.flatten()
