@@ -288,14 +288,17 @@ log4j = {
             production {
                 rollingFile name: "tomcatLog", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.INFO
                 rollingFile name: "access", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.INFO
+                rollingFile name: "cas", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-cas.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
             development {
                 console name: "tomcatLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
                 console name: "access", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
+                console name: "cas", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
             test {
                 rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
-                rollingFile name: "access", maxFileSize: '10MB', file: "/tmp/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
+                rollingFile name: "access", maxFileSize: '1MB', file: "/tmp/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
+                rollingFile name: "cas", maxFileSize: '1MB', file: "${loggingDir}/${appName}-cas.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
         }
     }
@@ -309,6 +312,11 @@ log4j = {
     debug   additivity: false,
             access: ["au.org.ala.volunteer.BVPSessionListener"]
 
+    debug   additivity: false,
+            cas: [
+                    'au.org.ala.cas',
+                    'org.jasig.cas'
+            ]
     
     error   'org.codehaus.groovy.grails.web.servlet',  //  controllers
             'org.codehaus.groovy.grails.web.pages', //  GSP
