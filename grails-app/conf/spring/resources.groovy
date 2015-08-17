@@ -1,10 +1,11 @@
 import au.org.ala.volunteer.ApplicationContextHolder
 import au.org.ala.volunteer.BVPSecurePluginFilter
+import au.org.ala.volunteer.CustomPageRenderer
 import au.org.ala.volunteer.collectory.CollectoryClientFactoryBean
 
 // Place your Spring DSL code here
 beans = {
-    customPageRenderer(au.org.ala.volunteer.CustomPageRenderer, ref("groovyPagesTemplateEngine")) {
+    customPageRenderer(CustomPageRenderer, ref("groovyPagesTemplateEngine")) {
         groovyPageLocator = ref("groovyPageLocator")
     }
 

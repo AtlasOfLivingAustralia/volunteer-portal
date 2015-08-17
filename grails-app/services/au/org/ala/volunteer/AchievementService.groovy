@@ -3,6 +3,8 @@ package au.org.ala.volunteer
 import com.google.common.io.Closer
 import grails.gorm.DetachedCriteria
 import groovy.text.SimpleTemplateEngine
+import org.apache.commons.pool2.impl.GenericKeyedObjectPool
+import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.grails.plugins.metrics.groovy.Timed
@@ -20,6 +22,15 @@ class AchievementService {
     def grailsApplication
     def fullTextIndexService
     def grailsLinkGenerator
+
+    def scriptPool
+
+    AchievementService() {
+        def config = new GenericKeyedObjectPoolConfig()
+        config.maxTotalPerKey = 50 // TODO get values from config (or inject pool?)
+        config.maxIdlePerKey = 50
+        scriptPool = new GenericKeyedObjectPool<String, Script>(new GroovyScriptPooledObjectFactory(), config)
+    }
 
     @Timed
     def evalAndRecordAchievementsForUser(User user, Long taskId) {
@@ -84,10 +95,8 @@ class AchievementService {
 
         final closure
         if (aggType == AggregationType.CODE) {
-            closure = {SearchResponse sr ->
-                def script = new GroovyShell().parse(code)
-                script.setBinding(new Binding([searchResponse: sr, taskId: taskId, user: user]))
-                return script.run()
+            closure = { SearchResponse sr ->
+                return runScript(code, new Binding([searchResponse: sr, taskId: taskId, user: user]))
             }
         } else {
             closure = fullTextIndexService.aggregationHitsGreaterThan(count, aggType)
@@ -98,9 +107,7 @@ class AchievementService {
     @Timed
     private def evaluateGroovyAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
         final code = achievementDescription.code
-        def script = new GroovyShell().parse(code)
-        script.setBinding(new Binding([applicationContext: grailsApplication.mainContext, taskId: taskId, user: user]))
-        return script.run()
+        return runScript(code, new Binding([applicationContext: grailsApplication.mainContext, taskId: taskId, user: user]))
     }
 
     @Timed
@@ -114,6 +121,16 @@ class AchievementService {
         def query = engine.createTemplate(template).make(binding)
         
         fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, fullTextIndexService.searchResponseHitsGreaterThan(count))
+    }
+
+    private def runScript(String code, Binding binding) {
+        def script = scriptPool.borrowObject(code)
+        try {
+            script.setBinding(binding)
+            return script.run()
+        } finally {
+            scriptPool.returnObject(code, script)
+        }
     }
 
     def getAllAchievements() {
