@@ -393,19 +393,33 @@ h2, h3, h4, h5 {
     text-align: justify;
 }
 
-@-webkit-keyframes colorPulse { 0% {background-color: #f2dede;} 50% {background-color: #d59595;} 100% {background-color: #f2dede;} }
-@-moz-keyframes colorPulse { 0% {background-color: #f2dede;} 50% {background-color: #d59595;} 100% {background-color: #f2dede;} }
-@keyframes colorPulse { 0% {background-color: #f2dede;} 50% {background-color: #d59595;} 100% {background-color: #f2dede;} }
-
-@keyframes changeSize {
-    0% {transform: scale(1)}
-    50% {transform: scale(1.2)}
-    100% {transform: scale(1)}
+@-webkit-keyframes colorPulse {
+    0% {background-color: #f2dede; transform: scale(1);}
+    5% {background-color: #d59595; transform: scale(1.2);}
+    10% {background-color: #f2dede; transform: scale(1);}
+}
+@-moz-keyframes colorPulse {
+    0% {background-color: #f2dede; transform: scale(1);}
+    5% {background-color: #d59595; transform: scale(1.2);}
+    10% {background-color: #f2dede; transform: scale(1);}
+}
+@-o-keyframes colorPulse {
+    0% {background-color: #f2dede; transform: scale(1);}
+    5% {background-color: #d59595; transform: scale(1.2);}
+    10% {background-color: #f2dede; transform: scale(1);}
+}
+@keyframes colorPulse {
+    0% {background-color: #f2dede; transform: scale(1);}
+    5% {background-color: #d59595; transform: scale(1.2);}
+    10% {background-color: #f2dede; transform: scale(1);}
 }
 
 .bvp-system-message {
-    animation: colorPulse 2s infinite, changeSize 2s infinite;
+    -webkit-animation: colorPulse 20s infinite;
+    -moz-animation: colorPulse 20s infinite;
+    -o-animation: colorPulse 20s infinite;
+    animation: colorPulse 20s infinite;
     padding-top: 16px;
     padding-bottom: 16px;
-    font-size: 2em;
+    font-size: 1.5em;
 }
