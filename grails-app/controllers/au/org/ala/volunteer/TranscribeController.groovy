@@ -15,7 +15,7 @@ class TranscribeController {
     def userService
     def logService
 
-    static allowedMethods = [saveTranscription: "POST", save: "POST", savePartial: "POST"]
+    static allowedMethods = [saveTranscription: "POST"]
 
     def index = {
         if (params.id) {

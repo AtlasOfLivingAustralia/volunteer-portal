@@ -7,7 +7,7 @@ webxml {
 	//========================================
 	//
 	// uncomment to set session timeout - Be sure to specify value as an Integer
-	// sessionConfig.sessionTimeout = 30
+	sessionConfig.sessionTimeout = 120
 
 	//========================================
 	// Delegating Filter Chain

@@ -5,7 +5,7 @@
 %>
 
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require module="slickgrid" />
+<r:require modules="slickgrid, underscore" />
 
 <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
 
@@ -106,6 +106,8 @@
 
     var spreadsheetDataView = null;
     var grid = null;
+    var fieldList = <cl:json value="${fieldList}" />;
+
 
     $(document).ready(function() {
 
@@ -295,4 +297,42 @@
         return true;
     });
 
+    function createDataItemsFromInputs() {
+        var grid_data = [];
+        var rows = $("#spreadsheet-form-fields").find("input[id^='recordValues.']");
+        var dataView = grid.getData();
+
+        var items = {};
+
+        rows.each(function() {
+            var $this = $(this);
+            var id = $this.attr('id');
+            var fieldNameIdx = id.lastIndexOf('.');
+            var recordIdxIdx = id.indexOf('.');
+            var fieldName = id.substring(fieldNameIdx+1);
+            var recordIdx = parseInt(id.substring(recordIdxIdx+1, fieldNameIdx));
+            var obj = grid_data[recordIdx];
+            if (!obj) {
+              obj = { id: recordIdx };
+              grid_data[recordIdx] = obj;
+            }
+            obj[fieldName] = $this.val();
+        });
+
+        dataView.setItems(grid_data);
+
+        grid.invalidate();
+    }
+
+    // recreate the initial form and then rerun the data items from said form.
+    var recoverFunction = function(lastState) {
+      var $spreadsheetFields = $("#spreadsheet-form-fields");
+      $spreadsheetFields.empty();
+      _.each(lastState.fields, function(v,i) {
+        var id = v.id;
+        var value = v.value;
+        $spreadsheetFields.append("<input type='text' name='" + id + "' id='" + id + "' value='" +  value + "'/>");
+      });
+      createDataItemsFromInputs();
+    }
 </r:script>

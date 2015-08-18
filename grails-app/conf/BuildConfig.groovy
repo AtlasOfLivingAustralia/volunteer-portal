@@ -11,6 +11,9 @@ grails.project.fork = [
         console: false
 ]
 
+grails.project.target.level = 1.7
+grails.project.source.level = 1.7
+
 grails.project.dependency.resolver = "maven" // or ivy
 
 grails.project.dependency.resolution = {
@@ -66,10 +69,11 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        runtime 'postgresql:postgresql:9.1-901.jdbc4'
+        runtime 'org.postgresql:postgresql:9.3-1103-jdbc41'
         compile 'org.imgscalr:imgscalr-lib:4.2'
         compile 'com.squareup.retrofit:retrofit:1.6.1'
         compile 'com.google.guava:guava:17.0'
+        compile 'org.apache.commons:commons-pool2:2.4.2'
         compile 'org.elasticsearch:elasticsearch:1.3.5'
         compile 'net.sf.opencsv:opencsv:2.3'
     }

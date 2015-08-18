@@ -75,6 +75,9 @@
 
                     transcribeWidgets.prepareFieldWidgetsForSubmission();
 
+                    // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
+                    saveFormState();
+
                     return true;
                 });
 
@@ -312,8 +315,8 @@
                     var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
                     var value = $(this).val();
                     if (matches.length > 0) {
-                        var recordIdx = matches[1]
-                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID'
+                        var recordIdx = matches[1];
+                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
                         var collectorName = $(elemSelector).attr("collector_name");
                         if (value != collectorName) {
                             $(elemSelector).val('');
@@ -860,11 +863,11 @@
     });
 
 
-    function saveFormState(action) {
+    function saveFormState() {
         var dynamicDataSetFieldId = $("#observationFields").attr("entriesFieldId");
 
         var taskState = {
-            action: action,
+            action: $(".transcribeForm").attr('action'),
             taskId: ${taskInstance.id ?: 0},
                 dynamicDataSetFieldId: dynamicDataSetFieldId,
                 fields: []
@@ -908,8 +911,19 @@
                     $(key).change();
                 }
             }
-            // Now clear our local store so this message doesn't happen again if the user chooses not to save this time.
-            amplify.store("bvp_task_${taskInstance.id ?: 0}", null);
+
+
+            try {
+                // Allow the template a chance to react to recovery as well
+                if (recoverFunction && typeof recoverFunction == 'function') {
+                    recoverFunction(lastState);
+                }
+
+                // Now clear our local store so this message doesn't happen again if the user chooses not to save this time.
+                amplify.store("bvp_task_${taskInstance.id ?: 0}", null);
+            } catch (e) {
+                if (console && console.error) console.error(e);
+            }
         }
     }
 
@@ -921,6 +935,8 @@
             submitFormWithAction("${createLink(controller:'transcribe', action:'save')}");
         </g:else>
     }
+
+    var recoverFunction;
 
     var submitRequiresConfirmation = false;
     var $submitConfirm = $("#submitConfirmModal");
@@ -952,8 +968,6 @@
         try {
             disableSubmitButtons();
             var form = $(".transcribeForm");
-            // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
-            saveFormState(action);
             // Now we can attempt the submission
             form.get(0).setAttribute('action', action);
             form.submit();

@@ -146,7 +146,12 @@ class FieldService {
                     max('value')
                 }
             }
-            return fields[0] as Integer ?: 0
+            try{
+                return fields[0] as Integer ?: 0
+            } catch (NumberFormatException e) {
+                log.debug("Can not extract sequence number from ${fields[0]}")
+                // fall through to default value
+            }
         }
 
         return 0

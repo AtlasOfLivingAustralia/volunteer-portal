@@ -2,6 +2,11 @@ sudo: false
 language: groovy
 jdk:
 - oraclejdk7
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.ivy
+  - $HOME/.gvm
 branches:
   only:
   - master
@@ -16,6 +21,7 @@ before_install:
 - GRAILS_VERSION=`grep '^app\.grails\.version=' ./application.properties | sed -e
   's/^app\.grails\.version=//g'`
 - gvm install grails $GRAILS_VERSION || true
+- gvm use grails $GRAILS_VERSION
 before_script:
 - mkdir -p ~/.grails; wget -q -O ~/.grails/settings.groovy https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_settings_new.groovy
 - APP_VERSION=`grep '^app\.version=' ./application.properties | sed -e 's/^app\.version=//g'`
