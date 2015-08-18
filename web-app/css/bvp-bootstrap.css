@@ -419,6 +419,10 @@ h2, h3, h4, h5 {
     -moz-animation: colorPulse 20s infinite;
     -o-animation: colorPulse 20s infinite;
     animation: colorPulse 20s infinite;
+    -webkit-animation-delay: 2s;
+    -moz-animation-delay: 2s;
+    -o-animation-delay: 2s;
+    animation-delay: 2s;
     padding-top: 16px;
     padding-bottom: 16px;
     font-size: 1.5em;
