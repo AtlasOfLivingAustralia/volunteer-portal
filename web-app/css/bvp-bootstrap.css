@@ -395,30 +395,30 @@ h2, h3, h4, h5 {
 
 @-webkit-keyframes colorPulse {
     0% {background-color: #f2dede; transform: scale(1);}
-    5% {background-color: #d59595; transform: scale(1.2);}
-    10% {background-color: #f2dede; transform: scale(1);}
+    50% {background-color: #d59595; transform: scale(1.2);}
+    100% {background-color: #f2dede; transform: scale(1);}
 }
 @-moz-keyframes colorPulse {
     0% {background-color: #f2dede; transform: scale(1);}
-    5% {background-color: #d59595; transform: scale(1.2);}
-    10% {background-color: #f2dede; transform: scale(1);}
+    50% {background-color: #d59595; transform: scale(1.2);}
+    100% {background-color: #f2dede; transform: scale(1);}
 }
 @-o-keyframes colorPulse {
     0% {background-color: #f2dede; transform: scale(1);}
-    5% {background-color: #d59595; transform: scale(1.2);}
-    10% {background-color: #f2dede; transform: scale(1);}
+    50% {background-color: #d59595; transform: scale(1.2);}
+    100% {background-color: #f2dede; transform: scale(1);}
 }
 @keyframes colorPulse {
     0% {background-color: #f2dede; transform: scale(1);}
-    5% {background-color: #d59595; transform: scale(1.2);}
-    10% {background-color: #f2dede; transform: scale(1);}
+    50% {background-color: #d59595; transform: scale(1.2);}
+    100% {background-color: #f2dede; transform: scale(1);}
 }
 
 .bvp-system-message {
-    -webkit-animation: colorPulse 20s infinite;
-    -moz-animation: colorPulse 20s infinite;
-    -o-animation: colorPulse 20s infinite;
-    animation: colorPulse 20s infinite;
+    -webkit-animation: colorPulse 2s 1;
+    -moz-animation: colorPulse 2s 1;
+    -o-animation: colorPulse 2s 1;
+    animation: colorPulse 2s 1;
     -webkit-animation-delay: 2s;
     -moz-animation-delay: 2s;
     -o-animation-delay: 2s;
