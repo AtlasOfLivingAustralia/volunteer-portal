@@ -218,7 +218,7 @@ class VolunteerTagLib {
         }
 
         if (flash.systemMessage) {
-            out << '<div class="alert alert-error" style="margin-top:10px">' + flash.systemMessage + '</div>'
+            out << '<div class="alert alert-error bvp-system-message" style="margin-top:10px">' + flash.systemMessage + '</div>'
         }
     }
 

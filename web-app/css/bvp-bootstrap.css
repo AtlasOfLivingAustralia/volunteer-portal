@@ -392,3 +392,20 @@ h2, h3, h4, h5 {
 .text-justify {
     text-align: justify;
 }
+
+@-webkit-keyframes colorPulse { 0% {background-color: #f2dede;} 50% {background-color: #d59595;} 100% {background-color: #f2dede;} }
+@-moz-keyframes colorPulse { 0% {background-color: #f2dede;} 50% {background-color: #d59595;} 100% {background-color: #f2dede;} }
+@keyframes colorPulse { 0% {background-color: #f2dede;} 50% {background-color: #d59595;} 100% {background-color: #f2dede;} }
+
+@keyframes changeSize {
+    0% {transform: scale(1)}
+    50% {transform: scale(1.2)}
+    100% {transform: scale(1)}
+}
+
+.bvp-system-message {
+    animation: colorPulse 2s infinite, changeSize 2s infinite;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    font-size: 2em;
+}
