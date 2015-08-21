@@ -62,7 +62,7 @@ grails.project.dependency.resolution = {
         compile ':scaffolding:2.0.3'
         compile ':build-info:1.2.8'
         compile ":yammer-metrics:3.0.1-2"
-        compile ":grails-melody:1.55.0"
+        //compile ":grails-melody:1.55.0"
         compile(":images-client-plugin:0.3") {
             excludes "ala-bootstrap2"
         }
@@ -76,5 +76,6 @@ grails.project.dependency.resolution = {
         compile 'org.apache.commons:commons-pool2:2.4.2'
         compile 'org.elasticsearch:elasticsearch:1.3.5'
         compile 'net.sf.opencsv:opencsv:2.3'
+        compile 'org.freemarker:freemarker:2.3.23'
     }
 }
