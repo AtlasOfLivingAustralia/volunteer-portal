@@ -20,10 +20,10 @@ class UserController {
     def taskService
     def userService
     def logService
-    def fieldService
     def forumService
     def authService
     def fullTextIndexService
+    def freemarkerService
 
     static final ALA_HARVESTABLE = '''{
   "constant_score": {
@@ -536,11 +536,11 @@ class UserController {
         log.info("ajaxGetPoints| Task.countByFullyTranscribedBy(): ${sw.toString()}")
         sw.reset().start()
 
-        final q = '''{
+        final query = """{
   "constant_score": {
     "filter": {
       "and": [
-        { "term": { "fullyTranscribedBy": "${userId}" } },
+        { "term": { "fullyTranscribedBy": "${userInstance.userId}" } },
         { "nested" :
           {
             "path" : "fields",
@@ -556,9 +556,7 @@ class UserController {
       ]
     }
   }
-}'''
-        final simpleTemplateEngine = new SimpleTemplateEngine();
-        final query = simpleTemplateEngine.createTemplate(q).make([userId: userInstance.userId]).toString()
+}"""
 
         def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, taskCount.intValue(), rawResponse)
         sw.stop()
@@ -568,17 +566,11 @@ class UserController {
         def data = searchResponse.hits.hits.collect { hit ->
             def field = hit.source['fields']
 
-            //log.error("Keys ${field}")
             def pt = field.findAll { value ->
                 value['name'] == 'decimalLongitude' || value['name'] == 'decimalLatitude'
             }.collectEntries { value ->
                 def dVal = value['value']
-//                    try {
-//                        dVal = Double.valueOf(value['value'])
-//                    } catch (NumberFormatException e) {
-//                        log.warn("Got invalid lat/lon value ${value['value']}")
-//                        dVal = 0.0
-//                    }
+
                 if (value['name'] == 'decimalLongitude') {
                     [lng: dVal]
                 } else {
@@ -591,19 +583,6 @@ class UserController {
 
         sw.stop()
         log.info("ajaxGetPoints| generateResults: ${sw.toString()}")
-        //sw.reset().start()
-
-        //def tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
-
-        //def data = []
-        //tasks.each { task ->
-//            def point = fieldService.getPointForTask(task)
-        //    if (point) {
-        //        data << [lat:point.lat, lng:point.lng, taskId: task.id]
-        //    }
-        //}
-
-
 
         render(data as JSON)
     }
@@ -611,7 +590,7 @@ class UserController {
     def notebookMainFragment() {
         Stopwatch sw = new Stopwatch();
         def userInstance = User.get(params.int("id"))
-        def simpleTemplateEngine = new SimpleTemplateEngine()
+        //def simpleTemplateEngine = new SimpleTemplateEngine()
         def c = Task.createCriteria()
         sw.start()
         def expeditions = c {
@@ -635,7 +614,7 @@ class UserController {
         log.info("notebookMainFragment.recentAchievements ${sw.toString()}")
 
         sw.reset().start()
-        final query = simpleTemplateEngine.createTemplate(ALA_HARVESTABLE).make([userId: userInstance.userId]).toString()
+        final query = freemarkerService.runTemplate(ALA_HARVESTABLE, [userId: userInstance.userId])
         final agg = SPECIES_AGG_TEMPLATE
 
         def speciesList2 = fullTextIndexService.rawSearch(query, SearchType.COUNT, agg) { SearchResponse searchResponse ->
@@ -658,14 +637,14 @@ class UserController {
         log.info("notbookMainFragment.percentage ${sw.toString()}")
 
         sw.reset().start()
-        def fieldObservationQuery = simpleTemplateEngine.createTemplate(FIELD_OBSERVATIONS).make([userId: userInstance.userId]).toString()
+        def fieldObservationQuery = freemarkerService.runTemplate(FIELD_OBSERVATIONS, [userId: userInstance.userId])
         def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, hitsCount)
 
         sw.stop()
         log.info("notbookMainFragment.fieldObservationCount ${sw.toString()}")
 
         sw.reset().start()
-        final validatedQuery = simpleTemplateEngine.createTemplate(VALIDATED_TASKS_FOR_USER).make([userId: userInstance.userId]).toString()
+        final validatedQuery = freemarkerService.runTemplate(VALIDATED_TASKS_FOR_USER, [userId: userInstance.userId])
         def validatedCount = fullTextIndexService.rawSearch(validatedQuery, SearchType.COUNT, hitsCount)
         sw.stop()
         log.info("notbookMainFragment.validatedCount ${sw.toString()}")

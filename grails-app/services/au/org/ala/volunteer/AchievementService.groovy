@@ -2,7 +2,6 @@ package au.org.ala.volunteer
 
 import com.google.common.io.Closer
 import grails.gorm.DetachedCriteria
-import groovy.text.SimpleTemplateEngine
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig
 import org.elasticsearch.action.search.SearchResponse
@@ -22,6 +21,7 @@ class AchievementService {
     def grailsApplication
     def fullTextIndexService
     def grailsLinkGenerator
+    def freemarkerService
 
     def scriptPool
 
@@ -88,10 +88,9 @@ class AchievementService {
 
         final binding = ["userId":user.userId, "taskId":taskId]
 
-        def engine = new SimpleTemplateEngine()
-        def query = engine.createTemplate(template).make(binding)
+        def query = freemarkerService.runTemplate(template, binding)
 
-        def agg = engine.createTemplate(aggTemplate).make(binding)
+        def agg = freemarkerService.runTemplate(aggTemplate, binding)
 
         final closure
         if (aggType == AggregationType.CODE) {
@@ -117,8 +116,7 @@ class AchievementService {
 
         final binding = ["userId":user.userId, "taskId":taskId]
 
-        def engine = new SimpleTemplateEngine()
-        def query = engine.createTemplate(template).make(binding)
+        def query = freemarkerService.runTemplate(template, binding)
         
         fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, fullTextIndexService.searchResponseHitsGreaterThan(count))
     }
