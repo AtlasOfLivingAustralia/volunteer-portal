@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import org.apache.commons.lang.StringUtils
 import org.imgscalr.Scalr
 
@@ -240,14 +241,18 @@ class TaskService {
             return null;
         }
 
+
+
         def jump = project?.template?.viewParams?.jumpNTasks
         // This is the earliest last viewed time for a task to be unlocked
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
 
         def tasks
+        def sw = new Stopwatch()
 
         // If the template calls for jumping forward n at a time and we have a jumping off point...
         if (jump && lastId > 0) {
+            sw.start()
             tasks = Task.createCriteria().list(max:jump) {
                 eq("project", project)
                 gt('id', lastId)
@@ -255,12 +260,14 @@ class TaskService {
                 sizeLe('viewedTasks', 0)
                 order('id','asc')
             }
+            log.debug("Took ${sw.stop()} for 1st check")
             if (tasks) {
                 def task = tasks.last()
                 log.info("getNextTask(project ${project.id}, lastId $lastId) found a task to jump to: ${task.id}")
                 return task
             }
 
+            sw.start()
             tasks = Task.createCriteria().list([max:jump]) {
                 eq("project", project)
                 gt('id', lastId)
@@ -271,11 +278,14 @@ class TaskService {
                 }
                 order('id','asc')
             }
+            log.debug("Took ${sw.stop()} for 2nd check")
             if (tasks) {
                 def task = tasks.last()
                 log.info("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
                 return task
             }
+
+            sw.start()
             tasks = Task.createCriteria().list([max:jump]) {
                 eq("project", project)
                 gt('id', lastId)
@@ -286,6 +296,7 @@ class TaskService {
                 }
                 order('id','asc')
             }
+            log.debug("Took ${sw.stop()} for 3rd check")
             if (tasks) {
                 def task = tasks.last()
                 log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
@@ -293,13 +304,14 @@ class TaskService {
             }
         }
 
-        tasks = Task.createCriteria().list(max:1) {
+        sw.start()
+        tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNull("fullyTranscribedBy")
             sizeLe("viewedTasks", 0)
             order("id", "asc")
         }
-
+        log.debug("Took ${sw.stop()} for 4th check")
         if (tasks) {
             def task = tasks.last()
             log.info("getNextTask(project ${project.id}) found a task with no views: ${task.id}")
@@ -307,7 +319,7 @@ class TaskService {
         }
 
         // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
-
+        sw.start()
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNull("fullyTranscribedBy")
@@ -317,6 +329,7 @@ class TaskService {
             }
             order("lastViewed", "asc")
         }
+        log.debug("Took ${sw.stop()} for 5th check")
 
         if (tasks) {
             def task = tasks.last()
@@ -325,7 +338,7 @@ class TaskService {
         }
 
         // Finally, we'll have to serve up a task that this user has seen before
-
+        sw.start()
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
             isNull("fullyTranscribedBy")
@@ -335,6 +348,7 @@ class TaskService {
             }
             order("lastViewed", "asc")
         }
+        log.debug("Took ${sw.stop()}for 6th check")
 
         if (tasks) {
             def task = tasks.last()

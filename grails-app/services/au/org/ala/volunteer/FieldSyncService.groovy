@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import org.h2.util.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 class FieldSyncService {
 
@@ -47,7 +47,7 @@ class FieldSyncService {
     def handleDuplicateFormFields(Task task, String fieldname, values) {
         def distinctValues = []
         values.each {
-            if (!StringUtils.isNullOrEmpty(it) && !distinctValues.contains(it)) {
+            if (StringUtils.isNotEmpty(it) && !distinctValues.contains(it)) {
                 distinctValues << it
             }
         }
@@ -65,6 +65,17 @@ class FieldSyncService {
         return value
     }
 
+    // TODO hard coded for expediency, replace with something more useful in future
+    List<String> truncateFieldsForProject(Project project) {
+        def result;
+        switch (project.template.viewName) {
+            case 'cameratrapTranscribe': result = ['vernacularName', 'certainty', 'unlisted']
+                break
+            default: result = []
+        }
+        return result
+    }
+
     /**
      * Takes some new field values and sensibly syncs with existing field values
      * in the database.
@@ -73,7 +84,7 @@ class FieldSyncService {
      * @param fieldValues
      * @return
      */
-    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid) {
+    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = []) {
         //sync
         def idx = 0
         def hasMore = true
@@ -159,6 +170,14 @@ class FieldSyncService {
             }
         }
 
+        // Slightly dodgy hack, as camera trap records can be removed on re-save or validation
+        // and the record index is shared between selected images and unlisted write ins
+        def sortedIndexes = fieldValues.keySet().findAll { StringUtils.isNumeric(it) }.collect { Integer.parseInt(it) }.sort().reverse()
+        truncateFields.each { fieldName ->
+            def truncIdx = maxIndexFor(fieldName, fieldValues, sortedIndexes)
+            markSuperceded(task, truncIdx, fieldName)
+        }
+
         def now = Calendar.instance.time;
 
         //set the transcribed by
@@ -199,6 +218,31 @@ class FieldSyncService {
 
         // Should be dealt with by GORM event
         //DomainUpdateService.scheduleTaskIndex(task)
+    }
+
+    int maxIndexFor(fieldName, Map fieldValues, sortedIndexes) {
+
+        for (def key : sortedIndexes) {
+            if (fieldValues.get(key.toString())[fieldName]) {
+                return key
+            }
+        }
+        return -1;
+//        def c = Field.createCriteria()
+//        c.get {
+//            eq('task', task)
+//            eq('name', fieldName)
+//            eq('superceded', false)
+//            projections {
+//                max('recordIdx')
+//            }
+//        }
+    }
+
+    void markSuperceded(Task theTask, int truncIdx, String fieldName) {
+        Field.where {
+            task == theTask && superceded == false && recordIdx > truncIdx && name == fieldName
+        }.updateAll(superceded: true)
     }
 
 }

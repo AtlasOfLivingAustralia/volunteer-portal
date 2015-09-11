@@ -154,7 +154,7 @@ class TranscribeController {
             def taskInstance = Task.get(params.id)
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project))
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
                 if (skipNextAction) redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])

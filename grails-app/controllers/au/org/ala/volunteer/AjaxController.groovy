@@ -106,11 +106,12 @@ class AjaxController {
                 'user_id' { it[0] }
                 'display_name' { it[1] }
                 'organisation' { it[2] }
-                'transcribed_count' { it[3] }
-                'validated_count' { it[4] }
-                'last_activity' { it[5] ?: nodata }
-                'projects_count' { it[6] }
-                'volunteer_since' { it[7] }
+                'location' { it[3] }
+                'transcribed_count' { it[4] }
+                'validated_count' { it[5] }
+                'last_activity' { it[6] ?: nodata }
+                'projects_count' { it[7] }
+                'volunteer_since' { it[8] }
             })
             writer.writeHeadings()
             response.flushBuffer()
@@ -189,8 +190,8 @@ class AjaxController {
             def projectCount = projectCounts[id]?: 0
 
             def serviceResult = serviceResults?.users?.get(id)
-
-            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', transcribedCount, validatedCount, lastActivity, projectCount, user.created])
+            def location = (serviceResult.city && serviceResult.state) ? "${serviceResult.city}, ${serviceResult.state}" : (serviceResult.city ?: (serviceResult.state ?: ''))
+            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
         }
         sw5.stop()
         log.debug("UserReport generate report took ${sw5}")
