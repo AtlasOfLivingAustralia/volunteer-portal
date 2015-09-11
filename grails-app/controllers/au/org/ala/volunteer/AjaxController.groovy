@@ -190,7 +190,7 @@ class AjaxController {
             def projectCount = projectCounts[id]?: 0
 
             def serviceResult = serviceResults?.users?.get(id)
-            def location = (serviceResult.city && serviceResult.state) ? "${serviceResult.city}, ${serviceResult.state}" : (serviceResult.city ?: (serviceResult.state ?: ''))
+            def location = (serviceResult?.city && serviceResult?.state) ? "${serviceResult?.city}, ${serviceResult?.state}" : (serviceResult?.city ?: (serviceResult?.state ?: ''))
             report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
         }
         sw5.stop()
