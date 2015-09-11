@@ -198,7 +198,7 @@ class AjaxController {
 
         sw5.reset().start()
         // Sort by the transcribed count
-        report.sort({ row1, row2 -> row2[3] - row1[3]})
+        report.sort({ row1, row2 -> row2[4] - row1[4]})
         sw5.stop()
         log.debug("UserReport sort took ${sw5.toString()}")
 
