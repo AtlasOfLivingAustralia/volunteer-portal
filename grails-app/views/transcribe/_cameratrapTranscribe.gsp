@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require modules="cameratrap, fontawesome" />
+<r:require modules="cameratrap, font-awesome" />
 <div id="ct-container" class="container-fluid fourthree-image">
 
     <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}" />

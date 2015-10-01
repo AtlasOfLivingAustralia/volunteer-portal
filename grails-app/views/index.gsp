@@ -4,6 +4,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
         <meta name="section" content="home"/>
         <title><cl:pageTitle title="Home" /></title>
+        <r:require module="digivol" />
     </head>
 
     <body>
@@ -27,7 +28,7 @@
             <h2 class="heading">Volunteer by</h2>
             <div class="row">
                 <div class="col-sm-1 col-xs-4">
-                    <asset:image src="iconWild.png" class="img-responsive" />
+                    <r:img dir="images/2.0" file="iconWild.png" class="img-responsive" />
                 </div>
                 <div class="col-sm-3 col-xs-8">
                     <h3>Identify Animals</h3>
@@ -35,7 +36,7 @@
                     <a href="#">See all camera traps</a>
                 </div>
                 <div class="col-sm-1 col-xs-4">
-                    <asset:image src="iconNotes.png" class="img-responsive" />
+                    <r:img dir="images/2.0" file="iconNotes.png" class="img-responsive" />
                 </div>
                 <div class="col-sm-3 col-xs-8">
                     <h3>Transcribe field journals</h3>
@@ -43,7 +44,7 @@
                     <a href="#">See all field journals</a>
                 </div>
                 <div class="col-sm-1 col-xs-4">
-                    <asset:image src="iconLabels.png" class="img-responsive" />
+                    <r:img dir="images/2.0" file="iconLabels.png" class="img-responsive" />
                 </div>
                 <div class="col-sm-3 col-xs-8">
                     <h3>Transcribe speciman labels</h3>

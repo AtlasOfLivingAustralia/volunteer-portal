@@ -4,6 +4,11 @@ modules = {
 //        resource url:'/less/bvp-bootstrap.less',attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_style', deposition: 'head'
 //    }
 
+    'digivol' {
+        dependsOn 'bootstrap', 'jquery', 'font-awesome'
+        resource url: '/css/main.css'
+    }
+
     'qtip' {
         dependsOn "jquery"
         resource url:'/js/jquery.qtip-1.0.0-rc3.min.js'
@@ -103,7 +108,7 @@ modules = {
 
     "bootbox" {
         dependsOn "bootstrap-js, jquery"
-        resource url: 'js/bootbox/3.3.0/bootbox.js'
+        resource url: 'js/bootbox/4.4.0/bootbox.js'
     }
 
     "labelAutocomplete" {
@@ -173,7 +178,4 @@ modules = {
         resource url: 'css/cameratrap.css'
     }
 
-    "fontawesome" {
-        resource url: 'css/font-awesome/4.3.0/css/font-awesome.min.css'
-    }
 }

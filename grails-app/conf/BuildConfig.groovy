@@ -57,12 +57,12 @@ grails.project.dependency.resolution = {
         runtime ":jquery-ui:1.10.4"
 
         // asset-pipeline 2.0+ requires Java 7, use version 1.9.x with Java 6
-        compile ":asset-pipeline:2.5.1"
+        //compile ":asset-pipeline:2.5.1"
 
-        //runtime ':resources:1.2.14'
+        runtime ':resources:1.2.14'
         //runtime ":lesscss-resources:1.3.3"
-        //compile ":cache-headers:1.1.7"
-        //runtime ":cached-resources:1.0"
+        compile ":cache-headers:1.1.7"
+        runtime ":cached-resources:1.0"
 
         runtime ":mail:1.0.7"
         runtime ":csv:0.3.1"

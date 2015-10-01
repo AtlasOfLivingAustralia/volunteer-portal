@@ -8,13 +8,12 @@
     <cl:addApplicationMetaTags/>
     <meta name="description" content="Atlas of Living Australia"/>
     <meta name="author" content="Atlas of Living Australia">
-    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <r:external uri="favicon.ico" />
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
-    <asset:stylesheet href="application.css"/>
-
     <g:layoutHead />
+    <r:layoutResources />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -32,7 +31,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#"><asset:image src="logoDigivol.png" /></a>
+                <a class="navbar-brand" href="#"><r:img dir="images/2.0/" file="logoDigivol.png" /></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
 
@@ -142,11 +141,11 @@
         <div class="row">
 
             <div class="col-sm-12">
-                <asset:image src="institutions/logoAustMus@2x.png" />
-                <asset:image src="institutions/logoCSIRO@2x.png" />
-                <asset:image src="institutions/logoMelbourneVictoria@2x.png" />
-                <asset:image src="institutions/logoVermont@2x.png" />
-                <asset:image src="institutions/logoSmithsonian@2x.png" />
+                <r:img dir="images/2.0/institutions/" file="logoAustMus@2x.png" />
+                <r:img dir="images/2.0/institutions/" file="logoCSIRO@2x.png" />
+                <r:img dir="images/2.0/institutions/" file="logoMelbourneVictoria@2x.png" />
+                <r:img dir="images/2.0/institutions/" file="logoVermont@2x.png" />
+                <r:img dir="images/2.0/institutions/" file="logoSmithsonian@2x.png" />
             </div>
 
         </div>
@@ -161,7 +160,7 @@
 
             <div class="row footer-header">
                 <div class="col-sm-12">
-                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image src="logoDigivolInverted.png" /></a>
+                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><r:img dir="images/2.0/" file="logoDigivolInverted.png" /></a>
                     <div class="social-icons pull-right">
                         <a href="#" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
                         <a href="https://twitter.com/amdigivol" class="btn-lg"><i class="fa fa-twitter fa-lg"></i></a>
@@ -214,10 +213,10 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-7">
-                <asset:image src="logoAustMus.png"/> <asset:image src="logoALA.png" />
+                <r:img dir="images/2.0/" file="logoAustMus.png"/> <r:img dir="images/2.0/" file="logoALA.png"/>
             </div>
             <div class="col-sm-5">
-                <asset:image src="logoAGI.png" class="logo-agi" />
+                <r:img dir="images/2.0/" file="logoAGI.png" class="logo-agi"/>
             </div>
         </div>
     </div>
@@ -252,7 +251,7 @@
             <button data-dismiss="modal" data-target="#achievement-notifier" class="btn">Close</button>
         </div>
     </div>
-    <asset:script type="text/javascript">
+    <r:script>
         jQuery(function($) {
             var cheevs = <cl:json value="${cheevs*.id}" />;
     var acceptUrl = "${g.createLink(controller: 'ajax', action: 'acceptAchievements')}";
@@ -264,20 +263,20 @@
         });
     }).modal('show');
 });
-    </asset:script>
+    </r:script>
 </g:if>
 
 
-<asset:javascript src="application.js" />
-<asset:script type="text/javascript">
+%{--<asset:javascript src="application.js" />--}%
+<r:script>
     var BVP_JS_URLS = {
                 selectProjectFragment: "${createLink(controller:'project', action:'findProjectFragment')}",
                 webappRoot: "${resource(dir:'/')}",
                 picklistAutocompleteUrl: "${createLink(action:'autocomplete', controller:'picklistItem')}"
             };
-</asset:script>
-<asset:deferredScripts/>
+</r:script>
+%{--<asset:deferredScripts/>--}%
 <!-- JS resources-->
-%{--<r:layoutResources/>--}%
+<r:layoutResources />
 </body>
 </html>
