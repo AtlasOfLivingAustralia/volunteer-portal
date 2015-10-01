@@ -12,8 +12,35 @@
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
+    <r:require module="digivol" />
     <g:layoutHead />
     <r:layoutResources />
+
+    <%-- Allow overriding of primary branding colour --%>
+    <style>
+    section#footer .footer-brand,
+    section#footer .footer-brand:hover,
+    .navbar-brand,
+    .navbar-brand:hover,
+    .digivol-tab img,
+    body .navbar .navbar-brand,
+    body .navbar .navbar-brand:hover,
+    body .btn-primary,
+    body .label,
+    .progress .progress-bar-transcribed,
+    .key.transcribed,
+    .transcription-actions .btn.btn-next {
+        background-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/> ;
+    }
+
+    body .navbar {
+        border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
+    }
+
+    body.digivol .badge {
+        color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
+    }
+    </style>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -21,7 +48,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body class="digivol">
+<body>
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">

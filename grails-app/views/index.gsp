@@ -1,10 +1,10 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+        <meta name="layout" content="digivol"/>
         <meta name="section" content="home"/>
         <title><cl:pageTitle title="Home" /></title>
-        <r:require module="digivol" />
+        %{--<content tag="primaryColour">#0097d4</content>--}%
     </head>
 
     <body>
