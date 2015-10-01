@@ -14,7 +14,8 @@ class UserService {
     def logService
     def grailsApplication
     def emailService
-    def CustomPageRenderer customPageRenderer
+    //def CustomPageRenderer customPageRenderer
+    def groovyPageRenderer
     def messageSource
 
     static transactional = true
@@ -46,7 +47,7 @@ class UserService {
     @NotTransactional
     private void notifyNewUser(User user) {
         def interestedUsers = getUsersWithRole(BVPRole.SITE_ADMIN)
-        def message = customPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
+        def message = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
 
         interestedUsers.each {

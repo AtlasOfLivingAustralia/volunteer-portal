@@ -8,9 +8,12 @@ class ForumTagLib {
     static namespace = 'vpf'
 
     def userService
-    def forumService
+    def applicationContext
+    //def forumService
     def markdownService
     def taskService
+
+    @Lazy def forumService = applicationContext.getBean('forumService')
 
     /**
      * @param project

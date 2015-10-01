@@ -1,11 +1,9 @@
 import au.org.ala.volunteer.*
 import com.google.common.io.Resources
 import grails.converters.JSON
-import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang3.time.StopWatch
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.hibernate.FlushMode
@@ -323,7 +321,7 @@ class BootStrap {
             if (!Picklist.findByName(it)) {
                 log.info("creating new picklist " + it)
                 Picklist picklist = new Picklist(name: it).save(flush: true, failOnError: true)
-                def csvText = ApplicationHolder.application.parentContext.getResource("classpath:resources/" + it + ".csv").inputStream.text
+                def csvText = grailsApplication.parentContext.getResource("classpath:resources/" + it + ".csv").inputStream.text
                 csvText.eachCsvLine { tokens ->
                     def picklistItem = new PicklistItem()
                     picklistItem.picklist = picklist

@@ -26,6 +26,15 @@ class VolunteerTagLib {
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate']
 
+    /**
+     * @attr title The page title
+     */
+    def pageTitle = { attrs, body ->
+        def appName = g.message(code: 'default.application.name')
+        def pageName = attrs.title ?: 'Home'
+        out << "$appName | $pageName"
+    }
+
     def isLoggedIn = { attrs, body ->
 
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
