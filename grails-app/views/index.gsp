@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="digivol"/>
+        <meta name="layout" content="main-digivol-bs3"/>
         <meta name="section" content="home"/>
         <title><cl:pageTitle title="Home" /></title>
         %{--<content tag="primaryColour">#0097d4</content>--}%
