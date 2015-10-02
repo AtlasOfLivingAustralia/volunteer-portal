@@ -153,6 +153,7 @@ class VolunteerTagLib {
     /**
      *
      */
+    //TODO This is hideous and it should disappear after applying the new skin
     def navbar = { attrs, body ->
 
         def selected = null;
@@ -410,34 +411,33 @@ class VolunteerTagLib {
             }
 
             if (!attrs.hideCrumbs) {
-                mb.nav(id:'breadcrumb') {
-                    ol {
-                        li {
-                            a(href:createLink(uri:'/')) {
-                                mkp.yield(message(code:'default.home.label'))
-                            }
+                mb.ol(class: 'breadcrumb') {
+                    li {
+                        a(href:createLink(uri:'/')) {
+                            mkp.yield(message(code:'default.home.label'))
                         }
-                        if (crumbList) {
-                            for (int i = 0; i < crumbList?.size(); i++) {
-                                def item = crumbList[i]
-                                li {
-                                    a(href: item.link) {
-                                        mkp.yield(item.label)
-                                    }
+                    }
+                    if (crumbList) {
+                        for (int i = 0; i < crumbList?.size(); i++) {
+                            def item = crumbList[i]
+                            li {
+                                a(href: item.link) {
+                                    mkp.yield(item.label)
                                 }
                             }
                         }
-                        li(class:'last') {
-                            span {
-                                mkp.yield(crumbLabel)
-                            }
+                    }
+                    li(class:'last') {
+                        span {
+                            mkp.yield(crumbLabel)
                         }
                     }
                 }
+
             }
 
             if (!attrs.hideTitle) {
-                mb.h1(class:'bvp-heading') {
+                mb.h2(class:'bvp-heading') {
                     mkp.yield(attrs.title)
                 }
             }

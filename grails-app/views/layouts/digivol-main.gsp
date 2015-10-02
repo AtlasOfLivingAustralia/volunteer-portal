@@ -150,14 +150,17 @@
     </div>
 </nav>
 
-<header id="page-header">
-    <div class="container">
-        <cl:messages/>
-        <hgroup>
-            <g:pageProperty name="page.page-header"/>
-        </hgroup>
+<div id="page-header" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <cl:messages/>
+            <div>
+                <g:pageProperty name="page.page-header"/>
+            </div>
+        </div>
     </div>
-</header>
+
+</div>
 
 <g:layoutBody/>
 
