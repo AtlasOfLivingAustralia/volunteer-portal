@@ -20,7 +20,11 @@ class MultimediaService {
     }
 
     public String getImageUrl(Multimedia media) {
-        return media.filePath ? "${grailsApplication.config.server.url}${media.filePath}" : ''
+        getImageUrl(media.filePath)
+    }
+
+    public String getImageUrl(String filePath) {
+        return filePath ? "${grailsApplication.config.server.url}${filePath}" : ''
     }
 
     public String getImageThumbnailUrl(Multimedia media) {
