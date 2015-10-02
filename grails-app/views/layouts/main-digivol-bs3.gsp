@@ -121,6 +121,9 @@
                             </li>
                         </ul>
                     </li>
+                    <cl:ifAdmin>
+                    <li><a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> Admin</a></li>
+                    </cl:ifAdmin>
                     <!-- Logged In Ends -->
 
 
