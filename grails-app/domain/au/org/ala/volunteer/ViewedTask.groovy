@@ -11,6 +11,7 @@ class ViewedTask implements Serializable {
 
   static mapping = {
     version false
+    task index:'viewed_task_task_id_idx'
   }
 
   static constraints = {
