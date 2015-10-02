@@ -138,7 +138,7 @@ viewedTask.timeout = 2 * 60 * 60 * 1000
 
 leaderBoard.count = 5
 
-ala.skin = "main-digivol"
+ala.skin = "digivol-main"
 ala.baseURL = "http://www.ala.org.au"
 bie.baseURL = "http://bie.ala.org.au"
 bie.searchPath = "/search"
