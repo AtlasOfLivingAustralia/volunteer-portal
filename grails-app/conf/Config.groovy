@@ -82,7 +82,7 @@ expedition = [
                             icon: "images/explorers/RobertEtheridge.png",
                             link: "http://www.australianmuseum.net.au/Curators-and-Directors-of-the-Australian-Museum/",
                             name: "Robert Etheridge Jnr (1846-1920)",
-                            bio:  "Robert Etheridge Jnr trained as a palaeontologist and was appointed curator of the Australian Mueseum in 1895. During his time, the museum building was enlarged with the erection of the south wing, public lectures resumed and cadetships were introduced."
+                            bio:  "Robert Etheridge Jnr trained as a palaeontologist and was appointed curator of the Australian Museum in 1895. During his time, the museum building was enlarged with the erection of the south wing, public lectures resumed and cadetships were introduced."
                         ],[
                             icon: "images/explorers/GeorgeBennet.png",
                             link: "http://www.australianmuseum.net.au/Curators-and-Directors-of-the-Australian-Museum/",
