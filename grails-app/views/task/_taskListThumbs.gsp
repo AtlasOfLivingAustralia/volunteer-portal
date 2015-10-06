@@ -1,12 +1,19 @@
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <table class="table table-striped table-condensed table-bordered">
     <thead>
-        <tr>
-            <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'External Id')}" params="${[q: params.q, mode: params.mode]}"/>
-            <g:sortableColumn property="fullyTranscribedBy" title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}" params="${[q: params.q, mode: params.mode]}"/>
-            <g:sortableColumn property="fullyValidatedBy" title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}" params="${[q: params.q, mode: params.mode]}"/>
-            <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Validation Status')}" params="${[q: params.q, mode: params.mode]}" style="text-align: center;"/>
-        </tr>
+    <tr>
+        <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'External Id')}"
+                          params="${[q: params.q, mode: params.mode]}"/>
+        <g:sortableColumn property="fullyTranscribedBy"
+                          title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}"
+                          params="${[q: params.q, mode: params.mode]}"/>
+        <g:sortableColumn property="fullyValidatedBy"
+                          title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}"
+                          params="${[q: params.q, mode: params.mode]}"/>
+        <g:sortableColumn property="isValid"
+                          title="${message(code: 'task.isValid.label', default: 'Validation Status')}"
+                          params="${[q: params.q, mode: params.mode]}" style="text-align: center;"/>
+    </tr>
     </thead>
 </table>
 
@@ -20,10 +27,11 @@
                 </div>
 
                 <div style="text-align: center">
-                    <a href="${createLink(controller: 'task', action:'showDetails', id:taskInstance.id)}">
-                        <cl:taskThumbnail task="${taskInstance}" />
+                    <a href="${createLink(controller: 'task', action: 'showDetails', id: taskInstance.id)}">
+                        <cl:taskThumbnail task="${taskInstance}"/>
                     </a>
                 </div>
+
                 <div style="text-align: center">
                     <g:if test="${taskInstance.fullyTranscribedBy}">
                         <g:if test="${taskInstance.isValid == true}">
@@ -48,9 +56,10 @@
                         </div>
                     </g:else>
 
-                    <g:set var="lastView" value="${lockedMap[taskInstance.id]}" />
+                    <g:set var="lastView" value="${lockedMap[taskInstance.id]}"/>
                     <g:if test="${lastView}">
-                        <i class="icon-lock lastViewedTask pull-right" title="Locked by ${lastView.userId}" viewedTaskId="${lastView.id}"></i>
+                        <i class="icon-lock lastViewedTask pull-right" title="Locked by ${lastView.userId}"
+                           viewedTaskId="${lastView.id}"></i>
                     </g:if>
                 </div>
             </div>

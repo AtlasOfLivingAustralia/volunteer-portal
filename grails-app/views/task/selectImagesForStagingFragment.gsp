@@ -4,7 +4,8 @@
         Depending on your connection speed and the size of your images, it might be a good idea to stage images in batches of 200 or less.
     </div>
 
-    <g:form name="stageImagesForm" controller="task" action="stageImage" method="post" enctype="multipart/form-data" class="form-horizontal">
+    <g:form name="stageImagesForm" controller="task" action="stageImage" method="post" enctype="multipart/form-data"
+            class="form-horizontal">
         <g:hiddenField name="projectId" value="${projectInstance.id}"/>
         <div class="control-group">
             <div class="controls">
@@ -21,7 +22,7 @@
 
         <div class="control-group">
             <div id="uploadingMessage" style="display: none">
-                <cl:spinner /> Uploading, please wait...
+                <cl:spinner/> Uploading, please wait...
             </div>
         </div>
 
@@ -29,12 +30,12 @@
 
     <script>
 
-        $("#btnCancelUploadImages").click(function(e) {
+        $("#btnCancelUploadImages").click(function (e) {
             e.preventDefault();
             bvp.hideModal();
         });
 
-        $("#btnUploadImages").click(function(e) {
+        $("#btnUploadImages").click(function (e) {
             e.preventDefault();
             $("#uploadingMessage").css("display", "block");
             $("#stageImagesForm").submit();

@@ -1,48 +1,50 @@
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-  <title><g:message code="leaderBoardAdmin.label" default="Leaderboard Configuration"/></title>
-  <r:require modules="bvp-js" />
-  <r:style>
-      #ajax-spinner.disabled {
-        display: none;
-      }
-      li.user > span {
-          margin-right: 5px;
-      }
-      i.icon-remove {
-          cursor: pointer;
-      }
-  </r:style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <title><g:message code="leaderBoardAdmin.label" default="Leaderboard Configuration"/></title>
+    <r:require modules="bvp-js"/>
+    <r:style>
+        #ajax-spinner.disabled {
+          display: none;
+        }
+        li.user > span {
+            margin-right: 5px;
+        }
+        i.icon-remove {
+            cursor: pointer;
+        }
+    </r:style>
 </head>
 
 <body>
 
-<cl:headerContent title="${message(code:'default.leaderboardadmin.label', default:'Leaderboard Configuration')}">
-  <%
-    pageScope.crumbs = [
-            [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
-    ]
-  %>
+<cl:headerContent title="${message(code: 'default.leaderboardadmin.label', default: 'Leaderboard Configuration')}">
+    <%
+        pageScope.crumbs = [
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Admin')]
+        ]
+    %>
 </cl:headerContent>
 
 <div class="row">
-  <div class="span12">
-    <legend>Ineligible leaderboard users <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner" class="disabled" /></legend>
-    <div class="row-fluid" >
-      <ul id="user-list">
-        <g:each in="${users}" var="user">
-          <li class="user">
-            <span>${user.displayName}</span><i data-user-id="${user.userId}" class="icon-remove"></i>
-          </li>
-        </g:each>
-      </ul>
-      <label for="add-user">Add User: </label>
-      <input id="add-user" type="text" autocomplete="off" data-provide="typeahead"
-             data-source="typeahead" data-updater="typeaheadUpdate" />
+    <div class="span12">
+        <legend>Ineligible leaderboard users <r:img dir="images" file="spinner.gif" height="16px" width="16px"
+                                                    id="ajax-spinner" class="disabled"/></legend>
+
+        <div class="row-fluid">
+            <ul id="user-list">
+                <g:each in="${users}" var="user">
+                    <li class="user">
+                        <span>${user.displayName}</span><i data-user-id="${user.userId}" class="icon-remove"></i>
+                    </li>
+                </g:each>
+            </ul>
+            <label for="add-user">Add User:</label>
+            <input id="add-user" type="text" autocomplete="off" data-provide="typeahead"
+                   data-source="typeahead" data-updater="typeaheadUpdate"/>
+        </div>
     </div>
-  </div>
 </div>
 
 <r:script>

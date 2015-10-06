@@ -1,34 +1,34 @@
 <style type="text/css">
 
-    #toolContentHeader, #currentTaskHeader {
-        background: #3D464C;
-        padding-left: 10px;
-        padding-right: 10px;
-        color: white;
-    }
+#toolContentHeader, #currentTaskHeader {
+    background: #3D464C;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+}
 
-    #toolContentHeader {
-        padding-top: 10px;
-    }
+#toolContentHeader {
+    padding-top: 10px;
+}
 
-    #currentTaskHeader h3 {
-        color: white;
-        margin: 0;
-    }
+#currentTaskHeader h3 {
+    color: white;
+    margin: 0;
+}
 
-    #toolContentHeader h3, #currentTaskHeader h3 {
-        color: white;
-        padding-bottom: 6px;
-    }
+#toolContentHeader h3, #currentTaskHeader h3 {
+    color: white;
+    padding-bottom: 6px;
+}
 
-    #taskImage {
-        height: 200px;
-        width: 670px;
-    }
+#taskImage {
+    height: 200px;
+    width: 670px;
+}
 
-    #taskImage img {
-        max-width: inherit !important;
-    }
+#taskImage img {
+    max-width: inherit !important;
+}
 
 </style>
 
@@ -42,7 +42,7 @@
         </div>
 
         <div id="imagePane">
-            <g:set var="mm" value="${taskInstance.multimedia?.first()}" />
+            <g:set var="mm" value="${taskInstance.multimedia?.first()}"/>
             <div id="taskImageViewer" style="height: 200px; overflow: hidden">
                 <g:imageViewer multimedia="${mm}" elementId="taskImage" hideControls="${true}"/>
             </div>
@@ -59,12 +59,12 @@
         var target = $("#taskImage img");
 
         target.panZoom({
-            pan_step:10,
-            zoom_step:10,
-            min_width:100,
-            min_height:100,
-            mousewheel:true,
-            mousewheel_delta:6
+            pan_step: 10,
+            zoom_step: 10,
+            min_width: 100,
+            min_height: 100,
+            mousewheel: true,
+            mousewheel_delta: 6
         });
 
     </script>

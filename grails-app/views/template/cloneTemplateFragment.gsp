@@ -6,6 +6,7 @@
 
     <div class="control-group">
         <label for="templateName" class="control-label">New template name:</label>
+
         <div class="controls">
             <g:textField name="templateName" value="Copy of ${templateInstance?.name}"/>
         </div>
@@ -23,12 +24,12 @@
 
     $("#templateName").select().focus();
 
-    $("#btnCancelCloneTemplate").click(function(e) {
+    $("#btnCancelCloneTemplate").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });
 
-    $("#btnCopyTemplate").click(function(e) {
+    $("#btnCopyTemplate").click(function (e) {
         e.preventDefault();
         var newName = $("#templateName").val();
         if (newName) {

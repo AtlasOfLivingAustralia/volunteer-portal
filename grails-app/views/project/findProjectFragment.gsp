@@ -13,26 +13,26 @@
 </div>
 <script>
 
-    $("#search").keypress(function(e) {
+    $("#search").keypress(function (e) {
         if (e.keyCode == 13) {
             e.preventDefault();
             doProjectSearch();
         }
     });
 
-    $("#btnSearchProjects").click(function(e) {
+    $("#btnSearchProjects").click(function (e) {
         e.preventDefault();
         doProjectSearch();
     });
 
     function doProjectSearch() {
         $("#searchResults").html("Searching...");
-        $.ajax("${createLink(action:"findProjectResultsFragment")}?q=" + $("#search").val()).done(function(content) {
+        $.ajax("${createLink(action:"findProjectResultsFragment")}?q=" + $("#search").val()).done(function (content) {
             $("#searchResults").html(content);
         });
     }
 
-    $("#btnCancelProjectSearch").click(function(e) {
+    $("#btnCancelProjectSearch").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });

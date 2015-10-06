@@ -1,7 +1,7 @@
 <table class="table table-striped table-condensed">
     <g:each in="${projectList}" var="project">
         <tr projectId="${project.id}">
-            <td style="width: 125px"><img src="${project.featuredImage}" style="height: 75px" /></td>
+            <td style="width: 125px"><img src="${project.featuredImage}" style="height: 75px"/></td>
             <td>
                 <strong>${project.name}</strong>
                 <br/>
@@ -17,11 +17,11 @@
     </g:each>
 </table>
 
-<g:hiddenField name="selectedProjectId" value="" />
+<g:hiddenField name="selectedProjectId" value=""/>
 
 <script>
 
-    $(".btnSelectProject").click(function(e) {
+    $(".btnSelectProject").click(function (e) {
         e.preventDefault();
         var projectId = $(this).closest("[projectId]").attr("projectId");
         $("#selectedProjectId").val(projectId);

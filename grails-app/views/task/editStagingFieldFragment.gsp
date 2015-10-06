@@ -2,12 +2,16 @@
 
     <div class="control-group">
         <label class="control-label" for="fieldType">Field type</label>
+
         <div class="controls">
-            <g:select class="fieldType" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}" value="${fieldDefinition?.fieldDefinitionType}"/>
+            <g:select class="fieldType" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"
+                      value="${fieldDefinition?.fieldDefinitionType}"/>
             <cl:helpText tooltipPosition="topMiddle" targetPosition="bottomMiddle" tipPosition="topMiddle" width="600">
                 <ul>
-                    <li><code>NameRegex</code> extracts part of the filename out using a <em>regular expression</em> and a capturing group.</li>
-                    <li><code>NamePattern</code> extracts part of the filename out using a wildcard surrounded by parentheses <code>(*)</code></li>
+                    <li><code>NameRegex</code> extracts part of the filename out using a <em>regular expression</em> and a capturing group.
+                    </li>
+                    <li><code>NamePattern</code> extracts part of the filename out using a wildcard surrounded by parentheses <code>(*)</code>
+                    </li>
                     <li><code>Literal</code> to assign the same static field value to every task</li>
                     <li><code>Sequence</code> assigns a automatically incremented number to each task</li>
                     <li><code>DataFileColumn</code> assigns a value from an uploaded csv file</li>
@@ -19,11 +23,12 @@
     <div id="formatBlock">
         <div class="control-group">
             <label class="control-label" for="definition" id="formatLabel">Definition/Value</label>
+
             <div class="controls">
-                <g:textField name="definition" value="${fieldDefinition?.format}" />
+                <g:textField name="definition" value="${fieldDefinition?.format}"/>
 
                 <g:if test="${hasDataFile && dataFileColumns}">
-                    <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}" />
+                    <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}"/>
                 </g:if>
             </div>
         </div>
@@ -31,13 +36,16 @@
 
     <div class="control-group">
         <label class="control-label" for="fieldName">Field name</label>
+
         <div class="controls">
-            <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}" value="${fieldDefinition?.fieldName}"/>
+            <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"
+                      value="${fieldDefinition?.fieldName}"/>
         </div>
     </div>
 
     <div class="control-group">
         <label class="control-label" for="recordIndex">Index (optional)</label>
+
         <div class="controls">
             <g:textField name="recordIndex" value="${fieldDefinition?.recordIndex}"/>
         </div>
@@ -53,12 +61,12 @@
 
     <script>
 
-        $("#btnCancelEditFieldDefinition").click(function(e) {
+        $("#btnCancelEditFieldDefinition").click(function (e) {
             e.preventDefault();
             bvp.hideModal();
         });
 
-        $("#btnSaveFieldDefinition").click(function(e) {
+        $("#btnSaveFieldDefinition").click(function (e) {
             e.preventDefault();
             var fieldName = encodeURIComponent($("#fieldName").val());
             var fieldType = encodeURIComponent($("#fieldType").val());
@@ -70,11 +78,11 @@
             }
         });
 
-        $("#fieldType").change(function() {
+        $("#fieldType").change(function () {
             updateFormatOptions();
         });
 
-        $("#dataFileColumn").change(function() {
+        $("#dataFileColumn").change(function () {
             $("#fieldName").val($("#dataFileColumn").val());
         });
 
@@ -94,8 +102,8 @@
                 } else if (fieldType == 'DataFileColumn') {
                     $("#formatLabel").html("Column (leave blank to use field name)")
                     <g:if test="${hasDataFile && dataFileColumns}">
-                        $("#definition").css("display", "none");
-                        $("#dataFileColumn").css("display", "block");
+                    $("#definition").css("display", "none");
+                    $("#dataFileColumn").css("display", "block");
                     </g:if>
                 } else {
                     $("#formatLabel").html("Value")
@@ -103,7 +111,7 @@
             }
         }
 
-        $("#dataFileColumn").change(function() {
+        $("#dataFileColumn").change(function () {
             $("#definition").val($("#dataFileColumn").val());
         });
 

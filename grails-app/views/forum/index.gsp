@@ -1,27 +1,27 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+<head>
+    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
 
-        <style type="text/css">
+    <style type="text/css">
 
-            .forumSection {
-                border: 1px solid #a9a9a9;
-                margin-top: 5px;
-                margin-bottom: 5px;
-                padding: 10px;
-            }
+    .forumSection {
+        border: 1px solid #a9a9a9;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        padding: 10px;
+    }
 
-        </style>
+    </style>
 
-    </head>
+</head>
 
-    <body>
+<body>
 
-        <r:script type="text/javascript">
+<r:script type="text/javascript">
 
             function renderTab(tabIndex, q, offset, max, sort, order) {
                 // var $tabs = $('#tabControl').tabs();
@@ -29,20 +29,21 @@
                 var baseUrl = "";
                 if (tabIndex == 0 || !tabIndex) {
                     selector = "#tabRecentTopics";
-                    baseUrl = "${createLink(action:'ajaxRecentTopicsList')}";
+                    baseUrl = "${createLink(action: 'ajaxRecentTopicsList')}";
                 } else if (tabIndex == 1) {
                     selector = "#tabGeneralTopics";
-                    baseUrl = "${createLink(action:'ajaxGeneralTopicsList')}";
+                    baseUrl = "${createLink(action: 'ajaxGeneralTopicsList')}";
                 } else if (tabIndex == 2) {
                     selector = "#tabProjectForums";
-                    baseUrl = "${createLink(action:'ajaxProjectForumsList')}";
+                    baseUrl = "${createLink(action: 'ajaxProjectForumsList')}";
                 } else if (tabIndex == 3) {
                     selector = "#tabWatchedTopics";
-                    baseUrl = "${createLink(action:'ajaxWatchedTopicsList')}";
+                    baseUrl = "${createLink(action: 'ajaxWatchedTopicsList')}";
                 }
 
                 if (baseUrl && selector) {
-                    $(selector).html('<div>Retrieving list of topics... <img src="${resource(dir:'images', file:'spinner.gif')}"/> </div>');
+                    $(selector).html('<div>Retrieving list of topics... <img
+        src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
                     baseUrl += "?selectedTab=" + tabIndex;
                     if (q) {
                         baseUrl += "&q=" + q;
@@ -78,40 +79,54 @@
                     }
                 });
 
-                renderTab(${params.selectedTab ?: 0}, ${params.q ? '"' + params.q + '"': 'null'}, ${params.offset ?: "null"}, ${params.max ?: "null"}, ${params.sort ? '"' + params.sort + '"': "null"}, ${params.order ? '"' + params.order + '"' : "null"});
+                renderTab(${params.selectedTab ?: 0}, ${params.q ? '"' + params.q + '"' : 'null'}, ${params.offset ?: "null"}, ${params.max ?: "null"}, ${params.sort ? '"' + params.sort + '"' : "null"}, ${params.order ? '"' + params.order + '"' : "null"});
             });
 
-        </r:script>
+</r:script>
 
-        <cl:headerContent title="${message(code:'default.forum.label', default:'DigiVol Forum')}" selectedNavItem="forum"/>
+<cl:headerContent title="${message(code: 'default.forum.label', default: 'DigiVol Forum')}" selectedNavItem="forum"/>
 
-        <div class="row" id="content">
-            <div class="span12">
-                <section class="forumSection">
-                    <h3>Find forum topics</h3>
-                    <g:form controller="forum" action="searchForums">
-                        <g:textField style="margin-bottom: 0px" id="search-input" class="filled" placeholder="Search the forums..." name="query"/>
-                        <button class="btn" style="font-size:1.3em" type="submit">Search</button>
-                    </g:form>
-                </section>
+<div class="row" id="content">
+    <div class="span12">
+        <section class="forumSection">
+            <h3>Find forum topics</h3>
+            <g:form controller="forum" action="searchForums">
+                <g:textField style="margin-bottom: 0px" id="search-input" class="filled"
+                             placeholder="Search the forums..." name="query"/>
+                <button class="btn" style="font-size:1.3em" type="submit">Search</button>
+            </g:form>
+        </section>
 
-                <div id="tabControl" class="tabbable">
-                    <ul class="nav nav-tabs">
-                        <li class="${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"><a href="#tabRecentTopics" class="forum-tab-title" data-toggle="tab" tabIndex="0">Featured and recent topics</a></li>
-                        <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabGeneralTopics" class="forum-tab-title" data-toggle="tab" tabIndex="1">Browse General Discussion Topics</a></li>
-                        <li class="${params.selectedTab == '2' ? 'active' : ''}"><a href="#tabProjectForums" class="forum-tab-title" data-toggle="tab" tabIndex="2">Expedition Forums</a></li>
-                        <li class="${params.selectedTab == '3' ? 'active' : ''}"><a href="#tabWatchedTopics" class="forum-tab-title" data-toggle="tab" tabIndex="3">Your watched topics</a></li>
-                    </ul>
+        <div id="tabControl" class="tabbable">
+            <ul class="nav nav-tabs">
+                <li class="${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"><a
+                        href="#tabRecentTopics" class="forum-tab-title" data-toggle="tab"
+                        tabIndex="0">Featured and recent topics</a></li>
+                <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabGeneralTopics"
+                                                                            class="forum-tab-title" data-toggle="tab"
+                                                                            tabIndex="1">Browse General Discussion Topics</a>
+                </li>
+                <li class="${params.selectedTab == '2' ? 'active' : ''}"><a href="#tabProjectForums"
+                                                                            class="forum-tab-title" data-toggle="tab"
+                                                                            tabIndex="2">Expedition Forums</a></li>
+                <li class="${params.selectedTab == '3' ? 'active' : ''}"><a href="#tabWatchedTopics"
+                                                                            class="forum-tab-title" data-toggle="tab"
+                                                                            tabIndex="3">Your watched topics</a></li>
+            </ul>
 
-                    <div class="tab-content">
-                        <div id="tabRecentTopics" class="tab-pane ${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"></div>
-                        <div id="tabGeneralTopics" class="tab-pane ${params.selectedTab == '1' ? 'active' : ''}"></div>
-                        <div id="tabProjectForums" class="tab-pane ${params.selectedTab == '2' ? 'active' : ''}"></div>
-                        <div id="tabWatchedTopics" class="tab-pane ${params.selectedTab == '3' ? 'active' : ''}"></div>
-                    </div>
+            <div class="tab-content">
+                <div id="tabRecentTopics"
+                     class="tab-pane ${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"></div>
 
-                </div>
+                <div id="tabGeneralTopics" class="tab-pane ${params.selectedTab == '1' ? 'active' : ''}"></div>
+
+                <div id="tabProjectForums" class="tab-pane ${params.selectedTab == '2' ? 'active' : ''}"></div>
+
+                <div id="tabWatchedTopics" class="tab-pane ${params.selectedTab == '3' ? 'active' : ''}"></div>
             </div>
+
         </div>
-    </body>
+    </div>
+</div>
+</body>
 </html>

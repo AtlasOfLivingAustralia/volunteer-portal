@@ -4,8 +4,9 @@
 <div class="form-horizontal">
     <div class="control-group">
         <label class="control-label" for="newCollectionCode">Collection code:</label>
+
         <div class="controls">
-            <g:textField name="newCollectionCode" />
+            <g:textField name="newCollectionCode"/>
         </div>
     </div>
 
@@ -19,16 +20,16 @@
 
 <script>
 
-    $("#btnCancelCreateCollectionCode").click(function(e) {
+    $("#btnCancelCreateCollectionCode").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });
 
-    $("#btnCreateNewCollectionCode").click(function(e) {
+    $("#btnCreateNewCollectionCode").click(function (e) {
         e.preventDefault();
         var code = $("#newCollectionCode").val();
         if (code) {
-            $.ajax("${createLink(action:'ajaxCreateNewCollectionCode')}?code=" + code).done(function(result) {
+            $.ajax("${createLink(action:'ajaxCreateNewCollectionCode')}?code=" + code).done(function (result) {
                 if (result.success) {
                     bvp.newCollectionCode = code;
                     bvp.hideModal();

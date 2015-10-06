@@ -1,12 +1,12 @@
 <<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
-    <head>
-        <title><g:message code="default.application.name" /> - Atlas of Living Australia</title>
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<head>
+    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-        <r:script type="text/javascript">
+    <r:script type="text/javascript">
             // Load the Visualization API and the piechart package.
             google.load('visualization', '1.0', {'packages': ['corechart']});
 
@@ -25,7 +25,7 @@
             });
 
             function transcriptionsByMonth() {
-                $.ajax("${createLink(controller:'ajax', action:'statsTranscriptionsByMonth')}").done(function (data) {
+                $.ajax("${createLink(controller: 'ajax', action: 'statsTranscriptionsByMonth')}").done(function (data) {
                     // Create the data table.
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Month');
@@ -49,7 +49,7 @@
             }
 
             function validationsByMonth() {
-                $.ajax("${createLink(controller:'ajax', action:'statsValidationsByMonth')}").done(function (data) {
+                $.ajax("${createLink(controller: 'ajax', action: 'statsValidationsByMonth')}").done(function (data) {
                     // Create the data table.
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Month');
@@ -72,43 +72,43 @@
                 });
             }
 
+    </r:script>
+</head>
 
+<body>
 
-        </r:script>
-    </head>
+<sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
-    <body>
+<cl:headerContent title="Statistics">
+    <%
+        pageScope.crumbs = [
+                [link: createLink(controller: 'admin', action: 'index'), label: "Administration"]
+        ]
+    %>
+</cl:headerContent>
 
-        <sitemesh:parameter name="useFluidLayout" value="${true}" />
+<div class="row-fluid">
+    <div class="span12">
+        <div class="tabbable">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="#transcriptionsByMonth" data-toggle="tab">Transcriptions by month</a>
+                </li>
+                <li>
+                    <a href="#validationsByMonth" data-toggle="tab">Validations by month</a>
+                </li>
+            </ul>
 
-        <cl:headerContent title="Statistics">
-            <%
-                pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: "Administration"]
-                ]
-            %>
-        </cl:headerContent>
-
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="tabbable">
-                    <ul class="nav nav-tabs">
-                        <li>
-                            <a href="#transcriptionsByMonth" data-toggle="tab" >Transcriptions by month</a>
-                        </li>
-                        <li>
-                            <a href="#validationsByMonth" data-toggle="tab" >Validations by month</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane" id="transcriptionsByMonth" style="margin-right: 15px">
-                        </div>
-                        <div class="tab-pane" id="validationsByMonth" style="margin-right: 15px">
-                        </div>
-
-                    </div>
+            <div class="tab-content">
+                <div class="tab-pane" id="transcriptionsByMonth" style="margin-right: 15px">
                 </div>
+
+                <div class="tab-pane" id="validationsByMonth" style="margin-right: 15px">
+                </div>
+
             </div>
         </div>
-    </body>
+    </div>
+</div>
+</body>
 </html>

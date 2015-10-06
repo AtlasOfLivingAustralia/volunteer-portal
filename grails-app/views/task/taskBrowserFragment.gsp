@@ -45,9 +45,9 @@
         </div>
 
         <div class="dialog" id="imagePane">
-            <g:set var="mm" value="${taskInstance.multimedia?.first()}" />
+            <g:set var="mm" value="${taskInstance.multimedia?.first()}"/>
             <div id="imageViewer" style="height: 200px; overflow: hidden">
-                <g:imageViewer multimedia="${mm}" elementId="taskBrowserImage" hideControls="${true}" />
+                <g:imageViewer multimedia="${mm}" elementId="taskBrowserImage" hideControls="${true}"/>
             </div>
         </div>
 
@@ -63,8 +63,10 @@
 
         <div>
             <span style="padding: 5px; float: left">
-                <button class="btn btn-small" id="show_prev_task"><img src="${resource(dir: 'images', file: 'left_arrow.png')}">&nbsp;Previous</button>
-                <button class="btn btn-small" id="show_next_task">Next&nbsp;<img src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
+                <button class="btn btn-small" id="show_prev_task"><img
+                        src="${resource(dir: 'images', file: 'left_arrow.png')}">&nbsp;Previous</button>
+                <button class="btn btn-small" id="show_next_task">Next&nbsp;<img
+                        src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
                 <span id="task_location"></span>
             </span>
             <span style="padding: 5px;float:right">
@@ -111,10 +113,12 @@
         $("#task_list").attr("currentTaskIndex", taskIndex)
         var taskId = $("#task_" + taskIndex).attr("task_id")
         var taskUrl = "${createLink(controller: 'task', action:'taskDetailsFragment')}?taskId=" + taskId + "&taskIndex=" + taskIndex;
-        $.ajax({url: taskUrl, success: function (data) {
-            $("#task_content").html(data);
-            updateLocation();
-        }})
+        $.ajax({
+            url: taskUrl, success: function (data) {
+                $("#task_content").html(data);
+                updateLocation();
+            }
+        })
     }
 
     function clearTaskData() {
@@ -152,32 +156,34 @@
         clearTaskData();
 
         var taskDataUrl = "${createLink(controller: 'task', action:'ajaxTaskData')}?taskId=" + taskId;
-        $.ajax({url: taskDataUrl, success: function (data) {
-            // the data is the form of a dictionary with the keys being the form element id for each data element
-            // being copied, and the value being the field value
-            var excluded = ['locality', 'stateProvince', 'decimalLatitude', 'decimalLongitude', 'country', 'coordinateUncertaintyInMeters']
-            for (var key in data) {
-                // copy over the data
-                var skip = false;
-                for (var excludeIdx in excluded) {
-                    var exclude = excluded[excludeIdx]
-                    if (endsWith(key, '.' + exclude)) {
-                        skip = true;
-                        break;
+        $.ajax({
+            url: taskDataUrl, success: function (data) {
+                // the data is the form of a dictionary with the keys being the form element id for each data element
+                // being copied, and the value being the field value
+                var excluded = ['locality', 'stateProvince', 'decimalLatitude', 'decimalLongitude', 'country', 'coordinateUncertaintyInMeters']
+                for (var key in data) {
+                    // copy over the data
+                    var skip = false;
+                    for (var excludeIdx in excluded) {
+                        var exclude = excluded[excludeIdx]
+                        if (endsWith(key, '.' + exclude)) {
+                            skip = true;
+                            break;
+                        }
                     }
-                }
-                if (!skip) {
-                    var selector = "#" + key;
-                    var jq = $(selector);
-                    if (jq.attr("type") == 'checkbox') {
-                        jq.prop('checked', data[key] == 'true');
-                    } else {
-                        jq.val(data[key]);
+                    if (!skip) {
+                        var selector = "#" + key;
+                        var jq = $(selector);
+                        if (jq.attr("type") == 'checkbox') {
+                            jq.prop('checked', data[key] == 'true');
+                        } else {
+                            jq.val(data[key]);
+                        }
+                        jq.change();
                     }
-                    jq.change();
                 }
             }
-        }});
+        });
 
     }
 
@@ -247,12 +253,12 @@
     var target = $("#taskBrowserImage img");
 
     target.panZoom({
-        pan_step:10,
-        zoom_step:10,
-        min_width:200,
-        min_height:200,
-        mousewheel:true,
-        mousewheel_delta:4
+        pan_step: 10,
+        zoom_step: 10,
+        min_width: 200,
+        min_height: 200,
+        mousewheel: true,
+        mousewheel_delta: 4
     });
 
 </script>

@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
-    <head>
-        <meta name="layout" content="projectSettingsLayout"/>
-        <r:require modules="institution-dropdown,labelAutocomplete" />
-        <r:script type="text/javascript">
+<head>
+    <meta name="layout" content="projectSettingsLayout"/>
+    <r:require modules="institution-dropdown,labelAutocomplete"/>
+    <r:script type="text/javascript">
         jQuery(function($) {
-            var institutions = <cl:json value="${institutions}" />;
-            var nameToId = <cl:json value="${institutionsMap}" />;
-            var labelColourMap = <cl:json value="${labelColourMap}" />;
+            var institutions = <cl:json value="${institutions}"/>;
+            var nameToId = <cl:json value="${institutionsMap}"/>;
+            var labelColourMap = <cl:json value="${labelColourMap}"/>;
             var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
             setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
@@ -52,108 +52,129 @@
 
             $('#labels').on('click', 'span.label i.icon-remove', onDeleteClick);
         });
-        </r:script>
-        <r:style>
-        div#labels {
-            padding-top: 4px;
-            padding-bottom: 4px;
-        }
-        div#labels > span.label {
-            margin: 2px;
-        }
-        i.icon-remove {
-            cursor: pointer;
-        }
-        </r:style>
-    </head>
+    </r:script>
+    <r:style>
+    div#labels {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    }
+    div#labels > span.label {
+    margin: 2px;
+    }
+    i.icon-remove {
+    cursor: pointer;
+    }
+    </r:style>
+</head>
 
-    <body>
+<body>
 
-        <content tag="pageTitle">General Settings</content>
+<content tag="pageTitle">General Settings</content>
 
-        <content tag="adminButtonBar">
-        </content>
+<content tag="adminButtonBar">
+</content>
 
-        <g:form method="post" class="form-horizontal">
-            <g:hiddenField name="id" value="${projectInstance?.id}"/>
-            <g:hiddenField name="version" value="${projectInstance?.version}"/>
+<g:form method="post" class="form-horizontal">
+    <g:hiddenField name="id" value="${projectInstance?.id}"/>
+    <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-            <div class="control-group">
-                <label class="control-label" for="featuredOwner">Expedition institution</label>
-                <div class="controls">
-                    <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}" />
-                    <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}" />
-                    <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to <a id="institution-link" href="">institution</a>!</small></span>
-                </div>
-            </div>
+    <div class="control-group">
+        <label class="control-label" for="featuredOwner">Expedition institution</label>
 
-            <div class="control-group">
-                <label class="control-label" for="name">Expedition name</label>
-                <div class="controls">
-                    <g:textField class="input-xlarge" name="name" value="${projectInstance.name}" />
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="shortDescription">Short description</label>
-                <div class="controls">
-                    <g:textField class="input-xxlarge" name="shortDescription"  value="${projectInstance.shortDescription}" />
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="description">Long description</label>
-                <div class="controls">
-                    <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" class="span12">
-                        ${projectInstance.description}
-                    </tinyMce:renderEditor>
-                    %{--<g:textArea rows="8" class="input-xxlarge" name="description"  value="${projectInstance.description}" />--}%
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="template">Template</label>
-                <div class="controls">
-                    <g:select name="template" from="${templates}" value="${projectInstance.template?.id}" optionKey="id" />
-                    <a class="btn" href="${createLink(controller:'template', action:'edit', id:projectInstance?.template?.id)}">Edit template</a>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="projectType">Expedition type</label>
-                <div class="controls">
-                    <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}" optionValue="label" optionKey="id" />
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="label">Tags</label>
-                <div class="controls">
-                    <div id="labels"><g:each in="${sortedLabels}" var="l"><span class="label ${labelColourMap[l.category]}" title="${l.category}">${l.value} <i class="icon-remove icon-white" data-label-id="${l.id}"></i></span></g:each></div>
-                </div>
-                <div class="controls"><input autocomplete="off" type="text" id="label" class="input-small" /></div>
-            </div>
-            <div class="control-group">
-                <div class="controls">
-                    <label for="harvestableByAla" class="checkbox">
-                        <g:checkBox name="harvestableByAla" checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia
-                    </label>
-                </div>
-            </div>
+        <div class="controls">
+            <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}"/>
+            <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}"/>
+            <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to <a
+                    id="institution-link" href="">institution</a>!</small></span>
+        </div>
+    </div>
 
-            <div class="control-group">
-                <div class="controls">
-                    <g:actionSubmit class="save btn btn-primary" action="updateGeneralSettings" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                </div>
-            </div>
+    <div class="control-group">
+        <label class="control-label" for="name">Expedition name</label>
 
-        </g:form>
+        <div class="controls">
+            <g:textField class="input-xlarge" name="name" value="${projectInstance.name}"/>
+        </div>
+    </div>
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                tinyMCE.init({
-                    mode: "textareas",
-                    theme: "advanced",
-                    editor_selector: "mceadvanced",
-                    theme_advanced_toolbar_location : "top",
-                    convert_urls : false
-                });
-            });
-        </script>
-    </body>
+    <div class="control-group">
+        <label class="control-label" for="shortDescription">Short description</label>
+
+        <div class="controls">
+            <g:textField class="input-xxlarge" name="shortDescription" value="${projectInstance.shortDescription}"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="description">Long description</label>
+
+        <div class="controls">
+            <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" class="span12">
+                ${projectInstance.description}
+            </tinyMce:renderEditor>
+            %{--<g:textArea rows="8" class="input-xxlarge" name="description"  value="${projectInstance.description}" />--}%
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="template">Template</label>
+
+        <div class="controls">
+            <g:select name="template" from="${templates}" value="${projectInstance.template?.id}" optionKey="id"/>
+            <a class="btn"
+               href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">Edit template</a>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="projectType">Expedition type</label>
+
+        <div class="controls">
+            <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
+                      optionValue="label" optionKey="id"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="label">Tags</label>
+
+        <div class="controls">
+            <div id="labels"><g:each in="${sortedLabels}" var="l"><span class="label ${labelColourMap[l.category]}"
+                                                                        title="${l.category}">${l.value} <i
+                        class="icon-remove icon-white" data-label-id="${l.id}"></i></span></g:each></div>
+        </div>
+
+        <div class="controls"><input autocomplete="off" type="text" id="label" class="input-small"/></div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+            <label for="harvestableByAla" class="checkbox">
+                <g:checkBox name="harvestableByAla"
+                            checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia
+            </label>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+            <g:actionSubmit class="save btn btn-primary" action="updateGeneralSettings"
+                            value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+        </div>
+    </div>
+
+</g:form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        tinyMCE.init({
+            mode: "textareas",
+            theme: "advanced",
+            editor_selector: "mceadvanced",
+            theme_advanced_toolbar_location: "top",
+            convert_urls: false
+        });
+    });
+</script>
+</body>
 </html>

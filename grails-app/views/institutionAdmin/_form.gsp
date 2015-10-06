@@ -1,8 +1,8 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
-<tinyMce:resources />
+<tinyMce:resources/>
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'name', 'error')} required">
     <label for="name">
-        <g:message code="institution.name.label" default="Name" />
+        <g:message code="institution.name.label" default="Name"/>
         <span class="required-indicator">*</span>
     </label>
     <g:textField class="input-block-level" name="name" required="" value="${institutionInstance?.name}"/>
@@ -10,21 +10,22 @@
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'acronym', 'error')}">
     <label for="acronym">
-        <g:message code="institution.acronym.label" default="Acronym" />
+        <g:message code="institution.acronym.label" default="Acronym"/>
     </label>
     <g:textField class="input-block-level" name="acronym" required="" value="${institutionInstance?.acronym}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'shortDescription', 'error')}">
     <label for="shortDescription">
-        <g:message code="institution.description.label" default="Short description" />
+        <g:message code="institution.description.label" default="Short description"/>
     </label>
-    <g:textArea class="input-block-level" rows="2" name="shortDescription" value="${institutionInstance?.shortDescription}"/>
+    <g:textArea class="input-block-level" rows="2" name="shortDescription"
+                value="${institutionInstance?.shortDescription}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'description', 'error')}">
     <label for="description">
-        <g:message code="institution.description.label" default="Description" />
+        <g:message code="institution.description.label" default="Description"/>
     </label>
     <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" class="span12">
         ${institutionInstance?.description}
@@ -34,35 +35,35 @@
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'contactName', 'error')}">
     <label for="contactName">
-        <g:message code="institution.contactName.label" default="Contact Name" />
+        <g:message code="institution.contactName.label" default="Contact Name"/>
     </label>
     <g:textField name="contactName" value="${institutionInstance?.contactName}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'contactEmail', 'error')}">
     <label for="contactEmail">
-		<g:message code="institution.contactEmail.label" default="Contact Email" />
-	</label>
+        <g:message code="institution.contactEmail.label" default="Contact Email"/>
+    </label>
     <g:field type="email" name="contactEmail" value="${institutionInstance?.contactEmail}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'contactPhone', 'error')}">
     <label for="contactPhone">
-        <g:message code="institution.contactPhone.label" default="Contact Phone" />
+        <g:message code="institution.contactPhone.label" default="Contact Phone"/>
     </label>
     <g:textField name="contactPhone" value="${institutionInstance?.contactPhone}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'websiteUrl', 'error')}">
     <label for="websiteUrl">
-        <g:message code="institution.websiteUrl.label" default="Website URL" />
+        <g:message code="institution.websiteUrl.label" default="Website URL"/>
     </label>
     <g:textField name="websiteUrl" value="${institutionInstance?.websiteUrl}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'imageCaption', 'error')}">
     <label for="imageCaption">
-        <g:message code="institution.imageCaption.label" default="Image caption/attribution" />
+        <g:message code="institution.imageCaption.label" default="Image caption/attribution"/>
     </label>
     <g:textField name="imageCaption" value="${institutionInstance?.imageCaption}"/>
 </div>
@@ -70,19 +71,19 @@
 <g:if test="${institutionInstance.collectoryUid}">
     <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
         <label for="collectoryUid">
-            <g:message code="institution.collectoryUid.label" default="Collectory Uid" />
+            <g:message code="institution.collectoryUid.label" default="Collectory Uid"/>
         </label>
         <g:textField class="input-mini" name="collectoryUid" value="${institutionInstance.collectoryUid}"/>
     </div>
 </g:if>
 <r:script>
-jQuery(function($) {
-    tinyMCE.init({
-        mode: "textareas",
-        theme: "advanced",
-        editor_selector: "mceadvanced",
-        theme_advanced_toolbar_location : "top",
-        convert_urls : false
+    jQuery(function ($) {
+        tinyMCE.init({
+            mode: "textareas",
+            theme: "advanced",
+            editor_selector: "mceadvanced",
+            theme_advanced_toolbar_location: "top",
+            convert_urls: false
+        });
     });
-});
 </r:script>

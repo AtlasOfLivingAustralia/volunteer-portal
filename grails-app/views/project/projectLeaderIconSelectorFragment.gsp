@@ -5,7 +5,8 @@
         </p>
     </div>
     <g:each in="${role.icons}" var="icon" status="imgIndex">
-        <g:set var="selectUrl" value="${createLink(controller: 'project', action: 'setLeaderIconIndex', id: projectInstance.id, params: [iconIndex: imgIndex])}" />
+        <g:set var="selectUrl"
+               value="${createLink(controller: 'project', action: 'setLeaderIconIndex', id: projectInstance.id, params: [iconIndex: imgIndex])}"/>
         <div class="table table-striped">
             <div class="row-fluid">
                 <div class="span3" style="text-align: center">
@@ -13,13 +14,16 @@
                         <img src='<g:resource file="${icon.icon}"/>' alt="${icon.name}">
                     </a>
                 </div>
+
                 <div class="span9">
                     <strong>
                         <a href="${selectUrl}">${icon.name}</a>
                     </strong>
+
                     <div>
                         ${icon.bio}
                     </div>
+
                     <div>
                         <a href="${selectUrl}" class="btn">Select</a>
                     </div>

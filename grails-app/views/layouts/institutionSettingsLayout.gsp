@@ -24,66 +24,84 @@
             opacity: .25;
         }
 
-        <cl:ifInstitutionHasBanner institution="${institutionInstance}">
-            #page-header {
-                background-image: url(<cl:institutionBannerUrl id="${institutionInstance.id}" />);
-            }
-        </cl:ifInstitutionHasBanner>
+        <
+        cl:ifInstitutionHasBanner
 
-    </style>
-    <title>Edit Institution ${institutionInstance?.name}</title>
-        <r:require module="bootstrap-switch" />
+        institution
+        =
+        "
+        ${
+        institutionInstance
+        }
+        "
+        >
+        #page-header {
+            background-image: url(<cl:institutionBannerUrl id="${institutionInstance.id}" />);
+        }
+
+        </
+        cl:ifInstitutionHasBanner
+        >
+
+        </style>
+        <title>Edit Institution ${institutionInstance?.name}</title>
+        <r:require module="bootstrap-switch"/>
 
     </head>
 
     <body>
 
-        <tinyMce:resources />
+    <tinyMce:resources/>
 
-        <cl:headerContent hideTitle="${true}" selectedNavItem="institutions">
-            <%
-                pageScope.crumbs = [
-                        [link: createLink(controller: 'admin', action: 'index'), label: 'Admin'],
-                        [link: createLink(controller: 'institutionAdmin', action: 'index'), label: 'Manage Institutions' ],
-                        [link: createLink(controller: 'institutionAdmin', action: 'edit', id:institutionInstance.id), label: institutionInstance.name ]
-                ]
-            %>
-            <h1>Institution Settings - ${institutionInstance.name}</h1>
-        </cl:headerContent>
+    <cl:headerContent hideTitle="${true}" selectedNavItem="institutions">
+        <%
+            pageScope.crumbs = [
+                    [link: createLink(controller: 'admin', action: 'index'), label: 'Admin'],
+                    [link: createLink(controller: 'institutionAdmin', action: 'index'), label: 'Manage Institutions'],
+                    [link: createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id), label: institutionInstance.name]
+            ]
+        %>
+        <h1>Institution Settings - ${institutionInstance.name}</h1>
+    </cl:headerContent>
 
-        <div class="container-fluid">
+    <div class="container-fluid">
 
-            <div class="row-fluid">
-                <div class="span3">
-                    <ul class="nav nav-list nav-stacked nav-tabs">
-                        <cl:settingsMenuItem href="${createLink(controller: 'institutionAdmin', action: 'edit', id:institutionInstance.id)}" title="General Settings" />
-                        <cl:settingsMenuItem href="${createLink(controller: 'institutionAdmin', action: 'editNewsItems', id:institutionInstance.id)}" title="News items" />
-                    </ul>
-                </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <ul class="nav nav-list nav-stacked nav-tabs">
+                    <cl:settingsMenuItem
+                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"
+                            title="General Settings"/>
+                    <cl:settingsMenuItem
+                            href="${createLink(controller: 'institutionAdmin', action: 'editNewsItems', id: institutionInstance.id)}"
+                            title="News items"/>
+                </ul>
+            </div>
 
-                <div class="span9">
-                    <legend>
-                        ${institutionInstance.name} - <g:pageProperty name="page.pageTitle"/>
-                        %{--<div class="btn-group pull-right">--}%
-                            %{--<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">--}%
-                                %{--<i class="icon-cog"></i>&nbsp;Actions--}%
-                                %{--<span class="caret"></span>--}%
-                            %{--</a>--}%
-                            %{--<ul class="dropdown-menu">--}%
-                            %{--</ul>--}%
-                        %{--</div>--}%
-                        <div class="btn-group pull-right" style="margin-left: 5px;margin-right: 5px">
-                            <g:pageProperty name="page.adminButtonBar"/>
-                        </div>
+            <div class="span9">
+                <legend>
+                    ${institutionInstance.name} - <g:pageProperty name="page.pageTitle"/>
+                    %{--<div class="btn-group pull-right">--}%
+                    %{--<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">--}%
+                    %{--<i class="icon-cog"></i>&nbsp;Actions--}%
+                    %{--<span class="caret"></span>--}%
+                    %{--</a>--}%
+                    %{--<ul class="dropdown-menu">--}%
+                    %{--</ul>--}%
+                    %{--</div>--}%
+                    <div class="btn-group pull-right" style="margin-left: 5px;margin-right: 5px">
+                        <g:pageProperty name="page.adminButtonBar"/>
+                    </div>
 
-                    </legend>
-                    <div class="row-fluid">
-                        <div class="span12">
-                            <g:layoutBody/>
-                        </div>
+                </legend>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        <g:layoutBody/>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
     </body>
 </g:applyLayout>

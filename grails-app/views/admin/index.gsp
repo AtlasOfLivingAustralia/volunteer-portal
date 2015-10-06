@@ -9,7 +9,8 @@
 <body>
 <div class="container">
 
-    <cl:headerContent title="${message(code: 'default.admin.label', default: 'Administration')}" selectedNavItem="bvpadmin">
+    <cl:headerContent title="${message(code: 'default.admin.label', default: 'Administration')}"
+                      selectedNavItem="bvpadmin">
         <small class="muted">Version ${grailsApplication.metadata['app.version']}&nbsp;(built <cl:buildDate/>&nbsp;${grails.util.Environment.current}&nbsp;sha:&nbsp;<a
                 href="https://github.com/AtlasOfLivingAustralia/volunteer-portal/commit/${grailsApplication.metadata['environment.TRAVIS_COMMIT']}">${grailsApplication.metadata['environment.TRAVIS_COMMIT']}</a>)
         </small>
@@ -67,7 +68,8 @@
                             <td>Configure the appearance of the leader board</td>
                         </tr>
                         <tr>
-                            <td><a class="btn btn-default bs3" href="${createLink(controller: 'stats', action: 'index')}">Stats</a></td>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'stats', action: 'index')}">Stats</a></td>
                             <td>Various Statistics (Experimental!)</td>
                         </tr>
                         <tr>
@@ -77,7 +79,8 @@
                             <td>Manage tutorial files</td>
                         </tr>
                         <tr>
-                            <td><a class="btn btn-default bs3" href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
                             <td>Tools</td>
                         </tr>
                         <tr>
@@ -106,9 +109,11 @@
                         <tr>
                             <td>Admin reports</td>
                             <td>
-                                <a class="btn btn-default bs3" title="Display a list of email address for all volunteers"
+                                <a class="btn btn-default bs3"
+                                   title="Display a list of email address for all volunteers"
                                    href="${createLink(controller: 'admin', action: 'mailingList')}">Global mailing List</a>
-                                <a class="btn btn-default bs3" title="Users and their various counts and last activity etc..."
+                                <a class="btn btn-default bs3"
+                                   title="Users and their various counts and last activity etc..."
                                    href="${createLink(controller: 'ajax', action: 'userReport', params: [wt: 'csv'])}">User report</a>
                                 <a class="btn btn-default bs3" title="A summary of recent user activity"
                                    href="${createLink(controller: 'admin', action: 'currentUsers')}">Current users</a>

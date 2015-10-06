@@ -1,14 +1,14 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
-<sitemesh:parameter name="useFluidLayout" value="${true}" />
-<r:require modules="dotdotdot, mustache-util, bootbox" />
+<sitemesh:parameter name="useFluidLayout" value="${true}"/>
+<r:require modules="dotdotdot, mustache-util, bootbox"/>
 <r:style disposition="head">
-#qa-questions-pager.pagination ul a.summary, #qa-questions-pager.pagination ul  span.summary {
-    background-color: #d7edd7;
-}
-#qa-questions-pager.pagination ul > .active > a.summary, #qa-questions-pager.pagination ul > .active > span.summary,
-#qa-questions-pager.pagination ul a.summary:hover, #qa-questions-pager.pagination ul span.summary:hover {
-    background-color: #cce4cc;
-}
+    #qa-questions-pager.pagination ul a.summary, #qa-questions-pager.pagination ul  span.summary {
+        background-color: #d7edd7;
+    }
+    #qa-questions-pager.pagination ul > .active > a.summary, #qa-questions-pager.pagination ul > .active > span.summary,
+    #qa-questions-pager.pagination ul a.summary:hover, #qa-questions-pager.pagination ul span.summary:hover {
+        background-color: #cce4cc;
+    }
 
 </r:style>
 <div class="container-fluid qa-transcribe tall-image">
@@ -17,18 +17,28 @@
         <div class="span12">
             <span id="journalPageButtons">
 
-                <button type="button" class="btn btn-small" id="showPreviousJournalPage" title="displays page in new window" data-container="body" ${prevTask ? '' : 'disabled="true"'}><img src="${resource(dir:'images',file:'left_arrow.png')}"> show previous</button>
-                <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window" data-container="body" ${nextTask ? '' : 'disabled="true"'}>show next <img src="${resource(dir:'images',file:'right_arrow.png')}"></button>
-                <button type="button" class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees" data-container="body">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;" src="${resource(dir:'images',file:'rotate.png')}"></button>
+                <button type="button" class="btn btn-small" id="showPreviousJournalPage"
+                        title="displays page in new window"
+                        data-container="body" ${prevTask ? '' : 'disabled="true"'}><img
+                        src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous</button>
+                <button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window"
+                        data-container="body" ${nextTask ? '' : 'disabled="true"'}>show next <img
+                        src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
+                <button type="button" class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees"
+                        data-container="body">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;"
+                                                               src="${resource(dir: 'images', file: 'rotate.png')}">
+                </button>
                 <button type="button" class="btn btn-small bvp-submit-button" id="showNextFromProject">Skip</button>
                 <g:if test="${validator}">
                     <g:if test="${validator}">
-                        <a href="${createLink(controller: "task", action:"projectAdmin", id:taskInstance?.project?.id, params: params.clone())}" />
+                        <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
                     </g:if>
                 </g:if>
                 <g:else>
-                    <button type="button" class="btn btn-small" id="btnSavePartial" class="btn bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save draft')}</button>
-                    <button type="button" class="btn btn-small" id="btnQuit" class="btn bvp-quit-button">${message(code: 'default.button.quit.label', default: 'Quit')}</button>
+                    <button type="button" class="btn btn-small" id="btnSavePartial"
+                            class="btn bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save draft')}</button>
+                    <button type="button" class="btn btn-small" id="btnQuit"
+                            class="btn bvp-quit-button">${message(code: 'default.button.quit.label', default: 'Quit')}</button>
                 </g:else>
                 <vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-small"/>
             </span>
@@ -40,35 +50,44 @@
             <div class="well well-small">
                 <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                     <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
-                        <g:imageViewer multimedia="${multimedia}" />
+                        <g:imageViewer multimedia="${multimedia}"/>
                     </g:if>
                 </g:each>
             </div>
         </div>
 
-        <g:set var="fieldList" value="${g.templateFields(category: FieldCategory.dataset, template:  template)}" />
-        <g:set var="hiddenList" value="${g.templateFields(category: FieldCategory.dataset, template:  template, hidden: true)}" />
+        <g:set var="fieldList" value="${g.templateFields(category: FieldCategory.dataset, template: template)}"/>
+        <g:set var="hiddenList"
+               value="${g.templateFields(category: FieldCategory.dataset, template: template, hidden: true)}"/>
 
         <div class="span6">
             <div class="well well-small">
                 <div id="qaCarousel" class="carousel slide" data-interval="">
                     <div class="carousel-inner">
                         <g:each in="${fieldList}" var="f" status="st">
-                            <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
-                            <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}" />
+                            <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}"/>
+                            <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}"/>
                             <div id="item-${name}" class="${isActive} item" data-item-index="${st}">
                                 <div style="margin-bottom: 10px;">
-                                    <h3><g:if test="${!template.viewParams.hideQuestionNumbers}">${st+1}/${fieldList.size()}: </g:if><g:fieldValue bean="${f.field}" field="uiLabel" /></h3>
-                                    <span><g:fieldValue bean="${f.field}" field="helpText" /></span>
-                                    <div id="inline-validation-${name}" class="alert alert-block inline-validation" style="display: none;"><span></span></div>
+                                    <h3><g:if
+                                            test="${!template.viewParams.hideQuestionNumbers}">${st + 1}/${fieldList.size()}:</g:if><g:fieldValue
+                                            bean="${f.field}" field="uiLabel"/></h3>
+                                    <span><g:fieldValue bean="${f.field}" field="helpText"/></span>
+
+                                    <div id="inline-validation-${name}" class="alert alert-block inline-validation"
+                                         style="display: none;"><span></span></div>
                                 </div>
+
                                 <div>
-                                    <g:renderWidgetHtml taskInstance="${taskInstance}" field="${f.field}" recordValues="${recordValues}" recordIdx="${f.recordIdx}" auxClass="" />
+                                    <g:renderWidgetHtml taskInstance="${taskInstance}" field="${f.field}"
+                                                        recordValues="${recordValues}" recordIdx="${f.recordIdx}"
+                                                        auxClass=""/>
                                 </div>
                             </div>
                         </g:each>
-                        %{-- summary page last --}%
-                        <div id="item-summary" class="item ${validator ? 'active' : ''}" data-item-index="${fieldList.size()}">
+                    %{-- summary page last --}%
+                        <div id="item-summary" class="item ${validator ? 'active' : ''}"
+                             data-item-index="${fieldList.size()}">
                             <h4>Data summary</h4>
                             <table class="table table-condensed">
                                 <thead>
@@ -79,10 +98,12 @@
                                 </thead>
                                 <tbody id="tbody-answer-summary">
                                 <g:each in="${fieldList}" var="f" status="st">
-                                    <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}" />
+                                    <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}"/>
                                     <tr>
-                                        <td><g:fieldValue bean="${f.field}" field="uiLabel" /></td>
-                                        <td><span id="validation-${name}" class="pull-right validation pointer" data-target-field="${name}"></span><span id="display-${name}"></span></td>
+                                        <td><g:fieldValue bean="${f.field}" field="uiLabel"/></td>
+                                        <td><span id="validation-${name}" class="pull-right validation pointer"
+                                                  data-target-field="${name}"></span><span id="display-${name}"></span>
+                                        </td>
                                     </tr>
                                 </g:each>
                                 </tbody>
@@ -93,23 +114,34 @@
             </div>
             <g:if test="${validator}">
                 <div class="btn-group pull-right">
-                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}</button>
-                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}</button>
+                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i
+                            class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
+                    </button>
+                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
+                            class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
+                    </button>
                 </div>
             </g:if>
             <div id="qa-questions-pager" class="pagination text-center" style="height:36px;">
                 <ul style="margin-bottom: 6px;">
                     <li><a href="#qaCarousel" data-slide="prev" style="width:69px;">&larr; Previous</a></li>
                     <g:each in="${fieldList}" var="f" status="st">
-                        <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}" />
-                        <li class="${isActive}"><a href="#qaCarousel" data-target="#qaCarousel" data-slide-to="${st}">${st+1}</a></li>
+                        <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}"/>
+                        <li class="${isActive}"><a href="#qaCarousel" data-target="#qaCarousel"
+                                                   data-slide-to="${st}">${st + 1}</a></li>
                     </g:each>
-                    <li class="${validator ? 'active' : ''}"><a href="#qaCarousel" class="summary" title="${message(code: 'questionnarie.summary.button.tooltip', default: 'Click any time to view and submit your choices')}" data-container="body" data-target="#qaCarousel" data-slide-to="${fieldList.size()}">Summary</a></li>
+                    <li class="${validator ? 'active' : ''}"><a href="#qaCarousel" class="summary"
+                                                                title="${message(code: 'questionnarie.summary.button.tooltip', default: 'Click any time to view and submit your choices')}"
+                                                                data-container="body" data-target="#qaCarousel"
+                                                                data-slide-to="${fieldList.size()}">Summary</a></li>
                     %{--${fieldList.size()+1}--}%
                     <li>
-                        <a id="carousel-control-right" href="#qaCarousel" data-slide="next" style="width:69px;">Next &rarr;</a>
+                        <a id="carousel-control-right" href="#qaCarousel" data-slide="next"
+                           style="width:69px;">Next &rarr;</a>
                         <g:if test="${!validator}">
-                            <button type="button" id="btnSave" class="btn btn-primary bvp-submit-button" ${'disabled="true"'} style="width:94px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
+                            <button type="button" id="btnSave"
+                                    class="btn btn-primary bvp-submit-button" ${'disabled="true"'}
+                                    style="width:94px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>
                         </g:if>
                     </li>
                 </ul>
@@ -124,7 +156,8 @@
 
     <div style="display: none;">
         <g:each in="${hiddenList}" var="f" status="st">
-            <g:renderWidgetHtml taskInstance="${taskInstance}" field="${f.field}" recordValues="${recordValues}" recordIdx="${f.recordIdx}" auxClass="" />
+            <g:renderWidgetHtml taskInstance="${taskInstance}" field="${f.field}" recordValues="${recordValues}"
+                                recordIdx="${f.recordIdx}" auxClass=""/>
         </g:each>
     </div>
 
@@ -332,16 +365,16 @@
         // enable tooltips
         $('[title]').tooltip();
 
-    <g:set var="okCaption" value="Submit for validation anyway" />
-    <g:set var="cancelCaption" value="Let me fix the marked fields" />
+    <g:set var="okCaption" value="Submit for validation anyway"/>
+    <g:set var="cancelCaption" value="Let me fix the marked fields"/>
     <g:if test="${validator}">
-        <g:set var="okCaption" value="Mark valid anyway" />
-        <g:set var="cancelCaption" value="Let me fix the marked fields" />
+        <g:set var="okCaption" value="Mark valid anyway"/>
+        <g:set var="cancelCaption" value="Let me fix the marked fields"/>
     </g:if>
-        postValidationFunction = function(validationResults) {
-          if (validationResults.hasErrors || validationResults.hasWarnings) {
-            bootbox.confirm(
-              "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
+    postValidationFunction = function(validationResults) {
+      if (validationResults.hasErrors || validationResults.hasWarnings) {
+        bootbox.confirm(
+          "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
               "${cancelCaption}", "${okCaption}", function(answer) {
                 if (answer) submitInvalid();
               });

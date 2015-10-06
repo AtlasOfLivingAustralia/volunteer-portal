@@ -7,28 +7,28 @@
     <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
     <style>
-        .picklist-item-row input[type="text"] {
-            border: none;
-            user-select: none;
-            width:100%;
-            padding: 0;
-        }
+    .picklist-item-row input[type="text"] {
+        border: none;
+        user-select: none;
+        width: 100%;
+        padding: 0;
+    }
 
-        .picklist-item-row input:focus {
-            box-shadow: none;
-            outline: none;
-        }
+    .picklist-item-row input:focus {
+        box-shadow: none;
+        outline: none;
+    }
     </style>
-    <r:require modules="underscore, font-awesome" />
+    <r:require modules="underscore, font-awesome"/>
 </head>
 
 <body>
 
-<cl:headerContent title="${message(code:'default.picklists.label', default:'Manage Image Picklists')}">
+<cl:headerContent title="${message(code: 'default.picklists.label', default: 'Manage Image Picklists')}">
     <%
         pageScope.crumbs = [
-                [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')],
-                [link:createLink(controller:'picklist', action: 'manage'),label:message(code:'default.picklist.manage.label', default:'Bulk manage picklists')]
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Admin')],
+                [link: createLink(controller: 'picklist', action: 'manage'), label: message(code: 'default.picklist.manage.label', default: 'Bulk manage picklists')]
         ]
     %>
 </cl:headerContent>
@@ -45,17 +45,17 @@
 </div>
 
 <div class="container-fluid">
-<div class="row-fluid">
-    <div class="span12">
-        <table class="table table-condensed table-bordered">
-            <thead>
+    <div class="row-fluid">
+        <div class="span12">
+            <table class="table table-condensed table-bordered">
+                <thead>
                 <tr>
                     <th style="width: 300px;">Value</th>
                     <th>Images</th>
                     <th style="width: 50px;">Controls</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <g:each in="${picklistItems}" status="i" var="item">
                     <tr class="picklist-item-row">
                         <td>
@@ -72,9 +72,9 @@
                         </td>
                     </tr>
                 </g:each>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
 </body>

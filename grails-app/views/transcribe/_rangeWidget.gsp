@@ -13,23 +13,29 @@
     <div class="row-fluid" style="vertical-align: bottom">
 
         %{--<div class="span2 muted">--}%
-            %{--from--}%
+        %{--from--}%
         %{--</div>--}%
         <div class="span3">
-            <g:textField tabindex="${tabindex}" name="${field.fieldType}.minValue" class="span12 rangeMinValue" value="" placeholder="From"/>
+            <g:textField tabindex="${tabindex}" name="${field.fieldType}.minValue" class="span12 rangeMinValue" value=""
+                         placeholder="From"/>
         </div>
+
         <div class="span1 muted" style="text-align: center">-
-            </div>
+        </div>
         %{--<div class="span1 muted">--}%
-            %{--to--}%
+        %{--to--}%
         %{--</div>--}%
         <div class="span3">
-            <g:textField tabindex="${tabindex}" name="${field.fieldType}.maxValue" class="span12 rangeMaxValue" value="" placeholder="To"/>
+            <g:textField tabindex="${tabindex}" name="${field.fieldType}.maxValue" class="span12 rangeMaxValue" value=""
+                         placeholder="To"/>
         </div>
+
         <div class="span5">
-            <g:select tabindex="${tabindex}" class="span12 rangeUnits" name="${field.fieldType}.units" value="" from="${values}" />
+            <g:select tabindex="${tabindex}" class="span12 rangeUnits" name="${field.fieldType}.units" value=""
+                      from="${values}"/>
         </div>
 
     </div>
-    <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" validationRule="${field.validationRule}" />
+    <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}"
+                   validationRule="${field.validationRule}"/>
 </div>

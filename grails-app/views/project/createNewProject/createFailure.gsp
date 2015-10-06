@@ -6,7 +6,7 @@
 
     <r:script type="text/javascript">
 
-        $(document).ready(function() {
+        $(document).ready(function () {
         });
 
     </r:script>
@@ -14,6 +14,7 @@
     <style type="text/css">
     </style>
 </head>
+
 <body class="content">
 
 <cl:headerContent title="Create a new Expedition - Failed to create project" selectedNavItem="expeditions">

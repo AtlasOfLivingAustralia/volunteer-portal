@@ -3,9 +3,10 @@
 
 <div class="control-group fieldcontain ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'error')} required">
     <label class="control-label" for="name">
-        <g:message code="achievementDescription.name.label" default="Name" />
+        <g:message code="achievementDescription.name.label" default="Name"/>
         <span class="required-indicator">*</span>
     </label>
+
     <div class="controls">
         <g:textField class="input-xlarge" name="name" required="" value="${achievementDescriptionInstance?.name}"/>
     </div>
@@ -13,69 +14,80 @@
 
 <div class="control-group fieldcontain ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'error')} required">
     <label class="control-label" for="description">
-        <g:message code="achievementDescription.description.label" default="Description" />
+        <g:message code="achievementDescription.description.label" default="Description"/>
         <span class="required-indicator">*</span>
     </label>
+
     <div class="controls">
-        <g:textArea class="input-xxlarge" rows="5" name="description" required="" value="${achievementDescriptionInstance?.description}"/>
+        <g:textArea class="input-xxlarge" rows="5" name="description" required=""
+                    value="${achievementDescriptionInstance?.description}"/>
     </div>
 </div>
 
 <div class="control-group fieldcontain required">
     <label class="control-label" for="type">
-        <g:message code="achievementDescription.type.label" default="Type" />
+        <g:message code="achievementDescription.type.label" default="Type"/>
         <span class="required-indicator">*</span>
     </label>
+
     <div class="controls">
-        <g:select name="type" from="${AchievementType?.values()}" keys="${AchievementType.values()*.name()}" required="" value="${achievementDescriptionInstance?.type?.name()}" />
+        <g:select name="type" from="${AchievementType?.values()}" keys="${AchievementType.values()*.name()}" required=""
+                  value="${achievementDescriptionInstance?.type?.name()}"/>
     </div>
 </div>
 
 <div class="control-group fieldcontain esType ${hasErrors(bean: achievementDescriptionInstance, field: 'searchQuery', 'error')}">
     <label class="control-label" for="searchQuery">
-        <g:message code="achievementDescription.searchQuery.label" default="Search Query" />
+        <g:message code="achievementDescription.searchQuery.label" default="Search Query"/>
         <span class="required-indicator">*</span>
     </label>
+
     <div class="controls">
-        <g:textArea class="input-block-level" rows="10" name="searchQuery" value="${achievementDescriptionInstance?.searchQuery}"/>
+        <g:textArea class="input-block-level" rows="10" name="searchQuery"
+                    value="${achievementDescriptionInstance?.searchQuery}"/>
     </div>
 </div>
 
 <div class="control-group fieldcontain esType ${hasErrors(bean: achievementDescriptionInstance, field: 'count', 'error')}">
     <label class="control-label" for="count">
-        <g:message code="achievementDescription.count.label" default="Count" />
+        <g:message code="achievementDescription.count.label" default="Count"/>
         <span class="required-indicator">*</span>
     </label>
+
     <div class="controls">
-        <g:field class="input-mini" name="count" type="number" min="0" value="${achievementDescriptionInstance?.count}"/>
+        <g:field class="input-mini" name="count" type="number" min="0"
+                 value="${achievementDescriptionInstance?.count}"/>
     </div>
 </div>
 
 <div class="control-group fieldcontain agType ${hasErrors(bean: achievementDescriptionInstance, field: 'aggregationQuery', 'error')}">
     <label class="control-label" for="aggregationQuery">
-        <g:message code="achievementDescription.aggregationQuery.label" default="Aggregation Query" />
+        <g:message code="achievementDescription.aggregationQuery.label" default="Aggregation Query"/>
         <span class="required-indicator">*</span>
     </label>
+
     <div class="controls">
-        <g:textArea class="input-block-level" rows="10" name="aggregationQuery" value="${achievementDescriptionInstance?.aggregationQuery}"/>
+        <g:textArea class="input-block-level" rows="10" name="aggregationQuery"
+                    value="${achievementDescriptionInstance?.aggregationQuery}"/>
     </div>
 </div>
 
 %{--<div class="control-group fieldcontain agType ${hasErrors(bean: achievementDescriptionInstance, field: 'aggregationType', 'error')}">--}%
-    %{--<label class="control-label" for="aggregationType">--}%
-        %{--<g:message code="achievementDescription.aggregationType.label" default="Aggregation Type" />--}%
-        %{--<span class="required-indicator">*</span>--}%
-    %{--</label>--}%
-    %{--<div class="controls">--}%
-        %{--<g:select name="aggregationType" from="${AggregationType?.values()}" keys="${AggregationType.values()*.name()}" value="${achievementDescriptionInstance?.aggregationType?.name()}" />--}%
-    %{--</div>--}%
+%{--<label class="control-label" for="aggregationType">--}%
+%{--<g:message code="achievementDescription.aggregationType.label" default="Aggregation Type" />--}%
+%{--<span class="required-indicator">*</span>--}%
+%{--</label>--}%
+%{--<div class="controls">--}%
+%{--<g:select name="aggregationType" from="${AggregationType?.values()}" keys="${AggregationType.values()*.name()}" value="${achievementDescriptionInstance?.aggregationType?.name()}" />--}%
+%{--</div>--}%
 %{--</div>--}%
 
 <div class="control-group fieldcontain grType ${hasErrors(bean: achievementDescriptionInstance, field: 'code', 'error')}">
     <label class="control-label" for="code">
-        <g:message code="achievementDescription.badge.label" default="Code" />
+        <g:message code="achievementDescription.badge.label" default="Code"/>
         <span class="hidden required-indicator">*</span>
     </label>
+
     <div class="controls">
         <g:textArea class="input-block-level" rows="10" name="code" value="${achievementDescriptionInstance?.code}"/>
     </div>
@@ -83,12 +95,14 @@
 
 <div class="control-group fieldcontain ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'error')}">
     <label class="control-label" for="badge">
-        <g:message code="achievementDescription.badge.label" default="Badge" />
+        <g:message code="achievementDescription.badge.label" default="Badge"/>
     </label>
+
     <div class="controls">
-        <g:hiddenField name="badge" value="${achievementDescriptionInstance?.badge}" />
-        <img id="badge-image" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}" />" width="140" height="140" />
-        <input type="file" id="file-select" />
+        <g:hiddenField name="badge" value="${achievementDescriptionInstance?.badge}"/>
+        <img id="badge-image" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}"/>"
+             width="140" height="140"/>
+        <input type="file" id="file-select"/>
         <input type="button" id="upload-button" class="btn" value="Upload"/>
     </div>
 </div>
@@ -112,7 +126,7 @@
 jQuery(function($) {
     var id = "${achievementDescriptionInstance?.id ?: 0}"
     var badgeBase = "${cl.achievementBadgeBase()}";
-    var noBadgeUrl = "<g:resource dir="/images/achievements" file="blank.png" />";
+    var noBadgeUrl = "<g:resource dir="/images/achievements" file="blank.png"/>";
 
     function toggleTypeFields() {
         var type = $('#type').val();

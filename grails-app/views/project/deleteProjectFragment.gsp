@@ -25,7 +25,7 @@
 
 <script>
 
-    $("#btnCancelDeleteExpedition").click(function(e) {
+    $("#btnCancelDeleteExpedition").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });

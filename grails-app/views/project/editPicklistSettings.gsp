@@ -1,40 +1,46 @@
 <!doctype html>
 <html>
-    <head>
-        <meta name="layout" content="projectSettingsLayout"/>
-    </head>
-    <body>
+<head>
+    <meta name="layout" content="projectSettingsLayout"/>
+</head>
 
-        <content tag="pageTitle">Picklists</content>
+<body>
 
-        <content tag="adminButtonBar">
-        </content>
+<content tag="pageTitle">Picklists</content>
 
-            <g:form method="post" class="form-horizontal">
-                <g:hiddenField name="id" value="${projectInstance?.id}"/>
-                <g:hiddenField name="version" value="${projectInstance?.version}"/>
+<content tag="adminButtonBar">
+</content>
 
-                <div class="alert">A picklist with a specific 'Collection Code' must be <a href="${createLink(controller:'picklist', action:'manage')}">loaded</a> first</div>
+<g:form method="post" class="form-horizontal">
+    <g:hiddenField name="id" value="${projectInstance?.id}"/>
+    <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-                <div class="control-group">
-                    <label class="control-label" for="projectType"><g:message code="project.picklistInstitutionCode.label" default="Picklist Collection Code"/></label>
-                    <div class="controls">
-                        <g:select name="picklistInstitutionCode" from="${picklistInstitutionCodes}" value="${projectInstance?.picklistInstitutionCode}"/>
-                    </div>
+    <div class="alert">A picklist with a specific 'Collection Code' must be <a
+            href="${createLink(controller: 'picklist', action: 'manage')}">loaded</a> first</div>
 
-                </div>
+    <div class="control-group">
+        <label class="control-label" for="projectType"><g:message code="project.picklistInstitutionCode.label"
+                                                                  default="Picklist Collection Code"/></label>
 
-                <div class="control-group">
-                    <div class="controls">
-                        <g:actionSubmit class="save btn btn-primary" action="updatePicklistSettings" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                    </div>
-                </div>
+        <div class="controls">
+            <g:select name="picklistInstitutionCode" from="${picklistInstitutionCodes}"
+                      value="${projectInstance?.picklistInstitutionCode}"/>
+        </div>
 
-            </g:form>
+    </div>
 
-        <script type='text/javascript'>
-            $(document).ready(function () {
-            });
-        </script>
-    </body>
+    <div class="control-group">
+        <div class="controls">
+            <g:actionSubmit class="save btn btn-primary" action="updatePicklistSettings"
+                            value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+        </div>
+    </div>
+
+</g:form>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+    });
+</script>
+</body>
 </html>

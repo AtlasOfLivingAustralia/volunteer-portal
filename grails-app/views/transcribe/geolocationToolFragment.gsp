@@ -9,12 +9,14 @@
 
         <div id="mapInfo">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
             <div id="sightingAddress">
                 <h4>Locality Search</h4>
 
                 <textarea name="address" id="address" size="32" rows="1" value=""></textarea>
                 <button type="button" id="locationSearch" class="btn btn-small">Search</button>
-                <a href="#" class="geolocateHelp fieldHelp" title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description. Choose a location, or move the pin to a location that you think represents the Verbatim Locality as sensibly as possible. Where the map tool cant find a location simply fill in the State/territory and Country fields">
+                <a href="#" class="geolocateHelp fieldHelp"
+                   title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description. Choose a location, or move the pin to a location that you think represents the Verbatim Locality as sensibly as possible. Where the map tool cant find a location simply fill in the State/territory and Country fields">
                     <span class="help-container">&nbsp;</span>
                 </a>
             </div>
@@ -23,22 +25,28 @@
 
             <div>Adjust Uncertainty:
                 <select class="input-medium" id="infoUncert">
-                    <g:set var="coordinateUncertaintyPL" value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
+                    <g:set var="coordinateUncertaintyPL"
+                           value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
                     <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">
-                        <g:set var="isSelected"><g:if test="${(item.value == '1000')}">selected='selected'</g:if></g:set>
+                        <g:set var="isSelected"><g:if
+                                test="${(item.value == '1000')}">selected='selected'</g:if></g:set>
                         <option ${isSelected} value="${item.value}">${item.key ?: item.value}</option>
                     </g:each>
                 </select>
-                <a href="#" class="geolocateHelp fieldHelp" title="If in doubt choose a larger area. For example if the location is simply a small town then choose an uncertainty value that encompasses the town and some surrounding area. The larger the town the larger the uncertainty would need to be. If the locality description (verbatim locality) is quite detailed and you can find that location accurately then the uncertainty value can be smaller">
+                <a href="#" class="geolocateHelp fieldHelp"
+                   title="If in doubt choose a larger area. For example if the location is simply a small town then choose an uncertainty value that encompasses the town and some surrounding area. The larger the town the larger the uncertainty would need to be. If the locality description (verbatim locality) is quite detailed and you can find that location accurately then the uncertainty value can be smaller">
                     <span class="help-container">&nbsp;</span>
                 </a>
+
                 <div class="searchHint">Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map.</div>
             </div>
 
             <h4>Location Data</h4>
 
             <div>Latitude: <span id="infoLat"></span></div>
+
             <div>Longitude: <span id="infoLng"></span></div>
+
             <div>Location: <span id="infoLoc"></span></div>
 
             <div id="geolocationToolButtons" style="text-align: center; margin-top: 6px">
@@ -83,41 +91,41 @@
         }
 
         marker = new google.maps.Marker({
-                    position: latLng,
-                    //map.getCenter(),
-                    title: 'Specimen Location',
-                    map: map,
-                    draggable: true
-                });
+            position: latLng,
+            //map.getCenter(),
+            title: 'Specimen Location',
+            map: map,
+            draggable: true
+        });
         // Add a Circle overlay to the map.
         var radius = parseInt($(':input#infoUncert').val());
         circle = new google.maps.Circle({
-                    map: map,
-                    radius: radius,
-                    // 3000 km
-                    strokeWeight: 1,
-                    strokeColor: 'white',
-                    strokeOpacity: 0.5,
-                    fillColor: '#2C48A6',
-                    fillOpacity: 0.2
-                });
+            map: map,
+            radius: radius,
+            // 3000 km
+            strokeWeight: 1,
+            strokeColor: 'white',
+            strokeOpacity: 0.5,
+            fillColor: '#2C48A6',
+            fillOpacity: 0.2
+        });
         // bind circle to marker
         circle.bindTo('center', marker, 'position');
 
         // Add dragging event listeners.
         google.maps.event.addListener(marker, 'dragstart',
-                function() {
+                function () {
                     updateMarkerAddress('Dragging...');
                 });
 
         google.maps.event.addListener(marker, 'drag',
-                function() {
+                function () {
                     updateMarkerStatus('Dragging...');
                     updateMarkerPosition(marker.getPosition());
                 });
 
         google.maps.event.addListener(marker, 'dragend',
-                function() {
+                function () {
                     updateMarkerStatus('Drag ended');
                     geocodePosition(marker.getPosition());
                     map.panTo(marker.getPosition());
@@ -173,7 +181,7 @@
         geocoder.geocode({
                     latLng: pos
                 },
-                function(responses) {
+                function (responses) {
                     if (responses && responses.length > 0) {
                         updateMarkerAddress(responses[0].formatted_address, responses[0]);
                     } else {
@@ -194,7 +202,7 @@
                         'address': address,
                         region: 'AU'
                     },
-                    function(results, status) {
+                    function (results, status) {
                         if (status == google.maps.GeocoderStatus.OK) {
                             // geocode was successful
                             var latLng = results[0].geometry.location;
@@ -272,34 +280,34 @@
     }
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
-        $("#btnClose").click(function(e) {
+        $("#btnClose").click(function (e) {
             e.preventDefault();
             bvp.hideModal();
         });
 
         // trigger Google geolocation search on search button
-        $('#locationSearch').click(function(e) {
+        $('#locationSearch').click(function (e) {
             e.preventDefault();
             // ignore the href text - used for data
             codeAddress();
         });
 
-        $('input#address').keypress(function(e) {
+        $('input#address').keypress(function (e) {
             if (e.which == 13) {
                 codeAddress();
             }
         });
 
         // Catch Coordinate Uncertainty select (mapping tool) change
-        $('.coordinatePrecision, #infoUncert').change(function(e) {
+        $('.coordinatePrecision, #infoUncert').change(function (e) {
             var rad = parseInt($(this).val());
             circle.setRadius(rad);
             updateMarkerPosition(marker.getPosition());
         });
 
-        $('#setLocationFields').click(function(e) {
+        $('#setLocationFields').click(function (e) {
             e.preventDefault();
             if ($('#infoLat').html() && $('#infoLng').html()) {
                 // copy map fields into main form
@@ -366,7 +374,7 @@
 
         initializeGeolocateTool();
         google.maps.event.trigger(map, "resize");
-        setTimeout(function() {
+        setTimeout(function () {
             google.maps.event.trigger(map, "resize");
         }, 500);
 
