@@ -17,6 +17,7 @@
     vertical-align: middle;
 }
 
+/* Using the bs3 class to reset properties to original settings as provided by bs3 */
 .btn-default.bs3 {
     border: solid 1px #ccc;
     background-color: #fff;
@@ -24,6 +25,10 @@
 
 .btn-default.bs3:hover {
     background-color: #e6e6e6;
+}
+
+.btn-primary.bs3 {
+    margin-top: 0;
 }
 
 /*** End - Admin ***/
