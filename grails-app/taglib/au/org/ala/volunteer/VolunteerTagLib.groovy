@@ -421,6 +421,9 @@ class VolunteerTagLib {
                         for (int i = 0; i < crumbList?.size(); i++) {
                             def item = crumbList[i]
                             li {
+                                span(class:'glyphicon glyphicon-menu-right') {
+                                    mkp.yield(' ')
+                                }
                                 a(href: item.link) {
                                     mkp.yield(item.label)
                                 }
