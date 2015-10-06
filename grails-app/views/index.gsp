@@ -4,6 +4,7 @@
     <meta name="layout" content="digivol-main"/>
     <meta name="section" content="home"/>
     <title><cl:pageTitle title="Home"/></title>
+    <content tag="disableBreadcrumbs">true</content>
     %{--<content tag="primaryColour">#0097d4</content>--}%
 </head>
 
@@ -14,32 +15,37 @@
     <div class="container">
         <h1>Build knowledge &amp; <br/>communities through <br/>digitising collections</h1>
 
-        <h2>Join our community of 1,000+ volunteer citizen scientists</h2>
+        <h2>Join our community of 1,000+ volunteers</h2>
 
         <div class="cta-primary">
             <a class="btn btn-primary btn-lg" href="#expeditionList" role="button">Get involved <span
                     class="glyphicon glyphicon-arrow-down"></span></a>  <a class="btn btn-lg btn-hollow"
                                                                            href="#learnMore">Learn more</a>
         </div>
-        <a name="learnMore"></a>
+
+        <div class="row">
+            <div class="col-sm-12 image-origin">
+                <p>Image by [Name] from Flickr</p>
+            </div>
+        </div>
     </div>
 
 </div>
-
+<a name="expeditionList" class="expeditionListAnchor"></a>
 <section id="what-you-do" class="dark">
     <div class="container">
         <h2 class="heading">Volunteer by</h2>
 
         <div class="row">
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconWild.png" class="img-responsive"/>
+                <r:img dir="images/2.0" file="iconLabels.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
-                <h3>Identify Animals</h3>
+                <h3>Transcribe specimen labels</h3>
 
-                <p>Help identify animals in photos captured by in camera traps.</p>
-                <a href="#">See all camera traps</a>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla cursus sem nec consequat accumsan. Sed vel justo odio. </p>
+                <a href="#">See all labels</a>
             </div>
 
             <div class="col-sm-1 col-xs-4">
@@ -49,27 +55,25 @@
             <div class="col-sm-3 col-xs-8">
                 <h3>Transcribe field journals</h3>
 
-                <p>Transcribe written text in field journals from various expeditions.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla cursus sem nec consequat accumsan. Sed vel justo odio.</p>
                 <a href="#">See all field journals</a>
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconLabels.png" class="img-responsive"/>
+                <r:img dir="images/2.0" file="iconWild.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
-                <h3>Transcribe speciman labels</h3>
+                <h3>Identify Animals</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla cursus sem nec consequat accumsan. Sed vel justo odio.</p>
+                <a href="#">See all camera traps</a>
 
-                <p>Transcribe field labels from expeditions</p>
-                <a href="#">See all labels</a>
             </div>
 
         </div>
 
     </div>
 </section>
-
-<a name="expeditionList"></a>
 
 <section id="expedition-feature">
     <div class="container">
@@ -108,15 +112,15 @@
                     <div class="progress-legend">
                         <div class="row">
                             <div class="col-xs-4">
-                                <span class="key validated"></span><b>${potdSummary.percentValidated}%</b> Validated
+                                <b>${potdSummary.percentValidated}%</b> Validated
                             </div>
 
                             <div class="col-xs-4">
-                                <span class="key transcribed"></span><b>${potdSummary.percentTranscribed}%</b> Transcribed
+                                <b>${potdSummary.percentTranscribed}%</b> Transcribed
                             </div>
 
                             <div class="col-xs-4">
-                                <span class="key volunteers"></span><b>${potdSummary.transcriberCount}</b> Volunteers
+                                <b>${potdSummary.taskCount}</b> Tasks
                             </div>
                         </div>
                     </div>
@@ -142,7 +146,6 @@
                     </div>
 
                     <div class="col-sm-4">
-                        <button type="button" class="btn btn-default btn-sm pull-right">See all</button>
                     </div>
                 </div>
 
@@ -201,15 +204,17 @@
                         </div>
                     </g:each>
                 </div><!--/row-->
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <a class="btn btn-default btn-load" href="#" role="button">Load more</a>
-                    </div>
-                </div>
             </div>
 
             <div class="col-sm-4">
+
+                <div class="panel panel-default volunteer-stats">
+                    <!-- Default panel contents -->
+                    <h2 class="heading">Digivol Stats<i class="fa fa-users fa-sm pull-right"></i></h2>
+                    <h3><a href="#">1,239 Volunteers</a></h3>
+                    <p>233983 tasks of 254875 completed</p>
+
+                </div><!-- Volunteer Stats Ends Here -->
 
                 <div class="panel panel-default leaderboard">
                     <!-- Default panel contents -->
@@ -394,6 +399,7 @@
         </div>
     </div>
 </section>
+<a name="learnMore"></a>
 %{--<cl:headerContent title="${message(code:'default.application.name', default:'DigiVol')}" selectedNavItem="bvp" hideCrumbs="${true}">--}%
 %{--<p class="bvp-byline">Volunteers building knowledge and communities through digitising collections</p>--}%
 %{--</cl:headerContent>--}%

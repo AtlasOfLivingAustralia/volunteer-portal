@@ -8,7 +8,7 @@
     <cl:addApplicationMetaTags/>
     <meta name="description" content="Atlas of Living Australia"/>
     <meta name="author" content="Atlas of Living Australia">
-    <r:external uri="favicon.ico"/>
+    <r:external dir="images/" file="favicon.ico"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
@@ -37,7 +37,7 @@
         border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
 
-    body.digivol .badge {
+    body .badge {
         color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
     </style>
@@ -150,17 +150,19 @@
     </div>
 </nav>
 
-<div id="page-header" class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <cl:messages/>
-            <div>
-                <g:pageProperty name="page.page-header"/>
+<g:if test="${!pageProperty(name: 'page.disableBreadcrumbs', default: false)}">
+    <div id="page-header" class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <cl:messages/>
+                <div>
+                    <g:pageProperty name="page.page-header"/>
+                </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
+</g:if>
 
 <g:layoutBody/>
 
