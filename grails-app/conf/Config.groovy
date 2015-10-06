@@ -262,6 +262,9 @@ metrics {
     servletEnabled = true
 }
 
+//Fix grails taglib <g:paginate/> to work with bootstrap css.
+grails.plugins.twitterbootstrap.fixtaglib = true
+
 environments {
     development {
         //grails.resources.debug = true
