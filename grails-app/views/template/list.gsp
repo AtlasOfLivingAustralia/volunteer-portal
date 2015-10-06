@@ -46,7 +46,7 @@
     </r:script>
 </head>
 
-<body>
+<body class="admin">
 <div class="container">
     <cl:headerContent title="${message(code: 'default.list.label', args: [entityName])}" selectedNavItem="bvpadmin">
         <%

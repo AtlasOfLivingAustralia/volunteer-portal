@@ -4,30 +4,30 @@
 
 /*** Begin - Admin ***/
 
-#page-header {
+.admin #page-header {
     margin-top: 90px;
     margin-bottom: 20px;
 }
 
-.admin-table a {
+.admin table a {
     margin-top: 0;
 }
 
-.admin-table tbody tr td {
+.admin table tbody tr td {
     vertical-align: middle;
 }
 
 /* Using the bs3 class to reset properties to original settings as provided by bs3 */
-.btn-default.bs3 {
+.admin .btn-default.bs3 {
     border: solid 1px #ccc;
     background-color: #fff;
 }
 
-.btn-default.bs3:hover {
+.admin .btn-default.bs3:hover {
     background-color: #e6e6e6;
 }
 
-.btn-primary.bs3 {
+.admin .btn-primary.bs3 {
     margin-top: 0;
 }
 

@@ -49,7 +49,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name:'body.class')?:'nav-datasets'}">
+<body class="${pageProperty(name:'body.class')}">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
