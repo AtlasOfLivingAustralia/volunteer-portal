@@ -1,3 +1,9 @@
+/* Custom styles to fit new look&feel */
+/**************************************/
+
+
+/*** Begin - Admin ***/
+
 #page-header {
     margin-top: 90px;
     margin-bottom: 20px;
@@ -19,3 +25,5 @@
 .btn-default.bs3:hover {
     background-color: #e6e6e6;
 }
+
+/*** End - Admin ***/
