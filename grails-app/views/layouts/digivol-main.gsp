@@ -49,7 +49,7 @@
     <![endif]-->
 </head>
 
-<body>
+<body class="${pageProperty(name:'body.class')?:'nav-datasets'}">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -151,16 +151,29 @@
 </nav>
 
 <g:if test="${!pageProperty(name: 'page.disableBreadcrumbs', default: false)}">
-    <div id="page-header" class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <cl:messages/>
-                <div>
+    <section id="breadcrumb">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <cl:messages/>
+                    %{--<div>--}%
                     <g:pageProperty name="page.page-header"/>
+                    %{--</div>--}%
                 </div>
             </div>
         </div>
+    </section>
+</g:if>
 
+<g:if test="${g.pageProperty(name:"page.page-title")}">
+    <div class="a-feature simple-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-10">
+                    <g:pageProperty name="page.page-title"/>
+                </div>
+            </div>
+        </div>
     </div>
 </g:if>
 

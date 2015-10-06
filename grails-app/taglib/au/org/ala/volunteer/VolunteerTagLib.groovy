@@ -411,7 +411,7 @@ class VolunteerTagLib {
             }
 
             if (!attrs.hideCrumbs) {
-                mb.ol(class: 'breadcrumb') {
+                mb.ul(class: 'breadcrumb-list') {
                     li {
                         a(href:createLink(uri:'/')) {
                             mkp.yield(message(code:'default.home.label'))
@@ -427,29 +427,32 @@ class VolunteerTagLib {
                             }
                         }
                     }
-                    li(class:'last') {
-                        span {
-                            mkp.yield(crumbLabel)
+                    li(class:'active') {
+                        span(class:'glyphicon glyphicon-menu-right') {
+                            mkp.yield(' ')
                         }
+                        mkp.yield(crumbLabel)
                     }
                 }
 
             }
 
+
+        }
+
+        sitemesh.captureContent(tag:'page-title') {
             if (!attrs.hideTitle) {
-                mb.h2(class:'bvp-heading') {
+                mb.h1(class:'bvp-heading') {
                     mkp.yield(attrs.title)
                 }
             }
 
             if (bodyContent) {
-                mb.div {
+                mb.p(class:'section-description') {
                     mb.mkp.yieldUnescaped(bodyContent)
                 }
             }
-
         }
-
     }
 
     def spinner = { attrs, body ->

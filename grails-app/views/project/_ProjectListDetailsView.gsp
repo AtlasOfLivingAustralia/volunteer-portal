@@ -33,9 +33,8 @@ tr[inactive=true] .admin-link {
 
 </style>
 
-<div class="row-fluid">
-    <div class="span12">
-
+<div class="row">
+    <div class="col-sm-8">
         <table class="table table-condensed" style="border: 1px solid gainsboro">
             <thead>
             <tr>
