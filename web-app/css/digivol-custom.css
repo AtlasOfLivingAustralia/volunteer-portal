@@ -10,3 +10,12 @@
 .admin-table tbody tr td {
     vertical-align: middle;
 }
+
+.btn-default.bs3 {
+    border: solid 1px #ccc;
+    background-color: #fff;
+}
+
+.btn-default.bs3:hover {
+    background-color: #e6e6e6;
+}
