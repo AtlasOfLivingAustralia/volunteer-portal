@@ -67,7 +67,7 @@
                         <div class="form-group buttons">
                             <div class="col-md-offset-2 col-md-10">
                                 <g:hiddenField name="id" value="${templateInstance?.id}"/>
-                                <g:actionSubmit class="btn btn-default bs3 edit" action="edit"
+                                <g:actionSubmit class="btn btn-default edit" action="edit"
                                                 value="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
                                 <g:actionSubmit class="btn btn-danger delete" action="delete"
                                                 value="${message(code: 'default.button.delete.label', default: 'Delete')}"

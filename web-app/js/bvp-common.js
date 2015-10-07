@@ -8,7 +8,7 @@ var bvp = {};
             backdrop: options.backdrop ? options.backdrop : true,
             keyboard: options.keyboard ? options.keyboard: true,
             url: options.url ? options.url : false,
-            id: options.id ? options.id : 'modal_element_id',
+            id: options.id ? options.id : 'myModal',
             height: options.height ? options.height : 500,
             width: options.width ? options.width : 600,
             title: options.title ? options.title : 'Modal Title',
@@ -17,13 +17,14 @@ var bvp = {};
             onShown: options.onShown ? options.onShown : null
         };
 
-        var html = "<div id='" + opts.id + "' class='modal hide' role='dialog' aria-labelledby='modal_label_" + opts.id + "' aria-hidden='true' style='width: " + opts.width + "px; margin-left: -" + opts.width / 2 + "px;overflow: hidden'>";
-        if (!opts.hideHeader) {
-            html += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button><h3 id='modal_label_" + opts.id + "'>" + opts.title + "</h3></div>";
-        }
-        html += "<div class='modal-body' style='max-height: " + opts.height + "px'>Loading...</div></div>";
-
-        $("body").append(html);
+        $.get(opts.url, function(html) {
+            bootbox.dialog({
+                message: html,
+                title: options.title,
+                backdrop: options.backdrop,
+                onEscape: true
+            })
+        });
 
         var selector = "#" + opts.id;
 
@@ -57,16 +58,10 @@ var bvp = {};
             };
         }
 
-        $(selector).modal({
-            remote: opts.url,
-            keyboard: opts.keyboard,
-            backdrop: opts.backdrop
-        });
-
     };
 
     lib.hideModal = function() {
-        $("#modal_element_id").modal('hide');
+        bootbox.hideAll();
     };
 
     lib.htmlEscape = function(str) {

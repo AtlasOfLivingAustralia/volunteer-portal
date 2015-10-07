@@ -50,7 +50,7 @@
 
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
-                                <g:submitButton name="create" class="btn btn-primary bs3"
+                                <g:submitButton name="create" class="btn btn-primary"
                                                 value="${message(code: 'default.button.create.label', default: 'Create')}"/>
                             </div>
                         </div>

@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
-    <r:require module="jquery-ui"/>
+    <r:require modules="jquery-ui, bootbox, bvp-js"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
     <style type="text/css">
 
@@ -55,7 +55,7 @@
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default bs3">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
         </div>
     </cl:headerContent>
 
@@ -84,10 +84,10 @@
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                                 <td>
-                                    <a class="btn btn-default bs3 btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
-                                    <a class="btn btn-default bs3" style="margin-top: 6px"
+                                    <a class="btn btn-default btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
+                                    <a class="btn btn-default" style="margin-top: 6px"
                                        href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">Edit</a>
-                                    <a class="btn btn-default bs3" style="margin-top: 6px"
+                                    <a class="btn btn-default" style="margin-top: 6px"
                                        href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">Preview</a>
                                     <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
                                 </td>

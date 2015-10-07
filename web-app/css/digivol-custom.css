@@ -23,17 +23,21 @@
 }
 
 /* Using the bs3 class to reset properties to original settings as provided by bs3 */
-.admin .btn-default.bs3 {
+.admin .btn-default {
     border: solid 1px #ccc;
     background-color: #fff;
 }
 
-.admin .btn-default.bs3:hover {
+.admin .btn-default:hover {
     background-color: #e6e6e6;
 }
 
-.admin .btn-primary.bs3 {
+.admin .btn-primary {
     margin-top: 0;
+}
+
+.admin .modal .modal-header {
+    padding: 15px;
 }
 
 /*** End - Admin ***/

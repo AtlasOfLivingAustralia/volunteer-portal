@@ -1,24 +1,22 @@
-<div class="form-horizontal">
+<form>
 
-    <div class="control-group">
-        This will create a copy of the '${templateInstance.name}' template, including all of its fields and settings.
+    <div class="form-group">
+        <p class="">This will create a copy of the '${templateInstance.name}' template, including all of its fields and settings.</p>
     </div>
 
-    <div class="control-group">
+    <div class="form-group">
         <label for="templateName" class="control-label">New template name:</label>
 
         <div class="controls">
-            <g:textField name="templateName" value="Copy of ${templateInstance?.name}"/>
+            <g:textField name="templateName" class="form-control" value="Copy of ${templateInstance?.name}"/>
         </div>
     </div>
 
-    <div class="control-group">
-        <div class="controls">
-            <button type="button" class="btn" id="btnCancelCloneTemplate">Cancel</button>
-            <button type="button" class="btn btn-primary" id="btnCopyTemplate">Clone template</button>
-        </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="btnCancelCloneTemplate">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btnCopyTemplate">Clone template</button>
     </div>
-</div>
+</form>
 
 <script>
 

@@ -6,7 +6,7 @@
     <title><g:message code="admin.label" default="Administration"/></title>
 </head>
 
-<body>
+<body class="admin">
 <div class="container">
 
     <cl:headerContent title="${message(code: 'default.admin.label', default: 'Administration')}"

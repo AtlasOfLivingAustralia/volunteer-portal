@@ -104,7 +104,7 @@
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default bs3">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
         </div>
     </cl:headerContent>
 
@@ -127,8 +127,8 @@
                                 <g:textField name="name" class="form-control" maxlength="200" value="${templateInstance?.name}"/>
                             </div>
                             <div class="col-md-3">
-                                <button class="btn btn-default bs3" id="btnEditFields">Edit Fields</button>
-                                <button class="btn btn-default bs3" id="btnPreview">Preview Template</button>
+                                <button class="btn btn-default" id="btnEditFields">Edit Fields</button>
+                                <button class="btn btn-default" id="btnPreview">Preview Template</button>
                             </div>
                         </div>
 
@@ -172,7 +172,7 @@
 
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
-                                <g:actionSubmit class="btn btn-primary bs3" action="update"
+                                <g:actionSubmit class="btn btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
                                 <g:actionSubmit class="btn btn-danger delete" action="delete"
                                                 value="${message(code: 'default.button.delete.label', default: 'Delete')}"
