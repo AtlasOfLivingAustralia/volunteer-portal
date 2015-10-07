@@ -796,4 +796,30 @@ class VolunteerTagLib {
             df.format(new Date())
         }
     }
+
+    /**
+     * Truncate text at maxlength with ellipse symbol
+     *
+     * @attr maxlength REQUIRED
+     * @attr ellipse
+     */
+    def truncate = { attrs, body ->
+        def ELLIPSIS = attrs.ellipse ?: '...'
+        def maxLength = attrs.maxlength
+
+        if (maxLength == null || !maxLength.isInteger() || maxLength.toInteger() <= 0) {
+            throw new Exception("The attribute 'maxlength' must an integer greater than 3. Provided value: $maxLength")
+        } else {
+            maxLength = maxLength.toInteger()
+        }
+        if (maxLength <= ELLIPSIS.size()) {
+            throw new Exception("The attribute 'maxlength' must be greater than 3. Provided value: $maxLength")
+        }
+        if (body().length() > maxLength) {
+            String trucatedBody = body()[0..maxLength - (ELLIPSIS.size() + 1)]
+            out << trucatedBody.replaceAll("<(.|\n)*?>", '') + ELLIPSIS
+        } else {
+            out << body().replaceAll("<(.|\n)*?>", '').encodeAsHTML()
+        }
+    }
 }

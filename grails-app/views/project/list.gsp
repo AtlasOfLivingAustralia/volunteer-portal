@@ -57,6 +57,7 @@
                 var url = "${createLink(controller: 'project', action: 'list')}?mode=${params.mode}&q=" + encodeURIComponent(q);
                 window.location = url;
             }
+        });
 
     </r:script>
 </head>
@@ -75,19 +76,48 @@
                 %{--</div>--}%
                 <div class="col-sm-8">
                     <div class="row">
+                        <div class="col-sm-4">
+                            <h2 class="heading">
+                                All Expeditions
+                            </h2>
+                        </div>
+
+                        <div class="col-sm-8">
+                            <div class="card-filter">
+                                <div class="btn-group pull-right" role="group" aria-label="...">
+                                    <a href="${createLink(action:'list', params:[mode:'thumbs'])}" class="btn btn-default btn-xs ${params.mode == 'thumbs' ? 'active' : ''}"><i class="glyphicon glyphicon-th-large "></i></a>
+                                    <a href="${createLink(action:'list')}" class="btn btn-default btn-xs ${params.mode != 'thumbs' ? 'active' : ''}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                </div>
+
+                                <div class="custom-search-input body">
+                                    <div class="input-group">
+                                        <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search e.g. Bivalve"/>
+                                        <span class="input-group-btn">
+                                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row hide">
                         <div class="col-sm-12">
                             <g:set var="statusFilterMode" value="${ params.statusFilter ?: ProjectStatusFilterType.showAll}" />
                             <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
                             <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
-                            <div class="btn-group pull-right">
-                                <a href="${createLink(action:'list')}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View expedition list">
-                                    <i class="icon-th-list"></i>
-                                </a>
-                                <a href="${createLink(action:'list', params:[mode:'thumbs'])}" class="btn btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View expedition thumbnails">
-                                    <i class="icon-th"></i>
-                                </a>
-                            </div>
+                            %{--<div class="btn-group pull-right">--}%
+                                %{--<a href="${createLink(action:'list')}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View expedition list">--}%
+                                    %{--<i class="icon-th-list"></i>--}%
+                                %{--</a>--}%
+                                %{--<a href="${createLink(action:'list', params:[mode:'thumbs'])}" class="btn btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View expedition thumbnails">--}%
+                                    %{--<i class="icon-th"></i>--}%
+                                %{--</a>--}%
+                            %{--</div>--}%
 
                             <div class="btn-group pull-right" style="padding-right: 10px">
                                 <g:each in="${ProjectStatusFilterType.values()}" var="mode">
@@ -111,10 +141,10 @@
                             <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
 
                             <g:if test="${params.mode == 'thumbs'}">
-                                <g:render template="projectListThumbnailView" model="${model}"/>
+                                <g:render template="projectListThumbnailView2" model="${model}"/>
                             </g:if>
                             <g:else>
-                                <g:render template="ProjectListDetailsView" model="${model}" />
+                                <g:render template="ProjectListDetailsView2" model="${model}" />
                             </g:else>
                         </div>
                     </div>
