@@ -94,7 +94,7 @@
 
 </head>
 
-<body>
+<body class="admin">
 <div class="container">
     <cl:headerContent title="${message(code: 'default.edit.label', args: [entityName])} - ${templateInstance.name}" selectedNavItem="bvpadmin">
         <%

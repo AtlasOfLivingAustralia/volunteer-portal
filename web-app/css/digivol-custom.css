@@ -4,13 +4,18 @@
 
 /*** Begin - Admin ***/
 
+.admin .a-feature.simple-header {
+    padding: 0;
+    padding-bottom: 1em;
+}
+
 .admin #page-header {
     margin-top: 90px;
     margin-bottom: 20px;
 }
 
-.admin table a {
-    margin-top: 0;
+.admin .container .panel {
+    margin: 2em 0;
 }
 
 .admin table tbody tr td {

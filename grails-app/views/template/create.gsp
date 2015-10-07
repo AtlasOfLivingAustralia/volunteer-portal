@@ -7,7 +7,7 @@
     <title><g:message code="default.create.label" args="[entityName]"/></title>
 </head>
 
-<body>
+<body class="admin">
 <div class="container">
     <cl:headerContent title="${message(code: 'default.create.label', args: [entityName])}" selectedNavItem="bvpadmin">
         <%
