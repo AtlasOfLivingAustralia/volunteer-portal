@@ -144,7 +144,7 @@
                                 <g:render template="projectListThumbnailView" model="${model}"/>
                             </g:if>
                             <g:else>
-                                <g:render template="ProjectListDetailsView2" model="${model}" />
+                                <g:render template="ProjectListDetailsView" model="${model}" />
                             </g:else>
                         </div>
                     </div>
