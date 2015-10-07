@@ -179,4 +179,8 @@ modules = {
         resource url: 'css/cameratrap.css'
     }
 
+    'bootstrap-file-input' {
+        dependsOn 'jquery', 'bootstrap'
+        resource url: 'js/bootstrap.file-input/bootstrap.file-input.js'
+    }
 }
