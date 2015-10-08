@@ -107,23 +107,21 @@
                 });
 
                 // Context sensitive help popups
-                //$("a.fieldHelp").qtip({
-                //    tip: true,
-                //    position: {
-                //        corner: { target: 'topMiddle', tooltip: 'bottomRight' }
-                //    },
-                //    style: {
-                //        width: 400,
-                //        padding: 8,
-                //        background: 'white', //'#f0f0f0',
-                //        color: 'black',
-                //        textAlign: 'left',
-                //        border: { width: 4, radius: 5, color: '#E66542' },
-                //        tip: 'bottomRight',
-                //        name: 'light' // Inherit the rest of the attributes from the preset light style
-                //    }
-                //}).bind('click', function(e) { e.preventDefault(); return false; });
+                $("a.fieldHelp").each(function() {
+                var self = this;
+                    $(self).qtip({
+                        content: $(self).attr('title'),
+                        position: {
+                            at: "top left",
+                            my: "bottom right"
+                        },
+                        style: {
+                            classes: 'qtip-bootstrap'
+                        }
+                    }).bind('click', function(e) { e.preventDefault(); return false; });
+                });
 
+                // Initialize input type file
                 $('input[type=file]').bootstrapFileInput();
 
             });
@@ -193,20 +191,20 @@
                                 <td>${field.layoutClass}</td>
                                 <td>${field.validationRule}</td>
                                 <td>${field.category}</td>
-                                <td>
+                                <td class="text-center">
                                     <g:if test="${field.helpText}">
-                                        <a href="#" class="fieldHelp"
+                                        <a href="#" class="btn btn-default btn-xs fieldHelp"
                                            title="<markdown:renderHtml>${field.helpText}</markdown:renderHtml>"><span
-                                                class="help-container">&nbsp;</span></a>
+                                                class="help-container"><i class="fa fa-question"></i> </span></a>
                                     </g:if>
                                 </td>
-                                <td style="padding:0; width:180px">
-                                    <button class="btn btn-mini btnMoveFieldDown"><i class="icon-arrow-down"></i></button>
-                                    <button class="btn btn-mini btnMoveFieldUp"><i class="icon-arrow-up"></i></button>
-                                    <button class="btn btn-mini btnMoveFieldAnywhere"><i class="icon-move"></i></button>
-                                    <button class="btn btn-mini btnDeleteField btn-danger"><i class="icon-remove icon-white"></i>
+                                <td class="text-center">
+                                    <button class="btn btn-xs btn-default btnMoveFieldDown"><i class="fa fa-arrow-down"></i></button>
+                                    <button class="btn btn-xs btn-default btnMoveFieldUp"><i class="fa fa-arrow-up"></i></button>
+                                    <button class="btn btn-xs btn-default btnMoveFieldAnywhere"><i class="fa fa-arrows"></i></button>
+                                    <button class="btn btn-xs btnDeleteField btn-danger"><i class="fa fa-times"></i>
                                     </button>
-                                    <button class="btn btn-mini btnEditField imageButton"><i class="icon-edit"></i></button>
+                                    <button class="btn btn-xs btn-default btnEditField imageButton"><i class="fa fa-pencil"></i></button>
                                 </td>
                             </tr>
                         </g:each>

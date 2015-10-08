@@ -12,7 +12,8 @@ modules = {
 
     'qtip' {
         dependsOn "jquery"
-        resource url:'/js/jquery.qtip-1.0.0-rc3.min.js'
+        resource url:'/js/qtip.2.2.1/jquery.qtip.css'
+        resource url:'/js/qtip.2.2.1/jquery.qtip.js'
     }
 
     'mouseWheel' {

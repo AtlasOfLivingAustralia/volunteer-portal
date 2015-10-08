@@ -1,56 +1,38 @@
 <%@ page import="au.org.ala.volunteer.FieldType; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.DarwinCoreField" %>
 
-<div class="form-horizontal">
-
-    <div class="control-group">
+<form>
+    <div class="form-group">
         <label class="control-label" for="fieldName">Field:</label>
-
-        <div class="controls">
-            <g:select name="fieldName" from="${DarwinCoreField.values().sort({ it.name() })}"/>
-        </div>
+        <g:select name="fieldName" class="form-control" from="${DarwinCoreField.values().sort({ it.name() })}"/>
     </div>
 
-    <div class="control-group">
+    <div class="form-group">
         <label class="control-label" for="fieldTypeClassifier">Classifier:</label>
-
-        <div class="controls">
-            <g:textField name="fieldTypeClassifier" value=""/>
-        </div>
+        <g:textField class="form-control" name="fieldTypeClassifier" value=""/>
     </div>
 
-    <div class="control-group">
+    <div class="form-group">
         <label class="control-label" for="label">Label (blank for default):</label>
-
-        <div class="controls">
-            <g:textField name="label" value=""/>
-        </div>
+        <g:textField class="form-control" name="label" value=""/>
     </div>
 
-    <div class="control-group">
+    <div class="form-group">
         <label class="control-label" for="category">Category:</label>
-
-        <div class="controls">
-            <g:select name="category" from="${FieldCategory?.values()}" value="${FieldCategory.none}"/>
-        </div>
+        <g:select class="form-control" name="category" from="${FieldCategory?.values()}" value="${FieldCategory.none}"/>
     </div>
 
-    <div class="control-group">
+    <div class="form-group">
         <label class="control-label" for="type">Type:</label>
-
-        <div class="controls">
-            <g:select name="type" from="${FieldType?.values()}" keys="${FieldType?.values()*.name()}"
-                      value="${FieldType.text}"/>
-        </div>
+        <g:select class="form-control" name="type" from="${FieldType?.values()}" keys="${FieldType?.values()*.name()}"
+                  value="${FieldType.text}"/>
     </div>
 
-    <div class="control-group">
-        <div class="controls">
-            <button id="btnCancelAddField" class="btn">Cancel</button>
-            <button id="btnSaveField" class="btn btn-primary">Add field</button>
-        </div>
+    <div class="modal-footer">
+        <button id="btnCancelAddField" class="btn btn-default">Cancel</button>
+        <button id="btnSaveField" class="btn btn-primary">Add field</button>
     </div>
 
-</div>
+</form>
 
 <script>
     $('#btnSaveField').click(function (e) {
