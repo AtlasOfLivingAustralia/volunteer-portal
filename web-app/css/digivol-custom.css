@@ -106,7 +106,6 @@ div.pagination {
     vertical-align: middle;
 }
 
-/* Using the bs3 class to reset properties to original settings as provided by bs3 */
 .admin .btn-default {
     border: solid 1px #ccc;
     background-color: #fff;
@@ -126,6 +125,20 @@ div.pagination {
 
 .admin table.template-fields {
     margin-top: 1.5em;
+}
+
+.admin .form-control {
+    height: 34px;
+}
+
+.admin input.form-control:focus {
+    border-color: #66AFE9;
+    outline: 0px none;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+}
+
+.admin textarea.form-control {
+    height: auto;
 }
 
 /*** End - Admin ***/

@@ -61,7 +61,7 @@
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="row" id="content">
+            <div class="row">
                 <div class="col-md-12">
                     <table class="table table-striped admin-table">
                         <thead>
