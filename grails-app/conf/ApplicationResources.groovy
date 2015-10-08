@@ -5,7 +5,7 @@ modules = {
 //    }
 
     'digivol' {
-        dependsOn 'bootstrap', 'jquery', 'font-awesome'
+        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip'
         resource url: '/css/main.css'
         resource url: '/css/digivol-custom.css'
     }

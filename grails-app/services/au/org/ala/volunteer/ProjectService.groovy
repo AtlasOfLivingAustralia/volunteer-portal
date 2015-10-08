@@ -190,6 +190,8 @@ class ProjectService {
         ps.validatorCount = validatorCount
         ps.validatedCount = fullyValidatedCount
 
+        log.warn "projectSummry icon = ${ps.iconImage}"
+
         return ps
     }
 
