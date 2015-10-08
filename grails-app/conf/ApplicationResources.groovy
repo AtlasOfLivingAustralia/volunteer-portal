@@ -10,6 +10,11 @@ modules = {
         resource url: '/css/digivol-custom.css'
     }
 
+    'digivol-stats' {
+        dependsOn 'knockout'
+        resource url: '/js/digivol-stats.js'
+    }
+
     'qtip' {
         dependsOn "jquery"
         resource url:'/js/jquery.qtip-1.0.0-rc3.min.js'
@@ -182,5 +187,19 @@ modules = {
     'bootstrap-file-input' {
         dependsOn 'jquery', 'bootstrap'
         resource url: 'js/bootstrap.file-input/bootstrap.file-input.js'
+    }
+
+    "moment" {
+        resource url: 'js/moment/2.10.6/moment.min.js'
+    }
+
+    "livestamp" {
+        dependsOn 'jquery', 'moment'
+        resource url: 'js/livestamp/1.1.2/livestamp.min.js'
+    }
+
+    "knockout" {
+        resource url: 'js/knockout/3.3.0/knockout-3.3.0.js'
+        resource url: 'js/knockout/3.3.0/knockout.mapping-2.4.1.min.js'
     }
 }

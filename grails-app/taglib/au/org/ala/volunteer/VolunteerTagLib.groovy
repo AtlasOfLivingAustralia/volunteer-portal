@@ -459,7 +459,7 @@ class VolunteerTagLib {
     }
 
     def spinner = { attrs, body ->
-        out << "<image src=\"${resource(dir:'images', file:'spinner.gif')}\" />"
+        out << "<image src=\"${resource(dir:'images', file:'ajax-loader.gif')}\" />"
     }
 
     def sequenceThumbnail = { attrs, body ->
