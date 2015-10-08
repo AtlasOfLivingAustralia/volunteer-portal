@@ -58,7 +58,7 @@ class UserService {
     def getUserCounts(List<String> ineligibleUsers = []) {
         def args = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
         def users = User.executeQuery("""
-            select new map(displayName as displayName, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
+            select new map(displayName as displayName, email as email, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
             from User
             where (transcribedCount + validatedCount) > 0
             ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
@@ -66,7 +66,11 @@ class UserService {
         """, args)
         def deets = authService.getUserDetailsById(users.collect { it['userId'] })
         if (deets) {
-            users.each { it['displayName'] = deets.users.get(it['userId']).displayName }
+            users.each {
+                def deet = deets.users.get(it['userId'])
+                it['displayName'] = deet.displayName
+                it['email'] = deet.userName // this is actually the email address
+            }
         }
         return users;
     }

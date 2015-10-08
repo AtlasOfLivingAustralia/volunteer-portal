@@ -141,10 +141,10 @@
                             <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
 
                             <g:if test="${params.mode == 'thumbs'}">
-                                <g:render template="projectListThumbnailView2" model="${model}"/>
+                                <g:render template="projectListThumbnailView" model="${model}"/>
                             </g:if>
                             <g:else>
-                                <g:render template="ProjectListDetailsView2" model="${model}" />
+                                <g:render template="ProjectListDetailsView" model="${model}" />
                             </g:else>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                     <div class="panel panel-default volunteer-stats">
                         <!-- Default panel contents -->
                         <h2 class="heading">Digivol Stats<i class="fa fa-users fa-sm pull-right"></i></h2>
-                        <h3><a href="#">1,239 Volunteers</a></h3>
+                        <h3><a href="#"><g:formatNumber number="${totalUsers}" type="number" /> Volunteers</a></h3>
                         <p>233983 tasks of 254875 completed.</p>
                     </div><!-- Digivol Stats Ends Here -->
                     <div class="panel panel-default leaderboard">

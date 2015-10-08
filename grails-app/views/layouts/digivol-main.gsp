@@ -26,6 +26,10 @@
     body .navbar .navbar-brand,
     body .navbar .navbar-brand:hover,
     body .btn-primary,
+    body .btn-primary:hover,
+    body .btn-primary:focus,
+    body .btn-primary:active,
+    body .btn-primary.active,
     body .label,
     .progress .progress-bar-transcribed,
     .key.transcribed,
@@ -37,7 +41,8 @@
         border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
 
-    body .badge {
+    body .badge,
+    body .badge:hover {
         color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
     </style>
@@ -49,7 +54,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name:'body.class')}">
+<body class="${pageProperty(name: 'body.class')}">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -165,7 +170,7 @@
     </section>
 </g:if>
 
-<g:if test="${g.pageProperty(name:"page.page-title")}">
+<g:if test="${g.pageProperty(name: "page.page-title")}">
     <div class="a-feature simple-header">
         <div class="container">
             <div class="row">
