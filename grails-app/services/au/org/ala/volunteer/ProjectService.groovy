@@ -190,8 +190,6 @@ class ProjectService {
         ps.validatorCount = validatorCount
         ps.validatedCount = fullyValidatedCount
 
-        log.warn "projectSummry icon = ${ps.iconImage}"
-
         return ps
     }
 
@@ -240,6 +238,11 @@ class ProjectService {
 
             renderList = renderList.findAll { projectSummary ->
                 def project = projectSummary.project
+
+                // special syntax for label (project type). NdR Oct 2015.
+                if (query.startsWith("label:") && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst("label:",""))) {
+                    return true
+                }
 
                 if (project.featuredLabel?.toLowerCase()?.contains(query)) {
                     return true

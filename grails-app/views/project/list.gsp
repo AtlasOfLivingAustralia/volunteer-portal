@@ -84,7 +84,7 @@
                                 <g:if test="${params.q}">
                                     Expeditions matching:
                                     <span class="tag currentFilter">
-                                        <span>${params.q}</span>
+                                        <span>${params.q.replaceAll('label:','')}</span>
                                         <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
                                     </span>
                                 </g:if>
@@ -104,7 +104,7 @@
 
                                 <div class="custom-search-input body">
                                     <div class="input-group">
-                                        <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search e.g. Bivalve"/>
+                                        <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
                                         <span class="input-group-btn">
                                             <button id="btnSearch" class="btn btn-info btn-lg" type="button">
                                                 <i class="glyphicon glyphicon-search"></i>
@@ -117,13 +117,13 @@
                         </div>
                     </div>
 
-                    <div class="row hide">
+                    <div class="row ">
                         <div class="col-sm-12">
                             <g:set var="statusFilterMode" value="${ params.statusFilter ?: ProjectStatusFilterType.showAll}" />
                             <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
                             <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
-                            <div class="btn-group pull-right" style="padding-right: 10px">
+                            <div class="btn-group pull-right hide" style="padding-right: 10px">
                                 <g:each in="${ProjectStatusFilterType.values()}" var="mode">
                                     <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
                                     <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
@@ -131,7 +131,7 @@
                             </div>
 
                             <cl:ifAdmin>
-                                <div class="btn-group pull-right" style="padding-right: 10px">
+                                <div class="btn-group pull-right" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
                                     <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                         <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
                                         <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
