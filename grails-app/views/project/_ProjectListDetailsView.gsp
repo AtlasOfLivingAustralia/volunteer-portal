@@ -11,7 +11,7 @@
                         <div class="caption">
                             <h4><a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">${projectSummary.project.featuredLabel}</a></h4>
 
-                            <a class="badge"><span class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</a>
+                            <a href="?q=${projectSummary.iconLabel}" class="badge"><span class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</a>
 
                             <g:if test="${projectSummary.project.institution}">
                                 <a href="${createLink(controller: 'institution', action: 'index', id: projectSummary.project.institution.id)}" class="badge"><span class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${projectSummary.project.institution?.name}</a>

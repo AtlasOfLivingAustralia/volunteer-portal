@@ -21,6 +21,71 @@
     display: block;
 }
 
+h2.heading {
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+h2.heading > div.subheading {
+    text-transform:lowercase;
+    margin-top: 10px;
+}
+
+div.pagination {
+    width: 100%;
+    text-align: center;
+}
+
+.pagination > li > a, .pagination > li > span {
+    color: #d5502a;
+}
+
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+    background-color: #d5502a;
+    border-color: #d5502a;
+}
+
+
+/** special closable label tags */
+
+.currentFilter {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #d5502a;
+}
+
+.tag {
+    font-size: 12px;
+    padding: .3em .4em .4em;
+    margin: 0 .1em;
+}
+.tag a {
+    color: #bbb;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.tag a:hover {
+    opacity: 1.0
+}
+.tag .remove {
+    vertical-align: bottom;
+    top: 0;
+}
+.tag a {
+    margin: 0 0 0 .3em;
+}
+.tag a .glyphicon-white {
+    color: #fff;
+    margin-bottom: 2px;
+}
 /*** Begin - Admin ***/
 
 .admin .a-feature.simple-header {

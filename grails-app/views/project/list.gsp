@@ -65,24 +65,31 @@
 <body class="digivol">
 
     <cl:headerContent title="${message(code:'default.projectlist.label', default: "Volunteer for a virtual expedition")}" selectedNavItem="expeditions">
-        ${numberOfUncompletedProjects} expeditions need your help. Join now!
+        ${numberOfUncompletedProjects} expeditions need your help. Join now! <span class="label label-default">Default</span>
     </cl:headerContent>
 
     <section id="main-content">
         <div class="container">
             <div class="row">
-                %{--<div class="span6">--}%
-                %{--<h2>${numberOfUncompletedProjects} expeditions need your help. Join now!</h2>--}%
-                %{--</div>--}%
                 <div class="col-sm-8">
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <h2 class="heading">
-                                All Expeditions
+                                <g:if test="${params.q}">
+                                    Expeditions matching:
+                                    <span class="tag currentFilter">
+                                        <span>${params.q}</span>
+                                        <a href="?q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    All Expeditions
+                                </g:else>
+                                <div class="subheading">Showing <g:formatNumber number="${filteredProjectsCount}" type="number"/> projects</div>
                             </h2>
                         </div>
 
-                        <div class="col-sm-8">
+                        <div class="col-sm-6">
                             <div class="card-filter">
                                 <div class="btn-group pull-right" role="group" aria-label="...">
                                     <a href="${createLink(action:'list', params:[mode:'thumbs'])}" class="btn btn-default btn-xs ${params.mode == 'thumbs' ? 'active' : ''}"><i class="glyphicon glyphicon-th-large "></i></a>
@@ -110,15 +117,6 @@
                             <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
                             <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
-                            %{--<div class="btn-group pull-right">--}%
-                                %{--<a href="${createLink(action:'list')}" class="btn btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View expedition list">--}%
-                                    %{--<i class="icon-th-list"></i>--}%
-                                %{--</a>--}%
-                                %{--<a href="${createLink(action:'list', params:[mode:'thumbs'])}" class="btn btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View expedition thumbnails">--}%
-                                    %{--<i class="icon-th"></i>--}%
-                                %{--</a>--}%
-                            %{--</div>--}%
-
                             <div class="btn-group pull-right" style="padding-right: 10px">
                                 <g:each in="${ProjectStatusFilterType.values()}" var="mode">
                                     <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
@@ -139,7 +137,6 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
-
                             <g:if test="${params.mode == 'thumbs'}">
                                 <g:render template="projectListThumbnailView" model="${model}"/>
                             </g:if>
