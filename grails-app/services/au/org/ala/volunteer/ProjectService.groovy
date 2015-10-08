@@ -235,12 +235,13 @@ class ProjectService {
         // Then apply the query paramter
         if (params?.q) {
             String query = params.q.toLowerCase()
+            String tagPrefix = "tag:"
 
             renderList = renderList.findAll { projectSummary ->
                 def project = projectSummary.project
 
                 // special syntax for label (project type). NdR Oct 2015.
-                if (query.startsWith("label:") && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst("label:",""))) {
+                if (query.startsWith(tagPrefix) && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst(tagPrefix,""))) {
                     return true
                 }
 

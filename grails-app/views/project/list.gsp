@@ -84,14 +84,14 @@
                                 <g:if test="${params.q}">
                                     Expeditions matching:
                                     <span class="tag currentFilter">
-                                        <span>${params.q.replaceAll('label:','')}</span>
+                                        <span>${params.q.replaceAll('tag:','')}</span>
                                         <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     All Expeditions
                                 </g:else>
-                                <div class="subheading">Showing <g:formatNumber number="${filteredProjectsCount}" type="number"/> projects</div>
+                                <div class="subheading">Showing <g:formatNumber number="${filteredProjectsCount}" type="number"/> expeditions</div>
                             </h2>
                         </div>
 
