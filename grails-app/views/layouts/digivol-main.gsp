@@ -95,54 +95,62 @@
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><a
                         href="#contact">Contact Us</a></li>
                 <!-- Logged In Starts -->
-                <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-user"></span>
-                        My Profile
-                        <span class="glyphicon glyphicon-chevron-down"></span>
-                    </a>
-
-                    <ul class="dropdown-menu">
-                        <li>
-
-                            <div class="navbar-login">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <p class="text-center">
-                                            <img src="http://api.randomuser.me/portraits/men/49.jpg" alt=""
-                                                 class="center-block img-circle img-responsive">
-                                        </p>
-                                    </div>
-
-                                    <div class="col-lg-8">
-                                        <p class="text-left"><strong>Peter Smith</strong><br/><a
-                                                href="#">petersmity@email.com</a></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <div class="navbar-login navbar-login-session">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <ul class="profile-links">
-                                            <li><a href="#" class="">View Profile</a></li>
-                                            <li><a href="#" class="">Notebook</a></li>
-                                            <li><a href="#" class="">Logout</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <cl:ifAdmin>
-                    <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
-                        <a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> Admin</a>
+                <cl:isNotLoggedIn>
+                    <li>
+                        <a href="${grailsApplication.config.casServerName}/cas/login?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> Log in</a>
                     </li>
-                </cl:ifAdmin>
+                </cl:isNotLoggedIn>
+                <cl:isLoggedIn>
+                    <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-user"></span>
+                            My Profile
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li>
+
+                                <div class="navbar-login">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <p class="text-center">
+                                                <img src="http://api.randomuser.me/portraits/men/49.jpg" alt=""
+                                                     class="center-block img-circle img-responsive">
+                                            </p>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <p class="text-left"><strong>Peter Smith</strong><br/><a
+                                                    href="#">petersmity@email.com</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <div class="navbar-login navbar-login-session">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <ul class="profile-links">
+                                                <li><a href="#" class="">View Profile</a></li>
+                                                <li><a href="#" class="">Notebook</a></li>
+                                                <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.casServerName}/cas/logout", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class="">Logout</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <cl:ifAdmin>
+                        <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
+                            <a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> Admin</a>
+                        </li>
+                    </cl:ifAdmin>
+                </cl:isLoggedIn>
+
             <!-- Logged In Ends -->
 
 

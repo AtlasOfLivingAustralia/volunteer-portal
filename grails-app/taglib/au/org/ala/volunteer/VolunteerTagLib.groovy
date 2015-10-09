@@ -42,6 +42,12 @@ class VolunteerTagLib {
         }
     }
 
+    def isNotLoggedIn = { attrs, body ->
+        if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            out << body()
+        }
+    }
+
     /**
      * @param project
      *

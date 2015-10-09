@@ -12,97 +12,98 @@
 </head>
 
 <body>
-<cl:headerContent
+<cl:headerContent hideTitle="true"
         title="${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? "(that's you!)" : ''}"
-        crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}">
+        crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'user', action: 'list'), label: 'Volunteers']
         ]
     %>
-</cl:headerContent>
-<div class="a-feature simple-header profile-summary">
-    <div class="container">
-        <div class="row">
+    <div class="a-feature simple-header profile-summary">
+        <div class="container">
+            <div class="row">
 
-            <div class="col-sm-2">
-                <div class="avatar-holder"><img src="img/avatar-male.png" alt="" class="center-block img-circle img-responsive"></div>
-            </div>
-            <div class="col-sm-6">
-                <span class="pre-header">Volunteer Profile</span>
-                <h1>Jerry Smith</h1>
-                <div class="row">
-                    <div class="col-xs-4">
-                        <h2><strong>593</strong></h2>
-                        <p>Total Contribution</p>
-                    </div><!--/col-->
-                    <div class="col-xs-4">
-                        <h2><strong>744</strong></h2>
-                        <p>Transcribed</p>
-                    </div><!--/col-->
-                    <div class="col-xs-4">
-                        <h2><strong>322</strong></h2>
-                        <p>Validated</p>
-                    </div><!--/col-->
+                <div class="col-sm-2">
+                    <div class="avatar-holder"><img src="img/avatar-male.png" alt="" class="center-block img-circle img-responsive"></div>
                 </div>
-
-                <div class="achievements">
+                <div class="col-sm-6">
+                    <span class="pre-header">Volunteer Profile</span>
+                    <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? "(that's you!)" : ''}</h1>
                     <div class="row">
-                        <div class="col-sm-8">
-                            <span class="pre-header">Achievements</span>
+                        <div class="col-xs-4">
+                            <h2><strong>593</strong></h2>
+                            <p>Total Contribution</p>
+                        </div><!--/col-->
+                        <div class="col-xs-4">
+                            <h2><strong>744</strong></h2>
+                            <p>Transcribed</p>
+                        </div><!--/col-->
+                        <div class="col-xs-4">
+                            <h2><strong>322</strong></h2>
+                            <p>Validated</p>
+                        </div><!--/col-->
+                    </div>
+
+                    <div class="achievements">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <span class="pre-header">Achievements</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 badges">
+                                <img src="img/badges/badgeInsectTasks100.png">
+                                <img src="img/badges/badgeFieldNotes100.png">
+                                <img src="img/badges/badgeMalacologyTasks100.png">
+                                <img src="img/badges/badgeBotanicTasks100.png">
+                                <img src="img/badges/badge5Countries100Tasks.png">
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="contribution-chart">
+                        <h2>Contribution to Research</h2>
+                        <p>You have added 40 species to the ALA</p>
+                        <div id="canvas-holder">
+                            <canvas id="chart-area"/></canvas>
+                        </div>
+
+                        <div class="row pie-legend">
+
+                            <div class="col-xs-4">
+                                <span class="key" style="background-color: #d5502a;"></span>Acupalpa
+                            </div>
+
+                            <div class="col-xs-4">
+                                <span class="key" style="background-color: #f5bf56;"></span>Agrius convo
+                            </div>
+
+                            <div class="col-xs-4">
+                                <span class="key" style="background-color: #717171;"></span>Others
+                            </div>
+
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-12 badges">
-                            <img src="img/badges/badgeInsectTasks100.png">
-                            <img src="img/badges/badgeFieldNotes100.png">
-                            <img src="img/badges/badgeMalacologyTasks100.png">
-                            <img src="img/badges/badgeBotanicTasks100.png">
-                            <img src="img/badges/badge5Countries100Tasks.png">
+                        <div class="col-sm-12">
+                            <p>
+                                <i>First contributed in Jan 2014</i>
+                            </p>
                         </div>
                     </div>
                 </div>
 
-
-            </div>
-
-            <div class="col-sm-4">
-                <div class="contribution-chart">
-                    <h2>Contribution to Research</h2>
-                    <p>You have added 40 species to the ALA</p>
-                    <div id="canvas-holder">
-                        <canvas id="chart-area"/></canvas>
-                    </div>
-
-                    <div class="row pie-legend">
-
-                        <div class="col-xs-4">
-                            <span class="key" style="background-color: #d5502a;"></span>Acupalpa
-                        </div>
-
-                        <div class="col-xs-4">
-                            <span class="key" style="background-color: #f5bf56;"></span>Agrius convo
-                        </div>
-
-                        <div class="col-xs-4">
-                            <span class="key" style="background-color: #717171;"></span>Others
-                        </div>
-
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <p>
-                            <i>First contributed in Jan 2014</i>
-                        </p>
-                    </div>
-                </div>
             </div>
 
         </div>
-
     </div>
-</div>
+</cl:headerContent>
+
 
 
 <section id="user-progress">
