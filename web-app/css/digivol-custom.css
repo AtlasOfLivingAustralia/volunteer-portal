@@ -31,6 +31,25 @@ h2.heading > div.subheading {
     margin-top: 10px;
 }
 
+/*.thumbnail  {*/
+    /*position: relative;*/
+    /*min-height: 420px;*/
+/*}*/
+
+/*.thumbnail a  {*/
+    /*height: 250px;*/
+    /*width: 100%;*/
+    /*position: relative;*/
+    /*top:0;*/
+/*}*/
+
+/*.thumbnail .caption  {*/
+    /*/!*height: 262px;*!/*/
+    /*width: 100%;*/
+    /*position: absolute;*/
+    /*bottom:0;*/
+/*}*/
+
 div.pagination {
     width: 100%;
     text-align: center;
@@ -86,6 +105,7 @@ div.pagination {
     color: #fff;
     margin-bottom: 2px;
 }
+
 /*** Begin - Admin ***/
 
 .admin .a-feature.simple-header {
