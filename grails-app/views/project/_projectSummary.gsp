@@ -1,5 +1,5 @@
 <div class="caption">
-    <h4><a href="${projectUrl}">${projectSummary.project?.featuredLabel}</a></h4>
+    <h4><a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">${projectSummary.project?.featuredLabel}</a></h4>
 
     <a href="?mode=${params.mode}&q=tag:${projectSummary.iconLabel}" class="badge"><span class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</a>
 

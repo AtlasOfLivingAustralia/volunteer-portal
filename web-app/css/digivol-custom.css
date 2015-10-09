@@ -31,24 +31,33 @@ h2.heading > div.subheading {
     margin-top: 10px;
 }
 
-/*.thumbnail  {*/
-    /*position: relative;*/
-    /*min-height: 420px;*/
-/*}*/
+.institution .caption h4 {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-/*.thumbnail a  {*/
-    /*height: 250px;*/
-    /*width: 100%;*/
-    /*position: relative;*/
-    /*top:0;*/
-/*}*/
+/* not working so keeping for later
+.thumbnail  {
+    position: relative;
+    min-height: 420px;
+}
 
-/*.thumbnail .caption  {*/
-    /*/!*height: 262px;*!/*/
-    /*width: 100%;*/
-    /*position: absolute;*/
-    /*bottom:0;*/
-/*}*/
+.thumbnail a  {
+    height: 250px;
+    width: 100%;
+    position: relative;
+    top:0;
+}
+
+.thumbnail .caption  {
+
+    width: 100%;
+    position: absolute;
+    bottom:0;
+}
+*/
 
 div.pagination {
     width: 100%;

@@ -54,6 +54,8 @@
 
                 $("#searchbox").focus();
 
+                $('[data-toggle="tooltip"]').tooltip();
+
             });
 
             function doSearch() {
@@ -123,13 +125,13 @@
                         <div class="thumbnail institution">
                             <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}"><img src="<cl:institutionLogoUrl id="${inst.id}"/>"/></a>
                             <div class="caption">
-                                <h4>${inst.name}</h4>
+                                <h4 data-toggle="tooltip" title="${inst.name}">${inst.name}</h4>
                                 <cl:ifInstitutionAdmin institution="${inst}">
-                                    <button class="btn btn-warning btn-small pull-right"
-                                       href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}"><i
-                                            class="glyphicon glyphicon-cog glyphicon-white"></i>&nbsp;Settings</button>
+                                    <button class="btn btn-warning btn-small pull-right" title="Settings" data-toggle="tooltip"
+                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}"><i
+                                            class="glyphicon glyphicon-cog glyphicon-white"></i></button>
                                 </cl:ifInstitutionAdmin>
-                                <p><cl:truncate maxlength="90">${inst.shortDescription}</cl:truncate></p>
+                                <p data-toggle="tooltip-OFF" title="${inst.shortDescription}"><cl:truncate maxlength="90">${inst.shortDescription}</cl:truncate></p>
                                 <div class="expedition-progress">
                                     <div class="progress-legend">
                                         <div class="row">
