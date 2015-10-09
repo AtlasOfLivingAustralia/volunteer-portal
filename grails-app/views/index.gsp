@@ -6,6 +6,7 @@
     <title><cl:pageTitle title="Home"/></title>
     <content tag="disableBreadcrumbs">true</content>
     %{--<content tag="primaryColour">#0097d4</content>--}%
+    <content tag="selectedNavItem">bvp</content>
 </head>
 
 <body>
