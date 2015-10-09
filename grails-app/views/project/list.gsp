@@ -140,16 +140,14 @@
                             </cl:ifAdmin>
                         </div>
                     </div>
-                    <div class="row">
-                        <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
-                        <g:if test="${params.mode == 'thumbs'}">
-                            <g:render template="projectListThumbnailView" model="${model}"/>
-                        </g:if>
-                        <g:else>
-                            <g:render template="ProjectListDetailsView" model="${model}" />
-                        </g:else>
-                    </div>
 
+                    <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
+                    <g:if test="${params.mode == 'thumbs'}">
+                        <g:render template="projectListThumbnailView" model="${model}"/>
+                    </g:if>
+                    <g:else>
+                        <g:render template="ProjectListDetailsView" model="${model}" />
+                    </g:else>
 
                 </div>
                 <div class="col-sm-4">

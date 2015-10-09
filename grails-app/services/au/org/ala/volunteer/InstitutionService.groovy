@@ -189,7 +189,7 @@ class InstitutionService {
             return [:]
         }
 
-       def c = Project.createCriteria()
+        def c = Project.createCriteria()
         def results = c.list {
             'in'("institution", institutions)
             if (!includeDeactivated) {
@@ -207,6 +207,19 @@ class InstitutionService {
         return results.collectEntries {
             [it[0], it[1]]
         }
+    }
+
+    Map getTranscriberCounts(List<Institution> institutions, boolean includeDeactivated = false) {
+        Map counts = [:]
+
+        institutions.each {
+            if (includeDeactivated) {
+                log.warn "includeDeactivated not yet implemented" // TODO implement this
+            }
+            counts[it.id] = getTranscriberCount(it)
+        }
+
+        counts
     }
 
     Long getTranscriberCount(Institution institution) {
@@ -240,6 +253,19 @@ class InstitutionService {
         }
 
         return projectTypeCounts
+    }
+
+    Map countTasksForInstitutions(List<Institution> institutions, boolean includeDeactivated = false) {
+        Map counts = [:]
+
+        institutions.each {
+            if (includeDeactivated) {
+                log.warn "includeDeactivated not yet implemented" // TODO implement this
+            }
+            counts[it.id] = countTasksForInstitution(it)
+        }
+
+        counts
     }
 
     TaskCounts getTaskCounts(Institution institution) {

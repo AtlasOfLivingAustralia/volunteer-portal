@@ -7,7 +7,7 @@
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
     <cl:addApplicationMetaTags/>
     <meta name="description" content="Atlas of Living Australia"/>
-    <meta name="author" content="Atlas of Living Australia">
+    <meta name="author" content="Atlas of Living Australia"/>
     <r:external dir="images/" file="favicon.ico"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
@@ -17,6 +17,7 @@
     <r:layoutResources/>
 
     <%-- Allow overriding of primary branding colour --%>
+    <meta name="theme-color" content="${g.pageProperty(name: "page.primaryColour", default: "#d5502a")}"/>
     <style>
     section#footer .footer-brand,
     section#footer .footer-brand:hover,
@@ -82,18 +83,19 @@
             </div>
 
             <ul class="nav navbar-nav navbar-right">
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><a href="#">Home</a>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><g:link
+                        uri="/">Home</g:link>
                 </li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'institutions' ? 'active' : ''}"><a
-                        href="#about">Institutions</a></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><a
-                        href="#contact">Expeditions</a></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><a
-                        href="#contact">Tutorials</a></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><a
-                        href="#contact">Forum</a></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><a
-                        href="#contact">Contact Us</a></li>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'institutions' ? 'active' : ''}"><g:link
+                        controller="institution" action="list">Institutions</g:link></li>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
+                        controller="project" action="list">Expeditions</g:link></li>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
+                        controller="tutorials" action="index">Tutorials</g:link></li>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
+                        controller="forum" action="index">Forum</g:link></li>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link
+                        controller="contact" action="index">Contact Us</g:link></li>
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
                     <li>
