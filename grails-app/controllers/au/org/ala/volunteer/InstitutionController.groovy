@@ -47,17 +47,26 @@ class InstitutionController {
 
     def list() {
         List<Institution> institutions
+        def totalCount
 
         if (params.q) {
             institutions = Institution.findAllByNameIlikeOrAcronymIlike("%" + params.q + "%", "%" + params.q + "%")
+            totalCount = Institution.countByNameIlikeOrAcronymIlike("%" + params.q + "%", "%" + params.q + "%")
         } else {
             institutions = Institution.list(params)
+            totalCount = Institution.count()
         }
 
         def projectCounts = institutionService.getProjectCounts(institutions)
+        def projectVolunteers = institutionService.getTranscriberCounts(institutions)
+        def taskCounts = institutionService.countTasksForInstitutions(institutions)
 
-        def totalCount = Institution.count()
-        [institutions: institutions, totalInstitutions: totalCount, projectCounts: projectCounts]
+        [   institutions: institutions,
+            totalInstitutions: totalCount,
+            projectCounts: projectCounts,
+            projectVolunteers: projectVolunteers,
+            taskCounts: taskCounts
+        ]
     }
 
 }
