@@ -35,6 +35,14 @@ class VolunteerTagLib {
         out << "$appName | $pageName"
     }
 
+    def showCurrentUserName = {attrs, body ->
+        out << userService.authService.displayName
+    }
+
+    def showCurrentUserEmail = {attrs, body ->
+        out << userService.authService.email
+    }
+
     def isLoggedIn = { attrs, body ->
 
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
