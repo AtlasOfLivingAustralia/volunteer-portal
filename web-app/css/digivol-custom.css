@@ -141,6 +141,30 @@ div.pagination {
     height: auto;
 }
 
+.admin .sortable a:visited, .sortable a:link, .sortable a:active, .sortable a:hover {
+    border:none;
+    box-shadow: none;
+    position:relative;
+}
+
+.admin .sorted a:visited, .sorted a:link, .sorted a:active, .sorted a:hover {
+    font-weight: bold;
+}
+
+.admin .sorted.desc a:before {
+    content: '\f078';
+    font-family: FontAwesome;
+    left:-5px;
+    position:absolute;
+}
+
+.admin .sorted.asc a:before {
+    content: '\f077';
+    font-family: FontAwesome;
+    left:-5px;
+    position:absolute;
+}
+
 /*** End - Admin ***/
 
 /*** LeaderBoard ***/
