@@ -117,8 +117,8 @@
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <p class="text-center">
-                                                <img src="http://www.gravatar.com/avatar/${cl.showCurrentUserEmail().toLowerCase().encodeAsMD5()}?s=150"
-                                                     style="width:80px;border-radius: 50%;" class="avatar"/>
+                                                <img src="http://www.gravatar.com/avatar/${cl.showCurrentUserEmail().toLowerCase().encodeAsMD5()}?s=80"
+                                                     class="img-circle img-responsive avatar"/>
                                             </p>
                                         </div>
 
