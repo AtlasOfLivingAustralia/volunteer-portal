@@ -6,22 +6,22 @@ cache:
   directories:
   - $HOME/.m2
   - $HOME/.ivy
-  - $HOME/.gvm
+  - $HOME/.sdkman
 branches:
   only:
   - master
   - develop
 before_install:
-- rm -rf ~/.gvm
-- curl -s get.gvmtool.net > ~/install_gvm.sh
-- chmod 775 ~/install_gvm.sh
-- ~/install_gvm.sh
-- echo "gvm_auto_answer=true" > ~/.gvm/etc/config
-- source ~/.gvm/bin/gvm-init.sh
+- rm -rf ~/.sdkman
+- curl -s get.sdkman.io > ~/install_sdkman.sh
+- chmod 775 ~/install_sdkman.sh
+- ~/install_sdkman.sh
+- echo "sdkman_auto_answer=true" > ~/.sdkman/etc/config
+- source ~/.sdkman/bin/sdkman-init.sh
 - GRAILS_VERSION=`grep '^app\.grails\.version=' ./application.properties | sed -e
   's/^app\.grails\.version=//g'`
-- gvm install grails $GRAILS_VERSION || true
-- gvm use grails $GRAILS_VERSION
+- sdk install grails $GRAILS_VERSION || true
+- sdk use grails $GRAILS_VERSION
 before_script:
 - mkdir -p ~/.grails; wget -q -O ~/.grails/settings.groovy https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_settings_new.groovy
 - APP_VERSION=`grep '^app\.version=' ./application.properties | sed -e 's/^app\.version=//g'`

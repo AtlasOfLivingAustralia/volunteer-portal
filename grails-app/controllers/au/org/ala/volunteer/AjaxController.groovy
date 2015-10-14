@@ -7,13 +7,18 @@ import com.google.common.collect.Sets
 import com.google.gson.Gson
 import grails.converters.JSON
 import grails.converters.XML
+import groovy.time.TimeCategory
+import org.hibernate.ScrollMode
 
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 import javax.sql.DataSource
 import java.sql.ResultSet
 import org.grails.plugins.csv.CSVWriter
 import org.grails.plugins.csv.CSVWriterColumnsBuilder
+
+import java.util.concurrent.TimeUnit
 
 import static grails.async.Promises.*
 
@@ -439,4 +444,107 @@ class AjaxController {
         render status: 204
     }
 
+    def wedigbio(Long since, Long after, Long before) {
+
+        def sw = new Stopwatch().start()
+        def udsw = new Stopwatch()
+
+        def beforeTs, afterTs
+
+        if ((before == null) != (after == null)) {
+            def error = [error: "Both from and to must be specified"]
+            respond((Object)error, status: 400)
+            return
+        } else if (before && after) {
+            beforeTs = new Timestamp(before)
+            afterTs = new Timestamp(after)
+        } else if (since) {
+            beforeTs = new Timestamp(System.currentTimeMillis())
+            afterTs = new Timestamp(since)
+        } else {
+            beforeTs = new Timestamp(System.currentTimeMillis())
+            use (TimeCategory) {
+                afterTs = new Timestamp((new Date() - 1.hour).time)
+            }
+        }
+
+        log.info("Before $beforeTs, after $afterTs")
+
+        def results = []
+
+        def sql = new Sql(dataSource)
+
+        sql.eachRow("""
+select t.id as id, p.name as project_name, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp
+from task t
+inner join project p on t.project_id = p.id
+where (t.date_fully_transcribed <= $beforeTs) and (t.date_fully_transcribed > $afterTs)""") { row ->
+            def id = row.id
+            def projectName = row.project_name
+            def transcriber = row.transcriber
+            def timestamp = row.timestamp
+
+            udsw.start()
+            def details = authService.getUserForUserId(transcriber, true)
+            udsw.stop()
+            def urls = [] , species = [], cities = [], counties = [], states = [], countries = []
+
+            sql.eachRow("select file_path from multimedia where task_id = $id") { mrow ->
+                urls << multimediaService.getImageUrl(mrow.file_path)
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'scientificName'") { frow ->
+                species << frow.value
+            }
+
+            if (!species) {
+                sql.eachRow("select value from field where task_id = $id and name = 'vernacularName'") { frow ->
+                    species << frow.value
+                }
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'municipality'") { frow ->
+                cities << frow.value
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'county'") { frow ->
+                cities << frow.value
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'stateProvince'") { frow ->
+                states << frow.value
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'country'") { frow ->
+                countries << frow.value
+            }
+
+            results << [
+                    transcription_id: id,
+                    transcription_center: 'digivol',
+                    project_name: projectName,
+                    user_id: transcriber,
+                    user_name: details?.displayName,
+                    user_ip_address: null,
+                    user_city: details?.city,
+                    user_state: details?.state,
+                    subject_id: null,
+                    specimen_url: createLink(absolute: true, controller: 'task', action: 'showDetails', id: id), //createLink(absolute: true, controller: 'forum', action: 'taskTopic', params: [taskId: t.id]),
+                    specimen_image_url: urls,
+                    transcription_timestamp: timestamp.time,
+                    transcribed_city: cities,
+                    transcribed_county: counties,
+                    transcribed_state: states,
+                    transcribed_country: countries,
+                    transcribed_species: species
+            ]
+        }
+
+        sw.stop()
+
+        log.info("Took ${sw} to get ${results.size()} results since $after.  ${sw.elapsed(TimeUnit.MILLISECONDS) / (results.size() ?: 1)}ms / result.")
+        log.info("Userdetails took ${udsw} for ${results.size()}.  ${udsw.elapsed(TimeUnit.MILLISECONDS) / (results.size() ?: 1)}ms / result.")
+
+        respond results
+    }
 }
