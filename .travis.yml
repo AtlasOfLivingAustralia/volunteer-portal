@@ -12,7 +12,7 @@ branches:
   - master
   - develop
 before_install:
-- rm -rf ~/.gvm
+- rm -rf ~/.sdkman
 - curl -s get.sdkman.io > ~/install_sdkman.sh
 - chmod 775 ~/install_sdkman.sh
 - ~/install_sdkman.sh
