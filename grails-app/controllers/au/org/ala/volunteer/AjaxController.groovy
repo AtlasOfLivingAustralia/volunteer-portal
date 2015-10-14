@@ -444,27 +444,41 @@ class AjaxController {
         render status: 204
     }
 
-    def wedigbio(Long since, Long from, Long to) {
+    def wedigbio(Long since, Long after, Long before) {
 
         def sw = new Stopwatch().start()
         def udsw = new Stopwatch()
 
-//        if ((from == null) != (to == null)) {
-//            def error = [error: "Both from and to must be specified"]
-//            respond((Object)error, status: 400)
-//            return
-//        }
+        def beforeTs, afterTs
 
-        def after
-        use (TimeCategory) {
-            after = new Timestamp(since ? since : (new Date() - 1.day).time)
+        if ((before == null) != (after == null)) {
+            def error = [error: "Both from and to must be specified"]
+            respond((Object)error, status: 400)
+            return
+        } else if (before && after) {
+            beforeTs = new Timestamp(before)
+            afterTs = new Timestamp(after)
+        } else if (since) {
+            beforeTs = new Timestamp(System.currentTimeMillis())
+            afterTs = new Timestamp(since)
+        } else {
+            beforeTs = new Timestamp(System.currentTimeMillis())
+            use (TimeCategory) {
+                afterTs = new Timestamp((new Date() - 1.hour).time)
+            }
         }
+
+        log.info("Before $beforeTs, after $afterTs")
 
         def results = []
 
-        def sql = new groovy.sql.Sql(dataSource)
+        def sql = new Sql(dataSource)
 
-        sql.eachRow("select t.id as id, p.name as project_name, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp from task t inner join project p on t.project_id = p.id where t.date_fully_transcribed >= $after") { row ->
+        sql.eachRow("""
+select t.id as id, p.name as project_name, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp
+from task t
+inner join project p on t.project_id = p.id
+where (t.date_fully_transcribed <= $beforeTs) and (t.date_fully_transcribed > $afterTs)""") { row ->
             def id = row.id
             def projectName = row.project_name
             def transcriber = row.transcriber
@@ -473,7 +487,7 @@ class AjaxController {
             udsw.start()
             def details = authService.getUserForUserId(transcriber, true)
             udsw.stop()
-            def urls = [] , species = []
+            def urls = [] , species = [], cities = [], counties = [], states = [], countries = []
 
             sql.eachRow("select file_path from multimedia where task_id = $id") { mrow ->
                 urls << multimediaService.getImageUrl(mrow.file_path)
@@ -489,6 +503,22 @@ class AjaxController {
                 }
             }
 
+            sql.eachRow("select value from field where task_id = $id and name = 'municipality'") { frow ->
+                cities << frow.value
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'county'") { frow ->
+                cities << frow.value
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'stateProvince'") { frow ->
+                states << frow.value
+            }
+
+            sql.eachRow("select value from field where task_id = $id and name = 'country'") { frow ->
+                countries << frow.value
+            }
+
             results << [
                     transcription_id: id,
                     transcription_center: 'digivol',
@@ -496,14 +526,16 @@ class AjaxController {
                     user_id: transcriber,
                     user_name: details?.displayName,
                     user_ip_address: null,
-                    subject_id: '???',
+                    user_city: details?.city,
+                    user_state: details?.state,
+                    subject_id: null,
                     specimen_url: createLink(absolute: true, controller: 'task', action: 'showDetails', id: id), //createLink(absolute: true, controller: 'forum', action: 'taskTopic', params: [taskId: t.id]),
                     specimen_image_url: urls,
                     transcription_timestamp: timestamp.time,
-                    transcription_city: details?.city,
-                    transcription_county: null,
-                    transcription_state: details?.state,
-                    transcription_country: null,
+                    transcribed_city: cities,
+                    transcribed_county: counties,
+                    transcribed_state: states,
+                    transcribed_country: countries,
                     transcribed_species: species
             ]
         }
