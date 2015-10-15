@@ -77,7 +77,7 @@
                 </tr>
                 <tr>
                     <th scope="row">Website</th>
-                    <td><a href="${institutionInstance.websiteUrl}">${institutionInstance.websiteUrl}</a></td>
+                    <td><a href="${(institutionInstance.websiteUrl?.startsWith("http")) ? "" : "http://"}${institutionInstance.websiteUrl}" target="_blank">${(institutionInstance.websiteUrl?.startsWith("http")) ? institutionInstance.websiteUrl?.substring(7) : institutionInstance.websiteUrl}</a></td>
                 </tr>
                 </tbody>
             </table>
