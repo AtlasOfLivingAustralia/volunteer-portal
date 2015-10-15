@@ -108,7 +108,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <p>
-                                <i>First contributed in Jan 2014</i>
+                                <i>First contributed in <g:formatDate date="${userInstance?.created}" format="MMM yyyy"/></i>
                             </p>
                         </div>
                     </div>
