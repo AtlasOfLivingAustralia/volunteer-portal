@@ -16,9 +16,9 @@
                 </div>
             </g:each>
 
-            <div class="pagination">
+            <div class="pagination foo">
                 <g:paginate total="${filteredProjectsCount}" prev="" next=""
-                            params="${[q: params.q] + (extraParams ?: [:])}"/>
+                            id="${params.id}" params="${[q: params.q] + (extraParams ?: [:])}"/>
             </div>
         </div>
     </div>

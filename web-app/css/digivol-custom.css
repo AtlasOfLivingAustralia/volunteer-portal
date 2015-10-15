@@ -31,12 +31,20 @@ h2.heading > div.subheading {
     margin-top: 10px;
 }
 
-.institution .caption h4 {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.thumbnail.institution h4 {
+    min-height: 40px;
 }
+
+.thumbnail.institution p.shortDescription {
+    min-height: 68px;
+}
+
+/*.institution .caption h4 {*/
+    /*width: 100%;*/
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+/*}*/
 
 /* not working so keeping for later
 .thumbnail  {

@@ -1,11 +1,12 @@
 
 <div class="expedition-progress">
     <div class="progress">
-        <div class="progress-bar progress-bar-success" style="width:${projectSummary.percentValidated}%">
-            <span class="sr-only">${projectSummary.percentValidated}% Complete (success)</span>
+        <g:set var="diffPercent" value="${(projectSummary?.percentTranscribed as Integer) - (projectSummary?.percentValidated as Integer)}"/>
+        <div class="progress-bar progress-bar-success" style="width:${projectSummary?.percentValidated}%">
+            <span class="sr-only">${projectSummary?.percentValidated}% Complete (success)</span>
         </div>
-        <div class="progress-bar progress-bar-transcribed" style="width: ${projectSummary.percentTranscribed}%">
-            <span class="sr-only">${projectSummary.percentTranscribed}% Complete (warning)</span>
+        <div class="progress-bar progress-bar-transcribed" style="width: ${diffPercent}%">
+            <span class="sr-only">${diffPercent}% Complete (warning)</span>
         </div>
     </div>
 

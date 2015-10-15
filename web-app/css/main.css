@@ -578,7 +578,7 @@ body.museumvictoria .transcription-actions .btn.btn-next {
     color: #696969; }
 .thumbnail img {
     border-radius: 4px 4px 0 0; }
-.thumbnail.institution a {
+.thumbnail.institution a.imgLink {
     display: block;
     min-height: 250px;
     line-height: 50px;
@@ -617,7 +617,7 @@ body.museumvictoria .transcription-actions .btn.btn-next {
 .progress-summary {
     border-top: 1px solid #eee;
     padding: 30px 0 20px 0;
-    margin-top: 8%; }
+    margin-top: 5%; }
 
 .expeditionListAnchor {
     margin-top: 50px; }
