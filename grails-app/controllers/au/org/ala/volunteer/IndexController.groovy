@@ -9,6 +9,7 @@ class IndexController {
     def projectService
     def leaderBoardService
     def multimediaService
+    def institutionService
 
     def index = {
         def frontPage = FrontPage.instance()
@@ -49,6 +50,12 @@ class IndexController {
         def transcriberCount = User.countByTranscribedCountGreaterThan(0)
 
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
+
+        if (institution) {
+            totalTasks = institutionService.countTasksForInstitution(institution)
+            completedTasks = institutionService.countValidatedTasksForInstitution(institution)
+            transcriberCount = institutionService.getTranscriberCount(institution)
+        }
 
         def daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution)
         def weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution)
