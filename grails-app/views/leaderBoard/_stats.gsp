@@ -1,5 +1,6 @@
 <r:require modules="digivol, digivol-stats, livestamp"/>
-<g:set var="instName" value="${institutionName ?: message(code: 'default.application.name')}"/>
+<g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
+<g:set var="institutionId" value="${institutionInstance?.id}"/>
 <section id="digivol-stats">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->

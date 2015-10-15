@@ -34,6 +34,8 @@
     body .label,
     .progress .progress-bar-transcribed,
     .key.transcribed,
+    .pagination > .active > span,
+    .pagination > .active > span:hover,
     .transcription-actions .btn.btn-next {
         background-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
@@ -41,12 +43,14 @@
         background-color: rgba( <cl:hexToRbg hex="${g.pageProperty(name:"page.primaryColour", default:"#d5502a")}"/>, .5 );
     }
 
-    body .navbar {
+    body .navbar, .pagination > .active > span,
+    .pagination > .active > span:hover {
         border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
 
     body .badge,
-    body .badge:hover {
+    body .badge:hover,
+    .pagination > li > a {
         color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
     </style>
