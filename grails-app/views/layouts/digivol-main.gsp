@@ -37,6 +37,9 @@
     .transcription-actions .btn.btn-next {
         background-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
+    .progress .progress-bar-success {
+        background-color: rgba( <cl:hexToRbg hex="${g.pageProperty(name:"page.primaryColour", default:"#d5502a")}"/>, .5 );
+    }
 
     body .navbar {
         border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
@@ -181,13 +184,13 @@
 </g:if>
 
 <g:if test="${g.pageProperty(name: "page.page-title")}">
-    <div class="a-feature simple-header">
+    <div class="a-feature ${g.pageProperty(name: "page.pageType", default: "simple-header")}">
         <div class="container">
-            <div class="row">
-                <div class="col-sm-10">
+            %{--<div class="row">--}%
+                %{--<div class="col-sm-10">--}%
                     <g:pageProperty name="page.page-title"/>
-                </div>
-            </div>
+                %{--</div>--}%
+            %{--</div>--}%
         </div>
     </div>
 </g:if>

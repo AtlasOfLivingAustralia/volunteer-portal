@@ -15,6 +15,6 @@
         <p>${raw(descrptionSnippet)}</p>
     </g:if>
 
-    <g:render template="../project/projectSummaryProgressBar"
+    <g:render template="/project/projectSummaryProgressBar"
               model="${[projectSummary: projectSummary]}"/>
 </div>
