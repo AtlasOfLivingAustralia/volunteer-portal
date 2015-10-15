@@ -8,7 +8,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-
+    <gvisualization:apiImport/>
 </head>
 
 <body>
@@ -20,28 +20,29 @@
                 [link: createLink(controller: 'user', action: 'list'), label: 'Volunteers']
         ]
     %>
-    <div class="a-feature simple-header profile-summary">
         <div class="container">
             <div class="row">
 
                 <div class="col-sm-2">
-                    <div class="avatar-holder"><img src="img/avatar-male.png" alt="" class="center-block img-circle img-responsive"></div>
+                    <div class="avatar-holder"><img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" alt="" class="center-block img-circle img-responsive"></div>
                 </div>
                 <div class="col-sm-6">
                     <span class="pre-header">Volunteer Profile</span>
                     <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? "(that's you!)" : ''}</h1>
                     <div class="row">
                         <div class="col-xs-4">
-                            <h2><strong>593</strong></h2>
+                            <h2><strong>${score}</strong></h2>
                             <p>Total Contribution</p>
                         </div><!--/col-->
                         <div class="col-xs-4">
-                            <h2><strong>744</strong></h2>
+                            <h2><strong>${totalTranscribedTasks}</strong></h2>
                             <p>Transcribed</p>
                         </div><!--/col-->
                         <div class="col-xs-4">
-                            <h2><strong>322</strong></h2>
+                        <g:if test="${userInstance.validatedCount > 0}">
+                            <h2><strong>${userInstance.validatedCount}</strong></h2>
                             <p>Validated</p>
+                        </g:if>
                         </div><!--/col-->
                     </div>
 
@@ -53,11 +54,11 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12 badges">
-                                <img src="img/badges/badgeInsectTasks100.png">
-                                <img src="img/badges/badgeFieldNotes100.png">
-                                <img src="img/badges/badgeMalacologyTasks100.png">
-                                <img src="img/badges/badgeBotanicTasks100.png">
-                                <img src="img/badges/badge5Countries100Tasks.png">
+                                <g:each in="${achievements}" var="ach" status="i">
+                                    <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>'
+                                         width="50px" alt="${ach.achievement.name}"
+                                         title="${ach.achievement.description}"/>
+                                </g:each>
                             </div>
                         </div>
                     </div>
@@ -68,26 +69,41 @@
                 <div class="col-sm-4">
                     <div class="contribution-chart">
                         <h2>Contribution to Research</h2>
-                        <p>You have added 40 species to the ALA</p>
-                        <div id="canvas-holder">
-                            <canvas id="chart-area"/></canvas>
-                        </div>
+                        <ul>
+                            <g:if test="${totalSpeciesCount > 0}">
+                                <li>
+                                    <span>You have added ${totalSpeciesCount} species to the ALA:</span>
 
-                        <div class="row pie-legend">
-
-                            <div class="col-xs-4">
-                                <span class="key" style="background-color: #d5502a;"></span>Acupalpa
-                            </div>
-
-                            <div class="col-xs-4">
-                                <span class="key" style="background-color: #f5bf56;"></span>Agrius convo
-                            </div>
-
-                            <div class="col-xs-4">
-                                <span class="key" style="background-color: #717171;"></span>Others
-                            </div>
-
-                        </div>
+                                    <div id="piechart"></div>
+                                    <gvisualization:pieCoreChart
+                                            name="totalSpecies"
+                                            dynamicLoading="${true}"
+                                            elementId="piechart"
+                                            title=""
+                                            columns="${[['string', 'Scientific Name'], ['number', 'Transcriptions']]}"
+                                            data="${speciesList}"
+                                            is3D="${true}"
+                                            pieSliceText="label" chartArea="${[width: '100%', height: '100%']}"
+                                            pieSliceTextStyle="${[fontSize: '12']}"
+                                            backgroundColor="${[fill: 'transparent']}"/>
+                                </li>
+                            </g:if>
+                            <g:if test="${fieldObservationCount > 0}">
+                                <li>
+                                    <span>You have contributed to ${fieldObservationCount} new field observations.</span>
+                                </li>
+                            </g:if>
+                            <g:if test="${expeditionCount > 0}">
+                                <li>
+                                    <span>You have participated in ${expeditionCount} expeditions.</span>
+                                </li>
+                            </g:if>
+                            <g:if test="${userPercent != '0.00'}">
+                                <li>
+                                    <span>You have transcribed ${userPercent}% of the total transcriptions on DigiVol.</span>
+                                </li>
+                            </g:if>
+                        </ul>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
@@ -101,7 +117,6 @@
             </div>
 
         </div>
-    </div>
 </cl:headerContent>
 
 

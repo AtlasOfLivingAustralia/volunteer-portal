@@ -90,5 +90,6 @@ grails.project.dependency.resolution = {
         compile(":images-client-plugin:0.3") {
             excludes "ala-bootstrap2"
         }
+        compile ":google-visualization:1.0.2"
     }
 }
