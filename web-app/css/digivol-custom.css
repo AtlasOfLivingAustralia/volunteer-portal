@@ -115,6 +115,54 @@ div.pagination {
     margin-bottom: 2px;
 }
 
+.search-help {
+    padding-top: 4px;
+}
+
+.search-results-count {
+    font-size: larger;
+}
+
+#profileTabsContent {
+    min-height: 650px;
+}
+
+/*** Begin - Styles for tables ***/
+table .sortable a:visited, .sortable a:link, .sortable a:active, .sortable a:hover {
+    border:none;
+    box-shadow: none;
+    position:relative;
+}
+
+table .sorted a:visited, .sorted a:link, .sorted a:active, .sorted a:hover {
+    font-weight: bold;
+    padding-left: 12px;
+}
+
+table .sorted.desc a:before {
+    content: '\f078';
+    font-family: FontAwesome;
+    left:-5px;
+    position:absolute;
+}
+
+table .sorted.asc a:before {
+    content: '\f077';
+    font-family: FontAwesome;
+    left:-5px;
+    position:absolute;
+}
+
+table .btn-default {
+    border: solid 1px #ccc;
+    background-color: #fff;
+}
+
+table .btn-default:hover {
+    background-color: #e6e6e6;
+}
+/*** End - Styles for tables ***/
+
 /*** Begin - Admin ***/
 
 .admin .a-feature.simple-header {
@@ -168,30 +216,6 @@ div.pagination {
 
 .admin textarea.form-control {
     height: auto;
-}
-
-.admin .sortable a:visited, .sortable a:link, .sortable a:active, .sortable a:hover {
-    border:none;
-    box-shadow: none;
-    position:relative;
-}
-
-.admin .sorted a:visited, .sorted a:link, .sorted a:active, .sorted a:hover {
-    font-weight: bold;
-}
-
-.admin .sorted.desc a:before {
-    content: '\f078';
-    font-family: FontAwesome;
-    left:-5px;
-    position:absolute;
-}
-
-.admin .sorted.asc a:before {
-    content: '\f077';
-    font-family: FontAwesome;
-    left:-5px;
-    position:absolute;
 }
 
 /*** End - Admin ***/

@@ -271,6 +271,7 @@ environments {
         grails.mail.disabled = true
         grails.mail.host = "fake.ala.org.au"
         grails.mail.overrideAddress = "your.email@here.com"
+        grails.resources.debug = true
     }
     production {
         grails.mail.host = "localhost"
