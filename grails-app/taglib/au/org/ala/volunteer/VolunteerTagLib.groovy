@@ -394,11 +394,12 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr title
+     * @attr title //REQUIRED
      * @attr selectedNavItem
      * @attr crumbLabel
      * @attr hideTitle
      * @attr hideCrumbs
+     * @attr complexBodyMarkup
      */
     def headerContent = { attrs, body ->
 
@@ -458,15 +459,23 @@ class VolunteerTagLib {
         }
 
         sitemesh.captureContent(tag:'page-title') {
+            def heading = ""
             if (!attrs.hideTitle) {
-                mb.h1(class:'bvp-heading') {
-                    mkp.yield(attrs.title)
-                }
+                heading = attrs.title
             }
 
-            if (bodyContent) {
-                mb.p(class:'section-description') {
-                    mb.mkp.yieldUnescaped(bodyContent)
+            if (attrs.complexBodyMarkup) {
+                mb.mkp.yieldUnescaped(bodyContent)
+            } else {
+                mb.div(class:"row") {
+                    div(class:"col-sm-10") {
+                        if (heading) {
+                            mb.h1(class:'bvp-heading') {
+                                mkp.yield(attrs.title)
+                            }
+                        }
+                        mb.mkp.yieldUnescaped(bodyContent)
+                    }
                 }
             }
         }
@@ -835,5 +844,18 @@ class VolunteerTagLib {
         } else {
             out << bodyText
         }
+    }
+
+    /**
+     * Taken from http://stackoverflow.com/a/7427266/249327
+     *
+     * Attr hex REQUIRED
+     */
+    def hexToRbg = { attrs, body ->
+        String hex = attrs.hex
+        String color = Integer.valueOf( hex.substring( 1, 3 ), 16 ) + "," +
+                Integer.valueOf( hex.substring( 3, 5 ), 16 ) + "," +
+                Integer.valueOf( hex.substring( 5, 7 ), 16 )
+        out << color
     }
 }

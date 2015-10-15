@@ -68,6 +68,13 @@
     <g:textField name="imageCaption" value="${institutionInstance?.imageCaption}"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'themeColour', 'error')}">
+    <label for="themeColour">
+        <g:message code="institution.themeColour.label" default="Theme colour code (hex)"/>
+    </label>
+    <g:textField name="themeColour" value="${institutionInstance?.themeColour}"/>
+</div>
+
 <g:if test="${institutionInstance.collectoryUid}">
     <div class="fieldcontain ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'error')} ">
         <label for="collectoryUid">

@@ -9,7 +9,7 @@
                                 <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}"><img src="${projectSummary.iconImage}"></a> %{--g.createLink(url:'/img/placeholder/1.jpg') --}%
                             </div>
                             <div class="col-xs-9">
-                                <g:render template="projectSummary" model="[projectSummary: projectSummary]" />
+                                <g:render template="/project/projectSummary" model="[projectSummary: projectSummary]" />
                             </div>
                         </div>
                     </div>
