@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-sm-4 search-results-count">
             <g:if test="${!totalMatchingTasks}">
-                <p><strong>435 Tasks Found</strong></p>
+                <p><strong>${totalMatchingTasks} Tasks Found</strong></p>
             </g:if>
             <g:else>
                 <p><strong>
@@ -43,7 +43,7 @@
 
         <g:sortableColumn style="text-align: left" property="id"
                           title="${message(code: 'task.id.label', default: 'Id')}" params="${pageParams}"
-                          action="show" controller="user"/>
+                          action="show" controller="user" />
 
         <g:sortableColumn style="text-align: left" property="externalIdentifier"
                           title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}"
@@ -68,7 +68,7 @@
         <g:sortableColumn property="status" title="${message(code: 'task.isValid.label', default: 'Status')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: center;"/>
 
-        <th style="text-align: center;">Action</th>
+        <th style="text-align: center; vertical-align: middle;">Action</th>
 
     </tr>
     </thead>
@@ -128,7 +128,7 @@
 
 <div class="pagination">
     <g:paginate total="${totalMatchingTasks}" id="${userInstance?.id}"
-                params="${params + [selectedTab: selectedTab]}" action="show" controller="user"/>
+                params="${params + [selectedTab: selectedTab]}" action="show" controller="user" fragment="profileTabs"/>
 </div>
 
 <script>
@@ -156,4 +156,7 @@
         }
     });
 
+    $('.sorting-header a').each(function() {
+        $(this).attr('href', $(this).attr('href') + '#profileTabs');
+    });
 </script>

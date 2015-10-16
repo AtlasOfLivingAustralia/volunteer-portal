@@ -1,2 +1,1 @@
-<g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}"/>
-<g:include action="taskListFragment" params="${includeParams + [selectedTab: 1]}"/>
+<g:include action="taskListFragment" id="${params.id}"/>
