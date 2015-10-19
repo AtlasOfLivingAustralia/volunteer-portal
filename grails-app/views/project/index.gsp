@@ -33,7 +33,7 @@
                 zoom: ${projectInstance.mapInitZoomLevel ?: 3},
                 minZoom: 1,
                 streetViewControl: false,
-                scrollwheel: true,
+                scrollwheel: false,
                 mapTypeControl: true,
                 mapTypeControlOptions: {
                     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
@@ -53,6 +53,7 @@
         }
 
         function drawMarkers(data) {
+
             if (data) {
                 //var bounds = new google.maps.LatLngBounds();
                 var markers = [];
@@ -104,12 +105,12 @@
         $(document).ready(function () {
             <g:if test="${projectInstance.showMap}">
                 loadMap();
-                resizeMap();
-            </g:if>
+                //resizeMap();
 
-            $(window).resize(function(e) {
-                resizeMap();
-            });
+                $(window).resize(function(e) {
+                    //resizeMap();
+                });
+            </g:if>
 
             $("#btnShowIconSelector").click(function(e) {
                 e.preventDefault();
@@ -194,7 +195,7 @@
     </style>
 </head>
 
-<body>
+<body class="digivol expedition-landing">
 
 <div class="a-feature expedition old">
     <div class="container">
@@ -272,53 +273,143 @@
     </div>
 
 </div>
-
-<section id="record-locations">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="map-header">
-                    <h2 class="heading">Record Locations</h2>
-                    <p>On this map you'll find all the location of transcribed records of the Gastropod expedition</p>
+<g:if test="${projectInstance.showMap}">
+    <section id="record-locations">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="map-header">
+                        <h2 class="heading">Record Locations</h2>
+                        <p>On this map you'll find all the location of transcribed records of the Gastropod expedition</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="recordsMap-X"></div>
+        <div id="recordsMap"></div>
+    </section>
+</g:if>
+
+<section id="main-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2 class="heading">
+                            Expedition Citizen Scientists
+                        </h2>
+                    </div>
+                </div>
+
+
+                <div class="expedition-team">
+
+                    <div class="row">
+                        <div class="col-xs-3 col-sm-2">
+                            <img src="img/team/teamExpeditionLeader.png" class="img-responsive">
+                        </div>
+                        <div class="col-xs-9 col-sm-4">
+                            <h3>Expedition Leaders</h3>
+                            <ul>
+                                <li><a href="#">John Smithy (65)</a></li>
+                                <li><a href="#">Peter Singer (65)</a></li>
+                                <li><a href="#">John Smithy (65)</a></li>
+                                <li><a href="#">Peter Singer (65)</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-2">
+                            <img src="img/team/teamScientist.png" class="img-responsive">
+                        </div>
+                        <div class="col-xs-9 col-sm-4">
+                            <h3>Scientists</h3>
+                            <ul>
+                                <li><a href="#">John Smithy (65)</a></li>
+                                <li><a href="#">Peter Singer (65)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-3 col-sm-2">
+                            <img src="img/team/teamTechnicalOfficer.png" class="img-responsive">
+                        </div>
+                        <div class="col-xs-9 col-sm-4">
+                            <h3>Technical Officers</h3>
+                            <ul>
+                                <li><a href="#">John Smithy (65)</a></li>
+                                <li><a href="#">Peter Singer (65)</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-2">
+                            <img src="img/team/teamCollectionsManager.png" class="img-responsive">
+                        </div>
+                        <div class="col-xs-9 col-sm-4">
+                            <h3>Collection Managers</h3>
+                            <ul>
+                                <li><a href="#">John Smithy (65)</a></li>
+                                <li><a href="#">Peter Singer (65)</a></li>
+                                <li><a href="#">John Smithy (65)</a></li>
+                                <li><a href="#">Peter Singer (65)</a></li>
+                            </ul>
+                        </div>
+                    </div><!--/row-->
+                </div>
+
+
+            </div>
+
+            <div class="col-sm-4">
+                <h2 class="heading">
+                    Latest Contributions
+                </h2>
+                <ul class="media-list">
+
+                    <li class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img src="https://randomuser.me/api/portraits/med/men/51.jpg" class="img-circle img-responsive">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <span class="time">5 hours ago</span>
+                            <h4 class="media-heading"><a href="#">Warren Lee</a></h4>
+                            <p>Has posted in the forum: <a href="#">Hawaiian Mouthparts expedition</a></p>
+                            <div class="transcribed-thumbs">
+                                <img src="http://placehold.it/40x40/ccc">
+                            </div>
+                            <a class="btn btn-default btn-xs join" href="#" role="button">Join discussion »</a>
+                        </div>
+                    </li>
+                    <li class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img src="https://randomuser.me/api/portraits/med/women/62.jpg" class="img-circle">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <span class="time">5 hours ago</span>
+                            <h4 class="media-heading"><a href="#">Margret Kin</a></h4>
+                            <p>Transcribed 3 items from the <a href="#">Bivalve expedition</a></p>
+                            <div class="transcribed-thumbs">
+                                <img src="http://placehold.it/40x40/ccc"> <img src="http://placehold.it/40x40/ccc"> <img src="http://placehold.it/40x40/ccc">
+                            </div>
+                            <a class="btn btn-default btn-xs join" href="#" role="button">Join expedition »</a>
+                        </div>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+    </div>
 </section>
 
-<cl:headerContent title="Welcome to the ${projectInstance.name ?: message(code: 'default.application.name')}"
-                  selectedNavItem="expeditions">
-    <%
-        def crumbs = []
 
-        if (projectInstance.institution) {
-            crumbs << [link: createLink(controller: 'institution', action: 'index', id: projectInstance.institution.id), label: projectInstance.institution.name]
-        } else {
-            crumbs << [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
-        }
-        pageScope.crumbs = crumbs
-    %>
-
-    <div>
-        <cl:ifValidator project="${projectInstance}">
-            <g:link style="margin-right: 5px" class="btn pull-right" controller="task" action="projectAdmin"
-                    id="${projectInstance.id}">Validate tasks</g:link>
-        </cl:ifValidator>
-        <cl:isLoggedIn>
-            <cl:ifAdmin>
-                <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="task"
-                        action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
-                <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="project"
-                        action="edit" id="${projectInstance.id}"><i
-                        class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
-            </cl:ifAdmin>
-        </cl:isLoggedIn>
-    </div>
-</cl:headerContent>
-
-<div class="row" style="margin-top: 10px">
+<div class="row hidden" style="margin-top: 10px">
 
     <div class="span4" id="sidebarDiv">
 
@@ -369,9 +460,8 @@
                 <g:if test="${projectInstance.showMap}">
                     <h3>Transcribed records</h3>
 
-                    <div id="recordsMap" style="margin-bottom: 12px"></div>
+                    <div id="recordsMapX" style="margin-bottom: 12px"></div>
                 </g:if>
-
             </section>
         </div>
     </div>

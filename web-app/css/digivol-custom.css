@@ -262,3 +262,14 @@ table .btn-default:hover {
     max-height: 60px;
     max-width: none;
 }
+
+#recordsMap {
+    min-height: 400px;
+    z-index: 0;
+}
+
+.map-header {
+    margin-left: 60px;
+    opacity: 0.8;
+    color: #393939;
+}
