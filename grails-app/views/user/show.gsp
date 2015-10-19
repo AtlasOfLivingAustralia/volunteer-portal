@@ -133,13 +133,18 @@
                 <a href="#saved-tasks" tab-index="1" content-url="${createLink(controller: 'user', action: 'savedTasksFragment', params: includeParams + [selectedTab: 1])}" aria-controls="saved-tasks" role="tab" data-toggle="tab">Saved Tasks</a>
             </li>
             <cl:ifValidator>
-            <li role="presentation" class="${selectedTab == 2 ? 'active' : ''}">
-                <a href="#validated-tasks" tab-index="2" content-url="${createLink(controller: 'user', action: 'validatedTasksFragment', params: includeParams + [selectedTab: 2])}" aria-controls="validated-tasks" role="tab" data-toggle="tab">Validated Tasks</a>
-            </li>
+                <li role="presentation" class="${selectedTab == 2 ? 'active' : ''}">
+                    <a href="#validated-tasks" tab-index="2" content-url="${createLink(controller: 'user', action: 'validatedTasksFragment', params: includeParams + [selectedTab: 2])}" aria-controls="validated-tasks" role="tab" data-toggle="tab">Validated Tasks</a>
+                </li>
             </cl:ifValidator>
             <li role="presentation" class="${selectedTab == 3 ? 'active' : ''}">
-                <a href="#forum-messages" tab-index="3" content-url="${createLink(controller: 'forum', action: 'userCommentsFragment', params: includeParams + [selectedTab: 3, userId: params.id])}" aria-controls="forum-messages" role="tab" data-toggle="tab">Forum Activities</a>
+                <a href="#forum-messages" tab-index="3" content-url="${createLink(controller: 'forum', action: 'userCommentsFragment', params: [selectedTab: 3, userId: params.id])}" aria-controls="forum-messages" role="tab" data-toggle="tab">Forum Activities</a>
             </li>
+            <cl:ifAdmin>
+                <li role="presentation" class="${selectedTab == 4 ? 'active' : ''}">
+                    <a href="#user-settings" tab-index="4" aria-controls="user-settings" role="tab" data-toggle="tab">User Settings</a>
+                </li>
+            </cl:ifAdmin>
         </ul>
     </div>
 
@@ -151,7 +156,7 @@
                     <div class="tab-pane-header">
                         <div class="row">
                             <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading...</strong></p>
+                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
                             </div>
                         </div>
                     </div>
@@ -161,7 +166,7 @@
                     <div class="tab-pane-header">
                         <div class="row">
                             <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading...</strong></p>
+                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
                             </div>
                         </div>
                     </div>
@@ -171,7 +176,7 @@
                     <div class="tab-pane-header">
                         <div class="row">
                             <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading...</strong></p>
+                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
                             </div>
                         </div>
                     </div>
@@ -181,11 +186,31 @@
                     <div class="tab-pane-header">
                         <div class="row">
                             <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading...</strong></p>
+                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <cl:ifAdmin>
+                <div role="tabpanel" class="tab-pane" id="user-settings">
+                    <div class="tab-pane-header">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-info" style="margin-bottom: 0px">
+                                    <%-- TODO Pull this from user details service --%>
+                                    &nbsp;Email:&nbsp;<a href="mailto:${userInstance.email}">${userInstance.email}</a>
+                                </div>
+                                <br/>
+                                <g:link class="btn btn-success" controller="user" action="editRoles"
+                                        id="${userInstance.id}">Manage user roles</g:link>
+                                <g:link class="btn btn-success" controller="user" action="edit"
+                                        id="${userInstance.id}">Edit user details</g:link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </cl:ifAdmin>
             </div>
         </div>
     </div>
@@ -348,13 +373,20 @@
 
 <r:script>
     var notebookTabs = {
+        nonAjaxTabs: ["4"],
 
         loadContent: function () {
-            var url = $('#profileTabsList li.active a').attr('content-url');
-            console.log('url 1 = ' + url);
-            $.ajax(url).done(function(content) {
-                $("#profileTabsContent .tab-pane.active").html(content);
-            });
+            var currentSelectedTab = $('#profileTabsList li.active a');
+            // This is a workaround to show the static content of the tab that was selected when no Ajax is involved
+            $('#profileTabsList li:eq(0) a').tab('show');
+            currentSelectedTab.tab('show');
+            if ($.inArray(currentSelectedTab.attr('tab-index'), notebookTabs.nonAjaxTabs) == -1) {
+                var url = $('#profileTabsList li.active a').attr('content-url');
+                console.log('url 1 = ' + url);
+                $.ajax(url).done(function (content) {
+                    $("#profileTabsContent .tab-pane.active").html(content);
+                });
+            }
         },
 
         updateQueryStringParameter: function (uri, key, value) {
@@ -374,7 +406,6 @@
 
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             e.preventDefault();
-            console.log('shown.bs.tab event fired');
             location.replace(notebookTabs.updateQueryStringParameter(window.location.pathname, 'selectedTab', $(this).attr('tab-index')) + '#profileTabs');
         });
     });
