@@ -252,3 +252,13 @@ table .btn-default:hover {
 }
 
 /*** End - LeaderBoard ***/
+
+.expedition #projectDescriptionX {
+    max-height: 120px;
+    overflow-y: scroll;
+}
+
+.a-feature.expedition .logo-holder img {
+    max-height: 60px;
+    max-width: none;
+}

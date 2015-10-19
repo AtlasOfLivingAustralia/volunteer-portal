@@ -63,11 +63,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-6 hidden-xs">
-
+                    <a href="javascript:history.back()" class="btn btn-hollow transcription-back grey">Back</a>
                 </div>
                 <div class="col-sm-6">
                     <div class="digivol-tab">
-                        <a href="#" class="tab-brand">A <r:img dir="images/2.0/" file="logoDigivolInverted.png" /> Expedition</a>
+                        <a href="${g.createLink(uri:"/")}" class="tab-brand">A <r:img dir="images/2.0/" file="logoDigivolInverted.png" /> Expedition</a>
                         <ul class="navbar-short">
                         <!-- Logged In Starts -->
                             <cl:isNotLoggedIn>

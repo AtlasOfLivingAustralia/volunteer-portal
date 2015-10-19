@@ -12,7 +12,7 @@
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
-    <r:require module="digivol"/>
+    <r:require modules="digivol, bvp-js, bootbox"/>
     <g:layoutHead/>
     <r:layoutResources/>
 

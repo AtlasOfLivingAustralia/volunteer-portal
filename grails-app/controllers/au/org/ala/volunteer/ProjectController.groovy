@@ -92,7 +92,19 @@ class ProjectController {
                 percentComplete = 99;
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete, newsItems: newsItems, projectSummary: projectSummary])
+            render(view: "index", model: [
+                    projectInstance: projectInstance,
+                    taskCount: taskCount,
+                    tasksTranscribed: tasksTranscribed,
+                    roles:roles,
+                    newsItem: newsItem,
+                    currentUserId: currentUserId,
+                    leader: leader,
+                    percentComplete: percentComplete,
+                    newsItems: newsItems,
+                    projectSummary: projectSummary,
+                    transcriberCount: userIds.size()
+            ])
         }
     }
 

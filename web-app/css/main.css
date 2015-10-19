@@ -597,7 +597,9 @@ body.museumvictoria .transcription-actions .btn.btn-next {
 
 @media (max-width: 1200px) {
     .thumbnail {
-        min-height: 480px; } }
+        /*min-height: 480px; */ /* Removed NdR 2015-10-19 */
+    }
+}
 .label {
     position: absolute;
     top: 25px;

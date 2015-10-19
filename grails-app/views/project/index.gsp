@@ -7,10 +7,12 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="digivol-expedition"/>
     <title><g:message code="default.application.name"/> - ${projectInstance.name ?: 'Atlas of Living Australia'}</title>
+    <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
+    <r:require modules="dotdotdot"/>
 
     <r:script>
 
@@ -80,9 +82,7 @@
 
                 url: "${createLink(controller: 'task', action: 'details')}/" + id,
                 success: function (data) {
-                    var content = "<div
-            style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber + "
-    </div>";
+                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber + "</div>";
                     infowindow.close();
                     infowindow.setContent(content);
                     infowindow.open(map, marker);
@@ -102,32 +102,47 @@
         }
 
         $(document).ready(function () {
-        <g:if test="${projectInstance.showMap}">
-            loadMap();
-            resizeMap();
-        </g:if>
+            <g:if test="${projectInstance.showMap}">
+                loadMap();
+                resizeMap();
+            </g:if>
 
-        $(window).resize(function(e) {
-            resizeMap();
+            $(window).resize(function(e) {
+                resizeMap();
+            });
+
+            $("#btnShowIconSelector").click(function(e) {
+                e.preventDefault();
+                showIconSelector();
+            });
+
+            /*
+             * Truncate the project description text
+             */
+            var descriptionDiv = "#projectDescription";
+            $(descriptionDiv).removeClass("hidden"); // prevent content jumping
+            $(descriptionDiv).dotdotdot({
+                after: "a.readmore",
+                height: 200
+            });
+            // read more link to show full description
+            $("a.readmore").click(function(e) {
+                e.preventDefault();
+                var content = $(descriptionDiv).triggerHandler("originalContent");
+                $(descriptionDiv).trigger("destroy");
+                $(descriptionDiv).html( content );
+                $(descriptionDiv + " a.readmore").addClass('hidden');
+            });
+
+
         });
 
-        $("#btnShowIconSelector").click(function(e) {
-            e.preventDefault();
-            showIconSelector();
-        });
-
-//            $(".tutorialLinks a").each(function(index, element) {
-//                $(this).css("font-weight", "bold");
-//            });
-
-    });
-
-    function showIconSelector() {
-        bvp.showModal({
-            url: "${createLink(action: 'projectLeaderIconSelectorFragment', id: projectInstance.id)}",
-                width:800,
-                height:500,
-                title: 'Select Expedition Leader Icon'
+        function showIconSelector() {
+            bvp.showModal({
+                url: "${createLink(action: 'projectLeaderIconSelectorFragment', id: projectInstance.id)}",
+                    width:800,
+                    height:500,
+                    title: 'Select Expedition Leader Icon'
             });
         }
 
@@ -160,43 +175,122 @@
         font-size: 0.9em;
     }
 
-    <
-    g:if
-
-    test
-    =
-    "
-    ${
-    projectInstance.institution
-    }
-    "
-    >
-    <
-    cl:ifInstitutionHasBanner
-
-    institution
-    =
-    "
-    ${
-    projectInstance.institution
-    }
-    "
-    >
-    #page-header {
-        background-image: url(<cl:institutionBannerUrl id="${projectInstance.institution.id}" />);
-    }
-
-    </
-    cl:ifInstitutionHasBanner
-    >
-    </
-    g:if
-    >
+    <g:if test="${projectInstance.institution}">
+        <cl:ifInstitutionHasBanner institution="${projectInstance.institution}">
+            #page-header {
+                background-image: url(<cl:institutionBannerUrl id="${projectInstance.institution.id}" />);
+            }
+        </cl:ifInstitutionHasBanner>
+    </g:if>
 
     </style>
 </head>
 
 <body>
+
+<div class="a-feature expedition old">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-sm-12">
+                <div class="logo-holder">
+                    <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id}"/>" class="img-responsive institution-logo-main">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+                <h1>${projectInstance.name}</h1>
+                <div id="projectDescription" class="hidden">
+                    <p>${raw(projectInstance.description)}</p><!-- end description -->
+                    <a href="#" title="read more" class="readmore">Read more »</a>
+                </div>
+                <div class="cta-primary">
+                    <g:if test="${!projectInstance.inactive}">
+                        <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="glyphicon glyphicon-arrow-right"></span></a>
+                        <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow grey">View tutorial</a>
+                    </g:if>
+                    <g:else>
+                        <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>
+                        <a href="#similarExpeditions" class="btn btn-lg btn-hollow grey">See similar expeditions</a>
+                    </g:else>
+                </div>
+                <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
+            </div>
+            <div class="col-sm-4">
+
+                <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
+
+                <div style="margin-top: 20px;">
+                    <cl:ifValidator project="${projectInstance}">
+                        <g:link style="margin-right: 5px" class="btn pull-right" controller="task" action="projectAdmin"
+                                id="${projectInstance.id}">Validate tasks</g:link>
+                    </cl:ifValidator>
+                    <cl:isLoggedIn>
+                        <cl:ifAdmin>
+                            <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="task"
+                                    action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
+                            <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="project"
+                                    action="edit" id="${projectInstance.id}"><i
+                                    class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
+                        </cl:ifAdmin>
+                    </cl:isLoggedIn>
+                </div>
+            </div>
+
+
+        </div>
+        %{--<div class="row">--}%
+            %{--<cl:ifValidator project="${projectInstance}">--}%
+                %{--<g:link style="margin-right: 5px" class="btn pull-right" controller="task" action="projectAdmin"--}%
+                        %{--id="${projectInstance.id}">Validate tasks</g:link>--}%
+            %{--</cl:ifValidator>--}%
+            %{--<cl:isLoggedIn>--}%
+                %{--<cl:ifAdmin>--}%
+                    %{--<g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="task"--}%
+                            %{--action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;--}%
+                    %{--<g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="project"--}%
+                            %{--action="edit" id="${projectInstance.id}"><i--}%
+                            %{--class="icon-cog icon-white"></i> Settings</g:link>&nbsp;--}%
+                %{--</cl:ifAdmin>--}%
+            %{--</cl:isLoggedIn>--}%
+        %{--</div>--}%
+    </div>
+
+    <div class="progress-summary">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    <g:render template="../project/projectSummaryProgressBar" model="${[projectSummary: projectSummary]}"/>
+                </div>
+
+                <div class="col-sm-3 col-xs-6">
+                    <h3><b>${transcriberCount}</b>Volunteers</h3>
+                </div>
+
+                <div class="col-sm-3 col-xs-6">
+                    <h3><b>${projectInstance.tasks?.size()}</b>Tasks</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<section id="record-locations">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="map-header">
+                    <h2 class="heading">Record Locations</h2>
+                    <p>On this map you'll find all the location of transcribed records of the Gastropod expedition</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="recordsMap-X"></div>
+</section>
 
 <cl:headerContent title="Welcome to the ${projectInstance.name ?: message(code: 'default.application.name')}"
                   selectedNavItem="expeditions">
@@ -266,8 +360,7 @@
 
                 <section class="padding-bottom">
                     <h4>${projectInstance.featuredLabel} progress</h4>
-                    <g:render template="../project/projectSummaryProgressBar"
-                              model="${[projectSummary: projectSummary]}"/>
+                    <g:render template="../project/projectSummaryProgressBar" model="${[projectSummary: projectSummary]}"/>
                     %{--<div id="recordsChart">--}%
                     %{--<strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${percentComplete}" format="#"/>%</strong>)--}%
                     %{--</div>--}%
