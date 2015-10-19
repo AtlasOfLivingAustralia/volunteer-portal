@@ -12,7 +12,7 @@
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
-    <r:require modules="dotdotdot"/>
+    <r:require modules="dotdotdot, bootbox"/>
 
     <r:script>
 
@@ -134,7 +134,15 @@
                 $(descriptionDiv + " a.readmore").addClass('hidden');
             });
 
+            // Show tutorial modal if content is present
+            $(".tutorial").click(function(e) {
+                if ($(this).attr('href') == "#tutorial") {
+                    e.preventDefault();
+                    var content = $("#tutorialContent").html();
+                    bootbox.alert(content);
+                }
 
+            });
         });
 
         function showIconSelector() {
@@ -208,7 +216,13 @@
                 <div class="cta-primary">
                     <g:if test="${!projectInstance.inactive}">
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="glyphicon glyphicon-arrow-right"></span></a>
-                        <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow grey">View tutorial</a>
+                        <g:if test="${projectInstance.tutorialLinks}">
+                            <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow grey tutorial">View tutorial</a>
+                            <div id="tutorialContent" class="hidden">${raw(projectInstance.tutorialLinks)}</div>
+                        </g:if>
+                        <g:else>
+                            <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-lg btn-hollow grey tutorial">View tutorial</a>
+                        </g:else>
                     </g:if>
                     <g:else>
                         <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>
@@ -218,9 +232,7 @@
                 <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
             </div>
             <div class="col-sm-4">
-
                 <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
-
                 <div style="margin-top: 20px;">
                     <cl:ifValidator project="${projectInstance}">
                         <g:link style="margin-right: 5px" class="btn pull-right" controller="task" action="projectAdmin"
@@ -238,23 +250,7 @@
                 </div>
             </div>
 
-
         </div>
-        %{--<div class="row">--}%
-            %{--<cl:ifValidator project="${projectInstance}">--}%
-                %{--<g:link style="margin-right: 5px" class="btn pull-right" controller="task" action="projectAdmin"--}%
-                        %{--id="${projectInstance.id}">Validate tasks</g:link>--}%
-            %{--</cl:ifValidator>--}%
-            %{--<cl:isLoggedIn>--}%
-                %{--<cl:ifAdmin>--}%
-                    %{--<g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="task"--}%
-                            %{--action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;--}%
-                    %{--<g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="project"--}%
-                            %{--action="edit" id="${projectInstance.id}"><i--}%
-                            %{--class="icon-cog icon-white"></i> Settings</g:link>&nbsp;--}%
-                %{--</cl:ifAdmin>--}%
-            %{--</cl:isLoggedIn>--}%
-        %{--</div>--}%
     </div>
 
     <div class="progress-summary">
