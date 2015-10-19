@@ -18,35 +18,7 @@
 
     <%-- Allow overriding of primary branding colour --%>
     <meta name="theme-color" content="${g.pageProperty(name: "page.primaryColour", default: "#d5502a")}"/>
-    <style>
-    section#footer .footer-brand,
-    section#footer .footer-brand:hover,
-    .navbar-brand,
-    .navbar-brand:hover,
-    .digivol-tab img,
-    body .navbar .navbar-brand,
-    body .navbar .navbar-brand:hover,
-    body .btn-primary,
-    body .btn-primary:hover,
-    body .btn-primary:focus,
-    body .btn-primary:active,
-    body .btn-primary.active,
-    body .label,
-    .progress .progress-bar-transcribed,
-    .key.transcribed,
-    .transcription-actions .btn.btn-next {
-        background-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
-    }
-
-    body .navbar {
-        border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
-    }
-
-    body .badge,
-    body .badge:hover {
-        color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
-    }
-    </style>
+    <g:render template="/layouts/commonCss" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -55,7 +27,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')}">
+<body class="${pageProperty(name: 'body.class')?: 'digivol expedition-landing'}">
 
 <nav class="navbar navbar-default navbar-fixed-top">
 
@@ -85,41 +57,7 @@
                                         <span class="glyphicon glyphicon-chevron-down"></span>
                                     </a>
 
-                                    <ul class="dropdown-menu">
-                                        <li>
-
-                                            <div class="navbar-login">
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <p class="text-center">
-                                                            <img src="http://api.randomuser.me/portraits/men/49.jpg" alt=""
-                                                                 class="center-block img-circle img-responsive">
-                                                        </p>
-                                                    </div>
-
-                                                    <div class="col-lg-8">
-                                                        <p class="text-left"><strong>Peter Smith</strong><br/><a
-                                                                href="#">petersmity@email.com</a></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li>
-                                            <div class="navbar-login navbar-login-session">
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <ul class="profile-links">
-                                                            <li><a href="#" class="">View Profile</a></li>
-                                                            <li><a href="#" class="">Notebook</a></li>
-                                                            <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.casServerName}/cas/logout", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class="">Logout</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    <g:render template="/layouts/profileDropDown"/>
                                 </li>
                             </cl:isLoggedIn>
                         </ul>

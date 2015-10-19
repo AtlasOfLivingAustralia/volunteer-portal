@@ -142,11 +142,11 @@ section#associated-brands img.logo-agi {
     margin: 0;
     padding: 0;
     float: right; }
-.digivol-tab ul.navbar-short li {
+.digivol-tab ul.navbar-short > li {
     display: inline-block;
     padding: 0 10px 0 10px;
     border-left: 1px solid #444; }
-.digivol-tab ul.navbar-short li:first-child {
+.digivol-tab ul.navbar-short > li:first-child {
     border-left: none; }
 
 .navbar-login {
