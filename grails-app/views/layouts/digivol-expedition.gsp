@@ -27,7 +27,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')?: 'digivol expedition-landing'}">
+<body class="${pageProperty(name: 'body.class')?:'digivol'}">
 
 <nav class="navbar navbar-default navbar-fixed-top">
 

@@ -11,7 +11,14 @@
     body .btn-primary:focus,
     body .btn-primary:active,
     body .btn-primary.active,
-    body .label,
+    body.digivol .navbar .navbar-brand,
+    body.digivol .navbar .navbar-brand:hover,
+    body.digivol .btn-primary,
+    body.digivol .btn-primary:hover,
+    body.digivol .btn-primary:focus,
+    body.digivol .btn-primary:active,
+    body.digivol .btn-primary.active,
+    body.digivol .label,
     .progress .progress-bar-transcribed,
     .key.transcribed,
     .pagination > .active > span,
@@ -23,13 +30,17 @@
         background-color: rgba( <cl:hexToRbg hex="${g.pageProperty(name:"page.primaryColour", default:"#d5502a")}"/>, .5 );
     }
 
-    body .navbar, .pagination > .active > span,
+    body .navbar,
+    body.digivol .navbar,
+    .pagination > .active > span,
     .pagination > .active > span:hover {
         border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
 
     body .badge,
     body .badge:hover,
+    body.digivol .badge,
+    body.digivol .badge:hover,
     .pagination > li > a {
         color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
 }
