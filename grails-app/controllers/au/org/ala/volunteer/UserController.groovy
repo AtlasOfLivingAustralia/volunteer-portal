@@ -524,7 +524,7 @@ class UserController {
             return
         }
 
-        [userInstance: userInstance]
+        forward(action: 'show', id: userInstance.id)
     }
 
     def ajaxGetPoints() {
