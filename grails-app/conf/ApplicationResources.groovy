@@ -19,6 +19,11 @@ modules = {
         dependsOn 'digivol', 'marker-clusterer'
         resource url: 'js/digivol-notebook.js'
     }
+    
+    'digivol-expedition' {
+        dependsOn 'digivol', 'bootbox'
+        resource url: '/css/digivol-expedition.css'
+    }
 
     'qtip' {
         dependsOn "jquery"

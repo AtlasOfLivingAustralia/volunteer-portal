@@ -38,7 +38,7 @@
     <g:set var="entriesField"
            value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
     <g:if test="${isPreview && !entriesField}">
-        <div class="alert alert-error">
+        <div class="alert alert-danger">
             This template view (journalTranscribe) requires the <strong>individualCount</strong> field to be configured.
         </div>
     </g:if>

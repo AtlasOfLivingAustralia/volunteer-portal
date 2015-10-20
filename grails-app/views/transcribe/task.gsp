@@ -9,12 +9,13 @@
 
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <title>${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.id} : ${taskInstance?.project?.name}</title>
+    <meta name="layout" content="digivol-expedition"/>
+
+    <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
-    <r:require module="bootstrap-js"/>
+    %{--<r:require module="bootstrap-js"/>--}%
+    <r:require module="digivol-expedition" />
+    <r:require module="bvp-js" />
     <r:require module="panZoom"/>
     <r:require module="jqZoom"/>
     <r:require module="imageViewer"/>
@@ -191,10 +192,23 @@
         function showGeolocationTool() {
             bvp.showModal({
                 url: "${createLink(controller: 'transcribe', action: 'geolocationToolFragment')}",
-                    width: 978,
-                    height: 500,
-                    hideHeader: true,
-                    title: ''
+                    //width: 978,
+                    //height: 500,
+                    //hideHeader: true,
+                    title: 'Mapping Tool',
+                    buttons: {
+                      close: {
+                        label: "Close & cancel",
+                        className: 'btn-default'
+                      },
+                      copy: {
+                        label: 'Copy Values to main form <i class="fa fa-check fa-sm"></i>',
+                        className: 'btn-primary',
+                        callback: function () {
+                          setLocationFields(); // via geolocationtoolfragment
+                        }
+                      }
+                    }
                 });
             }
 
@@ -371,35 +385,6 @@
 
     <style type="text/css">
 
-    .row-fluid input[type="text"] {
-        height: 12px;
-        font-size: 12px;
-        line-height: 12px;
-        margin-bottom: 2px;
-        padding: 1px;
-        /*border-radius:2px;*/
-        min-height: 24px;
-    }
-
-    .row-fluid textarea {
-        font-size: 12px;
-        line-height: 12px;
-        margin-bottom: 2px;
-        padding: 2px;
-        /*border-radius:2px;*/
-        min-height: 24px;
-    }
-
-    .row-fluid [class*=span] select {
-        height: 24px;
-        font-size: 12px;
-        line-height: 12px;
-        margin-bottom: 2px;
-        padding: 1px;
-        /*border-radius:2px;*/
-        min-height: 24px;
-    }
-
     .ui-state-hover, .ui-widget-content .ui-state-hover {
         border: none;
     }
@@ -479,43 +464,8 @@
 
     /* Mapping tool (popup) */
 
-    div#mapWidgets {
-        width: 950px;
-        height: 500px;
-        overflow: hidden;
-    }
-
-    #mapWidgets img {
-        max-width: none !important;
-    }
-
-    #mapWidgets #mapWrapper {
-
-        width: 500px;
-        height: 500px;
-        float: left;
-        padding-right: 10px;
-    }
-
-    #mapWidgets #mapCanvas {
-        width: 500px;
-        height: 500px;
-        /*// height: 94%;*/
-        margin-bottom: 6px;
-    }
-
-    #mapWidgets #mapInfo {
-        float: left;
-        height: 100%;
-        width: 44%;
-        padding: 0 0 0 10px;
-        text-align: left;
-        border-left: 2px solid #cccccc;
-    }
-
-    #mapWidgets #sightingAddress {
-        margin-bottom: 4px;
-        line-height: 22px;
+    #mapCanvas {
+        height: 424px;
     }
 
     #mapWidgets .searchHint {
@@ -525,10 +475,7 @@
         color: #666;
     }
 
-    #mapWidgets #address {
-        width: 360px;
-    }
-
+    /* End Mapping tool */
     span.coordsIcons {
         height: 18px;
     }
@@ -555,42 +502,11 @@
         background-color: #0046AD;
     }
 
-    .row-fluid select {
-        margin-bottom: 6px;
-    }
-
-    <
-    g:if
-
-    test
-    =
-    "
-    ${
-    taskInstance.project.institution
-    }
-    "
-    >
-    <
-    cl:ifInstitutionHasBanner
-
-    institution
-    =
-    "
-    ${
-    taskInstance.project.institution
-    }
-    "
-    >
+    <cl:ifInstitutionHasBanner institution="${taskInstance?.project?.institution}">
     #page-header {
         background-image: url(<cl:institutionBannerUrl id="${taskInstance.project.institution.id}" />);
     }
-
-    </
-    cl:ifInstitutionHasBanner
-    >
-    </
-    g:if
-    >
+    </cl:ifInstitutionHasBanner>
 
 
     </style>
@@ -599,7 +515,7 @@
 
 <body>
 
-<cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.externalIdentifier}"
+%{--<cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.externalIdentifier}"
                   hideTitle="${true}">
     <%
         def crumbs = []
@@ -623,163 +539,191 @@
         </cl:ifAdmin>
     </div>
 
-</cl:headerContent>
+</cl:headerContent>--}%
 
-<div class="row">
-    <div class="span12">
-        <g:hasErrors bean="${taskInstance}">
-            <div class="errors">
-                There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list"/>
+<section id="transcription-template">
+    <div class="row branding-row">
+        <div class="col-sm-5">
+
+
+            <div class="transcription-branding">
+                <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
+                <h1>${taskInstance?.project?.name} ${taskInstance?.externalIdentifier}</h1>
+                <h2><g:transcribeSubheadingLine task="${task}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
             </div>
-        </g:hasErrors>
+
+        </div>
+        <div class="col-sm-7 col-xs-12 transcription-controls">
+
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default">Skip Image </button>
+                <button type="button" class="btn btn-default">Create Forum Topic</button>
+                <button type="button" class="btn btn-default">View Tutorial</button>
+            </div>
+
+        </div>
+
     </div>
-</div>
-<g:if test="${taskInstance}">
-    <g:form class="transcribeForm">
-
-        <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
-        <g:hiddenField name="redirect" value="${params.redirect}"/>
-        <g:hiddenField name="id" value="${taskInstance?.id}"/>
-
-        <g:set var="sectionNumber" value="${1}"/>
-
-        <g:set var="nextSectionNumber" value="${{ sectionNumber++ }}"/>
-
-        <g:render template="/transcribe/${template.viewName}"
-                  model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}"/>
-
-        <div class="container-fluid">
-            <div class="well well-small transcribeSection">
-                <div class="row-fluid transcribeSectionHeader">
-                    <div class="span12">
-                        <span class="transcribeSectionHeaderLabel"><g:if
-                                test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
-                        <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
-                    </div>
+    <g:hasErrors bean="${taskInstance}">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="errors">
+                    There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list"/>
                 </div>
+            </div>
+        </div>
+    </g:hasErrors>
 
-                <div class="transcribeSectionBody">
-                    <div class="row-fluid">
+    <div class="row">
+        <g:if test="${taskInstance}">
+            <g:form class="transcribeForm col-md-12">
 
-                        <div class="span6">
-                            <div class="row-fluid">
-                                <div class="span4">
-                                    ${(validator) ? 'Transcriber' : 'Your'} Notes
-                                </div>
+                <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
+                <g:hiddenField name="redirect" value="${params.redirect}"/>
+                <g:hiddenField name="id" value="${taskInstance?.id}"/>
 
-                                <div class="span8">
-                                    <g:textArea name="recordValues.0.transcriberNotes"
-                                                value="${recordValues?.get(0)?.transcriberNotes}"
-                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="span12"/>
+                <g:set var="sectionNumber" value="${1}"/>
+
+                <g:set var="nextSectionNumber" value="${{ sectionNumber++ }}"/>
+
+                <g:render template="/transcribe/${template.viewName}"
+                          model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}"/>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="well well-sm transcribeSection">
+                            <div class="row transcribeSectionHeader">
+                                <div class="col-sm-12">
+                                    <span class="transcribeSectionHeaderLabel"><g:if
+                                            test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
+                                    <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="span6">
-                            <g:if test="${validator}">
-                                <div class="row-fluid">
-                                    <div class="span4">Validator Notes</div>
+                            <div class="transcribeSectionBody">
+                                <div class="row">
 
-                                    <div class="span8">
-                                        <g:textArea name="recordValues.0.validatorNotes"
-                                                    value="${recordValues?.get(0)?.validatorNotes}"
-                                                    id="recordValues.0.validatorNotes" rows="5" cols="40"
-                                                    class="span12"/>
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                ${(validator) ? 'Transcriber' : 'Your'} Notes
+                                            </div>
+
+                                            <div class="col-sm-8">
+                                                <g:textArea name="recordValues.0.transcriberNotes"
+                                                            value="${recordValues?.get(0)?.transcriberNotes}"
+                                                            id="recordValues.0.transcriberNotes" rows="5" cols="40" class="col-sm-12"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <g:if test="${validator}">
+                                            <div class="row">
+                                                <div class="col-sm-4">Validator Notes</div>
+
+                                                <div class="col-sm-8">
+                                                    <g:textArea name="recordValues.0.validatorNotes"
+                                                                value="${recordValues?.get(0)?.validatorNotes}"
+                                                                id="recordValues.0.validatorNotes" rows="5" cols="40"
+                                                                class="col-sm-12"/>
+                                                </div>
+                                            </div>
+                                        </g:if>
                                     </div>
                                 </div>
-                            </g:if>
-                        </div>
-                    </div>
 
-                </div>
-            </div>
-        </div>
-
-        <g:if test="${!isReadonly}">
-            <div class="container-fluid">
-                <div class="row-fluid" id="errorMessagesContainer" style="display: none">
-                    <div class="alert alert-error">
-                        <p class="lead">
-                            <strong>Warning!</strong>
-                            There are problems with the field(s) indicated.
-                            Please correct the fields marked in red before proceeding.
-                            <br/>
-                            <button id="btnErrorCancelSubmission" class="btn btn-primary">Continue</button>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="row-fluid" id="warningMessagesContainer" style="display: none">
-                    <div class="alert alert-warning">
-                        <p class="lead">
-                            <strong>Warning!</strong> There may be some problems with the fields indicated.
-                        If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
-                        </p>
-
-                        <div>
-                            <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
-                            <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields"/>
-                            <g:if test="${validator}">
-                                <g:set var="okCaption" value="It's ok, mark as valid anyway"/>
-                                <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields"/>
-                            </g:if>
-                            <button id="btnValidateSubmitInvalid" class="btn bvp-submit-button">${okCaption}</button>
-                            <button id="btnWarningCancelSubmission"
-                                    class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <g:if test="${!template.viewParams.hideDefaultButtons}">
-                    <div id="submitButtons" class="row-fluid">
-                        <div class="span12">
-                            <g:if test="${validator}">
-                                <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i
-                                        class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
-                                </button>
-                                <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
-                                        class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
-                                </button>
-                                <button type="button" class="btn bvp-submit-button"
-                                        id="showNextFromProject">Skip</button>
-                                <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+
+                <g:if test="${!isReadonly}">
+                    <div class="row" id="errorMessagesContainer" style="display: none">
+                        <div class="alert alert-danger">
+                            <p class="lead">
+                                <strong>Warning!</strong>
+                                There are problems with the field(s) indicated.
+                                Please correct the fields marked in red before proceeding.
+                                <br/>
+                                <button id="btnErrorCancelSubmission" class="btn btn-primary">Continue</button>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row" id="warningMessagesContainer" style="display: none">
+                        <div class="alert alert-warning">
+                            <p class="lead">
+                                <strong>Warning!</strong> There may be some problems with the fields indicated.
+                            If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
+                            </p>
+
+                            <div>
+                                <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
+                                <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields"/>
                                 <g:if test="${validator}">
-                                    <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
+                                    <g:set var="okCaption" value="It's ok, mark as valid anyway"/>
+                                    <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields"/>
                                 </g:if>
-                            </g:if>
-                            <g:else>
-                                <button type="button" id="btnSave"
-                                        class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
-                                <button type="button" id="btnSavePartial"
-                                        class="btn bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
-                                <button type="button" class="btn bvp-submit-button"
-                                        id="showNextFromProject">Skip</button>
-                                <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
-                            </g:else>
+                                <button id="btnValidateSubmitInvalid" class="btn bvp-submit-button">${okCaption}</button>
+                                <button id="btnWarningCancelSubmission"
+                                        class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
+                            </div>
                         </div>
                     </div>
+                    <g:if test="${!template.viewParams.hideDefaultButtons}">
+                        <div id="submitButtons" class="row">
+                            <div class="col-sm-12">
+                                <g:if test="${validator}">
+                                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i
+                                            class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
+                                    </button>
+                                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
+                                            class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
+                                    </button>
+                                    <button type="button" class="btn bvp-submit-button"
+                                            id="showNextFromProject">Skip</button>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+                                    <g:if test="${validator}">
+                                        <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
+                                    </g:if>
+                                </g:if>
+                                <g:else>
+                                    <button type="button" id="btnSave"
+                                            class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
+                                    <button type="button" id="btnSavePartial"
+                                            class="btn bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                                    <button type="button" class="btn bvp-submit-button"
+                                            id="showNextFromProject">Skip</button>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+                                </g:else>
+                            </div>
+                        </div>
+                    </g:if>
                 </g:if>
 
-            </div>
+                <div class="container-fluid">
+                    <div class="row" style="margin-top:10px">
+                        <div class="col-sm-12">
+                            <cl:validationStatus task="${taskInstance}"/>
+                        </div>
+                    </div>
+                </div>
+            </g:form>
         </g:if>
-
-        <div class="container-fluid">
-            <div class="row-fluid" style="margin-top:10px">
-                <div class="span12">
-                    <cl:validationStatus task="${taskInstance}"/>
+        <g:else>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="alert alert-warning">
+                        No tasks loaded for this project !
+                    </div>
                 </div>
             </div>
-        </div>
-    </g:form>
-</g:if>
-<g:else>
-    <div class="row">
-        <div class="span12">
-            <div class="alert">
-                No tasks loaded for this project !
-            </div>
-        </div>
+        </g:else>
     </div>
-</g:else>
+</section> %{-- transcription-template --}%
+
+
 <div id="submitConfirmModal" class="modal hide fade">
     <!-- dialog contents -->
     <div class="modal-body">

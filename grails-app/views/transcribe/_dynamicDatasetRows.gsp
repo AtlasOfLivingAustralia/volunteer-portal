@@ -1,6 +1,6 @@
 <%@ page import="groovy.json.StringEscapeUtils" %>
 <g:if test="${!entriesField}">
-    <div class="alert alert-error">
+    <div class="alert alert-danger">
         No entriesField defined. Each template will require a specific field defined to capture the number of entries. Please consult with the <g:message
                 code="default.application.name"/> team for more details.
     </div>
@@ -69,44 +69,39 @@
             var itemCount = 0;
             for (entryIndex in entries) {
                 htmlStr += '<div>';
-if (entryIndex > 0) {
-htmlStr += "<hr/>";
-}
-var fieldCount = 0;
-for (fieldIndex in entries[entryIndex]) {
-var e = entries[entryIndex][fieldIndex];
-var name = "recordValues." + entryIndex + "." + e.name;
-htmlStr += '<span class="fieldLabel">';
-if (fieldIndex == 0) {
-htmlStr += '<strong>' + (parseInt(entryIndex) + 1) + '.</strong>&nbsp;';
-}
-htmlStr += e.label;
-if (e.helpText) {
-htmlStr += '<a href="#" class="fieldHelp"
-               title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><span
-        class="help-container">&nbsp;</span></a>';
-}
+                if (entryIndex > 0) {
+                  htmlStr += "<hr/>";
+                }
+                var fieldCount = 0;
+                for (fieldIndex in entries[entryIndex]) {
+                    var e = entries[entryIndex][fieldIndex];
+                    var name = "recordValues." + entryIndex + "." + e.name;
+                    htmlStr += '<span class="fieldLabel">';
+                    if (fieldIndex == 0) {
+                      htmlStr += '<strong>' + (parseInt(entryIndex) + 1) + '.</strong>&nbsp;';
+                    }
+                      htmlStr += e.label;
+                    if (e.helpText) {
+                      htmlStr += '<a href="#" class="fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><span class="help-container">&nbsp;</span></a>';
+                    }
 
-htmlStr += '</span>';
+                    htmlStr += '</span>';
 
-htmlStr += '<span class="fieldValue">';
+                    htmlStr += '<span class="fieldValue">';
 
-if (e.fieldType == 'textarea') {
-htmlStr += '<textarea name="' + name + '" rows="2" id="' + name + '" class="' + e.name + '">' + e.value + '</textarea>';
-} else {
-htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + '"/>';
-}
+                    if (e.fieldType == 'textarea') {
+                      htmlStr += '<textarea name="' + name + '" rows="2" id="' + name + '" class="' + e.name + '">' + e.value + '</textarea>';
+                    } else {
+                      htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + '"/>';
+                    }
 
-htmlStr += "</span>";
-fieldCount++;
-}
-if (entryIndex > 0) {
-htmlStr += '<span class="deleteButton"><button class="btn btn-small btn-danger"
-                                               onclick="deleteEntry(' + entryIndex + ');
-                                               return false;"><i class="icon-remove icon-white"></i>&nbsp;Delete
-</button></span>';
-}
-htmlStr += "</div>"
+                    htmlStr += "</span>";
+                    fieldCount++;
+                }
+                if (entryIndex > 0) {
+                htmlStr += '<span class="deleteButton"><button class="btn btn-small btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><i class="icon-remove icon-white"></i>&nbsp;Delete </button></span>';
+                }
+                htmlStr += "</div>"
                 itemCount++;
             }
             $("#observationFields").html(htmlStr);

@@ -69,7 +69,14 @@
     </div>
 </nav>
 
-<g:layoutBody/>
+<g:set var="containerClass" value="container"/>
+<g:if test="${pageProperty(name:'page.useFluidLayout')}">
+    <g:set var="containerClass" value="container-fluid"/>
+</g:if>
+
+<div class="${containerClass}">
+    <g:layoutBody/>
+</div>
 
 <section id="associated-brands" class="dark darker">
     <div class="container">
