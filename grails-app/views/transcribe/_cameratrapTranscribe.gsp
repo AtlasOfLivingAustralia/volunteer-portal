@@ -46,7 +46,7 @@
                         </g:each>
                         <g:each in="${sequences.previous}" var="p">
                             <div class="faux-img-cell" data-seq-no="${p}">
-                                <cl:sequenceThumbnail project="${taskInstance.project}" seqNo=" $ p"/>
+                                <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
                             </div>
                         </g:each>
                         <div class="faux-img-cell active default">
@@ -54,7 +54,7 @@
                         </div>
                         <g:each in="${sequences.next}" var="n">
                             <div class="faux-img-cell" data-seq-no="${n}">
-                                <cl:sequenceThumbnail project="${taskInstance.project}" seqNo=" $ n"/>
+                                <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${n}"/>
                             </div>
                         </g:each>
                         <g:each in="${0..<(3 - sequences.next.size())}">
