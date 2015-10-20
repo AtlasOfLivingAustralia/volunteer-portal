@@ -31,7 +31,7 @@
 </cl:headerContent>
 
 <g:if test="${errorMessages}">
-    <div class="alert alert-error">
+    <div class="alert alert-danger">
         Please correct the following before proceeding:
         <ul>
             <g:each in="${errorMessages}" var="errorMessage">

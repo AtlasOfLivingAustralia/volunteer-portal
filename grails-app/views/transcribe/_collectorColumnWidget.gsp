@@ -1,9 +1,9 @@
-<div class="collectorColumnWidget control-group span12 ${cssClass}" fieldType="${field.fieldType}">
+<div class="collectorColumnWidget form-group ${cssClass}" fieldType="${field.fieldType}">%{-- col-md-12 --}%
 
-    <div class="row-fluid">
-        <div class="span12">
+    <div class="row">
+        <div class="col-md-12">
             <g:textField tabindex="${tabindex}" name="recordValues.0.${field.fieldType}"
-                         class="span12 autocomplete ${field.fieldType.toString()}"
+                         class="form-control autocomplete ${field.fieldType.toString()}"
                          validationRule="${validationRule?.name}"
                          value="${recordValues.get(0)?.get(field.fieldType.toString())}"/>
             <g:hiddenField name="recordValues.0.recordedByID" class="recordedByID" id="recordValues.0.recordedByID"
@@ -11,10 +11,10 @@
         </div>
     </div>
 
-    <div class="row-fluid">
-        <div class="span12">
+    <div class="row">
+        <div class="col-md-12">
             <g:textField tabindex="${tabindex}" name="recordValues.1.${field.fieldType}"
-                         class="span12 autocomplete ${field.fieldType.toString()}"
+                         class="form-control autocomplete ${field.fieldType.toString()}"
                          validationRule="${validationRule?.testEmptyValues ? "" : validationRule?.name}"
                          value="${recordValues.get(1)?.get(field.fieldType.toString())}"/>
             <g:hiddenField name="recordValues.1.recordedByID" class="recordedByID" id="recordValues.1.recordedByID"
@@ -22,10 +22,10 @@
         </div>
     </div>
 
-    <div class="row-fluid">
-        <div class="span12">
+    <div class="row">
+        <div class="col-md-12">
             <g:textField tabindex="${tabindex}" name="recordValues.2.${field.fieldType}"
-                         class="span12 autocomplete ${field.fieldType.toString()}"
+                         class="form-control autocomplete ${field.fieldType.toString()}"
                          validationRule="${validationRule?.testEmptyValues ? "" : validationRule?.name}"
                          value="${recordValues.get(2)?.get(field.fieldType.toString())}"/>
             <g:hiddenField name="recordValues.2.recordedByID" class="recordedByID" id="recordValues.2.recordedByID"
@@ -33,10 +33,10 @@
         </div>
     </div>
 
-    <div class="row-fluid">
-        <div class="span12">
+    <div class="row">
+        <div class="col-md-12">
             <g:textField tabindex="${tabindex}" name="recordValues.3.${field.fieldType}"
-                         class="span12 autocomplete ${field.fieldType.toString()}"
+                         class="form-control autocomplete ${field.fieldType.toString()}"
                          validationRule="${validationRule?.testEmptyValues ? "" : validationRule?.name}"
                          value="${recordValues.get(3)?.get(field.fieldType.toString())}"/>
             <g:hiddenField name="recordValues.3.recordedByID" class="recordedByID" id="recordValues.3.recordedByID"

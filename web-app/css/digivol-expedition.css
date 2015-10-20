@@ -1,0 +1,5 @@
+/* Duplicate .stepwizard .btn-primary for use with bs carousel */
+.stepwizard .btn.active {
+    background-color: #222;
+    color: #fff;
+}

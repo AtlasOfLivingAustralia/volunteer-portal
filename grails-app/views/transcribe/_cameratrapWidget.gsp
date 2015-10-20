@@ -1,6 +1,6 @@
 <div class="itemgrid">
     <g:if test="${imageInfos.error}">
-        <div class="alert alert-block alert-error">
+        <div class="alert alert-block alert-danger">
             Images for picklist id: ${picklistId} could not be loaded because ${imageInfos.error}
         </div>
     </g:if>

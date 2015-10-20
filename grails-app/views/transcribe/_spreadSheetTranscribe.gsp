@@ -10,7 +10,7 @@
 <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
 
 <g:if test="${!entriesField}">
-    <div class="alert alert-error">
+    <div class="alert alert-danger">
         You need to define the sightingCount field in this template to hold the number rows in the grid
     </div>
 </g:if>
@@ -24,6 +24,12 @@
        value="${(recordValues?.get(0)?.get(entriesField?.fieldType?.name()) ?: entriesField?.defaultValue ?: "0").toInteger()}"/>
 
 <style>
+
+#dataGrid, #dataGrid div {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
 
 .slick-cell {
     padding: 0;
@@ -66,46 +72,43 @@
 </style>
 
 
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <div>
-                <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
-                <g:imageViewer multimedia="${multimedia}"/>
-            </div>
+<div class="row">
+    <div class="col-md-12">
+        <div>
+            <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
+            <g:imageViewer multimedia="${multimedia}"/>
         </div>
     </div>
+</div>
 
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="well well-small transcribeSection" style="margin-top: 10px">
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${template.viewParams?.datasetSectionHeader ?: 'Specimen details'}</span>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well well-sm transcribeSection" style="margin-top: 10px">
+            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${template.viewParams?.datasetSectionHeader ?: 'Specimen details'}</span>
 
-                <div class="row-fluid" style="margin-top: 10px">
-                    <div class="span12">
-                        <div id="dataGrid" style="height: 300px"></div>
-                    </div>
+            <div class="row" style="margin-top: 10px">
+                <div class="col-md-12">
+                    <div id="dataGrid" style="height: 300px"></div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="spreadsheet-form-fields" style="display: none">
-        <g:each in="${0..numItems}" var="i">
-            <div>
-                <g:each in="${fieldList}" var="field" status="fieldIndex">
-                    <g:set var="fieldLabel"
-                           value="${StringEscapeUtils.escapeJavaScript(field.label ?: field.fieldType.label)}"/>
-                    <g:set var="fieldName" value="${field.fieldType.name()}"/>
-                    <g:set var="fieldValue"
-                           value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}"/>
-                    <input type="text" name="recordValues.${i}.${fieldName}" value="${fieldValue}"
-                           id="recordValues.${i}.${fieldName}"/>
-                </g:each>
-            </div>
-        </g:each>
-    </div>
-
+<div id="spreadsheet-form-fields" style="display: none">
+    <g:each in="${0..numItems}" var="i">
+        <div>
+            <g:each in="${fieldList}" var="field" status="fieldIndex">
+                <g:set var="fieldLabel"
+                       value="${StringEscapeUtils.escapeJavaScript(field.label ?: field.fieldType.label)}"/>
+                <g:set var="fieldName" value="${field.fieldType.name()}"/>
+                <g:set var="fieldValue"
+                       value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}"/>
+                <input type="text" name="recordValues.${i}.${fieldName}" value="${fieldValue}"
+                       id="recordValues.${i}.${fieldName}"/>
+            </g:each>
+        </div>
+    </g:each>
 </div>
 
 <r:script>
@@ -288,8 +291,7 @@ var renderItem = function(item) {
         if (selector.length) {
             selector.attr('value', value);
         } else {
-            $("#spreadsheet-form-fields").append("<input type='text' name='" + elementId + "'
-                                                                 id='" + elementId + "' value='" +  value + "'/>");
+            $("#spreadsheet-form-fields").append("<input type='text' name='" + elementId + "' id='" + elementId + "' value='" +  value + "'/>");
                 }
             });
         };

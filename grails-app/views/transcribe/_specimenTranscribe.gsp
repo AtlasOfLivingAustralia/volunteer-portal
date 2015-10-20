@@ -1,17 +1,16 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span8">
-            <div class="well well-small">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="well well-sm">
                 <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
                 <g:imageViewer multimedia="${multimedia}"/>
             </div>
         </div>
 
-        <div class="span4">
-            <div class="well well-small">
+        <div class="col-md-4">
+            <div class="well well-sm">
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
 
@@ -46,14 +45,14 @@
                 </div>
             </div>
 
-            <div class="well well-small">
+            <div class="well well-sm">
                 <g:set var="allTextField"
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                 <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
                 <a href="#" class="fieldHelp"
                    title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><span
                         class="help-container">&nbsp;</span></a>
-                <g:textArea class="span12" name="recordValues.0.occurrenceRemarks"
+                <g:textArea class="col-md-12" name="recordValues.0.occurrenceRemarks"
                             value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                             rows="6" cols="42"/>
                 <div>
@@ -90,4 +89,3 @@
                                   recordValues="${recordValues}" title="Identification"
                                   description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
 
-</div>

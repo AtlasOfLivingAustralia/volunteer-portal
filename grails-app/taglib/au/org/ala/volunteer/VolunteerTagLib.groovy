@@ -30,7 +30,7 @@ class VolunteerTagLib {
      * @attr title The page title
      */
     def pageTitle = { attrs, body ->
-        def appName = g.message(code: 'default.application.name')
+        def appName = g.message(code: 'default.application.name').toString().toUpperCase()
         def pageName = attrs.title ?: 'Home'
         out << "$appName | $pageName"
     }
@@ -363,7 +363,7 @@ class VolunteerTagLib {
                 def badgeClass = "label"
                 if (taskInstance.isValid == false) {
                     status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-important"
+                    badgeClass = "label label-danger"
                 } else if (taskInstance.isValid) {
                     status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
                     badgeClass = "label label-success"

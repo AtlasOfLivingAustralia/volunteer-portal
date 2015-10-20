@@ -20,6 +20,11 @@ modules = {
         resource url: 'js/digivol-notebook.js'
     }
 
+    'digivol-expedition' {
+        dependsOn 'digivol', 'bootbox'
+        resource url: '/css/digivol-expedition.css'
+    }
+
     'qtip' {
         dependsOn "jquery"
         resource url:'/js/qtip.2.2.1/jquery.qtip.css'

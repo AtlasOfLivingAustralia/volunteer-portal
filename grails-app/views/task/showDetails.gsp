@@ -65,7 +65,7 @@
 </cl:headerContent>
 
 <g:if test="${!taskInstance}">
-    <div class="alert alert-error">
+    <div class="alert alert-danger">
         Task is null!
     </div>
 </g:if>

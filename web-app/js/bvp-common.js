@@ -14,7 +14,8 @@ var bvp = {};
             title: options.title ? options.title : 'Modal Title',
             hideHeader: options.hideHeader ? options.hideHeader : false,
             onClose: options.onClose ? options.onClose : null,
-            onShown: options.onShown ? options.onShown : null
+            onShown: options.onShown ? options.onShown : null,
+            buttons: options.buttons ? options.buttons : null
         };
 
         $.get(opts.url, function(html) {
@@ -22,7 +23,8 @@ var bvp = {};
                 message: html,
                 title: options.title,
                 backdrop: options.backdrop,
-                onEscape: true
+                onEscape: true,
+                buttons: options.buttons
             })
         });
 
