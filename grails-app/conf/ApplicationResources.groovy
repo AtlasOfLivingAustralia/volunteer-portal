@@ -15,6 +15,11 @@ modules = {
         resource url: '/js/digivol-stats.js'
     }
 
+    'digivol-notebook' {
+        dependsOn 'digivol', 'marker-clusterer'
+        resource url: 'js/digivol-notebook.js'
+    }
+
     'qtip' {
         dependsOn "jquery"
         resource url:'/js/qtip.2.2.1/jquery.qtip.css'
@@ -35,10 +40,6 @@ modules = {
         'jquery-theme' {
             resource id:'theme', url:'/js/jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'
         }
-    }
-
-    'bootstrap-js' {
-        resource url:[dir:'js', file:'bootstrap.js', plugin: 'ala-web-theme', disposition: 'head']
     }
 
     'jqZoom' {
@@ -202,5 +203,10 @@ modules = {
     "knockout" {
         resource url: 'js/knockout/3.3.0/knockout-3.3.0.js'
         resource url: 'js/knockout/3.3.0/knockout.mapping-2.4.1.min.js'
+    }
+
+    'marker-clusterer' {
+        resource url: 'js/markerclusterer.js'
+
     }
 }

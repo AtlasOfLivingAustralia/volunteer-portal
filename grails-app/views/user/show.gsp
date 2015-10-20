@@ -8,8 +8,9 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
     <gvisualization:apiImport/>
-    <r:require modules="qtip"/>
+    <r:require module="digivol-notebook"/>
 </head>
 
 <body>
@@ -112,6 +113,7 @@
                             <i>First contributed in <g:formatDate date="${userInstance?.created}" format="MMM yyyy"/></i>
                         </p>
                     </div>
+                    <a id="profileTabs"></a>
                 </div>
             </div>
 
@@ -121,7 +123,6 @@
 
 </cl:headerContent>
 
-<a id="profileTabs"></a>
 <g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}"/>
 <section id="user-progress">
     <div class="container" >
@@ -223,192 +224,17 @@
             <div class="col-sm-4">
                 <div class="map-header">
                     <h2 class="heading">Record Locations</h2>
-                    <p>Jerry has transcribed records from all the locations on this map</p>
+                    <p>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? 'You' : ''} ${userInstance.userId == currentUser ? 'have' : 'has'} transcribed records from all the locations on this map</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="map">
+    <div id="map"
+         markers-url="${createLink(controller: "user", action: 'ajaxGetPoints', id: userInstance.id)}"
+         infowindow-url="${createLink(controller: 'task', action: 'details')}">
     </div>
 </section>
 
-<section id="main-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-
-                <div class="row">
-                    <div class="col-sm-8">
-                        <h2 class="heading">
-                            Jerry's Current Expeditions
-                        </h2>
-                    </div>
-                    <div class="col-sm-4">
-
-                    </div>
-                </div>
-
-
-
-                <div class="row">
-                    <div class="col-sm-12 col-md-4">
-                        <div class="thumbnail">
-                            <a class="btn btn-info btn-xs label">Australian Museum</a>
-                            <a href="#"><img src="img/placeholder/1.jpg"></a>
-                            <div class="caption">
-                                <h4><a href="#">Thumbnail label</a></h4>
-                                <a class="badge"><span class="glyphicon glyphicon-tag icon-flipped"></span>Speciman</a><a class="badge"><span class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>Australian Museum</a>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-
-                                <div class="expedition-progress">
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success" style="width: 10%">
-                                            <span class="sr-only">10% Validated (success)</span>
-                                        </div>
-                                        <div class="progress-bar progress-bar-transcribed" style="width: 20%">
-                                            <span class="sr-only">20% Transcribed</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="progress-legend">
-                                        <div class="row">
-                                            <div class="col-xs-4">
-                                                <b>38%</b> Validated
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <b>60%</b> Transcribed
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <b>2000</b> Tasks
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12 col-md-4">
-                        <div class="thumbnail">
-                            <a class="btn btn-info btn-xs label">Australian Museum</a>
-                            <a href="#"><img src="img/placeholder/1.jpg"></a>
-                            <div class="caption">
-                                <h4><a href="#">Thumbnail label</a></h4>
-                                <a class="badge"><span class="glyphicon glyphicon-tag icon-flipped"></span>Speciman</a><a class="badge"><span class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>Australian Museum</a>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-
-                                <div class="expedition-progress">
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success" style="width: 10%">
-                                            <span class="sr-only">10% Validated (success)</span>
-                                        </div>
-                                        <div class="progress-bar progress-bar-transcribed" style="width: 20%">
-                                            <span class="sr-only">20% Transcribed</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="progress-legend">
-                                        <div class="row">
-                                            <div class="col-xs-4">
-                                                <b>38%</b> Validated
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <b>60%</b> Transcribed
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <b>2000</b> Tasks
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12 col-md-4">
-                        <div class="thumbnail">
-                            <a class="btn btn-info btn-xs label">Australian Museum</a>
-                            <a href="#"><img src="img/placeholder/1.jpg"></a>
-                            <div class="caption">
-                                <h4><a href="#">Thumbnail label</a></h4>
-                                <a class="badge"><span class="glyphicon glyphicon-tag icon-flipped"></span>Speciman</a><a class="badge"><span class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>Australian Museum</a>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-
-                                <div class="expedition-progress">
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success" style="width: 10%">
-                                            <span class="sr-only">10% Validated (success)</span>
-                                        </div>
-                                        <div class="progress-bar progress-bar-transcribed" style="width: 20%">
-                                            <span class="sr-only">20% Transcribed</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="progress-legend">
-                                        <div class="row">
-                                            <div class="col-xs-4">
-                                                <b>38%</b> Validated
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <b>60%</b> Transcribed
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <b>2000</b> Tasks
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--/row-->
-
-
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<r:script>
-    var notebookTabs = {
-        nonAjaxTabs: ["4"],
-
-        loadContent: function () {
-            var currentSelectedTab = $('#profileTabsList li.active a');
-            // This is a workaround to show the static content of the tab that was selected when no Ajax is involved
-            $('#profileTabsList li:eq(0) a').tab('show');
-            currentSelectedTab.tab('show');
-            if ($.inArray(currentSelectedTab.attr('tab-index'), notebookTabs.nonAjaxTabs) == -1) {
-                var url = $('#profileTabsList li.active a').attr('content-url');
-                console.log('url 1 = ' + url);
-                $.ajax(url).done(function (content) {
-                    $("#profileTabsContent .tab-pane.active").html(content);
-                });
-            }
-        },
-
-        updateQueryStringParameter: function (uri, key, value) {
-            var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-            if (uri.match(re)) {
-                return uri.replace(re, '$1' + key + "=" + value + '$2');
-            }
-            else {
-                return uri + separator + key + "=" + value;
-            }
-        }
-    };
-
-    $(function() {
-        notebookTabs.loadContent();
-
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            e.preventDefault();
-            location.replace(notebookTabs.updateQueryStringParameter(window.location.pathname, 'selectedTab', $(this).attr('tab-index')) + '#profileTabs');
-        });
-    });
-</r:script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 
 <g:each in="${projects}" var="projectSummary" status="i">
-    <g:if test="${(i % 2) == 0}"><div class="row ."></g:if>
+    <g:if test="${(i % 2) == 0}"><div class="row"></g:if>
     <div class="col-md-6">
         <div class="thumbnail">
             <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}"><img src="${projectSummary.iconImage}"></a>
