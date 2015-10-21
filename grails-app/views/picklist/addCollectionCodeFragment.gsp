@@ -2,17 +2,17 @@
 </div>
 
 <div class="form-horizontal">
-    <div class="control-group">
-        <label class="control-label" for="newCollectionCode">Collection code:</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="newCollectionCode">Collection code:</label>
 
-        <div class="controls">
-            <g:textField name="newCollectionCode"/>
+        <div class="col-md-6">
+            <g:textField name="newCollectionCode" class="form-control"/>
         </div>
     </div>
 
-    <div class="control-group">
-        <div class="controls">
-            <button type="button" class="btn" id="btnCancelCreateCollectionCode">Cancel</button>
+    <div class="form-group">
+        <div class="col-md-offset-3 col-md-9">
+            <button type="button" class="btn btn-default" id="btnCancelCreateCollectionCode">Cancel</button>
             <button type="button" class="btn btn-primary" id="btnCreateNewCollectionCode">Create</button>
         </div>
     </div>

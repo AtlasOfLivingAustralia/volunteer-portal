@@ -7,53 +7,65 @@
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>
 
-<body>
-<div class="nav">
-    <span class="menuButton"><a class="crumb" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-    </span>
-</div>
-
-<div>
-    <h1><g:message code="default.list.label" args="[entityName]"/></h1>
+<body class="admin">
+<div class="container">
+    <cl:headerContent title="${message(code: "default.list.label", args: [entityName])}" selectedNavItem="bvpadmin">
+        <%
+            pageScope.crumbs = [
+                    [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
+                    [link: createLink(controller: 'picklist', action: 'manage'), label: message(code: 'manage.picklists.label', default: 'Manage picklists')],
+                    [link: createLink(controller: 'picklist', action: 'list'), label: message(code: 'default.list.label', args: ['Picklist'])],
+                    [link: createLink(controller: 'picklist', action: 'show', id:params.id), label: message(code: 'default.show.label', args: ["Picklist - ${picklistInstance?.uiLabel}"])]
+            ]
+        %>
+    </cl:headerContent>
     <cl:messages/>
-    <div class="list">
-        <table>
-            <thead>
-            <tr>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12" >
+                    <table class="table-striped table-condensed table-hover">
+                        <thead>
+                        <tr>
 
-                <g:sortableColumn property="id" title="${message(code: 'picklistItem.id.label', default: 'Id')}"/>
+                            <g:sortableColumn property="id" title="${message(code: 'picklistItem.id.label', default: 'Id')}"/>
 
-                <g:sortableColumn property="key" title="${message(code: 'picklistItem.key.label', default: 'Key')}"/>
+                            <g:sortableColumn property="key" title="${message(code: 'picklistItem.key.label', default: 'Key')}"/>
 
-                <th><g:message code="picklistItem.picklist.label" default="Picklist"/></th>
+                            <th><g:message code="picklistItem.picklist.label" default="Picklist"/></th>
 
-                <g:sortableColumn property="value"
-                                  title="${message(code: 'picklistItem.value.label', default: 'Value')}"/>
+                            <g:sortableColumn property="value"
+                                              title="${message(code: 'picklistItem.value.label', default: 'Value')}"/>
 
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${picklistItemInstanceList}" status="i" var="picklistItemInstance">
-                <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${picklistItemInstanceList}" status="i" var="picklistItemInstance">
+                            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
-                    <td><g:link action="show"
-                                id="${picklistItemInstance.id}">${fieldValue(bean: picklistItemInstance, field: "id")}</g:link></td>
+                                <td><g:link action="show"
+                                            id="${picklistItemInstance.id}">${picklistItemInstance?.id}</g:link></td>
 
-                    <td>${fieldValue(bean: picklistItemInstance, field: "key")}</td>
+                                <td>${picklistItemInstance?.key}</td>
 
-                    <td>${fieldValue(bean: picklistItemInstance, field: "picklist")}</td>
+                                <td>${picklistItemInstance?.picklist}</td>
 
-                    <td>${fieldValue(bean: picklistItemInstance, field: "value")}</td>
+                                <td>${picklistItemInstance?.value}</td>
 
-                </tr>
-            </g:each>
-            </tbody>
-        </table>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                    </table>
+
+                    <div class="pagination">
+                        <g:paginate total="${picklistItemInstanceTotal}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="paginateButtons">
-        <g:paginate total="${picklistItemInstanceTotal}"/>
-    </div>
+
 </div>
 </body>
 </html>
