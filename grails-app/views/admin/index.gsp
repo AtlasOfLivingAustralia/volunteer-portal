@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-md-12">
 
-                    <table class="table table-condensed table-condensed admin-table">
+                    <table class="table table-condensed table-striped table-hover admin-table">
                         <thead>
                         <tr>
                             <th>Tool</th>
