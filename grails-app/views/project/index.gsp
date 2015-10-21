@@ -4,6 +4,7 @@
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
 <g:set var="tasksDone" value="${tasksTranscribed ?: 0}"/>
 <g:set var="tasksTotal" value="${taskCount ?: 0}"/>
+<sitemesh:parameter name="includeBack" value="${true}"/>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>

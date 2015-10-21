@@ -6,15 +6,13 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
 <%@ page contentType="text/html; UTF-8" %>
-
 <html>
 <head>
-    <meta name="layout" content="digivol-expedition"/>
+    <meta name="layout" content="digivol-transcribe"/>
 
     <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
-    %{--<r:require module="bootstrap-js"/>--}%
-    <r:require module="digivol-expedition" />
+    <r:require module="digivol-transcribe" />
     <r:require module="bvp-js" />
     <r:require module="panZoom"/>
     <r:require module="jqZoom"/>

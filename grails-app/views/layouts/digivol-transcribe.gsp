@@ -29,9 +29,17 @@
 
 <g:render template="/layouts/condensedNav" />
 
-<g:layoutBody/>
+<g:set var="containerClass" value="container"/>
+<g:if test="${pageProperty(name:'page.useFluidLayout')}">
+    <g:set var="containerClass" value="container-fluid"/>
+</g:if>
+
+<div class="${containerClass}">
+    <g:layoutBody/>
+</div>
 
 <g:render template="/layouts/associatedBrands" />
+
 <r:script>
     var BVP_JS_URLS = {
                 selectProjectFragment: "${createLink(controller: 'project', action: 'findProjectFragment')}",
