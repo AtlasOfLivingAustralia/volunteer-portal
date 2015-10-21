@@ -46,7 +46,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="well well-small" style="margin-top: 10px">
+            <div class="well well-sm" style="margin-top: 10px">
                 <h3>Caches</h3>
                 <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-default">Clear page caches</a>
                 <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-default">Clear entity caches</a>

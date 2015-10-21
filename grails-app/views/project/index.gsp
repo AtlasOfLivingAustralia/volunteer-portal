@@ -1,9 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="au.org.ala.volunteer.Task" %>
+<%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
 <g:set var="tasksDone" value="${tasksTranscribed ?: 0}"/>
 <g:set var="tasksTotal" value="${taskCount ?: 0}"/>
+<sitemesh:parameter name="includeBack" value="${true}"/>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -200,7 +201,6 @@
 <div class="a-feature expedition old">
     <div class="container">
         <div class="row">
-
             <div class="col-sm-12">
                 <div class="logo-holder">
                     <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id}"/>" class="img-responsive institution-logo-main">
@@ -250,7 +250,6 @@
                     </cl:isLoggedIn>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -271,8 +270,8 @@
             </div>
         </div>
     </div>
-
 </div>
+
 <g:if test="${projectInstance.showMap}">
     <section id="record-locations">
         <div class="container">
@@ -305,104 +304,34 @@
 
 
                 <div class="expedition-team">
-
                     <div class="row">
-                        <div class="col-xs-3 col-sm-2">
-                            <img src="img/team/teamExpeditionLeader.png" class="img-responsive">
-                        </div>
-                        <div class="col-xs-9 col-sm-4">
-                            <h3>Expedition Leaders</h3>
-                            <ul>
-                                <li><a href="#">John Smithy (65)</a></li>
-                                <li><a href="#">Peter Singer (65)</a></li>
-                                <li><a href="#">John Smithy (65)</a></li>
-                                <li><a href="#">Peter Singer (65)</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="col-xs-3 col-sm-2">
-                            <img src="img/team/teamScientist.png" class="img-responsive">
-                        </div>
-                        <div class="col-xs-9 col-sm-4">
-                            <h3>Scientists</h3>
-                            <ul>
-                                <li><a href="#">John Smithy (65)</a></li>
-                                <li><a href="#">Peter Singer (65)</a></li>
-                            </ul>
-                        </div>
+                        <g:each in="${roles}" status="i" var="role">
+                            <g:set var="iconIndex"
+                                   value="${(((role.name == 'Expedition Leader') && projectInstance.leaderIconIndex) ? projectInstance.leaderIconIndex : 0)}"
+                                   scope="page"/>
+                            <g:set var="roleIcon" value="${role.icons[iconIndex]}"/>
+                            <div class="col-xs-3 col-sm-2">
+                                <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-responsive" title="${roleIcon?.name}" alt="${roleIcon?.name}">
+                            </div>
+                            <div class="col-xs-9 col-sm-4">
+                                <h3>${role.name}</h3>
+                                <ul>
+                                    <g:each in="${role.members}" var="member">
+                                        <li><a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}">${member.name} (${member.count})</a>
+                                        </li>
+                                    </g:each>
+                                </ul>
+                            </div>
+                        </g:each>
                     </div>
-
-                    <div class="row">
-                        <div class="col-xs-3 col-sm-2">
-                            <img src="img/team/teamTechnicalOfficer.png" class="img-responsive">
-                        </div>
-                        <div class="col-xs-9 col-sm-4">
-                            <h3>Technical Officers</h3>
-                            <ul>
-                                <li><a href="#">John Smithy (65)</a></li>
-                                <li><a href="#">Peter Singer (65)</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="col-xs-3 col-sm-2">
-                            <img src="img/team/teamCollectionsManager.png" class="img-responsive">
-                        </div>
-                        <div class="col-xs-9 col-sm-4">
-                            <h3>Collection Managers</h3>
-                            <ul>
-                                <li><a href="#">John Smithy (65)</a></li>
-                                <li><a href="#">Peter Singer (65)</a></li>
-                                <li><a href="#">John Smithy (65)</a></li>
-                                <li><a href="#">Peter Singer (65)</a></li>
-                            </ul>
-                        </div>
-                    </div><!--/row-->
                 </div>
 
 
             </div>
 
             <div class="col-sm-4">
-                <h2 class="heading">
-                    Latest Contributions
-                </h2>
-                <ul class="media-list">
-
-                    <li class="media">
-                        <div class="media-left">
-                            <a href="#">
-                                <img src="https://randomuser.me/api/portraits/med/men/51.jpg" class="img-circle img-responsive">
-                            </a>
-                        </div>
-                        <div class="media-body">
-                            <span class="time">5 hours ago</span>
-                            <h4 class="media-heading"><a href="#">Warren Lee</a></h4>
-                            <p>Has posted in the forum: <a href="#">Hawaiian Mouthparts expedition</a></p>
-                            <div class="transcribed-thumbs">
-                                <img src="http://placehold.it/40x40/ccc">
-                            </div>
-                            <a class="btn btn-default btn-xs join" href="#" role="button">Join discussion »</a>
-                        </div>
-                    </li>
-                    <li class="media">
-                        <div class="media-left">
-                            <a href="#">
-                                <img src="https://randomuser.me/api/portraits/med/women/62.jpg" class="img-circle">
-                            </a>
-                        </div>
-                        <div class="media-body">
-                            <span class="time">5 hours ago</span>
-                            <h4 class="media-heading"><a href="#">Margret Kin</a></h4>
-                            <p>Transcribed 3 items from the <a href="#">Bivalve expedition</a></p>
-                            <div class="transcribed-thumbs">
-                                <img src="http://placehold.it/40x40/ccc"> <img src="http://placehold.it/40x40/ccc"> <img src="http://placehold.it/40x40/ccc">
-                            </div>
-                            <a class="btn btn-default btn-xs join" href="#" role="button">Join expedition »</a>
-                        </div>
-                    </li>
-
-                </ul>
-
+                %{-- leaderboard --}%
+                <g:render template="/leaderBoard/miniLeaderBoard"/>
             </div>
         </div>
     </div>

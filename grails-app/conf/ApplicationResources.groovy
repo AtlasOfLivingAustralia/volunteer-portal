@@ -20,7 +20,7 @@ modules = {
         resource url: 'js/digivol-notebook.js'
     }
 
-    'digivol-expedition' {
+    'digivol-transcribe' {
         dependsOn 'digivol', 'bootbox'
         resource url: '/css/digivol-expedition.css'
     }
@@ -87,8 +87,8 @@ modules = {
 
     "bootstrap-switch" {
         dependsOn "jquery"
-        resource url: 'js/bootstrap-switch/bootstrap-switch.css'
-        resource url: 'js/bootstrap-switch/bootstrap-switch.js'
+        resource url: 'js/bootstrap-switch/bootstrap-switch.min.css'
+        resource url: 'js/bootstrap-switch/bootstrap-switch.min.js'
     }
 
     "institution-dropdown" {

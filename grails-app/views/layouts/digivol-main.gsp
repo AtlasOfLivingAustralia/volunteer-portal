@@ -16,8 +16,6 @@
     <g:layoutHead/>
     <r:layoutResources/>
 
-    <%-- Allow overriding of primary branding colour --%>
-    <meta name="theme-color" content="${g.pageProperty(name: "page.primaryColour", default: "#d5502a")}"/>
     <g:render template="/layouts/commonCss" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -246,19 +244,7 @@
     </footer>
 </section>
 
-<section id="associated-brands" class="dark darker">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-7">
-                <r:img dir="images/2.0/" file="logoAustMus.png"/> <r:img dir="images/2.0/" file="logoALA.png"/>
-            </div>
-
-            <div class="col-sm-5">
-                <r:img dir="images/2.0/" file="logoAGI.png" class="logo-agi"/>
-            </div>
-        </div>
-    </div>
-</section>
+<g:render template="/layouts/associatedBrands" />
 
 <g:set var="cheevs" value="${cl.newAchievements()}"/>
 <g:if test="${cl.achievementsEnabled() && cheevs.size() > 0}">

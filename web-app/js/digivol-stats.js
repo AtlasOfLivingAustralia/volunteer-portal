@@ -67,7 +67,7 @@ function digivolStats(config) {
   jQuery(function($) {
     ko.applyBindings(viewModel, document.getElementById('digivol-stats'));
 
-    var p = $.get(config.statsUrl, { institutionId: config.institutionId }, $.noop, 'json');
+    var p = $.get(config.statsUrl, { institutionId: config.institutionId, maxContributors: config.maxContributors }, $.noop, 'json');
     p.done(function(data, status, jqXHR) {
       viewModel.loading(false);
       ko.mapping.fromJS(data, viewModel);

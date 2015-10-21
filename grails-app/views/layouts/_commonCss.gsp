@@ -1,3 +1,5 @@
+<%-- Allow overriding of primary branding colour --%>
+<meta name="theme-color" content="${g.pageProperty(name: "page.primaryColour", default: "#d5502a")}"/>
 <style>
     section#footer .footer-brand,
     section#footer .footer-brand:hover,
@@ -23,7 +25,8 @@
     .key.transcribed,
     .pagination > .active > span,
     .pagination > .active > span:hover,
-    .transcription-actions .btn.btn-next {
+    .transcription-actions .btn.btn-next,
+    .transcription-branding .institution-logo-main {
         background-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
     .progress .progress-bar-success {
