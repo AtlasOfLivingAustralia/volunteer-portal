@@ -48,6 +48,7 @@ class IndexController {
         def totalTasks = Task.count()
         def completedTasks = Task.countByFullyTranscribedByIsNotNull()
         def transcriberCount = User.countByTranscribedCountGreaterThan(0)
+        def maxContributors = (params.maxContributors as Integer) ?: 5
 
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
 
@@ -73,7 +74,7 @@ class IndexController {
                 property('dateFullyTranscribed')
             }
             order('dateFullyTranscribed', 'desc')
-            maxResults 5
+            maxResults maxContributors
         }
 
         def contributors = latestContribs.collect {
