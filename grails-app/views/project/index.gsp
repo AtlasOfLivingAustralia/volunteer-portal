@@ -203,7 +203,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="logo-holder">
-                    <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id}"/>" class="img-responsive institution-logo-main">
+                    <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id?:-1}"/>" class="img-responsive institution-logo-main">
                 </div>
             </div>
         </div>
@@ -227,27 +227,28 @@
                     </g:if>
                     <g:else>
                         <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>
-                        <a href="#similarExpeditions" class="btn btn-lg btn-hollow grey">See similar expeditions</a>
+                        <a href="${g.createLink(controller:"project", action:"list", params: [q: "tag:" + projectInstance.projectType?:'' ])}" class="btn btn-lg btn-hollow grey">See similar expeditions</a>
                     </g:else>
                 </div>
                 <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
             </div>
             <div class="col-sm-4">
                 <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
-                <div style="margin-top: 20px;">
-                    <cl:ifValidator project="${projectInstance}">
-                        <g:link style="margin-right: 5px" class="btn pull-right" controller="task" action="projectAdmin"
-                                id="${projectInstance.id}">Validate tasks</g:link>
-                    </cl:ifValidator>
+                <div class="projectActionLinks" >
                     <cl:isLoggedIn>
                         <cl:ifAdmin>
-                            <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="task"
+                            <g:link class="btn btn-warning " controller="task"
                                     action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
-                            <g:link style="margin-right: 5px; color: white" class="btn btn-warning pull-right" controller="project"
+                            <g:link class="btn btn-warning " controller="project"
                                     action="edit" id="${projectInstance.id}"><i
                                     class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
                         </cl:ifAdmin>
                     </cl:isLoggedIn>
+                    <cl:ifValidator project="${projectInstance}">
+                    <g:link class="btn btn-default btn-hollow grey" controller="task" action="projectAdmin"
+                            id="${projectInstance.id}">Validate tasks</g:link>
+                </cl:ifValidator>
+
                 </div>
             </div>
         </div>
@@ -293,7 +294,6 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-8">
-
                 <div class="row">
                     <div class="col-sm-12">
                         <h2 class="heading">
@@ -302,41 +302,43 @@
                     </div>
                 </div>
 
-
-                <div class="expedition-team">
-                    <div class="row">
-                        <g:each in="${roles}" status="i" var="role">
-                            <g:set var="iconIndex"
-                                   value="${(((role.name == 'Expedition Leader') && projectInstance.leaderIconIndex) ? projectInstance.leaderIconIndex : 0)}"
-                                   scope="page"/>
-                            <g:set var="roleIcon" value="${role.icons[iconIndex]}"/>
-                            <div class="col-xs-3 col-sm-2">
-                                <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-responsive" title="${roleIcon?.name}" alt="${roleIcon?.name}">
-                            </div>
-                            <div class="col-xs-9 col-sm-4">
-                                <h3>${role.name}</h3>
-                                <ul>
-                                    <g:each in="${role.members}" var="member">
-                                        <li><a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}">${member.name} (${member.count})</a>
-                                        </li>
-                                    </g:each>
-                                </ul>
-                            </div>
-                        </g:each>
+                <g:if test="${roles.find{it.members?.size()}}">
+                    <div class="expedition-team">
+                        <div class="row">
+                            <g:each in="${roles}" status="i" var="role">
+                            %{--<g:set var="iconIndex"--}%
+                            %{--value="${(((role.name == 'Expedition Leader') && projectInstance.leaderIconIndex) ? projectInstance.leaderIconIndex : 0)}"--}%
+                            %{--scope="page"/>--}%
+                            %{--<g:set var="roleIcon" value="${role.icons[iconIndex]}"/>--}%
+                                <g:set var="roleIcon" value="${role.icons[0]}"/>
+                                <div class="col-xs-3 col-sm-2">
+                                    <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-responsive" title="${roleIcon?.name}" alt="${roleIcon?.name}">
+                                </div>
+                                <div class="col-xs-9 col-sm-4">
+                                    <h3>${role.name}</h3>
+                                    <ul>
+                                        <g:each in="${role.members}" var="member">
+                                            <li><a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}">${member.name} (${member.count})</a>
+                                            </li>
+                                        </g:each>
+                                    </ul>
+                                </div>
+                            </g:each>
+                        </div>
                     </div>
-                </div>
-
-
+                </g:if>
+                <g:else>
+                    [ No transcriptions recorded ]
+                </g:else>
             </div>
 
             <div class="col-sm-4">
-                %{-- leaderboard --}%
+                %{-- mini leaderboard --}%
                 <g:render template="/leaderBoard/miniLeaderBoard"/>
             </div>
         </div>
     </div>
 </section>
-
 
 <div class="row hidden" style="margin-top: 10px">
 

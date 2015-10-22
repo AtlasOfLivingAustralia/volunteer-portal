@@ -327,3 +327,7 @@ table .btn-default:hover {
     opacity: 0.8;
     color: #393939;
 }
+
+.projectActionLinks {
+    margin-top: 20px;
+}

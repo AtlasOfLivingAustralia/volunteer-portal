@@ -120,7 +120,7 @@ class InstitutionService {
     }
 
     public String getLogoImageUrl(Institution institution) {
-        if (hasLogoImage(institution)) {
+        if (institution && hasLogoImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/logo-image.jpg"
         } else {
             return grailsLinkGenerator.resource([dir: '/images/banners', file: 'default-institution-logo.png'])

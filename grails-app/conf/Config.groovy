@@ -64,6 +64,12 @@ expedition = [
         [name: "Expedition Leader",
                 icons: [
                         [
+                            icon: "images/team/teamExpeditionLeader.png",
+                            link: "",
+                            name: "",
+                            bio:  ""
+                        ],
+                        [
                             icon: "images/explorers/GerardKrefft.png",
                             link: "http://www.australianmuseum.net.au/image/Gerard-Krefft/",
                             name: "Gerard Krefft (1830-1881)",
@@ -95,6 +101,11 @@ expedition = [
         [name: "Scientists",
                 icons: [
                         [
+                            icon: "images/team/teamScientist.png",
+                            link: "",
+                            name: "Expedition Scientist",
+                            bio: ""
+                        ],[
                             icon:"images/explorers/EdwardPiersonRamsay.png",
                             name: "Edward Pierson Ramsay",
                             link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
@@ -106,6 +117,11 @@ expedition = [
         [name: "Collection Managers",
                 icons: [
                         [
+                            icon: "images/team/teamCollectionsManager.png",
+                            link: "",
+                            name: "Expedition Collections Manager",
+                            bio: ""
+                        ],[
                             icon: "images/explorers/SusanEmilyNaegueli.png",
                             link: "http://www.australianmuseum.net.au/Harry-Burrell-Glass-Plate-Negative-Collection/",
                             name: "Susan Emily Naegueli",
@@ -117,6 +133,11 @@ expedition = [
         [name: "Technical Officers",
                 icons: [
                         [
+                            icon: "images/team/teamTechnicalOfficer.png",
+                            link: "",
+                            name: "Expedition Technical Officer",
+                            bio: ""
+                        ],[
                             icon: "images/explorers/WilliamSheridanWall.png",
                             name: "William Sheridan Wall",
                             link: "http://www.australianmuseum.net.au/image/William-Sheridan-Wall/",
