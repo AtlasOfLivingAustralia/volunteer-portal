@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Grails Runtime Exception</title>
+    <title><cl:pageTitle title="An error has occured" /></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <style type="text/css">
@@ -28,9 +28,10 @@
 </head>
 
 <body>
+<div class="container">
 <div class="row">
-    <div class="span12">
-        <h1>Grails Runtime Exception</h1>
+    <div class="col-md-12">
+        <h1><g:message code="error.title" default="Oh no!  An error has occured" /></h1>
 
         <h2>Error Details</h2>
 
@@ -60,6 +61,7 @@
             </div>
         </g:if>
     </div>
+</div>
 </div>
 </body>
 </html>
