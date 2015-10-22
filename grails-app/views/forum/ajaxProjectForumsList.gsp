@@ -1,10 +1,6 @@
 <%@ page import="au.org.ala.volunteer.ProjectStatusFilterType; au.org.ala.volunteer.ProjectActiveFilterType" %>
 <style>
 
-.expedition-details h3 {
-    /*background-color: white;*/
-}
-
 [inactive=true] {
     background-color: #F0F0E8;
     opacity: 0.5;
@@ -17,47 +13,54 @@
 </style>
 
 <div style="margin-bottom: 15px">
-    <table class="table" style="margin-bottom: 5px">
+    <table class="table expedition-forum" style="margin-bottom: 5px">
         <colgroup>
             <col style="width:165px"/>
         </colgroup>
         <thead>
         <tr>
             <td>
-                <div class="row-fluid">
-                    <div class="span8">
-                    </div>
+                <div class="row">
+                    <div class="col-sm-8"></div>
 
-                    <div class="span4">
+                    <div class="col-sm-4">
                         <div class="pull-right">
-                            <span>
-                                <a style="vertical-align: middle;" href="#" class="fieldHelp"
-                                   title="Enter search text here to find expeditions"><span
-                                        class="help-container">&nbsp;</span>
-                                </a>
-                            </span>
-                            <g:textField style="margin-top: 10px; margin-bottom: 10px" id="searchbox"
-                                         value="${params.q}" name="searchbox"/>
-                            <button class="btn btn-primary" id="btnSearch">Search</button>
+                            <span><a class="fieldHelp" href="#" style="vertical-align: middle;" title="Enter search text here to find expeditions"><span class="help-container">&nbsp;</span></a></span>
+
+                            <div class="card-filter">
+                                <div class="custom-search-input body">
+                                    <div class="input-group">
+                                        <g:textField class="form-control input-lg" id="searchbox"
+                                                     value="${params.q}" name="searchbox" placeholder="Search expeditions…"/>
+                                        <span class="input-group-btn">
+                                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
 
-                <div class="row-fluid" id="project-forums-btn-bar">
-                    <div class="span2">
+                <div class="row" id="project-forums-btn-bar">
+                    <div class="col-sm-2">
                     </div>
 
-                    <div class="span5">
+                    <div class="col-sm-5">
                         <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}"
                            class="btn ${params.sort == 'name' ? 'current' : ''}">Name</a>
                     </div>
 
-                    <div class="span2 project-type">
+                    <div class="col-sm-2 project-type">
                         <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}"
                            class="btn ${params.sort == 'type' ? 'current' : ''}">Type</a>
                     </div>
 
-                    <div class="span3">
+                    <div class="col-sm-3">
                     </div>
                 </div>
             </td>
@@ -67,29 +70,29 @@
         <g:each in="${projectSummaryList.projectRenderList}" status="i" var="projectSummary">
             <tr inactive="${projectSummary.project.inactive}">
                 <td>
-                    <div class="row-fluid expedition-details">
+                    <div class="row expedition-details">
                         <%-- Project thumbnail --%>
-                        <div class="span2">
+                        <div class="col-sm-2">
                             <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">
                                 <img src="${projectSummary.project.featuredImage}" width="147" height="81"
                                      style="padding-top: 5px"/>
                             </a>
                         </div>
                         <%-- Name and progress bar --%>
-                        <div class="span5">
+                        <div class="col-sm-5">
                             <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.featuredLabel}</a>
                             </h3>
                             <g:render template="../project/projectSummaryProgressBar"
                                       model="${[projectSummary: projectSummary]}"/>
                         </div>
                         <%-- Project type --%>
-                        <div class="span2 project-type">
+                        <div class="col-sm-2 project-type">
                             <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
                             <br/>
                             <span>${projectSummary.iconLabel}</span>
                         </div>
 
-                        <div class="span3">
+                        <div class="col-sm-3">
                             <a href="${createLink(controller: "forum", action: "projectForum", params: [projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> Expedition Topics and <b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> Task Topics
                             </a>
                         </div>

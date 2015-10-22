@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.volunteer.ProjectForumTopic" %>
 <div>
     <g:if test="${topics}">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped">
             <thead>
             <tr>
                 <g:sortableColumn class="button" property="title" title="Topic" action="index" params="${params}"/>

@@ -6,7 +6,7 @@
             <span class="sr-only">${projectSummary?.percentValidated}% Complete (success)</span>
         </div>
         <div class="progress-bar progress-bar-transcribed" style="width: ${diffPercent}%">
-            <span class="sr-only">${diffPercent}% Complete (warning)</span>
+            <span class="sr-only">${diffPercent}% Transcribed</span>
         </div>
     </div>
 

@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
-    <title>Task saved</title>
+    <title><cl:pageTitle title="Task saved"/></title>
     <r:require module="amplify"/>
     <r:script type="text/javascript">
             $(document).ready(function () {
@@ -40,7 +40,7 @@
 <cl:headerContent title="Transcription Saved" crumbLabel="What next?"/>
 
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <div class="lead">Thank you - your transcription was saved
             <span id="dateSaved">at <g:formatDate date="${taskInstance.dateLastUpdated}"
                                                   format="h:mm:ss a z 'on' d MMMM yyyy"/>

@@ -554,8 +554,9 @@
         <div class="col-sm-7 col-xs-12 transcription-controls">
 
             <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default">Skip Image </button>
-                <button type="button" class="btn btn-default">Create Forum Topic</button>
+                <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
+                        title="Skip the to next image">Skip</button>
+                <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
                 <button type="button" class="btn btn-default">View Tutorial</button>
             </div>
 

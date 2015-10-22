@@ -1,6 +1,35 @@
 /* Custom styles to fit new look&feel */
 /**************************************/
 
+.ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.not-a-badge-row {
+    margin-bottom: 10px;
+}
+
+.not-a-badge {
+    padding: 0;
+    min-width: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.not-a-badge:not(:last-child) {
+    margin-right: 10px;
+}
+
+.not-a-badge span {
+    margin-right: 5px;
+}
+
 .btn-file {
     position: relative;
     overflow: hidden;

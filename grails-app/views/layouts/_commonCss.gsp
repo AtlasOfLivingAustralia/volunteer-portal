@@ -41,10 +41,15 @@
     }
 
     body .badge,
+    body .not-a-badge,
+    body .not-a-badge:hover,
     body .badge:hover,
     body.digivol .badge,
     body.digivol .badge:hover,
-    .pagination > li > a {
+    body.digivol .not-a-badge,
+    body.digivol .not-a-badge:hover,
+    .pagination > li > a,
+    .primary-color {
         color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
-}
+    }
 </style>
