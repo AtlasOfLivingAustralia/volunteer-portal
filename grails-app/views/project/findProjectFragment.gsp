@@ -1,9 +1,9 @@
 <div class="form-horizontal">
 
     <div class="control-group">
-        <g:textField name="search" value="" placeholder="Search"/>
-        <button id="btnSearchProjects" class="btn"><i class="icon-search"></i> Search</button>
-        <button class="btn" id="btnCancelProjectSearch">Cancel</button>
+        <g:textField name="search" class="form-control" value="" placeholder="Search"/>
+        <button id="btnSearchProjects" class="btn btn-primary"><i class="icon-search"></i> Search</button>
+        <button class="btn btn-default" id="btnCancelProjectSearch">Cancel</button>
     </div>
 
     <div id="searchResults" style="height: 300px; overflow-y: auto">
