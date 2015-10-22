@@ -339,3 +339,13 @@ table .btn-default:hover {
 .expedition-team .roleIcon {
     margin-top: 20px;
 }
+
+.thumbnail a.thumbImg  {
+    display: block;
+    text-align: center;
+    min-height: 226px;
+}
+
+.thumbnail .projectDescription {
+    min-height: 44px;
+}

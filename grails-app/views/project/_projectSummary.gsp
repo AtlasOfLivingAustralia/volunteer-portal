@@ -12,10 +12,10 @@
     </div>
 
     <g:set var="descrptionSnippet"><cl:truncate
-            maxlength="${params.mode == 'thumbs' ? '90' : '150'}">${raw(projectSummary.project?.description)}</cl:truncate></g:set>
-    <g:if test="${descrptionSnippet?.size() > 5}">
-        <p>${raw(descrptionSnippet)}</p>
-    </g:if>
+            maxlength="${params.mode == 'thumbs' ? '85' : '150'}">${raw(projectSummary.project?.description)}</cl:truncate></g:set>
+    %{--<g:if test="${descrptionSnippet?.size() > 5}">--}%
+        <p class="projectDescription">${raw(descrptionSnippet)}</p>
+    %{--</g:if>--}%
 
     <g:render template="/project/projectSummaryProgressBar"
               model="${[projectSummary: projectSummary]}"/>
