@@ -19,13 +19,22 @@ var bvp = {};
         };
 
         $.get(opts.url, function(html) {
-            bootbox.dialog({
+            var dialog = bootbox.dialog({
                 message: html,
                 title: options.title,
                 backdrop: options.backdrop,
                 onEscape: true,
                 buttons: options.buttons
-            })
+            });
+
+            //Fixes event handling when using bootbox for dialogs
+            dialog.on('hide.bs.modal', function(e) {
+                opts.onClose();
+            });
+
+            dialog.on('shown.bs.modal', function(e) {
+                opts.onShown();
+            });
         });
 
         var selector = "#" + opts.id;
