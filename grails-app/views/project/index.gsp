@@ -125,7 +125,13 @@
             $(descriptionDiv).removeClass("hidden"); // prevent content jumping
             $(descriptionDiv).dotdotdot({
                 after: "a.readmore",
-                height: 200
+                height: 200,
+                callback: function( isTruncated, orgContent ) {
+                    console.log("isTruncated", isTruncated);
+                    if (!isTruncated) {
+                        $("a.readmore").addClass("hidden");
+                    }
+                },
             });
             // read more link to show full description
             $("a.readmore").click(function(e) {
@@ -311,10 +317,10 @@
                             %{--scope="page"/>--}%
                             %{--<g:set var="roleIcon" value="${role.icons[iconIndex]}"/>--}%
                                 <g:set var="roleIcon" value="${role.icons[0]}"/>
-                                <div class="col-xs-3 col-sm-2">
+                                <div class="col-xs-3 col-sm-2 roleIcon">
                                     <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-responsive" title="${roleIcon?.name}" alt="${roleIcon?.name}">
                                 </div>
-                                <div class="col-xs-9 col-sm-4">
+                                <div class="col-xs-9 col-sm-4 roleList">
                                     <h3>${role.name}</h3>
                                     <ul>
                                         <g:each in="${role.members}" var="member">

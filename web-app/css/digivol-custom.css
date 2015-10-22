@@ -331,3 +331,11 @@ table .btn-default:hover {
 .projectActionLinks {
     margin-top: 20px;
 }
+
+.expedition-team .roleList {
+    min-height: 120px;
+}
+
+.expedition-team .roleIcon {
+    margin-top: 20px;
+}
