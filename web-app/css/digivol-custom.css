@@ -1,6 +1,10 @@
 /* Custom styles to fit new look&feel */
 /**************************************/
 
+.inline-block {
+    display: inline-block;
+}
+
 .ellipsis {
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -262,6 +266,18 @@ table .btn-default:hover {
 
 .admin .grails-date select {
     display: inline-block;
+}
+
+.admin .list-group-item.active a {
+    color: white;
+}
+
+.admin .panel.subpanel {
+    margin-top: 0;
+}
+
+.admin .control-label.text-left {
+    text-align: left !important;
 }
 
 /*** End - Admin ***/

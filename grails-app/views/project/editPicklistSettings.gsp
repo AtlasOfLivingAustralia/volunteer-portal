@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="projectSettingsLayout"/>
+    <meta name="layout" content="digivol-projectSettings"/>
 </head>
 
 <body>

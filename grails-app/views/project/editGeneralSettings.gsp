@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="projectSettingsLayout"/>
+    <meta name="layout" content="digivol-projectSettings"/>
     <r:require modules="institution-dropdown,labelAutocomplete"/>
     <r:script type="text/javascript">
         jQuery(function($) {
@@ -78,14 +78,16 @@
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-    <div class="control-group">
-        <label class="control-label" for="featuredOwner">Expedition institution</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="featuredOwner">Expedition institution</label>
 
-        <div class="controls">
-            <g:textField class="input-xlarge" name="featuredOwner" value="${projectInstance.featuredOwner}"/>
+        <div class="col-md-6">
+            <g:textField class="form-control"  name="featuredOwner" value="${projectInstance.featuredOwner}"/>
             <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}"/>
-            <span id="institution-link-icon" class="hidden muted"><small><i class="icon-ok"></i> Linked to <a
-                    id="institution-link" href="">institution</a>!</small></span>
+        </div>
+
+        <div class="col-md-3 control-label text-left">
+            <i class="fa fa-check"></i> Linked to <a id="institution-link" href="">institution</a>!
         </div>
     </div>
 
