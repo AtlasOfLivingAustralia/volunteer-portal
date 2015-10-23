@@ -1,9 +1,18 @@
 #Grails Metadata file
+<<<<<<< HEAD
 #Thu Oct 15 03:19:53 EST 2015
+=======
+#Tue Sep 29 15:21:27 AEST 2015
+>>>>>>> feature/bs3
 app.buildDate=29 Jan, 2015
 app.buildNumber=192
 app.buildProfile=development
 app.grails.version=2.5.1
 app.name=volunteer-portal
-app.servlet.version=3.0
+<<<<<<< HEAD
+app.servlet.version=2.5
 app.version=2.2.10-SNAPSHOT
+=======
+app.servlet.version=3.0
+app.version=2.2.8-SNAPSHOT
+>>>>>>> feature/bs3
