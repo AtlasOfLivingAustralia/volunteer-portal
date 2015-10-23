@@ -125,7 +125,7 @@ modules = {
     }
 
     "labelAutocomplete" {
-        dependsOn "bootstrap-js, jquery"
+        dependsOn "bootstrap-js, jquery, typeahead"
         resource url: 'js/label.autocomplete.js'
         resource url: 'css/label.autocomplete.css'
     }
@@ -213,5 +213,10 @@ modules = {
     'marker-clusterer' {
         resource url: 'js/markerclusterer.js'
 
+    }
+
+    'typeahead' {
+        resource url: 'js/typeahead/0.11.1/typeahead.bundle.js'
+        resource url: 'js/typeahead/0.11.1/typeaheadjs.css'
     }
 }

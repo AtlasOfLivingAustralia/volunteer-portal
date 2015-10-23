@@ -12,21 +12,22 @@
 
             setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
             labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
-                var obj = JSON.parse(item);
+                //var obj = JSON.parse(item);
                 var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
                 //showSpinner();
-                $.ajax(updateUrl, {type: 'POST', data: { labelId: obj.id }})
+                $.ajax(updateUrl, {type: 'POST', data: { labelId: item.id }})
                     .done(function(data) {
                         $( "<span>" )
                             .addClass("label")
-                            .addClass(labelColourMap[obj.category])
-                            .attr("title", obj.category)
-                            .text(obj.value)
+                            .addClass(labelColourMap[item.category])
+                            .attr("title", item.category)
+                            .text(item.value)
                             .append(
                             $( "<i>" )
-                                .attr("data-label-id", obj.id)
-                                .addClass("icon-remove")
-                                .addClass("icon-white")
+                                .attr("data-label-id", item.id)
+                                .addClass("fa")
+                                .addClass("fa-times-circle")
+                                .addClass("delete-label")
                             )
                             .appendTo(
                                 $( "#labels" )
@@ -50,7 +51,7 @@
                     //.always(hideSpinner);
             }
 
-            $('#labels').on('click', 'span.label i.icon-remove', onDeleteClick);
+            $('#labels').on('click', 'span.label i.delete-label', onDeleteClick);
         });
     </r:script>
     <r:style>
@@ -61,7 +62,7 @@
     div#labels > span.label {
     margin: 2px;
     }
-    i.icon-remove {
+    i.delete-label {
     cursor: pointer;
     }
     </r:style>
@@ -137,16 +138,18 @@
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="label">Tags</label>
+    <div class="form-group">
+        <label class="col-md-3" for="label">Tags</label>
 
-        <div class="controls">
+        <div class="col-md-6">
             <div id="labels"><g:each in="${sortedLabels}" var="l"><span class="label ${labelColourMap[l.category]}"
                                                                         title="${l.category}">${l.value} <i
-                        class="icon-remove icon-white" data-label-id="${l.id}"></i></span></g:each></div>
+                        class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i></span></g:each></div>
         </div>
 
-        <div class="controls"><input autocomplete="off" type="text" id="label" class="input-small"/></div>
+        <div class="clearfix visible-md-block visible-lg-block"></div>
+
+        <div class="col-md-offset-3 col-md-6"><input autocomplete="off" type="text" id="label" class="form-control typeahead"/></div>
     </div>
 
     <div class="control-group">

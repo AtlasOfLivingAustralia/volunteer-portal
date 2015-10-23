@@ -1,3 +1,11 @@
+.itemgrid { overflow: hidden; margin-bottom: 10px; }
+.itemgrid .item,
+.itemgrid .griditem {
+    float: left;
+    width: 160px;
+    margin: 5px 10px;
+}
+
 .imageSelectWidget a.thumbnail.selected,
 .imageSelectWidget a.thumbnail.selected:hover {
     border: 2px solid #df4a21;
