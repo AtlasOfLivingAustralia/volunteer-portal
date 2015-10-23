@@ -15,22 +15,25 @@
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-    <div class="alert">A picklist with a specific 'Collection Code' must be <a
-            href="${createLink(controller: 'picklist', action: 'manage')}">loaded</a> first</div>
+    <div class="alert alert-warning">
+        A picklist with a specific 'Collection Code' must be
+        <a href="${createLink(controller: 'picklist', action: 'manage')}">loaded</a> first
+    </div>
 
-    <div class="control-group">
-        <label class="control-label" for="projectType"><g:message code="project.picklistInstitutionCode.label"
-                                                                  default="Picklist Collection Code"/></label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="picklistInstitutionCode">
+            <g:message code="project.picklistInstitutionCode.label" default="Picklist Collection Code"/>
+        </label>
 
-        <div class="controls">
-            <g:select name="picklistInstitutionCode" from="${picklistInstitutionCodes}"
+        <div class="col-md-6">
+            <g:select class="form-control" name="picklistInstitutionCode" from="${picklistInstitutionCodes}"
                       value="${projectInstance?.picklistInstitutionCode}"/>
         </div>
 
     </div>
 
-    <div class="control-group">
-        <div class="controls">
+    <div class="form-group">
+        <div class="col-md-offset-3 col-md-9">
             <g:actionSubmit class="save btn btn-primary" action="updatePicklistSettings"
                             value="${message(code: 'default.button.update.label', default: 'Update')}"/>
         </div>

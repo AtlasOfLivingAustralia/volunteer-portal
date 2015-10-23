@@ -280,6 +280,14 @@ table .btn-default:hover {
     text-align: left !important;
 }
 
+.admin .label {
+    position: relative;
+    display: inline-block;
+    padding: .2em .6em .3em;
+    top: 0;
+    left: 0;
+}
+
 /*** End - Admin ***/
 
 /*** LeaderBoard ***/

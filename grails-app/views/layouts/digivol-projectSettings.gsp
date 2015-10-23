@@ -31,7 +31,6 @@
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
-                    [link: createLink(controller: 'frontPage', action: 'edit'), label: message(code: 'default.frontpageoptions.label', default: 'Front Page Options')],
                     [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel ?: ""]
             ]
         %>

@@ -92,68 +92,78 @@
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="name">Expedition name</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="name">Expedition name</label>
 
-        <div class="controls">
-            <g:textField class="input-xlarge" name="name" value="${projectInstance.name}"/>
+        <div class="col-md-6">
+            <g:textField class="form-control" name="name" value="${projectInstance.name}"/>
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="shortDescription">Short description</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="shortDescription">Short description</label>
 
-        <div class="controls">
-            <g:textField class="input-xxlarge" name="shortDescription" value="${projectInstance.shortDescription}"/>
+        <div class="col-md-6">
+            <g:textField class="form-control" name="shortDescription" value="${projectInstance.shortDescription}"/>
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="description">Long description</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="description">Long description</label>
 
-        <div class="controls">
-            <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" class="span12">
+        <div class="col-md-9">
+            <tinyMce:renderEditor type="advanced" name="description" rows="10" class="form-control">
                 ${projectInstance.description}
             </tinyMce:renderEditor>
             %{--<g:textArea rows="8" class="input-xxlarge" name="description"  value="${projectInstance.description}" />--}%
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="template">Template</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="template">Template</label>
 
-        <div class="controls">
-            <g:select name="template" from="${templates}" value="${projectInstance.template?.id}" optionKey="id"/>
-            <a class="btn"
+        <div class="col-md-6">
+            <g:select name="template" class="form-control" from="${templates}" value="${projectInstance.template?.id}" optionKey="id"/>
+        </div>
+
+        <div class="col-md-3">
+            <a class="btn btn-default"
                href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">Edit template</a>
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="projectType">Expedition type</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="projectType">Expedition type</label>
 
-        <div class="controls">
+        <div class="col-md-6">
             <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
-                      optionValue="label" optionKey="id"/>
+                      optionValue="label" optionKey="id" class="form-control"/>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-md-3" for="label">Tags</label>
+        <label class="control-label col-md-3" for="label">Tags</label>
 
         <div class="col-md-6">
-            <div id="labels"><g:each in="${sortedLabels}" var="l"><span class="label ${labelColourMap[l.category]}"
-                                                                        title="${l.category}">${l.value} <i
-                        class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i></span></g:each></div>
+            <input autocomplete="off" type="text" id="label" class="form-control typeahead"/>
+
         </div>
 
-        <div class="clearfix visible-md-block visible-lg-block"></div>
+        <div id="labels" class="col-md-offset-3 col-md-9">
+            <g:each in="${sortedLabels}" var="l">
+                <span class="label ${labelColourMap[l.category]}" title="${l.category}">
+                    ${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i>
+                </span>
+            </g:each>
+        </div>
 
-        <div class="col-md-offset-3 col-md-6"><input autocomplete="off" type="text" id="label" class="form-control typeahead"/></div>
+        %{--<div class="clearfix visible-md-block visible-lg-block"></div>--}%
+
+        %{--<div class="col-md-offset-3 col-md-6"></div>--}%
     </div>
 
-    <div class="control-group">
-        <div class="controls">
+    <div class="form-group">
+        <div class="col-md-9 col-md-offset-3">
             <label for="harvestableByAla" class="checkbox">
                 <g:checkBox name="harvestableByAla"
                             checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia
@@ -161,8 +171,8 @@
         </div>
     </div>
 
-    <div class="control-group">
-        <div class="controls">
+    <div class="form-group">
+        <div class="col-md-9 col-md-offset-3">
             <g:actionSubmit class="save btn btn-primary" action="updateGeneralSettings"
                             value="${message(code: 'default.button.update.label', default: 'Update')}"/>
         </div>
