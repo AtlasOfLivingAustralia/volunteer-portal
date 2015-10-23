@@ -1,18 +1,23 @@
-<div class="row-fluid" style="margin-bottom: 10px">
-    <div class="span10">
+<div class="row" style="padding-bottom: 10px">
+    <div class="col-md-10">
         If the Latitude/Longitude do not appear on the label, find them using the mapping tool below
     </div>
 </div>
-<div class="row-fluid ${cssClass}" style="margin-bottom: 10px">
-    <div class="span4">
+
+<div class="row ${cssClass}" style="padding-bottom: 10px">
+    <div class="col-md-4">
         <strong>${field.label ?: 'Find Lat/Long'}</strong>
     </div>
-    <div class="span8">
-        <div class="span10">
-            <button type="button" class="btn btn-info pull-right" id="btnGeolocate">Use mapping tool</button>
-        </div>
-        <div class="span2">
-            <g:fieldHelp field="${field}" />
+
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-10">
+                <button type="button" class="btn btn-info pull-right" id="btnGeolocate">Use mapping tool</button>
+            </div>
+
+            <div class="col-md-2">
+                <g:fieldHelp field="${field}"/>
+            </div>
         </div>
     </div>
 </div>

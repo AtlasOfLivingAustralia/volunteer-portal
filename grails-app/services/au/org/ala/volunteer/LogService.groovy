@@ -1,7 +1,5 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
-
 class LogService {
 
     static transactional = false

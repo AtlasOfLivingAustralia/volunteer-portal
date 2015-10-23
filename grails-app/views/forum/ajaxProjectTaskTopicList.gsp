@@ -1,3 +1,3 @@
 <small>
-    <vpf:taskTopicsTable topics="${topics}" />
+    <vpf:taskTopicsTable topics="${topics}"/>
 </small>

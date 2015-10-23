@@ -1,19 +1,19 @@
 <%@ page import="au.org.ala.volunteer.Template" %>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
-        <r:require module="jquery-ui" />
-        <title><g:message code="default.list.label" args="[entityName]" /></title>
-        <style type="text/css">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
+    <r:require modules="jquery-ui, bootbox, bvp-js"/>
+    <title><g:message code="default.list.label" args="[entityName]"/></title>
+    <style type="text/css">
 
-            table.bvp-expeditions thead th {
-                text-align: left;
-            }
+    table.bvp-expeditions thead th {
+        text-align: left;
+    }
 
-        </style>
-        <r:script type="text/javascript">
+    </style>
+    <r:script type="text/javascript">
 
             $(function() {
 
@@ -23,7 +23,7 @@
                     var templateName = $(this).parents("[templateName]").attr("templateName");
                     if (templateId && templateName) {
                         if (confirm("Are you sure you wish to delete template " + templateName + "?")) {
-                            window.location = "${createLink(controller:'template', action:'delete')}/" + templateId;
+                            window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
                         }
                     }
                 });
@@ -35,7 +35,7 @@
 
                     if (oldTemplateId && oldTemplateName) {
                         bvp.showModal({
-                            url:"${createLink(action:'cloneTemplateFragment')}?sourceTemplateId=" + oldTemplateId,
+                            url:"${createLink(action: 'cloneTemplateFragment')}?sourceTemplateId=" + oldTemplateId,
                             title:"Clone template '" + oldTemplateName + "'"
                         });
                     }
@@ -43,54 +43,66 @@
 
             });
 
-        </r:script>
-    </head>
-    <body>
+    </r:script>
+</head>
 
-        <cl:headerContent title="${message(code: 'default.list.label', args: [entityName])}">
-            <%
-                pageScope.crumbs = [
+<body class="admin">
+<div class="container">
+    <cl:headerContent title="${message(code: 'default.list.label', args: [entityName])}" selectedNavItem="bvpadmin">
+        <%
+            pageScope.crumbs = [
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
-                ]
-            %>
-            <div>
-                <a href="${createLink(action:'create')}" class="btn">Create new template</a>
-            </div>
-        </cl:headerContent>
+            ]
+        %>
+        <div>
+            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
+        </div>
+    </cl:headerContent>
 
-        <div class="row" id="content">
-            <div class="span12">
-                <table class="table table-striped table-bordered">
-                    <thead>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped admin-table">
+                        <thead>
                         <tr>
-                            <g:sortableColumn property="name" title="${message(code: 'template.name.label', default: 'Name')}" />
-                            <g:sortableColumn property="author" title="${message(code: 'template.author.label', default: 'Author')}" />
-                            <g:sortableColumn property="viewName" title="${message(code: 'template.viewName.label', default: 'View Name')}" />
+                            <g:sortableColumn property="name" title="${message(code: 'template.name.label', default: 'Name')}"/>
+                            <g:sortableColumn property="author"
+                                              title="${message(code: 'template.author.label', default: 'Author')}"/>
+                            <g:sortableColumn property="viewName"
+                                              title="${message(code: 'template.viewName.label', default: 'View Name')}"/>
                             <th></th>
                         </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${templateInstanceList}" status="i" var="templateInstance">
-                        <tr class="${(i % 2) == 0 ? 'odd' : 'even'}" templateId="${templateInstance.id}" templateName="${templateInstance.name}" >
+                        </thead>
+                        <tbody>
+                        <g:each in="${templateInstanceList}" status="i" var="templateInstance">
+                            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}" templateId="${templateInstance.id}"
+                                templateName="${templateInstance.name}">
 
-                            <td>${fieldValue(bean: templateInstance, field: "name")}</td>
-                            <td>${cl.emailForUserId(id: templateInstance.author)}</td>
-                            <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
+                                <td>${fieldValue(bean: templateInstance, field: "name")}</td>
+                                <td>${cl.emailForUserId(id: templateInstance.author)}</td>
+                                <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
-                            <td>
-                                <a class="btn btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
-                                <a class="btn" style="margin-top: 6px" href="${createLink(controller:'template', action:'edit', id:templateInstance.id)}">Edit</a>
-                                <a class="btn" style="margin-top: 6px" href="${createLink(controller:'template', action:'preview', id:templateInstance.id)}">Preview</a>
-                                <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
-                            </td>
-                        </tr>
-                    </g:each>
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination">
-                <g:paginate total="${templateInstanceTotal}" />
+                                <td>
+                                    <a class="btn btn-default btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
+                                    <a class="btn btn-default" style="margin-top: 6px"
+                                       href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">Edit</a>
+                                    <a class="btn btn-default" style="margin-top: 6px"
+                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">Preview</a>
+                                    <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
+                                </td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center">
+                    <g:paginate total="${templateInstanceTotal}"/>
+                </div>
             </div>
         </div>
-    </body>
+    </div>
+</div>
+</body>
 </html>

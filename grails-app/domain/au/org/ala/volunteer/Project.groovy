@@ -25,6 +25,7 @@ class Project implements Serializable {
 
     def grailsApplication
     def grailsLinkGenerator
+    def assetResourceLocator
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label]
@@ -69,13 +70,18 @@ class Project implements Serializable {
         return name
     }
 
+    public String getInstitutionName() {
+        institution ? institution.name : featuredOwner
+    }
+
     public String getFeaturedImage() {
         // Check to see if there is a feature image for this expedition by looking in its project directory.
         // If one exists, use it, otherwise use a default image...
         def localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-image.jpg"
         def file = new File(localPath)
         if (!file.exists()) {
-            return grailsLinkGenerator.resource([dir: '/images/banners', file:'default-expedition.jpg'])
+            return grailsLinkGenerator.resource([dir: '/images/banners', file:'default-expedition-large.jpg'])
+
         } else {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-image.jpg"
         }

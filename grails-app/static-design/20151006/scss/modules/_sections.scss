@@ -1,0 +1,85 @@
+
+section {
+	padding: 80px 0;
+	&.dark {
+		background-color: #1b1b1b;
+		color: #fff;
+		h2.heading {
+			color: white;
+		}
+		p {
+			color: $body-copy-on-black;
+		}
+	}
+	&.white {
+		background-color: white;
+	}
+	&.darker {
+		background-color: black;
+	}
+}
+section#expedition-feature {
+	background-color: white;
+	h3 {
+		margin-top: 0;
+		color: $black;
+		a {
+			color: $black;
+		}
+	}
+	img {
+		border-radius: 4px;
+		margin-bottom: 20px;
+	}
+}
+section#what-you-do {
+	h3 {
+		font-size: 14px;
+		margin: 0 0 5px 0;
+	}
+	img {
+		max-height: 58px;
+	}
+	a {
+		display: block;
+		margin-bottom: 30px;
+	}
+}
+section#breadcrumb {
+	padding: 85px 0 10px 0;
+	border-bottom: 1px solid $divider-grey;
+}
+section#record-locations {
+	padding: 0;
+}
+@media (max-width: 1200px) {
+	section#breadcrumb {
+		padding-top: 65px;
+
+	}
+
+}
+section#institution-progress {
+	padding: 40px 0;
+	background-color: #fff;
+	border-top: 1px solid $divider-grey;
+		h3 {
+		margin-top: 5px;
+	}
+}
+section#logos-institutions {
+	img {
+		max-height: 80px;
+		margin: 0 80px 20px 0;
+	}
+
+}
+section#footer {
+	
+}
+section#map {
+	min-height: 300px;
+}
+section#user-progress {
+	padding: 0;
+}

@@ -27,6 +27,8 @@ class TranscribeTagLib {
     def picklistService
     def markdownService
     def imageServiceService
+    def institutionService
+    def grailsLinkGenerator
 
     static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName', 'sequenceNumbers']
 
@@ -76,9 +78,9 @@ class TranscribeTagLib {
 
         Task task = attrs.task as Task
         def recordValues = attrs.recordValues
-        def labelClass = attrs.labelClass ?: "span2"
-        def valueClass = attrs.valueClass ?: "span12"
-        def rowClass = attrs.rowClass ?: "row-fluid"
+        def labelClass = attrs.labelClass ?: "col-md-2"
+        def valueClass = attrs.valueClass ?: "col-md-12"
+        def rowClass = attrs.rowClass ?: "row"
         def recordIdx = attrs.recordIdx ?: 0
         def helpTargetPosition = attrs.helpTargetPosition
         def helpTooltipPosition = attrs.helpTooltipPosition
@@ -105,7 +107,7 @@ class TranscribeTagLib {
         }
     }
 
-    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row-fluid", String helpTargetPosition = null, String helpTooltipPosition = null) {
+    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row", String helpTargetPosition = null, String helpTooltipPosition = null) {
 
         if (!task || !field) {
             return
@@ -115,7 +117,7 @@ class TranscribeTagLib {
         def label = getFieldLabel(field)
         def hideLabel = attrs.hideLabel as Boolean
 
-        def widgetHtml = getWidgetHtml(task, field, recordValues,recordIdx, attrs, "span12")
+        def widgetHtml = getWidgetHtml(task, field, recordValues,recordIdx, attrs, "") // col-md-12
 
         if (field.type == FieldType.hidden) {
             mb.mkp.yieldUnescaped(widgetHtml)
@@ -137,11 +139,13 @@ class TranscribeTagLib {
                     }
                 }
                 div(class:valueClass) {
-                    div(class:'span10') {
-                        mkp.yieldUnescaped(widgetHtml)
-                    }
-                    div(class:'span2') {
-                        renderFieldHelp(mb, field, helpTargetPosition, helpTooltipPosition)
+                    div(class: rowClass) {
+                        div(class:'col-md-10') {
+                            mkp.yieldUnescaped(widgetHtml)
+                        }
+                        div(class:'col-md-2') {
+                            renderFieldHelp(mb, field, helpTargetPosition, helpTooltipPosition)
+                        }
                     }
                 }
             }
@@ -251,7 +255,7 @@ class TranscribeTagLib {
                     name: widgetName,
                     rows: rows,
                     value: existingValue,
-                    'class':cssClass,
+                    'class':"$cssClass form-control",
                     validationRule: validationRule?.name,
                     tabindex: tabindex
                 )
@@ -269,7 +273,8 @@ class TranscribeTagLib {
                     name: widgetName,
                     value: checked,
                     validationRule: validationRule?.name,
-                    tabindex: tabindex
+                    tabindex: tabindex,
+                    class: 'form-control'
                 )
                 break;
             case FieldType.select:
@@ -282,7 +287,7 @@ class TranscribeTagLib {
                         optionKey:'value',
                         value: existingValue ?: field?.defaultValue,
                         noSelection:['':''],
-                        'class':cssClass,
+                        'class': "$cssClass form-control",
                         validationRule: validationRule?.name,
                         tabindex: tabindex
                     )
@@ -297,6 +302,7 @@ class TranscribeTagLib {
                         value: existingValue ?:field?.defaultValue,
                         values: labels,
                         labels: labels,
+                        class: 'form-control',
                         // 'class':cssClass,
                         validationRule:validationRule?.name,
                         tabindex: tabindex
@@ -318,7 +324,7 @@ class TranscribeTagLib {
                     name: widgetName,
                     maxLength:200,
                     value: existingValue,
-                    'class':cssClass,
+                    'class':"$cssClass form-control",
                     validationRule: validationRule?.name,
                     tabindex: tabindex
                 )
@@ -417,8 +423,8 @@ class TranscribeTagLib {
         FieldCategory category = attrs.category
         Task task = attrs.task as Task
         int columns = 2
-        String labelClass = attrs.labelClass ?: 'span4'
-        String valueClass = attrs.valueClass ?: 'span8'
+        String labelClass = attrs.labelClass ?: 'col-md-4'
+        String valueClass = attrs.valueClass ?: 'col-md-8'
         def recordValues = attrs.recordValues
         def mb = new MarkupBuilder(out)
         def fields = TemplateField.findAllByCategoryAndTemplate(category, task?.project?.template, [sort: 'displayOrder'])
@@ -434,13 +440,13 @@ class TranscribeTagLib {
 
             def hidden = fields.findAll { it.type == FieldType.hidden }
 
-            def spanClass = String.format("span%d", (12 / numCols).toInteger());
+            def spanClass = String.format("col-md-%d", (12 / numCols).toInteger());
 
             fields.removeAll { it.type == FieldType.hidden }
 
             def fieldIndex = 0;
             while (fieldIndex < fields.size()) {
-                mb.div(class:'row-fluid') {
+                mb.div(class:'row') {
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
                         mb.div(class:'') {
                             mb.div(class:spanClass) {
@@ -498,8 +504,8 @@ class TranscribeTagLib {
         def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
 
         mb.div(class:'well well-small transcribeSection') {
-            div(class:'row-fluid transcribeSectionHeader') {
-                div(class:'span12') {
+            div(class:'row transcribeSectionHeader') {
+                div(class:'col-md-12') {
                     span(class:'transcribeSectionHeaderLabel') {
                         if (nextSectionNumberClosure) {
                             mkp.yield("${nextSectionNumberClosure()}. ")
@@ -525,7 +531,7 @@ class TranscribeTagLib {
             }
 
             div(class:'transcribeSectionBody') {
-                renderFieldsInColumns(columns, mb, fields, task, "span4", "span8", recordValues, attrs)
+                renderFieldsInColumns(columns, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
                 mkp.yieldUnescaped("&nbsp;")
             }
 
@@ -561,7 +567,7 @@ class TranscribeTagLib {
 
         def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
 
-        renderFieldsInColumns(1, mb, fields, task, "span4", "span8", recordValues, attrs)
+        renderFieldsInColumns(1, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
 
     }
 
@@ -657,6 +663,45 @@ class TranscribeTagLib {
         }
 
         return results
+    }
+
+    def transcriptionLogoUrl = { attrs, body ->
+        Task task = attrs.task
+        if (task?.project?.institution) {
+            out << institutionService.getLogoImageUrl(task.project.institution)
+        } else if (task?.project) {
+            out << task.project.featuredImage
+        } else {
+            out << grailsLinkGenerator.resource( dir: 'images/2.0/', file: 'logoDigivolGrey.png' )
+        }
+    }
+
+    /**
+     * Get the title line for a v2 transcription
+     * @attr task The task
+     * @attr recordValues The record values
+     * @attr sequenceNumber The task sequence number
+     */
+    def transcribeSubheadingLine = { attrs, body ->
+        def task = attrs.task
+        def recordValues = attrs.recordValues
+        def sequenceNumber = attrs.sequenceNumber
+
+        def maxSeqNo = sequenceNumber ? taskService.findMaxSequenceNumber(task.project) : -1
+
+        def cn = recordValues?.get(0)?.catalogNumber
+        def m
+        if (cn && sequenceNumber) {
+            m = message(code: 'transcribe.subheading.full', default: 'Catalog Number {0} <span>({1} of {2})</span>', args: [cn, sequenceNumber, maxSeqNo])
+        } else if (cn) {
+            m = message(code: 'transcribe.subheading.catalog', default: 'Catalog Number {0}', args: [cn])
+        } else if (sequenceNumber) {
+            m = message(code: 'transcribe.subheading.seqNo', default: '<span>{1} of {2}</span>', args: [sequenceNumber, maxSeqNo])
+        } else {
+            m = ''
+        }
+
+        out << m
     }
 
 }

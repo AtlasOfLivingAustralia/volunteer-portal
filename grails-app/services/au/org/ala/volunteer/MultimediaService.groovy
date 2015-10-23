@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringUtils
 
 class MultimediaService {
 
@@ -8,6 +9,7 @@ class MultimediaService {
 
     def logService
     def grailsApplication
+    def grailsLinkGenerator
 
     def deleteMultimedia(Multimedia media) {
         def dir = new File(grailsApplication.config.images.home + '/' + media.task?.projectId + '/' + media.task?.id + "/" + media.id)
@@ -19,6 +21,10 @@ class MultimediaService {
         }
     }
 
+    public String filePathFor(Multimedia media) {
+        grailsApplication.config.images.home + File.pathSeparator + media.task?.projectId + File.pathSeparator + media.task?.id + File.pathSeparator + media.id
+    }
+
     public String getImageUrl(Multimedia media) {
         getImageUrl(media.filePath)
     }
@@ -28,8 +34,14 @@ class MultimediaService {
     }
 
     public String getImageThumbnailUrl(Multimedia media) {
-        return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
+        if (new File(filePathFor(media), filenameFromFilePath(media.filePathToThumbnail)).exists()) {
+            media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
+        } else {
+            grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+        }
     }
 
-
+    private String filenameFromFilePath(String filePath) {
+        StringUtils.substringAfterLast(filePath, '/')
+    }
 }

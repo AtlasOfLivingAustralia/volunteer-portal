@@ -64,6 +64,12 @@ expedition = [
         [name: "Expedition Leader",
                 icons: [
                         [
+                            icon: "images/team/teamExpeditionLeader.png",
+                            link: "",
+                            name: "",
+                            bio:  ""
+                        ],
+                        [
                             icon: "images/explorers/GerardKrefft.png",
                             link: "http://www.australianmuseum.net.au/image/Gerard-Krefft/",
                             name: "Gerard Krefft (1830-1881)",
@@ -82,7 +88,7 @@ expedition = [
                             icon: "images/explorers/RobertEtheridge.png",
                             link: "http://www.australianmuseum.net.au/Curators-and-Directors-of-the-Australian-Museum/",
                             name: "Robert Etheridge Jnr (1846-1920)",
-                            bio:  "Robert Etheridge Jnr trained as a palaeontologist and was appointed curator of the Australian Mueseum in 1895. During his time, the museum building was enlarged with the erection of the south wing, public lectures resumed and cadetships were introduced."
+                            bio:  "Robert Etheridge Jnr trained as a palaeontologist and was appointed curator of the Australian Museum in 1895. During his time, the museum building was enlarged with the erection of the south wing, public lectures resumed and cadetships were introduced."
                         ],[
                             icon: "images/explorers/GeorgeBennet.png",
                             link: "http://www.australianmuseum.net.au/Curators-and-Directors-of-the-Australian-Museum/",
@@ -95,6 +101,11 @@ expedition = [
         [name: "Scientists",
                 icons: [
                         [
+                            icon: "images/team/teamScientist.png",
+                            link: "",
+                            name: "Expedition Scientist",
+                            bio: ""
+                        ],[
                             icon:"images/explorers/EdwardPiersonRamsay.png",
                             name: "Edward Pierson Ramsay",
                             link: "http://www.australianmuseum.net.au/image/Edward-Pierson-Ramsay/",
@@ -106,6 +117,11 @@ expedition = [
         [name: "Collection Managers",
                 icons: [
                         [
+                            icon: "images/team/teamCollectionsManager.png",
+                            link: "",
+                            name: "Expedition Collections Manager",
+                            bio: ""
+                        ],[
                             icon: "images/explorers/SusanEmilyNaegueli.png",
                             link: "http://www.australianmuseum.net.au/Harry-Burrell-Glass-Plate-Negative-Collection/",
                             name: "Susan Emily Naegueli",
@@ -117,6 +133,11 @@ expedition = [
         [name: "Technical Officers",
                 icons: [
                         [
+                            icon: "images/team/teamTechnicalOfficer.png",
+                            link: "",
+                            name: "Expedition Technical Officer",
+                            bio: ""
+                        ],[
                             icon: "images/explorers/WilliamSheridanWall.png",
                             name: "William Sheridan Wall",
                             link: "http://www.australianmuseum.net.au/image/William-Sheridan-Wall/",
@@ -138,7 +159,7 @@ viewedTask.timeout = 2 * 60 * 60 * 1000
 
 leaderBoard.count = 5
 
-ala.skin = "ala-bootstrap"
+ala.skin = "digivol-main"
 ala.baseURL = "http://www.ala.org.au"
 bie.baseURL = "http://bie.ala.org.au"
 bie.searchPath = "/search"
@@ -163,8 +184,31 @@ grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
 // URL Mapping Cache Max Size, defaults to 5000
 //grails.urlmapping.cache.maxsize = 1000
 
-// The default codec used to encode data with ${}
-grails.views.default.codec = "none" // none, html, base64
+// Legacy setting for codec used to encode data with ${}
+grails.views.default.codec = "html"
+
+// The default scope for controllers. May be prototype, session or singleton.
+// If unspecified, controllers are prototype scoped.
+grails.controllers.defaultScope = 'singleton'
+
+// GSP settings
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside ${}
+                scriptlet = 'html' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        // filteringCodecForContentType.'text/html' = 'html'
+    }
+}
+
 grails.views.gsp.encoding = "UTF-8"
 grails.converters.encoding = "UTF-8"
 // enable Sitemesh preprocessing of GSP pages
@@ -184,8 +228,18 @@ grails.spring.bean.packages = []
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
+// configure auto-caching of queries by default (if false you can cache individual queries with 'cache: true')
+grails.hibernate.cache.queries = false
+
+// configure passing transaction's read-only attribute to Hibernate session, queries and criterias
+// set "singleSession = false" OSIV mode in hibernate configuration after enabling
+grails.hibernate.pass.readonly = false
+// configure passing read-only to OSIV session by default, requires "singleSession = false" OSIV mode
+grails.hibernate.osiv.readonly = false
+
 // tiny mce loads its own files, so don't hash it
 grails.resources.mappers.hashandcache.excludes= ['plugins/tiny-mce-3.4.9/**/*']
+//grails.assets.excludes	["tiny_mce/src/*.js"]
 
 bvp.tmpdir="/data/${appName}/config/"
 
@@ -197,7 +251,7 @@ environments {
         security.cas.appServerName = "http://devt.ala.org.au:8080"
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer-portal'
-        ala.image.service.url = "http://images-dev.ala.org.au/"
+        ala.image.service.url = "http://images.ala.org.au/"
     }
     test {
         grails.serverURL = "http://volunteer-dev.ala.org.au"
@@ -229,12 +283,16 @@ metrics {
     servletEnabled = true
 }
 
+//Fix grails taglib <g:paginate/> to work with bootstrap css.
+grails.plugins.twitterbootstrap.fixtaglib = true
+
 environments {
     development {
         //grails.resources.debug = true
         grails.mail.disabled = true
         grails.mail.host = "fake.ala.org.au"
         grails.mail.overrideAddress = "your.email@here.com"
+        grails.resources.debug = true
     }
     production {
         grails.mail.host = "localhost"
@@ -342,27 +400,3 @@ log4j = {
 //            'org.apache.http.wire'
 
 }
-
-// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
-
-/* remove this line 
-// GSP settings
-grails {
-    views {
-        gsp {
-            encoding = 'UTF-8'
-            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
-            codecs {
-                expression = 'html' // escapes values inside null
-                scriptlet = 'none' // escapes output from scriptlets in GSPs
-                taglib = 'none' // escapes output from taglibs
-                staticparts = 'none' // escapes output from static template parts
-            }
-        }
-        // escapes all not-encoded output at final stage of outputting
-        filteringCodecForContentType {
-            //'text/html' = 'html'
-        }
-    }
-}
-remove this line */

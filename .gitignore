@@ -16,6 +16,7 @@ stacktrace.log
 /web-app/WEB-INF/classes
 /.link_to_grails_plugins/
 /target-eclipse/
+.asscache
 
 # Created by http://www.gitignore.io
 

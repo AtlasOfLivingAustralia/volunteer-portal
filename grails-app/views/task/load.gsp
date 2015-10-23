@@ -6,9 +6,9 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'record.label', default: 'Record')}"/>
     <title>CSV Image Upload</title>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.qtip-1.0.0-rc3.min.js')}"></script>
+    <r:require modules="qtip"/>
     <r:script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             // tootltip on help icon
             $("a.fieldHelp").qtip({
                 tip: true,
@@ -32,19 +32,22 @@
                     tip: 'bottomLeft',
                     name: 'light' // Inherit the rest of the attributes from the preset light style
                 }
-            }).bind('click', function(e) {
-                        e.preventDefault();
-                        return false;
-                    });
+            }).bind('click', function (e) {
+                e.preventDefault();
+                return false;
+            });
         });
     </r:script>
 </head>
 
 <body class="two-column-right">
 <div class="nav">
-    <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+    <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+    </span>
     <g:if test="${params.id}">
-        <span class="menuButton"><a class="home" href="${createLink(controller: 'project', action:'edit', id: params.id)}">Edit project</a></span>
+        <span class="menuButton"><a class="home"
+                                    href="${createLink(controller: 'project', action: 'edit', id: params.id)}">Edit project</a>
+        </span>
     </g:if>
 </div>
 
@@ -60,7 +63,8 @@
                         <label for="projectId"><g:message code="record.projectId.label" default="Project Id"/></label>
                     </td>
                     <td valign="top" class="value">
-                        <g:select name="projectId" id="projectId" from="${projectList}" optionKey="id" optionValue="name" value="${params.id}" />
+                        <g:select name="projectId" id="projectId" from="${projectList}" optionKey="id"
+                                  optionValue="name" value="${params.id}"/>
                     </td>
                 </tr>
 
@@ -83,10 +87,10 @@
         </div>
 
         <div class="buttons">
-          Duplicate handling mode:
+            Duplicate handling mode:
             <select name="duplicateMode">
-              <option value="skip">Skip duplicates</option>
-              <option value="replace">Replace duplicates</option>
+                <option value="skip">Skip duplicates</option>
+                <option value="replace">Replace duplicates</option>
             </select>
             <span class="button"><g:actionSubmit class="submit" action="loadCSVAsync"
                                                  value="${message(code: 'default.button.submit.label', default: 'Submit')}"/></span>

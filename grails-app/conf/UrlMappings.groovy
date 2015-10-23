@@ -2,6 +2,8 @@ class UrlMappings {
 
 	static mappings = {
 
+        "/"(controller: "/index")
+
         "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin') {
             constraints {
 
@@ -20,7 +22,6 @@ class UrlMappings {
 
         "/ws/$action?/$id?"(controller: 'ajax')
 
-		"/"(controller: "/index")
 		"500"(view:'/error')
 	}
 }

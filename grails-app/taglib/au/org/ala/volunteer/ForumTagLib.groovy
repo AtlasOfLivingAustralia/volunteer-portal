@@ -8,9 +8,12 @@ class ForumTagLib {
     static namespace = 'vpf'
 
     def userService
-    def forumService
+    def applicationContext
+    //def forumService
     def markdownService
     def taskService
+
+    @Lazy def forumService = applicationContext.getBean('forumService')
 
     /**
      * @param project
@@ -167,8 +170,8 @@ class ForumTagLib {
             topicCounts[topic] = replyCount
         }
 
-        mb.div(class: 'topicTable', style: 'margin-bottom: 15px') {
-            table(class: "forum-table", style: "margin-bottom: 5px") {
+        mb.div(class: 'topicTable') {
+            table(class: "forum-table table table-striped") {
                 thead {
                     tr {
                         mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"title", title: "Topic", action:paginateAction, params:params))

@@ -1,7 +1,9 @@
-<g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data" class="form-horizontal">
+<g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data"
+        class="form-horizontal">
     <g:hiddenField name="projectId" value="${projectInstance.id}"/>
     <div class="control-group">
         <label for="dataFile">Select a data file</label>
+
         <div class="controls">
             <input type="file" name="dataFile" id="dataFile"/>
         </div>
@@ -31,7 +33,7 @@
 
 <script>
 
-    $("#btnCancelDataFileUpload").click(function(e) {
+    $("#btnCancelDataFileUpload").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });

@@ -1,12 +1,19 @@
 package au.org.ala.volunteer
 
 import au.org.ala.web.UserDetails
+import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
 import java.util.concurrent.ConcurrentLinkedQueue
+
+import static au.org.ala.volunteer.FullTextIndexService.getHitsCount
+import static au.org.ala.volunteer.FullTextIndexService.getHitsCount
+import static au.org.ala.volunteer.FullTextIndexService.getHitsCount
 
 class UserService {
 
@@ -14,8 +21,11 @@ class UserService {
     def logService
     def grailsApplication
     def emailService
-    def CustomPageRenderer customPageRenderer
+    //def CustomPageRenderer customPageRenderer
+    def groovyPageRenderer
     def messageSource
+    FreemarkerService freemarkerService
+    FullTextIndexService fullTextIndexService
 
     static transactional = true
 
@@ -46,7 +56,7 @@ class UserService {
     @NotTransactional
     private void notifyNewUser(User user) {
         def interestedUsers = getUsersWithRole(BVPRole.SITE_ADMIN)
-        def message = customPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
+        def message = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
 
         interestedUsers.each {
@@ -57,7 +67,7 @@ class UserService {
     def getUserCounts(List<String> ineligibleUsers = []) {
         def args = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
         def users = User.executeQuery("""
-            select new map(displayName as displayName, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
+            select new map(displayName as displayName, email as email, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
             from User
             where (transcribedCount + validatedCount) > 0
             ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
@@ -65,7 +75,11 @@ class UserService {
         """, args)
         def deets = authService.getUserDetailsById(users.collect { it['userId'] })
         if (deets) {
-            users.each { it['displayName'] = deets.users.get(it['userId']).displayName }
+            users.each {
+                def deet = deets.users.get(it['userId'])
+                it['displayName'] = deet.displayName
+                it['email'] = deet.userName // this is actually the email address
+            }
         }
         return users;
     }
@@ -455,5 +469,59 @@ class UserService {
             def dbIds = User.saveAll(updates)
             log.debug("Updated ids ${dbIds}")
         }
+    }
+
+    // Retrieves all the data required for the notebook functionality
+    Map appendNotebookFunctionalityToModel(Map model) {
+        Stopwatch sw = new Stopwatch();
+        sw.reset().start()
+        final query = freemarkerService.runTemplate(UserController.ALA_HARVESTABLE, [userId: model.userInstance.userId])
+        final agg = UserController.SPECIES_AGG_TEMPLATE
+
+        def speciesList2 = fullTextIndexService.rawSearch(query, SearchType.COUNT, agg) { SearchResponse searchResponse ->
+            searchResponse.aggregations.get('fields').aggregations.get('speciesfields').aggregations.get('species').buckets.collect { [ it.key, it.docCount ] }
+        }.sort { m -> m[1] }
+        def totalSpeciesCount = speciesList2.size()
+        sw.stop()
+        log.info("notebookMainFragment.speciesList2 ${sw.toString()}")
+        log.info("specieslist2: ${speciesList2}")
+
+        sw.reset().start()
+        def fieldObservationQuery = freemarkerService.runTemplate(UserController.FIELD_OBSERVATIONS, [userId: model.userInstance.userId])
+        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, hitsCount)
+
+        sw.stop()
+        log.info("notbookMainFragment.fieldObservationCount ${sw.toString()}")
+
+        sw.reset().start()
+        def c = Task.createCriteria()
+        def expeditions = c {
+            eq("fullyTranscribedBy", model.userInstance.userId)
+            projections {
+                countDistinct("project")
+            }
+        }
+        sw.stop()
+
+        sw.reset().start()
+
+        final matchAllQuery = UserController.MATCH_ALL
+
+        def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, hitsCount)
+        def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, hitsCount)
+        def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
+
+        sw.stop()
+        log.info("notbookMainFragment.percentage ${sw.toString()}")
+
+        log.info("notebookMainFragment.projectCount ${sw.toString()}")
+
+        return model << [
+                totalSpeciesCount: totalSpeciesCount,
+                speciesList: speciesList2,
+                fieldObservationCount: fieldObservationCount,
+                expeditionCount: expeditions ? expeditions[0] : 0,
+                userPercent: userPercent
+        ]
     }
 }

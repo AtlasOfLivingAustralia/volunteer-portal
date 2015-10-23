@@ -1,0 +1,91 @@
+body.digivol {
+    .navbar {
+        border-color: $brand-color;
+        .navbar-brand, .navbar-brand:hover {
+            background-color: $brand-color;
+        }
+    }
+    .btn-primary, .label {
+        background-color: $brand-color;
+    }
+    .badge {
+    	color: $brand-color;
+    }
+}
+
+
+body.smithsonian {
+    .navbar {
+        border-color: $smithsonian-color;
+        .navbar-brand, .navbar-brand:hover {
+            background-color: $smithsonian-color;
+        }
+    }
+    .btn-primary, .label {
+        background-color: $smithsonian-color;
+    }
+    .badge {
+        color: $smithsonian-color;
+    }
+    .progress-bar-transcribed{
+        background-color: $smithsonian-color;
+    }
+    .progress-bar-success{
+        background-color: rgba( $smithsonian-color, .5 );
+    }
+    .expedition-tab {
+        .digivol-tab {
+            img{
+                background-color: $smithsonian-color;
+            }
+        }
+    }
+    .key {
+        &.transcribed {
+            background-color: $smithsonian-color;
+        }
+        &.validated {
+            background-color: rgba( $smithsonian-color, .5 );
+        }
+    }
+
+    .transcription-actions .btn.btn-next {
+        background-color: $smithsonian-color;
+    }
+}
+
+
+body.museumvictoria {
+    .navbar {
+        border-color: $museumvictoria-color;
+        .navbar-brand, .navbar-brand:hover {
+            background-color: $museumvictoria-color;
+        }
+
+    }
+    .btn-primary, .label {
+        background-color: $museumvictoria-color;
+    }
+    .badge {
+        color: $museumvictoria-color;
+    }
+
+    .progress-bar-transcribed{
+        background-color: $museumvictoria-color;
+    }
+    .progress-bar-success{
+        background-color: rgba( $museumvictoria-color, .5 );
+    }
+    .key {
+        &.transcribed {
+            background-color: $museumvictoria-color;
+        }
+    }
+    .key.transcribed {
+        background-color: $museumvictoria-color;
+    }
+    .transcription-actions .btn.btn-next {
+        background-color: $museumvictoria-color;
+    }
+
+}

@@ -26,9 +26,32 @@ class VolunteerTagLib {
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate']
 
+    /**
+     * @attr title The page title
+     */
+    def pageTitle = { attrs, body ->
+        def appName = g.message(code: 'default.application.name').toString().toUpperCase()
+        def pageName = attrs.title ?: 'Home'
+        out << "$appName | $pageName"
+    }
+
+    def showCurrentUserName = {attrs, body ->
+        out << userService.authService.displayName
+    }
+
+    def showCurrentUserEmail = {attrs, body ->
+        out << userService.authService.email
+    }
+
     def isLoggedIn = { attrs, body ->
 
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            out << body()
+        }
+    }
+
+    def isNotLoggedIn = { attrs, body ->
+        if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << body()
         }
     }
@@ -144,6 +167,7 @@ class VolunteerTagLib {
     /**
      *
      */
+    //TODO This is hideous and it should disappear after applying the new skin
     def navbar = { attrs, body ->
 
         def selected = null;
@@ -339,7 +363,7 @@ class VolunteerTagLib {
                 def badgeClass = "label"
                 if (taskInstance.isValid == false) {
                     status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-important"
+                    badgeClass = "label label-danger"
                 } else if (taskInstance.isValid) {
                     status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
                     badgeClass = "label label-success"
@@ -370,11 +394,12 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr title
+     * @attr title //REQUIRED
      * @attr selectedNavItem
      * @attr crumbLabel
      * @attr hideTitle
      * @attr hideCrumbs
+     * @attr complexBodyMarkup
      */
     def headerContent = { attrs, body ->
 
@@ -401,50 +426,63 @@ class VolunteerTagLib {
             }
 
             if (!attrs.hideCrumbs) {
-                mb.nav(id:'breadcrumb') {
-                    ol {
-                        li {
-                            a(href:createLink(uri:'/')) {
-                                mkp.yield(message(code:'default.home.label'))
-                            }
+                mb.ul(class: 'breadcrumb-list') {
+                    li {
+                        a(href:createLink(uri:'/')) {
+                            mkp.yield(message(code:'default.home.label'))
                         }
-                        if (crumbList) {
-                            for (int i = 0; i < crumbList?.size(); i++) {
-                                def item = crumbList[i]
-                                li {
-                                    a(href: item.link) {
-                                        mkp.yield(item.label)
-                                    }
+                    }
+                    if (crumbList) {
+                        for (int i = 0; i < crumbList?.size(); i++) {
+                            def item = crumbList[i]
+                            li {
+                                span(class:'glyphicon glyphicon-menu-right') {
+                                    mkp.yield(' ')
+                                }
+                                a(href: item.link) {
+                                    mkp.yield(item.label)
                                 }
                             }
                         }
-                        li(class:'last') {
-                            span {
-                                mkp.yield(crumbLabel)
-                            }
+                    }
+                    li(class:'active') {
+                        span(class:'glyphicon glyphicon-menu-right') {
+                            mkp.yield(' ')
                         }
+                        mkp.yield(crumbLabel)
                     }
                 }
+
             }
 
-            if (!attrs.hideTitle) {
-                mb.h1(class:'bvp-heading') {
-                    mkp.yield(attrs.title)
-                }
-            }
-
-            if (bodyContent) {
-                mb.div {
-                    mb.mkp.yieldUnescaped(bodyContent)
-                }
-            }
 
         }
 
+        sitemesh.captureContent(tag:'page-title') {
+            def heading = ""
+            if (!attrs.hideTitle) {
+                heading = attrs.title
+            }
+
+            if (attrs.complexBodyMarkup) {
+                mb.mkp.yieldUnescaped(bodyContent)
+            } else {
+                mb.div(class:"row") {
+                    div(class:"col-sm-10") {
+                        if (heading) {
+                            mb.h1(class:'bvp-heading') {
+                                mkp.yield(attrs.title)
+                            }
+                        }
+                        mb.mkp.yieldUnescaped(bodyContent)
+                    }
+                }
+            }
+        }
     }
 
     def spinner = { attrs, body ->
-        out << "<image src=\"${resource(dir:'images', file:'spinner.gif')}\" />"
+        out << "<image src=\"${resource(dir:'images', file:'ajax-loader.gif')}\" />"
     }
 
     def sequenceThumbnail = { attrs, body ->
@@ -535,9 +573,9 @@ class VolunteerTagLib {
         def current = pageProperty(name:'page.pageTitle')?.toString()
 
         def mb = new MarkupBuilder(out)
-        mb.li(class: active == current ? 'active' : '') {
+        mb.li(class: "list-group-item ${active == current ? 'active' : ''}") {
             a(href:attrs.href) {
-                i(class:'icon-chevron-right') { mkp.yieldUnescaped('&nbsp;')}
+                i(class:'fa fa-chevron-right') { mkp.yieldUnescaped('&nbsp;')}
                 mkp.yield(attrs.title)
             }
         }
@@ -780,5 +818,44 @@ class VolunteerTagLib {
         } else {
             df.format(new Date())
         }
+    }
+
+    /**
+     * Truncate text at maxlength with ellipse symbol
+     *
+     * @attr maxlength REQUIRED
+     * @attr ellipse
+     */
+    def truncate = { attrs, body ->
+        def ELLIPSIS = attrs.ellipse ?: '...'
+        def maxLength = attrs.maxlength
+        def bodyText = body().replaceAll("<[^>]*>", '') // strip out html tags
+
+        if (maxLength == null || !maxLength.isInteger() || maxLength.toInteger() <= 0) {
+            throw new Exception("The attribute 'maxlength' must an integer greater than 3. Provided value: $maxLength")
+        } else {
+            maxLength = maxLength.toInteger()
+        }
+        if (maxLength <= ELLIPSIS.size()) {
+            throw new Exception("The attribute 'maxlength' must be greater than 3. Provided value: $maxLength")
+        }
+        if (body().length() > maxLength) {
+            out << bodyText[0..maxLength - (ELLIPSIS.size() + 1)] + ELLIPSIS
+        } else {
+            out << bodyText
+        }
+    }
+
+    /**
+     * Taken from http://stackoverflow.com/a/7427266/249327
+     *
+     * Attr hex REQUIRED
+     */
+    def hexToRbg = { attrs, body ->
+        String hex = attrs.hex
+        String color = Integer.valueOf( hex.substring( 1, 3 ), 16 ) + "," +
+                Integer.valueOf( hex.substring( 3, 5 ), 16 ) + "," +
+                Integer.valueOf( hex.substring( 5, 7 ), 16 )
+        out << color
     }
 }

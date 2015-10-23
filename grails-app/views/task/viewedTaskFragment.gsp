@@ -7,7 +7,7 @@
         </tr>
         <tr>
             <td>Last viewed by</td>
-            <td><cl:userDisplayName userId="${viewedTask.userId}" /></td>
+            <td><cl:userDisplayName userId="${viewedTask.userId}"/></td>
         </tr>
         <tr>
             <td>Last viewed on</td>
@@ -22,7 +22,7 @@
 
 <script>
 
-    $("#btnCloseViewedTask").click(function(e) {
+    $("#btnCloseViewedTask").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });

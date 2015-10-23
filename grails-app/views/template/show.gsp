@@ -1,78 +1,84 @@
 <%@ page import="au.org.ala.volunteer.Template" %>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}" />
-        <title><g:message code="default.show.label" args="[entityName]" /></title>
-    </head>
-    <body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
+    <title><g:message code="default.show.label" args="[entityName]"/></title>
+</head>
 
-        <cl:headerContent title="${message(code: 'default.show.label', args: [entityName])} - ${templateInstance.name}">
-           <%
-               pageScope.crumbs = [
-                   [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                   [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
-               ]
-           %>
-        </cl:headerContent>
+<body class="admin">
 
-        <div class="row">
-            <div class="span12">
-                <table class="table">
-                    <tbody>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.id.label" default="Id" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: templateInstance, field: "id")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.author.label" default="Author" /></td>
-                            
-                            <td valign="top" class="value">${cl.emailForUserId(id: templateInstance.author)}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.name.label" default="Name" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: templateInstance, field: "name")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.viewName.label" default="View Name" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: templateInstance, field: "viewName")}</td>
-                            
-                        </tr>
+<div class="container">
+    <cl:headerContent title="${message(code: 'default.show.label', args: [entityName])} - ${templateInstance.name}" selectedNavItem="bvpadmin">
+        <%
+            pageScope.crumbs = [
+                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+            ]
+        %>
+    </cl:headerContent>
 
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="template.project.label" default="Projects" /></td>
-                            
-                            <td valign="top" style="text-align: left;" class="value">
-                                <ul>
-                                <g:each in="${templateInstance.project}" var="p">
-                                    <li><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
-                                </g:each>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="templateId" class="col-md-2 control-label"><g:message code="template.id.label" default="Id"/></label>
+                            <div class="col-md-6">
+                                <div id="templateId" class="form-control-static">${fieldValue(bean: templateInstance, field: "id")}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="author" class="col-md-2 control-label"><g:message code="template.author.label" default="Author"/></label>
+                            <div class="col-md-6">
+                                <div id="author" class="form-control-static">${cl.emailForUserId(id: templateInstance.author)}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name" class="col-md-2 control-label"><g:message code="template.name.label" default="Name"/></label>
+                            <div class="col-md-6">
+                                <div id="name" class="form-control-static">${fieldValue(bean: templateInstance, field: "name")}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="viewName" class="col-md-2 control-label"><g:message code="template.viewName.label" default="View Name"/></label>
+                            <div class="col-md-6">
+                                <div id="viewName" class="form-control-static">${fieldValue(bean: templateInstance, field: "viewName")}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="project" class="col-md-2 control-label"><g:message code="template.project.label" default="Projects"/></label>
+                            <div class="col-md-6">
+                                <ul class="form-control-static" id="project">
+                                    <g:each in="${templateInstance.project}" var="p">
+                                        <li><g:link controller="project" action="show"
+                                                    id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+                                    </g:each>
                                 </ul>
-                            </td>
-                            
-                        </tr>
-                    
-                    </tbody>
-                </table>
-            </div>
-            <div class="buttons">
-                <g:form>
-                    <g:hiddenField name="id" value="${templateInstance?.id}" />
-                    <g:actionSubmit class="btn edit" action="edit" value="${message(code: 'default.button.edit.label', default: 'Edit')}" />
-                    <g:actionSubmit class="btn btn-danger delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                </g:form>
+                            </div>
+                        </div>
+
+                        <div class="form-group buttons">
+                            <div class="col-md-offset-2 col-md-10">
+                                <g:hiddenField name="id" value="${templateInstance?.id}"/>
+                                <g:actionSubmit class="btn btn-default edit" action="edit"
+                                                value="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
+                                <g:actionSubmit class="btn btn-danger delete" action="delete"
+                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"
+                                                onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </body>
+    </div>
+</div>
+</body>
 </html>

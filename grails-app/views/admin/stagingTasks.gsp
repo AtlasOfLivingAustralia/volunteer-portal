@@ -9,21 +9,23 @@
         margin: 0;
         lext
     }
-    dl.inline dd:after{
+
+    dl.inline dd:after {
         display: block;
         content: '';
     }
-    dl.inline dt{
+
+    dl.inline dt {
         display: inline-block;
         min-width: 100px;
     }
     </style>
-    <r:require module="bootbox" />
+    <r:require module="bootbox"/>
     <r:script type='text/javascript'>
 
-        jQuery(function($) {
-            $('#button-bar').find('button.btn-danger').click(function(e) {
-                bootbox.confirm("Are you sure you want to " + e.target.dataset.message + "?", e.target.dataset.cancel, e.target.dataset.confirm, function(result) {
+        jQuery(function ($) {
+            $('#button-bar').find('button.btn-danger').click(function (e) {
+                bootbox.confirm("Are you sure you want to " + e.target.dataset.message + "?", e.target.dataset.cancel, e.target.dataset.confirm, function (result) {
                     if (result) {
                         window.open(e.target.dataset.href, "_self");
                     }
@@ -36,11 +38,11 @@
 
 <body>
 
-<cl:headerContent title="${message(code:'admin.stagingQueue.label', default:'Staging Queue')}">
+<cl:headerContent title="${message(code: 'admin.stagingQueue.label', default: 'Staging Queue')}">
     <%
         pageScope.crumbs = [
-                [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')],
-                [link:createLink(controller:'admin', actions: 'tools'),label:message(code:'default.tools.label', default:'Tools')]
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Admin')],
+                [link: createLink(controller: 'admin', actions: 'tools'), label: message(code: 'default.tools.label', default: 'Tools')]
         ]
     %>
 </cl:headerContent>
@@ -48,32 +50,38 @@
 <div class="row">
     <div class="span12">
         <div id="button-bar" class="well well-small">
-            <button id="cancel" data-href="${createLink(action:'cancelStagingQueue')}" data-message="send a cancel request to the staging queue" data-confirm="Send Cancel Message" data-cancel="Dismiss" class="btn btn-danger">Cancel Staging Queue</button>
-            <button id="clear" data-href="${createLink(action:'clearStagingQueue')}" data-message="clear the staging queue (this is highly risky)" data-confirm="Clear Queue" data-cancel="Dismiss" class="btn btn-danger">Clear Staging Queue</button>
+            <button id="cancel" data-href="${createLink(action: 'cancelStagingQueue')}"
+                    data-message="send a cancel request to the staging queue" data-confirm="Send Cancel Message"
+                    data-cancel="Dismiss" class="btn btn-danger">Cancel Staging Queue</button>
+            <button id="clear" data-href="${createLink(action: 'clearStagingQueue')}"
+                    data-message="clear the staging queue (this is highly risky)" data-confirm="Clear Queue"
+                    data-cancel="Dismiss" class="btn btn-danger">Clear Staging Queue</button>
         </div>
     </div>
 </div>
+
 <div class="row">
     <div class="span12">
         <h3>Staging Queue:</h3>
         <table class="table">
             <thead>
-                <th>
-                    <td>Project</td>
-                    <td>External identifier</td>
-                    <td>Image URL</td>
-                </th>
+            <th>
+            <td>Project</td>
+            <td>External identifier</td>
+            <td>Image URL</td>
+            </th>
             </thead>
             <tbody>
-                <g:each in="${queueItems}" status="i" var="taskDescriptor">
+            <g:each in="${queueItems}" status="i" var="taskDescriptor">
                 <tr>
                     <td>$taskDescriptor?.project?.name</td>
                     <td>$taskDescriptor?.externalIdentifier</td>
                     <td>$taskDescriptor?.imageUrl</td>
                 </tr>
-                </g:each>
+            </g:each>
             </tbody>
         </table>
+
         <div class="well">
             <dl class="inline">
                 <dt>Start Time</dt>

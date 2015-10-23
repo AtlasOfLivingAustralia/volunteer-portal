@@ -1,3 +1,11 @@
+.itemgrid { overflow: hidden; margin-bottom: 10px; }
+.itemgrid .item,
+.itemgrid .griditem {
+    float: left;
+    width: 160px;
+    margin: 5px 10px;
+}
+
 .imageSelectWidget a.thumbnail.selected,
 .imageSelectWidget a.thumbnail.selected:hover {
     border: 2px solid #df4a21;
@@ -98,21 +106,21 @@
     min-height: 200px;
 }
 
-#qaCarousel.carousel .carousel-inner {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
+/*#qaCarousel.carousel .carousel-inner {*/
+    /*width: 100%;*/
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+/*}*/
 
-#qaCarousel.carousel .carousel-inner > .item {
-    /*min-height: 200px;*/
-    height: 460px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-    padding-bottom:5px;
-    -webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(255,254,247,1)), to(rgba(0,0,0,0.3)))
-    /*#ff fe f7*/
-}
+/*#qaCarousel.carousel .carousel-inner > .item {*/
+    /*/!*min-height: 200px;*!/*/
+    /*height: 460px;*/
+    /*overflow-y: auto;*/
+    /*margin-bottom: 15px;*/
+    /*padding-bottom:5px;*/
+    /*-webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(255,254,247,1)), to(rgba(0,0,0,0.3)))*/
+    /*/!*#ff fe f7*!/*/
+/*}*/
 
 #qaCarousel.carousel .carousel-control {
     top: inherit;

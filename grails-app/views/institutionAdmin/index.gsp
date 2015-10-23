@@ -1,87 +1,106 @@
-
 <%@ page import="au.org.ala.volunteer.Institution" %>
 <!DOCTYPE html>
 <html>
-	<head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-		<g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}" />
-        <title><g:message code="default.list.label" args="[entityName]"/></title>
-	</head>
-	<body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
+    <title><g:message code="default.list.label" args="[entityName]"/></title>
+</head>
 
-        <cl:headerContent title="${message(code:'default.institutions.label', default:'Manage Institutions')}">
-            <%
-                pageScope.crumbs = [
-                    [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
-                ]
+<body>
 
-            %>
+<cl:headerContent title="${message(code: 'default.institutions.label', default: 'Manage Institutions')}">
+    <%
+        pageScope.crumbs = [
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Admin')]
+        ]
 
-            <a class="btn btn-success" href="${createLink(action:"create")}"><i class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
-            <a id="quick-create" role="button" class="create btn" href="javascript:void(0)" data-target="#quick-create-modal" data-toggle="modal"><g:message code="quick.new.label" default="Create from Atlas Collectory" args="[entityName]" /></a>
-        </cl:headerContent>
+    %>
 
-		<div id="list-institution" class="content scaffold-list" role="main">
-			<table>
-    			<thead>
-					<tr>
-                        <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}" />
-                        <g:sortableColumn property="contactName" title="${message(code: 'institution.contactName.label', default: 'Contact Name')}" />
-                        <g:sortableColumn property="contactEmail" title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}" />
-						<g:sortableColumn property="dateCreated" title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}" />
-					    <th />
-					</tr>
-				</thead>
-				<tbody>
-				<g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
-					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+    <a class="btn btn-success" href="${createLink(action: "create")}"><i
+            class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
+    <a id="quick-create" role="button" class="create btn" href="javascript:void(0)" data-target="#quick-create-modal"
+       data-toggle="modal"><g:message code="quick.new.label" default="Create from Atlas Collectory"
+                                      args="[entityName]"/></a>
+</cl:headerContent>
 
-                        <td><g:link action="edit" id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
+<div id="list-institution" class="content scaffold-list" role="main">
+    <table>
+        <thead>
+        <tr>
+            <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}"/>
+            <g:sortableColumn property="contactName"
+                              title="${message(code: 'institution.contactName.label', default: 'Contact Name')}"/>
+            <g:sortableColumn property="contactEmail"
+                              title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}"/>
+            <g:sortableColumn property="dateCreated"
+                              title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}"/>
+            <th/>
+        </tr>
+        </thead>
+        <tbody>
+        <g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
+            <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                        <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
+                <td><g:link action="edit"
+                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
 
-                        <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
+                <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
 
-						<td><g:formatDate date="${institutionInstance.dateCreated}" /></td>
+                <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
 
-                        <td>
-                            <g:form url="[action:'delete', id:institutionInstance.id]" method="DELETE">
-                                <fieldset class="buttons">
-                                    <g:actionSubmit class="btn btn-danger" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                                    <a class="btn" href="${createLink(controller:'institution', action:'index', id:institutionInstance.id)}"><i class="icon-home"></i></a>
-                                    <a class="btn" href="${createLink(controller:'institutionAdmin', action:'edit', id:institutionInstance.id)}"><i class="icon-edit"></i></a>
-                                </fieldset>
+                <td><g:formatDate date="${institutionInstance.dateCreated}"/></td>
 
-                            </g:form>
+                <td>
+                    <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
+                        <fieldset class="buttons">
+                            <g:actionSubmit class="btn btn-danger"
+                                            value="${message(code: 'default.button.delete.label', default: 'Delete')}"
+                                            onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
+                            <a class="btn"
+                               href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
+                                    class="icon-home"></i></a>
+                            <a class="btn"
+                               href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
+                                    class="icon-edit"></i></a>
+                        </fieldset>
 
-                        </td>
+                    </g:form>
 
-					</tr>
-				</g:each>
-				</tbody>
-			</table>
-			<div class="pagination">
-				<g:paginate total="${institutionInstanceCount ?: 0}" />
-			</div>
-		</div>
-        <div id="quick-create-modal" class="modal hide fade">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Quick Create Institution</h3>
-            </div>
-            <div class="modal-body">
-                <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}" method="POST">
-                    <select name="cid" id="cid" class="input-block-level">
-                    </select>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
-            </div>
-        </div>
-        <r:script>
+                </td>
+
+            </tr>
+        </g:each>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <g:paginate total="${institutionInstanceCount ?: 0}"/>
+    </div>
+</div>
+
+<div id="quick-create-modal" class="modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+        <h3>Quick Create Institution</h3>
+    </div>
+
+    <div class="modal-body">
+        <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}"
+              method="POST">
+            <select name="cid" id="cid" class="input-block-level">
+            </select>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Close</a>
+        <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
+    </div>
+</div>
+<r:script>
             jQuery(function($) {
                 var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
                 $('#quick-create-modal').on('show', function (e) {
@@ -113,6 +132,6 @@
                     }
                 }
             });
-        </r:script>
-	</body>
+</r:script>
+</body>
 </html>

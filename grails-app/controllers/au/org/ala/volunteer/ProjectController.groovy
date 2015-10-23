@@ -43,7 +43,7 @@ class ProjectController {
         } else {
             // project info
             def taskCount = Task.countByProject(projectInstance)
-            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
+            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:'dateLastUpdated', order:'desc'])
             def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
             def expedition = grailsApplication.config.expedition
             def roles = [] //  List of Map
@@ -75,6 +75,7 @@ class ProjectController {
                     }
                 }
             }
+            log.warn "roles = ${roles as JSON}"
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
             def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc', max: 1])
@@ -92,7 +93,22 @@ class ProjectController {
                 percentComplete = 99;
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete, newsItems: newsItems, projectSummary: projectSummary])
+            def recentTasks = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:'dateLastUpdated', order:'desc'])
+
+            render(view: "index", model: [
+                    projectInstance: projectInstance,
+                    taskCount: taskCount,
+                    tasksTranscribed: tasksTranscribed,
+                    recentTasks: recentTasks,
+                    roles:roles,
+                    newsItem: newsItem,
+                    currentUserId: currentUserId,
+                    leader: leader,
+                    percentComplete: percentComplete,
+                    newsItems: newsItems,
+                    projectSummary: projectSummary,
+                    transcriberCount: userIds.size()
+            ])
         }
     }
 
@@ -275,7 +291,8 @@ class ProjectController {
         [
             projects: projectSummaryList.projectRenderList,
             filteredProjectsCount: projectSummaryList.matchingProjectCount,
-            numberOfUncompletedProjects: numberOfUncompletedProjects
+            numberOfUncompletedProjects: numberOfUncompletedProjects,
+            totalUsers: User.countByTranscribedCountGreaterThan(0)
         ]
     }
 
