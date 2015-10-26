@@ -387,7 +387,7 @@ class ProjectController {
             final names = insts*.name
             final nameToId = insts.collectEntries { ["${it.name}": it.id] }
             final labelCats = Label.withCriteria { projections { distinct 'category' } }
-            final colours = ["", "label-success", "label-warning", "label-important", "label-info", "label-inverse"]
+            final colours = ["label-default", "label-success", "label-warning", "label-important", "label-info", "label-inverse"]
             final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
             def counter = 0
             final catColourMap = labelCats.collectEntries { [(it): colours[counter++ % colours.size()]] }
