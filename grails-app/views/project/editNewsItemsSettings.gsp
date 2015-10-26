@@ -33,7 +33,7 @@
 
 ${newsItems?.size() ?: 0} news items
 
-<table class="table table-striped">
+<table class="table table-striped table-hover">
     <thead>
     <th>Date</th>
     <th>Content</th>
@@ -58,12 +58,12 @@ ${newsItems?.size() ?: 0} news items
             </td>
             <td style="max-width: 20px">
                 <div class="pull-right">
-                    <a class="btn btn-small btn-danger"
+                    <a class="btn btn-xs btn-danger"
                        href="${createLink(controller: 'newsItem', action: 'delete', id: newsItem.id)}"><i
-                            class="icon-remove icon-white"></i></a>
-                    <a class="btn btn-small"
+                            class="fa fa-trash"></i></a>
+                    <a class="btn btn-default btn-xs"
                        href="${createLink(controller: 'newsItem', action: 'edit', id: newsItem.id)}"><i
-                            class="icon-edit"></i></a>
+                            class="fa fa-edit"></i></a>
                 </div>
             </td>
         </tr>
