@@ -68,18 +68,17 @@
                 </div>
 
                 <div class="col-md-9">
-                    <g:form name="activationForm" controller="project" action="update" class="form-horizontal">
-                        <g:hiddenField name="id" value="${projectInstance.id}"/>
-                        <g:if test="${projectInstance.inactive}">
-                            <g:hiddenField name="inactive" value="false"/>
-                        </g:if>
-                        <g:else>
-                            <g:hiddenField name="inactive" value="true"/>
-                        </g:else>
-                        <div class="panel panel-default subpanel">
-                            <div class="panel-heading text-right" >
-                                <h4 class="pull-left">${projectInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
-
+                    <div class="panel panel-default subpanel">
+                        <div class="panel-heading text-right" >
+                            <h4 class="pull-left">${projectInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                            <g:form name="activationForm" controller="project" action="update" class="form-horizontal">
+                                <g:hiddenField name="id" value="${projectInstance.id}"/>
+                                <g:if test="${projectInstance.inactive}">
+                                    <g:hiddenField name="inactive" value="false"/>
+                                </g:if>
+                                <g:else>
+                                    <g:hiddenField name="inactive" value="true"/>
+                                </g:else>
                                 <div class="btn-group">
                                     <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
                                         <i class="fa fa-cog"></i>&nbsp;Actions
@@ -100,12 +99,12 @@
                                 <div class="btn-group" style="margin-left: 5px;margin-right: 5px">
                                     <g:pageProperty name="page.adminButtonBar"/>
                                 </div>
-                            </div>
-                            <div class="panel-body">
-                                <g:layoutBody/>
-                            </div>
+                            </g:form>
                         </div>
-                    </g:form>
+                        <div class="panel-body">
+                            <g:layoutBody/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

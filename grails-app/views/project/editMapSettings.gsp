@@ -6,22 +6,8 @@
 
 <body class="continer">
 
-<style>
-#recordsMap {
-    width: 280px;
-    height: 280px;
-    max-height: 280px;
-    max-width: 280px;
-    margin: 0 0;
-}
 
-#recordsMap img {
-    max-width: none !important;
-    max-height: none !important;
-}
-</style>
-
-<content tag="pageTitle">Map settings</content>
+<content tag="pageTitle">Map</content>
 
 <content tag="adminButtonBar">
 </content>
@@ -35,61 +21,58 @@
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-    <div class="control-group">
-        <label for="showMap" class="checkbox">
-            Show the map on the expedition landing page&nbsp;<g:checkBox name="showMap"
-                                                                         checked="${projectInstance.showMap}"/>
+    <div class="form-group">
+        <label for="showMap" class="checkbox col-md-6">
+            Show the map on the expedition landing page
         </label>
-    </div>
-
-    <div id="mapPositionControls" class="control-group">
-
-        <div class="alert">
-            Position the map to how you would like it to appear on the project start page
+        <div class="col-md-6">
+            <g:checkBox name="showMap"
+                        checked="${projectInstance.showMap}"/>
         </div>
-
-        <table style="width: 100%">
-            <tr>
-                <td width="280px">
-                    <div id="recordsMap"></div>
-                </td>
-                <td>
-                    <div class="control-group">
-                        <label class="control-label" for="mapZoomLevel">Zoom</label>
-
-                        <div class="controls">
-                            <g:textField name="mapZoomLevel" value="${initZoom}"/>
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label" for="mapLatitude">Center Latitude:</label>
-
-                        <div class="controls">
-                            <g:textField name="mapLatitude" value="${initLatitude}"/>
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label" for="mapLongitude">Center Longitude:</label>
-
-                        <div class="controls">
-                            <g:textField name="mapLongitude" value="${initLongitude}"/>
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <div class="controls">
-                            <g:actionSubmit class="save btn btn-primary" action="updateMapSettings"
-                                            value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                        </div>
-                    </div>
-
-                </td>
-            </tr>
-        </table>
     </div>
 
+    <div class="alert alert-warning">
+        Position the map to how you would like it to appear on the project start page
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="thumbnail">
+                <div id="recordsMap"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-md-4" for="mapZoomLevel">Zoom</label>
+                    <div class="col-md-6">
+                        <g:textField name="mapZoomLevel" class="form-control" value="${initZoom}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4" for="mapLatitude">Center Latitude:</label>
+                    <div class="col-md-6">
+                        <g:textField name="mapLatitude" class="form-control" value="${initLatitude}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4" for="mapLongitude">Center Longitude:</label>
+                    <div class="col-md-6">
+                        <g:textField name="mapLongitude" class="form-control" value="${initLongitude}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-8">
+                        <g:actionSubmit class="save btn btn-primary" action="updateMapSettings"
+                                        value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </g:form>
 
 <script type='text/javascript' src='https://www.google.com/jsapi'></script>
@@ -103,7 +86,7 @@
 
     $(document).ready(function () {
 
-        $('input:checkbox').bootstrapSwitch({
+        $('#showMap').bootstrapSwitch({
             size: "small",
             onText: "yes",
             offText: "no"
@@ -112,7 +95,7 @@
         bvp.bindTooltips();
         bvp.suppressEnterSubmit();
 
-        $('input:checkbox').on('switchChange.bootstrapSwitch', function (event, state) {
+        $('#showMap').on('switchChange.bootstrapSwitch', function (event, state) {
             $("#updateForm").submit();
         });
 

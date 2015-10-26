@@ -15,15 +15,20 @@
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-    <div class="control-group">
-        <tinyMce:renderEditor type="advanced" name="tutorialLinks" cols="60" rows="10" class="span12">
-            ${projectInstance?.tutorialLinks}
-        </tinyMce:renderEditor>
+    <div class="form-group">
+        <div class="col-md-12">
+            <tinyMce:renderEditor type="advanced" name="tutorialLinks" rows="10" class="form-control">
+                ${projectInstance?.tutorialLinks}
+            </tinyMce:renderEditor>
+        </div>
+
     </div>
 
-    <div class="control-group">
-        <g:actionSubmit class="save btn btn-primary" action="updateTutorialLinksSettings"
-                        value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+    <div class="form-group">
+        <div class="col-md-12">
+            <g:actionSubmit class="save btn btn-primary" action="updateTutorialLinksSettings"
+                            value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+        </div>
     </div>
 
 </g:form>
