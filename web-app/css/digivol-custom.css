@@ -288,6 +288,10 @@ table .btn-default:hover {
     left: 0;
 }
 
+.admin .twitter-typeahead {
+    width: 100%;
+}
+
 /*** End - Admin ***/
 
 /*** LeaderBoard ***/

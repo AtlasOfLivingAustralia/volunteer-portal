@@ -1,4 +1,4 @@
-function labelAutocomplete(input, findUrl, ajaxSpinnerSelector, selectedCallback) {
+function labelAutocomplete(input, findUrl, ajaxSpinnerSelector, selectedCallback, listTextKey) {
     var url = findUrl;
 
     function showSpinner() {
@@ -9,9 +9,9 @@ function labelAutocomplete(input, findUrl, ajaxSpinnerSelector, selectedCallback
     }
 
     var bh = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace(listTextKey || 'value'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
-        identify: function(obj) { return obj.category + obj.value; },
+        identify: function(obj) { return obj.category + obj[listTextKey || 'value']; },
         remote: {
             url: url + '?term=%QUERY',
             wildcard: '%QUERY'
@@ -24,7 +24,7 @@ function labelAutocomplete(input, findUrl, ajaxSpinnerSelector, selectedCallback
     }, {
         source: bh,
         async: true,
-        display: 'value'
+        display: listTextKey || 'value'
     });
 
     $input.on('typeahead:select', function(e, obj) {
