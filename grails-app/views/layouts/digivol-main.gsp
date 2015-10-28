@@ -42,14 +42,16 @@
         <div id="navbar" class="navbar-collapse collapse">
 
             <div class="custom-search-input">
+                <g:form controller="project" action="list" method="GET" >
                 <div class="input-group">
-                    <input type="text" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
+                    <g:textField name="q" class="form-control input-lg" placeholder="Search e.g. Bivalve" />
                     <span class="input-group-btn">
                         <button class="btn btn-info btn-lg" type="button">
                             <i class="glyphicon glyphicon-search"></i>
                         </button>
                     </span>
                 </div>
+                </g:form>
             </div>
 
             <ul class="nav navbar-nav navbar-right">
