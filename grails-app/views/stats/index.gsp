@@ -112,12 +112,10 @@
                         <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
 
-</div>
 </body>
 </html>
