@@ -292,7 +292,12 @@ table .btn-default:hover {
     width: 100%;
 }
 
+.admin #mapWidgets #mapCanvas {
+    height: 400px;
+}
+
 /*** End - Admin ***/
+
 
 /*** LeaderBoard ***/
 

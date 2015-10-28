@@ -3,7 +3,10 @@
     <div id="mapWidgets">
         <div id="mapWrapper" class="col-sm-6">
             <div id="mapCanvas"></div>
-            <div class="searchHint">Hint: you can also drag & drop the marker icon to set the location data</div>
+            <div class="searchHint">
+                <br/>
+                <i class="fa fa-info-circle"></i> Hint: you can also drag & drop the marker icon to set the location data
+            </div>
         </div>
 
         <div id="mapInfo" class="col-sm-6">
@@ -11,7 +14,7 @@
             <h5>Locality Search</h5>
             <div class="custom-search-input in-modal">
                 <div class="input-group">
-                    <input type="text" name="address" class="form-control input-lg" placeholder="Search e.g. Wollongong">
+                    <input type="text" name="address" id="address" class="form-control input-lg" placeholder="Search e.g. Wollongong">
                     <span class="input-group-btn">
                         <button id="locationSearch" class="btn btn-info btn-lg" type="button">
                             <i class="glyphicon glyphicon-search"></i>
@@ -31,34 +34,34 @@
                     <option ${isSelected} value="${item.value}">${item.key ?: item.value}</option>
                 </g:each>
             </select>
-            <p>
+
+            <p class="small">
                 Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map.
             </p>
 
-            <h5>Location Data</h5>
-            <table class="table table-striped">
-                <tbody>
-                <tr>
-                    <th scope="row">Longtitude</th>
-                    <td><span id="infoLng"></span></td>
-                </tr>
-                <tr>
-                    <th scope="row">Latitude</th>
-                    <td><span id="infoLat"></span></td>
-                </tr>
-                <tr>
-                    <th scope="row">Location</th>
-                    <td><span id="infoLoc"></span></td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="form-horizontal">
+                <h5>Location Data</h5>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="infoLng">Longitude:</label>
+                    <label class="col-md-9">
+                        <span id="infoLng" class="form-control-static"></span>
+                    </label>
+                </div>
 
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="infoLat">Latitude:</label>
+                    <label class="col-md-9">
+                        <span id="infoLat" class="form-control-static"></span>
+                    </label>
+                </div>
 
-            %{--<div id="geolocationToolButtons" style="text-align: center; margin-top: 6px">--}%
-                %{--<button type="button" id="setLocationFields" class="btn btn-primary">Copy values to main form</button>--}%
-                %{--<button type="button" id="btnClose" class="btn">Cancel</button>--}%
-            %{--</div>--}%
-
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="infoLoc">Location:</label>
+                    <label class="col-md-9">
+                        <span id="infoLoc" class="form-control-static"></span>
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 </div>
