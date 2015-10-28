@@ -165,7 +165,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <table class="table table-striped template-fields">
+                    <table class="table table-striped table-hover template-fields">
                         <thead>
                         <tr>
                             <th>Order</th>

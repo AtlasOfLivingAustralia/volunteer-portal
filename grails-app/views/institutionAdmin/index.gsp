@@ -8,75 +8,83 @@
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>
 
-<body>
+<body class="admin">
 
-<cl:headerContent title="${message(code: 'default.institutions.label', default: 'Manage Institutions')}">
+<cl:headerContent title="${message(code: 'default.institutions.label', default: 'Manage Institutions')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Admin')]
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
         ]
 
     %>
 
     <a class="btn btn-success" href="${createLink(action: "create")}"><i
             class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
-    <a id="quick-create" role="button" class="create btn" href="javascript:void(0)" data-target="#quick-create-modal"
+    <a id="quick-create" role="button" class="create btn btn-default" href="javascript:void(0)" data-target="#quick-create-modal"
        data-toggle="modal"><g:message code="quick.new.label" default="Create from Atlas Collectory"
                                       args="[entityName]"/></a>
 </cl:headerContent>
 
-<div id="list-institution" class="content scaffold-list" role="main">
-    <table>
-        <thead>
-        <tr>
-            <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}"/>
-            <g:sortableColumn property="contactName"
-                              title="${message(code: 'institution.contactName.label', default: 'Contact Name')}"/>
-            <g:sortableColumn property="contactEmail"
-                              title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}"/>
-            <g:sortableColumn property="dateCreated"
-                              title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}"/>
-            <th/>
-        </tr>
-        </thead>
-        <tbody>
-        <g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
-            <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}"/>
+                            <g:sortableColumn property="contactName"
+                                              title="${message(code: 'institution.contactName.label', default: 'Contact Name')}"/>
+                            <g:sortableColumn property="contactEmail"
+                                              title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}"/>
+                            <g:sortableColumn property="dateCreated"
+                                              title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}"/>
+                            <th/>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
+                            <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                <td><g:link action="edit"
-                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
+                                <td><g:link action="edit"
+                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
 
-                <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
+                                <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
 
-                <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
+                                <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
 
-                <td><g:formatDate date="${institutionInstance.dateCreated}"/></td>
+                                <td><g:formatDate date="${institutionInstance.dateCreated}"/></td>
 
-                <td>
-                    <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
-                        <fieldset class="buttons">
-                            <g:actionSubmit class="btn btn-danger"
-                                            value="${message(code: 'default.button.delete.label', default: 'Delete')}"
-                                            onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
-                            <a class="btn"
-                               href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
-                                    class="icon-home"></i></a>
-                            <a class="btn"
-                               href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
-                                    class="icon-edit"></i></a>
-                        </fieldset>
+                                <td>
+                                    <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
+                                        <fieldset class="buttons">
+                                            <g:actionSubmit class="btn btn-danger"
+                                                            value="${message(code: 'default.button.delete.label', default: 'Delete')}"
+                                                            onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
+                                            <a class="btn"
+                                               href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
+                                                    class="icon-home"></i></a>
+                                            <a class="btn"
+                                               href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
+                                                    class="icon-edit"></i></a>
+                                        </fieldset>
 
-                    </g:form>
+                                    </g:form>
 
-                </td>
+                                </td>
 
-            </tr>
-        </g:each>
-        </tbody>
-    </table>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                    </table>
 
-    <div class="pagination">
-        <g:paginate total="${institutionInstanceCount ?: 0}"/>
+                    <div class="pagination">
+                        <g:paginate total="${institutionInstanceCount ?: 0}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

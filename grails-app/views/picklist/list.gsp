@@ -17,19 +17,16 @@
                     [link: createLink(controller: 'picklist', action: 'manage'), label: message(code: 'manage.picklists.label', default: 'Manage picklists')],
             ]
         %>
+
+        <a href="${createLink(controller: 'picklist', action: 'create')}" class="btn btn-success">Create a new Picklist</a>
     </cl:headerContent>
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12" style="margin-bottom: 10px">
-                    <a href="${createLink(controller: 'picklist', action: 'create')}" class="btn btn-success">Create a new Picklist</a>
-                </div>
-            </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <table class="table table-striped">
+                    <table class="table table-striped table-hover">
                         <thead>
                         <tr>
                             <g:sortableColumn property="id" title="${message(code: 'picklist.id.label', default: 'Id')}"/>
