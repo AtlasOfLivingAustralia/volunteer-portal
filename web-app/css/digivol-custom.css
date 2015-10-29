@@ -211,6 +211,10 @@ table .btn-default:hover {
 
 /*** Begin - Admin ***/
 
+.admin h1 {
+    font-size: 2.5em !important;
+}
+
 .admin .a-feature.simple-header {
     padding: 0;
     padding-bottom: 1em;

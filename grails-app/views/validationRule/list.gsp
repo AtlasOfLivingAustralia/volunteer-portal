@@ -15,15 +15,13 @@
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
             ]
         %>
+        <a href="${createLink(action: 'addRule')}" class="btn btn-primary"><i
+                class="icon-plus icon-white"></i>&nbsp;Add new rule</a>
     </cl:headerContent>
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="buttons" style="margin-bottom: 10px">
-                        <a href="${createLink(action: 'addRule')}" class="btn btn-primary"><i
-                                class="icon-plus icon-white"></i>&nbsp;Add new rule</a>
-                    </div>
                     <table class="table table-striped table-hover table-striped">
                         <thead>
                         <tr>

@@ -63,7 +63,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <table class="table table-striped admin-table">
+                    <table class="table table-striped table-hover admin-table">
                         <thead>
                         <tr>
                             <g:sortableColumn property="name" title="${message(code: 'template.name.label', default: 'Name')}"/>
