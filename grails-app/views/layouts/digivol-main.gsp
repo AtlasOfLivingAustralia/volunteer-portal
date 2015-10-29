@@ -134,31 +134,22 @@
 
 <section id="why" class="white">
     <div class="container">
-        <h2 class="heading">Why should you get involved?</h2>
+        <h2 class="heading"><g:message code="layout.whyinvolved.heading" default="Why you should get involved?"/></h2>
 
         <div class="row">
             <div class="col-sm-4">
-                <h3>Lorem ipsum dolor sit ame</h3>
-
-                <p>
-                    Nullam mollis bibendum nisi, eu feugiat leo efficitur in. Curabitur in porttitor libero.
-                </p>
+                <h3><g:message code="layout.whyinvolved.contribute.heading" default="Contribute to knowledge"/></h3>
+                <p><g:message code="layout.whyinvolved.contribute.body" default="Help researchers better understand the diversity of plant and animal life."/></p>
             </div>
 
             <div class="col-sm-4">
-                <h3>Lorem ipsum dolor sit ame</h3>
-
-                <p>
-                    Nullam mollis bibendum nisi, eu feugiat leo efficitur in. Curabitur in porttitor libero.e
-                </p>
+                <h3><g:message code="layout.whyinvolved.volunteer.heading" default="Be an online volunteer"/></h3>
+                <p><g:message code="layout.whyinvolved.volunteer.body" default="Be part of an active community that supports and contributes to science and culture."/></p>
             </div>
 
             <div class="col-sm-4">
-                <h3>Lorem ipsum dolor sit ame</h3>
-
-                <p>
-                    Nullam mollis bibendum nisi, eu feugiat leo efficitur in. Curabitur in porttitor libero.
-                </p>
+                <h3><g:message code="layout.whyinvolved.accessible.heading" default="Make data accessible"/></h3>
+                <p><g:message code="layout.whyinvolved.accessible.body" default="Unlock collections and extend the reach of information around the world."/></p>
             </div>
         </div>
     </div>
