@@ -2,20 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="achievementSettingsLayout">
+    <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:style>
-        #ajax-spinner.disabled, .ajax-spinner.disabled {
-          display: none;
-        }
-        li.user > span {
-            margin-right: 5px;
-        }
-        i.icon-remove {
-            cursor: pointer;
-        }
-    </r:style>
+    <r:require modules="labelAutocomplete"/>
 </head>
 
 <body>
@@ -24,7 +14,7 @@
 <content tag="adminButtonBar">
     <g:form class="form-inline" style="display: inline-block; padding-right: 10px;" action="awardAll"
             id="${achievementDescriptionInstance?.id}" method="post">
-        <input type="submit" class="btn"
+        <input type="submit" class="btn btn-default"
                value="${message(code: 'default.button.awardAll.label', default: 'Award All Eligible')}"/>
     </g:form>
     <g:form class="form-inline" style="display: inline-block" action="unawardAll"
@@ -38,14 +28,14 @@
     %{--<g:if test="${flash.message}">--}%
     %{--<div class="message" role="status">${flash.message}</div>--}%
     %{--</g:if>--}%
-    <table class="table">
+    <table class="table table-striped table-hover">
         <thead>
         <tr>
             <th>User</th>
             <th>Awarded</th>
             <th>Notified</th>
             <th>Currently Eligible</th>
-            <th>Actions</th>
+            <th class="text-center">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -56,9 +46,8 @@
                 <td>${award.userNotified}</td>
                 <td class="eligible-column"><r:img dir="images" file="spinner.gif" height="16px" width="16px"
                                                    class="ajax-spinner"/></td>
-                <td>
-                    %{--<button class="btn btn-small btn-warning"><i class="icon-refresh icon-white"></i></button>--}%
-                    <button class="btn btn-small btn-danger rmAward"><i class="icon-remove icon-white"></i></button>
+                <td class="text-center">
+                    <button class="btn btn-xs btn-danger rmAward"><i class="fa fa-times"></i></button>
                 </td>
             </tr>
         </g:each>
@@ -66,34 +55,33 @@
     </tabLe>
 
     <div class="well">
-        <legend>Grant achievement</legend>
+        <h4>Grant achievement</h4>
         <g:form class="form-horizontal" action="award" id="${achievementDescriptionInstance?.id}" method="POST">
-            <fieldset class="form">
-                <div class="control-group">
-                    <label class="control-label" for="user">
-                        <g:message code="user.label" default="User"/>
-                    </label>
+            <div class="form-group">
+                <label class="control-label col-md-3" for="user">
+                    <g:message code="user.label" default="User"/>
+                </label>
 
-                    <div class="controls">
-                        <input id="user" type="text" value="${displayName}" autocomplete="off"/>
-                        <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner"
-                               class="disabled"/>
-                        <input id="userId" name="userId" type="hidden" value="${userId}"/>
-                    </div>
+                <div class="col-md-6">
+                    <input class="form-control" id="user" type="text" value="${displayName}" autocomplete="off"/>
+                    <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner"
+                           class="hidden"/>
+                    <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
+            </div>
 
-                <div class="control-group">
-                    <div class="controls">
-                        <input type="submit" class="save"
-                               value="${message(code: 'default.button.award.label', default: 'Award')}"/>
-                    </div>
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-9">
+                    <input type="submit" class="save btn btn-default" id="awardButton"
+                           value="${message(code: 'default.button.award.label', default: 'Award')}"/>
                 </div>
-            </fieldset>
+            </div>
         </g:form>
     </div>
 </div>
+
 <r:script>
-jQuery(function($) {
+$(function($) {
 
     var ids = <cl:json value="${achievementDescriptionInstance.awards*.user*.id}"/>;
 
@@ -132,65 +120,12 @@ jQuery(function($) {
     });
 
     var url = "${createLink(controller: 'achievementDescription', action: 'findEligibleUsers', id: achievementDescriptionInstance.id)}";
-    function showSpinner() {
-        $('#ajax-spinner').removeClass('disabled');
-    }
-    function hideSpinner() {
-        $('#ajax-spinner').addClass('disabled');
-    }
 
-    function typeahead(query, process) {
-        showSpinner();
-        $.getJSON(url, {term: query})
-                .done(function(data) {
-                    var toString = function() {
-                        return JSON.stringify(this);
-                    };
-                    for (var i = 0; i < data.length; ++i) {
-                        data[i].toString = toString;
-                    }
-                    process(data);
-                })
-                .fail(function(e) {
-                    ajaxFail();
-                    process([]);
-                })
-                .always(hideSpinner);
-    }
-
-    function ajaxFail() {
-        alert("Failure contacting server, please refresh and try again");
-    }
-
-    function typeaheadHighlighter(item) {
-        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
-        return item.displayName.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
-                    return '<strong>' + match + '</strong>';
-                }) + ' (' + item.email.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) { return '<strong>' + query + '</strong>'; }) + ')';
-    }
-
-    function typeaheadSorter(items) {
-        return items;
-    }
-
-    function typeaheadMatcher(item) {
-        return true;
-    }
-
-    function typeaheadUpdate(item) {
-        var obj = JSON.parse(item);
-        $('#userId').val(obj.userId);
-        return obj.displayName;
-    }
-
-    $('#user').typeahead({
-        source: typeahead,
-        minLength: 2,
-        highlighter: typeaheadHighlighter,
-        matcher: typeaheadMatcher,
-        sorter: typeaheadSorter,
-        updater: typeaheadUpdate
-    });
+    labelAutocomplete("#user", url, '#ajax-spinner', function(item) {
+        $('#userId').val(item.userId);
+        $('#awardButton').click();
+        return null;
+    }, 'displayName');
 });
 </r:script>
 </body>

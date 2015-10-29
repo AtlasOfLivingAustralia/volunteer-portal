@@ -5,41 +5,48 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
+    <r:require modules="bootstrap-file-input"/>
 </head>
 
-<body>
-<a href="#create-achievementDescription" class="skip" tabindex="-1"><g:message code="default.link.skip.label"
-                                                                               default="Skip to content&hellip;"/></a>
+<body class="admin">
+<cl:headerContent title="${message(code: 'create.achievementDescription.label', default: 'Create Badge')}" selectedNavItem="bvpadmin">
+    <%
+        pageScope.crumbs = [
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
+                [link: createLink(controller: 'achievementDescription', action: 'index'), label: message(code: 'default.achievementDescription.label', default: 'Manage Badges')]
+        ]
 
-<div class="nav" role="navigation">
-    <ul>
-        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]"/></g:link></li>
-    </ul>
-</div>
+    %>
+</cl:headerContent>
 
-<div id="create-achievementDescription" class="content scaffold-create" role="main">
-    <h1><g:message code="default.create.label" args="[entityName]"/></h1>
-    <g:if test="${flash.message}">
-        <div class="message" role="status">${flash.message}</div>
-    </g:if>
-    <g:hasErrors bean="${achievementDescriptionInstance}">
-        <ul class="errors" role="alert">
-            <g:eachError bean="${achievementDescriptionInstance}" var="error">
-                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message
-                        error="${error}"/></li>
-            </g:eachError>
-        </ul>
-    </g:hasErrors>
-    <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal">
-        <fieldset class="form">
-            <g:render template="form"/>
-        </fieldset>
-        <fieldset class="buttons">
-            <g:submitButton name="create" class="save"
-                            value="${message(code: 'default.button.create.label', default: 'Create')}"/>
-        </fieldset>
-    </g:form>
+<div class="container" role="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <g:hasErrors bean="${achievementDescriptionInstance}">
+                <ul class="errors" role="alert">
+                    <g:eachError bean="${achievementDescriptionInstance}" var="error">
+                        <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message
+                                error="${error}"/></li>
+                    </g:eachError>
+                </ul>
+            </g:hasErrors>
+            <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal">
+                <g:render template="form"/>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <g:submitButton name="create" class="save btn btn-primary"
+                                        value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+                    </div>
+                </div>
+            </g:form>
+        </div>
+    </div>
 </div>
+<r:script>
+    $(function() {
+        // Initialize input type file
+        $('input[type=file]').bootstrapFileInput();
+    });
+</r:script>
 </body>
 </html>

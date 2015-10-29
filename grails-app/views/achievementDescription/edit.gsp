@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="achievementSettingsLayout">
+    <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <r:require modules="bootstrap-file-input"/>
 </head>
 
 <body>
@@ -32,20 +33,21 @@
     </g:hasErrors>
     <g:form class="form-horizontal" url="[resource: achievementDescriptionInstance, action: 'update']" method="PUT">
         <g:hiddenField name="version" value="${achievementDescriptionInstance?.version}"/>
-        <fieldset class="form">
-            <g:render template="form"/>
-        </fieldset>
-        <fieldset class="buttons form">
-            <div class="control-group">
-                <div class="controls">
-                    <g:actionSubmit class="save" action="update"
-                                    value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                </div>
+        <g:render template="form"/>
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-9">
+                <g:actionSubmit class="save btn btn-primary" action="update"
+                                value="${message(code: 'default.button.update.label', default: 'Update')}"/>
             </div>
-        </fieldset>
+        </div>
     </g:form>
 </div>
 <r:script>
+    $(function() {
+        // Initialize input type file
+        $('input[type=file]').bootstrapFileInput();
+    });
+
     $("[name='enabled']").bootstrapSwitch().on('switchChange.bootstrapSwitch', function(event, state) {
         var p = $.ajax({
             type: 'POST',

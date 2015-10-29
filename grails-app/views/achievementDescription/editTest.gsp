@@ -2,27 +2,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="achievementSettingsLayout">
+    <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:style>
-        #ajax-spinner.disabled {
-          display: none;
-        }
-        li.user > span {
-            margin-right: 5px;
-        }
-        i.icon-remove {
-            cursor: pointer;
-        }
-    </r:style>
+    <r:require modules="labelAutocomplete"/>
 </head>
 
 <body>
 <content tag="pageTitle">Tester</content>
 
 <content tag="adminButtonBar">
-    %{--<form class="form-inline"><g:checkBox name="enabled" checked="${achievementDescriptionInstance?.enabled}"/></form>--}%
+    %{--This is just for formatting purposes--}%
+    <div style="height: 40px;">&nbsp;</div>
 </content>
 
 <div id="edit-achievementDescription" class="content scaffold-edit" role="main">
@@ -51,94 +42,40 @@
     </tabLe>
     <g:form class="form-horizontal" action="editTest" id="${achievementDescriptionInstance?.id}" method="GET">
         <div class="well">
-            <legend>Check User</legend>
-            <fieldset class="form">
-                <div class="control-group">
-                    <label class="control-label" for="user">
-                        <g:message code="user.label" default="User"/>
-                        <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner"
-                               class="disabled"/>
-                    </label>
+            <h4>Check User</h4>
+            <div class="form-group">
+                <label class="control-label col-md-3" for="user">
+                    <g:message code="user.label" default="User"/>
+                    <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner"
+                           class="hidden"/>
+                </label>
 
-                    <div class="controls">
-                        <input id="user" type="text" value="${displayName}" autocomplete="off"/>
-                        <input id="userId" name="userId" type="hidden" value="${userId}"/>
-                    </div>
+                <div class="col-md-6">
+                    <input id="user" class="form-control" type="text" value="${displayName}" autocomplete="off"/>
+                    <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
+            </div>
 
-                <div class="control-group">
-                    <div class="controls">
-                        <input type="submit" class="save"
-                               value="${message(code: 'default.button.test.label', default: 'Test')}"/>
-                    </div>
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-9">
+                    <input type="submit" class="save btn btn-default" id="testButton"
+                           value="${message(code: 'default.button.test.label', default: 'Test')}"/>
                 </div>
-            </fieldset>
+            </div>
         </div>
     </g:form>
 </div>
 <r:script>
-jQuery(function($) {
-    var url = "${createLink(controller: 'leaderBoardAdmin', action: 'findEligibleUsers')}";
-    function showSpinner() {
-        $('#ajax-spinner').removeClass('disabled')
-    }
-    function hideSpinner() {
-        $('#ajax-spinner').addClass('disabled')
-    }
+    $(function($) {
+        var url = "${createLink(controller: 'leaderBoardAdmin', action: 'findEligibleUsers')}";
 
-    function typeahead(query, process) {
-        showSpinner();
-        $.getJSON(url, {term: query, filter: false})
-                .done(function(data) {
-                    var toString = function() {
-                        return JSON.stringify(this);
-                    };
-                    for (var i = 0; i < data.length; ++i) {
-                        data[i].toString = toString;
-                    }
-                    process(data);
-                })
-                .fail(function(e) {
-                    ajaxFail();
-                    process([]);
-                })
-                .always(hideSpinner);
-    }
 
-    function ajaxFail() {
-        alert("Failure contacting server, please refresh and try again");
-    }
-
-    function typeaheadHighlighter(item) {
-        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
-        return item.displayName.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
-                    return '<strong>' + match + '</strong>';
-                }) + ' (' + item.email.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) { return '<strong>' + query + '</strong>'; }) + ')';
-    }
-
-    function typeaheadSorter(items) {
-        return items;
-    }
-
-    function typeaheadMatcher(item) {
-        return true;
-    }
-
-    function typeaheadUpdate(item) {
-        var obj = JSON.parse(item);
-        $('#userId').val(obj.userId);
-        return obj.displayName;
-    }
-
-    $('#user').typeahead({
-        source: typeahead,
-        minLength: 2,
-        highlighter: typeaheadHighlighter,
-        matcher: typeaheadMatcher,
-        sorter: typeaheadSorter,
-        updater: typeaheadUpdate
+        labelAutocomplete("#user", url, '#ajax-spinner', function(item) {
+            $('#userId').val(item.userId);
+            $('#testButton').click();
+            return null;
+        }, 'displayName');
     });
-});
 </r:script>
 </body>
 </html>
