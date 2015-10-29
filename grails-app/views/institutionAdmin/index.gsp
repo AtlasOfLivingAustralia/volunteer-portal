@@ -58,22 +58,16 @@
 
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
-                                        <fieldset class="buttons">
-                                            <g:actionSubmit class="btn btn-danger"
-                                                            value="${message(code: 'default.button.delete.label', default: 'Delete')}"
-                                                            onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
-                                            <a class="btn"
-                                               href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
-                                                    class="icon-home"></i></a>
-                                            <a class="btn"
-                                               href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
-                                                    class="icon-edit"></i></a>
-                                        </fieldset>
-
+                                        <g:actionSubmit class="btn btn-danger delete-institution"
+                                                        value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+                                        <a class="btn btn-default"
+                                           href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
+                                                class="fa fa-home"></i></a>
+                                        <a class="btn btn-default"
+                                           href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
+                                                class="fa fa-edit"></i></a>
                                     </g:form>
-
                                 </td>
-
                             </tr>
                         </g:each>
                         </tbody>
@@ -88,30 +82,34 @@
     </div>
 </div>
 
-<div id="quick-create-modal" class="modal hide fade">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+<div id="quick-create-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
-        <h3>Quick Create Institution</h3>
-    </div>
+                <h3>Quick Create Institution</h3>
+            </div>
 
-    <div class="modal-body">
-        <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}"
-              method="POST">
-            <select name="cid" id="cid" class="input-block-level">
-            </select>
-        </form>
-    </div>
+            <div class="modal-body">
+                <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}"
+                      method="POST">
+                    <select name="cid" id="cid" class="form-control">
+                    </select>
+                </form>
+            </div>
 
-    <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Close</a>
-        <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-default" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
+            </div>
+        </div>
     </div>
 </div>
 <r:script>
-            jQuery(function($) {
+            $(function($) {
                 var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
-                $('#quick-create-modal').on('show', function (e) {
+                $('#quick-create-modal').on('shown.bs.modal', function (e) {
                     loadQuickCreateData();
                 })
                 $('#quick-create-button').click(function (e) {
@@ -139,6 +137,14 @@
                         selectbox.remove(i);
                     }
                 }
+
+                $('.delete-institution').on('click', function(e) {
+                    e.preventDefault();
+                    var self = this;
+                    bootbox.alert('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function() {
+                      $(self).closest('form').submit();
+                    });
+                });
             });
 </r:script>
 </body>

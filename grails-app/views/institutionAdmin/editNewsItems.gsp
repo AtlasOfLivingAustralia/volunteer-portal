@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="institutionSettingsLayout"/>
+    <meta name="layout" content="digivol-institutionSettings"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <g:setProvider library="jquery"/>
@@ -38,7 +38,7 @@
 
 ${newsItems?.size() ?: 0} news items
 
-<table class="table table-striped">
+<table class="table table-striped table-hover">
     <thead>
     <tr>
         <th>Date</th>
@@ -65,12 +65,12 @@ ${newsItems?.size() ?: 0} news items
             </td>
             <td style="max-width: 20px">
                 <div class="pull-right">
-                    <a class="btn btn-small btn-danger"
+                    <a class="btn btn-xs btn-danger"
                        href="${createLink(controller: 'newsItem', action: 'delete', id: newsItem.id)}"><i
-                            class="icon-remove icon-white"></i></a>
-                    <a class="btn btn-small"
+                            class="fa fa-trash"></i></a>
+                    <a class="btn btn-xs btn-default"
                        href="${createLink(controller: 'newsItem', action: 'edit', id: newsItem.id)}"><i
-                            class="icon-edit"></i></a>
+                            class="fa fa-edit"></i></a>
                 </div>
             </td>
         </tr>

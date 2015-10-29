@@ -1,26 +1,7 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <style type="text/css">
-
-    .icon-chevron-right {
-        float: right;
-        margin-top: 2px;
-        margin-right: -6px;
-        opacity: .25;
-    }
-
-    <g:if test="${projectInstance.institution}">
-    <cl:ifInstitutionHasBanner institution="${projectInstance.institution}">
-    #page-header {
-        background-image: url(<cl:institutionBannerUrl id="${projectInstance.institution.id}" />);
-    }
-    </cl:ifInstitutionHasBanner>
-    </g:if>
-
-    </style>
     <title>Edit Project ${projectInstance?.name}</title>
     <r:require module="bootstrap-switch"/>
-
 </head>
 
 <body class="admin">

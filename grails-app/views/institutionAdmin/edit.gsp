@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="institutionSettingsLayout"/>
+    <meta name="layout" content="digivol-institutionSettings"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <g:setProvider library="jquery"/>
@@ -22,7 +22,7 @@
 <content tag="pageTitle">General Settings</content>
 
 <content tag="adminButtonBar">
-    <a class="btn" href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
+    <a class="btn btn-default" href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
             class="icon-eye-open"></i> View client page</a>
 </content>
 
@@ -35,26 +35,21 @@
             </g:eachError>
         </ul>
     </g:hasErrors>
-%{--<div class="container-fluid">--}%
-%{--<div class="row-fluid">--}%
-%{--<div class="span6">--}%
-    <g:form url="[controller: 'institutionAdmin', id: institutionInstance?.id, action: 'update']" method="PUT">
+
+    <g:form class="form-horizontal" url="[controller: 'institutionAdmin', id: institutionInstance?.id, action: 'update']" method="PUT">
         <g:hiddenField name="version" value="${institutionInstance?.version}"/>
-        <fieldset class="form">
-            <g:render template="form"/>
-        </fieldset>
-        <fieldset class="buttons">
-            <g:actionSubmit class="save" action="update"
-                            value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-        </fieldset>
+        <g:render template="form"/>
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-9">
+                <g:actionSubmit class="save btn btn-primary" action="update"
+                                value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+            </div>
+        </div>
     </g:form>
-%{--</div>--}%
-%{--</div>--}%
-%{--<div class="row-fluid">--}%
-%{--<div class="span12">--}%
+
     <hr/>
 
-    <h2>Images</h2>
+    <h3>Images</h3>
 
     <table class="table">
         <tr>
@@ -62,14 +57,14 @@
                 <img src="<cl:institutionImageUrl id="${institutionInstance.id}"/>">
             </td>
             <td>
-                <h3>Institution image</h3>
+                <h4>Institution image</h4>
 
                 <div class="alert alert-info">
                     Institution images should be 300 x 150 pixels. They appear on the institution index (or home) page.
                 </div>
 
                 <div>
-                    <button class="btn" type="button" id="btnUploadInstitutionImage">Upload image</button>
+                    <button class="btn btn-default" type="button" id="btnUploadInstitutionImage">Upload image</button>
                     <cl:ifInstitutionHasImage institution="${institutionInstance}">
                         <a href="${createLink(action: 'clearImage', id: institutionInstance.id)}"
                            class="btn btn-danger">Clear image</a>
@@ -82,14 +77,14 @@
                 <img src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>">
             </td>
             <td>
-                <h3>Logo</h3>
+                <h4>Logo</h4>
 
                 <div class="alert alert-info">
                     Logo images should be 150 x 150 pixels. The logo will appear in the list of institutions, as well as on the institution index (home) page
                 </div>
 
                 <div>
-                    <button class="btn" type="button" id="btnUploadLogoImage">Upload logo</button>
+                    <button class="btn btn-default" type="button" id="btnUploadLogoImage">Upload logo</button>
                     <cl:ifInstitutionHasLogo institution="${institutionInstance}">
                         <a href="${createLink(action: 'clearLogoImage', id: institutionInstance.id)}"
                            class="btn btn-danger">Clear logo</a>
@@ -99,7 +94,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <h3>Banner image <small>Optional</small></h3>
+                <h4>Banner image <small>Optional</small></h4>
                 <cl:ifInstitutionHasBanner institution="${institutionInstance}">
                     <img src="<cl:institutionBannerUrl id="${institutionInstance.id}"/>" style="margin-bottom: 10px">
                 </cl:ifInstitutionHasBanner>
@@ -114,7 +109,7 @@
                 </div>
 
                 <div>
-                    <button class="btn" type="button" id="btnUploadBannerImage">Upload banner image</button>
+                    <button class="btn btn-default" type="button" id="btnUploadBannerImage">Upload banner image</button>
                     <cl:ifInstitutionHasBanner institution="${institutionInstance}">
                         <a href="${createLink(action: 'clearBannerImage', id: institutionInstance.id)}"
                            class="btn btn-danger">Clear banner</a>
