@@ -487,7 +487,7 @@ class VolunteerTagLib {
 
     def sequenceThumbnail = { attrs, body ->
         def project = attrs.project
-        def seq = attrs.seqNo
+        def seq = attrs.seqNo as String
         def task = taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)
         if (task) {
             def url, fullUrl = ''

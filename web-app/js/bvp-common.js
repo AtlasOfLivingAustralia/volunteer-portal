@@ -2,6 +2,8 @@ var bvp = {};
 
 (function(lib) {
 
+    var noop = function() {};
+
     lib.showModal = function(options) {
 
         var opts = {
@@ -13,8 +15,8 @@ var bvp = {};
             width: options.width ? options.width : 600,
             title: options.title ? options.title : 'Modal Title',
             hideHeader: options.hideHeader ? options.hideHeader : false,
-            onClose: options.onClose ? options.onClose : null,
-            onShown: options.onShown ? options.onShown : null,
+            onClose: options.onClose || noop,
+            onShown: options.onShown || noop,
             buttons: options.buttons ? options.buttons : null
         };
 
@@ -28,9 +30,14 @@ var bvp = {};
             });
 
             //Fixes event handling when using bootbox for dialogs
-            dialog.on('hide.bs.modal', function(e) {
-                if (opts.onClose) {
-                    opts.onClose();
+            dialog.on('hidden.bs.modal', function(e) {
+                opts.onClose();
+                // Pop this modal off the history stack. Will only work on browsers that support window history
+                if (window.history && window.history.pushState) {
+                    var current = window.history.state;
+                    if (current && current["bvp-modal"]) {
+                        window.history.back(1);
+                    }
                 }
             });
 
@@ -39,30 +46,6 @@ var bvp = {};
                     opts.onShown();
                 }
             });
-        });
-
-        var selector = "#" + opts.id;
-
-        $(selector).on("hidden", function() {
-            if (opts.onClose) {
-                opts.onClose();
-            }
-            $(selector).remove();
-
-            // Pop this modal off the history stack. Will only work on browsers that support window history
-            if (window.history && window.history.pushState) {
-                var current = window.history.state;
-                if (current && current["bvp-modal"]) {
-                    window.history.back(1);
-                }
-            }
-
-        });
-
-        $(selector).on("shown", function() {
-            if (opts.onShown) {
-                opts.onShown();
-            }
         });
 
         // hook the back button so that it closes the window. Only works on browsers that support window.history and window.history.popstate

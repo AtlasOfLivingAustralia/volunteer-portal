@@ -696,7 +696,7 @@ class TranscribeTagLib {
         } else if (cn) {
             m = message(code: 'transcribe.subheading.catalog', default: 'Catalog Number {0}', args: [cn])
         } else if (sequenceNumber) {
-            m = message(code: 'transcribe.subheading.seqNo', default: '<span>{1} of {2}</span>', args: [sequenceNumber, maxSeqNo])
+            m = message(code: 'transcribe.subheading.seqNo', default: '<span>{0} of {1}</span>', args: [sequenceNumber, maxSeqNo])
         } else {
             m = ''
         }
