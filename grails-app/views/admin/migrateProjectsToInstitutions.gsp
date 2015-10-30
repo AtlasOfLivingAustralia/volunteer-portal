@@ -25,7 +25,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <a id="migrate-button" class="btn btn-success" href="javascript:void(0)">Migrate Selected</a>
-            <div id="list-institution" class="content scaffold-list" role="main">
+            <div id="list-institution" class="content scaffold-list table-responsive" role="main">
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>

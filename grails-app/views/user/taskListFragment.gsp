@@ -35,7 +35,8 @@
         </div>
     </div>
 </div>
-<table class="table table-striped ">
+<div class="table-responsive">
+<table class="table table-striped table-hover">
     <thead>
     <tr class="sorting-header">
 
@@ -125,7 +126,7 @@
     </g:each>
     </tbody>
 </table>
-
+</div>
 <div class="pagination">
     <g:paginate total="${totalMatchingTasks}" id="${userInstance?.id}"
                 params="${params + [selectedTab: selectedTab]}" action="show" controller="user" fragment="profileTabs"/>

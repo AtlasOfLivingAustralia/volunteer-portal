@@ -40,26 +40,28 @@
                     </div>
 
                     <h3>Tutorial Files</h3>
-                    <table class="table table-hover table-striped">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Link</th>
-                            <th class="col-md-2 text-center">Actions</th>
-                        </tr>
-                        </thead>
-                        <g:each in="${tutorials}" var="tute">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead>
                             <tr>
-                                <td>${tute.name}</td>
-                                <td><a href="${tute.url}">${tute.url}</a></td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-default btnRenameTutorial" tutorial="${tute.name}">Rename</button>
-                                    <button class="btn btn-sm btn-danger btnDeleteTutorial"
-                                            tutorial="${tute.name}">Delete</button>
-                                </td>
+                                <th>Name</th>
+                                <th>Link</th>
+                                <th class="col-md-2 text-center">Actions</th>
                             </tr>
-                        </g:each>
-                    </table>
+                            </thead>
+                            <g:each in="${tutorials}" var="tute">
+                                <tr>
+                                    <td>${tute.name}</td>
+                                    <td><a href="${tute.url}">${tute.url}</a></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-default btnRenameTutorial" tutorial="${tute.name}">Rename</button>
+                                        <button class="btn btn-sm btn-danger btnDeleteTutorial"
+                                                tutorial="${tute.name}">Delete</button>
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </table>
+                    </div>
 
                     <div>
                         <strong>Warning!</strong> Renaming tutorial files will break existing links to those files. Make sure you update project links after renaming!
