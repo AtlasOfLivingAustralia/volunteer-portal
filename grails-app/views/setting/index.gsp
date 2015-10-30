@@ -1,20 +1,10 @@
-<%@ page import="au.org.ala.volunteer.Project" %>
+<%@ page import="org.codehaus.groovy.grails.web.json.JSONArray; au.org.ala.volunteer.Project" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <style type="text/css">
 
-    #buttonBar {
-        margin-bottom: 10px;
-    }
-
-    .bvp-expeditions td button {
-        margin-top: 5px;
-    }
-
-    </style>
     <r:script type='text/javascript'>
 
             $(document).ready(function() {
@@ -30,9 +20,9 @@
     </r:script>
 </head>
 
-<body>
+<body class="admin">
 
-<cl:headerContent title="${message(code: 'default.advancedSettings.label', default: 'Advanced Settings')}">
+<cl:headerContent title="${message(code: 'default.advancedSettings.label', default: 'Advanced Settings')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
@@ -40,39 +30,53 @@
     %>
 </cl:headerContent>
 
-<div class="row">
-    <div class="span12">
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th style="text-align: left">Key</th>
-                <th style="text-align: left">Default Value</th>
-                <th style="text-align: left">Value</th>
-                <th style="text-align: left">Description</th>
-                <th></th>
-            </tr>
-            </thead>
-            <g:each in="${settings}" var="setting">
-                <tr settingKey="${setting.key}">
-                    <td>${setting.key}</td>
-                    <td>${setting.defaultValue}</td>
-                    <td><strong>${values[setting]}</strong></td>
-                    <td>${setting.description}</td>
-                    <td><button class="btn btnEditSetting">Change</button></td>
-                </tr>
-            </g:each>
-        </table>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Default Value</th>
+                            <th>Value</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${settings}" var="setting">
+                            <tr settingKey="${setting.key}">
+                                <td>${setting.key}</td>
+                                <td>${setting.defaultValue}</td>
+                                <td><strong>${values[setting] instanceof org.codehaus.groovy.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
+                                <td>${setting.description}</td>
+                                <td><button class="btn btn-default btnEditSetting">Change</button></td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <g:form action="sendTestEmail" class="form-horizontal">
+                        <label class="control-label col-md-1" for="to">To:</label>
+                        <div class="col-md-5">
+                            <g:textField class="form-control" name="to"/>
+                        </div>
+
+                        <button class="btn btn-default" type="submit">Send test email</button>
+                    </g:form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="span12">
-        <g:form action="sendTestEmail">
-            To: <g:textField style="margin-bottom: 0" name="to"/>
-            <button class="btn" type="submit">Send test email</button>
-        </g:form>
-    </div>
-</div>
+
 
 </body>
 </html>
