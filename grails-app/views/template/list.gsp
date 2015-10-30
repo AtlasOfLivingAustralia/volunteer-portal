@@ -22,9 +22,9 @@
                     var templateId = $(this).parents("[templateId]").attr("templateId");
                     var templateName = $(this).parents("[templateName]").attr("templateName");
                     if (templateId && templateName) {
-                        if (confirm("Are you sure you wish to delete template " + templateName + "?")) {
-                            window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
-                        }
+                        bootbox.confirm("Are you sure you wish to delete template " + templateName + "?", function(result) {
+                          window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
+                        });
                     }
                 });
 

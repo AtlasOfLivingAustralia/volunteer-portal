@@ -4,15 +4,10 @@ class UrlMappings {
 
         "/"(controller: "/index")
 
-        "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin') {
-            constraints {
-
-            }
-        }
-
+        name institutionAdmin: "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin')
         "/admin/label/$action?" (controller: 'label')
 		"/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
-        "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
+        name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
 
         "/$controller/$action?/$id?"{
 			constraints {

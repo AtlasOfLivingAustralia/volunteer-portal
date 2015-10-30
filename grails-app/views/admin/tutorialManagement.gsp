@@ -4,52 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <r:require modules="bootstrap-file-input"/>
-    <r:script type='text/javascript'>
-
-            $(document).ready(function() {
-
-                //$( "#dialog" ).dialog({
-                //    minHeight: 200,
-                //    minWidth: 500,
-                //    resizable: false,
-                //    autoOpen: false
-                //});
-
-                $(".btnDeleteTutorial").click(function(e) {
-                    e.preventDefault();
-                    var name = $(this).attr("tutorial");
-                    window.location = "${createLink(controller: 'admin', action: 'deleteTutorial')}?tutorialFile=" + name;
-                });
-
-                $(".btnRenameTutorial").click(function(e) {
-                    e.preventDefault();
-                    var name = $(this).attr("tutorial");
-                    $("#oldName").val(name);
-                    $("#newName").val(name);
-                    $( "#renameDialog" ).modal( "show" );
-                });
-
-                $("#btnCancelRename").click(function(e) {
-                    e.preventDefault();
-                    $( "#renameDialog" ).modal( "hide" );
-                });
-
-                $("#btnApplyRename").click(function(e) {
-                    e.preventDefault();
-                    var oldName = $("#oldName").val();
-                    var newName = $("#newName").val();
-                    if (oldName && newName) {
-                        window.location = "${createLink(controller: 'admin', action: 'renameTutorial')}?tutorialFile=" + oldName + "&newName=" + newName;
-                    }
-                });
-
-                // Initialize input type file
-                $('input[type=file]').bootstrapFileInput();
-
-            });
-
-    </r:script>
+    <r:require modules="bootstrap-file-input, bootbox"/>
 </head>
 
 <body class="admin">
@@ -145,5 +100,57 @@
         </div>
     </div>
 </div>
+
+<r:script type='text/javascript'>
+
+    $(function() {
+
+        //$( "#dialog" ).dialog({
+        //    minHeight: 200,
+        //    minWidth: 500,
+        //    resizable: false,
+        //    autoOpen: false
+        //});
+
+        $(".btnDeleteTutorial").click(function(e) {
+            e.preventDefault();
+            var name = $(this).attr("tutorial");
+            var self = this;
+            bootbox.confirm("Are you sure?", function (result) {
+                _result = result;
+                if(result) {
+                   window.location = "${createLink(controller: 'admin', action: 'deleteTutorial')}?tutorialFile=" + name;
+                }
+            });
+        });
+
+        $(".btnRenameTutorial").click(function(e) {
+            e.preventDefault();
+            var name = $(this).attr("tutorial");
+            $("#oldName").val(name);
+            $("#newName").val(name);
+            $( "#renameDialog" ).modal( "show" );
+        });
+
+        $("#btnCancelRename").click(function(e) {
+            e.preventDefault();
+            $( "#renameDialog" ).modal( "hide" );
+        });
+
+        $("#btnApplyRename").click(function(e) {
+            e.preventDefault();
+            var oldName = $("#oldName").val();
+            var newName = $("#newName").val();
+            if (oldName && newName) {
+                window.location = "${createLink(controller: 'admin', action: 'renameTutorial')}?tutorialFile=" + oldName + "&newName=" + newName;
+            }
+        });
+
+        // Initialize input type file
+        $('input[type=file]').bootstrapFileInput();
+
+    });
+
+</r:script>
 </body>
 </html>

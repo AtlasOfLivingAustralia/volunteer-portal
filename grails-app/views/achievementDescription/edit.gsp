@@ -13,10 +13,12 @@
 
 <content tag="adminButtonBar">
     <g:form class="form-inline" style="display: inline-block; padding-right:10px;" action="delete"
-            id="${achievementDescriptionInstance?.id}" method="delete"><g:submitButton class="btn btn-danger"
-                                                                                       name="Delete"/></g:form>
-    <form class="form-inline" style="display: inline-block;"><g:checkBox name="enabled"
-                                                                         checked="${achievementDescriptionInstance?.enabled}"/></form>
+            id="${achievementDescriptionInstance?.id}" method="delete">
+        <g:submitButton class="btn btn-danger" id="deleteButton" name="Delete"/>
+    </g:form>
+    <form class="form-inline" style="display: inline-block;">
+        <g:checkBox name="enabled" checked="${achievementDescriptionInstance?.enabled}"/>
+    </form>
 </content>
 
 <div id="edit-achievementDescription" class="content scaffold-edit" role="main">
@@ -46,6 +48,16 @@
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
+
+        $('#deleteButton').on('click', function(e) {
+            e.preventDefault();
+            var self = this;
+            bootbox.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function(result) {
+                if (result) {
+                    $(self).closest('form').submit();
+                }
+            });
+        });
     });
 
     $("[name='enabled']").bootstrapSwitch().on('switchChange.bootstrapSwitch', function(event, state) {

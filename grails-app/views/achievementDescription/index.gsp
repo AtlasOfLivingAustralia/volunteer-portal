@@ -27,19 +27,19 @@
                     <table class="table table-striped table-hover">
                         <thead>
                         <tr>
-                            <g:sortableColumn property="name"
+                            <g:sortableColumn property="name" mapping="achievementDescription"
                                               title="${message(code: 'achievementDescription.name.label', default: 'Name')}"/>
 
-                            <g:sortableColumn width="10%" property="enabled"
+                            <g:sortableColumn width="10%" property="enabled" mapping="achievementDescription"
                                               title="${message(code: 'achievementDescription.enabled.label', default: 'Enabled')}"/>
 
-                            <g:sortableColumn width="15%" property="badge"
+                            <g:sortableColumn width="15%" property="badge" mapping="achievementDescription"
                                               title="${message(code: 'achievementDescription.badge.label', default: 'Icon')}"/>
 
-                            <g:sortableColumn width="15%" property="dateCreated"
+                            <g:sortableColumn width="15%" property="dateCreated" mapping="achievementDescription"
                                               title="${message(code: 'achievementDescription.dateCreated.label', default: 'Date Created')}"/>
 
-                            <g:sortableColumn width="15%" property="lastUpdated"
+                            <g:sortableColumn width="15%" property="lastUpdated" mapping="achievementDescription"
                                               title="${message(code: 'achievementDescription.lastUpdated.label', default: 'Last Updated')}"/>
 
                         </tr>
