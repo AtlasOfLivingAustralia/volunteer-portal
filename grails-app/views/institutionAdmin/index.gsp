@@ -33,13 +33,13 @@
                     <table class="table table-striped table-hover">
                         <thead>
                         <tr>
-                            <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}"/>
+                            <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}" mapping="institutionAdmin"/>
                             <g:sortableColumn property="contactName"
-                                              title="${message(code: 'institution.contactName.label', default: 'Contact Name')}"/>
+                                              title="${message(code: 'institution.contactName.label', default: 'Contact Name')}" mapping="institutionAdmin"/>
                             <g:sortableColumn property="contactEmail"
-                                              title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}"/>
+                                              title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}" mapping="institutionAdmin"/>
                             <g:sortableColumn property="dateCreated"
-                                              title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}"/>
+                                              title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}" mapping="institutionAdmin"/>
                             <th/>
                         </tr>
                         </thead>
@@ -141,8 +141,10 @@
                 $('.delete-institution').on('click', function(e) {
                     e.preventDefault();
                     var self = this;
-                    bootbox.alert('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function() {
-                      $(self).closest('form').submit();
+                    bootbox.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function(result) {
+                        if (result) {
+                            $(self).closest('form').submit();
+                        }
                     });
                 });
             });

@@ -19,9 +19,9 @@ class InstitutionAdminController {
     def collectoryClient
     def institutionService
 
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond Institution.list(params), model: [institutionInstanceCount: Institution.count()]
+    def index() {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        [institutionInstanceList: Institution.list(params),institutionInstanceCount: Institution.count()]
     }
 
     def create() {
