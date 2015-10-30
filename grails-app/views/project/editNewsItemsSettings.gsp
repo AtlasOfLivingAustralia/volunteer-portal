@@ -58,7 +58,7 @@ ${newsItems?.size() ?: 0} news items
             </td>
             <td style="max-width: 20px">
                 <div class="pull-right">
-                    <a class="btn btn-xs btn-danger"
+                    <a class="btn btn-xs btn-danger delete-button"
                        href="${createLink(controller: 'newsItem', action: 'delete', id: newsItem.id)}"><i
                             class="fa fa-trash"></i></a>
                     <a class="btn btn-default btn-xs"
@@ -72,7 +72,7 @@ ${newsItems?.size() ?: 0} news items
 </table>
 
 <script type='text/javascript'>
-    $(document).ready(function () {
+    $(function () {
 
         $('input:checkbox').bootstrapSwitch({
             size: "small"
@@ -81,6 +81,17 @@ ${newsItems?.size() ?: 0} news items
         $('input:checkbox').on('switchChange.bootstrapSwitch', function (event, state) {
             $("#disableNewsItems").val(!state);
             $("#enableNewsItemsForm").submit();
+        });
+
+        $('a.delete-button').on('click', function(e) {
+            e.preventDefault();
+            var self = this;
+            bootbox.confirm("Are you sure?", function (result) {
+                _result = result;
+                if(result) {
+                    window.location.href = $(self).attr('href');
+                }
+            });
         });
     });
 </script>
