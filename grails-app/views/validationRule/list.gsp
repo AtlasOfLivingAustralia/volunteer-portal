@@ -47,7 +47,7 @@
                                 <td>${rule.message}</td>
                                 <td style="width: 90px;">
                                     <a href="${createLink(controller: 'validationRule', action: 'delete', id: rule.id)}"
-                                       class="btn btn-xs btn-danger" title="Delete rule '${rule.name}"><i
+                                       class="btn btn-xs btn-danger delete-button" title="Delete rule '${rule.name}"><i
                                             class="fa fa-remove"></i></a>
                                     <a href="${createLink(controller: 'validationRule', action: 'edit', id: rule.id)}"
                                        class="btn btn-default btn-xs" title="Edit rule '${rule.name}"><i class="fa fa-edit"></i></a>
@@ -64,5 +64,20 @@
         </div>
     </div>
 </div>
+
+<r:script>
+    $(function() {
+        $('a.delete-button').on('click', function(e) {
+            e.preventDefault();
+            var self = this;
+            bootbox.confirm("Are you sure?", function (result) {
+                _result = result;
+                if(result) {
+                    window.location.href = $(self).attr('href');
+                }
+            });
+        });
+    });
+</r:script>
 </body>
 </html>

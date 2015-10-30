@@ -160,7 +160,7 @@
                         </div>
 
                         <div id="row-view-params-json" class="form-group">
-                            <label class="col-md-3 control-label" for="project"><g:message code="template.project.label"
+                            <label class="col-md-3 control-label"><g:message code="template.project.label"
                                                                                   default="Projects that use this template:"/></label>
 
                             <div class="col-md-6">
