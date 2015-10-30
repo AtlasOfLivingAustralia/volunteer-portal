@@ -25,35 +25,35 @@
                 <div class="col-md-12">
                     <form class="form-horizontal">
                         <div class="form-group">
-                            <label for="templateId" class="col-md-2 control-label"><g:message code="template.id.label" default="Id"/></label>
+                            <label for="templateId" class="col-md-3 control-label"><g:message code="template.id.label" default="Id"/></label>
                             <div class="col-md-6">
                                 <div id="templateId" class="form-control-static">${fieldValue(bean: templateInstance, field: "id")}</div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="author" class="col-md-2 control-label"><g:message code="template.author.label" default="Author"/></label>
+                            <label for="author" class="col-md-3 control-label"><g:message code="template.author.label" default="Author"/></label>
                             <div class="col-md-6">
                                 <div id="author" class="form-control-static">${cl.emailForUserId(id: templateInstance.author)}</div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="name" class="col-md-2 control-label"><g:message code="template.name.label" default="Name"/></label>
+                            <label for="name" class="col-md-3 control-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
                                 <div id="name" class="form-control-static">${fieldValue(bean: templateInstance, field: "name")}</div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="viewName" class="col-md-2 control-label"><g:message code="template.viewName.label" default="View Name"/></label>
+                            <label for="viewName" class="col-md-3 control-label"><g:message code="template.viewName.label" default="View Name"/></label>
                             <div class="col-md-6">
                                 <div id="viewName" class="form-control-static">${fieldValue(bean: templateInstance, field: "viewName")}</div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="project" class="col-md-2 control-label"><g:message code="template.project.label" default="Projects"/></label>
+                            <label for="project" class="col-md-3 control-label"><g:message code="template.project.label" default="Projects"/></label>
                             <div class="col-md-6">
                                 <ul class="form-control-static" id="project">
                                     <g:each in="${templateInstance.project}" var="p">
@@ -65,13 +65,10 @@
                         </div>
 
                         <div class="form-group buttons">
-                            <div class="col-md-offset-2 col-md-10">
+                            <div class="col-md-offset-3 col-md-9">
                                 <g:hiddenField name="id" value="${templateInstance?.id}"/>
                                 <g:actionSubmit class="btn btn-default edit" action="edit"
                                                 value="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
-                                <g:actionSubmit class="btn btn-danger delete" action="delete"
-                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"
-                                                onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
                             </div>
                         </div>
                     </form>

@@ -174,9 +174,8 @@
                             <div class="col-md-offset-3 col-md-9">
                                 <g:actionSubmit class="btn btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                <g:actionSubmit class="btn btn-danger delete" action="delete"
-                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"
-                                                onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
+                                <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
+                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
                             </div>
                         </div>
                     </g:form>
@@ -185,5 +184,23 @@
         </div>
     </div>
 </div>
+<r:script>
+    var _result = false;
+    $(function() {
+        $('#deleteButton').on('click', function(e) {
+            if (!_result) {
+                e.preventDefault();
+                bootbox.confirm("Are you sure?", function (result) {
+                    _result = result;
+                    if(result) {
+                        $('#deleteButton').click();
+                    }
+                });
+            } else {
+                return true;
+            }
+        });
+    });
+</r:script>
 </body>
 </html>

@@ -29,11 +29,15 @@ var bvp = {};
 
             //Fixes event handling when using bootbox for dialogs
             dialog.on('hide.bs.modal', function(e) {
-                opts.onClose();
+                if (opts.onClose) {
+                    opts.onClose();
+                }
             });
 
             dialog.on('shown.bs.modal', function(e) {
-                opts.onShown();
+                if (opts.onShown) {
+                    opts.onShown();
+                }
             });
         });
 
