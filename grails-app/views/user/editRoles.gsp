@@ -37,52 +37,59 @@
     </r:script>
 </head>
 
-<body>
-<cl:headerContent crumbLabel="Volunteers" title="Edit Roles for ${cl.displayNameForUserId(id: userInstance.userId)}">
+<body class="admin">
+<cl:headerContent crumbLabel="Edit Roles" title="Edit Roles for ${cl.displayNameForUserId(id: userInstance.userId)}">
     <%
         pageScope.crumbs = []
         pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: cl.displayNameForUserId(id: userInstance.userId)]
+        pageScope.crumbs << [link: createLink(controller: 'user', action: 'edit', id: userInstance.id), label: 'Edit User']
     %>
 </cl:headerContent>
 
-<div class="row">
-    <div class="span12">
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
 
-        <g:form controller="user" action="updateRoles" id="${userInstance.id}" name="rolesForm">
-            <g:if test="${userInstance.userRoles?.size() == 0}">
-                This user has no roles currently. Click 'Add role' to create a new role
-            </g:if>
-            <g:hiddenField name="selectedUserRoleId" value="" id="selectedUserRoleId"/>
-            <g:hiddenField name="selectedUserRoleAction" value="" id="selectedUserRoleAction"/>
-            <table class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                    <td>Role</td>
-                    <td>Project</td>
-                    <td></td>
-                </tr>
-                </thead>
-                <g:each in="${userInstance.userRoles}" var="userRole" status="i">
-                    <tr>
+                    <g:form controller="user" action="updateRoles" id="${userInstance.id}" name="rolesForm">
+                        <g:if test="${userInstance.userRoles?.size() == 0}">
+                            This user has no roles currently. Click 'Add role' to create a new role
+                        </g:if>
+                        <g:hiddenField name="selectedUserRoleId" value="" id="selectedUserRoleId"/>
+                        <g:hiddenField name="selectedUserRoleAction" value="" id="selectedUserRoleAction"/>
+                        <table class="table table-hover table-striped">
+                            <thead>
+                            <tr>
+                                <td>Role</td>
+                                <td>Project</td>
+                                <td></td>
+                            </tr>
+                            </thead>
+                            <g:each in="${userInstance.userRoles}" var="userRole" status="i">
+                                <tr>
 
-                        <td><g:select name="userRole_${userRole.id}_role" from="${roles}" optionKey="id"
-                                      optionValue="name" value="${userRole.role?.id}"></g:select></td>
-                        <td><g:select name="userRole_${userRole.id}_project" from="${projects}" optionKey="id"
-                                      optionValue="featuredLabel" value="${userRole.project?.id}"
-                                      noSelection="${[null: '<All Projects>']}"></g:select></td>
-                        <td>
-                            <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
-                                <i class="icon-remove icon-white"></i>&nbsp;Delete
-                            </button>
-                        </td>
+                                    <td><g:select name="userRole_${userRole.id}_role" from="${roles}" optionKey="id" class="form-control"
+                                                  optionValue="name" value="${userRole.role?.id}"></g:select></td>
+                                    <td><g:select name="userRole_${userRole.id}_project" from="${projects}" optionKey="id" class="form-control"
+                                                  optionValue="featuredLabel" value="${userRole.project?.id}"
+                                                  noSelection="${[null: '<All Projects>']}"></g:select></td>
+                                    <td>
+                                        <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
+                                            <i class="icon-remove icon-white"></i>&nbsp;Delete
+                                        </button>
+                                    </td>
 
-                    </tr>
-                </g:each>
-            </table>
-            <button class="btn btn-primary" id="update">Update</button>
-            <button class="btn" id="addRole">Add Role</button>
-            <br/>
-        </g:form>
+                                </tr>
+                            </g:each>
+                        </table>
+                        <button class="btn btn-primary" id="update">Update</button>
+                        <button class="btn btn-default" id="addRole">Add Role</button>
+                        <br/>
+                    </g:form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>
