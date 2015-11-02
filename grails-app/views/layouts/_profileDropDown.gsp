@@ -1,5 +1,5 @@
 <ul class="dropdown-menu">
-    <li>
+    <li class="hidden-xs">
         <div class="navbar-login logged-in">
             <div class="row">
                 <div class="col-lg-4">
@@ -17,7 +17,7 @@
         </div>
 
     </li>
-    <li class="divider"></li>
+    <li class="divider hidden-xs"></li>
     <li>
         <div class="navbar-login navbar-login-session">
             <div class="row">
