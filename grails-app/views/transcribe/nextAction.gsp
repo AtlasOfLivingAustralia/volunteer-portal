@@ -35,24 +35,28 @@
     </r:script>
 </head>
 
-<body>
+<body class="admin">
 
 <cl:headerContent title="Transcription Saved" crumbLabel="What next?"/>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="lead">Thank you - your transcription was saved
+                        <span id="dateSaved">at <g:formatDate date="${taskInstance.dateLastUpdated}"
+                                                              format="h:mm:ss a z 'on' d MMMM yyyy"/>
+                    </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="lead">Thank you - your transcription was saved
-            <span id="dateSaved">at <g:formatDate date="${taskInstance.dateLastUpdated}"
-                                                  format="h:mm:ss a z 'on' d MMMM yyyy"/>
+                    <ul>
+                        <li id="goBack"><a href="#">Return to the saved task</a></li>
+                        <li id="viewTask"><a href="#">Transcribe another task</a></li>
+                        <li id="projectHome"><a href="#">Return to project start page</a></li>
+                        <li id="viewStats"><a href="#">View My Stats</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-
-        <ul>
-            <li id="goBack"><a href="#">Return to the saved task</a></li>
-            <li id="viewTask"><a href="#">Transcribe another task</a></li>
-            <li id="projectHome"><a href="#">Return to project start page</a></li>
-            <li id="viewStats"><a href="#">View My Stats</a></li>
-        </ul>
-
     </div>
 </div>
 </body>

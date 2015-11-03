@@ -27,9 +27,9 @@
                                 </div>
 
                                 <div class="col-md-2">
-                                    <a href="#" class="fieldHelp"
-                                       title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span
-                                            class="help-container">&nbsp;</span></a>
+                                    <a href="#" class="btn btn-default btn-xs fieldHelp"
+                                       title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
+                                            class="fa fa-question help-container"></i></a>
                                 </div>
                             </td>
                         </tr>

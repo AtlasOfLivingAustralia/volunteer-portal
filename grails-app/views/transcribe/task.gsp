@@ -161,9 +161,9 @@
                 // Add clickable icons for deg, min sec in lat/lng inputs
                 var title = "Click to insert this symbol";
                 var icons = " symbols: <span class='coordsIcons'>" +
-    "<a href='#' title='" + title + "' class='&deg;'>&deg;</a>&nbsp;" +
-    "<a href='#' title='" + title + "' class='&#39;'>&#39;</a>&nbsp;" +
-    "<a href='#' title='" + title + "' class='&quot;'>&quot;</a></span>";
+    "<a href='#' title='" + title + "' class='btn btn-xs btn-primary' data-symbol='&deg;'>&deg;</a>&nbsp;" +
+    "<a href='#' title='" + title + "' class='btn btn-xs btn-primary' data-symbol='&#39;'>&#39;</a>&nbsp;" +
+    "<a href='#' title='" + title + "' class='btn btn-xs btn-primary' data-symbol='&quot;'>&quot;</a></span>";
                 $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
                     $(this).css('width', '140px');
                     $(this).after(icons);
@@ -174,7 +174,7 @@
                     e.preventDefault();
                     var input = $(this).parent().prev(':input');
                     var text = $(input).val();
-                    var char = $(this).attr('class');
+                    var char = $(this).attr('data-symbol');
                     $(input).val(text + char);
                     $(input).focus();
                 });
@@ -391,33 +391,33 @@
         background-color: #a9a9a9;
     }
 
-    .insert-symbol-button {
-        font-family: courier;
-        color: #DDDDDD;
-        background: #4075C2;
-        -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        -o-border-radius: 4px;
-        -icab-border-radius: 4px;
-        -khtml-border-radius: 4px;
-        border-radius: 4px;
-    }
+    %{--.insert-symbol-button {--}%
+        %{--font-family: courier;--}%
+        %{--color: #DDDDDD;--}%
+        %{--background: #4075C2;--}%
+        %{---moz-border-radius: 4px;--}%
+        %{---webkit-border-radius: 4px;--}%
+        %{---o-border-radius: 4px;--}%
+        %{---icab-border-radius: 4px;--}%
+        %{---khtml-border-radius: 4px;--}%
+        %{--border-radius: 4px;--}%
+    %{--}--}%
 
-    .insert-symbol-button:hover {
-        background: #0046AD;
-        color: #DDDDDD;
-    }
+    %{--.insert-symbol-button:hover {--}%
+        %{--background: #0046AD;--}%
+        %{--color: #DDDDDD;--}%
+    %{--}--}%
 
-    #collectionEventFields table tr.columnLayout {
-        width: 450px;
-        min-height: 34px;
-        float: left;
-    }
+    %{--#collectionEventFields table tr.columnLayout {--}%
+        %{--width: 450px;--}%
+        %{--min-height: 34px;--}%
+        %{--float: left;--}%
+    %{--}--}%
 
-    #taskMetadata h3 {
-        margin-bottom: 0;
-        margin-top: 0;
-    }
+    %{--#taskMetadata h3 {--}%
+        %{--margin-bottom: 0;--}%
+        %{--margin-top: 0;--}%
+    %{--}--}%
 
     #taskMetadata ul {
         margin: 0;
@@ -434,9 +434,9 @@
         font-weight: bold;
     }
 
-    .transcribeSectionBody select {
-        margin-bottom: 10px;
-    }
+    %{--.transcribeSectionBody select {--}%
+        %{--margin-bottom: 10px;--}%
+    %{--}--}%
 
     .transcribeSectionBody {
         border-top: 1px solid #d3d3d3;
@@ -447,18 +447,18 @@
         font-weight: bold;
     }
 
-    .prop .name {
-        vertical-align: top;
-    }
+    %{--.prop .name {--}%
+        %{--vertical-align: top;--}%
+    %{--}--}%
 
     .closeSectionLink {
         float: right;
     }
 
-    .radio-item input {
-        margin: 0;
-        /*vertical-align: middle;*/
-    }
+    %{--.radio-item input {--}%
+        %{--margin: 0;--}%
+        %{--/*vertical-align: middle;*/--}%
+    %{--}--}%
 
     /* Mapping tool (popup) */
 
@@ -474,37 +474,37 @@
     }
 
     /* End Mapping tool */
-    span.coordsIcons {
-        height: 18px;
-    }
+    %{--span.coordsIcons {--}%
+        %{--height: 18px;--}%
+    %{--}--}%
 
-    span.coordsIcons a {
-        display: inline-block;
-        width: 10px;
-        text-align: center;
-        font-size: 20px;
-        line-height: 13px;
-        text-decoration: none;
-        color: #DDDDDD;
-        background-color: #4075C2;
-        padding: 4px 2px 0 2px;
-        -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        -o-border-radius: 4px;
-        -icab-border-radius: 4px;
-        -khtml-border-radius: 4px;
-        border-radius: 4px;
-    }
+    %{--span.coordsIcons a {--}%
+        %{--display: inline-block;--}%
+        %{--width: 10px;--}%
+        %{--text-align: center;--}%
+        %{--font-size: 20px;--}%
+        %{--line-height: 13px;--}%
+        %{--text-decoration: none;--}%
+        %{--color: #DDDDDD;--}%
+        %{--background-color: #4075C2;--}%
+        %{--padding: 4px 2px 0 2px;--}%
+        %{---moz-border-radius: 4px;--}%
+        %{---webkit-border-radius: 4px;--}%
+        %{---o-border-radius: 4px;--}%
+        %{---icab-border-radius: 4px;--}%
+        %{---khtml-border-radius: 4px;--}%
+        %{--border-radius: 4px;--}%
+    %{--}--}%
 
-    span.coordsIcons a:hover {
-        background-color: #0046AD;
-    }
+    %{--span.coordsIcons a:hover {--}%
+        %{--background-color: #0046AD;--}%
+    %{--}--}%
 
-    <cl:ifInstitutionHasBanner institution="${taskInstance?.project?.institution}">
-    #page-header {
-        background-image: url(<cl:institutionBannerUrl id="${taskInstance.project.institution.id}" />);
-    }
-    </cl:ifInstitutionHasBanner>
+    %{--<cl:ifInstitutionHasBanner institution="${taskInstance?.project?.institution}">--}%
+    %{--#page-header {--}%
+        %{--background-image: url(<cl:institutionBannerUrl id="${taskInstance.project.institution.id}" />);--}%
+    %{--}--}%
+    %{--</cl:ifInstitutionHasBanner>--}%
 
 
     </style>
@@ -540,7 +540,7 @@
 </cl:headerContent>--}%
 
 <section id="transcription-template">
-    <div class="row branding-row">
+    <div id="page-header" class="row branding-row">
         <div class="col-sm-5">
 
 
@@ -553,11 +553,11 @@
         </div>
         <div class="col-sm-7 col-xs-12 transcription-controls">
 
-            <div class="btn-group" role="group" aria-label="...">
+            <div class="btn-group" role="group" aria-label="Transcription controls">
                 <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
                         title="Skip the to next image">Skip</button>
                 <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
-                <button type="button" class="btn btn-default">View Tutorial</button>
+                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
             </div>
 
         </div>
@@ -575,7 +575,7 @@
 
     <div class="row">
         <g:if test="${taskInstance}">
-            <g:form class="transcribeForm col-md-12">
+            <g:form class="transcribeForm col-sm-12">
 
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>

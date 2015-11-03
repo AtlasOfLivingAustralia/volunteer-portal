@@ -40,7 +40,7 @@
     <div class="col-md-3">
         <g:if test="${taskInstance?.project?.tutorialLinks}">
             <div class="tutorialLinks" style="text-align: right">
-                ${taskInstance?.project?.tutorialLinks}
+                ${raw(taskInstance?.project?.tutorialLinks)}
             </div>
         </g:if>
     </div>

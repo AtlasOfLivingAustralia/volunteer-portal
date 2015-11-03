@@ -15,7 +15,7 @@
 
 </head>
 
-<body class="">
+<body class="admin">
 <cl:navbar selected="expeditions"/>
 
 <header id="page-header">

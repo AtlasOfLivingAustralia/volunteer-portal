@@ -581,9 +581,9 @@ class TranscribeTagLib {
     private renderFieldHelp(MarkupBuilder mb, TemplateField field, String targetPosition = null, String tooltipPosition = null) {
         if (field && field.helpText) {
             def helpText = markdownService.markdown(field.helpText)
-            mb.a(href:'#', class:'fieldHelp', title:helpText, tabindex: "-1", targetPosition: targetPosition, tooltipPosition: tooltipPosition) {
-                span(class:'help-container') {
-                    mkp.yieldUnescaped('&nbsp;')
+            mb.a(href:'#', class:'btn btn-default btn-xs fieldHelp', title:helpText, tabindex: "-1", targetPosition: targetPosition, tooltipPosition: tooltipPosition) {
+                i(class:'fa fa-question help-container') {
+                    mkp.yieldUnescaped('')
                 }
             }
         } else {
@@ -696,7 +696,7 @@ class TranscribeTagLib {
         } else if (cn) {
             m = message(code: 'transcribe.subheading.catalog', default: 'Catalog Number {0}', args: [cn])
         } else if (sequenceNumber) {
-            m = message(code: 'transcribe.subheading.seqNo', default: '<span>{1} of {2}</span>', args: [sequenceNumber, maxSeqNo])
+            m = message(code: 'transcribe.subheading.seqNo', default: '<span>{0} of {1}</span>', args: [sequenceNumber, maxSeqNo])
         } else {
             m = ''
         }

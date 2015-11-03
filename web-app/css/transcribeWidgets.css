@@ -142,3 +142,24 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+.transcribeSection .row {
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.transcribeSection .row .col-md-1,
+.transcribeSection .row .col-md-2,
+.transcribeSection .row .col-md-3,
+.transcribeSection .row .col-md-4,
+.transcribeSection .row .col-md-5,
+.transcribeSection .row .col-md-6,
+.transcribeSection .row .col-md-7,
+.transcribeSection .row .col-md-8,
+.transcribeSection .row .col-md-9,
+.transcribeSection .row .col-md-10,
+.transcribeSection .row .col-md-11,
+.transcribeSection .row .col-md-12 {
+    padding-left: 8px;
+    padding-right: 8px;
+}
