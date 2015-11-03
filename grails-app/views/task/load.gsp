@@ -72,9 +72,9 @@
                     <td valign="top" class="name">
                         <label for="csv">
                             <g:message code="record.csv.label" default="Paste CSV here"/>
-                            <a href="#" class="fieldHelp"
-                               title="identifier, imageUrl [,institutionCode, catalogNumber, scientificName]"><span
-                                    class="help-container">&nbsp;</span></a>
+                            <a href="#" class="btn btn-default btn-xs fieldHelp"
+                               title="identifier, imageUrl [,institutionCode, catalogNumber, scientificName]"><i
+                                    class="fa fa-question help-container"></i></a>
                         </label>
                     </td>
                     <td valign="top" class="value">

@@ -19,10 +19,10 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       }
     }
 
-    $('#ct-questions-nav').find('a[data-toggle="nav"]').click(function(e) {
+    $('#ct-questions-nav').find('[data-toggle="nav"]').click(function(e) {
       e.preventDefault();
       var $this = $(this);
-      switchCtPage($this.attr('href'));
+      switchCtPage($this.attr('data-target'));
     });
 
     var $ctq = $('#camera-trap-questions');
@@ -39,8 +39,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       $(to).addClass('active');
 
       var $ctqn = $('#ct-questions-nav');
-      $ctqn.find('li.active').removeClass('active');
-      $ctqn.find('a[href="'+to+'"]').parent().addClass('active');
+      $ctqn.find('button.active').removeClass('active');
+      $ctqn.find('button[data-target="'+to+'"]').addClass('active');
 
       var summary = to == '#ct-animals-summary';
       $('#btnNext').toggleClass('hidden', summary);
@@ -49,7 +49,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     $('#btnNext').click(function(e) {
       var $ctqn = $('#ct-questions-nav');
-      var nextPage = $ctqn.find('li.active').next().find('a[href]').attr('href') || '#ct-animals-present';
+      var nextPage = $ctqn.find('button.active').next().attr('data-target') || '#ct-animals-present';
       switchCtPage(nextPage);
     });
 

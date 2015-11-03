@@ -23,10 +23,10 @@
              data-tags="${piItem.value.tags} data-day-images=" ${piItem.value.dayImageIds}
              data-night-images="${piItem.value.nightImageIds}" data-popularity="${piItem.value.popularity}"
              data-last-used="${piItem.value.lastUsed}">
-            <span class="ct-badge ct-badge-sure badge" data-container="body"
+            <span class="ct-badge ct-badge-sure" data-container="body"
                   title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: "There is definitely a {0} in the image", args: [piItem.key])}"><i
                     class="fa fa-check-circle"></i></span>
-            <span class="ct-badge ct-badge-uncertain badge" data-container="body"
+            <span class="ct-badge ct-badge-uncertain" data-container="body"
                   title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: "There could possibly be a {0} in the image", args: [piItem.key])}"><i
                     class="fa fa-check-circle"></i></span>
             <g:if test="${piItem.value.similarSpecies}">

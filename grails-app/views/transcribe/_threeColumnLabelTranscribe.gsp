@@ -42,7 +42,7 @@
         <div class="col-md-3">
             <g:if test="${taskInstance?.project?.tutorialLinks}">
                 <div class="tutorialLinks" style="text-align: right">
-                    ${taskInstance?.project?.tutorialLinks}
+                    ${raw(taskInstance?.project?.tutorialLinks)}
                 </div>
             </g:if>
         </div>
@@ -61,20 +61,20 @@
                                 <g:fieldHelp field="${allTextField}" tooltipPosition="bottomLeft"/>
                             </span>
                             <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
-                            <g:textArea class="col-md-12" validationRule="${allTextField?.validationRule}"
+                            <g:textArea class="form-control" validationRule="${allTextField?.validationRule}"
                                         name="recordValues.0.occurrenceRemarks"
                                         value="${recordValues?.get(0)?.occurrenceRemarks}"
                                         id="recordValues.0.occurrenceRemarks" rows="12" cols="42"/>
                             <div>
-                                <button type="button" class="insert-symbol-button" symbol="&deg;"
+                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&deg;"
                                         title="Insert a degree symbol"></button>
-                                <button type="button" class="insert-symbol-button" symbol="&#39;"
+                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&#39;"
                                         title="Insert an apostrophe (minutes) symbol"></button>
-                                <button type="button" class="insert-symbol-button" symbol="&quot;"
+                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&quot;"
                                         title="Insert a quote (minutes) symbol"></button>
-                                <button type="button" class="insert-symbol-button" symbol="&#x2642;"
+                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&#x2642;"
                                         title="Insert the male gender symbol"></button>
-                                <button type="button" class="insert-symbol-button" symbol="&#x2640;"
+                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&#x2640;"
                                         title="Insert the female gender symbol"></button>
                             </div>
                         </div>
@@ -88,9 +88,9 @@
                     </div>
 
                     <div class="col-md-2">
-                        <a href="#" class="fieldHelp" tooltipPosition="bottomLeft"
-                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span
-                                class="help-container">&nbsp;</span></a>
+                        <a href="#" class="btn btn-default btn-xs fieldHelp" tooltipPosition="bottomLeft"
+                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
+                                class="fa fa-question help-container"></i></a>
                     </div>
                 </div>
             </div>

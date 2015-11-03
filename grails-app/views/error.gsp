@@ -30,7 +30,7 @@
 <body>
 <div class="container">
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12">
         <h1><g:message code="error.title" default="Oh no!  An error has occured" /></h1>
 
         <h2>Error Details</h2>

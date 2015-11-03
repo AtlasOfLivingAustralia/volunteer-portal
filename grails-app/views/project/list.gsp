@@ -71,7 +71,7 @@
 <body class="digivol">
 
     <cl:headerContent title="${message(code:'default.projectlist.label', default: "Volunteer for a virtual expedition")}" selectedNavItem="expeditions">
-        ${numberOfUncompletedProjects} expeditions need your help. Join now! <span class="label label-default">Default</span>
+        ${numberOfUncompletedProjects} expeditions need your help. Join now!
     </cl:headerContent>
 
     <section id="main-content">

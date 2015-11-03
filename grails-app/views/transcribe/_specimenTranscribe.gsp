@@ -30,9 +30,9 @@
                     <span>
                         <button type="button" class="btn btnCopyFromPreviousTask" href="#task_selector"
                                 style="">Copy values from a previous task</button>
-                        <a href="#" class="fieldHelp"
-                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><span
-                                class="help-container">&nbsp;</span></a>
+                        <a href="#" class="btn btn-default btn-xs fieldHelp"
+                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
+                                class="fa fa-question help-container"></i></a>
                     </span>
 
                     <div style="display: none;">
@@ -49,9 +49,9 @@
                 <g:set var="allTextField"
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                 <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
-                <a href="#" class="fieldHelp"
-                   title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><span
-                        class="help-container">&nbsp;</span></a>
+                <a href="#" class="btn btn-default btn-xs fieldHelp"
+                   title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
+                        class="help-container fa fa-question"></i></a>
                 <g:textArea class="col-md-12" name="recordValues.0.occurrenceRemarks"
                             value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                             rows="6" cols="42"/>

@@ -20,11 +20,4 @@
                      placeholder="To"/>
     </div>
 
-    <div class="col-md-5">
-        <g:select tabindex="${tabindex}" class="form-control rangeUnits" name="${field.fieldType}.units" value=""
-                  from="${values}"/> %{-- form-control  --}%
-    </div>
-
-    <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}"
-                   validationRule="${field.validationRule}"/>
-</div>
+    <div class="col-md-5"><g:select tabindex="${tabindex}" class="form-control rangeUnits" name="${field.fieldType}.units" value="" from="${values}"/></div><g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}" validationRule="${field.validationRule}"/></div>

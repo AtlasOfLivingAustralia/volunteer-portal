@@ -13,14 +13,6 @@
     body .btn-primary:focus,
     body .btn-primary:active,
     body .btn-primary.active,
-    body.digivol .navbar .navbar-brand,
-    body.digivol .navbar .navbar-brand:hover,
-    body.digivol .btn-primary,
-    body.digivol .btn-primary:hover,
-    body.digivol .btn-primary:focus,
-    body.digivol .btn-primary:active,
-    body.digivol .btn-primary.active,
-    body.digivol .label,
     .progress .progress-bar-transcribed,
     .key.transcribed,
     .pagination > .active > span,
@@ -41,13 +33,9 @@
     }
 
     body .badge,
+    body .badge:hover,
     body .not-a-badge,
     body .not-a-badge:hover,
-    body .badge:hover,
-    body.digivol .badge,
-    body.digivol .badge:hover,
-    body.digivol .not-a-badge,
-    body.digivol .not-a-badge:hover,
     .pagination > li > a,
     .primary-color {
         color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;

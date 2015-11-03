@@ -26,7 +26,7 @@
 
         <div class="row">
             <div class="col-sm-12 image-origin">
-                <p>Image by [Name] from Flickr</p>
+                <p>Image by John Tann from Flickr</p>
             </div>
         </div>
     </div>
@@ -83,7 +83,6 @@
 
         <div class="row">
             <div class="col-md-6">
-                <a class="btn btn-info btn-xs label">${frontPage.projectOfTheDay?.institutionName}</a>
                 <g:link controller="project" action="index" id="${frontPage.projectOfTheDay?.id}"><img
                         src="${frontPage.projectOfTheDay?.featuredImage}" class="img-responsive"></g:link>
             </div>
@@ -122,7 +121,6 @@
                         <h2 class="heading">
                             More Expeditions
                         </h2>
-                        <span class="label label-default">Default</span>
                     </div>
 
                     <div class="col-sm-4">
@@ -130,7 +128,7 @@
                 </div>
 
                 <div class="row">
-                    <g:render template="/project/projectListThumbnailView" model="[projects: featuredProjects, includeWeirdAnchorLabel: true, disablePagination: true]" />
+                    <g:render template="/project/projectListThumbnailView" model="[projects: featuredProjects, disablePagination: true]" />
                 </div>
             </div>
 

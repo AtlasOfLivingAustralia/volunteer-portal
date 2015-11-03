@@ -82,7 +82,7 @@
                     }
                       htmlStr += e.label;
                     if (e.helpText) {
-                      htmlStr += '<a href="#" class="fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><span class="help-container">&nbsp;</span></a>';
+                      htmlStr += '<a href="#" class="btn btn-default btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><i class="fa fa-question help-container"></i></a>';
                     }
 
                     htmlStr += '</span>';
