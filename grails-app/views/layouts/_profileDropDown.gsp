@@ -15,7 +15,6 @@
                 </div>
             </div>
         </div>
-
     </li>
     <li class="divider hidden-xs"></li>
     <li>
