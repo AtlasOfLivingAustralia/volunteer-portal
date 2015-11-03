@@ -37,9 +37,9 @@
         </div>
 
         <div class="span1" style="vertical-align: middle">
-            <a href="#" class="fieldHelp"
-               title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality."><span
-                    class="help-container">&nbsp;</span></a>
+            <a href="#" class="btn btn-default btn-xs fieldHelp"
+               title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality."><i
+                    class="fa fa-question help-container"></i></a>
         </div>
 
         <div class="span5">
@@ -102,24 +102,12 @@
         $("a.fieldHelp").qtip({
             tip: true,
             position: {
-                corner: {
-                    target: 'topMiddle',
-                    tooltip: 'bottomRight'
-                }
+                my: 'bottomRight',
+                at: 'topMiddle'
             },
             style: {
                 width: 400,
-                padding: 8,
-                background: 'white', //'#f0f0f0',
-                color: 'black',
-                textAlign: 'left',
-                border: {
-                    width: 4,
-                    radius: 5,
-                    color: '#E66542'// '#E66542' '#DD3102'
-                },
-                tip: 'bottomRight',
-                name: 'light' // Inherit the rest of the attributes from the preset light style
+                classes: 'qtip-bootstrap'
             }
         }).bind('click', function (e) {
             e.preventDefault();

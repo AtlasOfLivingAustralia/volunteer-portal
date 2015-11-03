@@ -108,7 +108,7 @@ class VolunteerTagLib {
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
         if (helpText) {
             helpText = markdownService.markdown(helpText)
-            def attributes = [href:'#', class:'fieldHelp', title:helpText, tabindex: "-1"]
+            def attributes = [href:'#', class:'btn btn-default btn-xs fieldHelp', title:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.tooltipPosition = attrs.tooltipPosition
             }
@@ -124,8 +124,8 @@ class VolunteerTagLib {
             }
 
             mb.a(attributes) {
-                span(class:'help-container') {
-                    mkp.yieldUnescaped('&nbsp;')
+                i(class:'fa fa-question help-container') {
+                    mkp.yieldUnescaped('')
                 }
             }
         } else {
@@ -482,7 +482,7 @@ class VolunteerTagLib {
     }
 
     def spinner = { attrs, body ->
-        out << "<image src=\"${resource(dir:'images', file:'ajax-loader.gif')}\" />"
+        out << '<i class="fa fa-cog fa-spin fa-2x"></i>'
     }
 
     def sequenceThumbnail = { attrs, body ->

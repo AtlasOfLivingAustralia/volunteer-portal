@@ -316,54 +316,6 @@ ul.profile-links li a {
 
     .nav-tabs > li > a {
         padding: 25px 30px !important; } }
-body.digivol .navbar {
-    border-color: #d5502a; }
-body.digivol .navbar .navbar-brand, body.digivol .navbar .navbar-brand:hover {
-    background-color: #d5502a; }
-body.digivol .btn-primary, body.digivol .label {
-    background-color: #d5502a; }
-body.digivol .badge {
-    color: #d5502a; }
-
-body.smithsonian .navbar {
-    border-color: #0097d4; }
-body.smithsonian .navbar .navbar-brand, body.smithsonian .navbar .navbar-brand:hover {
-    background-color: #0097d4; }
-body.smithsonian .btn-primary, body.smithsonian .label {
-    background-color: #0097d4; }
-body.smithsonian .badge {
-    color: #0097d4; }
-body.smithsonian .progress-bar-transcribed {
-    background-color: #0097d4; }
-body.smithsonian .progress-bar-success {
-    background-color: rgba(0, 151, 212, 0.5); }
-body.smithsonian .expedition-tab .digivol-tab img {
-    background-color: #0097d4; }
-body.smithsonian .key.transcribed {
-    background-color: #0097d4; }
-body.smithsonian .key.validated {
-    background-color: rgba(0, 151, 212, 0.5); }
-body.smithsonian .transcription-actions .btn.btn-next {
-    background-color: #0097d4; }
-
-body.museumvictoria .navbar {
-    border-color: #6e9a35; }
-body.museumvictoria .navbar .navbar-brand, body.museumvictoria .navbar .navbar-brand:hover {
-    background-color: #6e9a35; }
-body.museumvictoria .btn-primary, body.museumvictoria .label {
-    background-color: #6e9a35; }
-body.museumvictoria .badge {
-    color: #6e9a35; }
-body.museumvictoria .progress-bar-transcribed {
-    background-color: #6e9a35; }
-body.museumvictoria .progress-bar-success {
-    background-color: rgba(110, 154, 53, 0.5); }
-body.museumvictoria .key.transcribed {
-    background-color: #6e9a35; }
-body.museumvictoria .key.transcribed {
-    background-color: #6e9a35; }
-body.museumvictoria .transcription-actions .btn.btn-next {
-    background-color: #6e9a35; }
 
 /* Import Modules */
 .btn {
@@ -600,14 +552,6 @@ body.museumvictoria .transcription-actions .btn.btn-next {
         /*min-height: 480px; */ /* Removed NdR 2015-10-19 */
     }
 }
-.label {
-    position: absolute;
-    top: 25px;
-    left: 45px;
-    border-radius: 2px;
-    padding: 7px 10px 5px 10px;
-    display: none; }
-
 .progress {
     height: 12px;
     border-radius: 25px; }

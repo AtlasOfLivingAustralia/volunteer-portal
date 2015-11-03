@@ -91,7 +91,7 @@ var bvp = {};
     lib.bindTooltips = function(selector, width) {
 
         if (!selector) {
-            selector = "a.fieldHelp";
+            selector = ".fieldHelp";
         }
         if (!width) {
             width = 300;
@@ -122,24 +122,23 @@ var bvp = {};
             $(this).qtip({
                 tip: true,
                 position: {
-                    corner: {
-                        target: targetPosition,
-                        tooltip: tooltipPosition
-                    }
+                    my: tooltipPosition,
+                    at: targetPosition
                 },
                 style: {
                     width: width,
-                    padding: 8,
-                    background: 'white', //'#f0f0f0',
-                    color: 'black',
-                    textAlign: 'left',
-                    border: {
-                        width: 4,
-                        radius: 5,
-                        color: '#E66542'// '#E66542' '#DD3102'
-                    },
-                    tip: tipPosition,
-                    name: 'light' // Inherit the rest of the attributes from the preset light style
+                    classes: 'qtip-bootstrap'
+                    //padding: 8,
+                    //background: 'white', //'#f0f0f0',
+                    //color: 'black',
+                    //textAlign: 'left',
+                    //border: {
+                    //    width: 4,
+                    //    radius: 5,
+                    //    color: '#E66542'// '#E66542' '#DD3102'
+                    //},
+                    //tip: tipPosition,
+                    //name: 'light' // Inherit the rest of the attributes from the preset light style
                 }
             }).bind('click', function(e){ e.preventDefault(); return false; });
 
