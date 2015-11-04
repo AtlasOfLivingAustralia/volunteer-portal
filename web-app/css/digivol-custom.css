@@ -302,8 +302,12 @@ table .btn-default:hover {
 
 /*** End - Admin ***/
 
-.contact .panel {
+.contact .panel, .forum .panel {
     margin-top: 20px;
+}
+
+.forum #searchResults {
+    padding-top: 2em;
 }
 
 

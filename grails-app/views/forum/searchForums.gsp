@@ -29,14 +29,22 @@
     %>
 </cl:headerContent>
 
-<div class="container">
-    <p>
-        <strong>${results.totalCount} matching message${results.totalCount == 1 ? '' : 's'} found.</strong>
-    </p>
-    <section id="searchResults">
-        <vpf:messagesTable messages="${results}"/>
-        %{--<vpf:searchResultsTable searchResults="${results}"/>--}%
-    </section>
+<div class="container forum">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        <strong>${results.totalCount} matching message${results.totalCount == 1 ? '' : 's'} found.</strong>
+                    </p>
+                    <section id="searchResults">
+                        <vpf:messagesTable messages="${results}"/>
+                        %{--<vpf:searchResultsTable searchResults="${results}"/>--}%
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>
