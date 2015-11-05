@@ -4,21 +4,21 @@
 
 <div class="row">
 
-    <div class="span6">
+    <div class="col-md-6">
         <div class="well well-small">
             <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
             <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" hideShowInOtherWindow="${true}"/>
         </div>
     </div>
 
-    <div class="span6">
+    <div class="col-md-6">
         <g:set var="templateFields"
                value="${TemplateField.findAllByTemplate(taskInstance?.project?.template)?.collectEntries {
                    [it.fieldType.toString(), it]
                }}"/>
         <g:set var="fields" value="${Field.findAllByTask(taskInstance)}"/>
-        <div style="height: 400px; overflow-y: scroll">
-            <table class="table table-condensed table-striped table-bordered">
+        <div class="task-summary thumbnail">
+            <table class="table table-condensed table-striped table-hover">
                 <thead>
                 <tr>
                     <th>Field</th>

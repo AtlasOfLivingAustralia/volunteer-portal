@@ -12,7 +12,7 @@
 
 </head>
 
-<body class="content">
+<body class="forum">
 
 <r:script type="text/javascript">
 
@@ -29,7 +29,7 @@
     %>
 </cl:headerContent>
 
-<div class="container forum">
+<div class="container">
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">

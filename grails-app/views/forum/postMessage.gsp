@@ -20,7 +20,7 @@
 
 </head>
 
-<body>
+<body class="forum">
 
 <r:script type="text/javascript">
 
@@ -42,7 +42,7 @@
                 return t;
             }
 
-            $(document).ready(function () {
+            $(function () {
 
                 $("#btnInsertQuote").mousedown(function(e) {
                     e.preventDefault();
@@ -70,70 +70,77 @@
 
 </r:script>
 
-<cl:headerContent title="" selectedNavItem="forum" hideTitle="${true}" hideCrumbs="${true}">
+<cl:headerContent title="${message(code: 'forum.project.newMessage', default: 'New Message')}" selectedNavItem="forum" hideTitle="${true}">
     <vpf:forumNavItems topic="${topic}"
-                       lastLabel="${message(code: 'forum.project.newMessage', default: 'New Message')}"/>
+                       lastLabel="true"/>
 </cl:headerContent>
 
-<g:if test="${taskInstance}">
-    <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
-</g:if>
 
-<div class="row">
-    <div class="span12">
-        <h3>Conversation history:</h3>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <g:if test="${taskInstance}">
+                        <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
+                    </g:if>
 
-        <div style="height: 300px; overflow-y: scroll; border: 1px solid #a9a9a9">
-            <g:each in="${topic.messages?.sort { it.date }}" var="reply">
-                <div class="messageReply" author="<cl:userDetails id="${reply?.user?.userId}" displayName="true"/>"
-                     style="border: 1px solid #a9a9a9; margin: 3px; padding: 3px; background: white">
-                    <div style="background-color: #3a5c83; color: white">
-                        <img src="${resource(dir: '/images', file: 'reply.png')}" style="vertical-align: bottom"/>
-                        On ${formatDate(date: reply.date, format: 'dd MMM yyyy')} at ${formatDate(date: reply.date, format: 'HH:mm:ss')} <strong><cl:userDetails
-                            id="${reply?.user?.userId}" displayName="true"/></strong> wrote:
+                    <h3>Conversation history:</h3>
+
+                    <div style="height: 300px; overflow-y: scroll; border: 1px solid #a9a9a9">
+                        <g:each in="${topic.messages?.sort { it.date }}" var="reply">
+                            <div class="messageReply" author="<cl:userDetails id="${reply?.user?.userId}" displayName="true"/>"
+                                 style="border: 1px solid #a9a9a9; margin: 3px; padding: 3px; background: white">
+                                <div style="background-color: #3a5c83; color: white">
+                                    <img src="${resource(dir: '/images', file: 'reply.png')}" style="vertical-align: bottom"/>
+                                    On ${formatDate(date: reply.date, format: 'dd MMM yyyy')} at ${formatDate(date: reply.date, format: 'HH:mm:ss')} <strong><cl:userDetails
+                                        id="${reply?.user?.userId}" displayName="true"/></strong> wrote:
+                                </div>
+                                <markdown:renderHtml>${reply.text}</markdown:renderHtml>
+                            </div>
+                        </g:each>
+
                     </div>
-                    <markdown:renderHtml>${reply.text}</markdown:renderHtml>
+
+                    <div class="originalMessageButtons" class="form-inline">
+                        <button class="btn btn-default" id="btnInsertQuote" class="button">Insert quote</button>
+                        <label for="insertTagLine">
+                            <g:checkBox name="insertTagline" id="insertTagLine" checked="true"/>
+                            Insert tag line
+                        </label>
+                    </div>
+
+                    <h2>Your message:</h2>
+                    <small>* Note: To see help on how to format your messages, including bold and italics, see <a
+                            href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
+                    <g:form id="messageForm" controller="forum">
+
+                        <g:hiddenField name="topicId" value="${topic.id}"/>
+                        <g:hiddenField name="replyTo" value="${replyTo?.id}"/>
+                        <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${params.messageText}"/>
+
+                        <label for="watchTopic">
+                            <g:checkBox name="watchTopic" checked="${isWatched}"/>
+                            Watch this topic
+                        </label>
+
+                        <div>
+                            <g:actionSubmit class="btn btn-success" value="Preview" action="previewMessage"/>
+                            <g:actionSubmit class="btn btn-primary" value="Post message" action="saveNewTopicMessage"/>
+                            <button class="btn btn-default" id="btnCancel">Cancel</button>
+                        </div>
+
+                    </g:form>
+
+                    <g:if test="${params.messageText}">
+                        <div class="messagePreview">
+                            <h3>Message preview</h3>
+                            <markdown:renderHtml>${params.messageText}</markdown:renderHtml>
+                        </div>
+                    </g:if>
                 </div>
-            </g:each>
-
-        </div>
-
-        <div class="originalMessageButtons" class="form-inline">
-            <button class="btn" id="btnInsertQuote" class="button">Insert quote</button>
-            <label for="insertTagLine">
-                <g:checkBox name="insertTagline" id="insertTagLine" checked="true"/>
-                Insert tag line
-            </label>
-        </div>
-
-        <h2>Your message:</h2>
-        <small>* Note: To see help on how to format your messages, including bold and italics, see <a
-                href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
-        <g:form id="messageForm" controller="forum">
-
-            <g:hiddenField name="topicId" value="${topic.id}"/>
-            <g:hiddenField name="replyTo" value="${replyTo?.id}"/>
-            <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${params.messageText}"/>
-
-            <label for="watchTopic">
-                <g:checkBox name="watchTopic" checked="${isWatched}"/>
-                Watch this topic
-            </label>
-
-            <div>
-                <g:actionSubmit class="btn" value="Preview" action="previewMessage"/>
-                <g:actionSubmit class="btn" value="Post message" action="saveNewTopicMessage"/>
-                <button class="btn" id="btnCancel">Cancel</button>
             </div>
-
-        </g:form>
-
-        <g:if test="${params.messageText}">
-            <div class="messagePreview">
-                <h3>Message preview</h3>
-                <markdown:renderHtml>${params.messageText}</markdown:renderHtml>
-            </div>
-        </g:if>
+        </div>
     </div>
 </div>
 </body>

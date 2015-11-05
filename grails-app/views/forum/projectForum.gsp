@@ -32,7 +32,7 @@
 
 </head>
 
-<body>
+<body class="forum">
 
 <r:require module="url"/>
 <r:script type="text/javascript">
@@ -76,8 +76,7 @@
                 var url = "${createLink(controller: 'forum', action: 'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}";
 
                 function displayTaskTopicsSpinner() {
-                    $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img
-        src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
+                    $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
                 }
 
                 function activateTaskTopics(jqElem, params) {
@@ -142,60 +141,67 @@
     %>
 </cl:headerContent>
 
-<div id="content" class="row">
-    <div class="span12">
-        <div class="projectSummary">
-            <table style="margin-bottom: 0px; width: 100%">
-                <tr>
-                    <td style="width:210px"><img src="${projectInstance.featuredImage}" alt=""
-                                                 title="${projectInstance.name}" width="200" height="124"/></td>
-                    <td style="text-align: left">
-                        <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a>
-                        </h2>
-
-                        <h3>${projectInstance.featuredOwner}</h3>
-                        ${projectInstance.description}
-                    </td>
-                    <td style="text-align: right"></td>
-                </tr>
-                <g:if test="${projectInstance.featuredImageCopyright}">
-                    <tr>
-                        <td><span class="copyright-label">${projectInstance.featuredImageCopyright}</span></td>
-                    </tr>
-                </g:if>
-            </table>
-
-            <div class="notifyMe">
-                <g:checkBox name="watchProject" id="watchProjectCheckbox"
-                            checked="${isWatching}"/>&nbsp;Email me when messages are posted to this project
-                <span id="watchUpdateMessage"></span>
-            </div>
-        </div>
-
-        <div id="projectForumTabs" class="tabbable">
-            <ul class="nav nav-tabs">
-                <li class="${!params.selectedTab ? 'active' : ''}"><a id="tabProject" href="#tabProjectTopics"
-                                                                      class="forum-tab-title" data-toggle="tab"
-                                                                      tabIndex="0">Expedition Topics</a></li>
-                <li class="${params.selectedTab == '1' ? 'active' : ''}"><a id="tabTasks" href="#tabTaskTopics"
-                                                                            class="forum-tab-title" data-toggle="tab"
-                                                                            tabIndex="1">Task Topics</a></li>
-            </ul>
-
-            <div class="tab-content">
-                <div id="tabProjectTopics" class="tabContent tab-pane ${!params.selectedTab ? 'active' : ''}">
-                    <div class="buttonBar">
-                        <button id="btnNewProjectTopic" class="btn">
-                            Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
-                        </button>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row project-forum">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="thumbnail">
+                                <img src="${projectInstance.featuredImage}" alt="${projectInstance.name}" title="${projectInstance.name}">
+                                <g:if test="${projectInstance.featuredImageCopyright}">
+                                    <div class="caption">
+                                    &copy; ${projectInstance.featuredImageCopyright}
+                                    </div>
+                                </g:if>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a></h2>
+                            <h3>${projectInstance.featuredOwner}</h3>
+                            <p>${projectInstance.description}</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-success">
+                        <div class="notifyMe">
+                            <g:checkBox name="watchProject" id="watchProjectCheckbox"
+                                        checked="${isWatching}"/>&nbsp;Email me when messages are posted to this project
+                            <span id="watchUpdateMessage"></span>
+                        </div>
                     </div>
 
-                    <vpf:topicTable topics="${topics.topics}" totalCount="${topics.totalCount}"
-                                    paginateAction="projectForum"/>
 
-                </div>
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                            <li class="${!params.selectedTab ? 'active' : ''}"><a id="tabProject" href="#tabProjectTopics"
+                                                                                  class="forum-tab-title" data-toggle="tab"
+                                                                                  tabIndex="0">Expedition Topics</a></li>
+                            <li class="${params.selectedTab == '1' ? 'active' : ''}"><a id="tabTasks" href="#tabTaskTopics"
+                                                                                        class="forum-tab-title" data-toggle="tab"
+                                                                                        tabIndex="1">Task Topics</a></li>
+                        </ul>
+                    </div>
+                    <div class="tab-content-bg">
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div id="tabProjectTopics" class="tabContent tab-pane ${!params.selectedTab ? 'active' : ''}">
+                                <div class="buttonBar">
+                                    <button id="btnNewProjectTopic" class="btn btn-default">
+                                        Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
+                                    </button>
+                                </div>
 
-                <div id="tabTaskTopics" class="tab-pane ${params.selectedTab == '1' ? 'active' : ''}">
+                                <vpf:topicTable topics="${topics.topics}" totalCount="${topics.totalCount}"
+                                                paginateAction="projectForum"/>
+
+                            </div>
+
+                            <div id="tabTaskTopics" class="tab-pane ${params.selectedTab == '1' ? 'active' : ''}">
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

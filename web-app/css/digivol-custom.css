@@ -1,8 +1,12 @@
 /* Custom styles to fit new look&feel */
 /**************************************/
 
-.inline-block {
+.display-inline-block {
     display: inline-block;
+}
+
+.display-block {
+    display: block;
 }
 
 .ellipsis {
@@ -302,6 +306,8 @@ table .btn-default:hover {
 
 /*** End - Admin ***/
 
+/*** Begin - Forum ***/
+
 .contact .panel, .forum .panel {
     margin-top: 20px;
 }
@@ -309,6 +315,51 @@ table .btn-default:hover {
 .forum #searchResults {
     padding-top: 2em;
 }
+
+.forum .task-summary {
+    height: 440px;
+    overflow-y: scroll
+}
+
+.forum .btn-default {
+    border: solid 1px #ccc;
+    background-color: #fff;
+}
+
+.forum .btn-default:hover {
+    background-color: #e6e6e6;
+}
+
+.forum .project-forum .thumbnail {
+    margin-top: 20px;
+}
+
+.forum .project-forum .thumbnail .caption{
+    padding: 10px 20px;
+
+}
+
+.forum .project-forum .tabbable {
+    background-color: #f6f6f6;
+    padding-top: 2em;
+    padding-left: 1em;
+}
+
+.forum .form-control {
+    min-height: 34px;
+}
+
+.forum select.form-control {
+    height: 34px;
+}
+
+.forum input.form-control:focus {
+    border-color: #66AFE9;
+    outline: 0px none;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+}
+
+/*** End - Forum ***/
 
 
 /*** LeaderBoard ***/
