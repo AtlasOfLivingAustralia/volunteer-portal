@@ -133,7 +133,7 @@
 
 </r:script>
 
-<cl:headerContent title="Expedition Forum - ${projectInstance.featuredLabel}" selectedNavItem="forum">
+<cl:headerContent title="Expedition Forum" selectedNavItem="forum">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]

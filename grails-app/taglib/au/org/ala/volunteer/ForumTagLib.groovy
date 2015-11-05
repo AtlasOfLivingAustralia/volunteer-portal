@@ -207,13 +207,13 @@ class ForumTagLib {
                             }
 
                             tr(class: rowClasses.join(" "), topicId: topic.id) {
-                                td(style: "width: 40px;") {
+                                td(style: "width: 60px;") {
                                     span(style: 'color:green') {
                                         if (topic.sticky) {
                                             i(class:'fa fa-asterisk', title:'This topic is sticky') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                         if (topic.locked) {
-                                            i(class:'fa fa--lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
+                                            i(class:'fa fa-lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                     }
                                 }
@@ -310,11 +310,11 @@ class ForumTagLib {
         pageScope.crumbs = []
         if (projectInstance) {
             pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
-            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id]), label: message(code: 'forum.project.forum', default: 'Project Forum')]
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
         }
 
         if (taskInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id]), label: message(code: 'forum.project.forum', default: 'Project Forum')]
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
             pageScope.crumbs << [link: createLink(controller: 'task', action: 'show', id: taskInstance.id), label: "Task - " + taskInstance.externalIdentifier]
         }
 

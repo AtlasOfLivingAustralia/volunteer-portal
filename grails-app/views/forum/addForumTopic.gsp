@@ -31,7 +31,7 @@
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel],
-                [link: createLink(controller: 'forum', action: 'projectForum', id: projectInstance.id), label: "Expedition Forum - ${projectInstance.featuredLabel}"]
+                [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId:projectInstance.id]), label: "Expedition Forum - ${projectInstance.featuredLabel}"]
         ]
     %>
 </cl:headerContent>
