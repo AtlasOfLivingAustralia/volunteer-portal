@@ -27,13 +27,9 @@
 
 <body class="forum">
 
-<cl:headerContent title="Add Forum topic" selectedNavItem="forum">
-    <%
-        pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel],
-                [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId:projectInstance.id]), label: "Expedition Forum - ${projectInstance.featuredLabel}"]
-        ]
-    %>
+<cl:headerContent title="${message(code: 'forum.newprojecttopic.label', default: 'New Topic')}" selectedNavItem="forum">
+    <vpf:forumNavItems projectInstance="${projectInstance}" taskInstance="${taskInstance}"
+                       lastLabel="true"/>
 </cl:headerContent>
 <div class="container">
     <div class="panel panel-default">

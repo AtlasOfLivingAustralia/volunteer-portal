@@ -250,7 +250,7 @@ class ForumTagLib {
                                         mkp.yield(formatDate(date: topic.lastReplyDate, format: DateConstants.DATE_TIME_FORMAT))
                                     }
                                 }
-                                td(class: 'text-right') {
+                                td(class: 'text-right', style: 'width:180px;') {
                                     def replyLink = topic.locked ? "#" : createLink(controller: 'forum', action: 'postMessage', params: [topicId: topic.id])
                                     def attrMap = [class: 'btn btn-sm btn-default', href: replyLink]
                                     if (topic.locked) {
