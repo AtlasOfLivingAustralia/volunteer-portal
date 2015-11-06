@@ -25,8 +25,6 @@
 
                     <div class="col-sm-4">
                         <div class="pull-right">
-                            <span><a class="btn btn-default btn-xs fieldHelp" href="#" style="vertical-align: middle;" title="Enter search text here to find expeditions"><i class="fa fa-question help-container"></i></a></span>
-
                             <div class="card-filter">
                                 <div class="custom-search-input body">
                                     <div class="input-group">

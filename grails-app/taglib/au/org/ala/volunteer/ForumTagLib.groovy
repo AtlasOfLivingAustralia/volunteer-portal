@@ -207,7 +207,7 @@ class ForumTagLib {
                             }
 
                             tr(class: rowClasses.join(" "), topicId: topic.id) {
-                                td(style: "width: 60px;") {
+                                td(style: "width: ${topic instanceof ProjectForumTopic ? '100' : '60'}px;", class: 'text-center') {
                                     span(style: 'color:green') {
                                         if (topic.sticky) {
                                             i(class:'fa fa-asterisk', title:'This topic is sticky') { mkp.yieldUnescaped("&nbsp;") }
@@ -215,6 +215,9 @@ class ForumTagLib {
                                         if (topic.locked) {
                                             i(class:'fa fa-lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
                                         }
+                                    }
+                                    if (topic instanceof ProjectForumTopic) {
+                                        delegate.img(src: (topic as ProjectForumTopic).project.featuredImage, width: '40')
                                     }
                                 }
                                 td {
@@ -226,12 +229,11 @@ class ForumTagLib {
                                             mkp.yield("Featured Topic")
                                         }
                                     }
-
                                 }
-                                td {
+                                td(class: 'text-center') {
                                     mkp.yield(topicCounts[topic] - 1)
                                 }
-                                td {
+                                td(class: 'text-center') {
                                     mkp.yield(topic.views ?: 0)
                                 }
                                 td {
