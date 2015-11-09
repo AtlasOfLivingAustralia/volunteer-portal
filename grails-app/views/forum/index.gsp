@@ -78,7 +78,10 @@
                     }
                 });
 
+                <g:applyCodec encodeAs="none">
                 renderTab(${params.selectedTab ?: 0}, ${params.q ? '"' + params.q + '"' : 'null'}, ${params.offset ?: "null"}, ${params.max ?: "null"}, ${raw(params.sort ? '"' + params.sort + '"' : "null")}, ${params.order ? '"' + params.order + '"' : "null"});
+                </g:applyCodec>
+
             });
 
 </r:script>

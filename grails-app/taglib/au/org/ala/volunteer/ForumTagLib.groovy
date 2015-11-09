@@ -1,19 +1,20 @@
 package au.org.ala.volunteer
 
+import com.naleid.grails.MarkdownService
 import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class ForumTagLib {
 
     static namespace = 'vpf'
 
-    def userService
-    def applicationContext
-    //def forumService
-    def markdownService
-    def taskService
-
-    @Lazy def forumService = applicationContext.getBean('forumService')
+    UserService userService
+    GrailsApplication grailsApplication
+    MarkdownService markdownService
+    TaskService taskService
+    MultimediaService multimediaService
+    @Lazy ForumService forumService = grailsApplication.mainContext.getBean('forumService')
 
     /**
      * @param project
@@ -58,10 +59,10 @@ class ForumTagLib {
                                 mb.img(style: 'vertical-align: middle', src: resource(dir: '/images', file: 'lock.png'))
                                 mkp.yield("Topic is locked")
                             } else {
-                                mb.button(id:'btnReply', class:'btn') {
-                                    mb.img(src:resource(dir:'images', file:'reply.png')) {
-                                        mkp.yieldUnescaped("&nbsp;Post Reply")
-                                    }
+                                mb.a(id:'btnReply', class:'btn btn-primary') {
+                                    mb.i(class: 'fa fa-reply') {mkp.yieldUnescaped("&nbsp;")}
+                                    mkp.yield("Post Reply")
+
                                 }
                             }
                         }
@@ -116,14 +117,14 @@ class ForumTagLib {
                                         br {}
                                     }
 
-                                    button(class:'btn editMessageButton') {
+                                    button(class:'btn btn-default editMessageButton') {
                                         mkp.yield("Edit")
                                     }
 
                                     // if this is the first message in the topic, you can't delete it
                                     // Only the first message as a null replyTo
                                     if (reply.replyTo != null) {
-                                        button(class:'btn deleteMessageButton') {
+                                        button(class:'btn btn-danger deleteMessageButton') {
                                             mkp.yield("Delete")
                                         }
                                     }
@@ -170,8 +171,8 @@ class ForumTagLib {
             topicCounts[topic] = replyCount
         }
 
-        mb.div(class: 'topicTable') {
-            table(class: "forum-table table table-striped") {
+        mb.div(class: 'table-responsive') {
+            table(class: "table table-striped table-hover table-condensed") {
                 thead {
                     tr {
                         mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"title", title: "Topic", action:paginateAction, params:params))
@@ -180,7 +181,7 @@ class ForumTagLib {
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"creator", title: "Posted&nbsp;by", action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"dateCreated", title: "Posted", action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"lastReplyDate", title: "Last reply", action:paginateAction, params:params))
-                        th {
+                        th(class: 'text-center') {
                             mkp.yield("")
                         }
                     }
@@ -207,14 +208,21 @@ class ForumTagLib {
                             }
 
                             tr(class: rowClasses.join(" "), topicId: topic.id) {
-                                td(style: "width: 40px; padding: 0px") {
+                                td(style: "width: ${topic instanceof ProjectForumTopic ? '100' : '60'}px;", class: 'text-center') {
                                     span(style: 'color:green') {
-                                        mkp.yieldUnescaped("&nbsp;")
                                         if (topic.sticky) {
-                                            i(class:'icon-asterisk', title:'This topic is sticky') { mkp.yieldUnescaped("&nbsp;") }
+                                            i(class:'fa fa-asterisk', title:'This topic is sticky') { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                         if (topic.locked) {
-                                            i(class:'icon-lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
+                                            i(class:'fa fa-lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
+                                        }
+                                    }
+                                    if (topic instanceof ProjectForumTopic) {
+                                        delegate.img(src: (topic as ProjectForumTopic).project.featuredImage, width: '40')
+                                    } else if (topic instanceof TaskForumTopic) {
+                                        def mm = (topic as TaskForumTopic).task.multimedia?.first()
+                                        if (mm) {
+                                            delegate.img(src: multimediaService.getImageThumbnailUrl(mm), width: '40')
                                         }
                                     }
                                 }
@@ -227,12 +235,11 @@ class ForumTagLib {
                                             mkp.yield("Featured Topic")
                                         }
                                     }
-
                                 }
-                                td {
+                                td(class: 'text-center') {
                                     mkp.yield(topicCounts[topic] - 1)
                                 }
-                                td {
+                                td(class: 'text-center') {
                                     mkp.yield(topic.views ?: 0)
                                 }
                                 td {
@@ -251,9 +258,9 @@ class ForumTagLib {
                                         mkp.yield(formatDate(date: topic.lastReplyDate, format: DateConstants.DATE_TIME_FORMAT))
                                     }
                                 }
-                                td {
+                                td(class: 'text-right', style: 'width:180px;') {
                                     def replyLink = topic.locked ? "#" : createLink(controller: 'forum', action: 'postMessage', params: [topicId: topic.id])
-                                    def attrMap = [class: 'btn btn-small', href: replyLink]
+                                    def attrMap = [class: 'btn btn-sm btn-default', href: replyLink]
                                     if (topic.locked) {
                                         attrMap['disabled'] = 'true'
                                     }
@@ -261,10 +268,10 @@ class ForumTagLib {
                                         mkp.yield("Reply")
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
-                                        a(class: 'btn btn-small', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
+                                        a(class: 'btn btn-sm btn-default', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
                                             mkp.yield("Edit")
                                         }
-                                        a(class: 'btn btn-small btn-danger', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
+                                        a(class: 'btn btn-sm btn-danger', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
                                             mkp.yield("Delete")
                                         }
 
@@ -308,73 +315,29 @@ class ForumTagLib {
             taskInstance = attrs.taskInstance as Task
         }
 
-        def mb = new MarkupBuilder(out)
-
-        mb.nav(id: 'breadcrumb') {
-            ol {
-                li {
-                    a(href: createLink(uri: '/')) {
-                        mkp.yield(message(code: 'default.home.label'))
-                    }
-                }
-                if (projectInstance) {
-                    li {
-                        a(href: createLink(controller: 'project', action: 'index', id: projectInstance.id)) {
-                            mkp.yield(projectInstance.featuredLabel)
-                        }
-                    }
-                    li {
-                        a(href: createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])) {
-                            mkp.yield(message(code: 'forum.project.forum', default: 'Project Forum'))
-                        }
-                    }
-                }
-                if (taskInstance) {
-                    li {
-                        a(href: createLink(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id])) {
-                            mkp.yield(message(code: 'forum.project.forum', default: 'Project Forum'))
-                        }
-                    }
-
-                    li {
-                        a(href: createLink(controller: 'task', action: 'show', id: taskInstance.id)) {
-                            mkp.yield("task " + taskInstance.externalIdentifier)
-                        }
-                    }
-
-                }
-                if (!projectInstance && !taskInstance) {
-                    li {
-                        a(href: createLink(controller: 'forum', action: 'index')) {
-                            mkp.yield(message(code: "default.forum.label", default: "Forum"))
-                        }
-                    }
-                    li {
-                        a(href: createLink(controller: 'forum', action: 'index',params:[selectedTab: 1])) {
-                            mkp.yield(message(code: "default.generaldiscussion.label", default: "General Discussion"))
-                        }
-                    }
-                }
-                if (attrs.lastLabel) {
-                    if (topic) {
-                        li {
-                            a(href: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id)) {
-                                mkp.yield(topic.title)
-                            }
-                        }
-                    }
-                    li(class: 'last') {
-                        mkp.yield(attrs.lastLabel)
-                    }
-                } else {
-                    if (topic) {
-                        mkp.yield(topic.title)
-                    }
-                }
-
-            }
-
+        pageScope.crumbs = []
+        if (projectInstance) {
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
         }
+
+        if (taskInstance) {
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
+            pageScope.crumbs << [link: createLink(controller: 'task', action: 'show', id: taskInstance.id), label: "Task - " + taskInstance.externalIdentifier]
+        }
+
+        if (!projectInstance && !taskInstance) {
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index'), label: message(code: "default.forum.label", default: "Forum")]
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index',params:[selectedTab: 1]), label: message(code: "default.generaldiscussion.label", default: "General Discussion")]
+        }
+
+        if (attrs.lastLabel) {
+            if (topic) {
+                pageScope.crumbs << [link: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id), label: topic.title]
+            }
+        }
+
+        def mb = new MarkupBuilder(out)
 
         if (topic) {
             mb.h1() {

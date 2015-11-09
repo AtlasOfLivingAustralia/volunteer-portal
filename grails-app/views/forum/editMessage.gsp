@@ -20,11 +20,11 @@
 
 </head>
 
-<body>
+<body class="forum">
 
 <r:script type="text/javascript">
 
-            $(document).ready(function () {
+            $(function () {
 
                 $("#btnCancel").click(function (e) {
                     e.preventDefault();
@@ -35,38 +35,44 @@
 
 </r:script>
 
-<cl:headerContent title="" selectedNavItem="forum" hideTitle="${true}" hideCrumbs="${true}">
+<cl:headerContent title="${message(code: 'forum.project.editMessage', default: 'Edit Message')}" selectedNavItem="forum" hideTitle="${true}">
     <vpf:forumNavItems topic="${forumMessage?.topic}"
-                       lastLabel="${message(code: 'forum.project.editMessage', default: 'Edit Message')}"/>
+                       lastLabel="true"/>
 </cl:headerContent>
 
-<div class="row">
-    <div class="span12">
-        <h2>Your message:</h2>
-        <small>* Note: To see help on how to format your messages, including bold and italics, see <a
-                href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
-        <g:form id="messageForm" controller="forum">
-            <g:hiddenField name="messageId" value="${forumMessage?.id}"/>
-            <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${messageText}"/>
-            <label for="watchTopic">
-                <g:checkBox name="watchTopic" checked="${isWatched}"/>
-                Watch this topic
-            </label>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Your message:</h2>
+                    <small>* Note: To see help on how to format your messages, including bold and italics, see <a
+                            href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
+                    <g:form id="messageForm" controller="forum">
+                        <g:hiddenField name="messageId" value="${forumMessage?.id}"/>
+                        <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${messageText}"/>
+                        <label for="watchTopic">
+                            <g:checkBox name="watchTopic" checked="${isWatched}"/>
+                            Watch this topic
+                        </label>
 
-            <div>
-                <g:actionSubmit class="btn" value="Preview" action="previewMessageEdit"/>
-                <g:actionSubmit class="btn" value="Save message" action="updateTopicMessage"/>
-                <button class="btn" id="btnCancel">Cancel</button>
+                        <div>
+                            <g:actionSubmit class="btn btn-success" value="Preview" action="previewMessageEdit"/>
+                            <g:actionSubmit class="btn btn-primary" value="Save message" action="updateTopicMessage"/>
+                            <button class="btn btn-default" id="btnCancel">Cancel</button>
+                        </div>
+
+                    </g:form>
+
+                    <g:if test="${messageText}">
+                        <div class="messagePreview">
+                            <h3>Message preview</h3>
+                            <markdown:renderHtml>${messageText}</markdown:renderHtml>
+                        </div>
+                    </g:if>
+                </div>
             </div>
-
-        </g:form>
-
-        <g:if test="${messageText}">
-            <div class="messagePreview">
-                <h3>Message preview</h3>
-                <markdown:renderHtml>${messageText}</markdown:renderHtml>
-            </div>
-        </g:if>
+        </div>
     </div>
 </div>
 </body>
