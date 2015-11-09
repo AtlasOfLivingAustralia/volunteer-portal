@@ -308,7 +308,7 @@ table .btn-default:hover {
 
 /*** Begin - Forum ***/
 
-.contact .panel, .forum .panel {
+.contact .panel, .forum .panel, .tutorial .panel {
     margin-top: 20px;
 }
 
@@ -360,7 +360,6 @@ table .btn-default:hover {
 }
 
 /*** End - Forum ***/
-
 
 /*** LeaderBoard ***/
 
