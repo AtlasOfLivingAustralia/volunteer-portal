@@ -4,29 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <style type="text/css">
 
-    .well {
-        /*background-color: rgba(245, 245, 245, 0.4);*/
-    }
-
-    .numberCircle {
-        border-radius: 50%;
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        padding: 6px;
-
-        background: #fff;
-        border: 2px solid #666;
-        color: #666;
-        text-align: center;
-
-        /*// font: 18px sans-serif;*/
-    }
-
-
-    </style>
     <r:script type='text/javascript'>
 
             $(document).ready(function () {
@@ -124,156 +102,158 @@
     </r:script>
 </head>
 
-<body>
+<body class="admin">
 
-<cl:headerContent title="Project Task Staging" selectedNavItem="expeditions">
+<cl:headerContent title="Project Task Staging" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel],
-                [link: createLink(controller: 'project', action: 'edit', id: projectInstance.id), label: "Edit"]
+                [link: createLink(controller: 'project', action: 'editTaskSettings', id: projectInstance.id), label: "Edit Project"]
         ]
     %>
 </cl:headerContent>
 
-<div class="row">
-    <div class="span12">
-
-        <div class="well well-small">
-            <div class="row-fluid">
-                <div class="span3">
+<div class="container task-staging">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
                     <h4><span class="numberCircle">1</span>&nbsp;Upload Images</h4>
 
                     <p>
                         Upload your images to the staging area
                     </p>
-                <p>
-                    In addition to task image files, you can also upload auxiliary data files that can contain additional data that should
-                    be attached to individual tasks (e.g. OCR text)
-                    <cl:helpText markdown="${false}" tooltipPosition="bottomLeft" tipPosition="bottomLeft">
-                        <div>
-                            <p>
-                                Image filenames should be of the form <code>&lt;filename&gt;.jpg</code>
-                                <b/>
-                                Example: image01.jpg
-                            </p>
-
-                            <p>
-                                Text files must match the following pattern:
-                            </p>
-                            <code>&lt;imageFilename&gt;__&ltDwC field name&gt;__&lt;record index&gt;.txt</code>
-                            where:
-                            <ul>
-                                <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension
-                                </li>
-                                <li><code>DwC field name</code> is the name of the field which should be populated with the contents of the file
-                                </li>
-                                <li><code>record index</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)
-                                </li>
-                            </ul>
-
-                            <p><strong>Important:</strong> <code>__</code> in the filename are two underscore characters.
-                            </p>
-
-                            <div>
+                    <p>
+                        In addition to task image files, you can also upload auxiliary data files that can contain additional data that should
+                        be attached to individual tasks (e.g. OCR text)
+                        <cl:helpText markdown="${false}" tooltipPosition="bottomLeft" tipPosition="bottomLeft" customClass="upload-images-tooltip">
                                 <p>
-                                    For example, assuming an image file has been staged with the name <code>image01.jpg</code>:
-                                    <br/>
-                                    The contents of <code>image01.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
+                                    Image filenames should be of the form <code>&lt;filename&gt;.jpg</code>
+                                    <b/>
+                                    Example: image01.jpg
                                 </p>
-                            </div>
-                        </div>
-                    </cl:helpText>
-                </p>
 
+                                <p>
+                                    Text files must match the following pattern:
+                                </p>
+                                <code>&lt;imageFilename&gt;__&ltDwC field name&gt;__&lt;record index&gt;.txt</code>
+                                where:
+                                <ul>
+                                    <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension
+                                    </li>
+                                    <li><code>DwC field name</code> is the name of the field which should be populated with the contents of the file
+                                    </li>
+                                    <li><code>record index</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)
+                                    </li>
+                                </ul>
+
+                                <p><strong>Important:</strong> <code>__</code> in the filename are two underscore characters.
+                                </p>
+
+                                <div>
+                                    <p>
+                                        For example, assuming an image file has been staged with the name <code>image01.jpg</code>:
+                                        <br/>
+                                        The contents of <code>image01.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
+                                    </p>
+                                </div>
+                        </cl:helpText>
+                    </p>
                 </div>
-
-                <div class="span3">
+            
+                <div class="col-md-3">
                     <h4><span class="numberCircle">2</span>&nbsp;Upload datafile (Optional)</h4>
 
                     <p>
                         Upload a csv file containing extra data to attach to each task. This can also be used for prepopulating fields within your template.
                     </p>
                 </div>
-
-                <div class="span3">
+            
+                <div class="col-md-3">
                     <h4><span class="numberCircle">3</span>&nbsp;Configure columns (Optional)</h4>
-                <p>
-                    Add and configure columns in the table below to pre-populate data in your tasks.
-                    <cl:helpText>
-                        <p>Pre-populated field values can be derived from the image filename, or portions thereof, or can also be read from a separate csv datafile keyed by the image filename.</p>
-
-                        <p><strong>Note:</strong> Only data displayed in the staged images table will be loaded</p>
-                    </cl:helpText>
-                </p>
+                    <p>
+                        Add and configure columns in the table below to pre-populate data in your tasks.
+                        <cl:helpText>
+                            <p>Pre-populated field values can be derived from the image filename, or portions thereof, or can also be read from a separate csv datafile keyed by the image filename.</p>
+        
+                            <p><strong>Note:</strong> Only data displayed in the staged images table will be loaded</p>
+                        </cl:helpText>
+                    </p>
                 </div>
 
-                <div class="span3">
+                <div class="col-md-3">
                     <h4><span class="numberCircle">4</span>&nbsp;Create tasks</h4>
                     Review the staged images table, and create the tasks.
                 </div>
             </div>
 
-            <div class="row-fluid">
-                <div class="span3" style="text-align: center">
-                    <button id="btnSelectImages" class="btn">Select files</button>
+            <div class="row">
+                <div class="col-md-3" style="text-align: center">
+                    <button id="btnSelectImages" class="btn btn-default">Select files</button>
                 </div>
 
-                <div class="span3" style="text-align: center">
+                <div class="col-md-3" style="text-align: center">
                     <g:if test="${hasDataFile}">
                         <button class="btn btn-warning" id="btnClearDataFile">Clear data file</button>
                         <a href="${dataFileUrl}">View data file</a>
                     </g:if>
                     <g:else>
-                        <button class="btn" id="btnUploadDataFile"><i class="icon-upload"></i>&nbsp;Upload data file
+                        <button class="btn btn-default" id="btnUploadDataFile"><i class="fa fa-upload"></i>&nbsp;Upload data file
                         </button>
                     </g:else>
                 </div>
 
-                <div class="span3" style="text-align: center">
-                    <button class="btnAddFieldDefinition btn"><i class="icon-plus"></i> Add column</button>
+                <div class="col-md-3" style="text-align: center">
+                    <button class="btnAddFieldDefinition btn btn-default"><i class="fa fa-plus"></i> Add column</button>
                 </div>
 
-                <div class="span3" style="text-align: center">
+                <div class="col-md-3" style="text-align: center">
                     <button id="btnLoadTasks" class="btn btn-primary"
                             style="margin-left: 10px">Create tasks from staged images</button>
                 </div>
             </div>
-        </div>
 
-        <div id="imagesSection" class="">
-            <table style="width:100%; margin-bottom: 5px">
-                <tr>
-                    <td><h3>Staged images (${images.size()})</h3></td>
-                    <td>
+            <hr/>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Staged images (${images.size()})
+
                         <div class="btn-group pull-right">
-                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="icon-cog"></i> Actions
+                            <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-cog"></i> Actions
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="#" class="btnAddFieldDefinition"><i
-                                            class="icon-plus"></i>&nbsp;Add a column</a>
+                                            class="fa fa-plus"></i>&nbsp;Add a column</a>
                                 </li>
                                 <li class="divider"></li>
 
                                 <li>
                                     <a href="#" id="btnExportTasksCSV"><i
-                                            class="icon-file"></i>&nbsp;Export staged tasks as CSV</a>
+                                            class="fa fa-file"></i>&nbsp;Export staged tasks as CSV</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="#" id="btnClearStagingArea"><i
-                                            class="icon-trash"></i>&nbsp;Delete all images</a>
+                                            class="fa fa-trash"></i>&nbsp;Delete all images</a>
                                 </li>
                             </ul>
                         </div>
-                    </td>
-                </tr>
-            </table>
+                    </h3>
+                </div>
+            </div>
 
 
-            <table class="table table-striped table-bordered">
+
+
+
+
+
+
+            <table class="table table-striped table-hover">
                 <thead>
                 <tr>
                     <th>
@@ -336,7 +316,6 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
 </body>

@@ -119,26 +119,26 @@ var bvp = {};
                 width = elemWidth;
             }
 
+            var styleClasses = ['qtip-bootstrap'];
+            var customClass = $(this).attr("customClass");
+            if (customClass) {
+                styleClasses.push(customClass);
+            }
+
             $(this).qtip({
                 tip: true,
                 position: {
                     my: tooltipPosition,
                     at: targetPosition
                 },
+                hide: {
+                  fixed: true
+                },
                 style: {
-                    width: width,
-                    classes: 'qtip-bootstrap'
-                    //padding: 8,
-                    //background: 'white', //'#f0f0f0',
-                    //color: 'black',
-                    //textAlign: 'left',
-                    //border: {
-                    //    width: 4,
-                    //    radius: 5,
-                    //    color: '#E66542'// '#E66542' '#DD3102'
-                    //},
-                    //tip: tipPosition,
-                    //name: 'light' // Inherit the rest of the attributes from the preset light style
+                    tip: {
+                        width: width
+                    },
+                    classes: styleClasses.join(' '),
                 }
             }).bind('click', function(e){ e.preventDefault(); return false; });
 
