@@ -94,7 +94,7 @@ var bvp = {};
             selector = ".fieldHelp";
         }
         if (!width) {
-            width = 300;
+            width = '500px';
         }
         // Context sensitive help popups
         $(selector).each(function() {
@@ -116,7 +116,7 @@ var bvp = {};
 
             var elemWidth = $(this).attr("width");
             if (elemWidth) {
-                width = elemWidth;
+                width = elemWidth.toString() + 'px';
             }
 
             var styleClasses = ['qtip-bootstrap'];
@@ -135,9 +135,7 @@ var bvp = {};
                   fixed: true
                 },
                 style: {
-                    tip: {
-                        width: width
-                    },
+                    width: width,
                     classes: styleClasses.join(' '),
                 }
             }).bind('click', function(e){ e.preventDefault(); return false; });

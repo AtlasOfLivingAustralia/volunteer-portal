@@ -1,11 +1,11 @@
 <g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data"
         class="form-horizontal">
     <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-    <div class="control-group">
-        <label for="dataFile">Select a data file</label>
+    <div class="form-group">
+        <label for="dataFile" class="col-md-3">Select a data file:</label>
 
-        <div class="controls">
-            <input type="file" name="dataFile" id="dataFile"/>
+        <div class="col-md-9">
+            <input type="file" name="dataFile" id="dataFile" data-filename-placement="inside"/>
         </div>
     </div>
     <br/>
@@ -22,9 +22,9 @@
         </ul>
     </div>
 
-    <div class="control-group">
-        <div class="controls">
-            <button class="btn" id="btnCancelDataFileUpload">Cancel</button>
+    <div class="form-group">
+        <div class="text-center">
+            <button class="btn btn-default" id="btnCancelDataFileUpload">Cancel</button>
             <g:submitButton class="btn btn-primary" name="Upload Data File"/>
         </div>
     </div>
@@ -37,5 +37,8 @@
         e.preventDefault();
         bvp.hideModal();
     });
+
+    // Initialize input type file
+    $('input[type=file]').bootstrapFileInput();
 
 </script>

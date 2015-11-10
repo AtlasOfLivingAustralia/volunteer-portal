@@ -1,12 +1,14 @@
 <div class="form-horizontal">
 
-    <div class="control-group">
-        <label class="control-label" for="fieldType">Field type</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="fieldType">Field type</label>
 
-        <div class="controls">
-            <g:select class="fieldType" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"
+        <div class="col-md-6">
+            <g:select class="fieldType form-control" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"
                       value="${fieldDefinition?.fieldDefinitionType}"/>
-            <cl:helpText tooltipPosition="topMiddle" targetPosition="bottomMiddle" tipPosition="topMiddle" width="600">
+        </div>
+        <div class="col-md-3">
+            <cl:helpText tooltipPosition="topLeft" tipPosition="bottomRight" width="1000">
                 <ul>
                     <li><code>NameRegex</code> extracts part of the filename out using a <em>regular expression</em> and a capturing group.
                     </li>
@@ -21,40 +23,40 @@
     </div>
 
     <div id="formatBlock">
-        <div class="control-group">
-            <label class="control-label" for="definition" id="formatLabel">Definition/Value</label>
+        <div class="form-group">
+            <label class="control-label col-md-3" for="definition" id="formatLabel">Definition/Value</label>
 
-            <div class="controls">
-                <g:textField name="definition" value="${fieldDefinition?.format}"/>
+            <div class="col-md-6">
+                <g:textField name="definition" value="${fieldDefinition?.format}" class="form-control"/>
 
                 <g:if test="${hasDataFile && dataFileColumns}">
-                    <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}"/>
+                    <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}" class="form-control"/>
                 </g:if>
             </div>
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="fieldName">Field name</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="fieldName">Field name</label>
 
-        <div class="controls">
+        <div class="col-md-6">
             <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"
-                      value="${fieldDefinition?.fieldName}"/>
+                      value="${fieldDefinition?.fieldName}" class="form-control"/>
         </div>
     </div>
 
-    <div class="control-group">
-        <label class="control-label" for="recordIndex">Index (optional)</label>
+    <div class="form-group">
+        <label class="control-label col-md-3" for="recordIndex">Index (optional)</label>
 
-        <div class="controls">
-            <g:textField name="recordIndex" value="${fieldDefinition?.recordIndex}"/>
+        <div class="col-md-6">
+            <g:textField name="recordIndex" value="${fieldDefinition?.recordIndex}" class="form-control"/>
         </div>
     </div>
 
-    <div class="control-group">
+    <div class="form-group">
 
-        <div class="controls">
-            <button class="btn" id="btnCancelEditFieldDefinition">Cancel</button>
+        <div class="col-md-offset-3 col-md-9">
+            <button class="btn btn-default" id="btnCancelEditFieldDefinition">Cancel</button>
             <button class="btn btn-primary" id="btnSaveFieldDefinition">Save</button>
         </div>
     </div>

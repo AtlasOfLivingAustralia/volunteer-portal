@@ -262,6 +262,10 @@ table .btn-default:hover {
     height: 34px;
 }
 
+.admin .modal input {
+     margin-bottom: 0;
+}
+
 .admin input.form-control:focus {
     border-color: #66AFE9;
     outline: 0px none;
