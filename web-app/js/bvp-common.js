@@ -94,7 +94,7 @@ var bvp = {};
             selector = ".fieldHelp";
         }
         if (!width) {
-            width = 300;
+            width = '500px';
         }
         // Context sensitive help popups
         $(selector).each(function() {
@@ -116,7 +116,13 @@ var bvp = {};
 
             var elemWidth = $(this).attr("width");
             if (elemWidth) {
-                width = elemWidth;
+                width = elemWidth.toString() + 'px';
+            }
+
+            var styleClasses = ['qtip-bootstrap'];
+            var customClass = $(this).attr("customClass");
+            if (customClass) {
+                styleClasses.push(customClass);
             }
 
             $(this).qtip({
@@ -125,20 +131,12 @@ var bvp = {};
                     my: tooltipPosition,
                     at: targetPosition
                 },
+                hide: {
+                  fixed: true
+                },
                 style: {
                     width: width,
-                    classes: 'qtip-bootstrap'
-                    //padding: 8,
-                    //background: 'white', //'#f0f0f0',
-                    //color: 'black',
-                    //textAlign: 'left',
-                    //border: {
-                    //    width: 4,
-                    //    radius: 5,
-                    //    color: '#E66542'// '#E66542' '#DD3102'
-                    //},
-                    //tip: tipPosition,
-                    //name: 'light' // Inherit the rest of the attributes from the preset light style
+                    classes: styleClasses.join(' '),
                 }
             }).bind('click', function(e){ e.preventDefault(); return false; });
 

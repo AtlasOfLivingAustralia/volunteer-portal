@@ -262,6 +262,10 @@ table .btn-default:hover {
     height: 34px;
 }
 
+.admin .modal input {
+     margin-bottom: 0;
+}
+
 .admin input.form-control:focus {
     border-color: #66AFE9;
     outline: 0px none;
@@ -304,6 +308,23 @@ table .btn-default:hover {
     height: 400px;
 }
 
+.admin .task-staging h4 {
+    font-size:16px;
+}
+
+.admin .numberCircle {
+    border-radius: 50%;
+    padding: 2px 8px;
+    background: #fff;
+    border: 2px solid #666;
+    color: #666;
+    text-align: center;
+    font-size: 18px;
+}
+
+.admin .upload-images-tooltip {
+    min-width: 700px;
+}
 /*** End - Admin ***/
 
 /*** Begin - Forum ***/

@@ -102,13 +102,14 @@ class VolunteerTagLib {
      * @attr tooltipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
      * @atrr tipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
      * @attr targetPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     * @attr width
      */
     def helpText = { attrs, body ->
         def mb = new MarkupBuilder(out)
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
         if (helpText) {
             helpText = markdownService.markdown(helpText)
-            def attributes = [href:'#', class:'btn btn-default btn-xs fieldHelp', title:helpText, tabindex: "-1"]
+            def attributes = [href:'#', class:"btn btn-default btn-xs fieldHelp", title:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.tooltipPosition = attrs.tooltipPosition
             }
@@ -121,6 +122,10 @@ class VolunteerTagLib {
 
             if (attrs.width) {
                 attributes.width = attrs.width
+            }
+
+            if (attrs.customClass) {
+                attributes.customClass = attrs.customClass;
             }
 
             mb.a(attributes) {

@@ -604,7 +604,7 @@ class TaskController {
                 if (f != null) {
                     def allowedMimeTypes = ['text/plain','text/csv']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = "The image file must be one of: ${allowedMimeTypes}"
+                        flash.message = "The file must be one of: ${allowedMimeTypes}"
                         redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
                         return
                     }
