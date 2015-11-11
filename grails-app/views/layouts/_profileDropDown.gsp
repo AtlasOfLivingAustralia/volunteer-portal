@@ -10,7 +10,7 @@
                 </div>
 
                 <div class="col-lg-8">
-                    <p class="text-left"><strong>${cl.showCurrentUserName()}</strong><br/><a
+                    <p class="text-left word-wrap-break-word"><strong>${cl.showCurrentUserName()}</strong><br/><a
                             href="#">${cl.showCurrentUserEmail()}</a></p>
                 </div>
             </div>
