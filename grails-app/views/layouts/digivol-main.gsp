@@ -185,8 +185,8 @@
                             dir="images/2.0/" file="logoDigivolInverted.png"/></a>
 
                     <div class="social-icons pull-right">
-                        <a href="#" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
-                        <a href="https://twitter.com/amdigivol" class="btn-lg"><i class="fa fa-twitter fa-lg"></i></a>
+                        <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
+                        <a href="https://twitter.com/AMDigiVol" class="btn-lg"><i class="fa fa-twitter fa-lg"></i></a>
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@
                 <div class="col-sm-3">
                     <h3>Expeditions</h3>
                     <ul>
-                        <li><a href="#">View all expeditions</a></li>
+                        <li><a href="${g.createLink(controller: 'project', action: 'list')}">View all expeditions</a></li>
                     </ul>
                 </div>
 
@@ -225,8 +225,8 @@
                     <p>Get help in using DIGIVOL and reporting issues</p>
 
                     <p class="address">
-                        <a href="#">paul.flemons@austmus.gov.au</a><br/>
-                        (02) 9320 6343<br/>
+                        <a href="mailto:DigiVol@austmus.gov.au">DigiVol@austmus.gov.au</a><br/>
+                        (02) 9320 6429<br/>
                         Australian Museum<br/>
                         Sydney NSW 2010
                     </p>
