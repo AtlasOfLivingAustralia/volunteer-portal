@@ -224,7 +224,7 @@
             <div class="col-sm-4">
                 <div class="map-header">
                     <h2 class="heading">Record Locations</h2>
-                    <p>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? 'You' : ''} ${userInstance.userId == currentUser ? 'have' : 'has'} transcribed records from all the locations on this map</p>
+                    <p>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? ', you' : ''} ${userInstance.userId == currentUser ? 'have' : 'has'} transcribed records from all the locations on this map</p>
                 </div>
             </div>
         </div>
