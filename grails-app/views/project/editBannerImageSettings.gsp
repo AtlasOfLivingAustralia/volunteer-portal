@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <r:require modules="bootstrap-file-input"/>
+    <r:require modules="bootstrap-file-input, jquery.resizeAndCrop"/>
 </head>
 
 <body>
@@ -13,13 +13,15 @@
 </content>
 
 <div class="alert alert-warning">
-    Expedition images must be exactly <strong>254 x 158</strong> pixels in size (w x h). Images that have different dimensions will be scaled to this size when uploaded. To preserve image quality, crop and scale them to this size before uploading.
+    For best results and to preserve quality, it is recommend that the expedition image aspect ratio sits anywhere between <strong>3:2</strong> and <strong>4:3</strong> with a minimum of <strong>600px width</strong>.
 </div>
 
-<div class="thumbnail">
-    <img src="${projectInstance?.featuredImage}" class="img-responsive"/>
-    <div class="caption">
-        &copy; ${projectInstance.featuredImageCopyright}
+<div class="text-center">
+    <div class="thumbnail display-inline-block">
+        <img src="" realsrc="${projectInstance?.featuredImage}" class="img-responsive cropme" style="width: 600px; height: 450px;"/>
+        <div class="caption">
+            &copy; ${projectInstance.featuredImageCopyright}
+        </div>
     </div>
 </div>
 
@@ -54,7 +56,11 @@
 
 </g:form>
 <script type='text/javascript'>
-    $(document).ready(function () {
+    $(function () {
+        $('img.cropme').resizeAndCrop({
+            forceResize: true
+        });
+
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
     });

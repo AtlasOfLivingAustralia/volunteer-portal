@@ -47,92 +47,31 @@
         </div>
     </g:form>
 
-    <hr/>
+    <div>
+        <h3>Logo</h3>
 
-    <h3>Images</h3>
+        <div class="alert alert-info">
+            For best results a centered image between <strong>200px and 150px wide</strong> is recommended. The logo will appear in the list of institutions, as well as on the institution index (home) page
+        </div>
 
-    <table class="table">
-        <tr>
-            <td>
-                <img src="<cl:institutionImageUrl id="${institutionInstance.id}"/>">
-            </td>
-            <td>
-                <h4>Institution image</h4>
+        <div class="text-center">
+            <div class="thumbnail display-inline-block">
+                <img class="img-responsive" src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>"/>
+            </div>
 
-                <div class="alert alert-info">
-                    Institution images should be 300 x 150 pixels. They appear on the institution index (or home) page.
-                </div>
-
-                <div>
-                    <button class="btn btn-default" type="button" id="btnUploadInstitutionImage">Upload image</button>
-                    <cl:ifInstitutionHasImage institution="${institutionInstance}">
-                        <a href="${createLink(action: 'clearImage', id: institutionInstance.id)}"
-                           class="btn btn-danger">Clear image</a>
-                    </cl:ifInstitutionHasImage>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <img src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>">
-            </td>
-            <td>
-                <h4>Logo</h4>
-
-                <div class="alert alert-info">
-                    Logo images should be 150 x 150 pixels. The logo will appear in the list of institutions, as well as on the institution index (home) page
-                </div>
-
-                <div>
-                    <button class="btn btn-default" type="button" id="btnUploadLogoImage">Upload logo</button>
-                    <cl:ifInstitutionHasLogo institution="${institutionInstance}">
-                        <a href="${createLink(action: 'clearLogoImage', id: institutionInstance.id)}"
-                           class="btn btn-danger">Clear logo</a>
-                    </cl:ifInstitutionHasLogo>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <h4>Banner image <small>Optional</small></h4>
-                <cl:ifInstitutionHasBanner institution="${institutionInstance}">
-                    <img src="<cl:institutionBannerUrl id="${institutionInstance.id}"/>" style="margin-bottom: 10px">
-                </cl:ifInstitutionHasBanner>
-                <div class="alert alert-info">
-                    <p>
-                        Banner images will replace the banner behind the heading at the top of the page and behind the text on the Institutions list page
-                    </p>
-
-                    <p>
-                        Banners should be 1170 x 200 pixels in size, and should be mostly transparent so that overlaid text is easily readable.
-                    </p>
-                </div>
-
-                <div>
-                    <button class="btn btn-default" type="button" id="btnUploadBannerImage">Upload banner image</button>
-                    <cl:ifInstitutionHasBanner institution="${institutionInstance}">
-                        <a href="${createLink(action: 'clearBannerImage', id: institutionInstance.id)}"
-                           class="btn btn-danger">Clear banner</a>
-                    </cl:ifInstitutionHasBanner>
-                </div>
-            </td>
-        </tr>
-    </table>
-    %{--</div>--}%
-    %{--</div>--}%
-    %{--</div>--}%
+            <div>
+            <button class="btn btn-default" type="button" id="btnUploadLogoImage">Upload logo</button>
+            <cl:ifInstitutionHasLogo institution="${institutionInstance}">
+                <a href="${createLink(action: 'clearLogoImage', id: institutionInstance.id)}"
+                   class="btn btn-danger">Clear logo</a>
+            </cl:ifInstitutionHasLogo>
+            </div>
+        </div>
+    </div>
 </div>
 <r:script>
 
-            $(document).ready(function() {
-                $("#btnUploadBannerImage").click(function(e) {
-                    e.preventDefault();
-                    bvp.showModal({
-                        url: "${createLink(action: "uploadBannerImageFragment", id: institutionInstance.id)}",
-                        title: "Upload banner image"
-                    });
-                });
-
+            $(function() {
                 $("#btnUploadLogoImage").click(function(e) {
                     e.preventDefault();
                     bvp.showModal({
@@ -140,15 +79,6 @@
                         title: "Upload institution logo"
                     });
                 });
-
-                $("#btnUploadInstitutionImage").click(function(e) {
-                    e.preventDefault();
-                    bvp.showModal({
-                        url: "${createLink(action: "uploadInstitutionImageFragment", id: institutionInstance.id)}",
-                        title: "Upload institution logo"
-                    });
-                });
-
             });
 
 </r:script>

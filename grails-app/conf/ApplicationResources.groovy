@@ -215,4 +215,9 @@ modules = {
         resource url: 'js/typeahead/0.11.1/typeahead.bundle.js'
         resource url: 'js/typeahead/0.11.1/typeaheadjs.css'
     }
+
+    'jquery.resizeAndCrop' {
+        resource url: 'js/jquery.resizeandcrop.0.4.0/jquery.resizeandcrop.css'
+        resource url: 'js/jquery.resizeandcrop.0.4.0/jquery.resizeandcrop.js'
+    }
 }
