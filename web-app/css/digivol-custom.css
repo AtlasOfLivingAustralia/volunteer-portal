@@ -127,6 +127,17 @@ h2.heading > div.subheading {
 }
 */
 
+.expedition-inactive {
+    opacity: .5;
+}
+
+.expedition-thumb-settings-btn-group {
+    position: absolute;
+    z-index: 10;
+    right: 25px;
+    top: 10px;
+}
+
 div.pagination {
     width: 100%;
     text-align: center;

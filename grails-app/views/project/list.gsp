@@ -143,7 +143,6 @@
                         </div>
                     </div>
 
-                    <div class="row">
                     <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
                     <g:if test="${params.mode == 'thumbs'}">
                         <g:render template="projectListThumbnailView" model="${model}"/>
@@ -151,8 +150,6 @@
                     <g:else>
                         <g:render template="ProjectListDetailsView" model="${model}" />
                     </g:else>
-                    </div>
-
                 </div>
                 <div class="col-sm-4">
                     <g:render template="/leaderBoard/stats"/>
