@@ -9,10 +9,10 @@
         border-top: none;
     }
     </style>
-
+    <r:require modules="jquery.resizeAndCrop"/>
     <r:script>
 
-            $(document).ready(function() {
+            $(function() {
 
                 $("#searchbox").keydown(function(e) {
                     if (e.keyCode ==13) {
@@ -55,6 +55,10 @@
                 $("#searchbox").focus();
 
                 $('[data-toggle="tooltip"]').tooltip();
+
+                $('img.cropme').resizeAndCrop({
+                    forceResize: true
+                });
 
             });
 
@@ -123,7 +127,11 @@
                     <g:if test="${(i % 2) == 0}"><div class="row"></g:if>
                     <div class="col-md-6">
                         <div class="thumbnail institution">
-                            <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}" class="imgLink"><img src="<cl:institutionLogoUrl id="${inst.id}"/>"/></a>
+                            <div class="logo-centre">
+                            <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
+                                <img src="" realsrc="<cl:institutionLogoUrl id="${inst.id}"/>" class="img-responsive cropme centre" />
+                            </a>
+                            </div>
                             <div class="caption">
                                 <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
                                 <cl:ifInstitutionAdmin institution="${inst}">

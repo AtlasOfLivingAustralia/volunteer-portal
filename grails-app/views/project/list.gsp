@@ -7,12 +7,10 @@
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 
-    <style type="text/css">
-    </style>
-
+    <r:require modules="jquery.resizeAndCrop"/>
     <r:script>
 
-        $(document).ready(function() {
+        $(function() {
 
             $("#searchbox").keydown(function(e) {
                 if (e.keyCode ==13) {
@@ -63,6 +61,10 @@
                 var url = "${createLink(controller: 'project', action: 'list')}?mode=${params.mode}&q=" + encodeURIComponent(q);
                 window.location = url;
             }
+
+            $('img.cropme').resizeAndCrop({
+                forceResize: true
+            });
         });
 
     </r:script>
@@ -141,6 +143,7 @@
                         </div>
                     </div>
 
+                    <div class="row">
                     <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
                     <g:if test="${params.mode == 'thumbs'}">
                         <g:render template="projectListThumbnailView" model="${model}"/>
@@ -148,6 +151,7 @@
                     <g:else>
                         <g:render template="ProjectListDetailsView" model="${model}" />
                     </g:else>
+                    </div>
 
                 </div>
                 <div class="col-sm-4">

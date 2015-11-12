@@ -347,9 +347,9 @@ class ProjectService {
             // Now check image size...
             def image = ImageIO.read(file)
             log.info("Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}")
-            if (image.width != 254 || image.height != 158) {
-                log.info "Image is not the correct size. Scaling to 254 x 158..."
-                image = ImageUtils.scale(image, 254, 158)
+            if (image.width > 600) {
+                log.info "Image is not the correct size. Scaling width to 600px..."
+                image = ImageUtils.scaleWidth(image, 600)
                 log.info "Saving new dimensions ${image.width} x ${image.height}"
                 ImageIO.write(image, "jpg", file)
                 log.info "Done."

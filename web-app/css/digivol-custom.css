@@ -81,6 +81,24 @@ h2.heading > div.subheading {
     min-height: 68px;
 }
 
+.thumbnail.institution a.imgLink {
+    padding-top: 0;
+}
+
+.thumbnail.institution img {
+    width: 200px;
+    height: 200px;
+    max-width:200px;
+    max-height:200px;
+}
+
+.thumbnail.institution div.logo-centre {
+    width: 200px;
+    height: 200px;
+    padding-top: 25px;
+    padding-left: 80px;
+}
+
 /*.institution .caption h4 {*/
     /*width: 100%;*/
     /*white-space: nowrap;*/
