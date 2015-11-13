@@ -10,6 +10,7 @@
                                     <img src="${projectSummary.project?.featuredImage}" class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
                                 </a>
                                 <div class="text-center">
+                                    <cl:ifAdmin>
                                     <div class="btn-group ">
                                         <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-toggle="dropdown" href="#">
                                             <i class="fa fa-lg fa-cog"></i>&nbsp;<span class="caret"></span>
@@ -23,6 +24,7 @@
                                             </li>
                                         </ul>
                                     </div>
+                                    </cl:ifAdmin>
                                 </div>
                             </div>
                             <div class="col-xs-9 ${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">

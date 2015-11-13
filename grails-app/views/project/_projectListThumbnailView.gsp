@@ -2,6 +2,7 @@
 <g:each in="${projects}" var="projectSummary" status="i">
     <div class="col-sm-12 col-md-6">
         <div class="thumbnail">
+            <cl:ifAdmin>
             <div class="expedition-thumb-settings-btn-group">
                 <div class="btn-group ">
                     <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-toggle="dropdown" href="#">
@@ -17,6 +18,7 @@
                     </ul>
                 </div>
             </div>
+            </cl:ifAdmin>
             <div class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
                 <g:link controller="project" action="index" class="thumbImg" id="${projectSummary.project?.id}">
                     <img class="img-responsive cropme" src="" realsrc="${projectSummary.project?.featuredImage}" style="width: 100%; height: 236px;"/>
