@@ -94,7 +94,14 @@ h2.heading > div.subheading {
     height: 200px;
     padding-top: 25px;
     text-align: center;
+    display: table;
 }
+
+.thumbnail.institution div.logo-centre a {
+    display: table-cell;
+    vertical-align: middle;
+}
+
 
 /*.institution .caption h4 {*/
     /*width: 100%;*/
