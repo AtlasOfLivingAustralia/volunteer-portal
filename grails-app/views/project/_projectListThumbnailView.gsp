@@ -19,7 +19,7 @@
             </div>
             <div class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
                 <g:link controller="project" action="index" class="thumbImg" id="${projectSummary.project?.id}">
-                    <img class="img-responsive cropme " src="" realsrc="${projectSummary.project?.featuredImage}" style="width: 100%; height: 236px;"/>
+                    <img class="img-responsive cropme" src="" realsrc="${projectSummary.project?.featuredImage}" style="width: 100%; height: 236px;"/>
                 </g:link>
                 <g:render template="/project/projectSummary" model="[projectSummary: projectSummary]" />
             </div>

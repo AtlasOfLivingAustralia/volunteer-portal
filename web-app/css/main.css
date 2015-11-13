@@ -535,10 +535,6 @@ ul.profile-links li a {
     min-height: 250px;
     line-height: 50px;
     padding-top: 90px; }
-.thumbnail.institution img {
-    max-width: 180px;
-    max-height: 100px;
-    margin: auto; }
 .thumbnail.row-style {
     margin-bottom: 15px; }
 .thumbnail.row-style img {

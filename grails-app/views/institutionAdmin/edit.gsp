@@ -51,7 +51,7 @@
         <h3>Logo</h3>
 
         <div class="alert alert-info">
-            For best results a centered image between <strong>200px and 150px wide</strong> is recommended. The logo will appear in the list of institutions, as well as on the institution index (home) page
+            For best results a centered square image between <strong>200px and 150px</strong> for width and height is recommended. The logo will appear in the list of institutions, as well as on the institution index (home) page
         </div>
 
         <div class="text-center">

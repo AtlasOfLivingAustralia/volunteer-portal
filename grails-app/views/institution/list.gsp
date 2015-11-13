@@ -57,7 +57,11 @@
                 $('[data-toggle="tooltip"]').tooltip();
 
                 $('img.cropme').resizeAndCrop({
-                    forceResize: true
+                    forceResize: true,
+                    width:200,
+                    height:150,
+                    center:true,
+                    crop:false
                 });
 
             });
@@ -127,18 +131,21 @@
                     <g:if test="${(i % 2) == 0}"><div class="row"></g:if>
                     <div class="col-md-6">
                         <div class="thumbnail institution">
+                            <div class="institution-settings-btn">
+                                <cl:ifInstitutionAdmin institution="${inst}">
+                                    <a class="btn btn-warning btn-sm pull-right" title="Settings" data-toggle="tooltip"
+                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}"><i
+                                            class="fa fa-cog"></i></a>
+                                </cl:ifInstitutionAdmin>
+                            </div>
                             <div class="logo-centre">
-                            <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
-                                <img src="" realsrc="<cl:institutionLogoUrl id="${inst.id}"/>" class="img-responsive cropme centre" />
-                            </a>
+                                <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
+                                    <img class="img-responsive cropme" src="" realsrc="<cl:institutionLogoUrl id="${inst.id}"/>"/>
+                                </a>
                             </div>
                             <div class="caption">
                                 <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
-                                <cl:ifInstitutionAdmin institution="${inst}">
-                                    <button class="btn btn-warning btn-small pull-right" title="Settings" data-toggle="tooltip"
-                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}"><i
-                                            class="glyphicon glyphicon-cog glyphicon-white"></i></button>
-                                </cl:ifInstitutionAdmin>
+
                                 <p class="shortDescription" title="${inst.shortDescription}"><cl:truncate maxlength="90">${inst.shortDescription}</cl:truncate></p>
                                 <div class="expedition-progress">
                                     <div class="progress-legend">
