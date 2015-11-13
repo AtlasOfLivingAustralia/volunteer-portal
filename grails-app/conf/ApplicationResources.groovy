@@ -21,6 +21,11 @@ modules = {
         resource url: '/css/digivol-expedition.css'
     }
 
+    'digivol-new-project-wizard' {
+        dependsOn 'angular', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead' // 'angular-typeahead',
+        resource url: '/js/new-project-wizard.js'
+    }
+
     'qtip' {
         dependsOn "jquery"
         resource url:'/js/qtip.2.2.1/jquery.qtip.css'
@@ -219,5 +224,45 @@ modules = {
     'jquery.resizeAndCrop' {
         resource url: 'js/jquery.resizeandcrop.0.4.0/jquery.resizeandcrop.css'
         resource url: 'js/jquery.resizeandcrop.0.4.0/jquery.resizeandcrop.js'
+    }
+
+    'angular' {
+        resource url: 'js/angular/1.4.7/angular.min.js'
+        resource url: 'js/angular/1.4.7/angular-csp.css'
+    }
+
+    'angular-ui-router' {
+        dependsOn 'angular'
+        resource url: '/js/angular/ui-router/0.2.15/angular-ui-router.min.js'
+    }
+
+    'angular-typeahead' {
+        dependsOn 'jquery', 'angular', 'typeahead'
+        resource url: '/js/angular/typeahead/0.2.4/angular-typeahead.min.js'
+    }
+
+    'angular-qtip' {
+        dependsOn 'jquery', 'angular', 'qtip'
+        resource url: '/js/angular/qtip/angular-qtip.js'
+    }
+
+    'angular-simple-logger' {
+        dependsOn 'angular'
+        resource url: '/js/angular/simple-logger/0.1.5/angular-simple-logger.light.min.js'
+    }
+
+    'angular-google-maps' {
+        dependsOn 'angular', 'underscore', 'angular-simple-logger'
+        resource url: '/js/angular/google-maps/2.2.1/angular-google-maps.min.js'
+    }
+
+    'ng-file-upload' {
+        dependsOn 'angular'
+        resource url: '/js/angular/file-upload/9.1.2/ng-file-upload.min.js'
+    }
+
+    'angular-bootstrap-show-errors' {
+        dependsOn 'angular'
+        resource url: '/js/angular/bootstrap-show-errors/2.3.0/showErrors.min.js'
     }
 }

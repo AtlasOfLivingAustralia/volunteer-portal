@@ -25,7 +25,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')}">
+<body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app')}">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">

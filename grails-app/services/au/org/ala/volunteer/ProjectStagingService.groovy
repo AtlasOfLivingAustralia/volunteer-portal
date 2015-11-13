@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import org.apache.commons.io.FileUtils
+import org.codehaus.groovy.runtime.IOGroovyMethods
 import org.springframework.web.multipart.MultipartFile
 
 class ProjectStagingService {
@@ -86,15 +87,34 @@ class ProjectStagingService {
         return folder.getAbsolutePath() + "/expedition-image.jpg"
     }
 
+    public void saveTempProjectDescriptor(String id, Reader body) {
+        new File(getStagingRootFile(new NewProjectDescriptor(stagingId: id)), "autosave.json").withWriter {
+            it << body
+        }
+    }
+
+    public String getTempProjectDescriptor(String id) {
+        def f = new File(getStagingRootFile(new NewProjectDescriptor(stagingId: id)), "autosave.json")
+        return f.exists() ? f.text : null
+    }
+
+    public boolean stagingDirectoryExists(String stagingId) {
+        new File(getStagingRootPath(stagingId)).exists()
+    }
+
     private File getStagingRootFile(NewProjectDescriptor project) {
-        def f = new File(getStagingRootPath(project))
+        ensureStagingDirectoryExists(project.stagingId)
+    }
+
+    public File ensureStagingDirectoryExists(String stagingId) {
+        def f = new File(getStagingRootPath(stagingId))
         if (!f.exists()) {
             f.mkdirs()
         }
         return f;
     }
 
-    private String getStagingRootPath(NewProjectDescriptor project) {
-        return "${grailsApplication.config.images.home}/projectStaging/${project.stagingId}"
+    private String getStagingRootPath(String stagingId) {
+        return "${grailsApplication.config.images.home}/projectStaging/${stagingId}"
     }
 }
