@@ -1,5 +1,8 @@
 package au.org.ala.volunteer
 
+import groovy.transform.ToString
+
+@ToString
 class NewProjectDescriptor implements Serializable {
 
     String featuredOwner
@@ -20,4 +23,23 @@ class NewProjectDescriptor implements Serializable {
     String picklistId
     List<Long> labelIds = []
 
+    static NewProjectDescriptor fromJson(String s, def p) {
+        new NewProjectDescriptor(
+                stagingId: s,
+                featuredOwner: p.featuredOwner.name,
+                featuredOwnerId: p.featuredOwner.id,
+                name: p.name,
+                shortDescription: p.shortDescription,
+                longDescription: p.longDescription,
+                templateId: p.templateId,
+                projectTypeId: p.projectTypeId,
+                imageCopyright: p.imageCopyright,
+                showMap: p.showMap,
+                mapInitLatitude: p.map.centre.latitude,
+                mapInitLongitude: p.map.centre.longitude,
+                mapInitZoomLevel: p.map.zoom,
+                picklistId: p.picklistId,
+                labelIds: p.labelIds
+        )
+    }
 }

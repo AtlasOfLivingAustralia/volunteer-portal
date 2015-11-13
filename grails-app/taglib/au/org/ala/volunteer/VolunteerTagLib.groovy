@@ -139,6 +139,48 @@ class VolunteerTagLib {
     }
 
     /**
+     * @attr markdown defaults to true, will invoke the markdown service
+     * @attr tooltipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     * @atrr tipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     * @attr targetPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     */
+    def ngHelpText = { attrs, body ->
+        def mb = new MarkupBuilder(out)
+        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
+        if (helpText) {
+            helpText = markdownService.markdown(helpText)
+            def attributes = [href:'javascript:void(0)', class:'btn btn-default btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
+            if (attrs.tooltipPosition) {
+                attributes.qtipMy = attrs.tooltipPosition
+            }
+            if (attrs.tipPosition) {
+                attributes.qtipAt = attrs.tipPosition
+            }
+            if (attrs.targetPosition) {
+                attributes.targetPosition = attrs.targetPosition
+            }
+
+            if (attrs.classes) {
+                attributes.'qtip-class' = attrs.classes;
+            } else {
+                attributes.'qtip-class' = 'qtip-bootstrap';
+            }
+
+            if (attrs.width) {
+                attributes.width = attrs.width
+            }
+
+            mb.a(attributes) {
+                i(class:'fa fa-question help-container') {
+                    mkp.yieldUnescaped('')
+                }
+            }
+        } else {
+            mb.mkp.yieldUnescaped("&nbsp;")
+        }
+    }
+
+    /**
      * Show map of records based on UID
      *
      * - content is loaded by ajax calls

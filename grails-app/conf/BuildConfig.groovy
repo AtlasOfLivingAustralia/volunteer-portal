@@ -82,9 +82,7 @@ grails.project.dependency.resolution = {
 
         compile ':scaffolding:2.1.2'
         runtime ':database-migration:1.4.1'
-        compile (':webflow:2.1.0') {
-            excludes 'javassist'
-        }
+
         compile ':build-info:1.2.8'
         compile ":yammer-metrics:3.0.1-2"
         compile(":images-client-plugin:0.3") {
