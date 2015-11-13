@@ -9,7 +9,6 @@
         border-top: none;
     }
     </style>
-    <r:require modules="jquery.resizeAndCrop"/>
     <r:script>
 
             $(function() {
@@ -55,14 +54,6 @@
                 $("#searchbox").focus();
 
                 $('[data-toggle="tooltip"]').tooltip();
-
-                $('img.cropme').resizeAndCrop({
-                    forceResize: true,
-                    width:200,
-                    height:150,
-                    center:true,
-                    crop:false
-                });
 
             });
 
@@ -140,7 +131,7 @@
                             </div>
                             <div class="logo-centre">
                                 <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
-                                    <img class="img-responsive cropme" src="" realsrc="<cl:institutionLogoUrl id="${inst.id}"/>"/>
+                                    <img class="img-responsive cropme" src="<cl:institutionLogoUrl id="${inst.id}"/>" style="max-height: 200px;"/>
                                 </a>
                             </div>
                             <div class="caption">
