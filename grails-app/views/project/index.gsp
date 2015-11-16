@@ -303,7 +303,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <h2 class="heading">
-                            Expedition Citizen Scientists
+                            Expedition Volunteers
                         </h2>
                     </div>
                 </div>
