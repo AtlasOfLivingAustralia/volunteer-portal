@@ -68,13 +68,19 @@ class IndexController {
         [daily, weekly, monthly, alltime].each { it.email = it.email.toLowerCase().encodeAsMD5() }
 
         def latestContribs = Task.withCriteria {
+            if (institution) {
+                project {
+                    eq('institution', institution)
+                }
+            }
             isNotNull('fullyTranscribedBy')
             projections {
-                distinct(['project', 'fullyTranscribedBy'])
-                property('dateFullyTranscribed')
+                groupProperty('project')
+                groupProperty('fullyTranscribedBy')
+                max('dateFullyTranscribed', 'maxDate')
             }
-            order('dateFullyTranscribed', 'desc')
-            maxResults maxContributors
+            order('maxDate', 'desc')
+            maxResults(maxContributors)
         }
 
         def contributors = latestContribs.collect {

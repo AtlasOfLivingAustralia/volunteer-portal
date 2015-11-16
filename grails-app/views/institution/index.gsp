@@ -12,10 +12,6 @@
 
         $(document).ready(function () {
 
-            $.ajax("${createLink(controller: 'leaderBoard', action: 'leaderBoardFragment', params: [institutionId: institutionInstance.id])}").done(function (content) {
-                $("#leaderBoardSection").html(content);
-            });
-
             $("#searchbox").keydown(function(e) {
                 if (e.keyCode ==13) {
                     doSearch();

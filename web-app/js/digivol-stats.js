@@ -23,11 +23,12 @@ function digivolStats(config) {
       };
 
       $scope.userProfileUrl = function(user) {
-        var id = user.id || "";
+        var id = user.userId || "";
         return config.userProfileUrl.replace("-1", id);
       };
 
-      $scope.projectUrl = function(id) {
+      $scope.projectUrl = function(project) {
+        var id = project.projectId || "";
         return config.projectUrl.replace('-1', id);
       };
 
@@ -36,8 +37,10 @@ function digivolStats(config) {
       };
 
       var p = $http.get(config.statsUrl, {
-        institutionId: config.institutionId,
-        maxContributors: config.maxContributors
+        params: {
+          institutionId: config.institutionId,
+          maxContributors: config.maxContributors
+        }
       });
       p.then(function (resp) {
           angular.extend($scope, resp.data);
