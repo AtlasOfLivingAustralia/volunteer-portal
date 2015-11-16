@@ -1,76 +1,51 @@
 function digivolStats(config) {
-  function avatarUrl() {
-    return "http://www.gravatar.com/avatar/"+this.email()+"?s=40&d=mm"
-  }
+  var stats = angular.module('stats',[]);
 
-  function userProfileUrl() {
-    return config.userProfileUrl.replace("-1", this.userId())
-  }
+  stats.controller('StatsCtrl', [
+    '$scope', '$http', '$log',
+    function ($scope, $http, $log) {
+      $scope.loading = true;
 
-  function LeaderBoardEntryVM(data) {
-    var self = this;
-    ko.mapping.fromJS(data, {}, this);
-    self.src = ko.pureComputed(avatarUrl, this);
-    self.userProfileUrl = ko.pureComputed(userProfileUrl, this);
-  }
-  function ContributorEntryVM(data) {
-    var self = this;
-    ko.mapping.fromJS(data, {}, this);
-    self.avatarUrl = ko.pureComputed(avatarUrl, this);
-    self.userProfileUrl = ko.pureComputed(userProfileUrl, this);
-    self.additionalTranscribedThumbs = ko.pureComputed(function() {
-      return Math.max(self.transcribedItems() - 5, 0);
-    }, this);
-    self.projectUrl = ko.pureComputed(function() {
-      return config.projectUrl.replace('-1', self.projectId());
-    }, this);
-  }
-  var mapping = {
-    'daily': {
-      create: function(options) {
-        return new LeaderBoardEntryVM(options.data);
-      }
-    },
-    'weekly': {
-      create: function(options) {
-        return new LeaderBoardEntryVM(options.data);
-      }
-    },
-    'monthly': {
-      create: function(options) {
-        return new LeaderBoardEntryVM(options.data);
-      }
-    },
-    'alltime': {
-      create: function(options) {
-        return new LeaderBoardEntryVM(options.data);
-      }
-    },
-    'contributors': {
-      create: function(options) {
-        return new ContributorEntryVM(options.data);
-      }
+      $scope.transcriberCount = null;
+      $scope.completedTasks = null;
+      $scope.totalTasks = null;
+
+      $scope.daily = { userId: -1, email: '', name: '', score: null };
+      $scope.weekly = { userId: -1, email: '', name: '', score: null };
+      $scope.monthly = { userId: -1, email: '', name: '', score: null };
+      $scope.alltime = { userId: -1, email: '', name: '', score: null };
+
+      $scope.contributors = [];
+
+      $scope.avatarUrl = function (user) {
+        var email = user.email || "";
+        return "http://www.gravatar.com/avatar/" + email + "?s=40&d=mm"
+      };
+
+      $scope.userProfileUrl = function(user) {
+        var id = user.id || "";
+        return config.userProfileUrl.replace("-1", id);
+      };
+
+      $scope.projectUrl = function(id) {
+        return config.projectUrl.replace('-1', id);
+      };
+
+      $scope.additionalTranscribedThumbs = function(contrib) {
+        return Math.max(contrib.transcribedItems - 5, 0);
+      };
+
+      var p = $http.get(config.statsUrl, {
+        institutionId: config.institutionId,
+        maxContributors: config.maxContributors
+      });
+      p.then(function (resp) {
+          angular.extend($scope, resp.data);
+          $scope.loading = false;
+        },
+        function (resp) {
+          $log.error("Got error response for leaderboard", resp);
+        });
     }
-  };
-  var viewModel = ko.mapping.fromJS({
-    loading : true,
-    transcriberCount: null,
-    completedTasks: null,
-    totalTasks: null,
-    daily: { userId: -1, email: '', name: '', score: null },
-    weekly: { userId: -1, email: '', name: '', score: null },
-    monthly: { userId: -1, email: '', name: '', score: null },
-    alltime: { userId: -1, email: '', name: '', score: null },
-    contributors: []
-  }, mapping);
-
-  jQuery(function($) {
-    ko.applyBindings(viewModel, document.getElementById('digivol-stats'));
-
-    var p = $.get(config.statsUrl, { institutionId: config.institutionId, maxContributors: config.maxContributors }, $.noop, 'json');
-    p.done(function(data, status, jqXHR) {
-      viewModel.loading(false);
-      ko.mapping.fromJS(data, viewModel);
-    });
-  });
+  ]);
 }

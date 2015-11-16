@@ -213,7 +213,7 @@
             function showPreviousTaskBrowser() {
 
                 bvp.showModal({
-                    url: "${createLink(controller: 'task', action: 'taskBrowserFragment', params: [projectId: taskInstance?.project?.id, taskId: taskInstance?.id])}",
+                    url: "${raw(createLink(controller: 'task', action: 'taskBrowserFragment', params: [projectId: taskInstance?.project?.id, taskId: taskInstance?.id]))}",
                     width:700,
                     height:600,
                     hideHeader: false,
@@ -391,34 +391,6 @@
         background-color: #a9a9a9;
     }
 
-    %{--.insert-symbol-button {--}%
-        %{--font-family: courier;--}%
-        %{--color: #DDDDDD;--}%
-        %{--background: #4075C2;--}%
-        %{---moz-border-radius: 4px;--}%
-        %{---webkit-border-radius: 4px;--}%
-        %{---o-border-radius: 4px;--}%
-        %{---icab-border-radius: 4px;--}%
-        %{---khtml-border-radius: 4px;--}%
-        %{--border-radius: 4px;--}%
-    %{--}--}%
-
-    %{--.insert-symbol-button:hover {--}%
-        %{--background: #0046AD;--}%
-        %{--color: #DDDDDD;--}%
-    %{--}--}%
-
-    %{--#collectionEventFields table tr.columnLayout {--}%
-        %{--width: 450px;--}%
-        %{--min-height: 34px;--}%
-        %{--float: left;--}%
-    %{--}--}%
-
-    %{--#taskMetadata h3 {--}%
-        %{--margin-bottom: 0;--}%
-        %{--margin-top: 0;--}%
-    %{--}--}%
-
     #taskMetadata ul {
         margin: 0;
         padding: 0;
@@ -434,9 +406,6 @@
         font-weight: bold;
     }
 
-    %{--.transcribeSectionBody select {--}%
-        %{--margin-bottom: 10px;--}%
-    %{--}--}%
 
     .transcribeSectionBody {
         border-top: 1px solid #d3d3d3;
@@ -447,18 +416,11 @@
         font-weight: bold;
     }
 
-    %{--.prop .name {--}%
-        %{--vertical-align: top;--}%
-    %{--}--}%
 
     .closeSectionLink {
         float: right;
     }
 
-    %{--.radio-item input {--}%
-        %{--margin: 0;--}%
-        %{--/*vertical-align: middle;*/--}%
-    %{--}--}%
 
     /* Mapping tool (popup) */
 
@@ -473,71 +435,11 @@
         color: #666;
     }
 
-    /* End Mapping tool */
-    %{--span.coordsIcons {--}%
-        %{--height: 18px;--}%
-    %{--}--}%
-
-    %{--span.coordsIcons a {--}%
-        %{--display: inline-block;--}%
-        %{--width: 10px;--}%
-        %{--text-align: center;--}%
-        %{--font-size: 20px;--}%
-        %{--line-height: 13px;--}%
-        %{--text-decoration: none;--}%
-        %{--color: #DDDDDD;--}%
-        %{--background-color: #4075C2;--}%
-        %{--padding: 4px 2px 0 2px;--}%
-        %{---moz-border-radius: 4px;--}%
-        %{---webkit-border-radius: 4px;--}%
-        %{---o-border-radius: 4px;--}%
-        %{---icab-border-radius: 4px;--}%
-        %{---khtml-border-radius: 4px;--}%
-        %{--border-radius: 4px;--}%
-    %{--}--}%
-
-    %{--span.coordsIcons a:hover {--}%
-        %{--background-color: #0046AD;--}%
-    %{--}--}%
-
-    %{--<cl:ifInstitutionHasBanner institution="${taskInstance?.project?.institution}">--}%
-    %{--#page-header {--}%
-        %{--background-image: url(<cl:institutionBannerUrl id="${taskInstance.project.institution.id}" />);--}%
-    %{--}--}%
-    %{--</cl:ifInstitutionHasBanner>--}%
-
-
     </style>
 
 </head>
 
 <body>
-
-%{--<cl:headerContent title="${(validator) ? 'Validate' : 'Transcribe'} Task ${taskInstance?.externalIdentifier}"
-                  hideTitle="${true}">
-    <%
-        def crumbs = []
-        if (taskInstance.project.institution) {
-            crumbs << [link: createLink(controller: 'institution', action: 'index', id: taskInstance.project.institution.id), label: taskInstance.project.institution.name]
-        } else {
-            crumbs << [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
-        }
-        crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project.featuredLabel]
-
-        pageScope.crumbs = crumbs
-    %>
-
-    <div>
-        <g:if test="${sequenceNumber >= 0}">
-            <span>Image sequence number: ${sequenceNumber}</span>
-        </g:if>
-        <cl:ifAdmin>
-            <a href="${createLink(controller: 'task', action: 'showDetails', id: taskInstance?.id)}"
-               class="btn btn-small btn-info pull-right">View Details</a>
-        </cl:ifAdmin>
-    </div>
-
-</cl:headerContent>--}%
 
 <section id="transcription-template">
     <div id="page-header" class="row branding-row">
@@ -546,7 +448,7 @@
 
             <div class="transcription-branding">
                 <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
-                <h1>${taskInstance?.project?.name} ${taskInstance?.externalIdentifier}</h1>
+                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name} ${taskInstance?.externalIdentifier}</g:link></h1>
                 <h2><g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
             </div>
 
@@ -590,48 +492,49 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="well well-sm transcribeSection">
-                            <div class="row transcribeSectionHeader">
-                                <div class="col-sm-12">
-                                    <span class="transcribeSectionHeaderLabel"><g:if
-                                            test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
-                                    <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
-                                </div>
-                            </div>
-
-                            <div class="transcribeSectionBody">
-                                <div class="row">
-
-                                    <div class="col-sm-6">
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                ${(validator) ? 'Transcriber' : 'Your'} Notes
-                                            </div>
-
-                                            <div class="col-sm-8">
-                                                <g:textArea name="recordValues.0.transcriberNotes"
-                                                            value="${recordValues?.get(0)?.transcriberNotes}"
-                                                            id="recordValues.0.transcriberNotes" rows="5" cols="40" class="col-sm-12"/>
-                                            </div>
-                                        </div>
+                        <div class="panel panel-default transcribeSection">
+                            <div class="panel-default">
+                                <div class="row transcribeSectionHeader">
+                                    <div class="col-sm-12">
+                                        <span class="transcribeSectionHeaderLabel"><g:if
+                                                test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
+                                        <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                                     </div>
+                                </div>
 
-                                    <div class="col-sm-6">
-                                        <g:if test="${validator}">
+                                <div class="transcribeSectionBody">
+                                    <div class="row">
+
+                                        <div class="col-sm-6">
                                             <div class="row">
-                                                <div class="col-sm-4">Validator Notes</div>
+                                                <div class="col-sm-4">
+                                                    ${(validator) ? 'Transcriber' : 'Your'} Notes
+                                                </div>
 
                                                 <div class="col-sm-8">
-                                                    <g:textArea name="recordValues.0.validatorNotes"
-                                                                value="${recordValues?.get(0)?.validatorNotes}"
-                                                                id="recordValues.0.validatorNotes" rows="5" cols="40"
-                                                                class="col-sm-12"/>
+                                                    <g:textArea name="recordValues.0.transcriberNotes"
+                                                                value="${recordValues?.get(0)?.transcriberNotes}"
+                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="col-sm-12"/>
                                                 </div>
                                             </div>
-                                        </g:if>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <g:if test="${validator}">
+                                                <div class="row">
+                                                    <div class="col-sm-4">Validator Notes</div>
+
+                                                    <div class="col-sm-8">
+                                                        <g:textArea name="recordValues.0.validatorNotes"
+                                                                    value="${recordValues?.get(0)?.validatorNotes}"
+                                                                    id="recordValues.0.validatorNotes" rows="5" cols="40"
+                                                                    class="col-sm-12"/>
+                                                    </div>
+                                                </div>
+                                            </g:if>
+                                        </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>

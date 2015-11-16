@@ -28,50 +28,54 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="well well-small">
-            <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
-                <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
-                    <g:imageViewer multimedia="${multimedia}" hideControls="${true}"/>
-                </g:if>
-            </g:each>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
+                    <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
+                        <g:imageViewer multimedia="${multimedia}" hideControls="${true}"/>
+                    </g:if>
+                </g:each>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="well well-small transcribeSection">
-    <div class="flightDetails row">
-        <div class="col-md-2">
-            <strong>Date</strong>
+<div class="panel panel-default transcribeSection">
+    <div class="panel-body">
+        <div class="flightDetails row">
+            <div class="col-md-2">
+                <strong>Date</strong>
+            </div>
+
+            <div class="col-md-1"></div>
+
+            <div class="col-md-2">
+                <strong>Aircraft</strong>
+            </div>
+
+            <div class="col-md-7">
+                <strong>All text verbatim</strong>
+            </div>
         </div>
 
-        <div class="col-md-1"></div>
+        <div class="flightDetails row">
+            <div class="col-md-2">
+                <g:renderFieldBootstrap fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}"
+                                        task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12"
+                                        helpTooltipPosition="bottomLeft"/>
+            </div>
 
-        <div class="col-md-2">
-            <strong>Aircraft</strong>
-        </div>
+            <div class="col-md-1"></div>
 
-        <div class="col-md-7">
-            <strong>All text verbatim</strong>
-        </div>
-    </div>
+            <div class="col-md-2">
+                <g:renderFieldBootstrap fieldType="${DarwinCoreField.fieldNumber}" recordValues="${recordValues}"
+                                        task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12"/>
+            </div>
 
-    <div class="flightDetails row">
-        <div class="col-md-2">
-            <g:renderFieldBootstrap fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}"
-                                    task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12"
-                                    helpTooltipPosition="bottomLeft"/>
-        </div>
-
-        <div class="col-md-1"></div>
-
-        <div class="col-md-2">
-            <g:renderFieldBootstrap fieldType="${DarwinCoreField.fieldNumber}" recordValues="${recordValues}"
-                                    task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12"/>
-        </div>
-
-        <div class="col-md-7">
-            <g:renderFieldBootstrap fieldType="${DarwinCoreField.occurrenceRemarks}" recordValues="${recordValues}"
-                                    task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12" rows="2"/>
+            <div class="col-md-7">
+                <g:renderFieldBootstrap fieldType="${DarwinCoreField.occurrenceRemarks}" recordValues="${recordValues}"
+                                        task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12" rows="2"/>
+            </div>
         </div>
     </div>
 </div>
@@ -80,8 +84,10 @@
        value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
 <g:set var="fieldList"
        value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort: 'displayOrder'])}"/>
-<div class="well well-small transcribeSection">
-    <g:render template="/transcribe/dynamicDatasetRows"
-              model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+<div class="panel panel-default transcribeSection">
+    <div class="panel-body">
+        <g:render template="/transcribe/dynamicDatasetRows"
+                  model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+    </div>
 </div>
 

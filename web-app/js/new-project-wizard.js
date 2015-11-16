@@ -192,7 +192,7 @@ function createProjectModule(config) {
       $rootScope.project = project;
       $rootScope.$state = $state;
 
-      // Scrolling when screen changed.
+      // Scroll to top of page when state changes
       $rootScope.$on('$viewContentLoaded', function () {
         $timeout(performAutoScroll, 0);
       });
@@ -221,12 +221,12 @@ function createProjectModule(config) {
 
       $rootScope.back = function () {
         $http.post(config.autosaveUrl, project);
-        $state.go($state.current.data.prev);
+        $state.go($state.current.data.prev, {}, { location: 'replace' });
       };
 
       $rootScope.continue = function () {
         $http.post(config.autosaveUrl, project);
-        $state.go($state.current.data.next);
+        $state.go($state.current.data.next, {}, { location: 'replace' });
       };
 
       $rootScope.cancel = function () {
@@ -236,6 +236,11 @@ function createProjectModule(config) {
       $rootScope.$watch('project', function(newVal,oldVal,scope) {
         $http.post(config.autosaveUrl, newVal);
       }, true);
+
+      // if no autosave, force to start state
+      if (config.autosave == null) {
+        $state.go('start', {}, { location: 'replace' });
+      }
     }]);
   wizard.controller('InstitutionCtrl', [
     '$scope', '$log', 'project',
@@ -434,11 +439,11 @@ function createProjectModule(config) {
         $http.post(config.createUrl, project).then(
           function(resp) {
             $scope.loading = false;
-            $state.go('success', {id: resp.data.id});
+            $state.go('success', {id: resp.data.id}, { location: false });
           },
           function (resp) {
             $scope.loading = false;
-            $state.go('failed');
+            $state.go('failed', {}, { location: false });
           }
         );
       }

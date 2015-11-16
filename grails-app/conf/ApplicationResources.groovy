@@ -7,8 +7,9 @@ modules = {
     }
 
     'digivol-stats' {
-        dependsOn 'knockout'
+        dependsOn 'angular'
         resource url: '/js/digivol-stats.js'
+        resource url: '/css/digivol-stats.css'
     }
 
     'digivol-notebook' {
@@ -204,11 +205,6 @@ modules = {
     "livestamp" {
         dependsOn 'jquery', 'moment'
         resource url: 'js/livestamp/1.1.2/livestamp.min.js'
-    }
-
-    "knockout" {
-        resource url: 'js/knockout/3.3.0/knockout-3.3.0.js'
-        resource url: 'js/knockout/3.3.0/knockout.mapping-2.4.1.min.js'
     }
 
     'marker-clusterer' {

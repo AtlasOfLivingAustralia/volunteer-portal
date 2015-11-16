@@ -49,8 +49,9 @@
 
     </div>
 
-    <div class="well well-sm transcribeSection">
-        <div class="row">
+    <div class="panel panel-default transcribeSection">
+        <div class="panel-body">
+            <div class="row">
             <div class="col-md-3">
                 <div class="row">
                     <div class="col-md-12">
@@ -83,7 +84,7 @@
 
                 <div class="row">
                     <div class="col-md-10">
-                        <button type="button" class="btn btn-default btnCopyFromPreviousTask" href="#task_selector"
+                        <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
                                 style="">Copy values from a previous task</button>
                     </div>
 
@@ -110,6 +111,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 

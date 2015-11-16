@@ -1,16 +1,19 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="well well-sm">
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-body">
                 <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
                 <g:imageViewer multimedia="${multimedia}"/>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-4">
-            <div class="well well-sm">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-body">
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
 
@@ -28,7 +31,7 @@
                     </ul>
 
                     <span>
-                        <button type="button" class="btn btnCopyFromPreviousTask" href="#task_selector"
+                        <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
                                 style="">Copy values from a previous task</button>
                         <a href="#" class="btn btn-default btn-xs fieldHelp"
                            title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
@@ -44,8 +47,10 @@
 
                 </div>
             </div>
+        </div>
 
-            <div class="well well-sm">
+        <div class="panel panel-default">
+            <div class="panel-body">
                 <g:set var="allTextField"
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                 <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
@@ -70,22 +75,23 @@
             </div>
         </div>
     </div>
+</div>
 
-    <g:renderFieldCategorySection category="${FieldCategory.collectionEvent}" task="${taskInstance}"
-                                  recordValues="${recordValues}" title="Collection Event"
-                                  description="This records information directly from the label about when, where and by whom the specimen was collected. Only fill in fields for which information appears in the labels"/>
+<g:renderFieldCategorySection category="${FieldCategory.collectionEvent}" task="${taskInstance}"
+                              recordValues="${recordValues}" title="Collection Event"
+                              description="This records information directly from the label about when, where and by whom the specimen was collected. Only fill in fields for which information appears in the labels"/>
 
-    <g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}"
-                                  recordValues="${recordValues}" title="Interpreted Location"
-                                  description="Use the mapping tool before attempting to enter values manually">
-        <button type="button" class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
-    </g:renderFieldCategorySection>
+<g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}"
+                              recordValues="${recordValues}" title="Interpreted Location"
+                              description="Use the mapping tool before attempting to enter values manually">
+    <button type="button" class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
+</g:renderFieldCategorySection>
 
-    <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}"
-                                  recordValues="${recordValues}" title="Miscellaneous"
-                                  description="This section is for a range of fields. Many labels will not contain information for any or all of these fields."/>
+<g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}"
+                              recordValues="${recordValues}" title="Miscellaneous"
+                              description="This section is for a range of fields. Many labels will not contain information for any or all of these fields."/>
 
-    <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}"
-                                  recordValues="${recordValues}" title="Identification"
-                                  description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
+<g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}"
+                              recordValues="${recordValues}" title="Identification"
+                              description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
 

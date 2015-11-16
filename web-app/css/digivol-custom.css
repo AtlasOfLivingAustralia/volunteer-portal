@@ -533,15 +533,6 @@ table .btn-default:hover {
     font-size: 1.5em;
 }
 
-/*span.help-container {*/
-    /*background: url(../images/help.png) right 0 no-repeat;*/
-    /*padding: 5px 20px 0 0;*/
-/*}*/
-
-/*span.help-container:hover {*/
-    /*background-position:right -81px;*/
-/*}*/
-
 a.fieldHelp {
     text-decoration: none;
     display: inline-block;
@@ -554,4 +545,13 @@ a.fieldHelp {
 
 .form-group.required .control-label:after {
     content:"*";
+}
+
+/* Fix small and xs button groups */
+.btn-group.btn-group-sm .btn {
+    padding: 5px 10px;
+}
+
+.btn-group.btn-group-xs .btn {
+    padding: 1px 5px;
 }

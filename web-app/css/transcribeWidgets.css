@@ -144,8 +144,8 @@
 }
 
 .transcribeSection .row {
-    margin-left: -8px;
-    margin-right: -8px;
+    margin-left: -6px;
+    margin-right: -6px;
 }
 
 .transcribeSection .row .col-md-1,
@@ -160,6 +160,6 @@
 .transcribeSection .row .col-md-10,
 .transcribeSection .row .col-md-11,
 .transcribeSection .row .col-md-12 {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 6px;
+    padding-right: 6px;
 }

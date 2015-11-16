@@ -31,7 +31,11 @@
     /*border-radius: 2px;*/
 }
 
-#ct-animals-list {
+#ct-landing, #ct-animals-summary {
+    height: 560px;
+}
+
+#ct-animals-list, #ct-unlisted {
     /*margin: 0 -9px -9px -9px;*/
     overflow-y: auto;
     height: 500px;
@@ -449,8 +453,10 @@
     transition: all 0.5s ease-in-out;
 }
 .faux-img-cell img {
-    width: 100%;
+    width: auto;
     height: auto;
+    max-height: 100px;
+    max-width: 150px;
 }
 .faux-img-cell.default {
     border: solid #df4a21 5px;

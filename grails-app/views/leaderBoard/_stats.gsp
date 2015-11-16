@@ -1,25 +1,25 @@
 <r:require modules="digivol, digivol-stats, livestamp"/>
 <g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
-<section id="digivol-stats">
+<section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
         <h2 class="heading">${instName} Stats<i class="fa fa-users fa-sm pull-right"></i></h2>
 
         <h3>
             <g:link controller="user" action="list">
-                <!-- ko if: loading --><cl:spinner/><!-- /ko -->
-                <!-- ko ifNot: loading, text: transcriberCount --><!-- /ko -->
+                <span data-ng-if="loading"><cl:spinner/></span>
+                <span data-ng-if="!loading">{{transcriberCount}}</span>
                 Volunteers
             </g:link>
         </h3>
 
         <p>
-            <!-- ko if: loading --><cl:spinner/><!-- /ko -->
-            <!-- ko ifNot: loading, text: completedTasks --><!-- /ko -->
+            <span data-ng-if="loading"><cl:spinner/></span>
+            <span data-ng-if="!loading">{{completedTasks}}</span>
             tasks of
-            <!-- ko if: loading --><cl:spinner/><!-- /ko -->
-            <!-- ko ifNot: loading, text: totalTasks --><!-- /ko -->
+            <span data-ng-if="loading"><cl:spinner/></span>
+            <span data-ng-if="!loading">{{totalTasks}}</span>
             completed
         </p>
 
@@ -40,17 +40,17 @@
             <tbody>
             <tr>
                 <th scope="row">
-                    <a id="day-tripper-image" data-bind="attr: { href: daily.userProfileUrl }">
-                        <img data-bind="attr: { src: daily.src }" class="avatar img-circle">
+                    <a id="day-tripper-image" data-ng-href="{{userProfileUrl(daily)}}">
+                        <img data-ng-src="{{avatarUrl(daily)}}" class="avatar img-circle">
                     </a>
                 </th>
                 <th>
-                    <!-- ko if: loading --><cl:spinner/><!-- /ko -->
-                    <!-- ko ifNot: loading -->
-                    <a id="day-tripper-name" data-bind="attr: { href: daily.userProfileUrl }, text: daily.name"></a>
-                    <!-- /ko -->
+                    <span data-ng-if="loading"><cl:spinner/></span>
+                    <span data-ng-if="!loading">
+                    <a id="day-tripper-name" data-ng-href="{{userProfileUrl(daily)}}">{{daily.name}}</a>
+                    </span>
                 </th>
-                <td id="day-tripper-amount" class="transcribed-amount" data-bind="text: daily.score"></td>
+                <td id="day-tripper-amount" class="transcribed-amount">{{daily.score}}</td>
             </tr>
             </tbody>
             <thead>
@@ -63,17 +63,17 @@
             <tbody>
             <tr>
                 <th scope="row">
-                    <a id="weekly-wonder-image" data-bind="attr: { href: weekly.userProfileUrl }">
-                        <img data-bind="attr: { src: weekly.src }" class="avatar img-circle">
+                    <a id="weekly-wonder-image" data-ng-href="{{userProfileUrl(weekly)}}">
+                        <img data-ng-src="{{avatarUrl(weekly)}}" class="avatar img-circle">
                     </a>
                 </th>
                 <th>
-                    <!-- ko if: loading --><cl:spinner/><!-- /ko -->
-                    <!-- ko ifNot: loading -->
-                    <a id="weekly-wonder-name" data-bind="attr: { href: weekly.userProfileUrl }, text: weekly.name"></a>
-                    <!-- /ko -->
+                    <span data-ng-if="loading"><cl:spinner/></span>
+                    <span data-ng-if="!loading">
+                    <a id="weekly-wonder-name" data-ng-href="{{userProfileUrl(weekly)}}">{{weekly.name}}</a>
+                    </span>
                 </th>
-                <td id="weekly-wonder-amount" class="transcribed-amount" data-bind="text: weekly.score"></td>
+                <td id="weekly-wonder-amount" class="transcribed-amount">{{weekly.score}}</td>
             </tr>
             </tbody>
             <thead>
@@ -86,18 +86,18 @@
             <tbody>
             <tr>
                 <th scope="row">
-                    <a id="monthly-maestro-image" data-bind="attr: { href: monthly.userProfileUrl }">
-                        <img data-bind="attr: { src: monthly.src }" class="avatar img-circle">
+                    <a id="monthly-maestro-image" data-ng-href="{{userProfileUrl(monthly)}}">
+                        <img data-ng-src="{{avatarUrl(monthly)}}" class="avatar img-circle">
                     </a>
                 </th>
                 <th>
-                    <!-- ko if: loading --><cl:spinner/><!-- /ko -->
-                    <!-- ko ifNot: loading -->
+                    <span data-ng-if="loading"><cl:spinner/></span>
+                    <span data-ng-if="!loading">
                     <a id="monthly-maestro-name"
-                       data-bind="attr: { href: monthly.userProfileUrl }, text: monthly.name"></a>
-                    <!-- /ko -->
+                       data-ng-href="{{userProfileUrl(monthly)}}">{{monthly.name}}</a>
+                    </span>
                 </th>
-                <td id="monthly-maestro-amount" class="transcribed-amount" data-bind="text: monthly.score"></td>
+                <td id="monthly-maestro-amount" class="transcribed-amount">{{monthly.score}}</td>
             </tr>
             </tbody>
             <thead>
@@ -110,20 +110,18 @@
             <tbody>
             <tr>
                 <th scope="row">
-                    <a id="digivol-legend-image" data-bind="attr: { href: alltime.userProfileUrl }">
-                        <img data-bind="attr: { src: alltime.src }" class="avatar img-circle">
+                    <a id="digivol-legend-image" data-ng-href="{{userProfileUrl(alltime)}}">
+                        <img data-ng-src="{{avatarUrl(alltime)}}" class="avatar img-circle">
                     </a>
                 </th>
                 <th>
-                    <!-- ko if: loading -->
-                    <cl:spinner/>
-                    <!-- /ko -->
-                    <!-- ko ifNot: loading -->
+                    <span data-ng-if="loading"><cl:spinner/></span>
+                    <span data-ng-if="!loading">
                     <a id="digivol-legend-name"
-                       data-bind="attr: { href: alltime.userProfileUrl }, text: alltime.name"></a>
-                    <!-- /ko -->
+                       data-ng-href="{{userProfileUrl(alltime)}}">{{alltime.name}}</a>
+                    </span>
                 </th>
-                <td id="digivol-legend-amount" class="transcribed-amount" data-bind="text: alltime.score"></td>
+                <td id="digivol-legend-amount" class="transcribed-amount">{{alltime.score}}</td>
             </tr>
             </tbody>
         </table>
@@ -131,41 +129,63 @@
 
 
     <h2 class="heading">
-        Latest Contributions<!-- ko if: loading --> <cl:spinner/><!-- /ko -->
+        Latest Contributions<span data-ng-if="loading"> <cl:spinner/></span>
     </h2>
-    <ul class="media-list" data-bind="template: { name: 'contribution-template', foreach: contributors }">
+    <ul class="media-list" data-ng-repeat="contributor in contributors">
+        <li class="media">
+            <div class="media-left">
+                <a data-ng-href="{{userProfileUrl(contributor)}}">
+                    <img data-ng-src="{{avatarUrl(contributor)}}" class="avatar img-circle">
+                </a>
+            </div>
+
+            <div class="media-body">
+                <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
+                <h4 class="media-heading"><a>{{contributor.displayName}}</a></h4>
+
+                <p>Transcribed <span>{{contributor.transcribedItems}}</span> items from the <a
+                        data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a></p>
+
+                <div class="transcribed-thumbs">
+                    <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}">
+                    <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
+                </div>
+                <a class="btn btn-default btn-xs join" role="button"
+                   data-ng-href="{{projectUrl(contributor)}}">Join expedition »</a>
+            </div>
+        </li>
     </ul>
     <g:link controller="user" action="list">View all contributors »</g:link>
 </section>
-<script type="text/html" id="contribution-template">
-<li class="media">
-    <div class="media-left">
-        <a data-bind="attr: { href: userProfileUrl }">
-            <img data-bind="attr: { src: avatarUrl }" class="avatar img-circle">
-        </a>
-    </div>
+%{--<script type="text/html" id="contribution-template">--}%
+%{--<li class="media">--}%
+    %{--<div class="media-left">--}%
+        %{--<a data-bind="attr: { href: userProfileUrl }">--}%
+            %{--<img data-bind="attr: { src: avatarUrl }" class="avatar img-circle">--}%
+        %{--</a>--}%
+    %{--</div>--}%
 
-    <div class="media-body">
-        <span class="time" data-bind='attr: { "data-livestamp": timestamp }'></span>
-        <h4 class="media-heading"><a data-bind="text: displayName"></a></h4>
+    %{--<div class="media-body">--}%
+        %{--<span class="time" data-bind='attr: { "data-livestamp": timestamp }'></span>--}%
+        %{--<h4 class="media-heading"><a data-bind="text: displayName"></a></h4>--}%
 
-        <p>Transcribed <span data-bind="text: transcribedItems"></span> items from the <a
-                data-bind="attr: { href: projectUrl }, text: projectName"></a></p>
+        %{--<p>Transcribed <span data-bind="text: transcribedItems"></span> items from the <a--}%
+                %{--data-bind="attr: { href: projectUrl }, text: projectName"></a></p>--}%
 
-        <div class="transcribed-thumbs">
-            <!-- ko foreach: transcribedThumbs -->
-            <img data-bind="attr: { src: thumbnailUrl }">
-            <!-- /ko -->
-            <!-- ko if: additionalTranscribedThumbs -->
-            <a href="#"><span>+<!-- ko text: additionalTranscribedThumbs --><!-- /ko --></span>More</a>
-            <!-- /ko -->
-        </div>
-        <a class="btn btn-default btn-xs join" role="button"
-           data-bind="attr: { href: projectUrl }">Join expedition »</a>
-    </div>
+        %{--<div class="transcribed-thumbs">--}%
+            %{--<!-- ko foreach: transcribedThumbs -->--}%
+            %{--<img data-bind="attr: { src: thumbnailUrl }">--}%
+            %{--<!-- /ko -->--}%
+            %{--<!-- ko if: additionalTranscribedThumbs -->--}%
+            %{--<a href="#"><span>+<!-- ko text: additionalTranscribedThumbs --><!-- /ko --></span>More</a>--}%
+            %{--<!-- /ko -->--}%
+        %{--</div>--}%
+        %{--<a class="btn btn-default btn-xs join" role="button"--}%
+           %{--data-bind="attr: { href: projectUrl }">Join expedition »</a>--}%
+    %{--</div>--}%
 
-</li>
-</script>
+%{--</li>--}%
+%{--</script>--}%
 <r:script>
 digivolStats({
 statsUrl: "${createLink(controller: 'index', action: 'stats')}",

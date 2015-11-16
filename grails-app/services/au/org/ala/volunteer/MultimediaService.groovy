@@ -26,7 +26,7 @@ class MultimediaService {
     }
 
     public String getImageUrl(Multimedia media) {
-        getImageUrl(media.filePath)
+        media.filePath ? getImageUrl(media.filePath) : ''
     }
 
     public String getImageUrl(String filePath) {
@@ -34,7 +34,9 @@ class MultimediaService {
     }
 
     public String getImageThumbnailUrl(Multimedia media) {
-        if (new File(filePathFor(media), filenameFromFilePath(media.filePathToThumbnail)).exists()) {
+        String filePath = filePathFor(media) ?: ''
+        String filename = filenameFromFilePath(media.filePathToThumbnail) ?: ''
+        if (media && new File(filePath, filename).exists()) {
             media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
         } else {
             grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg')

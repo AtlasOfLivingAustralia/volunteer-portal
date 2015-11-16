@@ -569,8 +569,8 @@ class VolunteerTagLib {
 
         if (task) {
             def url = "", fullUrl = ''
-            def mm = task.multimedia?.first()
-            if (mm) {
+            final Multimedia mm = task.multimedia?.first()
+            if (mm != null) {
                 url = multimediaService.getImageThumbnailUrl(mm)
                 fullUrl = multimediaService.getImageUrl(mm)
             }

@@ -76,7 +76,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     });
 
     // switch back to regular camera trap transcribing when clicking any button:
-    var $ctToolbarBtns = $('#ct-animals-btn-group, #ct-sort-btn-group').find('button');
+    var $ctToolbarBtns = $('#ct-animals-btn-group, #ct-sort-btn-group').find('.btn');
 
     function switchCtSubPage(isOther) {
       var to = isOther ? '#ct-unlisted' : '#ct-animals-list';
@@ -376,7 +376,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     // SORT BUTTONS
     var $ctSortBtns = $('#ct-sort-btn-group');
-    $ctSortBtns.on('click', 'button', function (e) {
+    $ctSortBtns.on('change', 'input[type="radio"]', function (e) {
       var $this = $(this);
       var alreadyActive = $this.hasClass('active');
       var sortType = $this.data('sort-fn');
@@ -420,7 +420,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     });
 
     // Store last filter used
-    $ctSortBtns.on('click', 'button', function(e) {
+    $ctSortBtns.on('change', 'input[type="radio"]', function(e) {
       var id = $(e.target).attr('id');
       amplify.store('bvp_ct_last_filter', id);
     });
@@ -449,7 +449,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       filterAnimals();
     });
 
-    $('#ct-animals-btn-group').on('click', 'button', function(e) {
+    $('#ct-animals-btn-group').on('change', 'input[type="radio"]', function(e) {
       var $this = $(this);
       var selectedTags = keyToArray($this.data('filter-tag'));
       filterTags = {}; // remove for checkbox style filter buttons
