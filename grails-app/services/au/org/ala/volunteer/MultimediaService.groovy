@@ -22,7 +22,7 @@ class MultimediaService {
     }
 
     public String filePathFor(Multimedia media) {
-        grailsApplication.config.images.home + File.pathSeparator + media.task?.projectId + File.pathSeparator + media.task?.id + File.pathSeparator + media.id
+        grailsApplication.config.images.home + File.separator + media.task?.projectId + File.separator + media.task?.id + File.separator + media.id
     }
 
     public String getImageUrl(Multimedia media) {
@@ -41,7 +41,7 @@ class MultimediaService {
         String filePath = filePathFor(media) ?: ''
         String filename = filenameFromFilePath(media.filePathToThumbnail) ?: ''
         File file = new File(filePath, filename)
-        log.info("getImageThumbnailUrl media: $media, filePath: $filePath, filename: $filename, file: $file, exists: ${file.exists()}")
+        log.debug("getImageThumbnailUrl media: $media, filePath: $filePath, filename: $filename, file: $file, exists: ${file.exists()}")
         if (file.exists()) {
             return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
         } else {
