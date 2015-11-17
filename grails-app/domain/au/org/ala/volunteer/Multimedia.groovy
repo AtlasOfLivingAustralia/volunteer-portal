@@ -1,5 +1,8 @@
 package au.org.ala.volunteer
 
+import groovy.transform.ToString
+
+@ToString
 class Multimedia implements Serializable {
   static belongsTo = [task:Task]
   //Task task
