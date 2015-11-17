@@ -252,6 +252,7 @@ environments {
         security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer-portal'
         ala.image.service.url = "http://images.ala.org.au/"
+        images.urlPrefix = "/data/volunteer-portal/"
     }
     test {
         grails.serverURL = "http://volunteer-dev.ala.org.au"

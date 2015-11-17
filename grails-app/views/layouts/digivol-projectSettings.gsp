@@ -31,6 +31,9 @@
                                 href="${createLink(controller: 'project', action: 'editBannerImageSettings', id: projectInstance.id)}"
                                 title="Expedition image"/>
                         <cl:settingsMenuItem
+                                href="${createLink(controller: 'project', action: 'editBackgroundImageSettings', id: projectInstance.id)}"
+                                title="Expedition background image"/>
+                        <cl:settingsMenuItem
                                 href="${createLink(controller: 'project', action: 'editPicklistSettings', id: projectInstance.id)}"
                                 title="Picklists"/>
                         <cl:settingsMenuItem

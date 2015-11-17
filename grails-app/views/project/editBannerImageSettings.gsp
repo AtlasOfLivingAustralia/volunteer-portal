@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <r:require modules="bootstrap-file-input, jquery.resizeAndCrop"/>
+    <r:require modules="bootstrap-file-input"/>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
 
 <div class="text-center">
     <div class="thumbnail display-inline-block">
-        <img src="" realsrc="${projectInstance?.featuredImage}" class="img-responsive cropme" style="width: 600px; height: 450px;"/>
+        <img src="${projectInstance?.featuredImage}" class="img-responsive" style="width: 600px;"/>
         <div class="caption">
             &copy; ${projectInstance.featuredImageCopyright}
         </div>
@@ -57,9 +57,6 @@
 </g:form>
 <script type='text/javascript'>
     $(function () {
-        $('img.cropme').resizeAndCrop({
-            forceResize: true
-        });
 
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
