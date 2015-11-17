@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title><g:message code="leaderBoardAdmin.label" default="Leaderboard Configuration"/></title>
+    <title><g:message code="leaderBoardAdmin.label" default="Honour Board Configuration"/></title>
     <r:require modules="labelAutocomplete"/>
     <r:style>
         #ajax-spinner.disabled {
@@ -19,7 +19,7 @@
 
 <body class="admin">
 <div class="container">
-    <cl:headerContent title="${message(code: 'default.leaderboardadmin.label', default: 'Leaderboard Configuration')}" selectedNavItem="bvpadmin">
+    <cl:headerContent title="${message(code: 'default.leaderboardadmin.label', default: 'Honour Board Configuration')}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
@@ -33,7 +33,7 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Ineligible leaderboard users <r:img dir="images" file="spinner.gif" height="16px" width="16px"
+                            <h4>Ineligible Honour Board users <r:img dir="images" file="spinner.gif" height="16px" width="16px"
                                                             id="ajax-spinner" class="disabled"/></h4>
                             <hr/>
                         </div>

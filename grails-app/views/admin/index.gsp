@@ -63,9 +63,9 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'leaderBoardAdmin', action: 'index')}">Configure leaderboard</a>
+                                   href="${createLink(controller: 'leaderBoardAdmin', action: 'index')}">Configure Honour Board</a>
                             </td>
-                            <td>Configure the appearance of the leader board</td>
+                            <td>Configure the appearance of the Honour Board</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"

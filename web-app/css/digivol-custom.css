@@ -457,6 +457,10 @@ table .btn-default:hover {
 #digivol-stats .avatar {
     height: 40px;
 }
+/** override main .volunteer-stats a color: black because .volunteer-stats bg color is black */
+.volunteer-stats a {
+    color: white;
+}
 
 /*** End - LeaderBoard ***/
 

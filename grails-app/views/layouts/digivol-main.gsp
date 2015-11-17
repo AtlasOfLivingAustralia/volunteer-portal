@@ -93,11 +93,6 @@
 
             <!-- Logged In Ends -->
 
-
-            <!--
-                  <li><a href="#contact">Sign In</a></li>
-                  <li><a href="#contact">Register</a></li>
-                  -->
             </ul>
         </div>
     </div>

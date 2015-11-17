@@ -2,9 +2,10 @@
 <g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
 <section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl">
+    <g:if test="${!disableStats}">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
-        <h2 class="heading">${instName} Stats<i class="fa fa-users fa-sm pull-right"></i></h2>
+        <h2 class="heading">${instName} Stats<g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></h2>
 
         <h3>
             <g:link controller="user" action="list">
@@ -24,10 +25,11 @@
         </p>
 
     </div><!-- Volunteer Stats Ends Here -->
+    </g:if>
 
     <div class="panel panel-default leaderboard">
         <!-- Default panel contents -->
-        <h2 class="heading">Leaderboard <i class="fa fa-trophy fa-sm pull-right"></i></h2>
+        <h2 class="heading">Honour Board <g:link controller="leaderBoard" action="explain" class="pull-right"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
         <!-- Table -->
         <table class="table">
             <thead>
@@ -125,7 +127,7 @@
             </tr>
             </tbody>
         </table>
-    </div><!-- Leaderboard Ends Here -->
+    </div><!-- Honour Board Ends Here -->
 
 
     <h2 class="heading">
@@ -191,6 +193,7 @@ digivolStats({
 statsUrl: "${createLink(controller: 'index', action: 'stats')}",
 projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
 userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
-institutionId: ${institutionId ?: -1}
+institutionId: ${institutionId ?: -1},
+disableStats: ${disableStats ? 'true' : 'false' }
     });
 </r:script>
