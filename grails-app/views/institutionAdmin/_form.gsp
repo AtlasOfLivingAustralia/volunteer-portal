@@ -1,5 +1,6 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
 <tinyMce:resources/>
+<r:require module="bootstrap-colorpicker" />
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'name', 'has-error')}">
     <label class="control-label col-md-3" for="name">
         <g:message code="institution.name.label" default="Name"/>
@@ -90,7 +91,10 @@
         <g:message code="institution.themeColour.label" default="Theme colour code (hex)"/>
     </label>
     <div class="col-md-6">
-        <g:textField name="themeColour" class="form-control" value="${institutionInstance?.themeColour}"/>
+        <div class="input-group colpick" data-format="hex">
+            <g:textField name="themeColour" class="form-control" value="${institutionInstance?.themeColour}"/>
+            <span class="input-group-addon"><i></i></span>
+        </div>
     </div>
 </div>
 
@@ -113,5 +117,6 @@
             theme_advanced_toolbar_location: "top",
             convert_urls: false
         });
+        $('.colpick').colorpicker();
     });
 </r:script>

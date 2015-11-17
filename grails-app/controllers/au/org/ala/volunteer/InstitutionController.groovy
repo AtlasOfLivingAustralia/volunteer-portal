@@ -32,15 +32,17 @@ class InstitutionController {
 
         def projectSummaries = projectService.makeSummaryListFromProjectList(projects, params, filter)
         def transcriberCount = institutionService.getTranscriberCount(institution)
-        def projectTypeCounts = institutionService.getProjectTypeCounts(institution, userService.isInstitutionAdmin(institution))
+
         def taskCounts = institutionService.getTaskCounts(institution)
+        def completedProjects = institutionService.getProjectCompletedCount(institution)
+        def underwayProjects = institutionService.getProjectUnderwayCount(institution)
 
         def newsItems = NewsItem.findAllByInstitution(institution, [sort:'created', order: 'desc'])
         def newsItem = newsItems?.size() > 0 ? newsItems.get(0) : null
 
         [
             institutionInstance: institution, projects: projectSummaries.projectRenderList, filteredProjectsCount: projectSummaries.matchingProjectCount, totalProjectCount: projectSummaries.totalProjectCount,
-            transcriberCount: transcriberCount, projectTypes: projectTypeCounts, taskCounts: taskCounts,
+            transcriberCount: transcriberCount, completedProjects: completedProjects, underwayProjects: underwayProjects, taskCounts: taskCounts,
             statusFilterMode: statusFilterMode, activeFilterMode: activeFilterMode, newsItem: newsItem, newsItems: newsItems
         ]
     }
@@ -49,9 +51,17 @@ class InstitutionController {
         List<Institution> institutions
         def totalCount
 
+        if (!params.sort) {
+            params.sort = 'name'
+        }
+        if (!params.order) {
+            params.order = 'asc'
+        }
+
         if (params.q) {
-            institutions = Institution.findAllByNameIlikeOrAcronymIlike("%" + params.q + "%", "%" + params.q + "%")
-            totalCount = Institution.countByNameIlikeOrAcronymIlike("%" + params.q + "%", "%" + params.q + "%")
+            def query = "%${params.q}%"
+            institutions = Institution.findAllByNameIlikeOrAcronymIlike(query, query, params)
+            totalCount = Institution.countByNameIlikeOrAcronymIlike(query, query)
         } else {
             institutions = Institution.list(params)
             totalCount = Institution.count()

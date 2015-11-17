@@ -198,6 +198,12 @@ modules = {
         resource url: 'js/bootstrap.file-input/bootstrap.file-input.js'
     }
 
+    'bootstrap-colorpicker' {
+        dependsOn 'jquery', 'bootstrap'
+        resource url: 'js/bootstrap-colorpicker/2.3/js/bootstrap-colorpicker.min.js'
+        resource url: 'js/bootstrap-colorpicker/2.3/css/bootstrap-colorpicker.min.css'
+    }
+
     "moment" {
         resource url: 'js/moment/2.10.6/moment.min.js'
     }

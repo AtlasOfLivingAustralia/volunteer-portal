@@ -669,32 +669,6 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr institution
-     */
-    def ifInstitutionHasBanner = { attrs, body ->
-        def institutionInstance = attrs.institution as Institution
-        if (!institutionInstance) {
-            def id = (attrs.institution ?: attrs.id) as Long
-            institutionInstance = Institution.get(id)
-        }
-        if (institutionInstance) {
-            if (institutionService.hasBannerImage(institutionInstance)) {
-                out << body()
-            }
-        }
-    }
-
-    /**
-     * @attr institution
-     */
-    def ifInstitutionHasImage = { attrs, body ->
-        def institutionInstance = attrs.institution as Institution
-        if (institutionService.hasImage(institutionInstance)) {
-            out << body()
-        }
-    }
-
-    /**
      *
      */
     def achievementBadgeBase = { attrs, body ->

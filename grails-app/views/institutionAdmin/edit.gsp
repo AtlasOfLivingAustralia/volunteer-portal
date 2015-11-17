@@ -11,14 +11,6 @@
 </head>
 
 <body>
-%{--<cl:headerContent title="${message(code:'default.edit.label', args:[entityName])} - ${institutionInstance?.acronym}">--}%
-%{--<%--}%
-%{--pageScope.crumbs = [--}%
-%{--[link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')],--}%
-%{--[link:createLink(controller:'institutionAdmin'), label:message(code:'default.institutions.label', default:'Manage Institutions')]--}%
-%{--]--}%
-%{--%>--}%
-%{--</cl:headerContent>--}%
 
 <content tag="pageTitle">General Settings</content>
 

@@ -10,6 +10,7 @@ class InstitutionService {
     def grailsApplication
     def collectoryClient
     def grailsLinkGenerator
+    def sessionFactory
 
     private boolean uploadtoLocalPathFromUrl(String url, String localPath) {
         if (url && localPath) {
@@ -209,6 +210,53 @@ class InstitutionService {
         }
     }
 
+    def getProjectUnderwayCount(Institution institution) {
+        //select count(distinct p.id) from project p join task t on p.id = t.project_id where t.fully_transcribed_by is null and p.inactive = false and p.institution_id = 5590558;
+        def c = Project.createCriteria()
+        c.get {
+            eq('institution', institution)
+            or {
+                eq('inactive', false)
+                isNull('inactive')
+            }
+            tasks {
+                isNull('fullyTranscribedBy')
+            }
+            projections {
+                countDistinct('id')
+            }
+        }
+    }
+
+    def getProjectCompletedCount(Institution institution) {
+        //select count(p.id) from project p where (select count(t.id) from task t where t.project_id = p.id and t.fully_transcribed_by is not null) = (select count(t.id) from task t where t.project_id = p.id) and p.inactive = false and p.institution_id = 5590558;
+
+        // Get the current Hiberante session.
+        final session = sessionFactory.currentSession
+        // TODO Do this with Detached Criteria
+        // see: https://jira.grails.org/browse/GRAILS-9223
+        final String query = '''
+SELECT COUNT(p.id)
+FROM project p
+WHERE
+  p.institution_id = :instId
+  AND
+  EXISTS (SELECT * FROM task t WHERE t.project_id = p.id)
+  AND
+  NOT EXISTS (SELECT * FROM task t WHERE t.project_id = p.id AND t.fully_transcribed_by IS NULL)
+'''
+
+        // Create native SQL query.
+        final sqlQuery = session.createSQLQuery(query)
+
+        final results = sqlQuery.with {
+            setLong('instId', institution.id)
+            uniqueResult()
+        }
+
+        return results
+    }
+
     Map getTranscriberCounts(List<Institution> institutions, boolean includeDeactivated = false) {
         Map counts = [:]
 
@@ -224,35 +272,6 @@ class InstitutionService {
 
     Long getTranscriberCount(Institution institution) {
         Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.institution = :institution", [institution: institution]).get(0)
-    }
-
-    Map<String, Map<String, Long>> getProjectTypeCounts(Institution institution, boolean includeDeactivated = false) {
-        final tasks = Task.executeQuery("select new map(project.id as projId, project.projectType.label as label, fullyTranscribedBy as ft, fullyValidatedBy as fv) from Task where project.institution = :institution and ((project.inactive is null) or (project.inactive is not null and (project.inactive = :incDe or :incDe = true)))", [institution: institution, incDe: includeDeactivated])
-
-        // Do this to ensure projects with 0 tasks still get counted
-        final projectCountByProjectType = Project.executeQuery("select projectType.label, count(id) from Project where institution = :institution and ((inactive is null) or (inactive is not null and (inactive = :incDe or :incDe = true))) group by projectType.label", [institution: institution, incDe: includeDeactivated])
-
-        final accumulator = projectCountByProjectType.collectEntries {
-            final result = [:]
-            final key = it.length > 1 ? it[0] ?: 'None' : 'None'
-            final total = it.length > 1 ? it[1] : it[0]
-            result.put(key, [complete: 0, started: 0, total: total])
-            result
-        }
-
-        final groups = tasks.groupBy([{ it.label }, { it.projId }])
-
-        final projectTypeCounts = groups.inject(accumulator) { acc, val ->
-            final key = val.key ?: 'None'
-            final result = acc.get(key)
-            val.value.each { projTaskList ->
-                if (projTaskList.value.every { it.fv }) result.complete++
-                else if (projTaskList.value.any { it.fv || it.ft }) result.started++
-            }
-            acc
-        }
-
-        return projectTypeCounts
     }
 
     Map countTasksForInstitutions(List<Institution> institutions, boolean includeDeactivated = false) {

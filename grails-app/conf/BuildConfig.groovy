@@ -53,6 +53,7 @@ grails.project.dependency.resolution = {
         build ":release:3.0.1"
         compile ":cache:1.1.8"
         runtime ":cache-ehcache:1.0.4"
+        compile ":cache-headers:1.1.7"
         build ':tomcat:7.0.55.3'
         runtime ':hibernate4:4.3.10'
 
@@ -63,7 +64,6 @@ grails.project.dependency.resolution = {
         if (Environment.current == Environment.PRODUCTION) {
             runtime ":zipped-resources:1.0.1"
             runtime ":cached-resources:1.1"
-            compile ":cache-headers:1.1.7"
             runtime ":yui-minify-resources:0.1.5"
         }
 

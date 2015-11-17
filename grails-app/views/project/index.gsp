@@ -191,14 +191,6 @@
         font-size: 0.9em;
     }
 
-    <g:if test="${projectInstance.institution}">
-        <cl:ifInstitutionHasBanner institution="${projectInstance.institution}">
-            #page-header {
-                background-image: url(<cl:institutionBannerUrl id="${projectInstance.institution.id}" />);
-            }
-        </cl:ifInstitutionHasBanner>
-    </g:if>
-
     <g:if test="${projectInstance.backgroundImage}">
         .a-feature.expedition {
             background: url(${projectInstance.backgroundImage}) no-repeat center center fixed !important;
