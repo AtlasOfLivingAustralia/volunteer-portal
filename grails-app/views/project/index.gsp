@@ -199,6 +199,28 @@
         </cl:ifInstitutionHasBanner>
     </g:if>
 
+    <g:if test="${projectInstance.backgroundImage}">
+        .a-feature.expedition {
+            background: url(${projectInstance.backgroundImage}) no-repeat center center fixed !important;
+            color:white !important;
+        }
+
+        .a-feature.expedition h1, .a-feature.expedition p, .expedition-tab .transcription-back,
+        .expedition-progress .progress-legend, .a-feature.expedition .progress-summary h3 {
+            color: white !important;
+        }
+
+        .a-feature.expedition .cta-primary a, .a-feature.expedition a.forum-link {
+            color: #ddd !important;
+        }
+
+        .a-feature.expedition .cta-primary a:hover, .a-feature.expedition a.forum-link:hover {
+            color: white !important;
+            border-color: white !important;
+        }
+
+    </g:if>
+
     </style>
 </head>
 
@@ -258,6 +280,12 @@
                 </div>
             </div>
         </div>
+
+        %{--<div class="row">--}%
+            %{--<div class="col-sm-12 image-origin float-right">--}%
+                %{--<p>Image by [Name] from Flickr</p>--}%
+            %{--</div>--}%
+        %{--</div>--}%
     </div>
 
     <div class="progress-summary">

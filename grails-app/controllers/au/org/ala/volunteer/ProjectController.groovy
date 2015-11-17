@@ -441,6 +441,16 @@ class ProjectController {
         }
     }
 
+    def editBackgroundImageSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            return [projectInstance: projectInstance ]
+        }
+    }
+
     def editTaskSettings() {
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
@@ -635,6 +645,45 @@ class ProjectController {
         projectInstance.featuredImageCopyright = params.featuredImageCopyright
 
         redirect(action: "editBannerImageSettings", id: params.id)
+    }
+
+    def uploadBackgroundImage = {
+        def projectInstance = Project.get(params.id)
+
+        if(request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('backgroundImage')
+
+            if (f != null && f.size > 0) {
+
+                def allowedMimeTypes = ['image/jpeg', 'image/png']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.message = "Image must be one of: ${allowedMimeTypes}"
+                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    return;
+                }
+
+                if (f.size >= 512 * 1024) {
+                    flash.message = "Image size cannot be bigger than 512 KB (half a MB)"
+                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    return;
+                }
+
+                try {
+                    String fileExtension = f.getContentType() == 'image/png' ? 'png' : 'jpg'
+
+                    def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-background-image.${fileExtension}"
+                    def file = new File(filePath);
+                    file.getParentFile().mkdirs();
+                    f.transferTo(file);
+                } catch (Exception ex) {
+                    flash.message = "Failed to upload image: " + ex.message;
+                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    return;
+                }
+            }
+        }
+
+        redirect(action: "editBackgroundImageSettings", id: params.id)
     }
 
     def resizeExpeditionImage() {

@@ -108,6 +108,15 @@ h2.heading > div.subheading {
     padding-top: 0;
 }
 
+.progress-summary {
+    margin-top: 3em !important;
+}
+
+.image-origin {
+    padding-top: 3em !important;
+    padding-bottom: 0 !important;
+}
+
 
 /*.institution .caption h4 {*/
     /*width: 100%;*/

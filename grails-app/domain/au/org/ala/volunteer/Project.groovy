@@ -29,7 +29,7 @@ class Project implements Serializable {
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label]
-    static transients = ['featuredImage', 'grailsApplication', 'grailsLinkGenerator']
+    static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {
         version false
@@ -85,7 +85,25 @@ class Project implements Serializable {
         } else {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-image.jpg"
         }
+    }
 
+    /**
+     * Check to see if there is a feature image for this expedition by looking in its project directory.
+     * @return background image url or null if non existent
+     */
+    String getBackgroundImage() {
+
+        def localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
+        def localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
+        def fileJpg = new File(localPathJpg)
+        def filePng = new File(localPathPng)
+        if (fileJpg.exists()) {
+            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.jpg"
+        } else if (filePng.exists()) {
+            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.png"
+        } else {
+            return null;
+        }
     }
 
     public void setFeaturedImage(String image) {
