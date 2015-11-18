@@ -32,7 +32,7 @@
 <g:if test="${!disablePagination}">
     <div class="pagination">
         <g:paginate total="${filteredProjectsCount}" prev="" next=""
-                    params="${[q: params.q, mode: 'thumbs'] + (extraParams ?: [:])}"/>
+                    id="${params.id}" params="${[q: params.q] + (extraParams ?: [:])}"/>
     </div>
 </g:if>
 </div>

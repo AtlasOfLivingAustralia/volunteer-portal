@@ -140,8 +140,8 @@
                     <div class="col-sm-6">
                         <div class="card-filter">
                             <div class="btn-group pull-right" role="group" aria-label="...">
-                                <a href="?mode=thumbs" class="btn btn-default btn-xs ${params.mode == 'thumbs' ? 'active' : ''}"><i class="glyphicon glyphicon-th-large "></i></a>
-                                <a href="?mode=}" class="btn btn-default btn-xs ${params.mode != 'thumbs' ? 'active' : ''}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                <a href="?mode=" class="btn btn-default btn-xs ${params.mode != 'list' ? 'active' : ''}"><i class="glyphicon glyphicon-th-large "></i></a>
+                                <a href="?mode=list" class="btn btn-default btn-xs ${params.mode == 'list' ? 'active' : ''}"><i class="glyphicon glyphicon-th-list"></i></a>
                             </div>
 
                             <div class="custom-search-input body">
@@ -184,11 +184,11 @@
                 </div>
 
                 <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
-                <g:if test="${params.mode == 'thumbs'}">
-                    <g:render template="/project/projectListThumbnailView" model="${model}"/>
+                <g:if test="${params.mode == 'list'}">
+                    <g:render template="/project/ProjectListDetailsView" model="${model}" />
                 </g:if>
                 <g:else>
-                    <g:render template="/project/ProjectListDetailsView" model="${model}" />
+                    <g:render template="/project/projectListThumbnailView" model="${model}"/>
                 </g:else>
 
             </div>

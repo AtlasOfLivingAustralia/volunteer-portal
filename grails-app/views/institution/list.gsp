@@ -99,11 +99,6 @@
 
                     <div class="col-sm-6">
                         <div class="card-filter">
-                            %{--<div class="btn-group pull-right" role="group" aria-label="...">--}%
-                                %{--<a href="${createLink(action:'list', params:[mode:'thumbs'])}" class="btn btn-default btn-xs ${params.mode == 'thumbs' ? 'active' : ''}"><i class="glyphicon glyphicon-th-large "></i></a>--}%
-                                %{--<a href="${createLink(action:'list')}" class="btn btn-default btn-xs ${params.mode != 'thumbs' ? 'active' : ''}"><i class="glyphicon glyphicon-th-list"></i></a>--}%
-                            %{--</div>--}%
-
                             <div class="custom-search-input body">
                                 <div class="input-group">
                                     <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>

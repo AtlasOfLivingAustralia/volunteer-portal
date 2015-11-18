@@ -11,11 +11,8 @@
                 class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${projectSummary.project?.institutionName}</g:link>
     </div>
 
-    <g:set var="descrptionSnippet"><cl:truncate
-            maxlength="${params.mode == 'thumbs' ? '85' : '150'}">${raw(projectSummary.project?.description)}</cl:truncate></g:set>
-    %{--<g:if test="${descrptionSnippet?.size() > 5}">--}%
-        <p class="projectDescription">${raw(descrptionSnippet)}</p>
-    %{--</g:if>--}%
+    <g:set var="descrptionSnippet"><cl:truncate maxlength="${params.mode == 'list' ? '150' : '85'}">${raw(projectSummary.project?.description)}</cl:truncate></g:set>
+    <p class="projectDescription">${raw(descrptionSnippet)}</p>
 
     <g:render template="/project/projectSummaryProgressBar"
               model="${[projectSummary: projectSummary]}"/>

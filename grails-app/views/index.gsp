@@ -134,7 +134,7 @@
             </div>
 
             <div class="col-sm-4">
-                <g:render template="/leaderBoard/stats"/>
+                <g:render template="/leaderBoard/stats" model="[maxContributors: 10 ]"/>
             </div>
         </div>
     </div>

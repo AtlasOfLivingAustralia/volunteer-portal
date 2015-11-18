@@ -15,8 +15,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3>Help in using <g:message code="default.application.name"/> and reporting issues</h3>
-                    <b>E</b> paul.flemons at austmus.gov.au<br/>
-                    <b>T</b> (02) 9320 6343<br/>
+                    <b>E</b> <a href="mailto:DigiVol@austmus.gov.au">DigiVol@austmus.gov.au</a><br/>
+                    <b>T</b> (02) 9320 6429<br/>
                     Australian Museum<br/>
                     Sydney NSW 2010
                     <p/>

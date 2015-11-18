@@ -6,6 +6,8 @@ class LeaderBoardService {
 
     static transactional = false
 
+    final static EMPTY_LEADERBOARD_WINNER = [userId: 0, name:'', email:'', score:0]
+    
     private static Date getTodaysDate() {
         // def today = Date.parse("yyyy-MM-dd", "2014-03-01") // for testing
         def today = new Date().clearTime()
@@ -46,11 +48,15 @@ class LeaderBoardService {
                     def tmp = getTopNForInstitution(1, institution, ineligibleUsers)
                     if (tmp) {
                         result = tmp[0]
+                    } else {
+                        result = EMPTY_LEADERBOARD_WINNER
                     }
                 } else {
                     def userScores = userService.getUserCounts(ineligibleUsers);
                     if (userScores) {
                         result = [userId: userScores[0]['id'], name: userScores[0]['displayName'], email: userScores[0]['email'], score: userScores[0]['total']]
+                    } else {
+                        result = EMPTY_LEADERBOARD_WINNER
                     }
                 }
 
@@ -118,7 +124,7 @@ class LeaderBoardService {
             return results[0]
         }
 
-        return [userId: 0, name:'', email:'', score:0]
+        return EMPTY_LEADERBOARD_WINNER
     }
 
     List getTopNForInstitution(int count, Institution institution, List<String> ineligibleUsers = []) {

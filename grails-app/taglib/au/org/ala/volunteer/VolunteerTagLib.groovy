@@ -848,9 +848,9 @@ class VolunteerTagLib {
      * @attr ellipse
      */
     def truncate = { attrs, body ->
-        def ELLIPSIS = attrs.ellipse ?: '...'
+        final ELLIPSIS = attrs.ellipse ?: '…'
         def maxLength = attrs.maxlength
-        def bodyText = body().replaceAll("<[^>]*>", '') // strip out html tags
+        final bodyText = body().replaceAll("<[^>]*>", '') // strip out html tags
 
         if (maxLength == null || !maxLength.isInteger() || maxLength.toInteger() <= 0) {
             throw new Exception("The attribute 'maxlength' must an integer greater than 3. Provided value: $maxLength")
@@ -860,7 +860,7 @@ class VolunteerTagLib {
         if (maxLength <= ELLIPSIS.size()) {
             throw new Exception("The attribute 'maxlength' must be greater than 3. Provided value: $maxLength")
         }
-        if (body().length() > maxLength) {
+        if (bodyText.length() > maxLength) {
             out << bodyText[0..maxLength - (ELLIPSIS.size() + 1)] + ELLIPSIS
         } else {
             out << bodyText

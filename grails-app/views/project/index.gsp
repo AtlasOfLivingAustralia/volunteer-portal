@@ -306,7 +306,7 @@
                 <div class="col-sm-4">
                     <div class="map-header">
                         <h2 class="heading">Record Locations</h2>
-                        <p>On this map you'll find all the location of transcribed records of the Gastropod expedition</p>
+                        <p>On this map you'll find all the location of transcribed records of the ${projectInstance.name} expedition</p>
                     </div>
                 </div>
             </div>
@@ -360,7 +360,7 @@
 
             <div class="col-sm-4">
                 %{-- mini leaderboard --}%
-                <g:render template="/leaderBoard/miniLeaderBoard"/>
+                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableHonourBoard: true, projectId: projectInstance.id, maxContributors: 2]"/>
             </div>
         </div>
     </div>
@@ -405,13 +405,6 @@
                 <section class="padding-bottom">
                     <h4>${projectInstance.featuredLabel} progress</h4>
                     <g:render template="../project/projectSummaryProgressBar" model="${[projectSummary: projectSummary]}"/>
-                    %{--<div id="recordsChart">--}%
-                    %{--<strong>${tasksDone}</strong> tasks of <strong>${taskCount}</strong> completed (<strong><g:formatNumber number="${percentComplete}" format="#"/>%</strong>)--}%
-                    %{--</div>--}%
-                    %{--<div class="progress expedition-progress">--}%
-                    %{--<div class="bar bar-success" style="width: ${projectSummary.percentValidated}%"></div>--}%
-                    %{--<div class="bar bar-warning" style="width: ${projectSummary.percentTranscribed - projectSummary.percentValidated}%"></div>--}%
-                    %{--</div>--}%
                 </section>
 
                 <g:if test="${projectInstance.showMap}">
