@@ -274,10 +274,12 @@
             </div>
         </div>
 
-        <g:if test="${projectInstance.backgroundImage && projectInstance.backgroundImageAttribution}">
+        <g:if test="${projectInstance.backgroundImage}">
             <div class="row">
                 <div class="col-sm-12 image-origin">
-                    <p>Image by ${projectInstance.backgroundImageAttribution}</p>
+                    <g:if test="${projectInstance.backgroundImageAttribution}">
+                        <p>Image by ${projectInstance.backgroundImageAttribution}</p>
+                    </g:if>
                 </div>
             </div>
         </g:if>
