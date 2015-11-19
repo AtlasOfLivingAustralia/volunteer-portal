@@ -643,7 +643,7 @@ class ProjectController {
         }
 
         projectInstance.featuredImageCopyright = params.featuredImageCopyright
-
+        flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.id)
     }
 
@@ -669,12 +669,7 @@ class ProjectController {
                 }
 
                 try {
-                    String fileExtension = f.getContentType() == 'image/png' ? 'png' : 'jpg'
-
-                    def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-background-image.${fileExtension}"
-                    def file = new File(filePath);
-                    file.getParentFile().mkdirs();
-                    f.transferTo(file);
+                    projectInstance.setBackgroundImage(f)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message;
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
@@ -683,6 +678,20 @@ class ProjectController {
             }
         }
 
+        projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
+        flash.message = "Background image settings updated."
+        redirect(action: "editBackgroundImageSettings", id: params.id)
+    }
+
+
+    def clearBackgroundImageSettings() {
+        Project projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            projectInstance.backgroundImageAttribution = null;
+            projectInstance.setBackgroundImage(null);
+        }
+
+        flash.message = "Background image settings have been deleted."
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
 

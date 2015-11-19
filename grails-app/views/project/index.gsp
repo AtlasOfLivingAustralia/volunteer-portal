@@ -253,7 +253,9 @@
                 <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
             </div>
             <div class="col-sm-4">
-                <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
+                <g:if test="${!projectInstance.backgroundImage}">
+                    <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
+                </g:if>
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
                         <cl:ifAdmin>
@@ -265,19 +267,22 @@
                         </cl:ifAdmin>
                     </cl:isLoggedIn>
                     <cl:ifValidator project="${projectInstance}">
-                    <g:link class="btn btn-default btn-hollow grey" controller="task" action="projectAdmin"
-                            id="${projectInstance.id}">Validate tasks</g:link>
-                </cl:ifValidator>
-
+                        <g:link class="btn btn-default btn-hollow grey" controller="task" action="projectAdmin"
+                                id="${projectInstance.id}">Validate tasks</g:link>
+                    </cl:ifValidator>
                 </div>
             </div>
         </div>
 
-        %{--<div class="row">--}%
-            %{--<div class="col-sm-12 image-origin float-right">--}%
-                %{--<p>Image by [Name] from Flickr</p>--}%
-            %{--</div>--}%
-        %{--</div>--}%
+        <g:if test="${projectInstance.backgroundImage}">
+            <div class="row">
+                <div class="col-sm-12 image-origin">
+                    <g:if test="${projectInstance.backgroundImageAttribution}">
+                        <p>Image by ${projectInstance.backgroundImageAttribution}</p>
+                    </g:if>
+                </div>
+            </div>
+        </g:if>
     </div>
 
     <div class="progress-summary">
