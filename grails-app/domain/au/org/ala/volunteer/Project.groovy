@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import org.springframework.web.multipart.MultipartFile
+
 class Project implements Serializable {
 
     String name
@@ -14,6 +16,7 @@ class Project implements Serializable {
     Boolean disableNewsItems = false
     Integer leaderIconIndex = 0
     String featuredImageCopyright = null
+    String backgroundImageAttribution = null
     Boolean inactive = false
     String collectionEventLookupCollectionCode
     String localityLookupCollectionCode
@@ -55,6 +58,7 @@ class Project implements Serializable {
         disableNewsItems nullable: true
         leaderIconIndex nullable: true
         featuredImageCopyright nullable: true
+        backgroundImageAttribution nullable: true
         inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
@@ -88,21 +92,47 @@ class Project implements Serializable {
     }
 
     /**
-     * Check to see if there is a feature image for this expedition by looking in its project directory.
+     * Retrieves background image url
      * @return background image url or null if non existent
      */
     String getBackgroundImage() {
 
-        def localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
-        def localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
-        def fileJpg = new File(localPathJpg)
-        def filePng = new File(localPathPng)
+        String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
+        String localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
+        File fileJpg = new File(localPathJpg)
+        File filePng = new File(localPathPng)
         if (fileJpg.exists()) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.jpg"
         } else if (filePng.exists()) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.png"
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Saves the uploaded background image or deletes the existing one if argument is null
+     * @param multipartFile
+     */
+    void setBackgroundImage(MultipartFile multipartFile) {
+        if (multipartFile) {
+            // Save image
+            String fileExtension = multipartFile.getContentType() == 'image/png' ? 'png' : 'jpg'
+            def filePath = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.${fileExtension}"
+            def file = new File(filePath);
+            file.getParentFile().mkdirs();
+            multipartFile.transferTo(file);
+        } else {
+            // Remove image if exists
+            String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
+            String localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
+            File fileJpg = new File(localPathJpg)
+            File filePng = new File(localPathPng)
+            if (fileJpg.exists()) {
+                fileJpg.delete();
+            } else if (filePng.exists()) {
+                filePng.delete();
+            }
         }
     }
 
