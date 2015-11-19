@@ -39,8 +39,10 @@ function digivolStats(config) {
       var p = $http.get(config.statsUrl, {
         params: {
           institutionId: config.institutionId,
+          projectId: config.projectId,
           maxContributors: config.maxContributors,
-          disableStats: config.disableStats
+          disableStats: config.disableStats,
+          disableHonourBoard: config.disableHonourBoard
         }
       });
       p.then(function (resp) {
