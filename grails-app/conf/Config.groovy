@@ -393,7 +393,7 @@ log4j = {
             'au.org.ala.cas.client',
             'au.org.ala.cas.util'
             
-    debug    'grails.app',
+    info    'grails.app',
             'au.org.ala'
 
 //    debug   'org.apache.http.headers',
