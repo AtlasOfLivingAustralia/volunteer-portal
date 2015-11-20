@@ -197,20 +197,20 @@
                 <div class="col-sm-3">
                     <h3>About Digivol</h3>
                     <ul>
-                        <li><a href="#">Why capture this data</a></li>
-                        <li><a href="#">Become an online volunteer</a></li>
-                        <li><a href="#">Submit an expedition</a></li>
-                        <li><a href="#">Useful reference</a></li>
+                        <li><g:link controller="about" fragment="what-is-digivol">What is DigiVol</g:link></li>
+                        <li><g:link controller="about" fragment="why-capture-this-data">Why capture this data</g:link></li>
+                        <li><g:link controller="about" fragment="submit-an-expedition">Submit an expedition</g:link></li>
+                        <li><g:link controller="about" fragment="useful-references">Useful references</g:link></li>
                     </ul>
                 </div>
 
                 <div class="col-sm-3">
                     <h3>How can I volunteer</h3>
                     <ul>
-                        <li><a href="#">Registering</a></li>
-                        <li><a href="#">Transcribing</a></li>
-                        <li><a href="#">What happens next</a></li>
-                        <li><a href="#">Examples</a></li>
+                        <li><g:link controller="about" fragment="registering">Become an Online Volunteer</g:link></li>
+                        <li><g:link controller="about" fragment="transcribing">How to get started</g:link></li>
+                        <li><g:link controller="about" fragment="what-happens-next">What happens next</g:link></li>
+                        <li><g:link controller="about" fragment="examples">Examples</g:link></li>
                     </ul>
                 </div>
 
