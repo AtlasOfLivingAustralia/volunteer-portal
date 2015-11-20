@@ -507,6 +507,10 @@ table .btn-default:hover {
     min-height: 44px;
 }
 
+.image-origin p {
+    min-height: 1em;
+}
+
 .text-justify {
     text-align: justify;
 }

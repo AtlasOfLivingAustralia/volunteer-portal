@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-sm-6 hidden-xs">
                     <g:ifPageProperty name="page.includeBack">
-                        <a href="javascript:history.back()" class="btn btn-hollow transcription-back grey">Back</a>
+                        <a href="javascript:history.back()" class="btn btn-hollow transcription-back ${includeBackGrey ? 'grey' :''}">Back</a>
                     </g:ifPageProperty>
                 </div>
                 <div class="col-sm-6">

@@ -175,7 +175,7 @@ span.label i.remove {
             <label class="col-sm-3 control-label" for="featuredImage">Expedition image</label>
 
             <div class="col-sm-6">
-                <input type="file" name="featuredImage" id="featuredImage" ngf-select="upload($file)"/>
+                <input type="file" name="featuredImage" id="featuredImage" ngf-select="upload($file, 'imageUrl')"/>
             </div>
 
             <div class="col-sm-3">
@@ -183,7 +183,7 @@ span.label i.remove {
             </div>
             <div class="col-sm-offset-3 col-sm-9" data-ng-if="progress > 0">
                 <div class="progress">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': progress+'%'}">
                         {{progress}}%
                     </div>
                 </div>
@@ -203,6 +203,41 @@ span.label i.remove {
 
             <div class="col-sm-6">
                 <input type="text" id="imageCopyright" name="imageCopyright" class="form-control" data-ng-model="project.imageCopyright"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="backgroundImage">Expedition background image</label>
+
+            <div class="col-sm-6">
+                <input type="file" name="backgroundImage" id="backgroundImage" ngf-select="upload($file, 'backgroundImageUrl')"/>
+            </div>
+
+            <div class="col-sm-3">
+                <cl:ngHelpText>For best results and to preserve quality, it is recommend that the background image has a <strong>resolution</strong> of at least <strong>2 megapixels</strong> (eg: 1920 x 1080). The system won't accept images bigger than 512KB.<br><strong>The darker the image the better!</strong></cl:ngHelpText>
+            </div>
+            <div class="col-sm-offset-3 col-sm-9" data-ng-if="backgroundProgress > 0">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{backgroundProgress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': backgroundProgress+'%'}">
+                        {{backgroundProgress}}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" data-ng-if="project.backgroundImageUrl">
+            <div class="col-sm-offset-3 col-sm-9">
+                <img ng-src="{{project.backgroundImageUrl}}" class="img-responsive img-thumbnail"/>
+                <button role="button" type="button" class="btn btn-warning" data-ng-click="clearBackgroundImage()"><i
+                        class="icon-trash icon-white"></i>&nbsp;Remove image</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="backgroundImageCopyright">Background Image copyright</label>
+
+            <div class="col-sm-6">
+                <input type="text" id="backgroundImageCopyright" name="backgroundImageCopyright" class="form-control" data-ng-model="project.backgroundImageCopyright"/>
             </div>
         </div>
 

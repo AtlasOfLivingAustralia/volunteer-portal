@@ -14,6 +14,7 @@ class ProjectController {
     static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
 
     static final LABEL_COLOURS = ["label-success", "label-warning", "label-danger", "label-info", "label-primary", "label-default"]
+    public static final int MAX_BACKGROUND_SIZE = 512 * 1024
 
     def grailsApplication
     def taskService
@@ -662,14 +663,16 @@ class ProjectController {
                     return;
                 }
 
-                if (f.size >= 512 * 1024) {
+                if (f.size >= MAX_BACKGROUND_SIZE) {
                     flash.message = "Image size cannot be bigger than 512 KB (half a MB)"
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
                     return;
                 }
 
                 try {
-                    projectInstance.setBackgroundImage(f)
+                    f.inputStream.withCloseable {
+                        projectInstance.setBackgroundImage(it, f.contentType)
+                    }
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message;
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
@@ -687,8 +690,8 @@ class ProjectController {
     def clearBackgroundImageSettings() {
         Project projectInstance = Project.get(params.id)
         if (projectInstance) {
-            projectInstance.backgroundImageAttribution = null;
-            projectInstance.setBackgroundImage(null);
+            projectInstance.backgroundImageAttribution = null
+            projectInstance.setBackgroundImage(null,null)
         }
 
         flash.message = "Background image settings have been deleted."
@@ -896,30 +899,48 @@ class ProjectController {
         def project = new NewProjectDescriptor(stagingId: id)
 
         def errors = []
+        def result
 
         if (request instanceof MultipartHttpServletRequest) {
-            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('image')
             if (f != null && f.size > 0) {
-                def allowedMimeTypes = ['image/jpeg', 'image/png']
+                final allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     errors << "Image must be one of: ${allowedMimeTypes}"
                 } else {
-                    projectStagingService.uploadProjectImage(project, f)
+                    if (params.type == 'backgroundImageUrl') {
+                        if (f.size > MAX_BACKGROUND_SIZE) {
+                            errors << "Background image must be less than 512KB"
+                        } else {
+                            projectStagingService.uploadProjectBackgroundImage(project, f)
+                            result = projectStagingService.getProjectBackgroundImageUrl(project)
+                        }
+                    } else {
+                        projectStagingService.uploadProjectImage(project, f)
+                        result = projectStagingService.getProjectImageUrl(project)
+                    }
                 }
+            } else {
+                errors << "No file provided?!"
             }
         }
 
         if (errors) {
             render(errors as JSON, status: 401)
         } else {
-            render([projectImageUrl: projectStagingService.getProjectImageUrl(project)] as JSON)
+            render([imageUrl: result] as JSON)
 
         }
     }
 
     def wizardClearImage(String id) {
         def project = new NewProjectDescriptor(stagingId: id)
-        projectStagingService.clearProjectImage(project)
+        def type = request.getJSON()?.type ?: ''
+        if (type == 'background') {
+            projectStagingService.clearProjectBackgroundImage(project)
+        } else {
+            projectStagingService.clearProjectImage(project)
+        }
         render status: 204
     }
 

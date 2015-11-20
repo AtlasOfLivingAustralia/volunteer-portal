@@ -26,6 +26,7 @@ class ProjectStagingService {
         project.mapInitLongitude = projectDescriptor.mapInitLongitude
         project.mapInitZoomLevel = projectDescriptor.mapInitZoomLevel
         project.featuredImageCopyright = projectDescriptor.imageCopyright
+        project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
         project.inactive = true
 
         if (projectDescriptor.labelIds) {
@@ -46,6 +47,13 @@ class ProjectStagingService {
             destFile.getParentFile().mkdirs()
             FileUtils.copyFile(imageFile, destFile)
             projectService.checkAndResizeExpeditionImage(project)
+        }
+        // 2. Background Image
+        def backgroundImageFile = new File(getProjectBackgroundImagePath(projectDescriptor))
+        if (backgroundImageFile?.exists()) {
+            backgroundImageFile.withInputStream {
+                project.setBackgroundImage(it, backgroundImageFile.name.endsWith('png') ? 'image/png' : 'image/jpg')
+            }
         }
 
         // if we get here we can clean up the staging area...
@@ -68,8 +76,18 @@ class ProjectStagingService {
         file.transferTo(destFile)
     }
 
+    def uploadProjectBackgroundImage(NewProjectDescriptor project, MultipartFile file) {
+        def destFile = new File(getProjectBackgroundImagePath(project, file.contentType))
+        file.transferTo(destFile)
+    }
+
     def clearProjectImage(NewProjectDescriptor project) {
         def imageFile = new File(getProjectImagePath(project))
+        FileUtils.deleteQuietly(imageFile)
+    }
+
+    def clearProjectBackgroundImage(NewProjectDescriptor project) {
+        def imageFile = new File(getProjectBackgroundImagePath(project))
         FileUtils.deleteQuietly(imageFile)
     }
 
@@ -82,9 +100,24 @@ class ProjectStagingService {
         return grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-image.jpg"
     }
 
+    def getProjectBackgroundImageUrl(NewProjectDescriptor project) {
+        return grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-background-image.jpg"
+    }
+
     private String getProjectImagePath(NewProjectDescriptor project) {
         def folder = getStagingRootFile(project)
         return folder.getAbsolutePath() + "/expedition-image.jpg"
+    }
+
+    private String getProjectBackgroundImagePath(NewProjectDescriptor project, String contentType) {
+        def folder = getStagingRootFile(project)
+        return folder.getAbsolutePath() + "/expedition-background-image.${contentType == 'image/png' ? 'png' : 'jpg'}"
+    }
+
+    private String getProjectBackgroundImagePath(NewProjectDescriptor project) {
+        def folder = getStagingRootFile(project)
+        def f = new File(folder, 'expedition-background-image.png')
+        return f.exists() ? f.absolutePath : folder.absolutePath + File.separator + 'expedition-background-image.jpg'
     }
 
     public void saveTempProjectDescriptor(String id, Reader body) {

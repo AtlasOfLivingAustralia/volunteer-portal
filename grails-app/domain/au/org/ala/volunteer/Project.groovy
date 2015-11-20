@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import com.google.common.io.ByteStreams
+import com.google.common.io.Files
 import org.springframework.web.multipart.MultipartFile
 
 class Project implements Serializable {
@@ -111,17 +113,20 @@ class Project implements Serializable {
     }
 
     /**
-     * Saves the uploaded background image or deletes the existing one if argument is null
+     * Saves the uploaded background image or deletes the existing one if argument is null.  Consumes the inputstream
+     * but doesn't close it
      * @param multipartFile
      */
-    void setBackgroundImage(MultipartFile multipartFile) {
-        if (multipartFile) {
+    void setBackgroundImage(InputStream inputStream, String contentType) {
+        if (inputStream && contentType) {
             // Save image
-            String fileExtension = multipartFile.getContentType() == 'image/png' ? 'png' : 'jpg'
+            String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
             def filePath = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.${fileExtension}"
             def file = new File(filePath);
             file.getParentFile().mkdirs();
-            multipartFile.transferTo(file);
+            file.withOutputStream {
+              it << inputStream
+            }
         } else {
             // Remove image if exists
             String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"

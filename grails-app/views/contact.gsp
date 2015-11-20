@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <title><cl:pageTitle title="Contact Details" /></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
 </head>
 

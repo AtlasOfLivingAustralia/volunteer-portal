@@ -47,10 +47,12 @@ function createProjectModule(config) {
     var projectTypeId = arguments.length <= 6 || arguments[6] === undefined ? null : arguments[6];
     var imageUrl = arguments.length <= 7 || arguments[7] === undefined ? '' : arguments[7];
     var imageCopyright = arguments.length <= 8 || arguments[8] === undefined ? '' : arguments[8];
-    var showMap = arguments.length <= 9 || arguments[9] === undefined ? false : arguments[9];
-    var map = arguments.length <= 10 || arguments[10] === undefined ? new Map() : arguments[10];
-    var picklistId = arguments.length <= 11 || arguments[11] === undefined ? null : arguments[11];
-    var labelIds = arguments.length <= 12 || arguments[12] === undefined ? [] : arguments[12];
+    var backgroundImageUrl = arguments.length <= 9 || arguments[9] === undefined ? '' : arguments[9];
+    var backgroundImageCopyright = arguments.length <= 10 || arguments[10] === undefined ? '' : arguments[10];
+    var showMap = arguments.length <= 11 || arguments[11] === undefined ? false : arguments[11];
+    var map = arguments.length <= 12 || arguments[12] === undefined ? new Map() : arguments[12];
+    var picklistId = arguments.length <= 13 || arguments[13] === undefined ? null : arguments[13];
+    var labelIds = arguments.length <= 14 || arguments[14] === undefined ? [] : arguments[14];
 
     _classCallCheck(this, ProjectDefintion);
 
@@ -63,6 +65,8 @@ function createProjectModule(config) {
     this.projectTypeId = projectTypeId;
     this.imageUrl = imageUrl;
     this.imageCopyright = imageCopyright;
+    this.backgroundImageUrl = backgroundImageUrl;
+    this.backgroundImageCopyright = backgroundImageCopyright;
     this.showMap = showMap;
     this.map = map;
 
@@ -305,37 +309,54 @@ function createProjectModule(config) {
   ]);
 
   wizard.controller('ImageCtrl', [
-    '$scope', 'project', 'Upload', '$http',
-    function ($scope, project, Upload, $http) {
+    '$scope', 'project', 'Upload', '$http', '$window',
+    function ($scope, project, Upload, $http, $window) {
       $scope.project = project;
 
       $scope.progress = 0;
+      $scope.backgroundProgress = 0;
 
-      $scope.upload = function (file) {
+      $scope.upload = function (file, type) {
+        if (!type) type = 'imageUrl';
         if (!file) return;
-        $scope.project.imageUrl = null;
+        $scope.project[type] = null;
         Upload.upload({
           url: config.imageUploadUrl,
-          data: {featuredImage: file}
+          data: {image: file, type: type},
         }).then(function (resp) {
           var cb = Math.random();
-          $scope.project.imageUrl = resp.data.projectImageUrl + '?cb='+cb;
-          var filename = (file || {}).name || '';
-          console.log('Success ' + filename + 'uploaded. Response: ' + resp.data);
-          $scope.progress = 0;
+          $scope.project[type] = resp.data.imageUrl + '?cb='+cb; // cb for cache busting
+          if (type == 'backgroundImageUrl') {
+            $scope.backgroundProgress = 0;
+          } else {
+            $scope.progress = 0;
+          }
         }, function (resp) {
-          console.log('Error status: ' + resp.status);
-          $scope.progress = 0;
+          console.log('Error status: ' + resp.status, resp.data.errors);
+          if (type == 'backgroundImageUrl') {
+            $scope.backgroundProgress = 0;
+          } else {
+            $scope.progress = 0;
+          }
+          $window.alert("An error occured while uploading your image:\n\n" + resp.data.errors[0] + "  Please try again.");
         }, function (evt) {
           var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-          var filename = (evt.config.data.featuredImage || {}).name || '';
+          var filename = (evt.config.data.image || {}).name || '';
           console.log('progress: ' + progressPercentage + '% ' + filename);
-          $scope.progress = progressPercentage;
+          if (type == 'backgroundImageUrl') {
+            $scope.backgroundProgress = progressPercentage;
+          } else {
+            $scope.progress = progressPercentage;
+          }
         });
       };
 
       $scope.clearImage = function () {
-        $http.post(config.imageClearUrl).then(function(response) { $scope.project.imageUrl = null; });
+        $http.post(config.imageClearUrl, { type: 'expedition' }).then(function(response) { $scope.project.imageUrl = null; });
+      };
+
+      $scope.clearBackgroundImage = function () {
+        $http.post(config.imageClearUrl, { type: 'background' }).then(function(response) { $scope.project.backgroundImageUrl = null; });
       };
     }
   ]);

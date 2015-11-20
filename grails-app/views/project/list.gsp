@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
-    <title><g:message code="default.list.label" args="[entityName]"/></title>
+    <title><cl:pageTitle title="${g.message(code:"default.list.label", args:['Expedition'])}"/></title>
 
     <r:require modules="jquery.resizeAndCrop"/>
     <r:script>

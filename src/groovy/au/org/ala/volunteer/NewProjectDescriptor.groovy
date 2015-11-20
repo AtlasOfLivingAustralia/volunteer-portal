@@ -15,6 +15,7 @@ class NewProjectDescriptor implements Serializable {
     long projectTypeId
 
     String imageCopyright
+    String backgroundImageCopyright
     boolean showMap
     int mapInitZoomLevel
     double mapInitLatitude
@@ -34,6 +35,7 @@ class NewProjectDescriptor implements Serializable {
                 templateId: p.templateId,
                 projectTypeId: p.projectTypeId,
                 imageCopyright: p.imageCopyright,
+                backgroundImageCopyright: p.backgroundImageCopyright,
                 showMap: p.showMap,
                 mapInitLatitude: p.map.centre.latitude,
                 mapInitLongitude: p.map.centre.longitude,
