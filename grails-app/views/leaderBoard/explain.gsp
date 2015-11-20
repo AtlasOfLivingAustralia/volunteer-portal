@@ -6,7 +6,6 @@
     <meta name="section" content="home"/>
     <title><cl:pageTitle title="Badges"/></title>
     <content tag="selectedNavItem">bvp</content>
-    <r:require modules="jquery.resizeAndCrop"/>
 </head>
 <body>
 

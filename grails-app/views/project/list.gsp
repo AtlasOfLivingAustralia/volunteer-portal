@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title><cl:pageTitle title="${g.message(code:"default.list.label", args:['Expedition'])}"/></title>
 
-    <r:require modules="jquery.resizeAndCrop"/>
+    <r:require modules="digivol-image-resize"/>
     <r:script>
 
         $(function() {
@@ -50,21 +50,11 @@
                 return false;
             });
 
-             $('img').on("error", function(){
-                console.log('missing img','${g.createLink(uri:'/images/project-placeholder.jpg')}');
-                $(this).attr('src', '${g.createLink(uri:'/images/project-placeholder.jpg')}');
-            });
-
-
             function doSearch() {
                 var q = $("#searchbox").val();
                 var url = "${createLink(controller: 'project', action: 'list')}?mode=${params.mode}&q=" + encodeURIComponent(q);
                 window.location = url;
             }
-
-            $('img.cropme').resizeAndCrop({
-                forceResize: true
-            });
         });
 
     </r:script>

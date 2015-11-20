@@ -448,7 +448,7 @@
 
             <div class="transcription-branding">
                 <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
-                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name} ${taskInstance?.externalIdentifier}</g:link></h1>
+                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
                 <h2><g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
             </div>
 

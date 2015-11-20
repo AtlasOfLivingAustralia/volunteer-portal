@@ -8,6 +8,7 @@
     <content tag="pageType">institution</content>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
+    <r:require modules="digivol-image-resize"/>
     <r:script>
 
         $(document).ready(function () {

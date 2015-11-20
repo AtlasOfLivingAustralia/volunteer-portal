@@ -4,8 +4,9 @@
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
 <g:set var="tasksDone" value="${tasksTranscribed ?: 0}"/>
 <g:set var="tasksTotal" value="${taskCount ?: 0}"/>
+<g:set var="bgImage" value="${projectInstance.backgroundImage}" />
 <sitemesh:parameter name="includeBack" value="${true}"/>
-<sitemesh:parameter name="includeBackGrey" value="${!projectInstance.backgroundImage}"/>
+<sitemesh:parameter name="includeBackGrey" value="${!(bgImage as Boolean)}"/>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -167,9 +168,9 @@
 
     <style type="text/css">
 
-    <g:if test="${projectInstance.backgroundImage}">
+    <g:if test="${bgImage}">
         .a-feature.expedition {
-            background: url(${projectInstance.backgroundImage}) no-repeat center center fixed !important; %{-- important to override the one set in main.css, which should probably be removed --}%
+            background: url(${bgImage}) no-repeat center center fixed !important; %{-- important to override the one set in main.css, which should probably be removed --}%
         }
 
     </g:if>
@@ -178,8 +179,8 @@
 
 <body class="digivol expedition-landing">
 
-<g:set var="oldClass" value="${projectInstance.backgroundImage ? '' : 'grey'}" />
-<div class="a-feature expedition ${projectInstance.backgroundImage ? '' : 'old'}">
+<g:set var="oldClass" value="${bgImage ? '' : 'grey'}" />
+<div class="a-feature expedition ${bgImage ? '' : 'old'}">
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
@@ -214,7 +215,7 @@
                 <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
             </div>
             <div class="col-sm-4">
-                <g:if test="${!projectInstance.backgroundImage}">
+                <g:if test="${!bgImage}">
                     <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
                 </g:if>
                 <div class="projectActionLinks" >
@@ -235,7 +236,7 @@
             </div>
         </div>
 
-        <g:if test="${projectInstance.backgroundImage}">
+        <g:if test="${bgImage}">
             <div class="row">
                 <div class="col-sm-12 image-origin">
                     <p><g:if test="${projectInstance.backgroundImageAttribution}">Image by ${projectInstance.backgroundImageAttribution}</g:if></p>

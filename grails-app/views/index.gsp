@@ -7,7 +7,7 @@
     <content tag="disableBreadcrumbs">true</content>
     %{--<content tag="primaryColour">#0097d4</content>--}%
     <content tag="selectedNavItem">bvp</content>
-    <r:require modules="jquery.resizeAndCrop"/>
+    <r:require modules="digivol-image-resize"/>
 </head>
 
 <body>
@@ -85,7 +85,7 @@
         <div class="row">
             <div class="col-md-6">
                 <g:link controller="project" action="index" id="${frontPage.projectOfTheDay?.id}">
-                    <img src="" realsrc="${frontPage.projectOfTheDay?.featuredImage}" class="img-responsive cropme featured-exp-img" style="width:100%;height:312px;"></g:link>
+                    <img src="" realsrc="${frontPage.projectOfTheDay?.featuredImage}" class="img-responsive cropme featured-exp-img" style="width:100%;height:312px;" data-error-url="${createLink(uri: '/images/banners/default-expedition-large.jpg')}" ></g:link>
             </div>
 
             <div class="col-md-6">
@@ -140,12 +140,5 @@
     </div>
 </section>
 <a name="learnMore"></a>
-<r:script>
-    $(function() {
-        $('img.cropme').resizeAndCrop({
-            forceResize: true
-        });
-    })
-</r:script>
 </body>
 </html>

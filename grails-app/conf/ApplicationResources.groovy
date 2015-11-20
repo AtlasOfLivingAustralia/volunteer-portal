@@ -27,6 +27,11 @@ modules = {
         resource url: '/js/new-project-wizard.js'
     }
 
+    'digivol-image-resize' {
+        dependsOn 'jquery.resizeAndCrop'
+        resource url: '/js/imageResize.js'
+    }
+
     'qtip' {
         dependsOn "jquery"
         resource url:'/js/qtip.2.2.1/jquery.qtip.css'

@@ -4,6 +4,8 @@
             <div class="row">
                 <div class="col-sm-6 hidden-xs">
                     <g:ifPageProperty name="page.includeBack">
+                        <g:set var="includeBackGrey" value="${false}"/>
+                        <g:ifPageProperty name="page.includeBackGrey" equals="true"><g:set var="includeBackGrey" value="${true}"/></g:ifPageProperty>
                         <a href="javascript:history.back()" class="btn btn-hollow transcription-back ${includeBackGrey ? 'grey' :''}">Back</a>
                     </g:ifPageProperty>
                 </div>
