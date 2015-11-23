@@ -154,6 +154,8 @@ class ProjectService {
 
         if (viewName.contains("journal") || viewName.contains("fieldnotebook") || viewName.contains("observationDiary")) {
             return ProjectType.findByName("fieldnotes")
+        } else if (viewName.contains('camera trap') || viewName.contains('wild count') || viewName.contains('wildcount')) {
+            return ProjectType.findByName("cameratraps")
         }
 
         return ProjectType.findByName("specimens")
@@ -170,7 +172,7 @@ class ProjectService {
         }
 
         // Default, if all else fails
-        def iconImage = grailsLinkGenerator.resource(dir:'/images', file:'icon_specimens.png')
+        def iconImage = grailsLinkGenerator.resource(dir:'/images/2.0/images', file:'iconLabels.png')
         def iconLabel = 'Specimens'
 
         if (project.projectType) {

@@ -4,7 +4,6 @@
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'has-error')} required">
     <label class="control-label col-md-3" for="name">
         <g:message code="achievementDescription.name.label" default="Name"/>
-        <span class="required-indicator">*</span>
     </label>
 
     <div class="col-md-6">
@@ -14,9 +13,7 @@
 
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'has-error')} required">
     <label class="control-label col-md-3" for="description">
-        <g:message code="achievementDescription.description.label" default="Description"/>
-        <span class="required-indicator">*</span>
-    </label>
+        <g:message code="achievementDescription.description.label" default="Description"/>    </label>
 
     <div class="col-md-6">
         <g:textArea class="form-control" rows="5" name="description" required=""
@@ -26,9 +23,7 @@
 
 <div class="form-group required">
     <label class="control-label col-md-3" for="type">
-        <g:message code="achievementDescription.type.label" default="Type"/>
-        <span class="required-indicator">*</span>
-    </label>
+        <g:message code="achievementDescription.type.label" default="Type"/>    </label>
 
     <div class="col-md-6">
         <g:select name="type" class="form-control" from="${AchievementType?.values()}" keys="${AchievementType.values()*.name()}" required=""
@@ -38,9 +33,7 @@
 
 <div class="form-group esType ${hasErrors(bean: achievementDescriptionInstance, field: 'searchQuery', 'has-error')}">
     <label class="control-label col-md-3" for="searchQuery">
-        <g:message code="achievementDescription.searchQuery.label" default="Search Query"/>
-        <span class="required-indicator">*</span>
-    </label>
+        <g:message code="achievementDescription.searchQuery.label" default="Search Query"/>    </label>
 
     <div class="col-md-9">
         <g:textArea class="input-block-level" rows="10" name="searchQuery"
@@ -50,9 +43,7 @@
 
 <div class="form-group esType ${hasErrors(bean: achievementDescriptionInstance, field: 'count', 'has-error')}">
     <label class="control-label col-md-3" for="count">
-        <g:message code="achievementDescription.count.label" default="Count"/>
-        <span class="required-indicator">*</span>
-    </label>
+        <g:message code="achievementDescription.count.label" default="Count"/>    </label>
 
     <div class="col-md-6">
         <g:field class="form-control" name="count" type="number" min="0"
@@ -62,9 +53,7 @@
 
 <div class="form-group agType ${hasErrors(bean: achievementDescriptionInstance, field: 'aggregationQuery', 'has-error')}">
     <label class="control-label col-md-3" for="aggregationQuery">
-        <g:message code="achievementDescription.aggregationQuery.label" default="Aggregation Query"/>
-        <span class="required-indicator">*</span>
-    </label>
+        <g:message code="achievementDescription.aggregationQuery.label" default="Aggregation Query"/>    </label>
 
     <div class="col-md-9">
         <g:textArea class="form-control" rows="10" name="aggregationQuery"

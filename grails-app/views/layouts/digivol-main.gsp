@@ -236,47 +236,47 @@
 
 <g:set var="cheevs" value="${cl.newAchievements()}"/>
 <g:if test="${cl.achievementsEnabled() && cheevs.size() > 0}">
-    <g:if test="${cheevs.size() < 3}">
-        <g:set var="itemgridStyle" value="margin-left:auto; margin-right:auto; width: ${cheevs.size() * 160}px"/>
-    </g:if>
-    <g:else>
-        <g:set var="itemgridStyle" value=""/>
-    </g:else>
-    <div id="achievement-notifier" class="modal hide fade">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" data-target="#achievement-notifier"
-                    aria-hidden="true">&times;</button>
+    <div id="achievement-notifier" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" data-target="#achievement-notifier" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Congratulations!  You just achieved...</h4>
+                </div>
 
-            <h3>Congratulations!  You just achieved...</h3>
-        </div>
+                <div class="modal-body">
+                    <div class="row row-centered">
+                        <g:each in="${cheevs}" var="ach">
+                            <div class="col-sm-12 col-md-6 col-centered">
+                                <div class="thumbnail">
+                                    <img class="img-responsive" src="${cl.achievementBadgeUrl(achievement: ach.achievement)}"
+                                         title="${ach.achievement.description}" alt="${ach.achievement.name}"/>
 
-        <div class="modal-body">
-            <div class="itemgrid" style="${itemgridStyle}">
-                <g:each in="${cheevs}" var="ach">
-                    <div class="item bvpBadge">
-                        <img src="${cl.achievementBadgeUrl(achievement: ach.achievement)}"
-                             title="${ach.achievement.description}" alt="${ach.achievement.name}"/>
+                                    <div class="caption">
+                                        <h4>${ach.achievement.name}</h4>
 
-                        <div>${ach.achievement.name}</div>
-
-                        <div>Awarded <prettytime:display date="${ach.awarded}"/></div>
+                                        <div>Awarded <prettytime:display date="${ach.awarded}"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:each>
                     </div>
-                </g:each>
+
+                    <p>Visit <g:link controller="user"
+                                     action="notebook">your notebook</g:link> to see all your achievements.</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button data-dismiss="modal" data-target="#achievement-notifier" class="btn btn-primary">Close</button>
+                </div>
             </div>
-
-            <p>Visit <g:link controller="user"
-                             action="notebook">your notebook</g:link> to see all your achievements.</p>
-        </div>
-
-        <div class="modal-footer">
-            <button data-dismiss="modal" data-target="#achievement-notifier" class="btn">Close</button>
         </div>
     </div>
     <r:script>
         jQuery(function($) {
             var cheevs = <cl:json value="${cheevs*.id}"/>;
     var acceptUrl = "${g.createLink(controller: 'ajax', action: 'acceptAchievements')}";
-    $('#achievement-notifier').on('show', function () {
+    $('#achievement-notifier').on('shown.bs.modal', function () {
         $.ajax(acceptUrl, {
             type: 'post',
             data: { ids : cheevs },
