@@ -273,8 +273,7 @@ table .btn-default:hover {
 }
 
 .admin .a-feature.simple-header {
-    padding: 0;
-    padding-bottom: 1em;
+    padding: 1em 0;
 }
 
 .admin #page-header {
@@ -584,4 +583,17 @@ a.fieldHelp {
     text-align:left;
     /* inline-block space fix */
     margin-right:-4px;
+}
+
+/** Patch from Peter Chen */
+.a-feature.simple-header {
+    background-color: #fff;
+    padding: 3% 0 3% 0;
+}
+
+@media (min-width: 768px) {
+    .a-feature.simple-header h1 {
+        font-size: 45px;
+        margin-top: 0;
+    }
 }

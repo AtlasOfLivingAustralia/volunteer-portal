@@ -167,6 +167,8 @@ headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = true
+grails.mime.disable.accept.header.userAgents = []
+
 grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
                       xml: ['text/xml', 'application/xml'],
                       text: 'text/plain',

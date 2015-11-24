@@ -87,7 +87,6 @@
 </r:script>
 
 <cl:headerContent title="${message(code: 'default.forum.label', default: 'DigiVol Forum')}" selectedNavItem="forum">
-    <p class="section-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porta sem eu leo facilisis pulvinar.</p>
 </cl:headerContent>
 
 <section id="main-content">

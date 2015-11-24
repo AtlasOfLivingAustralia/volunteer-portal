@@ -10,7 +10,9 @@
 
 <cl:headerContent title="${message(code: 'default.tutorials.label', default: 'Tutorials')}" selectedNavItem="tutorials">
     <cl:ifAdmin>
-        <a class="btn btn-primary" href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Manage</a>
+        </div>
+        <div class="col-sm-2">
+            <a class="btn btn-primary" href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Manage</a>
     </cl:ifAdmin>
 </cl:headerContent>
 

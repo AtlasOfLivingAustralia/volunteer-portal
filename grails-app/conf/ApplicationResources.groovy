@@ -272,4 +272,9 @@ modules = {
         dependsOn 'angular'
         resource url: '/js/angular/bootstrap-show-errors/2.3.0/showErrors.min.js'
     }
+
+    'angular-moment' {
+        dependsOn 'angular', 'moment'
+        resource url: '/js/angular/moment/1.0.0-beta.3/angular-moment.min.js'
+    }
 }
