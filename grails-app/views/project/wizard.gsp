@@ -423,6 +423,21 @@ span.label i.remove {
             </tr>
 
             <tr>
+                <td class="prop-name">Background image</td>
+                <td class="prop-value">
+
+                    <img class="img-thumbnail img-responsive" data-ng-if="::project.backgroundImageUrl" data-ng-src="{{::project.backgroundImageUrl}}"/>
+
+                    <em data-ng-hide="project.backgroundImageUrl">No image uploaded</em>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="prop-name">Background image copyright text</td>
+                <td class="prop-value">{{::project.backgroundImageCopyright}}</td>
+            </tr>
+
+            <tr>
                 <td class="prop-name">Show map on expedition page</td>
                 <td class="prop-value">{{::project.showMap ? "Yes" : "No"}}</td>
             </tr>
