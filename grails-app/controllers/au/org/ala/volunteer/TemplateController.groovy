@@ -260,7 +260,7 @@ class TemplateController {
     def preview() {
         def templateInstance = Template.get(params.int("id"))
 
-        def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "PreviewProject")
+        def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "${templateInstance.name} Preview (${templateInstance.viewName})")
         def taskInstance = new Task(project: projectInstance)
         def multiMedia = new Multimedia(id: 0)
         taskInstance.addToMultimedia(multiMedia)
