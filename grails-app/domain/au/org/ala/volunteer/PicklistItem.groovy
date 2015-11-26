@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 class PicklistItem implements Serializable {
 
     Picklist picklist
-    Integer index
+    Integer index = 0
     String key
     String value
     String institutionCode

@@ -44,7 +44,6 @@ environments {
         dataSource {
             dbCreate = "update"
             url = "jdbc:postgresql://ala-biocachedb1.vm.csiro.au/volunteers"
-            testOnBorrow = true
             properties {
                 maxActive = 50
                 maxIdle = 25

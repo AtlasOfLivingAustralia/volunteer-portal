@@ -170,7 +170,7 @@
 
     <g:if test="${bgImage}">
         .a-feature.expedition {
-            background: url(${bgImage}) no-repeat center center fixed !important; %{-- important to override the one set in main.css, which should probably be removed --}%
+            background: url(${bgImage}) no-repeat center center fixed;
         }
 
     </g:if>
