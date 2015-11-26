@@ -468,7 +468,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-default transcribeSection">
-                            <div class="panel-default">
+                            <div class="panel-body">
                                 <div class="row transcribeSectionHeader">
                                     <div class="col-sm-12">
                                         <span class="transcribeSectionHeaderLabel"><g:if
