@@ -320,6 +320,8 @@ ul.profile-links {
 .btn {
   border: transparent;
   border-radius: 30px; }
+  .btn.btn-default {
+    border: 1px solid #ccc; }
   .btn:hover, .btn:focus, .btn:active, .btn:active:focus {
     box-shadow: none;
     outline: none; }
@@ -351,8 +353,10 @@ ul.profile-links {
   padding: 15px 0; }
 
 .btn-group.btn-group-sm .btn {
+  border-radius: 30px;
   padding: 5px 10px; }
 .btn-group.btn-group-xs .btn {
+  border-radius: 30px;
   padding: 1px 5px; }
 .btn-group .btn {
   padding: 10px 20px; }

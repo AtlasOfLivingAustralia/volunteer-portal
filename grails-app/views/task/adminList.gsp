@@ -136,26 +136,18 @@
     <div class="col-sm-12">
         <div class="alert alert-info">
             <div class="row">
-                <div class="col-sm-9">
+                <div class="col-sm-8">
                     Total Tasks: ${taskInstanceTotal},
                     Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                     Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
                     &nbsp;
-                    <div class="btn-group" role="group" aria-label="Export">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Export">
                         <button id="btnExportAll" class="btn btn-default">Export all</button>
                         <button id="btnExportTranscribed" class="btn btn-default">Export transcribed</button>
                         <button id="btnExportValidated" class="btn btn-default">Export validated</button>
                     </div>
                 </div>
-                <div class="col-sm-3">
-                    <div class="btn-group pull-right">
-                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-default btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
-                            <i class="fa fa-th-list"></i>
-                        </g:link>
-                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-default btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
-                            <i class="fa fa-th"></i>
-                        </g:link>
-                    </div>
+                <div class="col-sm-2">
                     <div class="input-group">
                         <input class="form-control input-lg" style="height:32px" type="text" name="projectAdminSearch" id="projectAdminSearch" value="${params.q}"
                                size="30"/>
@@ -164,6 +156,16 @@
                                 <i class="glyphicon glyphicon-search"></i>
                             </button>
                         </span>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="btn-group btn-group-sm pull-right">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-default btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
+                            <i class="fa fa-th-list"></i>
+                        </g:link>
+                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-default btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
+                            <i class="fa fa-th"></i>
+                        </g:link>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,9 @@
 .btn {
 	border: transparent;
 	border-radius: 30px;
+  	&.btn-default {
+	  border: 1px solid $btn-default-border;
+	}
 	&:hover, &:focus, &:active, &:active:focus {
 		box-shadow: none;
 		outline: none;
@@ -43,11 +46,13 @@
 .btn-group {
 	&.btn-group-sm {
 	  .btn {
+		border-radius: 30px;
 		padding: 5px 10px;
 	  }
 	}
 	&.btn-group-xs {
 	  .btn {
+		border-radius: 30px;
 		padding: 1px 5px;
 	  }
 	}
