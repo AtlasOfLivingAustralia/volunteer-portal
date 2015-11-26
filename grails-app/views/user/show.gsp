@@ -15,7 +15,7 @@
 
 <body>
 <cl:headerContent hideTitle="true"
-        title="${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? "(that's you!)" : ''}"
+        title="${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? " (that's you!)" : ''}"
         crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
     <%
         pageScope.crumbs = [
@@ -27,14 +27,19 @@
 
             <div class="col-sm-2">
                 <div class="avatar-holder">
-                    <a href="http://en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="To customise this avatar, register your email address at gravatar.com...">
+                    <g:if test="${userInstance.userId == currentUser}">
                         <img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" alt="" class="center-block img-circle img-responsive">
-                    </a>
+                    </g:if>
+                    <g:else>
+                        <a href="http://en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="To customise your avatar, register your email address at gravatar.com...">
+                            <img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" alt="" class="center-block img-circle img-responsive">
+                        </a>
+                    </g:else>
                 </div>
             </div>
             <div class="col-sm-6">
                 <span class="pre-header">Volunteer Profile</span>
-                <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? "(that's you!)" : ''}</h1>
+                <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? " (that's you!)" : ''}</h1>
                 <div class="row">
                     <div class="col-xs-4">
                         <h2><strong>${score}</strong></h2>
