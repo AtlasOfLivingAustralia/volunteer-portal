@@ -298,9 +298,9 @@
 
 <script id="new-unlisted-template" type="x-tmpl-mustache">
     <div class="form-group">
-        <label class="control-label" for="recordValues.{{index}}.unlisted">Species name</label>
-        <div class="controls">
-            <input type="text" class="speciesName input-xlarge autocomplete" data-picklist-id="${template.viewParams.animalsPicklistId}" id="recordValues.{{index}}.unlisted" name="recordValues.{{index}}.unlisted" placeholder="{{placeholder}}" />
+        <label class="col-sm-2 control-label" for="recordValues.{{index}}.unlisted">Species name</label>
+        <div class="col-sm-10">
+            <input type="text" class="speciesName form-control autocomplete" data-picklist-id="${template.viewParams.animalsPicklistId}" id="recordValues.{{index}}.unlisted" name="recordValues.{{index}}.unlisted" placeholder="{{placeholder}}" />
         </div>
     </div>
 </script>
