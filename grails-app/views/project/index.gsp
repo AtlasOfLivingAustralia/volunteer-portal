@@ -170,7 +170,7 @@
 
     <g:if test="${bgImage}">
         .a-feature.expedition {
-            background: url(${bgImage}) no-repeat center center fixed;
+            background-image: url(${bgImage});
         }
 
     </g:if>

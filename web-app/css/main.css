@@ -372,6 +372,9 @@ ul.profile-links {
   padding: 15% 0 10% 0; }
   .a-feature.home {
     color: white;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -395,6 +398,9 @@ ul.profile-links {
   .a-feature.expedition {
     background-color: #fff;
     padding: 60px 0 0 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;

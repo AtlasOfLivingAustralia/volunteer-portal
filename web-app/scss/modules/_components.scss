@@ -4,6 +4,9 @@
 	&.home {
 		color: white;
 		//background: url(../img/feature-digivol-b.jpg) no-repeat center center fixed;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
 		-webkit-background-size: cover;
 		-moz-background-size: cover;
 		-o-background-size: cover;
@@ -35,6 +38,9 @@
 		background-color: #fff;
 		padding: 60px 0 0 0;
 		//background: url(../img/feature-expedition.jpg) no-repeat center center fixed;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
 		-webkit-background-size: cover;
 		-moz-background-size: cover;
 		-o-background-size: cover;

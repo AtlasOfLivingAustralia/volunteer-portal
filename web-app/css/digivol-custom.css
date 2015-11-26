@@ -21,7 +21,7 @@
 }
 
 .a-feature.home {
-    background: url(../images/2.0/feature-digivol-b.jpg) no-repeat center center fixed;
+    background-image: url(../images/2.0/feature-digivol-b.jpg);
 }
 .btn-file {
     position: relative;
