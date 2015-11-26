@@ -2,6 +2,7 @@
 <head>
     <title>Edit Project ${projectInstance?.name}</title>
     <r:require module="bootstrap-switch"/>
+    <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>
 
 <body class="admin">

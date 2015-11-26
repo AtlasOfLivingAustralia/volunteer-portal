@@ -545,7 +545,7 @@
                                 </p>
 
                                 <div>
-                                    <button id="btnValidateSubmitInvalid" class="btn bvp-submit-button">${okCaption}</button>
+                                    <button id="btnValidateSubmitInvalid" class="btn btn-default bvp-submit-button">${okCaption}</button>
                                     <button id="btnWarningCancelSubmission"
                                             class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
                                 </div>
@@ -562,7 +562,7 @@
                                     <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
                                             class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
                                     </button>
-                                    <button type="button" class="btn bvp-submit-button"
+                                    <button type="button" class="btn btn-default bvp-submit-button"
                                             id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
@@ -573,8 +573,8 @@
                                     <button type="button" id="btnSave"
                                             class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
                                     <button type="button" id="btnSavePartial"
-                                            class="btn bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
-                                    <button type="button" class="btn bvp-submit-button"
+                                            class="btn btn-default bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                                    <button type="button" class="btn btn-default bvp-submit-button"
                                             id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>

@@ -5,6 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <r:require module="amplify"/>
     <title>Expedition administration</title>
+    <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 
     <r:script type="text/javascript">
 
