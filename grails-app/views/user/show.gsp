@@ -26,7 +26,11 @@
         <div class="row">
 
             <div class="col-sm-2">
-                <div class="avatar-holder"><img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" alt="" class="center-block img-circle img-responsive"></div>
+                <div class="avatar-holder">
+                    <a href="http://en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="To customise this avatar, register your email address at gravatar.com...">
+                        <img src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" alt="" class="center-block img-circle img-responsive">
+                    </a>
+                </div>
             </div>
             <div class="col-sm-6">
                 <span class="pre-header">Volunteer Profile</span>

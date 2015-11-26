@@ -133,7 +133,6 @@
                 bindShrinkExpandLinks();
                 setupPanZoom();
                 applyReadOnlyIfRequired();
-                insertCoordinateSymbolButtons();
                 bindGlobalKeyHandlers();
                 transcribeWidgets.initializeTranscribeWidgets();
 
@@ -157,30 +156,6 @@
 
             }
 
-            function insertCoordinateSymbolButtons() {
-                // Add clickable icons for deg, min sec in lat/lng inputs
-                var title = "Click to insert this symbol";
-                var icons = " symbols: <span class='coordsIcons'>" +
-    "<a href='#' title='" + title + "' class='btn btn-xs btn-primary' data-symbol='&deg;'>&deg;</a>&nbsp;" +
-    "<a href='#' title='" + title + "' class='btn btn-xs btn-primary' data-symbol='&#39;'>&#39;</a>&nbsp;" +
-    "<a href='#' title='" + title + "' class='btn btn-xs btn-primary' data-symbol='&quot;'>&quot;</a></span>";
-                $(":input.verbatimLatitude, :input.verbatimLongitude").each(function() {
-                    $(this).css('width', '140px');
-                    $(this).after(icons);
-                });
-
-                // Bind an event handler to each button to insert the correct symbol
-                $(".coordsIcons a").click(function(e) {
-                    e.preventDefault();
-                    var input = $(this).parent().prev(':input');
-                    var text = $(input).val();
-                    var char = $(this).attr('data-symbol');
-                    $(input).val(text + char);
-                    $(input).focus();
-                });
-
-            }
-
             function applyReadOnlyIfRequired() {
         <g:if test="${isReadonly}">
             $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
@@ -190,7 +165,7 @@
         function showGeolocationTool() {
             bvp.showModal({
                 url: "${createLink(controller: 'transcribe', action: 'geolocationToolFragment')}",
-                    //width: 978,
+                    size: 'large',
                     //height: 500,
                     //hideHeader: true,
                     title: 'Mapping Tool',
@@ -425,7 +400,7 @@
     /* Mapping tool (popup) */
 
     #mapCanvas {
-        height: 424px;
+        height: 500px;
     }
 
     #mapWidgets .searchHint {
@@ -514,7 +489,7 @@
                                                 <div class="col-sm-8">
                                                     <g:textArea name="recordValues.0.transcriberNotes"
                                                                 value="${recordValues?.get(0)?.transcriberNotes}"
-                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="col-sm-12"/>
+                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -528,7 +503,7 @@
                                                         <g:textArea name="recordValues.0.validatorNotes"
                                                                     value="${recordValues?.get(0)?.validatorNotes}"
                                                                     id="recordValues.0.validatorNotes" rows="5" cols="40"
-                                                                    class="col-sm-12"/>
+                                                                    class="form-control"/>
                                                     </div>
                                                 </div>
                                             </g:if>
@@ -541,35 +516,39 @@
                 </div>
 
                 <g:if test="${!isReadonly}">
+                    <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
+                    <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields"/>
+                    <g:if test="${validator}">
+                        <g:set var="okCaption" value="It's ok, mark as valid anyway"/>
+                        <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields"/>
+                    </g:if>
                     <div class="row" id="errorMessagesContainer" style="display: none">
-                        <div class="alert alert-danger">
-                            <p class="lead">
-                                <strong>Warning!</strong>
-                                There are problems with the field(s) indicated.
-                                Please correct the fields marked in red before proceeding.
-                                <br/>
-                                <button id="btnErrorCancelSubmission" class="btn btn-primary">Continue</button>
-                            </p>
+                        <div class="col-sm-12">
+                            <div class="alert alert-danger">
+                                <p class="lead">
+                                    <strong>Warning!</strong>
+                                    There are problems with the field(s) indicated.
+                                    Please correct the fields marked in red before proceeding.
+                                    <br/>
+                                    <button id="btnErrorCancelSubmission" class="btn btn-primary">${cancelCaption}</button>
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="row" id="warningMessagesContainer" style="display: none">
-                        <div class="alert alert-warning">
-                            <p class="lead">
-                                <strong>Warning!</strong> There may be some problems with the fields indicated.
-                            If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
-                            </p>
+                        <div class="col-sm-12">
+                            <div class="alert alert-warning">
+                                <p class="lead">
+                                    <strong>Warning!</strong> There may be some problems with the fields indicated.
+                                If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
+                                </p>
 
-                            <div>
-                                <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
-                                <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields"/>
-                                <g:if test="${validator}">
-                                    <g:set var="okCaption" value="It's ok, mark as valid anyway"/>
-                                    <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields"/>
-                                </g:if>
-                                <button id="btnValidateSubmitInvalid" class="btn bvp-submit-button">${okCaption}</button>
-                                <button id="btnWarningCancelSubmission"
-                                        class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
+                                <div>
+                                    <button id="btnValidateSubmitInvalid" class="btn bvp-submit-button">${okCaption}</button>
+                                    <button id="btnWarningCancelSubmission"
+                                            class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -626,28 +605,33 @@
 </section> %{-- transcription-template --}%
 
 
-<div id="submitConfirmModal" class="modal hide fade">
+<div id="submitConfirmModal" class="modal fade" tabindex="-1" role="dialog">
     <!-- dialog contents -->
-    <div class="modal-body">
-        <div class="form-horizontal">
-            <span class="control-label"><g:message code="transcribe.task.submit.confirm"
-                                                   default="Submit your selections?"/></span>
-
-            <div class="controls">
-                <button id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
-                <button id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal">Cancel</button>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="col-sm-12">
+                        <p><g:message code="transcribe.task.submit.confirm" default="Submit your selections?"/></p>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-1 col-sm-11">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="controls">
-                <label class="checkbox">
-                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
-                </label>
+            <div class="modal-footer">
+                <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
+                        data-dismiss="modal">Cancel</button>
+                <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
             </div>
         </div>
-    </div>
-
-    <div class="modal-footer">
     </div>
 </div>
 </body>
@@ -694,70 +678,69 @@
 
     </g:if>
 
-    var keepAliveInterval = 10; // Minutes
-    var intervalSeconds = 60 * keepAliveInterval;
+        var keepAliveInterval = 10; // Minutes
+        var intervalSeconds = 60 * keepAliveInterval;
 
-    // Set up the session keep alive
-    setInterval(function() {
-        $.ajax("${createLink(controller: 'ajax', action: 'keepSessionAlive')}").done(function(data) {
-                });
-            }, intervalSeconds * 1000);
+        // Set up the session keep alive
+        setInterval(function() {
+            $.ajax("${createLink(controller: 'ajax', action: 'keepSessionAlive')}").done(function(data) { });
+        }, intervalSeconds * 1000);
 
-            $("#btnSave").click(function(e) {
-                e.preventDefault();
-                if (checkValidation()) {
-                    submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id])}");
-                }
-            });
+        $("#btnSave").click(function(e) {
+            e.preventDefault();
+            if (checkValidation()) {
+                submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id])}");
+            }
+        });
 
-            $("#btnSavePartial").click(function(e) {
-                e.preventDefault();
-                submitFormWithAction("${createLink(controller: 'transcribe', action: 'savePartial', params: [failoverTaskId: taskInstance.id])}");
-            });
+        $("#btnSavePartial").click(function(e) {
+            e.preventDefault();
+            submitFormWithAction("${createLink(controller: 'transcribe', action: 'savePartial', params: [failoverTaskId: taskInstance.id])}");
+        });
 
-            $("#btnValidate").click(function(e) {
-                e.preventDefault();
-                if (checkValidation()) {
-                    submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id])}");
-                }
-            });
+        $("#btnValidate").click(function(e) {
+            e.preventDefault();
+            if (checkValidation()) {
+                submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id])}");
+            }
+        });
 
-            $("#btnDontValidate").click(function(e) {
-                e.preventDefault();
-                submitFormWithAction("${createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id])}");
-            });
+        $("#btnDontValidate").click(function(e) {
+            e.preventDefault();
+            submitFormWithAction("${createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id])}");
+        });
 
-            $("#btnWarningCancelSubmission").click(function(e) {
-                e.preventDefault();
-                $("#submitButtons").css("display", "block");
-                $('#warningMessagesContainer').css("display", "none");
-                $('#errorMessagesContainer').css("display", "none");
-            });
+        $("#btnWarningCancelSubmission").click(function(e) {
+            e.preventDefault();
+            $("#submitButtons").css("display", "block");
+            $('#warningMessagesContainer').css("display", "none");
+            $('#errorMessagesContainer').css("display", "none");
+        });
 
-            $("#btnErrorCancelSubmission").click(function(e) {
-                e.preventDefault();
-                $("#submitButtons").css("display", "block");
-                $('#warningMessagesContainer').css("display", "none");
-                $('#errorMessagesContainer').css("display", "none");
-            });
+        $("#btnErrorCancelSubmission").click(function(e) {
+            e.preventDefault();
+            $("#submitButtons").css("display", "block");
+            $('#warningMessagesContainer').css("display", "none");
+            $('#errorMessagesContainer').css("display", "none");
+        });
 
-            $("#btnValidateSubmitInvalid").click(function(e) {
-                e.preventDefault();
-                submitInvalid();
-            });
+        $("#btnValidateSubmitInvalid").click(function(e) {
+            e.preventDefault();
+            submitInvalid();
+        });
 
-            $("#showNextFromProject, .btn-skip-n").click(function(e) {
-                e.preventDefault();
-                var skip = $(this).data('skip');
-                var url = "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
-                if (skip) url = url + '&skip='+skip;
-                window.location = url;
-            });
+        $("#showNextFromProject, .btn-skip-n").click(function(e) {
+            e.preventDefault();
+            var skip = $(this).data('skip');
+            var url = "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
+            if (skip) url = url + '&skip='+skip;
+            window.location = url;
+        });
 
-            //enableSubmitButtons();
+        //enableSubmitButtons();
 
-            // Now check if we are have to restore from a save gone wrong...
-            checkAndRecoverFromFailedSubmit();
+        // Now check if we are have to restore from a save gone wrong...
+        checkAndRecoverFromFailedSubmit();
 
     });
 
@@ -840,9 +823,6 @@
     var submitRequiresConfirmation = false;
     var $submitConfirm = $("#submitConfirmModal");
 
-%{--$("#submit-confirm-cancel").on("click", function(e) {--}%
-%{--$submitConfirm.modal('hide');     // dismiss the dialog--}%
-%{--});--}%
     $submitConfirm.on("hide", function() {    // remove the event listeners when the dialog is dismissed
         $("#submit-confirm-ok").off("click");
     });

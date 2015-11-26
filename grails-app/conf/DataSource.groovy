@@ -47,13 +47,29 @@ environments {
             testOnBorrow = true
             properties {
                 maxActive = 50
-                maxIdle = 10
-                minIdle = 10
+                maxIdle = 25
+                minIdle = 5
                 initialSize = 10
                 minEvictableIdleTimeMillis = 60000
-                timeBetweenEvictionRunsMillis = 60000
+                timeBetweenEvictionRunsMillis = 5000
                 maxWait = 10000
-                validationQuery = "select max(id) from task"
+                maxAge = 10 * 60000
+                validationQuery = "SELECT 1"
+                validationQueryTimeout = 3
+                validationInterval = 15000
+                testOnBorrow = true
+                testWhileIdle = true
+                testOnReturn = false
+                ignoreExceptionOnPreLoad = true
+                // http://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#JDBC_interceptors
+                jdbcInterceptors = "ConnectionState;StatementCache(max=200)"
+                defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED // safe default
+                // controls for leaked connections
+                abandonWhenPercentageFull = 100 // settings are active only when pool is full
+                removeAbandonedTimeout = 120
+                removeAbandoned = true
+                // use JMX console to change this setting at runtime
+                logAbandoned = false // causes stacktrace recording overhead, use only for debugging
             }
         }
     }

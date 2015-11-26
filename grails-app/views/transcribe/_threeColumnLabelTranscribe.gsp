@@ -4,7 +4,7 @@
 <style>
 </style>
 
-<div class="">
+<div class="form-condensed">
     <div class="row">
         <div class="col-md-12">
             <div>

@@ -1,24 +1,9 @@
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <r:require modules="cameratrap, font-awesome"/>
-<div id="ct-container" >%{-- class="container-fluid fourthree-image" --}%
+<div id="ct-container" >
 
     <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}"/>
-    %{--<div class="row">--}%
-        %{--<div class="col-sm-12">--}%
-            %{--<span id="journalPageButtons">--}%
-                %{--<vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-sm"/>--}%
-                %{--<div id="ct-task-image-toolbar" class="btn-group">--}%
-                    %{--<button type="button" class="btn btn-sm" id="showcolFromProject" data-container="body"--}%
-                            %{--title="Skip the to next image">Skip</button>--}%
-                    %{--<g:link controller="transcribe" action="discard" id="${taskInstance?.id}"--}%
-                            %{--class="btn btn-sm btn-warning" data-container="body"--}%
-                            %{--title="Release your lock on this image and return to the expedition page">Quit</g:link>--}%
-                %{--</div>--}%
-
-            %{--</span>--}%
-        %{--</div>--}%
-    %{--</div>--}%
 
     <div class="row">
         <div id="ct-image-span" class="col-sm-6">

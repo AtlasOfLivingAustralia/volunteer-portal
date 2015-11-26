@@ -106,22 +106,6 @@
     min-height: 200px;
 }
 
-/*#qaCarousel.carousel .carousel-inner {*/
-    /*width: 100%;*/
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-/*}*/
-
-/*#qaCarousel.carousel .carousel-inner > .item {*/
-    /*/!*min-height: 200px;*!/*/
-    /*height: 460px;*/
-    /*overflow-y: auto;*/
-    /*margin-bottom: 15px;*/
-    /*padding-bottom:5px;*/
-    /*-webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(255,254,247,1)), to(rgba(0,0,0,0.3)))*/
-    /*/!*#ff fe f7*!/*/
-/*}*/
-
 #qaCarousel.carousel .carousel-control {
     top: inherit;
     top: initial;
@@ -141,25 +125,4 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-}
-
-.transcribeSection .row {
-    margin-left: -6px;
-    margin-right: -6px;
-}
-
-.transcribeSection .row .col-md-1,
-.transcribeSection .row .col-md-2,
-.transcribeSection .row .col-md-3,
-.transcribeSection .row .col-md-4,
-.transcribeSection .row .col-md-5,
-.transcribeSection .row .col-md-6,
-.transcribeSection .row .col-md-7,
-.transcribeSection .row .col-md-8,
-.transcribeSection .row .col-md-9,
-.transcribeSection .row .col-md-10,
-.transcribeSection .row .col-md-11,
-.transcribeSection .row .col-md-12 {
-    padding-left: 6px;
-    padding-right: 6px;
 }

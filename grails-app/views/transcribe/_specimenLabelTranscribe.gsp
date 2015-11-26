@@ -216,7 +216,7 @@
                     <div class="row" style="margin-bottom: 10px">
                         <div class="col-md-10 col-md-offset-2">
                             <button type="button" class="btn btn-small btn-info"
-                                    id="btnGeolocate">Use mapping tool</button>
+                                    id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
                         </div>
                     </div>
 

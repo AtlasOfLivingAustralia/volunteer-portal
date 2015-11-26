@@ -9,22 +9,22 @@
     <r:require module="amplify"/>
     <r:script type="text/javascript">
             $(document).ready(function () {
-                $("li#goBack a").click(function (e) {
+                $("li#goBack button").click(function (e) {
                     e.preventDefault();
                     window.location.href = "${createLink(action: 'task', id: id, controller: 'transcribe')}";
                 });
 
-                $("li#projectHome a").click(function (e) {
+                $("li#projectHome button").click(function (e) {
                     e.preventDefault();
                     window.location.href = "${createLink(action: 'index', controller: 'project', id: taskInstance?.project?.id)}";
                 });
 
-                $("li#viewTask a").click(function (e) {
+                $("li#viewTask button").click(function (e) {
                     e.preventDefault();
                     window.location.href = "${createLink(controller: 'transcribe', action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
                 });
 
-                $("li#viewStats a").click(function (e) {
+                $("li#viewStats button").click(function (e) {
                     e.preventDefault();
                     window.location.href = "${createLink(action: 'myStats', controller: 'user')}";
                 });
@@ -49,10 +49,10 @@
                     </div>
 
                     <ul>
-                        <li id="goBack"><a href="#">Return to the saved task</a></li>
-                        <li id="viewTask"><a href="#">Transcribe another task</a></li>
-                        <li id="projectHome"><a href="#">Return to project start page</a></li>
-                        <li id="viewStats"><a href="#">View My Stats</a></li>
+                        <li id="viewTask"><button class="btn btn-primary" role="button" autofocus tabindex="1">Transcribe another task</button></li>
+                        <li id="goBack"><button class="btn btn-link" tabindex="2">Return to the saved task</button></li>
+                        <li id="projectHome"><button class="btn btn-link" tabindex="3">Go to project landing page</button></li>
+                        <li id="viewStats"><button class="btn btn-link" tabindex="3">View My Stats</button></li>
                     </ul>
                 </div>
             </div>

@@ -93,10 +93,10 @@
                             id="${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.featuredLabel}</g:link>
                 </h3>
                 <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + potdSummary.iconLabel]"
-                        class="badge"><span
+                        class="not-a-badge"><span
                         class="glyphicon glyphicon-tag icon-flipped"></span>${potdSummary.iconLabel}</g:link><g:link
                     controller="institution" action="index" id="${frontPage.projectOfTheDay?.institutionId}"
-                    class="badge"><span
+                    class="not-a-badge"><span
                         class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${frontPage.projectOfTheDay?.institutionName}</g:link>
 
                 <p>

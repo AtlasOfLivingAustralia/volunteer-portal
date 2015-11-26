@@ -86,3 +86,7 @@ local.properties
 .texlipse
 
 logs
+
+### Sass ###
+.sass-cache/
+

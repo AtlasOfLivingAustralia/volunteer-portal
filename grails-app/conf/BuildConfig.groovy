@@ -38,7 +38,7 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        runtime 'org.postgresql:postgresql:9.3-1103-jdbc41'
+        runtime 'org.postgresql:postgresql:9.3-1104-jdbc41'
         compile 'org.imgscalr:imgscalr-lib:4.2'
         compile 'com.squareup.retrofit:retrofit:1.6.1'
         compile 'com.google.guava:guava:17.0'
@@ -77,7 +77,7 @@ grails.project.dependency.resolution = {
         runtime ":webxml:1.4.1"
 
         runtime ':twitter-bootstrap:3.3.5'
-        runtime ':font-awesome-resources:4.3.0.1'
+        runtime ':font-awesome-resources:4.4.0'
         runtime ':ala-auth:1.3.1'
 
         compile ':scaffolding:2.1.2'

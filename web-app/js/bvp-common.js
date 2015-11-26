@@ -13,6 +13,8 @@ var bvp = {};
             id: options.id ? options.id : 'myModal',
             height: options.height ? options.height : 500,
             width: options.width ? options.width : 600,
+            size: options.size ? options.size : null,
+            className: options.className ? options.className : null,
             title: options.title ? options.title : 'Modal Title',
             hideHeader: options.hideHeader ? options.hideHeader : false,
             onClose: options.onClose || noop,
@@ -26,7 +28,9 @@ var bvp = {};
                 title: options.title,
                 backdrop: options.backdrop,
                 onEscape: true,
-                buttons: options.buttons
+                buttons: options.buttons,
+                size: opts.size,
+                className: opts.className
             });
 
             //Fixes event handling when using bootbox for dialogs

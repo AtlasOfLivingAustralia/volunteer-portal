@@ -36,7 +36,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#"><r:img dir="images/2.0/" file="logoDigivol.png"/></a>
+            <g:link uri="/" class="navbar-brand"><r:img dir="images/2.0/" file="logoDigivol.png"/></g:link>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">

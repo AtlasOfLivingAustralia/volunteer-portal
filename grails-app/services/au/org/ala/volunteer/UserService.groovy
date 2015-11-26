@@ -473,8 +473,7 @@ class UserService {
 
     // Retrieves all the data required for the notebook functionality
     Map appendNotebookFunctionalityToModel(Map model) {
-        Stopwatch sw = new Stopwatch();
-        sw.reset().start()
+        Stopwatch sw = Stopwatch.createStarted();
         final query = freemarkerService.runTemplate(UserController.ALA_HARVESTABLE, [userId: model.userInstance.userId])
         final agg = UserController.SPECIES_AGG_TEMPLATE
 
@@ -483,15 +482,15 @@ class UserService {
         }.sort { m -> m[1] }
         def totalSpeciesCount = speciesList2.size()
         sw.stop()
-        log.info("notebookMainFragment.speciesList2 ${sw.toString()}")
-        log.info("specieslist2: ${speciesList2}")
+        log.debug("notebookMainFragment.speciesList2 ${sw.toString()}")
+        log.debug("specieslist2: ${speciesList2}")
 
         sw.reset().start()
         def fieldObservationQuery = freemarkerService.runTemplate(UserController.FIELD_OBSERVATIONS, [userId: model.userInstance.userId])
         def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, hitsCount)
 
         sw.stop()
-        log.info("notbookMainFragment.fieldObservationCount ${sw.toString()}")
+        log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
 
         sw.reset().start()
         def c = Task.createCriteria()
@@ -503,6 +502,8 @@ class UserService {
         }
         sw.stop()
 
+        log.debug("notebookMainFragment.projectCount ${sw.toString()}")
+
         sw.reset().start()
 
         final matchAllQuery = UserController.MATCH_ALL
@@ -512,9 +513,7 @@ class UserService {
         def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
 
         sw.stop()
-        log.info("notbookMainFragment.percentage ${sw.toString()}")
-
-        log.info("notebookMainFragment.projectCount ${sw.toString()}")
+        log.debug("notbookMainFragment.percentage ${sw.toString()}")
 
         return model << [
                 totalSpeciesCount: totalSpeciesCount,

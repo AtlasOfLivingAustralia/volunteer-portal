@@ -4,8 +4,10 @@
             <div class="row">
                 <div class="col-lg-4">
                     <p class="text-center">
-                        <img src="http://www.gravatar.com/avatar/${cl.showCurrentUserEmail().toLowerCase().encodeAsMD5()}?s=80"
-                             class="img-circle img-responsive avatar"/>
+                        <a href="http://en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="To customise this avatar, register your email address at gravatar.com...">
+                            <img src="http://www.gravatar.com/avatar/${cl.showCurrentUserEmail().toLowerCase().encodeAsMD5()}?s=80"
+                                 class="img-circle img-responsive avatar"/>
+                        </a>
                     </p>
                 </div>
 

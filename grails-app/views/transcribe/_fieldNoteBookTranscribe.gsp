@@ -45,47 +45,52 @@
 <g:if test="${taskInstance.project.template?.viewParams?.doublePage == 'true'}">
     <div class="row">
         <div id="leftPage" class="col-md-6 page">
-            <div class="well well-sm">
-                <div class="row">
-                    <div class="col-md-12">
-                        <g:set var="allTextField"
-                               value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the left hand page into this box as it appears</span>
-                        <a href="#" class="btn btn-default btn-xs fieldHelp"
-                           title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
-                           tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
-                        </a>
-                        <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
-                                class="icon icon-resize-full"></i></button>
-                    </div>
-                    <div class="col-md-12">
-                        <g:textArea class="form-control occurrenceRemarks" name="recordValues.0.occurrenceRemarks"
-                            value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
-                            rows="${numberOfTextRows}" cols="42"/>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <g:set var="allTextField"
+                                   value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
+                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the left hand page into this box as it appears</span>
+                            <a href="#" class="btn btn-default btn-xs fieldHelp"
+                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
+                               tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
+                            </a>
+                            <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
+                                    class="glyphicon glyphicon-resize-full"></i></button>
+                        </div>
+                        <div class="col-md-12">
+                            <g:textArea class="form-control occurrenceRemarks" name="recordValues.0.occurrenceRemarks"
+                                value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
+                                rows="${numberOfTextRows}" cols="42"/>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="rightPage" class="col-md-6 page">
-            <div class="well well-sm">
-                <div class="row">
-                    <div class="col-md-12">
-                        <g:set var="allTextField"
-                               value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the right hand page into this box as it appears</span>
-                        <a href="#" class="btn btn-default btn-xs fieldHelp"
-                           title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
-                                class="fa fa-question help-container"></i></a>
-                        <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
-                                class="icon icon-resize-full"></i></button>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <g:set var="allTextField"
+                                   value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
+                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the right hand page into this box as it appears</span>
+                            <a href="#" class="btn btn-default btn-xs fieldHelp"
+                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
+                                    class="fa fa-question help-container"></i></a>
+                            <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
+                                    class="glyphicon glyphicon-resize-full"></i></button>
+                        </div>
+
+                        <div class="col-md-12">
+                            <g:textArea class="form-control occurrenceRemarks" name="recordValues.1.occurrenceRemarks"
+                                value="${recordValues?.get(1)?.occurrenceRemarks}" id="recordValues.1.occurrenceRemarks"
+                                rows="${numberOfTextRows}" cols="42"/>
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <g:textArea class="form-control occurrenceRemarks" name="recordValues.1.occurrenceRemarks"
-                            value="${recordValues?.get(1)?.occurrenceRemarks}" id="recordValues.1.occurrenceRemarks"
-                            rows="${numberOfTextRows}" cols="42"/>
-                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -93,22 +98,24 @@
 <g:else>
     <div class="row">
         <div class="col-md-12">
-            <div class="well well-sm">
-                <div class="row">
-                <g:set var="allTextField"
-                       value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                <div class="col-md-12">
-                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
-                    <a href="#" class="btn btn-default btn-xs fieldHelp"
-                       title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
-                       tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
-                    </a>
-                </div>
-                <div class="col-md-12">
-                    <g:textArea class="form-control occurrenceRemarks" name="recordValues.0.occurrenceRemarks"
-                            value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
-                            rows="${numberOfTextRows}" cols="42"/>
-                </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <g:set var="allTextField"
+                               value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
+                        <div class="col-md-12">
+                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                            <a href="#" class="btn btn-default btn-xs fieldHelp"
+                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
+                               tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
+                            </a>
+                        </div>
+                        <div class="col-md-12">
+                            <g:textArea class="form-control occurrenceRemarks" name="recordValues.0.occurrenceRemarks"
+                                    value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
+                                    rows="${numberOfTextRows}" cols="42"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,26 +125,28 @@
 <g:if test="${taskInstance.project.template?.viewParams?.hideNames != 'true'}">
     <div class="fields row transcribeSection">
         <div class="col-md-12">
-            <div class="well">
-                <div class="row transcribeSectionHeader">
-                    <div class="col-md-12">
-                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  Where a species or common name appears in the text please enter any relevant information into the fields below</span>
-                        <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
-                    </div>
-                </div>
-
-                <div class="transcribeSectionBody">
-                    <g:set var="entriesField"
-                           value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
-                    <g:if test="${isPreview && !entriesField}">
-                        <div class="alert alert-danger">
-                            This template view (fieldNoteBookTranscribe) requires the <strong>individualCount</strong> field to be configured.
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row transcribeSectionHeader">
+                        <div class="col-md-12">
+                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  Where a species or common name appears in the text please enter any relevant information into the fields below</span>
+                            <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                         </div>
-                    </g:if>
-                    <g:set var="fieldList"
-                           value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort: 'displayOrder'])}"/>
-                    <g:render template="/transcribe/dynamicDatasetRows"
-                              model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+                    </div>
+
+                    <div class="transcribeSectionBody">
+                        <g:set var="entriesField"
+                               value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
+                        <g:if test="${isPreview && !entriesField}">
+                            <div class="alert alert-danger">
+                                This template view (fieldNoteBookTranscribe) requires the <strong>individualCount</strong> field to be configured.
+                            </div>
+                        </g:if>
+                        <g:set var="fieldList"
+                               value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort: 'displayOrder'])}"/>
+                        <g:render template="/transcribe/dynamicDatasetRows"
+                                  model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -177,14 +186,14 @@
                 otherPage.removeClass("col-md-6");
                 otherPage.removeClass(expandedClass);
                 otherPage.addClass(shrunkClass);
-                page.find(".textAreaResizeButton").html('<i class="icon-resize-small"></i>');
+                page.find(".textAreaResizeButton").html('<span class="glyphicon glyphicon-resize-small"></span>');
             } else if (page.hasClass(shrunkClass)) {
                 page.removeClass(shrunkClass);
                 page.addClass(expandedClass);
                 otherPage.removeClass(expandedClass);
                 otherPage.addClass(shrunkClass);
-                page.find(".textAreaResizeButton").html('<i class="icon-resize-small"></i>');
-                otherPage.find(".textAreaResizeButton").html('<i class="icon-resize-full"></i>');
+                page.find(".textAreaResizeButton").html('<span class="glyphicon glyphicon-resize-small"></span>');
+                otherPage.find(".textAreaResizeButton").html('<span class="glyphicon glyphicon-resize-full"></span>');
             } else {
                 page.removeClass(expandedClass);
                 page.removeClass(shrunkClass);
@@ -192,8 +201,8 @@
                 otherPage.removeClass(shrunkClass);
                 otherPage.removeClass(expandedClass);
                 otherPage.addClass("col-md-6");
-                page.find(".textAreaResizeButton").html('<i class="icon-resize-full"></i>');
-                otherPage.find(".textAreaResizeButton").html('<i class="icon-resize-full"></i>');
+                page.find(".textAreaResizeButton").html('<span class="glyphicon glyphicon-resize-full"></span>');
+                otherPage.find(".textAreaResizeButton").html('<span class="glyphicon glyphicon-resize-full"></span>');
                 page.find(".transcribeSectionHeaderLabel").css("display", "inline");
                 otherPage.find(".transcribeSectionHeaderLabel").css("display", "inline");
             }

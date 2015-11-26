@@ -84,7 +84,7 @@
 <g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}"
                               recordValues="${recordValues}" title="Interpreted Location"
                               description="Use the mapping tool before attempting to enter values manually">
-    <button type="button" class="btn btn-small btn-info" id="btnGeolocate">Use mapping tool</button>
+    <button type="button" class="btn btn-small btn-info" id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
 </g:renderFieldCategorySection>
 
 <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}"

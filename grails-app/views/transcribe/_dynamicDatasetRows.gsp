@@ -19,25 +19,10 @@
 
 <style type="text/css">
 
-.fieldLabel {
-    margin-right: 10px;
-    margin-left: 10px;
-    text-wrap: none;
-}
-
-.fieldValue input[type="text"] {
-    padding: 0px;
-    min-height: 22px;
-    width: 130px;
-}
-
 #btnAddRow {
     margin-top: 10px;
 }
 
-.deleteButton {
-    margin: 5px;
-}
 
 #observationFields hr {
     margin: 3px;
@@ -68,40 +53,39 @@
             var htmlStr ="";
             var itemCount = 0;
             for (entryIndex in entries) {
-                htmlStr += '<div>';
                 if (entryIndex > 0) {
                   htmlStr += "<hr/>";
                 }
+                htmlStr += '<div class="form-inline">';
                 var fieldCount = 0;
                 for (fieldIndex in entries[entryIndex]) {
                     var e = entries[entryIndex][fieldIndex];
                     var name = "recordValues." + entryIndex + "." + e.name;
-                    htmlStr += '<span class="fieldLabel">';
                     if (fieldIndex == 0) {
                       htmlStr += '<strong>' + (parseInt(entryIndex) + 1) + '.</strong>&nbsp;';
                     }
-                      htmlStr += e.label;
+
+                    htmlStr += '<div class="form-group">';
+
+                    htmlStr += '<label for="' + name + '">' + e.label;
                     if (e.helpText) {
                       htmlStr += '<a href="#" class="btn btn-default btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><i class="fa fa-question help-container"></i></a>';
                     }
-
-                    htmlStr += '</span>';
-
-                    htmlStr += '<span class="fieldValue">';
+                    htmlStr += '</label> ';
 
                     if (e.fieldType == 'textarea') {
-                      htmlStr += '<textarea name="' + name + '" rows="2" id="' + name + '" class="' + e.name + '">' + e.value + '</textarea>';
+                      htmlStr += '<textarea name="' + name + '" rows="2" id="' + name + '" class="' + e.name + ' form-control">' + e.value + '</textarea>';
                     } else {
-                      htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + '"/>';
+                      htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + ' form-control"/>';
                     }
 
-                    htmlStr += "</span>";
+                    htmlStr += '</div> ';
                     fieldCount++;
                 }
                 if (entryIndex > 0) {
-                htmlStr += '<span class="deleteButton"><button class="btn btn-small btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><i class="icon-remove icon-white"></i>&nbsp;Delete </button></span>';
+                htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="glyphicon glyphicon-remove glyphicon-white"></span> Delete </button>';
                 }
-                htmlStr += "</div>"
+                htmlStr += "</div>";
                 itemCount++;
             }
             $("#observationFields").html(htmlStr);
@@ -142,7 +126,7 @@
 }
 
 function deleteEntry(index) {
-syncEntries()
+syncEntries();
 if (index > 0 && index <= entries.length) {
     entries.splice(index, 1);
     renderEntries();

@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.volunteer.PicklistItem; au.org.ala.volunteer.Picklist" %>
 <div class="row">
     <div id="mapWidgets">
-        <div id="mapWrapper" class="col-sm-6">
+        <div id="mapWrapper" class="col-sm-8">
             <div id="mapCanvas"></div>
             <div class="searchHint">
                 <br/>
@@ -9,7 +9,7 @@
             </div>
         </div>
 
-        <div id="mapInfo" class="col-sm-6">
+        <div id="mapInfo" class="col-sm-4">
 
             <h5>Locality Search</h5>
             <div class="custom-search-input in-modal">
@@ -24,7 +24,7 @@
             </div>
 
             <h5>Coordinate Uncertainty</h5>
-            <p>Adjust uncertainty</p>
+            <label for="infoUncert">Adjust uncertainty</label>
             <select class="form-control" id="infoUncert">
                 <g:set var="coordinateUncertaintyPL"
                        value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
@@ -35,33 +35,27 @@
                 </g:each>
             </select>
 
-            <p class="small">
+            <p>
                 Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map.
             </p>
 
-            <div class="form-horizontal">
-                <h5>Location Data</h5>
-                <div class="form-group">
-                    <label class="col-md-3 control-label" for="infoLng">Longitude:</label>
-                    <label class="col-md-9">
-                        <span id="infoLng" class="form-control-static"></span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-md-3 control-label" for="infoLat">Latitude:</label>
-                    <label class="col-md-9">
-                        <span id="infoLat" class="form-control-static"></span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-md-3 control-label" for="infoLoc">Location:</label>
-                    <label class="col-md-9">
-                        <span id="infoLoc" class="form-control-static"></span>
-                    </label>
-                </div>
-            </div>
+            <h5>Location Data</h5>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th scope="row">Longitude:</th>
+                        <td id="infoLng"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Latitude:</th>
+                        <td id="infoLat"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Location:</th>
+                        <td id="infoLoc"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -138,6 +132,8 @@
                     geocodePosition(marker.getPosition());
                     map.panTo(marker.getPosition());
                 });
+
+        map.panTo(marker.getPosition());
 
         var localityStr = $(':input.verbatimLocality').val();
 
@@ -383,11 +379,18 @@
 
         });
 
-        initializeGeolocateTool();
-        google.maps.event.trigger(map, "resize");
-        setTimeout(function () {
+        var $modal = $('#mapWidgets').parents('.modal');
+        if ($modal.length > 0) {
+            $modal.on('shown.bs.modal', function () {
+                initializeGeolocateTool();
+            })
+        } else {
+            initializeGeolocateTool();
             google.maps.event.trigger(map, "resize");
-        }, 500);
+            setTimeout(function () {
+                google.maps.event.trigger(map, "resize");
+            }, 500);
+        }
 
         bvp.bindTooltips("a.geolocateHelp.fieldHelp", 600);
 

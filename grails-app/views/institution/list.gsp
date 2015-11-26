@@ -132,7 +132,6 @@
                             <div class="caption">
                                 <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
 
-                                <p class="shortDescription" title="${inst.shortDescription}"><cl:truncate maxlength="90">${inst.shortDescription}</cl:truncate></p>
                                 <div class="expedition-progress">
                                     <div class="progress-legend">
                                         <div class="row">
