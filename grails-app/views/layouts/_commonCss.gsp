@@ -1,8 +1,6 @@
 <%-- Allow overriding of primary branding colour --%>
 <meta name="theme-color" content="${g.pageProperty(name: "page.primaryColour", default: "#d5502a")}"/>
 <style>
-    section#footer .footer-brand,
-    section#footer .footer-brand:hover,
     .navbar-brand,
     .navbar-brand:hover,
     .navbar-brand:focus,
