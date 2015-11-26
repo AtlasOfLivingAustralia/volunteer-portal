@@ -16,8 +16,8 @@
                     if (viewedTaskId) {
                         var options = {
                             title: "Last view for task",
-                            url: "${createLink(action: 'viewedTaskFragment')}?viewedTaskId=" + viewedTaskId
-                        }
+                            url: "${createLink(action: 'viewedTaskFragment').encodeAsJavaScript()}?viewedTaskId=" + viewedTaskId
+                        };
                         bvp.showModal(options);
                     }
                 });
@@ -27,7 +27,7 @@
                     doSearch();
                 });
 
-                $("#q").keypress(function (e) {
+                $("#projectAdminSearch").keyup(function (e) {
                     if (e.keyCode == 13) {
                         e.preventDefault();
                         doSearch();
@@ -38,7 +38,7 @@
                     e.preventDefault();
                     var options = {
                         title:'Export all tasks',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id])}"
+                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id]).encodeAsJavaScript()}"
                     };
                     bvp.showModal(options);
                 });
@@ -47,7 +47,7 @@
                     e.preventDefault();
                     var options = {
                         title:'Export transcribed tasks',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id])}"
+                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id]).encodeAsJavaScript()}"
                     };
                     bvp.showModal(options);
 
@@ -57,7 +57,7 @@
                     e.preventDefault();
                     var options = {
                         title:'Export validated tasks',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id])}"
+                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id]).encodeAsJavaScript()}"
                     };
                     bvp.showModal(options);
                 });
@@ -69,12 +69,12 @@
         }); // end .ready()
 
         function doSearch() {
-            var query = $("#q").val()
+            var query = $("#projectAdminSearch").val();
             location.href = "?q=" + query;
         }
 
         function validateInSeparateWindow(taskId) {
-            window.open("${createLink(controller: 'validate', action: 'task')}/" + taskId, "bvp_validate_window");
+            window.open("${createLink(controller: 'validate', action: 'task').encodeAsJavaScript()}/" + taskId, "bvp_validate_window");
             }
     </r:script>
 </head>
@@ -136,36 +136,34 @@
     <div class="col-sm-12">
         <div class="alert alert-info">
             <div class="row">
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     Total Tasks: ${taskInstanceTotal},
                     Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
                     Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
-                    &nbsp;&nbsp;
-                    <button id="btnExportAll" class="btn btn-default btn-small">Export all</button>
-                    <button id="btnExportTranscribed" class="btn btn-default btn-small">Export transcribed</button>
-                    <button id="btnExportValidated" class="btn btn-default btn-small">Export validated</button>
+                    &nbsp;
+                    <div class="btn-group" role="group" aria-label="Export">
+                        <button id="btnExportAll" class="btn btn-default">Export all</button>
+                        <button id="btnExportTranscribed" class="btn btn-default">Export transcribed</button>
+                        <button id="btnExportValidated" class="btn btn-default">Export validated</button>
+                    </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-3">
+                    <div class="btn-group pull-right">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-default btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
+                            <i class="fa fa-th-list"></i>
+                        </g:link>
+                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-default btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
+                            <i class="fa fa-th"></i>
+                        </g:link>
+                    </div>
                     <div class="input-group">
-                        <input class="form-control input-lg" style="height:32px" type="text" name="q" id="q" value="${params.q}"
+                        <input class="form-control input-lg" style="height:32px" type="text" name="projectAdminSearch" id="projectAdminSearch" value="${params.q}"
                                size="30"/>
                         <span class="input-group-btn">
                             <button class="btn btn-small btn-primary" id="searchButton">
                                 <i class="glyphicon glyphicon-search"></i>
                             </button>
                         </span>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="btn-group pull-right">
-                        <a href="${createLink(action: 'projectAdmin', id: projectInstance.id)}"
-                           class="btn btn-default btn-small ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
-                            <i class="fa fa-th-list"></i>
-                        </a>
-                        <a href="${createLink(action: 'projectAdmin', id: projectInstance.id, params: [mode: 'thumbs', max: 48])}"
-                           class="btn btn-default btn-small ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
-                            <i class="fa fa-th"></i>
-                        </a>
                     </div>
                 </div>
             </div>
