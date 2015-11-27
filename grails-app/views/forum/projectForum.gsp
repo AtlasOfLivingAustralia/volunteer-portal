@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <title><cl:pageTitle title="${projectInstance.name} Forum"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
 
@@ -160,7 +160,7 @@
                         <div class="col-md-9">
                             <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a></h2>
                             <h3>${projectInstance.featuredOwner}</h3>
-                            <p>${projectInstance.description}</p>
+                            <p>${raw(projectInstance.description)}</p>
                         </div>
                     </div>
                     <div class="alert alert-success">

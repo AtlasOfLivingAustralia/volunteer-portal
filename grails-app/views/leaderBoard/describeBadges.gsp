@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<cl:headerContent title="${message(code: 'default.leaderboard.explain.label', default: 'Badges')}">
+<cl:headerContent title="${message(code: 'default.leaderboard.describeBadges.label', default: 'Badges')}">
     <% pageScope.crumbs = [] %>
 </cl:headerContent>
 

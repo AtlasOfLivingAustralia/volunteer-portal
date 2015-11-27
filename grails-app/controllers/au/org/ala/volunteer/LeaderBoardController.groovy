@@ -40,7 +40,7 @@ class LeaderBoardController {
         leaderBoardService.topList(category, institution)
     }
 
-    def explain() {
+    def describeBadges() {
         respond [:], model: [badges: AchievementDescription.findAllByEnabled(true, [sort: 'name'])]
     }
 

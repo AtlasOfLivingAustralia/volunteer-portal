@@ -195,7 +195,7 @@
                 </div>
 
                 <div class="col-sm-3">
-                    <h3>About Digivol</h3>
+                    <h3>About DigiVol</h3>
                     <ul>
                         <li><g:link controller="about" fragment="what-is-digivol">What is DigiVol</g:link></li>
                         <li><g:link controller="about" fragment="why-capture-this-data">Why capture this data</g:link></li>

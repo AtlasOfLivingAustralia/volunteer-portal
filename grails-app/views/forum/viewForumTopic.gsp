@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
     <r:require module="panZoom"/>

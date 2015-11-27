@@ -29,7 +29,7 @@
     <g:if test="${!disableHonourBoard}">
     <div class="panel panel-default leaderboard">
         <!-- Default panel contents -->
-        <h2 class="heading">Honour Board <g:link controller="leaderBoard" action="explain" class="pull-right"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
+        <h2 class="heading">Honour Board <g:link controller="leaderBoard" action="describeBadges" class="pull-right"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
         <!-- Table -->
         <table class="table">
             <thead>
@@ -133,8 +133,11 @@
     <h2 class="heading">
         Latest Contributions<span data-ng-if="loading"> <cl:spinner/></span>
     </h2>
-    <ul class="media-list" data-ng-repeat="contributor in contributors">
-        <li class="media">
+    <ul class="media-list"
+        data-ng-repeat="contributor in contributors"
+        data-ng-switch="contributor.type">
+        %{-- Begin template for task transcription contribution --}%
+        <li data-ng-switch-when="task" class="media">
             <div class="media-left">
                 <a data-ng-href="{{userProfileUrl(contributor)}}">
                     <img data-ng-src="{{avatarUrl(contributor)}}" class="avatar img-circle">
@@ -143,7 +146,7 @@
 
             <div class="media-body">
                 <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
-                <h4 class="media-heading"><a>{{contributor.displayName}}</a></h4>
+                <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
 
                 <p>Transcribed <span>{{contributor.transcribedItems}}</span> items from the <a
                         data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a></p>
@@ -154,6 +157,23 @@
                 </div>
                 <a class="btn btn-link btn-xs join" role="button"
                    data-ng-href="{{projectUrl(contributor)}}">Join expedition »</a>
+            </div>
+        </li>
+        %{-- Begin template for forum message contribution --}%
+        <li data-ng-switch-when="forum" class="media">
+            <div class="media-left">
+                <a data-ng-href="{{userProfileUrl(contributor)}}">
+                    <img data-ng-src="{{avatarUrl(contributor)}}" class="avatar img-circle">
+                </a>
+            </div>
+            <div class="media-body">
+                <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
+                <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
+                <p>Has posted in the forum: <a data-ng-href="{{contributor.forumUrl}}">{{contributor.forumName}}</a></p>
+                <div class="transcribed-thumbs">
+                    <img data-ng-src="{{contributor.thumbnailUrl}}">
+                </div>
+                <a class="btn btn-link btn-xs join" data-ng-href="{{contributor.topicUrl}}" role="button">Join discussion »</a>
             </div>
         </li>
     </ul>

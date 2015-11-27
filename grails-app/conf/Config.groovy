@@ -402,4 +402,7 @@ log4j = {
 //    debug   'org.apache.http.headers',
 //            'org.apache.http.wire'
 
+//    trace 'org.hibernate.type'
+//    debug 'org.hibernate.SQL'
+
 }
