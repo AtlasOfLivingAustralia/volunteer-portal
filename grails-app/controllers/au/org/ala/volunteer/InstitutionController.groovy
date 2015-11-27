@@ -58,6 +58,14 @@ class InstitutionController {
             params.order = 'asc'
         }
 
+        if (!params.offset) {
+            params.offset = 0
+        }
+
+        if (!params.limit) {
+            params.limit = 10
+        }
+
         if (params.q) {
             def query = "%${params.q}%"
             institutions = Institution.findAllByNameIlikeOrAcronymIlike(query, query, params)

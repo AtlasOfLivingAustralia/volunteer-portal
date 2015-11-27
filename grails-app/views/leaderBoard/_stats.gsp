@@ -152,7 +152,7 @@
                     <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}">
                     <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
                 </div>
-                <a class="btn btn-default btn-xs join" role="button"
+                <a class="btn btn-link btn-xs join" role="button"
                    data-ng-href="{{projectUrl(contributor)}}">Join expedition »</a>
             </div>
         </li>
