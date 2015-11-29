@@ -1,0 +1,75 @@
+.btn {
+	border: transparent;
+	border-radius: 30px;
+  	&.btn-default {
+	  border: 1px solid $btn-default-border;
+	}
+	&:hover, &:focus, &:active, &:active:focus {
+		box-shadow: none;
+		outline: none;
+	}
+}
+.btn-lg {
+	padding: 10px 40px;
+}
+.a-feature {
+	.btn-primary {
+		&:hover {
+			color: #ccc;
+		}
+		&.btn-complete{
+			background-color: #333;
+		}
+		margin-top: 10px;
+
+	}
+}
+.btn-hollow {
+	border: 1px solid #ddd;
+	color: #ddd;
+	&:hover {
+		color: white;
+		border: 1px solid #ffffff;
+	}
+	&.grey {
+		color: $body-copy;
+		border: 1px solid #dedede;
+		&:hover {
+			border-color: #aaa;
+		}
+	}
+}
+.btn-load {
+	width: 100%;
+	padding: 15px 0;
+}
+.btn-group {
+	&.btn-group-sm {
+	  .btn {
+		border-radius: 30px;
+		padding: 5px 10px;
+	  }
+	}
+	&.btn-group-xs {
+	  .btn {
+		border-radius: 30px;
+		padding: 1px 5px;
+	  }
+	}
+	.btn {
+		padding: 10px 20px;
+	}
+}
+.btn:focus {
+  outline: none;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+	background: #33a6cc;
+}
+ 
+.btn-primary:active, .btn-primary.active {
+	background: #007299;
+	box-shadow: none;
+}
+

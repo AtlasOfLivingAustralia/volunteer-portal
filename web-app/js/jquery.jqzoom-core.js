@@ -20,7 +20,7 @@
  */
 (function ($) {
     //GLOBAL VARIABLES
-    var isIE6 = ($.browser.msie && $.browser.version < 7);
+    var isIE6 = ( navigator.userAgent.match(/msie [6]/i) );
     var body = $(document.body);
     var window = $(window);
     var jqzoompluging_disabled = false; //disabilita globalmente il plugin

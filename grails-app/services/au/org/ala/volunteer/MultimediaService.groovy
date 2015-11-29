@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringUtils
 
 class MultimediaService {
 
@@ -8,6 +9,7 @@ class MultimediaService {
 
     def logService
     def grailsApplication
+    def grailsLinkGenerator
 
     def deleteMultimedia(Multimedia media) {
         def dir = new File(grailsApplication.config.images.home + '/' + media.task?.projectId + '/' + media.task?.id + "/" + media.id)
@@ -19,8 +21,12 @@ class MultimediaService {
         }
     }
 
+    public String filePathFor(Multimedia media) {
+        grailsApplication.config.images.home + File.separator + media.task?.projectId + File.separator + media.task?.id + File.separator + media.id
+    }
+
     public String getImageUrl(Multimedia media) {
-        getImageUrl(media.filePath)
+        media.filePath ? getImageUrl(media.filePath) : ''
     }
 
     public String getImageUrl(String filePath) {
@@ -28,8 +34,23 @@ class MultimediaService {
     }
 
     public String getImageThumbnailUrl(Multimedia media) {
-        return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
+        if (media == null) {
+            log.warn("getImageThumbnailUrl called for null media object")
+            return grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+        }
+        String filePath = filePathFor(media) ?: ''
+        String filename = filenameFromFilePath(media.filePathToThumbnail) ?: ''
+        File file = new File(filePath, filename)
+        log.debug("getImageThumbnailUrl media: $media, filePath: $filePath, filename: $filename, file: $file, exists: ${file.exists()}")
+        if (file.exists()) {
+            return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
+        } else {
+            log.warn("Thumbnail requested for $media but $file doesn't exist")
+            return grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+        }
     }
 
-
+    private String filenameFromFilePath(String filePath) {
+        StringUtils.substringAfterLast(filePath, '/')
+    }
 }

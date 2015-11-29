@@ -1,128 +1,151 @@
 <%@ page import="au.org.ala.volunteer.Project" %>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-        <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
-        <style type="text/css">
-        </style>
-        <r:require module="bootbox"/>
-        <r:require modules="codemirror-json, codemirror-codeedit, codemirror-sublime, codemirror-monokai" />
-        <r:script type='text/javascript'>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
+    <style type="text/css">
+    </style>
+    <r:require module="bootbox"/>
+    <r:require modules="codemirror-json, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>
+    <r:script type='text/javascript'>
 
-            jQuery(function($) {
-                $('button.confirmation-required').click(function(e) {
-                    var confirm = e.target.dataset.confirm || 'Confirm';
-                    var cancel = e.target.dataset.cancel || 'Cancel';
-                    bootbox.confirm("Are you sure you want to " + e.target.dataset.message, cancel, confirm, function(result) {
-                        if (result) {
-                            window.open(e.target.dataset.href, "_self");
-                        }
-                    })
-                });
+        jQuery(function ($) {
+            $('button.confirmation-required').click(function (e) {
+                var confirm = e.target.dataset.confirm || 'Confirm';
+                var cancel = e.target.dataset.cancel || 'Cancel';
+                bootbox.confirm("Are you sure you want to " + e.target.dataset.message, cancel, confirm, function (result) {
+                    if (result) {
+                        window.open(e.target.dataset.href, "_self");
+                    }
+                })
             });
+        });
 
-        </r:script>
-    </head>
+    </r:script>
+</head>
 
-    <body>
+<body class="admin">
 
-        <cl:headerContent title="${message(code:'default.tools.label', default:'Tools')}">
-            <%
-                pageScope.crumbs = [
-                        [link:createLink(controller:'admin'),label:message(code:'default.admin.label', default:'Admin')]
-                ]
-            %>
-        </cl:headerContent>
-
-        <div class="row">
-            <div class="span12">
-                <a href="${createLink(action:'mappingTool')}" class="btn">Mapping tool</a>
-                <a href="${createLink(action:'migrateProjectsToInstitutions')}" class="btn">Expedition-Institution migration tool</a>
-                <a href="${createLink(action:'stagingTasks')}" class="btn">Manage staging queue</a>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="span12">
-                <div class="well well-small" style="margin-top: 10px">
-                    <h3>Caches</h3>
-                    <a href="${createLink(action:'clearPageCaches')}" class="btn">Clear page caches</a>
-                    <a href="${createLink(action:'clearAllCaches')}" class="btn">Clear entity caches</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="span12">
-                <div class="well" style="margin-top: 10px">
-                <h3>Full Text Index</h3>
-                    <button class="confirmation-required btn btn-warning" data-href="${createLink(action:'reindexAllTasks')}" data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
-                    <button class="confirmation-required btn btn-danger" data-href="${createLink(action:'rebuildIndex')}" data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
-                    <div>
-                        Background queue length: <span id="queueLength"><cl:spinner /></span>
+<div class="container">
+    <cl:headerContent title="${message(code: 'default.tools.label', default: 'Tools')}" selectedNavItem="bvpadmin">
+        <%
+            pageScope.crumbs = [
+                    [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
+            ]
+        %>
+    </cl:headerContent>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well well-sm">
+                        <h3>General</h3>
+                        <hr/>
+                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-default">Mapping tool</a>
+                        <a href="${createLink(action: 'migrateProjectsToInstitutions')}"
+                           class="btn btn-default">Expedition-Institution migration tool</a>
+                        <a href="${createLink(action: 'stagingTasks')}" class="btn btn-default">Manage staging queue</a>
                     </div>
-                    <g:form method="GET" action="testQuery" class="form-horizontal">
-                        <fieldset>
-                            <legend>Raw Search Query</legend>
-                            <div class="control-group">
-                                <div id="set-query" class="controls">
-                                    <button id="match_all" class="btn btn-small" data-query="matchAll">Match All</button>
-                                    <button id="project_name" class="btn btn-small" data-query="projectName">Project Name</button>
-                                    <button id="project_id" class="btn btn-small" data-query="projectId">Project Id</button>
-                                    <button id="task_id" class="btn btn-small" data-query="taskId">Task Id</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well well-sm">
+                        <h3>Caches</h3>
+                        <hr/>
+                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-default">Clear page caches</a>
+                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-default">Clear entity caches</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well" style="margin-top: 10px">
+                        <h3>Full Text Index</h3>
+                        <hr/>
+                        <button class="confirmation-required btn btn-warning" data-href="${createLink(action: 'reindexAllTasks')}"
+                                data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
+                        <button class="confirmation-required btn btn-danger" data-href="${createLink(action: 'rebuildIndex')}"
+                                data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
+
+                        <div>
+                            Background queue length: <span id="queueLength"><cl:spinner/></span>
+                        </div>
+                        <g:form method="GET" action="testQuery" class="form-horizontal">
+                            <fieldset>
+                                <legend>Raw Search Query</legend>
+
+                                <div class="form-group">
+                                    <div id="set-query" class="col-sm-10">
+                                        <button id="match_all" class="btn btn-default btn-sm" data-query="matchAll">Match All</button>
+                                        <button id="project_name" class="btn btn-default btn-sm"
+                                                data-query="projectName">Project Name</button>
+                                        <button id="project_id" class="btn btn-default btn-sm" data-query="projectId">Project Id</button>
+                                        <button id="task_id" class="btn btn-default btn-sm" data-query="taskId">Task Id</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="query">Query text</label>
-                                <div class="controls">
-                                    <textarea class="input-block-level" id="query" name="query" rows="10">{
-    "query_string": {
-        "query": "query string"
-    }
-}</textarea>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="query">Query text</label>
+
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="query" name="query" rows="10">{
+            "query_string": {
+                "query": "query string"
+            }
+        }</textarea>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="searchType">Search Type</label>
-                                <div class="controls">
-                                    <select id="searchType" name="searchType">
-                                        <option value="dfs_query_then_fetch">DFS Query then Fetch</option>
-                                        <option value="dfs_query_and_fetch">DFS Query and Fetch</option>
-                                        <option value="query_then_fetch" selected>Query then Fetch</option>
-                                        <option value="query_and_fetch">Query and Fetch</option>
-                                        <option value="scan">Scan</option>
-                                        <option value="count">Count</option>
-                                    </select>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="searchType">Search Type</label>
+
+                                    <div class="col-sm-10">
+                                        <select id="searchType" class="form-control" name="searchType">
+                                            <option value="dfs_query_then_fetch">DFS Query then Fetch</option>
+                                            <option value="dfs_query_and_fetch">DFS Query and Fetch</option>
+                                            <option value="query_then_fetch" selected>Query then Fetch</option>
+                                            <option value="query_and_fetch">Query and Fetch</option>
+                                            <option value="scan">Scan</option>
+                                            <option value="count">Count</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="aggregation">Aggregation</label>
-                                <div class="controls">
-                                    <textarea class="input-block-level" id="aggregation" name="aggregation" rows="10">{
-    "&lt;aggregation_name>" : {
-        "&lt;aggregation_type>" : {
-            &lt;aggregation_body>
-        }
-        [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
-    }
-    [,"&lt;aggregation_name_2>" : { ... } ]*
-}</textarea>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="aggregation">Aggregation</label>
+
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="aggregation" name="aggregation" rows="10">{
+            "&lt;aggregation_name>" : {
+                "&lt;aggregation_type>" : {
+                    &lt;aggregation_body>
+                }
+                [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
+            }
+            [,"&lt;aggregation_name_2>" : { ... } ]*
+        }</textarea>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="control-group">
-                                <div class="controls">
-                                    <g:submitButton class="btn" name="submitQuery" value="Run Query" />
+
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <g:submitButton class="btn btn-default" name="submitQuery" value="Run Query"/>
+                                    </div>
                                 </div>
-                            </div>
-                        </fieldset>
-                    </g:form>
+                            </fieldset>
+                        </g:form>
+                    </div>
                 </div>
             </div>
         </div>
-
-    </body>
-    <r:script>
+    </div>
+</div>
+</body>
+<r:script>
 
 
         $(document).ready(function() {
@@ -131,7 +154,7 @@
         });
 
         function updateQueueLength() {
-            $.ajax("${createLink(controller:'ajax', action:'getUpdateQueueLength')}").done(function(results) {
+            $.ajax("${createLink(controller: 'ajax', action: 'getUpdateQueueLength')}").done(function(results) {
                 $("#queueLength").html(results.queueLength);
             });
         }
@@ -166,5 +189,5 @@
             aEditor.getDoc().setValue(q.a ? JSON.stringify(q.a, null, 2) : "");
         });
 
-    </r:script>
+</r:script>
 </html>

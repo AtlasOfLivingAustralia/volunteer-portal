@@ -19,7 +19,7 @@
 
 <div>
     <h1><g:message code="default.show.label" args="[entityName]"/></h1>
-    <cl:messages />
+    <cl:messages/>
     <div class="dialog">
         <table>
             <tbody>

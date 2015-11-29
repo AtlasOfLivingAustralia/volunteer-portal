@@ -8,10 +8,12 @@ class MessageFilters {
 
             before = {
 
-                def frontPage = FrontPage.instance()
+                FrontPage.withNewSession {
+                    def frontPage = FrontPage.list()[0]
 
-                if (frontPage && StringUtils.isNotEmpty(frontPage.systemMessage)) {
-                    flash.systemMessage = frontPage.systemMessage
+                    if (frontPage && StringUtils.isNotEmpty(frontPage.systemMessage)) {
+                        flash.systemMessage = frontPage.systemMessage
+                    }
                 }
 
                 return true

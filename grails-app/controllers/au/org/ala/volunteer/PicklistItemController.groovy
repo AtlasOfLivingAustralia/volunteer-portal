@@ -75,7 +75,12 @@ class PicklistItemController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
-        [picklistItemInstanceList: PicklistItem.list(params), picklistItemInstanceTotal: PicklistItem.count()]
+
+        def picklistInstance = Picklist.get(params.id)
+
+        List picklistItemInstanceList = PicklistItem.findAllByPicklist(picklistInstance, params)
+
+        [picklistItemInstanceList: picklistItemInstanceList, picklistItemInstanceTotal: picklistItemInstanceList.size(), picklistInstance: picklistInstance]
     }
 
     def create = {

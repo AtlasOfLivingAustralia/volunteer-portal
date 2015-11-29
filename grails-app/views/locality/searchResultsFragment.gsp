@@ -2,11 +2,13 @@
     <div id="">
         <g:each in="${localities}" var="locality" status="i">
             <g:set var="rowclass" value="${i % 2 == 0 ? 'even' : 'odd'}"/>
-            <table class="${rowclass} localitySearchResult" localityId="${locality.id}" lat="${locality.latitude}" lng="${locality.longitude}" locality="${locality.locality}">
+            <table class="${rowclass} localitySearchResult" localityId="${locality.id}" lat="${locality.latitude}"
+                   lng="${locality.longitude}" locality="${locality.locality}">
                 <tr>
                     <td colspan="2" class="locality">${locality.locality}</td>
                     <td class="buttonCell">
-                        <button class="btn selectLocalityButton" localityId="${locality.id}" title="Use this locality">Select&nbsp;locality</button>
+                        <button class="btn selectLocalityButton" localityId="${locality.id}"
+                                title="Use this locality">Select&nbsp;locality</button>
                     </td>
                 </tr>
                 <tr>
@@ -21,7 +23,8 @@
                         </g:if>
                         ${locality.country}
                     </td>
-                    <td class="localityLatlong"><a href="#" class="findOnMapLink" title="Locate on map">[${locality.latitude}, ${locality.longitude}]</a>
+                    <td class="localityLatlong"><a href="#" class="findOnMapLink"
+                                                   title="Locate on map">[${locality.latitude}, ${locality.longitude}]</a>
                     </td>
                     <td>
                     </td>
@@ -32,7 +35,7 @@
 
     <script type="text/javascript">
 
-        $(".selectLocalityButton").click(function(e) {
+        $(".selectLocalityButton").click(function (e) {
             e.preventDefault();
             bindToLocality($(this).attr("localityId"));
             bvp.hideModal();
@@ -43,7 +46,7 @@
 
         localityMap.removeMarkers();
 
-        $(".localitySearchResult").each(function(e) {
+        $(".localitySearchResult").each(function (e) {
 
             var elementId = $(this).attr('localityId');
 
@@ -55,17 +58,17 @@
                         title: $(this).attr('locality'),
                         localityId: $(this).attr('localityId'),
                         animation: google.maps.Animation.DROP,
-                        mouseover: function(e, y) {
+                        mouseover: function (e, y) {
                             $('table[localityId="' + elementId + '"]').css("background", "orange");
 
                             var container = $('#localitySearchResults');
                             var scrollTo = $('table[localityId="' + elementId + '"]');
 
                             container.scrollTop(
-                                scrollTo.offset().top - container.offset().top + container.scrollTop() - 20
+                                    scrollTo.offset().top - container.offset().top + container.scrollTop() - 20
                             );
                         },
-                        mouseout: function(e, y) {
+                        mouseout: function (e, y) {
                             $('table[localityId="' + elementId + '"]').css("background", "");
                         }
                     });
@@ -77,7 +80,7 @@
             }
         });
 
-        $('.localitySearchResult').mouseenter(function(e) {
+        $('.localitySearchResult').mouseenter(function (e) {
             var localityId = $(this).attr('localityId');
             if (localityId) {
                 $(this).css("background", "orange");
@@ -85,7 +88,7 @@
             }
         });
 
-        $('.localitySearchResult').mouseleave(function(e) {
+        $('.localitySearchResult').mouseleave(function (e) {
             var localityId = $(this).attr('localityId');
             if (localityId) {
                 $(this).css('background', '');
@@ -93,7 +96,7 @@
             }
         });
 
-        $('.findOnMapLink').click(function(e) {
+        $('.findOnMapLink').click(function (e) {
             e.preventDefault();
             var node = $(this).closest('.localitySearchResult')
             if (node) {

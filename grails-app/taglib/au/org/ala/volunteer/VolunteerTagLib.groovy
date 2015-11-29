@@ -26,9 +26,32 @@ class VolunteerTagLib {
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate']
 
+    /**
+     * @attr title The page title
+     */
+    def pageTitle = { attrs, body ->
+        def appName = g.message(code: 'default.application.name').toString().toUpperCase()
+        def pageName = attrs.title ?: 'Home'
+        out << "$appName | $pageName"
+    }
+
+    def showCurrentUserName = {attrs, body ->
+        out << userService.authService.displayName
+    }
+
+    def showCurrentUserEmail = {attrs, body ->
+        out << userService.authService.email
+    }
+
     def isLoggedIn = { attrs, body ->
 
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            out << body()
+        }
+    }
+
+    def isNotLoggedIn = { attrs, body ->
+        if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << body()
         }
     }
@@ -79,13 +102,14 @@ class VolunteerTagLib {
      * @attr tooltipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
      * @atrr tipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
      * @attr targetPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     * @attr width
      */
     def helpText = { attrs, body ->
         def mb = new MarkupBuilder(out)
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
         if (helpText) {
             helpText = markdownService.markdown(helpText)
-            def attributes = [href:'#', class:'fieldHelp', title:helpText, tabindex: "-1"]
+            def attributes = [href:'#', class:"btn btn-default btn-xs fieldHelp", title:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.tooltipPosition = attrs.tooltipPosition
             }
@@ -100,9 +124,55 @@ class VolunteerTagLib {
                 attributes.width = attrs.width
             }
 
+            if (attrs.customClass) {
+                attributes.customClass = attrs.customClass;
+            }
+
             mb.a(attributes) {
-                span(class:'help-container') {
-                    mkp.yieldUnescaped('&nbsp;')
+                i(class:'fa fa-question help-container') {
+                    mkp.yieldUnescaped('')
+                }
+            }
+        } else {
+            mb.mkp.yieldUnescaped("&nbsp;")
+        }
+    }
+
+    /**
+     * @attr markdown defaults to true, will invoke the markdown service
+     * @attr tooltipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     * @atrr tipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     * @attr targetPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
+     */
+    def ngHelpText = { attrs, body ->
+        def mb = new MarkupBuilder(out)
+        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
+        if (helpText) {
+            helpText = markdownService.markdown(helpText)
+            def attributes = [href:'javascript:void(0)', class:'btn btn-default btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
+            if (attrs.tooltipPosition) {
+                attributes.qtipMy = attrs.tooltipPosition
+            }
+            if (attrs.tipPosition) {
+                attributes.qtipAt = attrs.tipPosition
+            }
+            if (attrs.targetPosition) {
+                attributes.targetPosition = attrs.targetPosition
+            }
+
+            if (attrs.classes) {
+                attributes.'qtip-class' = attrs.classes;
+            } else {
+                attributes.'qtip-class' = 'qtip-bootstrap';
+            }
+
+            if (attrs.width) {
+                attributes.width = attrs.width
+            }
+
+            mb.a(attributes) {
+                i(class:'fa fa-question help-container') {
+                    mkp.yieldUnescaped('')
                 }
             }
         } else {
@@ -144,6 +214,7 @@ class VolunteerTagLib {
     /**
      *
      */
+    //TODO This is hideous and it should disappear after applying the new skin
     def navbar = { attrs, body ->
 
         def selected = null;
@@ -339,7 +410,7 @@ class VolunteerTagLib {
                 def badgeClass = "label"
                 if (taskInstance.isValid == false) {
                     status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-important"
+                    badgeClass = "label label-danger"
                 } else if (taskInstance.isValid) {
                     status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
                     badgeClass = "label label-success"
@@ -370,11 +441,12 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr title
+     * @attr title //REQUIRED
      * @attr selectedNavItem
      * @attr crumbLabel
      * @attr hideTitle
      * @attr hideCrumbs
+     * @attr complexBodyMarkup
      */
     def headerContent = { attrs, body ->
 
@@ -401,55 +473,68 @@ class VolunteerTagLib {
             }
 
             if (!attrs.hideCrumbs) {
-                mb.nav(id:'breadcrumb') {
-                    ol {
-                        li {
-                            a(href:createLink(uri:'/')) {
-                                mkp.yield(message(code:'default.home.label'))
-                            }
+                mb.ul(class: 'breadcrumb-list') {
+                    li {
+                        a(href:createLink(uri:'/')) {
+                            mkp.yield(message(code:'default.home.label'))
                         }
-                        if (crumbList) {
-                            for (int i = 0; i < crumbList?.size(); i++) {
-                                def item = crumbList[i]
-                                li {
-                                    a(href: item.link) {
-                                        mkp.yield(item.label)
-                                    }
+                    }
+                    if (crumbList) {
+                        for (int i = 0; i < crumbList?.size(); i++) {
+                            def item = crumbList[i]
+                            li {
+                                span(class:'glyphicon glyphicon-menu-right') {
+                                    mkp.yield(' ')
+                                }
+                                a(href: item.link) {
+                                    mkp.yield(item.label)
                                 }
                             }
                         }
-                        li(class:'last') {
-                            span {
-                                mkp.yield(crumbLabel)
-                            }
+                    }
+                    li(class:'active') {
+                        span(class:'glyphicon glyphicon-menu-right') {
+                            mkp.yield(' ')
                         }
+                        mkp.yield(crumbLabel)
                     }
                 }
+
             }
 
-            if (!attrs.hideTitle) {
-                mb.h1(class:'bvp-heading') {
-                    mkp.yield(attrs.title)
-                }
-            }
-
-            if (bodyContent) {
-                mb.div {
-                    mb.mkp.yieldUnescaped(bodyContent)
-                }
-            }
 
         }
 
+        sitemesh.captureContent(tag:'page-title') {
+            def heading = ""
+            if (!attrs.hideTitle) {
+                heading = attrs.title
+            }
+
+            if (attrs.complexBodyMarkup) {
+                mb.mkp.yieldUnescaped(bodyContent)
+            } else {
+                mb.div(class:"row") {
+                    div(class:"col-sm-10") {
+                        if (heading) {
+                            mb.h1(class:'bvp-heading') {
+                                mkp.yield(attrs.title)
+                            }
+                        }
+                        mb.mkp.yieldUnescaped(bodyContent)
+                    }
+                }
+            }
+        }
     }
 
     def spinner = { attrs, body ->
-        out << "<image src=\"${resource(dir:'images', file:'spinner.gif')}\" />"
+        out << '<i class="fa fa-cog fa-spin fa-2x"></i>'
     }
 
     def sequenceThumbnail = { attrs, body ->
         def project = attrs.project
-        def seq = attrs.seqNo
+        def seq = attrs.seqNo as String
         def task = taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)
         if (task) {
             def url, fullUrl = ''
@@ -484,8 +569,8 @@ class VolunteerTagLib {
 
         if (task) {
             def url = "", fullUrl = ''
-            def mm = task.multimedia?.first()
-            if (mm) {
+            final Multimedia mm = task.multimedia?.first()
+            if (mm != null) {
                 url = multimediaService.getImageThumbnailUrl(mm)
                 fullUrl = multimediaService.getImageUrl(mm)
             }
@@ -535,9 +620,9 @@ class VolunteerTagLib {
         def current = pageProperty(name:'page.pageTitle')?.toString()
 
         def mb = new MarkupBuilder(out)
-        mb.li(class: active == current ? 'active' : '') {
+        mb.li(class: "list-group-item ${active == current ? 'active' : ''}") {
             a(href:attrs.href) {
-                i(class:'icon-chevron-right') { mkp.yieldUnescaped('&nbsp;')}
+                i(class:'fa fa-chevron-right') { mkp.yieldUnescaped('&nbsp;')}
                 mkp.yield(attrs.title)
             }
         }
@@ -579,32 +664,6 @@ class VolunteerTagLib {
     def ifInstitutionHasLogo = { attrs, body ->
         def institutionInstance = attrs.institution as Institution
         if (institutionService.hasLogoImage(institutionInstance)) {
-            out << body()
-        }
-    }
-
-    /**
-     * @attr institution
-     */
-    def ifInstitutionHasBanner = { attrs, body ->
-        def institutionInstance = attrs.institution as Institution
-        if (!institutionInstance) {
-            def id = (attrs.institution ?: attrs.id) as Long
-            institutionInstance = Institution.get(id)
-        }
-        if (institutionInstance) {
-            if (institutionService.hasBannerImage(institutionInstance)) {
-                out << body()
-            }
-        }
-    }
-
-    /**
-     * @attr institution
-     */
-    def ifInstitutionHasImage = { attrs, body ->
-        def institutionInstance = attrs.institution as Institution
-        if (institutionService.hasImage(institutionInstance)) {
             out << body()
         }
     }
@@ -780,5 +839,44 @@ class VolunteerTagLib {
         } else {
             df.format(new Date())
         }
+    }
+
+    /**
+     * Truncate text at maxlength with ellipse symbol
+     *
+     * @attr maxlength REQUIRED
+     * @attr ellipse
+     */
+    def truncate = { attrs, body ->
+        final ELLIPSIS = attrs.ellipse ?: '…'
+        def maxLength = attrs.maxlength
+        final bodyText = body().replaceAll("<[^>]*>", '') // strip out html tags
+
+        if (maxLength == null || !maxLength.isInteger() || maxLength.toInteger() <= 0) {
+            throw new Exception("The attribute 'maxlength' must an integer greater than 3. Provided value: $maxLength")
+        } else {
+            maxLength = maxLength.toInteger()
+        }
+        if (maxLength <= ELLIPSIS.size()) {
+            throw new Exception("The attribute 'maxlength' must be greater than 3. Provided value: $maxLength")
+        }
+        if (bodyText.length() > maxLength) {
+            out << bodyText[0..maxLength - (ELLIPSIS.size() + 1)] + ELLIPSIS
+        } else {
+            out << bodyText
+        }
+    }
+
+    /**
+     * Taken from http://stackoverflow.com/a/7427266/249327
+     *
+     * Attr hex REQUIRED
+     */
+    def hexToRbg = { attrs, body ->
+        String hex = attrs.hex
+        String color = Integer.valueOf( hex.substring( 1, 3 ), 16 ) + "," +
+                Integer.valueOf( hex.substring( 3, 5 ), 16 ) + "," +
+                Integer.valueOf( hex.substring( 5, 7 ), 16 )
+        out << color
     }
 }

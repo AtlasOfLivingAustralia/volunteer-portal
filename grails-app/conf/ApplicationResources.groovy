@@ -1,12 +1,41 @@
 modules = {
 
-//    'style' {
-//        resource url:'/less/bvp-bootstrap.less',attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_style', deposition: 'head'
-//    }
+    'digivol' {
+        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip'
+        resource url: '/css/main.css'
+        resource url: '/css/digivol-custom.css'
+    }
+
+    'digivol-stats' {
+        dependsOn 'angular'
+        resource url: '/js/digivol-stats.js'
+        resource url: '/css/digivol-stats.css'
+    }
+
+    'digivol-notebook' {
+        dependsOn 'digivol', 'marker-clusterer'
+        resource url: 'js/digivol-notebook.js'
+    }
+
+    'digivol-transcribe' {
+        dependsOn 'digivol', 'bootbox'
+        resource url: '/css/digivol-expedition.css'
+    }
+
+    'digivol-new-project-wizard' {
+        dependsOn 'angular', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead' // 'angular-typeahead',
+        resource url: '/js/new-project-wizard.js'
+    }
+
+    'digivol-image-resize' {
+        dependsOn 'jquery.resizeAndCrop'
+        resource url: '/js/imageResize.js'
+    }
 
     'qtip' {
         dependsOn "jquery"
-        resource url:'/js/jquery.qtip-1.0.0-rc3.min.js'
+        resource url:'/js/qtip.2.2.1/jquery.qtip.css'
+        resource url:'/js/qtip.2.2.1/jquery.qtip.js'
     }
 
     'mouseWheel' {
@@ -23,10 +52,6 @@ modules = {
         'jquery-theme' {
             resource id:'theme', url:'/js/jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'
         }
-    }
-
-    'bootstrap-js' {
-        resource url:[dir:'js', file:'bootstrap.js', plugin: 'ala-web-theme', disposition: 'head']
     }
 
     'jqZoom' {
@@ -69,8 +94,8 @@ modules = {
 
     "bootstrap-switch" {
         dependsOn "jquery"
-        resource url: 'js/bootstrap-switch/bootstrap-switch.css'
-        resource url: 'js/bootstrap-switch/bootstrap-switch.js'
+        resource url: 'js/bootstrap-switch/bootstrap-switch.min.css'
+        resource url: 'js/bootstrap-switch/bootstrap-switch.min.js'
     }
 
     "institution-dropdown" {
@@ -103,11 +128,11 @@ modules = {
 
     "bootbox" {
         dependsOn "bootstrap-js, jquery"
-        resource url: 'js/bootbox/3.3.0/bootbox.js'
+        resource url: 'js/bootbox/4.4.0/bootbox.js'
     }
 
     "labelAutocomplete" {
-        dependsOn "bootstrap-js, jquery"
+        dependsOn "bootstrap-js, jquery, typeahead"
         resource url: 'js/label.autocomplete.js'
         resource url: 'css/label.autocomplete.css'
     }
@@ -173,7 +198,83 @@ modules = {
         resource url: 'css/cameratrap.css'
     }
 
-    "fontawesome" {
-        resource url: 'css/font-awesome/4.3.0/css/font-awesome.min.css'
+    'bootstrap-file-input' {
+        dependsOn 'jquery', 'bootstrap'
+        resource url: 'js/bootstrap.file-input/bootstrap.file-input.js'
+    }
+
+    'bootstrap-colorpicker' {
+        dependsOn 'jquery', 'bootstrap'
+        resource url: 'js/bootstrap-colorpicker/2.3/js/bootstrap-colorpicker.min.js'
+        resource url: 'js/bootstrap-colorpicker/2.3/css/bootstrap-colorpicker.min.css'
+    }
+
+    "moment" {
+        resource url: 'js/moment/2.10.6/moment.min.js'
+    }
+
+    "livestamp" {
+        dependsOn 'jquery', 'moment'
+        resource url: 'js/livestamp/1.1.2/livestamp.min.js'
+    }
+
+    'marker-clusterer' {
+        resource url: 'js/markerclusterer.js'
+
+    }
+
+    'typeahead' {
+        resource url: 'js/typeahead/0.11.1/typeahead.bundle.js'
+        resource url: 'js/typeahead/0.11.1/typeaheadjs.css'
+    }
+
+    'jquery.resizeAndCrop' {
+        resource url: 'js/jquery.resizeandcrop.0.4.0/jquery.resizeandcrop.css'
+        resource url: 'js/jquery.resizeandcrop.0.4.0/jquery.resizeandcrop.js'
+    }
+
+    'angular' {
+        resource url: 'js/angular/1.4.7/angular.min.js'
+        resource url: 'js/angular/1.4.7/angular-csp.css'
+    }
+
+    'angular-ui-router' {
+        dependsOn 'angular'
+        resource url: '/js/angular/ui-router/0.2.15/angular-ui-router.min.js'
+    }
+
+    'angular-typeahead' {
+        dependsOn 'jquery', 'angular', 'typeahead'
+        resource url: '/js/angular/typeahead/0.2.4/angular-typeahead.min.js'
+    }
+
+    'angular-qtip' {
+        dependsOn 'jquery', 'angular', 'qtip'
+        resource url: '/js/angular/qtip/angular-qtip.js'
+    }
+
+    'angular-simple-logger' {
+        dependsOn 'angular'
+        resource url: '/js/angular/simple-logger/0.1.5/angular-simple-logger.light.min.js'
+    }
+
+    'angular-google-maps' {
+        dependsOn 'angular', 'underscore', 'angular-simple-logger'
+        resource url: '/js/angular/google-maps/2.2.1/angular-google-maps.min.js'
+    }
+
+    'ng-file-upload' {
+        dependsOn 'angular'
+        resource url: '/js/angular/file-upload/9.1.2/ng-file-upload.min.js'
+    }
+
+    'angular-bootstrap-show-errors' {
+        dependsOn 'angular'
+        resource url: '/js/angular/bootstrap-show-errors/2.3.0/showErrors.min.js'
+    }
+
+    'angular-moment' {
+        dependsOn 'angular', 'moment'
+        resource url: '/js/angular/moment/1.0.0-beta.3/angular-moment.min.js'
     }
 }

@@ -2,51 +2,54 @@ var bvp = {};
 
 (function(lib) {
 
+    var noop = function() {};
+
     lib.showModal = function(options) {
 
         var opts = {
             backdrop: options.backdrop ? options.backdrop : true,
             keyboard: options.keyboard ? options.keyboard: true,
             url: options.url ? options.url : false,
-            id: options.id ? options.id : 'modal_element_id',
+            id: options.id ? options.id : 'myModal',
             height: options.height ? options.height : 500,
             width: options.width ? options.width : 600,
+            size: options.size ? options.size : null,
+            className: options.className ? options.className : null,
             title: options.title ? options.title : 'Modal Title',
             hideHeader: options.hideHeader ? options.hideHeader : false,
-            onClose: options.onClose ? options.onClose : null,
-            onShown: options.onShown ? options.onShown : null
+            onClose: options.onClose || noop,
+            onShown: options.onShown || noop,
+            buttons: options.buttons ? options.buttons : null
         };
 
-        var html = "<div id='" + opts.id + "' class='modal hide' role='dialog' aria-labelledby='modal_label_" + opts.id + "' aria-hidden='true' style='width: " + opts.width + "px; margin-left: -" + opts.width / 2 + "px;overflow: hidden'>";
-        if (!opts.hideHeader) {
-            html += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button><h3 id='modal_label_" + opts.id + "'>" + opts.title + "</h3></div>";
-        }
-        html += "<div class='modal-body' style='max-height: " + opts.height + "px'>Loading...</div></div>";
+        $.get(opts.url, function(html) {
+            var dialog = bootbox.dialog({
+                message: html,
+                title: options.title,
+                backdrop: options.backdrop,
+                onEscape: true,
+                buttons: options.buttons,
+                size: opts.size,
+                className: opts.className
+            });
 
-        $("body").append(html);
-
-        var selector = "#" + opts.id;
-
-        $(selector).on("hidden", function() {
-            if (opts.onClose) {
+            //Fixes event handling when using bootbox for dialogs
+            dialog.on('hidden.bs.modal', function(e) {
                 opts.onClose();
-            }
-            $(selector).remove();
-
-            // Pop this modal off the history stack. Will only work on browsers that support window history
-            if (window.history && window.history.pushState) {
-                var current = window.history.state;
-                if (current && current["bvp-modal"]) {
-                    window.history.back(1);
+                // Pop this modal off the history stack. Will only work on browsers that support window history
+                if (window.history && window.history.pushState) {
+                    var current = window.history.state;
+                    if (current && current["bvp-modal"]) {
+                        window.history.back(1);
+                    }
                 }
-            }
+            });
 
-        });
-
-        $(selector).on("shown", function() {
-            if (opts.onShown) {
-                opts.onShown();
-            }
+            dialog.on('shown.bs.modal', function(e) {
+                if (opts.onShown) {
+                    opts.onShown();
+                }
+            });
         });
 
         // hook the back button so that it closes the window. Only works on browsers that support window.history and window.history.popstate
@@ -57,16 +60,10 @@ var bvp = {};
             };
         }
 
-        $(selector).modal({
-            remote: opts.url,
-            keyboard: opts.keyboard,
-            backdrop: opts.backdrop
-        });
-
     };
 
     lib.hideModal = function() {
-        $("#modal_element_id").modal('hide');
+        bootbox.hideAll();
     };
 
     lib.htmlEscape = function(str) {
@@ -98,10 +95,10 @@ var bvp = {};
     lib.bindTooltips = function(selector, width) {
 
         if (!selector) {
-            selector = "a.fieldHelp";
+            selector = ".fieldHelp";
         }
         if (!width) {
-            width = 300;
+            width = '500px';
         }
         // Context sensitive help popups
         $(selector).each(function() {
@@ -123,30 +120,27 @@ var bvp = {};
 
             var elemWidth = $(this).attr("width");
             if (elemWidth) {
-                width = elemWidth;
+                width = elemWidth.toString() + 'px';
+            }
+
+            var styleClasses = ['qtip-bootstrap'];
+            var customClass = $(this).attr("customClass");
+            if (customClass) {
+                styleClasses.push(customClass);
             }
 
             $(this).qtip({
                 tip: true,
                 position: {
-                    corner: {
-                        target: targetPosition,
-                        tooltip: tooltipPosition
-                    }
+                    my: tooltipPosition,
+                    at: targetPosition
+                },
+                hide: {
+                  fixed: true
                 },
                 style: {
                     width: width,
-                    padding: 8,
-                    background: 'white', //'#f0f0f0',
-                    color: 'black',
-                    textAlign: 'left',
-                    border: {
-                        width: 4,
-                        radius: 5,
-                        color: '#E66542'// '#E66542' '#DD3102'
-                    },
-                    tip: tipPosition,
-                    name: 'light' // Inherit the rest of the attributes from the preset light style
+                    classes: styleClasses.join(' '),
                 }
             }).bind('click', function(e){ e.preventDefault(); return false; });
 

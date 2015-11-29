@@ -1,11 +1,9 @@
 import au.org.ala.volunteer.*
 import com.google.common.io.Resources
 import grails.converters.JSON
-import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang3.time.StopWatch
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.hibernate.FlushMode
@@ -22,8 +20,6 @@ class BootStrap {
     def fullTextIndexService
 
     def init = { servletContext ->
-
-        migrateUserIds();
 
         defineMetaMethods();
 
@@ -52,122 +48,6 @@ class BootStrap {
 
         fullTextIndexService.ping()
 
-    }
-
-    private void migrateUserIds() {
-        final migrateProp = grailsApplication.config.bvp.users.migrateIds
-        final migrate = migrateProp?.toBoolean()
-        if (migrate) {
-            final sw = new StopWatch()
-            sw.start()
-            final users = User.findAllByUserIdLike("%@%")
-            sw.stop()
-            log.warn("Took ${sw} to load users")
-            sw.reset()
-            sw.start()
-            final missing = []
-            final emailsAndIds = []
-            users.each {
-                if (it.email == 'system' || it.userId == 'system') {
-                    it.userId = 'system'
-                    it.email = 'support@ala.org.au'
-                } else {
-                    final userDetails = authService.getUserForEmailAddress(it.email)
-
-                    if (userDetails) {
-                        it.userId = userDetails.userId
-                        emailsAndIds.add([id: it.userId, email: it.email])
-                    } else {
-                        missing.add(it.email)
-                        log.warn("Missing user details for email address: ${it.email}!")
-                    }
-                }
-            }
-            sw.stop()
-            log.warn("Took ${sw} to get user ids via auth service")
-            sw.reset()
-            sw.start()
-
-            def test = checkMissing(Task,'lastViewedBy', missing)
-            test += checkMissing(Task,'fullyTranscribedBy', missing)
-            test += checkMissing(Task,'fullyValidatedBy', missing)
-            test += checkMissing(NewsItem,'createdBy', missing)
-            test += checkMissing(Field, 'transcribedByUserId', missing)
-            test += checkMissing(ViewedTask, 'userId', missing)
-            test += checkMissing(Template, 'author', missing)
-            if (test > 0) {
-                log.warn("a total of ${test} records still use email addresses")
-            }
-            sw.stop()
-            log.warn("Took ${sw} to test for domain objects referencing missing ids")
-            sw.reset()
-            sw.start()
-
-            User.saveAll(users)
-            sessionFactory.currentSession.flush()
-            sessionFactory.currentSession.clear()
-            sw.stop()
-            log.warn("Took ${sw} to save changes")
-            sw.reset()
-            sw.start()
-
-            def sql
-            try {
-                sql = new Sql(dataSource)
-
-                sql.withTransaction {
-                    def results = sql.withBatch { stmt ->
-                        stmt.addBatch("SET temp_buffers = '1GB';")
-                        // DROP INDEXES
-                        stmt.addBatch("DROP INDEX if exists field_name_index_superceeded_task_idx;")
-                        stmt.addBatch("DROP INDEX if exists fieldnameidx;")
-                        stmt.addBatch("DROP INDEX if exists fieldupdatedidx;")
-                        // BATCH UPDATES
-                        stmt.addBatch("UPDATE task AS t SET last_viewed_by = v.user_id FROM vp_user AS v WHERE t.last_viewed_by is not null AND t.last_viewed_by = v.email;")
-                        stmt.addBatch("UPDATE task AS t SET fully_transcribed_by = v.user_id FROM vp_user AS v WHERE t.fully_transcribed_by is not null AND t.fully_transcribed_by = v.email;")
-                        stmt.addBatch("UPDATE task AS t SET fully_validated_by = v.user_id FROM vp_user AS v WHERE t.fully_validated_by is not null AND t.fully_validated_by = v.email;")
-                        stmt.addBatch("UPDATE news_item AS n SET created_by = v.user_id FROM vp_user AS v WHERE n.created_by is not null AND  n.created_by = v.email;")
-                        stmt.addBatch("UPDATE field AS f SET transcribed_by_user_id = v.user_id FROM vp_user AS v WHERE f.transcribed_by_user_id is not null AND f.transcribed_by_user_id = v.email;")
-                        stmt.addBatch("UPDATE viewed_task AS t SET user_id = v.user_id FROM vp_user AS v WHERE t.user_id is not null AND t.user_id = v.email;")
-                        stmt.addBatch("UPDATE template AS t SET author = v.user_id FROM vp_user AS v WHERE t.author is not null AND t.author = v.email;")
-                        // RE ADD INDEXES
-                        stmt.addBatch("""CREATE INDEX field_name_index_superceeded_task_idx
-                                        ON field
-                                        USING btree
-                                        (name COLLATE pg_catalog."default", record_idx, superceded, task_id);""")
-                        stmt.addBatch("""CREATE INDEX fieldnameidx
-                                        ON field
-                                        USING btree
-                                        (name COLLATE pg_catalog."default");""")
-                        stmt.addBatch("""CREATE INDEX fieldupdatedidx
-                                        ON field
-                                        USING btree
-                                        (updated);""")
-
-                    }
-                    log.warn("Batch results: ${Arrays.toString(results)}")
-                }
-
-            } finally {
-                sql?.close()
-            }
-
-            sw.stop()
-            log.warn("Took ${sw} to update domain objects id references")
-            //sw.reset().start()
-        }
-    }
-
-    private def checkMissing(c,m,emails) {
-        if (emails) {
-            final missing = c.executeQuery("select new map(${m} as x, count(id) as count) from ${c.simpleName} where ${m} in (:missing) group by ${m}", [missing: emails])
-            missing.each { log.warn("${c.simpleName} ${m} has ${it.count} entries for ${it.x}") }
-            final mc = missing*.count.sum() ?: 0
-            log.warn("${c.simpleName} ${m} has ${mc} entries with unknown emails")
-            return mc
-        } else {
-            return 0
-        }
     }
 
     private void fixTaskLastViews() {
@@ -213,7 +93,7 @@ class BootStrap {
 
     private void prepareProjectTypes() {
         log.info("Checking project types...")
-        def builtIns = [[name:'specimens', label:'Specimens', icon:'/images/icon_specimens.png'], [name:'fieldnotes', label: 'Field notes', icon:'/images/icon_fieldnotes.png']]
+        def builtIns = [[name:'specimens', label:'Specimens', icon:'/images/2.0/iconLabels.png'], [name:'fieldnotes', label: 'Field notes', icon:'/images/2.0/iconNotes.png'], [name: 'cameratraps', label: 'Camera Traps', icon: '/images/2.0/iconWild.png']]
         builtIns.each {
             def projectType = ProjectType.findByName(it.name)
             if (!projectType) {
@@ -323,7 +203,7 @@ class BootStrap {
             if (!Picklist.findByName(it)) {
                 log.info("creating new picklist " + it)
                 Picklist picklist = new Picklist(name: it).save(flush: true, failOnError: true)
-                def csvText = ApplicationHolder.application.parentContext.getResource("classpath:resources/" + it + ".csv").inputStream.text
+                def csvText = grailsApplication.parentContext.getResource("classpath:resources/" + it + ".csv").inputStream.text
                 csvText.eachCsvLine { tokens ->
                     def picklistItem = new PicklistItem()
                     picklistItem.picklist = picklist

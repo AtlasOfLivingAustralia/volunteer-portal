@@ -8,9 +8,13 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 
 class ProjectController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST",
+                             wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
     static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
+
+    static final LABEL_COLOURS = ["label-success", "label-warning", "label-danger", "label-info", "label-primary", "label-default"]
+    public static final int MAX_BACKGROUND_SIZE = 512 * 1024
 
     def grailsApplication
     def taskService
@@ -43,7 +47,7 @@ class ProjectController {
         } else {
             // project info
             def taskCount = Task.countByProject(projectInstance)
-            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
+            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:'dateLastUpdated', order:'desc'])
             def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
             def expedition = grailsApplication.config.expedition
             def roles = [] //  List of Map
@@ -75,6 +79,7 @@ class ProjectController {
                     }
                 }
             }
+            log.warn "roles = ${roles as JSON}"
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
             def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc', max: 1])
@@ -92,7 +97,22 @@ class ProjectController {
                 percentComplete = 99;
             }
 
-            render(view: "index", model: [projectInstance: projectInstance, taskCount: taskCount, tasksTranscribed: tasksTranscribed, roles:roles, newsItem: newsItem, currentUserId: currentUserId, leader: leader, percentComplete: percentComplete, newsItems: newsItems, projectSummary: projectSummary])
+            def recentTasks = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:'dateLastUpdated', order:'desc'])
+
+            render(view: "index", model: [
+                    projectInstance: projectInstance,
+                    taskCount: taskCount,
+                    tasksTranscribed: tasksTranscribed,
+                    recentTasks: recentTasks,
+                    roles:roles,
+                    newsItem: newsItem,
+                    currentUserId: currentUserId,
+                    leader: leader,
+                    percentComplete: percentComplete,
+                    newsItems: newsItems,
+                    projectSummary: projectSummary,
+                    transcriberCount: userIds.size()
+            ])
         }
     }
 
@@ -275,7 +295,8 @@ class ProjectController {
         [
             projects: projectSummaryList.projectRenderList,
             filteredProjectsCount: projectSummaryList.matchingProjectCount,
-            numberOfUncompletedProjects: numberOfUncompletedProjects
+            numberOfUncompletedProjects: numberOfUncompletedProjects,
+            totalUsers: User.countByTranscribedCountGreaterThan(0)
         ]
     }
 
@@ -370,10 +391,10 @@ class ProjectController {
             final names = insts*.name
             final nameToId = insts.collectEntries { ["${it.name}": it.id] }
             final labelCats = Label.withCriteria { projections { distinct 'category' } }
-            final colours = ["", "label-success", "label-warning", "label-important", "label-info", "label-inverse"]
+
             final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
             def counter = 0
-            final catColourMap = labelCats.collectEntries { [(it): colours[counter++ % colours.size()]] }
+            final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
             return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId, labelColourMap: catColourMap, sortedLabels: sortedLabels]
         }
     }
@@ -412,6 +433,16 @@ class ProjectController {
     }
 
     def editBannerImageSettings() {
+        def projectInstance = Project.get(params.int("id"))
+        if (!projectInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+            redirect(action: "list")
+        } else {
+            return [projectInstance: projectInstance ]
+        }
+    }
+
+    def editBackgroundImageSettings() {
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -613,8 +644,58 @@ class ProjectController {
         }
 
         projectInstance.featuredImageCopyright = params.featuredImageCopyright
-
+        flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.id)
+    }
+
+    def uploadBackgroundImage = {
+        def projectInstance = Project.get(params.id)
+
+        if(request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('backgroundImage')
+
+            if (f != null && f.size > 0) {
+
+                def allowedMimeTypes = ['image/jpeg', 'image/png']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.message = "Image must be one of: ${allowedMimeTypes}"
+                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    return;
+                }
+
+                if (f.size >= MAX_BACKGROUND_SIZE) {
+                    flash.message = "Image size cannot be bigger than 512 KB (half a MB)"
+                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    return;
+                }
+
+                try {
+                    f.inputStream.withCloseable {
+                        projectInstance.setBackgroundImage(it, f.contentType)
+                    }
+                } catch (Exception ex) {
+                    flash.message = "Failed to upload image: " + ex.message;
+                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    return;
+                }
+            }
+        }
+
+        projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
+        flash.message = "Background image settings updated."
+        redirect(action: "editBackgroundImageSettings", id: params.id)
+    }
+
+
+    def clearBackgroundImageSettings() {
+        Project projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            projectInstance.backgroundImageAttribution = null
+            projectInstance.setBackgroundImage(null,null)
+        }
+
+        flash.message = "Background image settings have been deleted."
+        redirect(action: "editBackgroundImageSettings", id: params.id)
     }
 
     def resizeExpeditionImage() {
@@ -668,255 +749,6 @@ class ProjectController {
             flash.message = "Map settings updated"
         }
         redirect(action:'editMapSettings', id:projectInstance?.id)
-    }
-
-    def createNewProjectFlow = {
-
-        def checkMandatory = { List errors, Map...paramDescriptors ->
-            paramDescriptors?.each { paramDesc ->
-                if (!params[paramDesc.name]) {
-                    errors << "You must supply a ${paramDesc.label}"
-                }
-            }
-        }
-
-        welcome {
-            onEntry {
-                if (!flow.project) {
-                    flow.project = new NewProjectDescriptor(stagingId: UUID.randomUUID().toString())
-                }
-            }
-            onRender {
-                def list = Institution.list()
-                def institutions = list*.name
-                def institutionsMap = list.collectEntries { [ (it.name): it.id ] }
-                [institutions: institutions, institutionsMap: institutionsMap]
-            }
-            on("continue").to "institutionDetails"
-            on("cancel").to "cancel"
-        }
-
-        institutionDetails {
-            onEntry {
-                println flow.project.featuredOwner
-            }
-            on("continue") {
-                def errors = []
-                if (!params.featuredOwner) {
-                    errors << "You must supply the name of the project owner or sponsor"
-                }
-
-                if (errors) {
-                    flow.errorMessages = errors
-                    return validationError()
-                } else {
-                    flow.errorMessages = []
-                }
-
-                flow.project.featuredOwner = params.featuredOwner
-                flow.project.featuredOwnerId = params.getLong('featuredOwnerId')
-            }.to "projectDetails"
-            on("cancel").to "cancel"
-            on("back").to "welcome"
-        }
-
-        projectDetails {
-            onEntry {
-                flow.templates = Template.listOrderByName([:])
-                flow.projectTypes = ProjectType.listOrderByName([:])
-            }
-            on("continue") {
-
-                def errors = []
-
-                checkMandatory(errors, [name:'projectName', label:'project name'], [name:'shortDescription', label: 'short description'], [name:'longDescription', label:'long description'])
-
-                // The hibernate session (including it's cache) is included in the flow persistence context
-                // which means that if we do a findByName below, and a project exists, it will stored.
-                // Projects are currently not serializable because of an injected dependency, so we do the count
-                // method instead
-                def existing = Project.countByName(params.projectName)
-                if (existing) {
-                    errors << "A project with this name already exists. Choose another name"
-                }
-
-                if (errors) {
-                    flow.errorMessages = errors
-                    return validationError()
-                } else {
-                    flow.errorMessages = []
-                }
-
-                flow.project.name = params.projectName
-                flow.project.shortDescription = params.shortDescription
-                flow.project.longDescription = params.longDescription
-                flow.project.templateId = Long.parseLong(params.templateId)
-                flow.project.projectTypeId = Long.parseLong(params.projectTypeId)
-
-            }.to "projectImage"
-
-            on("cancel").to "cancel"
-            on("back").to "institutionDetails"
-        }
-
-        projectImage {
-            onEntry {
-                if (projectStagingService.hasProjectImage(flow.project)) {
-                    flow.projectImageUrl = projectStagingService.getProjectImageUrl(flow.project)
-                } else {
-                    flow.projectImageUrl = null
-                }
-            }
-
-            on("continue") {
-
-                def errors = []
-
-                if(request instanceof MultipartHttpServletRequest) {
-                    MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
-                    if (f != null && f.size > 0) {
-                        def allowedMimeTypes = ['image/jpeg', 'image/png']
-                        if (!allowedMimeTypes.contains(f.getContentType())) {
-                            errors << "Image must be one of: ${allowedMimeTypes}"
-                        } else {
-                            projectStagingService.uploadProjectImage(flow.project, f)
-                        }
-                    }
-                }
-
-                flow.project.imageCopyright = params.imageCopyright
-
-                if (errors) {
-                    flow.errorMessages = errors
-                    return validationError()
-                } else {
-                    flow.errorMessages = []
-                }
-
-            }.to "projectMap"
-
-            on("clearImage") {
-                projectStagingService.clearProjectImage(flow.project)
-            }.to "projectImage"
-            on("cancel").to "cancel"
-            on("back").to "projectDetails"
-        }
-
-        projectMap {
-            onEntry {
-            }
-            on("continue"){
-
-                flow.project.showMap = params.showMap ? true : false
-                if (params.showMap) {
-                    flow.project.mapInitZoomLevel = Integer.parseInt(params.mapZoomLevel)
-                    flow.project.mapInitLatitude = Double.parseDouble(params.mapLatitude)
-                    flow.project.mapInitLongitude = Double.parseDouble(params.mapLongitude)
-                }
-
-            }.to "projectExtras"
-            on("cancel").to "cancel"
-            on("back").to "projectImage"
-        }
-
-        projectExtras {
-            onEntry {
-                def c = PicklistItem.createCriteria();
-                def picklistInstitutionCodes = c {
-                    isNotNull("institutionCode")
-                    projections {
-                        distinct("institutionCode")
-                    }
-                    order('institutionCode')
-                }
-
-                flow.picklists = picklistInstitutionCodes
-                final labelCats = Label.withCriteria { projections { distinct 'category' } }
-                final colours = ["", "label-success", "label-warning", "label-important", "label-info", "label-inverse"]
-                def counter = 0
-                final catColourMap = labelCats.collectEntries { [(it): colours[counter++ % colours.size()]] }
-                flow.labelColourMap = catColourMap
-            }
-            on("continue") {
-                flow.project.picklistId = params.picklistId
-                def labelIdArr = params.getList('labelId[]')
-                flow.project.labelIds = labelIdArr.collect { Long.valueOf(it) }
-
-
-                def flowLabels
-                if (flow.project.labelIds) {
-                    def labelIds = flow.project.labelIds
-                    def labels = Label.withCriteria { inList 'id', labelIds }
-                    def labelMap = labels*.toMap()
-                    flowLabels = labelMap
-                } else { flowLabels  = [] }
-
-                flow.labels = flowLabels
-
-            }.to "summary"
-            on("cancel").to "cancel"
-            on("back").to "projectMap"
-        }
-
-        summary {
-            onEntry {
-                if (projectStagingService.hasProjectImage(flow.project)) {
-                    flow.projectImageUrl = projectStagingService.getProjectImageUrl(flow.project)
-                } else {
-                    flow.projectImageUrl = null
-                }
-                flow.projectTypeImageUrl = projectTypeService.getIconURL(ProjectType.get(flow.project.projectTypeId))
-
-                flow.templateName = Template.get(flow.project.templateId)?.name
-                flow.projectTypeLabel = ProjectType.get(flow.project.projectTypeId)?.label
-            }
-            on("continue").to "createProject"
-            on("cancel").to "cancel"
-            on("back").to "projectExtras"
-        }
-
-        createProject {
-            action {
-                def projectInstance = projectStagingService.createProject(flow.project as NewProjectDescriptor)
-                if (!projectInstance) {
-                    return fail()
-                }
-                flow.projectId = projectInstance.id
-                flow.persistenceContext.evict(projectInstance)
-            }
-            on("success").to "createSuccess"
-            on("fail").to "createFailure"
-        }
-
-        cancel {
-            onEntry {
-                projectStagingService.purgeProject(flow.project)
-            }
-            redirect(controller:'admin', action:"index")
-        }
-
-        createFailure {
-            on("finish") {
-                redirect(controller:'admin', action:"index")
-            }
-        }
-
-        createSuccess {
-
-            on("finish") {
-                redirect(controller:'admin', action:"index")
-            }
-
-            on("createAnother") {
-                redirect(controller:'project', action:"createNewProject")
-            }
-
-        }
-
-        finish {
-            redirect(controller:'admin', action:"index")
-        }
-
     }
 
     def ajaxFeaturedOwnerList() {
@@ -1003,5 +835,141 @@ class ProjectController {
         }
 
         render labels as JSON
+    }
+
+    def wizard(String id) {
+        if (!id) {
+            def stagingId = UUID.randomUUID().toString()
+            projectStagingService.ensureStagingDirectoryExists(stagingId)
+            redirect(action: 'wizard', id: stagingId)
+            return
+        }
+
+        if (!projectStagingService.stagingDirectoryExists(id)) {
+            // this one has probably been cancelled or saved already
+            redirect(action: 'wizard')
+            return
+        }
+
+        def project = new NewProjectDescriptor(stagingId: id)
+
+        def list = Institution.list()
+        def institutions = list.collect { [id: it.id, name: it.name ] }
+        def templates = Template.listOrderByName([:])
+        def projectTypes = ProjectType.listOrderByName([:])
+        def projectImageUrl = projectStagingService.hasProjectImage(project) ? projectStagingService.getProjectImageUrl(project) : null
+        def labels = Label.list()
+        def autosave = projectStagingService.getTempProjectDescriptor(id)
+
+        def c = PicklistItem.createCriteria();
+        def picklistInstitutionCodes = c {
+            isNotNull("institutionCode")
+            projections {
+                distinct("institutionCode")
+            }
+            order('institutionCode')
+        }
+
+
+        final labelCats = Label.withCriteria { projections { distinct 'category' } }
+
+        def counter = 0
+        final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
+
+        [
+                stagingId: id,
+                institutions: institutions,
+                templates: templates,
+                projectTypes: projectTypes,
+                projectImageUrl: projectImageUrl,
+                labels: labels,
+                autosave: autosave,
+                picklists: picklistInstitutionCodes,
+                labelColourMap: catColourMap
+        ]
+    }
+
+    def wizardAutosave(String id) {
+        projectStagingService.saveTempProjectDescriptor(id, request.reader)
+        render status: 204
+    }
+
+    def wizardImageUpload(String id) {
+
+        def project = new NewProjectDescriptor(stagingId: id)
+
+        def errors = []
+        def result
+
+        if (request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('image')
+            if (f != null && f.size > 0) {
+                final allowedMimeTypes = ['image/jpeg', 'image/png']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    errors << "Image must be one of: ${allowedMimeTypes}"
+                } else {
+                    if (params.type == 'backgroundImageUrl') {
+                        if (f.size > MAX_BACKGROUND_SIZE) {
+                            errors << "Background image must be less than 512KB"
+                        } else {
+                            projectStagingService.uploadProjectBackgroundImage(project, f)
+                            result = projectStagingService.getProjectBackgroundImageUrl(project)
+                        }
+                    } else {
+                        projectStagingService.uploadProjectImage(project, f)
+                        result = projectStagingService.getProjectImageUrl(project)
+                    }
+                }
+            } else {
+                errors << "No file provided?!"
+            }
+        }
+
+        if (errors) {
+            render(errors as JSON, status: 401)
+        } else {
+            render([imageUrl: result] as JSON)
+
+        }
+    }
+
+    def wizardClearImage(String id) {
+        def project = new NewProjectDescriptor(stagingId: id)
+        def type = request.getJSON()?.type ?: ''
+        if (type == 'background') {
+            projectStagingService.clearProjectBackgroundImage(project)
+        } else {
+            projectStagingService.clearProjectImage(project)
+        }
+        render status: 204
+    }
+
+    def wizardProjectNameValidator(String name) {
+        render([ count: Project.countByName(name) ] as JSON)
+    }
+
+    def wizardCancel(String id) {
+        projectStagingService.purgeProject(new NewProjectDescriptor(stagingId: id))
+        redirect(controller:'admin', action:"index")
+    }
+
+    def wizardCreate(String id) {
+        try {
+            def body = request.getJSON()
+            def descriptor = NewProjectDescriptor.fromJson(id, body)
+
+            log.debug("Attempting to create project with descriptor: $descriptor")
+
+            def projectInstance = projectStagingService.createProject(descriptor)
+            if (!projectInstance) {
+                render status: 401
+            } else {
+                response.status = 201
+                def obj = [id: projectInstance.id] as JSON
+                render(obj)
+            }
+        } finally {
+            projectStagingService.purgeProject(new NewProjectDescriptor(stagingId: id))
+        }
     }
 }

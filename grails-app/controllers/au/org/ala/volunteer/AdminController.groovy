@@ -68,6 +68,7 @@ class AdminController {
 
                 try {
                     tutorialService.uploadTutorialFile(f)
+                    flash.message = "Tutorial uploaded successfully";
                 } catch (Exception ex) {
                     flash.message = "Failed to upload tutorial file: " + ex.message;
                 }
@@ -83,6 +84,7 @@ class AdminController {
         if (filename) {
             try {
                 tutorialService.deleteTutorial(filename)
+                flash.message = "Tutorial deleted successfully"
             } catch (Exception ex) {
                flash.message ="Failed to delete tutorial file: " + ex.message
             }
@@ -222,7 +224,7 @@ class AdminController {
 
     def userActivityFragment() {
         def activities = UserActivity.list([sort:'timeLastActivity', order:'desc'])
-        [activities: activities]
+        respond([activities: activities])
     }
 
     def tools() {

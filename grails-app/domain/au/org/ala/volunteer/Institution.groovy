@@ -13,6 +13,7 @@ class Institution implements Serializable {
     String websiteUrl // optional
     String collectoryUid // optional
     String imageCaption // optional
+    String themeColour // optional
     boolean disableNewsItems = false
 
     int version
@@ -30,6 +31,7 @@ class Institution implements Serializable {
         acronym blank: true, nullable: true
         websiteUrl blank: true, nullable: true
         imageCaption blank: true, nullable: true
+        themeColour blank: true, nullable: true
     }
 
     static mapping = {

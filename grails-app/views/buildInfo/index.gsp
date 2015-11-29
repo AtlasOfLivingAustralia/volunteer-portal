@@ -13,13 +13,16 @@
         font-size: 20px;
         margin: .8em 0 .3em 0;
     }
+
     table {
         border: 1px solid #ccc;
         font-size: 14px;
     }
+
     tr {
         border: 0;
     }
+
     td, th {
         padding: 5px 6px;
         text-align: left;
@@ -28,6 +31,7 @@
     </style>
 
 </head>
+
 <body>
 <div id="pageBody">
     <g:render template="/buildInfo/buildInfo" plugin="buildInfo"/>

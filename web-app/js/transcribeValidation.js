@@ -3,8 +3,8 @@ var transcribeValidation = {};
 (function(vlib) {
 
     vlib.options = {
-        errorClass: 'error',
-        warningClass: 'warning',
+        errorClass: 'has-error',
+        warningClass: 'has-warning',
         alertErrorClass: 'alert-error',
         alertWarningClass: 'alert-warning',
         validationMessageClass: 'validationMessage',
@@ -286,7 +286,7 @@ var transcribeValidation = {};
     };
 
     vlib.markFieldInvalid = function(element, message, type) {
-        var parent = $(element).closest(".row-fluid");
+        var parent = $(element).closest(".form-group");
         var clazz = vlib.options.warningClass;
         if (type == 'Error') {
             clazz = vlib.options.errorClass;
@@ -302,7 +302,7 @@ var transcribeValidation = {};
             return $.isNumeric(value);
         }
         return true;
-    }
+    };
 
     vlib.validateIsInteger = function(element) {
         var value = element.val();
@@ -338,8 +338,8 @@ var transcribeValidation = {};
         if (messageType == 'Error') {
             alertClass = vlib.options.alertErrorClass;
         }
-        var buf = '<div class="row-fluid">';
-        buf += '<div class="span12 alert ' + vlib.options.validationMessageClass + ' ' + alertClass + '">' + message + '</div>';
+        var buf = '<div class="row">';
+        buf += '<div class="col-sm-12 alert ' + vlib.options.validationMessageClass + ' ' + alertClass + '">' + message + '</div></div>';
         return buf;
     };
 

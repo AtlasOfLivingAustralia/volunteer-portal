@@ -18,7 +18,7 @@ class UserController {
 
     def grailsApplication
     def taskService
-    def userService
+    UserService userService
     def logService
     def forumService
     def authService
@@ -324,6 +324,7 @@ class UserController {
 
     }
 
+
     def show = {
 
         def userInstance = User.get(params.int("id"))
@@ -335,6 +336,7 @@ class UserController {
             return
         }
 
+        // TODO Refactor this into a Service
         def projectInstance = null
         if (params.projectId) {
             projectInstance = Project.get(params.projectId)
@@ -358,9 +360,11 @@ class UserController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         } else {
-            [   userInstance: userInstance, currentUser: currentUser, project: projectInstance, totalTranscribedTasks: totalTranscribedTasks,
-                achievements: achievements, validatedCount: userService.getValidatedCount(userInstance, projectInstance), score:score, selectedTab: selectedTab
+            Map myModel = [   userInstance: userInstance, currentUser: currentUser, project: projectInstance, totalTranscribedTasks: totalTranscribedTasks,
+                achievements: achievements, validatedCount: userService.getValidatedCount(userInstance, projectInstance), score:score, selectedTab: selectedTab,
             ]
+
+            userService.appendNotebookFunctionalityToModel(myModel)
         }
     }
 
@@ -520,7 +524,7 @@ class UserController {
             return
         }
 
-        [userInstance: userInstance]
+        forward(action: 'show', id: userInstance.id)
     }
 
     def ajaxGetPoints() {

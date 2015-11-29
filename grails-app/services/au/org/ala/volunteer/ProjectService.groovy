@@ -154,6 +154,8 @@ class ProjectService {
 
         if (viewName.contains("journal") || viewName.contains("fieldnotebook") || viewName.contains("observationDiary")) {
             return ProjectType.findByName("fieldnotes")
+        } else if (viewName.contains('camera trap') || viewName.contains('wild count') || viewName.contains('wildcount')) {
+            return ProjectType.findByName("cameratraps")
         }
 
         return ProjectType.findByName("specimens")
@@ -170,7 +172,7 @@ class ProjectService {
         }
 
         // Default, if all else fails
-        def iconImage = grailsLinkGenerator.resource(dir:'/images', file:'icon_specimens.png')
+        def iconImage = grailsLinkGenerator.resource(dir:'/images/2.0/images', file:'iconLabels.png')
         def iconLabel = 'Specimens'
 
         if (project.projectType) {
@@ -235,9 +237,15 @@ class ProjectService {
         // Then apply the query paramter
         if (params?.q) {
             String query = params.q.toLowerCase()
+            String tagPrefix = "tag:"
 
             renderList = renderList.findAll { projectSummary ->
                 def project = projectSummary.project
+
+                // special syntax for label (project type). NdR Oct 2015.
+                if (query.startsWith(tagPrefix) && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst(tagPrefix,""))) {
+                    return true
+                }
 
                 if (project.featuredLabel?.toLowerCase()?.contains(query)) {
                     return true
@@ -341,9 +349,9 @@ class ProjectService {
             // Now check image size...
             def image = ImageIO.read(file)
             log.info("Checking Featured image for project ${projectInstance.id}: Dimensions ${image.width} x ${image.height}")
-            if (image.width != 254 || image.height != 158) {
-                log.info "Image is not the correct size. Scaling to 254 x 158..."
-                image = ImageUtils.scale(image, 254, 158)
+            if (image.width > 600) {
+                log.info "Image is not the correct size. Scaling width to 600px..."
+                image = ImageUtils.scaleWidth(image, 600)
                 log.info "Saving new dimensions ${image.width} x ${image.height}"
                 ImageIO.write(image, "jpg", file)
                 log.info "Done."

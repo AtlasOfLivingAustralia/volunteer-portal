@@ -1,8 +1,9 @@
 <div>
 
     <p>
-    The <strong>${projectInstance.name}</strong> expedition currently has <strong>${taskCount}</strong> tasks.
+        The <strong>${projectInstance.name}</strong> expedition currently has <strong>${taskCount}</strong> tasks.
     </p>
+
     <div class="alert alert-danger">
         <strong>Warning:</strong> This action cannot be undone. Are you sure you wish to remove all tasks (including those already transcribed) from expedition '${projectInstance.name}'?
     </div>
@@ -22,7 +23,7 @@
 
 <script>
 
-    $("#btnCancelDeleteAllTasks").click(function(e) {
+    $("#btnCancelDeleteAllTasks").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });

@@ -16,6 +16,8 @@ stacktrace.log
 /web-app/WEB-INF/classes
 /.link_to_grails_plugins/
 /target-eclipse/
+.asscache
+.slcache
 
 # Created by http://www.gitignore.io
 
@@ -84,3 +86,7 @@ local.properties
 .texlipse
 
 logs
+
+### Sass ###
+.sass-cache/
+

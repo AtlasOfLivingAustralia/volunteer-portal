@@ -18,7 +18,7 @@
 
 <div>
     <h1><g:message code="default.create.label" args="[entityName]"/></h1>
-    <cl:messages />
+    <cl:messages/>
     <g:hasErrors bean="${projectAssociationInstance}">
         <div class="errors">
             <g:renderErrors bean="${projectAssociationInstance}" as="list"/>

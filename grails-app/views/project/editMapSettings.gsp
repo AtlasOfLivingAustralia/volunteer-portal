@@ -1,185 +1,169 @@
 <!doctype html>
 <html>
-    <head>
-        <meta name="layout" content="projectSettingsLayout"/>
-    </head>
+<head>
+    <meta name="layout" content="digivol-projectSettings"/>
+</head>
 
-    <body class="continer">
+<body class="continer">
 
-        <style>
-            #recordsMap {
-                width: 280px;
-                height: 280px;
-                max-height: 280px;
-                max-width: 280px;
-                margin: 0 0;
-            }
 
-            #recordsMap img {
-                max-width: none !important;
-                max-height: none !important;
-            }
-        </style>
+<content tag="pageTitle">Map</content>
 
-        <content tag="pageTitle">Map settings</content>
+<content tag="adminButtonBar">
+</content>
 
-        <content tag="adminButtonBar">
-        </content>
+<g:set var="initZoom" value="${projectInstance.mapInitZoomLevel ?: 3}"/>
+<g:set var="initLatitude" value="${projectInstance.mapInitLatitude ?: -27.76133033947936}"/>
+<g:set var="initLongitude" value="${projectInstance.mapInitLongitude ?: 134.47265649999997}"/>
 
-        <g:set var="initZoom" value="${projectInstance.mapInitZoomLevel ?: 3}"/>
-        <g:set var="initLatitude" value="${projectInstance.mapInitLatitude ?: -27.76133033947936}"/>
-        <g:set var="initLongitude" value="${projectInstance.mapInitLongitude ?: 134.47265649999997}"/>
+<g:form method="post" class="form-horizontal" name="updateForm" action="updateMapSettings">
 
-        <g:form method="post" class="form-horizontal" name="updateForm" action="updateMapSettings">
+    <g:hiddenField name="id" value="${projectInstance?.id}"/>
+    <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-            <g:hiddenField name="id" value="${projectInstance?.id}"/>
-            <g:hiddenField name="version" value="${projectInstance?.version}"/>
+    <div class="form-group">
+        <label for="showMap" class="checkbox col-md-6">
+            Show the map on the expedition landing page
+        </label>
+        <div class="col-md-6">
+            <g:checkBox name="showMap"
+                        checked="${projectInstance.showMap}"/>
+        </div>
+    </div>
 
-            <div class="control-group">
-                <label for="showMap" class="checkbox">
-                    Show the map on the expedition landing page&nbsp;<g:checkBox name="showMap" checked="${projectInstance.showMap}"/>
-                </label>
+    <div class="alert alert-warning">
+        Position the map to how you would like it to appear on the project start page
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="thumbnail">
+                <div id="recordsMap"></div>
             </div>
-
-            <div id="mapPositionControls" class="control-group">
-
-                <div class="alert">
-                    Position the map to how you would like it to appear on the project start page
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-md-4" for="mapZoomLevel">Zoom</label>
+                    <div class="col-md-6">
+                        <g:textField name="mapZoomLevel" class="form-control" value="${initZoom}"/>
+                    </div>
                 </div>
 
-                <table style="width: 100%">
-                    <tr>
-                        <td width="280px">
-                            <div id="recordsMap"></div>
-                        </td>
-                        <td>
-                            <div class="control-group">
-                                <label class="control-label" for="mapZoomLevel">Zoom</label>
+                <div class="form-group">
+                    <label class="control-label col-md-4" for="mapLatitude">Center Latitude:</label>
+                    <div class="col-md-6">
+                        <g:textField name="mapLatitude" class="form-control" value="${initLatitude}"/>
+                    </div>
+                </div>
 
-                                <div class="controls">
-                                    <g:textField name="mapZoomLevel" value="${initZoom}"/>
-                                </div>
-                            </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4" for="mapLongitude">Center Longitude:</label>
+                    <div class="col-md-6">
+                        <g:textField name="mapLongitude" class="form-control" value="${initLongitude}"/>
+                    </div>
+                </div>
 
-                            <div class="control-group">
-                                <label class="control-label" for="mapLatitude">Center Latitude:</label>
-
-                                <div class="controls">
-                                    <g:textField name="mapLatitude" value="${initLatitude}"/>
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <label class="control-label" for="mapLongitude">Center Longitude:</label>
-
-                                <div class="controls">
-                                    <g:textField name="mapLongitude" value="${initLongitude}"/>
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <div class="controls">
-                                    <g:actionSubmit class="save btn btn-primary" action="updateMapSettings" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                </div>
-                            </div>
-
-                        </td>
-                    </tr>
-                </table>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-8">
+                        <g:actionSubmit class="save btn btn-primary" action="updateMapSettings"
+                                        value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+</g:form>
 
+<script type='text/javascript' src='https://www.google.com/jsapi'></script>
 
-        </g:form>
+<script type='text/javascript'>
 
-        <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    google.load("maps", "3.3", {other_params: "sensor=false"});
 
-        <script type='text/javascript'>
+    var map, infowindow;
+    var mapListenerActive = true;
 
-            google.load("maps", "3.3", {other_params: "sensor=false"});
+    $(document).ready(function () {
 
-            var map, infowindow;
-            var mapListenerActive = true;
+        $('#showMap').bootstrapSwitch({
+            size: "small",
+            onText: "yes",
+            offText: "no"
+        });
 
-            $(document).ready(function () {
+        bvp.bindTooltips();
+        bvp.suppressEnterSubmit();
 
-                $('input:checkbox').bootstrapSwitch({
-                    size: "small",
-                    onText: "yes",
-                    offText: "no"
-                });
+        $('#showMap').on('switchChange.bootstrapSwitch', function (event, state) {
+            $("#updateForm").submit();
+        });
 
-                bvp.bindTooltips();
-                bvp.suppressEnterSubmit();
+        $("#btnNext").click(function (e) {
+            e.preventDefault();
+            bvp.submitWithWebflowEvent($(this));
+        });
 
-                $('input:checkbox').on('switchChange.bootstrapSwitch', function(event, state) {
-                    $("#updateForm").submit();
-                });
+        loadMap();
+        updateMapDisplay();
+    });
 
-                $("#btnNext").click(function (e) {
-                    e.preventDefault();
-                    bvp.submitWithWebflowEvent($(this));
-                });
+    function loadMap() {
 
-                loadMap();
-                updateMapDisplay();
-            });
+        var mapElement = $("#recordsMap");
 
-            function loadMap() {
+        if (!mapElement) {
+            return;
+        }
 
-                var mapElement = $("#recordsMap");
+        var myOptions = {
+            scaleControl: false,
+            center: new google.maps.LatLng(${initLatitude}, ${initLongitude}),
+            zoom: ${initZoom},
+            minZoom: 1,
+            streetViewControl: false,
+            scrollwheel: true,
+            mapTypeControl: false,
+            navigationControl: true,
+            navigationControlOptions: {
+                style: google.maps.NavigationControlStyle.SMALL // DEFAULT
+            },
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
 
-                if (!mapElement) {
-                    return;
-                }
+        map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
 
-                var myOptions = {
-                    scaleControl: false,
-                    center: new google.maps.LatLng(${initLatitude}, ${initLongitude}),
-                    zoom: ${initZoom},
-                    minZoom: 1,
-                    streetViewControl: false,
-                    scrollwheel: true,
-                    mapTypeControl: false,
-                    navigationControl: true,
-                    navigationControlOptions: {
-                        style: google.maps.NavigationControlStyle.SMALL // DEFAULT
-                    },
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-
-                map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
-
-                google.maps.event.addListener(map, 'zoom_changed', function () {
-                    if (mapListenerActive) {
-                        updateFieldsFromMap();
-                    }
-                });
-
-                google.maps.event.addListener(map, 'center_changed', function () {
-                    if (mapListenerActive) {
-                        updateFieldsFromMap();
-                    }
-                });
+        google.maps.event.addListener(map, 'zoom_changed', function () {
+            if (mapListenerActive) {
+                updateFieldsFromMap();
             }
+        });
 
-            function updateFieldsFromMap() {
-                var zoomLevel = map.getZoom();
-
-                $("#mapZoomLevel").val(zoomLevel);
-
-                var center = map.getCenter();
-                $("#mapLatitude").val(center.lat());
-                $("#mapLongitude").val(center.lng());
+        google.maps.event.addListener(map, 'center_changed', function () {
+            if (mapListenerActive) {
+                updateFieldsFromMap();
             }
+        });
+    }
 
-            function updateMapDisplay() {
-                if ($("#showMap").attr("checked")) {
-                    $("#mapPositionControls").css("opacity", "1");
-                } else {
-                    $("#mapPositionControls").css("opacity", "0.2");
-                }
-            }
+    function updateFieldsFromMap() {
+        var zoomLevel = map.getZoom();
 
-        </script>
-    </body>
+        $("#mapZoomLevel").val(zoomLevel);
+
+        var center = map.getCenter();
+        $("#mapLatitude").val(center.lat());
+        $("#mapLongitude").val(center.lng());
+    }
+
+    function updateMapDisplay() {
+        if ($("#showMap").attr("checked")) {
+            $("#mapPositionControls").css("opacity", "1");
+        } else {
+            $("#mapPositionControls").css("opacity", "0.2");
+        }
+    }
+
+</script>
+</body>
 </html>

@@ -2,15 +2,12 @@ class UrlMappings {
 
 	static mappings = {
 
-        "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin') {
-            constraints {
+        "/"(controller: "/index")
 
-            }
-        }
-
+        name institutionAdmin: "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin')
         "/admin/label/$action?" (controller: 'label')
 		"/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
-        "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
+        name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
 
         "/$controller/$action?/$id?"{
 			constraints {
@@ -20,7 +17,6 @@ class UrlMappings {
 
         "/ws/$action?/$id?"(controller: 'ajax')
 
-		"/"(controller: "/index")
 		"500"(view:'/error')
 	}
 }
