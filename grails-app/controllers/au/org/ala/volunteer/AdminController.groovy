@@ -332,6 +332,7 @@ class AdminController {
             def results = c.list() {
                 projections {
                     property("id")
+                    order("lastViewed", "desc")
                 }
             }
 

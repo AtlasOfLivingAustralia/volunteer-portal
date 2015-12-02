@@ -14,11 +14,15 @@
             $('button.confirmation-required').click(function (e) {
                 var confirm = e.target.dataset.confirm || 'Confirm';
                 var cancel = e.target.dataset.cancel || 'Cancel';
-                bootbox.confirm("Are you sure you want to " + e.target.dataset.message, cancel, confirm, function (result) {
-                    if (result) {
-                        window.open(e.target.dataset.href, "_self");
+                bootbox.confirm({
+                    message: "Are you sure you want to " + e.target.dataset.message,
+                    callback: function (result) {
+                        if (result) {
+                            window.open(e.target.dataset.href, "_self");
+                        }
                     }
-                })
+
+                });
             });
         });
 

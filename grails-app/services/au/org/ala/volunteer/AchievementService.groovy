@@ -33,9 +33,14 @@ class AchievementService {
     }
 
     @Timed
-    def evalAndRecordAchievementsForUser(User user, Long taskId) {
+    /**
+     * @param userId The user's user.userId attribute (not the user.id attribute)
+     */
+    def evalAndRecordAchievementsForUser(String userId) {
         def alreadyAwarded = AchievementAward.withCriteria {
-            eq 'user', user
+            user {
+                eq('userId', userId)
+            }
             projections {
                 property 'achievement.id'
             }
@@ -44,40 +49,40 @@ class AchievementService {
                 AchievementDescription.findAllByIdNotInListAndEnabled(alreadyAwarded, true)
                 : AchievementDescription.findAllByEnabled(true)
 
-        achievements
-                .find { evaluateAchievement(it, user, taskId)}
-                .collect {
-            log.info("${user.id} (${user.email} achieved ${it.name}")
-            new AchievementAward(achievement: it, user: user, awarded: new Date())
-        }*.save(true)
-    }
+        final newAchievements = achievements
+                .find { evaluateAchievement(it, userId)}
 
-    @Timed
-    def evalAndRecordAchievements(Set<String> userIds, Long taskId) {
-        evalAndRecordAchievements(User.findAllByUserIdInList(userIds.toList()), taskId)
-    }
-
-    def evalAndRecordAchievements(List<User> users, Long taskId) {
-        users.collectEntries { user ->
-            def cheevs = evalAndRecordAchievementsForUser(user, taskId)
-            [(user.userId): cheevs]
+        if (newAchievements) {
+            final user = User.findByUserId(userId)
+            newAchievements.collect {
+                log.info("${user.id} (${user.displayName} ${user.email}) achieved ${it.name}")
+                new AchievementAward(achievement: it, user: user, awarded: new Date())
+            }*.save(true)
         }
     }
 
     @Timed
-    def evaluateAchievement(AchievementDescription cheev, User user, Long taskId) {
+    def evalAndRecordAchievements(Set<String> userIds) {
+        userIds.collectEntries { user ->
+            def cheevs = evalAndRecordAchievementsForUser(user)
+            [(user): cheevs]
+        }
+    }
+
+    @Timed
+    def evaluateAchievement(AchievementDescription cheev, String userId) {
         switch (cheev.type) {
             case AchievementType.ELASTIC_SEARCH_QUERY:
-                return evaluateElasticSearchAchievement(cheev, user, taskId)
+                return evaluateElasticSearchAchievement(cheev, userId)
             case AchievementType.GROOVY_SCRIPT:
-                return evaluateGroovyAchievement(cheev, user, taskId)
+                return evaluateGroovyAchievement(cheev, userId)
             case AchievementType.ELASTIC_SEARCH_AGGREGATION_QUERY:
-                return evaluateElasticSearchAggregationAchievement(cheev, user, taskId)
+                return evaluateElasticSearchAggregationAchievement(cheev, userId)
         }
     }
 
     @Timed
-    def evaluateElasticSearchAggregationAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
+    def evaluateElasticSearchAggregationAchievement(AchievementDescription achievementDescription, String userId) {
         final template = achievementDescription.searchQuery
         final aggTemplate = achievementDescription.aggregationQuery
 
@@ -86,7 +91,7 @@ class AchievementService {
         final count = achievementDescription.count
         final aggType = achievementDescription.aggregationType
 
-        final binding = ["userId":user.userId, "taskId":taskId]
+        final binding = ["userId":userId]
 
         def query = freemarkerService.runTemplate(template, binding)
 
@@ -95,30 +100,30 @@ class AchievementService {
         final closure
         if (aggType == AggregationType.CODE) {
             closure = { SearchResponse sr ->
-                return runScript(code, new Binding([searchResponse: sr, taskId: taskId, user: user]))
+                return runScript(code, new Binding([searchResponse: sr, userId: userId]))
             }
         } else {
-            closure = fullTextIndexService.aggregationHitsGreaterThan(count, aggType)
+            closure = fullTextIndexService.aggregationHitsGreaterThanOrEqual(count, aggType)
         }
         fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, agg.toString(), closure)
     }
 
     @Timed
-    private def evaluateGroovyAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
+    private def evaluateGroovyAchievement(AchievementDescription achievementDescription, String userId) {
         final code = achievementDescription.code
-        return runScript(code, new Binding([applicationContext: grailsApplication.mainContext, taskId: taskId, user: user]))
+        return runScript(code, new Binding([applicationContext: grailsApplication.mainContext, userId: userId]))
     }
 
     @Timed
-    private def evaluateElasticSearchAchievement(AchievementDescription achievementDescription, User user, Long taskId) {
+    private def evaluateElasticSearchAchievement(AchievementDescription achievementDescription, String userId) {
         final template = achievementDescription.searchQuery
         final count = achievementDescription.count
 
-        final binding = ["userId":user.userId, "taskId":taskId]
+        final binding = ["userId":userId]
 
         def query = freemarkerService.runTemplate(template, binding)
         
-        fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, fullTextIndexService.searchResponseHitsGreaterThan(count))
+        fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, fullTextIndexService.searchResponseHitsGreaterThanOrEqual(count))
     }
 
     private def runScript(String code, Binding binding) {
@@ -129,86 +134,6 @@ class AchievementService {
         } finally {
             scriptPool.returnObject(code, script)
         }
-    }
-
-    def getAllAchievements() {
-        def achievements = grailsApplication.config.achievements;
-        return achievements
-    }
-
-    def calculateAchievements(User user) {
-
-        def achievements = getAllAchievements()
-
-        if (!user) {
-            return
-        }
-
-        def results = []
-
-        def existing = Achievement.findAllByUser(user)
-        def tasks = taskService.transcribedDatesByUser(user.userId)
-
-        for (Map desc : achievements) {
-            Achievement ach = existing.find { it.name == desc.name }
-            if (!ach) {
-                def rule = this.metaClass.properties.find() { it.name == desc.name + "_rule" }
-
-                if (rule) {
-                    log.debug "Checking rule for achievement ${desc.name}"
-                    AchievementRuleResult result = rule.getProperty(this)(user, tasks)
-                    if (result && result.success) {
-                        log.info "${user.userId} (${user.email}) just achieved ${desc.name}!"
-                        Date dateAchieved = result.dateAchieved ?: new Date();
-                        def newAchievement = new Achievement( name: desc.name, user: user, dateAchieved: dateAchieved)
-                        newAchievement.save(flush: true, failOnError: true)
-                        ach = newAchievement
-                    }
-                } else {
-                    log.warn "Rule for achievement ${desc.name} not found!"
-                }
-            }
-
-            if (ach) {
-                results.add(desc)
-            }
-        }
-
-        return results
-    }
-
-    private AchievementRuleResult transcriptionRule(User user, List<Task> tasks, int threshold) {
-        if (tasks.size() >= threshold) {
-            return new AchievementRuleResult( success: true, dateAchieved: tasks[threshold-1].lastEdit );
-        }
-        return new AchievementRuleResult(success: false, dateAchieved: (Date) null );
-    }
-
-    def tenth_transcription_rule = { User user, List<Task> tasks ->
-        return transcriptionRule(user, tasks, 10);
-    }
-
-    def hundredth_transcription_rule = { User user, List<Task> tasks ->
-        return transcriptionRule(user, tasks, 100);
-    }
-
-    def fivehundredth_transcription_rule = { User user, List<Task> tasks ->
-        return transcriptionRule(user, tasks, 500);
-    }
-
-    def three_projects_rule = { User user, List<Task> tasks ->
-        def projects = tasks.groupBy { it.project }
-        return new AchievementRuleResult( success: projects.size() >= 3, dateAchieved: null );
-    }
-
-    def five_projects_rule = { User user, List<Task> tasks ->
-        def projects = tasks.groupBy { it.project }
-        return new AchievementRuleResult( success: projects.size() >= 5, dateAchieved: null );
-    }
-
-    def seven_projects_rule = { User user, List<Task> tasks ->
-        def projects = tasks.groupBy { it.project }
-        return new AchievementRuleResult( success: projects.size() >= 7, dateAchieved: null );
     }
 
     String getBadgeImageUrlPrefix() {

@@ -5,6 +5,7 @@ import grails.converters.JSON
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.json.JsonSlurper
+import org.apache.commons.lang.NotImplementedException
 import org.codehaus.groovy.grails.orm.hibernate.HibernateSession
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.elasticsearch.action.delete.DeleteResponse
@@ -21,6 +22,7 @@ import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.index.query.FilterBuilder
 import org.elasticsearch.search.sort.SortOrder
 import org.grails.plugins.metrics.groovy.Timed
+import org.hibernate.Criteria
 import org.hibernate.FetchMode
 
 import javax.annotation.PostConstruct
@@ -240,21 +242,23 @@ class FullTextIndexService {
         builder.endObject().flush().string()
     }
     
-    Closure<Boolean> searchResponseHitsGreaterThan(long count) {
-        { SearchResponse searchResponse -> searchResponse.hits.totalHits() > count } 
+    Closure<Boolean> searchResponseHitsGreaterThanOrEqual(long count) {
+        { SearchResponse searchResponse -> searchResponse.hits.totalHits() >= count }
     }
 
-    Closure<Boolean> aggregationHitsGreaterThan(long count, AggregationType type) {
+    Closure<Boolean> aggregationHitsGreaterThanOrEqual(long count, AggregationType type) {
         def closure;
         switch (type) {
             case AggregationType.ALL_MATCH:
-                closure = { SearchResponse searchResponse -> true }
+                throw new NotImplementedException("aggregationHitsGreaterThanOrEqual(count,type) can't be applied to type ${type}")
+                //closure = { SearchResponse searchResponse -> true }
                 break
             case AggregationType.ANY_MATCH:
-                closure = { SearchResponse searchResponse -> true }
+                throw new NotImplementedException("aggregationHitsGreaterThanOrEqual(count,type) can't be applied to type ${type}")
+                //closure = { SearchResponse searchResponse -> true }
                 break
             default:
-                throw new RuntimeException("aggregationHitsGreaterThan(count,type) can't be applied to type ${type}")
+                throw new RuntimeException("aggregationHitsGreaterThanOrEqual(count,type) can't be applied to type ${type}")
         }
         return closure
     }
@@ -435,6 +439,7 @@ class FullTextIndexService {
                                 fetchMode 'project', FetchMode.JOIN
                                 fetchMode 'project.labels', FetchMode.JOIN
                                 fetchMode 'project.institution', FetchMode.JOIN
+                                resultTransformer Criteria.DISTINCT_ROOT_ENTITY
                             }.collect { task ->
                                 IndexResponse r = null
                                 try {

@@ -5,9 +5,6 @@
     <title><g:message code="leaderBoardAdmin.label" default="Honour Board Configuration"/></title>
     <r:require modules="labelAutocomplete"/>
     <r:style>
-        #ajax-spinner.disabled {
-          display: none;
-        }
         li.user > span {
             margin-right: 5px;
         }
@@ -34,7 +31,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <h4>Ineligible Honour Board users <r:img dir="images" file="spinner.gif" height="16px" width="16px"
-                                                            id="ajax-spinner" class="disabled"/></h4>
+                                                            id="ajax-spinner" class="hidden"/></h4>
                             <hr/>
                         </div>
                     <hr/>
@@ -97,11 +94,11 @@
         }, 'displayName');
 
         function showSpinner() {
-            $('#ajax-spinner').removeClass('disabled');
+            $('#ajax-spinner').removeClass('hidden');
         }
 
         function hideSpinner() {
-            $('#ajax-spinner').addClass('disabled');
+            $('#ajax-spinner').addClass('hidden');
         }
 
         function onDeleteClick(e) {
