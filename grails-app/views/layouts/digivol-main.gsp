@@ -158,7 +158,7 @@
 
             <div class="col-sm-12">
                 <r:img dir="images/2.0/institutions/" file="logoAustMus@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoCSIRO@2x.png"/>
+                <r:img dir="images/2.0/institutions/" file="logoCSIRO.svg"/>
                 <r:img dir="images/2.0/institutions/" file="logoMelbourneVictoria@2x.png"/>
                 <r:img dir="images/2.0/institutions/" file="logoVermont@2x.png"/>
                 <r:img dir="images/2.0/institutions/" file="logoSmithsonian@2x.png"/>
