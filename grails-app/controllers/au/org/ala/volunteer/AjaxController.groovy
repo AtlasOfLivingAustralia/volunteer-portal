@@ -159,7 +159,8 @@ class AjaxController {
         }
 
         def sw3 = new Stopwatch().start()
-        def asyncUserDetails = User.async.list().then { users ->
+        def asyncUserDetails = User.async.task {
+            def users = User.list()
             def serviceResults = [:]
             try {
                 serviceResults = authService.getUserDetailsById(users*.userId, true)
