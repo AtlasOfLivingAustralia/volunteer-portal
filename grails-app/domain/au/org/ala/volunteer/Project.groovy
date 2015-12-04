@@ -19,6 +19,7 @@ class Project implements Serializable {
     Integer leaderIconIndex = 0
     String featuredImageCopyright = null
     String backgroundImageAttribution = null
+    String backgroundImageOverlayColour = null
     Boolean inactive = false
     String collectionEventLookupCollectionCode
     String localityLookupCollectionCode
@@ -30,7 +31,7 @@ class Project implements Serializable {
 
     def grailsApplication
     def grailsLinkGenerator
-    def assetResourceLocator
+    //def assetResourceLocator
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label]
@@ -61,6 +62,7 @@ class Project implements Serializable {
         leaderIconIndex nullable: true
         featuredImageCopyright nullable: true
         backgroundImageAttribution nullable: true
+        backgroundImageOverlayColour nullable: true
         inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true

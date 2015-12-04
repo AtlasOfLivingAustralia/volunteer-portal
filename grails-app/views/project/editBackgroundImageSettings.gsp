@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <r:require modules="bootstrap-file-input, bootbox"/>
+    <r:require modules="bootstrap-file-input, bootbox, bootstrap-colorpicker"/>
 </head>
 
 <body>
@@ -55,6 +55,18 @@
     </div>
 
     <div class="form-group">
+        <label class="control-label col-md-3" for="backgroundImageOverlayColour">
+            <g:message code="project.backgroundImageOverlayColour.label" default="Background image overlay colour (rgba)"/>
+        </label>
+        <div class="col-md-6">
+            <div class="input-group colpick" data-format="rgba">
+                <g:textField name="backgroundImageOverlayColour" class="form-control" value="${projectInstance?.backgroundImageOverlayColour}"/>
+                <span class="input-group-addon"><i></i></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <div class="col-md-offset-3 col-md-9">
             <g:submitButton class="btn btn-success" name="Update"/>
             <a class="btn btn-danger" id="clearImageSettings" href="${createLink(action: 'clearBackgroundImageSettings', id: projectInstance.id)}">Clear</a>
@@ -76,6 +88,8 @@
                 }
             });
         });
+
+        $('.colpick').colorpicker();
     });
 </script>
 

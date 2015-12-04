@@ -171,7 +171,12 @@
 
     <g:if test="${bgImage}">
         .a-feature.expedition {
+        <g:if test="${projectInstance.backgroundImageOverlayColour}">
+            background-image: linear-gradient(${projectInstance.backgroundImageOverlayColour}, ${projectInstance.backgroundImageOverlayColour}), url(${bgImage});
+        </g:if>
+        <g:else>
             background-image: url(${bgImage});
+        </g:else>
         }
 
     </g:if>
