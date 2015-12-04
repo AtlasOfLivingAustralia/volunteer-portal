@@ -1,10 +1,15 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.plugins.metrics.groovy.Timed
 
 import javax.imageio.ImageIO
+import java.util.concurrent.TimeUnit
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 @Transactional
 class ProjectService {
@@ -121,29 +126,48 @@ class ProjectService {
 
     }
 
+    @Timed
     public List<ProjectSummary> getFeaturedProjectList() {
 
-        def projectList = Project.list()
+        Stopwatch sw = Stopwatch.createStarted()
+
+        log.debug("featured project list")
+        def projectList = Project.findAllByInactive(false)
+        //def projectIds = projectList*.id
+        log.debug("project list: ${sw.elapsed(MILLISECONDS)}ms")
+        sw.reset().start()
         def taskCounts = taskService.getProjectTaskCounts()
+        log.debug("task counts: ${sw.elapsed(MILLISECONDS)}ms")
+        sw.reset().start()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+        log.debug("fully transcribed counts: ${sw.elapsed(MILLISECONDS)}ms")
+        sw.reset().start()
         def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
-        def volunteerCounts = taskService.getProjectTranscriberCounts()
-        def validatorCounts = taskService.getProjectValidatorCounts()
+        log.debug("fully validated counts: ${sw.elapsed(MILLISECONDS)}ms")
+        sw.reset().start()
+//        def volunteerCounts = taskService.getProjectTranscriberCounts(projectIds)
+//        log.debug("volunteer counts: ${sw.elapsed(MILLISECONDS)}ms")
+//        sw.reset().start()
+//        def validatorCounts = taskService.getProjectValidatorCounts(projectIds)
+//        log.debug("validator counts: ${sw.elapsed(MILLISECONDS)}ms")
+//        sw.reset().start()
 
         List results = []
         for (Project project : projectList) {
-            if (!project.inactive) {
+            //if (!project.inactive) {
 
                 def taskCount = (Long) taskCounts[project.id] ?: 0
                 long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
                 long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
-                def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
-                def validatorCount = (Integer) validatorCounts[project.id] ?: 0
+//                def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
+//                def validatorCount = (Integer) validatorCounts[project.id] ?: 0
                 if (transcribedCount < taskCount) {
-                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, volunteerCount, validatorCount)
+                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)//volunteerCount, validatorCount)
                 }
-            }
+            //}
         }
+        log.debug("make summary projects: ${sw.elapsed(MILLISECONDS)}ms")
+        sw.reset().start()
 
         return results
     }
@@ -196,6 +220,7 @@ class ProjectService {
     }
 
     public makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params, Closure<Boolean> filter = null) {
+        //def projectIds = projectList*.id
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
         def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
