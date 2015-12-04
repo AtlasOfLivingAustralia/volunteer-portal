@@ -1,19 +1,32 @@
 package au.org.ala.volunteer
 
 import com.google.common.io.Closer
+import grails.events.Listener
 import grails.gorm.DetachedCriteria
+import groovy.time.TimeCategory
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.grails.plugins.metrics.groovy.Timed
+import org.hibernate.FetchMode
+import org.hibernate.transform.DistinctRootEntityResultTransformer
+import org.hibernate.transform.ResultTransformer
+import org.ocpsoft.prettytime.PrettyTime
 
+import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 import java.nio.file.DirectoryStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
+import static org.hibernate.FetchMode.*
+
 class AchievementService {
+
+    public static final String ACHIEVEMENT_AWARDED = 'achievementAwarded'
+    public static final String ACHIEVEMENT_VIEWED = 'achievementViewed'
 
     static transactional = true
 
@@ -22,14 +35,43 @@ class AchievementService {
     def fullTextIndexService
     def grailsLinkGenerator
     def freemarkerService
+    def eventSourceService
 
     def scriptPool
 
-    AchievementService() {
+    def eventSourceStartMessage
+
+    @PostConstruct
+    void init() {
         def config = new GenericKeyedObjectPoolConfig()
         config.maxTotalPerKey = 50 // TODO get values from config (or inject pool?)
         config.maxIdlePerKey = 50
         scriptPool = new GenericKeyedObjectPool<String, Script>(new GroovyScriptPooledObjectFactory(), config)
+
+        eventSourceStartMessage = eventSourceService.addEventSourceStartMessage { userId ->
+            final achievements
+            if (userId) {
+                log.info("Get unnotified achievments for $userId")
+                achievements = AchievementAward.withCriteria {
+                    user {
+                        eq('userId', userId)
+                    }
+                    eq('userNotified', false)
+                    order('awarded')
+                    fetchMode('achievement', JOIN)
+                    resultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
+                }
+                log.info("Found ${achievements.size()} achievments")
+            } else {
+                achievements = []
+            }
+            achievements.collect { createAwardMessage(it) }
+        }
+    }
+
+    @PreDestroy
+    void destroy() {
+        eventSourceService.removeEventSourceStartMessage(eventSourceStartMessage)
     }
 
     @Timed
@@ -57,7 +99,9 @@ class AchievementService {
             newAchievements.collect {
                 log.info("${user.id} (${user.displayName} ${user.email}) achieved ${it.name}")
                 new AchievementAward(achievement: it, user: user, awarded: new Date())
-            }*.save(true)
+            }*.save(true).each {
+                event(AchievementService.ACHIEVEMENT_AWARDED, it)
+            }
         }
     }
 
@@ -186,11 +230,55 @@ class AchievementService {
         AchievementAward.findAllByUserAndUserNotified(user, false)
     }
 
-    def markAchievementsViewed(List<Long> ids) {
+    def markAchievementsViewed(User user, List<Long> ids) {
         def criteria = new DetachedCriteria(AchievementAward).build {
             inList 'id', ids
+            eq 'user', user
         }
         int total = criteria.updateAll(userNotified:true)
+        if (total) {
+            ids.each { event(ACHIEVEMENT_VIEWED, [id: it, userId: user.userId]) }
+        }
         log.info("Marked ${total} achievements as seen")
     }
+
+
+    @Listener(topic=AchievementService.ACHIEVEMENT_AWARDED)
+    void achievementAwarded(AchievementAward award) {
+        try {
+            log.info("On Achievement Awarded")
+            eventSourceService.sendToUser(award.user.userId, createAwardMessage(award))
+        } catch (e) {
+            log.error("Caught exception in $ACHIEVEMENT_AWARDED event listener", e)
+        }
+    }
+
+    @Listener(topic=AchievementService.ACHIEVEMENT_VIEWED)
+    void achievementViewed(Map args) {
+        try {
+            log.info("On Achievement Viewed")
+            eventSourceService.sendToUser(args.userId, new EventSourceMessage(event: ACHIEVEMENT_VIEWED, data: [id: args.id]))
+        } catch (e) {
+            log.error("Caught exception in $ACHIEVEMENT_VIEWED event listener", e)
+        }
+    }
+
+    private createAwardMessage(AchievementAward award) {
+        final message
+        use (TimeCategory) {
+            if ((new Date() - award.awarded) < 1.minute ) {
+                message = "You were just awarded the ${award.achievement.name} achievement!"
+            } else {
+                message = "You were awarded the ${award.achievement.name} achievement ${new PrettyTime().format(award.awarded)} ago!"
+            }
+        }
+
+        def data = [class     : 'achievement.award', badgeUrl: getBadgeImageUrl(award.achievement),
+                   title: 'Congratulations!', id: award.id,
+                   message   : message.toString(),
+                   profileUrl: grailsLinkGenerator.link(controller: 'user', action: 'notebook')]
+        def msg = new EventSourceMessage(event: ACHIEVEMENT_AWARDED, data: data)
+        return msg
+    }
+
 }

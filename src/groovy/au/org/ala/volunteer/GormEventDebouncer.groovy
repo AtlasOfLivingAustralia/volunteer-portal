@@ -9,12 +9,7 @@ class GormEventDebouncer {
     private static final Logger log = Logger.getLogger(GormEventDebouncer.class)
 
     static def debounceProject(long id) {
-//        def ps = getProjectSet()
-//        if (ps != null) {
-//            ps.add(id)
-//        } else {
-            DomainUpdateService.scheduleProjectUpdate(id)
-//        }
+        DomainUpdateService.scheduleProjectUpdate(id)
     }
 
     static def debounceTask(long id) {
@@ -23,26 +18,17 @@ class GormEventDebouncer {
             // we have an active request
             ts.add(id)
         } else {
-            // otherwise drop it on the task queue
+             //otherwise drop it on the task queue
             DomainUpdateService.scheduleTaskUpdate(id)
         }
 
     }
 
     static def debounceDeleteTask(long id) {
-        def ts = getDeletedTaskSet()
-        if (ts != null) {
-            // we have an active request
-            ts.add(id)
-        } else {
-            // otherwise drop it on the task queue
-            DomainUpdateService.scheduleTaskDeleteIndex(id)
-        }
+        DomainUpdateService.scheduleTaskDeleteIndex(id)
     }
     
     static Set<Long> getTaskSet() { getRequestSet("updatedTasks") }
-    //static Set<Long> getProjectSet() { getRequestSet("updatedProjects") }
-    static Set<Long> getDeletedTaskSet() { getRequestSet("deletedTasks") }
 
     static Set<Long> getRequestSet(String name) {
         try {

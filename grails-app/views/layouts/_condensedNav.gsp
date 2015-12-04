@@ -6,7 +6,7 @@
                     <g:ifPageProperty name="page.includeBack">
                         <g:set var="includeBackGrey" value="${false}"/>
                         <g:ifPageProperty name="page.includeBackGrey" equals="true"><g:set var="includeBackGrey" value="${true}"/></g:ifPageProperty>
-                        <a href="javascript:history.back()" class="btn btn-hollow transcription-back ${includeBackGrey ? 'grey' :''}">Back</a>
+                        <a href="${g.pageProperty(name:'page.backHref')}" class="btn btn-hollow transcription-back ${includeBackGrey ? 'grey' :''}">Back</a>
                     </g:ifPageProperty>
                 </div>
                 <div class="col-sm-6">

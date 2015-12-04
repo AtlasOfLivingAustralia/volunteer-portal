@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5"
-         metadata-complete="true"
-         xmlns="http://java.sun.com/xml/ns/javaee"
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
 
     <display-name>/@grails.project.key@</display-name>
 
@@ -24,6 +24,7 @@
     <filter>
         <filter-name>BVPServletFilter</filter-name>
         <filter-class>au.org.ala.volunteer.BVPServletFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
 
     <filter-mapping>
@@ -34,6 +35,7 @@
     <filter>
         <filter-name>charEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>targetBeanName</param-name>
             <param-value>characterEncodingFilter</param-value>
@@ -57,6 +59,7 @@
     <servlet>
         <servlet-name>grails</servlet-name>
         <servlet-class>org.codehaus.groovy.grails.web.servlet.GrailsDispatcherServlet</servlet-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>dispatchOptionsRequest</param-name>
             <param-value>true</param-value>

@@ -22,19 +22,10 @@ class DomainUpdateService {
     // tasks that have been removed from the queue but not yet completed
     private AtomicInteger currentlyProcessing = new AtomicInteger(0)
 
-    def onTasksDeleted(Set<Long> deletedTasks) {
-        if (deletedTasks) {
-            fullTextIndexService.deleteTasks(deletedTasks)
-        }
-    }
-
     def onTasksUpdated(Set<Long> taskSet) {
-        def cheevs = []
         if (taskSet) {
-            fullTextIndexService.indexTasks(taskSet)
-            postIndexTaskActions(taskSet)
+            taskSet.each { scheduleTaskUpdate(it) }
         }
-        return cheevs
     }
 
     private def postIndexTaskActions(Set<Long> taskSet) {
@@ -68,7 +59,6 @@ class DomainUpdateService {
             }
             cheevs = achievementService.evalAndRecordAchievements(involvedUserIds)
         }
-        //taskSet.clear()
         cheevs
     }
 

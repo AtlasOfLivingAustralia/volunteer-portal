@@ -208,6 +208,8 @@ class AchievementDescriptionController {
 
         AchievementAward.saveAll(awards)
 
+        awards.each { event(AchievementService.ACHIEVEMENT_AWARDED, it) }
+
         request.withFormat {
             form multipartForm {
                 flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, it.user.displayName]) }.join('<br/>')
@@ -231,6 +233,8 @@ class AchievementDescriptionController {
 
         def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
         award.save flush: true
+
+        event(AchievementService.ACHIEVEMENT_AWARDED, award)
 
         request.withFormat {
             form multipartForm {

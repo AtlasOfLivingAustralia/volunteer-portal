@@ -467,3 +467,14 @@ a.fieldHelp {
     /* inline-block space fix */
     margin-right:-4px;
 }
+
+/* notifications */
+
+[data-notify="container"] > [data-notify="icon"] > img {
+    height: auto;
+    width: 64px;
+    margin-right: 10px;
+    float: left;
+}
+
+/* end notifications */

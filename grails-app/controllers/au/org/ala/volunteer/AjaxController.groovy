@@ -440,8 +440,8 @@ class AjaxController {
             return
         }
         def cu = userService.currentUser
-        def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
-        if (validAwards) achievementService.markAchievementsViewed(validAwards*.id)
+        //def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
+        achievementService.markAchievementsViewed(cu, longIds)
         render status: 204
     }
 

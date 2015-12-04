@@ -40,6 +40,8 @@
 
 <g:render template="/layouts/associatedBrands" />
 
+<g:render template="/layouts/notifications" />
+
 <r:script>
     var BVP_JS_URLS = {
                 selectProjectFragment: "${createLink(controller: 'project', action: 'findProjectFragment')}",
