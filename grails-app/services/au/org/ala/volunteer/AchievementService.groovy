@@ -51,7 +51,7 @@ class AchievementService {
         eventSourceStartMessage = eventSourceService.addEventSourceStartMessage { userId ->
             final achievements
             if (userId) {
-                log.debug("Get unnotified achievments for $userId")
+                log.info("Get unnotified achievments for $userId")
                 achievements = AchievementAward.withCriteria {
                     user {
                         eq('userId', userId)
@@ -61,7 +61,7 @@ class AchievementService {
                     fetchMode('achievement', JOIN)
                     resultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
                 }
-                log.debug("Found ${achievements.size()} achievments")
+                log.info("Found ${achievements.size()} achievments")
             } else {
                 achievements = []
             }
@@ -239,14 +239,14 @@ class AchievementService {
         if (total) {
             ids.each { event(ACHIEVEMENT_VIEWED, [id: it, userId: user.userId]) }
         }
-        log.debug("Marked ${total} achievements as seen")
+        log.info("Marked ${total} achievements as seen")
     }
 
 
     @Listener(topic=AchievementService.ACHIEVEMENT_AWARDED)
     void achievementAwarded(AchievementAward award) {
         try {
-            log.debug("On Achievement Awarded")
+            log.info("On Achievement Awarded")
             eventSourceService.sendToUser(award.user.userId, createAwardMessage(award))
         } catch (e) {
             log.error("Caught exception in $ACHIEVEMENT_AWARDED event listener", e)
@@ -256,7 +256,7 @@ class AchievementService {
     @Listener(topic=AchievementService.ACHIEVEMENT_VIEWED)
     void achievementViewed(Map args) {
         try {
-            log.debug("On Achievement Viewed")
+            log.info("On Achievement Viewed")
             eventSourceService.sendToUser(args.userId, new EventSourceMessage(event: ACHIEVEMENT_VIEWED, data: [id: args.id]))
         } catch (e) {
             log.error("Caught exception in $ACHIEVEMENT_VIEWED event listener", e)
