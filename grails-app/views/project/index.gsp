@@ -7,6 +7,7 @@
 <g:set var="bgImage" value="${projectInstance.backgroundImage}" />
 <sitemesh:parameter name="includeBack" value="${true}"/>
 <sitemesh:parameter name="includeBackGrey" value="${!(bgImage as Boolean)}"/>
+<sitemesh:parameter name="backHref" value="${projectInstance.institutionId ? createLink(controller: 'institution', action: 'index', id: projectInstance.institutionId) : createLink(controller: 'project', action: 'list')}" />
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
