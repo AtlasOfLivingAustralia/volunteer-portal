@@ -28,16 +28,16 @@ class EventSourceService {
 
     @PostConstruct
     void init() {
-        log.info("Post Construct")
+        log.debug("Post Construct")
         keepalive.scheduleAtFixedRate({
-            log.info("Sending keep alive message")
+            log.debug("Sending keep alive message")
             sendToEveryone(keepAliveMsg)
         } as Runnable, 1, 1, TimeUnit.MINUTES)
     }
 
     @PreDestroy
     void close() {
-        log.info("Pre Destroy")
+        log.debug("Pre Destroy")
         keepalive.shutdownNow()
         ongoingRequests.each { k, v ->
             final i = v.iterator()
@@ -47,7 +47,7 @@ class EventSourceService {
                 ac.complete()
             }
         }
-        log.info("Pre Destroy End")
+        log.debug("Pre Destroy End")
     }
 
     private final ConcurrentLinkedQueue<Closure<List<EventSourceMessage>>> startMessages = new ConcurrentLinkedQueue<>();
@@ -64,7 +64,7 @@ class EventSourceService {
     public void addAsyncContext(AsyncContext ac, String userId) {
         ac.addListener(new AsyncListener() {
             @Override public void onComplete(AsyncEvent event) throws IOException { log.debug('Async onComplete'); removeRequest(userId, ac) }
-            @Override public void onTimeout(AsyncEvent event) throws IOException { log.info('Async onTimeout'); removeRequest(userId, ac) }
+            @Override public void onTimeout(AsyncEvent event) throws IOException { log.debug('Async onTimeout'); removeRequest(userId, ac) }
             @Override public void onError(AsyncEvent event) throws IOException { log.warn('Async onError'); ac.complete(); removeRequest(userId, ac) }
             @Override public void onStartAsync(AsyncEvent event) throws IOException { log.debug("On Start Async") }
         })
@@ -72,16 +72,16 @@ class EventSourceService {
         def q = ongoingRequests.get(userId)
         q.add(ac)
 
-        log.info("Start event source for $userId")
+        log.debug("Start event source for $userId")
 
         // Could be any domain class AFAIK
         FrontPage.async.task {
             try {
-                log.info("Getting startup messages for $userId")
+                log.debug("Getting startup messages for $userId")
                 def i = startMessages.iterator()
                 while (i.hasNext()) {
                     def c = i.next()
-                    log.info("Calling startup closure for $userId")
+                    log.debug("Calling startup closure for $userId")
                     final messages
                     try {
                         messages = c.call(userId)
@@ -89,15 +89,15 @@ class EventSourceService {
                         log.error("Caught exception getting startup messages for $userId", e)
                         messages = []
                     }
-                    log.info("Got $messages for $userId")
+                    log.debug("Got $messages for $userId")
 
                     messages.each {
-                        log.info("Sending start up message ${it.toString()}")
+                        log.debug("Sending start up message ${it.toString()}")
                         sendMessage(ac, it, { removeRequest(userId, ac); } )
-                        log.info("Send start up message done")
+                        log.debug("Send start up message done")
                     }
                 }
-                log.info("Completed sending startup messages for $userId")
+                log.debug("Completed sending startup messages for $userId")
             } catch (e) {
                 log.error("Exception sending startup messages for $userId", e)
             }
@@ -105,7 +105,7 @@ class EventSourceService {
     }
 
     private def removeRequest(String userId, AsyncContext ac) {
-        log.info("Removing async context for $userId")
+        log.debug("Removing async context for $userId")
         ongoingRequests[userId]?.remove(ac)
     }
 
