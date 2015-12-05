@@ -13,7 +13,6 @@ class EventSourceController {
         final userId = userService.currentUserId ?: ''
         response.setContentType("text/event-stream")
         response.setCharacterEncoding("UTF-8")
-        response.setHeader('Connection', 'close')
 
         final AsyncContext ac = request.startAsync()
         ac.setTimeout(TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS))

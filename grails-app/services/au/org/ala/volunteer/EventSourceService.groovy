@@ -44,7 +44,11 @@ class EventSourceService {
             while (i.hasNext()) {
                 final ac = i.next()
                 i.remove()
-                ac.complete()
+                try {
+                    ac.complete()
+                } catch (e) {
+                    log.debug("Caught exception closing async context while shutting down", e)
+                }
             }
         }
         log.info("Pre Destroy End")
@@ -138,6 +142,7 @@ class EventSourceService {
                 log.warn("Async Response Writer indicated an error")
                 onError.call()
             } else {
+                w.flush()
                 ac.response.flushBuffer()
             }
         } catch (IOException e) {
