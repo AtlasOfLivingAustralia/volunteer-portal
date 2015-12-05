@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.volunteer.AchievementService; au.org.ala.volunteer.FrontPageService" %>
 <r:script>
     digivolNotify({
-        eventSourceUrl: "${createLink(controller: 'eventSource', action: 'index')}",
+        eventSourceUrl: "${createLink(uri: '/es')}",
         acceptAchievementsUrl: "${createLink(controller: 'ajax', action: 'acceptAchievements')}",
         alertMessageType: '${FrontPageService.ALERT_MESSAGE}',
         achievmentAwardedMessageType: '${AchievementService.ACHIEVEMENT_AWARDED}',

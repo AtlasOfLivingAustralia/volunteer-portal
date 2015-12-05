@@ -78,6 +78,17 @@
         <url-pattern>*.gsp</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>eventSource</servlet-name>
+        <servlet-class>au.org.ala.volunteer.EventSourceServlet</servlet-class>
+        <async-supported>true</async-supported>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>eventSource</servlet-name>
+        <url-pattern>/es</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
         <!--
         The order of the welcome pages is important.  JBoss deployment will
