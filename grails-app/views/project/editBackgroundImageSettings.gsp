@@ -64,6 +64,10 @@
                 <span class="input-group-addon"><i></i></span>
             </div>
         </div>
+        <div class="col-md-3">
+            <cl:helpText>This will be applied over the background image.  Use this if the background image makes the text that overlays it unreadable.  A good starting point is black at half opacity (i.e. `rgba(0,0,0,0.5)`).</cl:helpText>
+            <button role="button" type="button" id="setDefaultOverlay" class="btn btn-default btn-xs">Set to default</button>
+        </div>
     </div>
 
     <div class="form-group">
@@ -90,6 +94,10 @@
         });
 
         $('.colpick').colorpicker();
+        bvp.bindTooltips('.fieldHelp');
+        $('#setDefaultOverlay').click(function() {
+            $('#backgroundImageOverlayColour').parent('.colpick').colorpicker('setValue', 'rgba(0,0,0,0.5)');
+        });
     });
 </script>
 

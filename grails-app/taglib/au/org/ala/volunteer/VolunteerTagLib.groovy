@@ -129,7 +129,7 @@ class VolunteerTagLib {
             }
 
             mb.a(attributes) {
-                i(class:'fa fa-question help-container') {
+                span(class:'fa fa-question help-container') {
                     mkp.yieldUnescaped('')
                 }
             }
