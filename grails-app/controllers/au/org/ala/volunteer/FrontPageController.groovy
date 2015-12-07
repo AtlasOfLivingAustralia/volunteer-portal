@@ -15,7 +15,7 @@ class FrontPageController {
         def frontPage = FrontPage.instance();
 
         frontPage.projectOfTheDay = Project.get(Long.parseLong(params['projectOfTheDay']))
-
+        frontPage.numberOfContributors = params.int('numberOfContributors') ?: 10
         frontPage.useGlobalNewsItem = params['useGlobalNewsItem'] == "on"
 
         frontPage.newsTitle = params["newsTitle"]
