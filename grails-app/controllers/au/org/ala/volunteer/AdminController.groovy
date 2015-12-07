@@ -232,7 +232,6 @@ class AdminController {
                 property('userId')
             }
         }.toMap()
-        log.info("EmailToIdMap: $emailToIdMap")
         def actWithOpenEventSources = activities*.properties.collect { it + [ openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '') ] }
         respond([activities: actWithOpenEventSources])
     }
