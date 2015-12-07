@@ -235,7 +235,9 @@ class ForumService {
         def c = ForumMessage.createCriteria()
         def results = c.list(max:params?.max, offset: params?.offset) {
             eq("user", user)
-            order("topic", "date")
+            order('date', 'desc')
+            order("topic")
+
         }
 
         return results as PagedResultList

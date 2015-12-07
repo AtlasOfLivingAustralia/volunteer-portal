@@ -539,7 +539,8 @@ class ForumController {
 
     def userCommentsFragment() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        def userInstance = User.get(params.int("userId"))
+        def id = params.int("id")
+        def userInstance = User.get(id)
         def messages = forumService.getMessagesForUser(userInstance, params)
         [userInstance: userInstance, messages: messages]
     }
