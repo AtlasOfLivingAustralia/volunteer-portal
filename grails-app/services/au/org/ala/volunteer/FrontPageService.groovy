@@ -16,9 +16,9 @@ class FrontPageService {
     @PostConstruct
     void init() {
         eventSourceStartMessage = eventSourceService.addEventSourceStartMessage { userId ->
-            log.info("Getting Front Page System Message")
+            log.debug("Getting Front Page System Message")
             def systemMessage = FrontPage.first().systemMessage
-            log.info("Got Front Page System Message")
+            log.debug("Got Front Page System Message")
             [createMessage(systemMessage)]
         }
     }
@@ -35,7 +35,7 @@ class FrontPageService {
     @Listener(topic=FrontPageService.ALERT_MESSAGE)
     void alertMessage(String alert) {
         try {
-            log.info("On Alert Message")
+            log.debug("On Alert Message")
             eventSourceService.sendToEveryone(createMessage(alert))
         } catch (e) {
             log.error("Exception caught while handling system message change", e)

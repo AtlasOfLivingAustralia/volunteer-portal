@@ -1,50 +1,49 @@
 "use strict";
 function digivolNotify(config) {
 
-  //$.getJSON(config.pageLoadUrl).done(function(data) {
-  //  if (data.alert) alertMessage(data.alert);
-  //  if (data.achievements) {
-  //    var ach = data.achievements;
-  //    for (var i = 0; i < ach.length; ++i) {
-  //      achievement(ach[i]);
-  //    }
-  //  }
-  //});
-
   var source = new EventSource(config.eventSourceUrl);
 
   source.addEventListener('error', function(e) {
     if (e.readyState == EventSource.CLOSED) {
-      console.debug("Eventsource closed", e);
+      //console.debug("Eventsource closed", e);
     } else {
       console.error("Eventsource error", e);
     }
   }, false);
 
   source.addEventListener('open', function(e) {
-    console.debug("eventsource opened!");
+    //console.debug("eventsource opened!");
   }, false);
 
   source.addEventListener(config.alertMessageType, function(event) {
-    console.log("Got Alert Message", event.data);
+    //console.log("Got Alert Message", event.data);
     alertMessage(event.data);
   }, false);
 
   source.addEventListener(config.achievmentAwardedMessageType, function(event) {
     var data = JSON.parse(event.data);
-    console.log("Got Achievement Awarded Message", data);
+    //console.log("Got Achievement Awarded Message", data);
     achievement(data);
   }, false);
 
   source.addEventListener(config.achievmentViewedMessageType, function(event) {
     var data = JSON.parse(event.data);
-    console.log("Got Achievement Viewed Message", data);
+    //console.log("Got Achievement Viewed Message", data);
     achievementViewed(data);
   }, false);
 
   source.addEventListener('message', function(e) {
     console.warn("Unexpected SSE", e.data);
   }, false);
+
+  $.notifyDefaults({
+    allow_duplicates: false,
+    delay: 0,
+    offset: {
+      x: 20,
+      y: 70
+    }
+  });
 
   var alertNotify = null;
 
@@ -60,9 +59,7 @@ function digivolNotify(config) {
         icon: config.alertIconClass,
         message: data
       },{
-        allow_duplicates: false,
         type: config.alertType,
-        delay: 0,
         onClose: function() {
           alertNotify = null;
         }
@@ -81,14 +78,12 @@ function digivolNotify(config) {
         message: data.message,
         url: data.profileUrl
       },{
-        icon_type: 'img',
-        allow_duplicates: false,
-        type: config.achievementType,
         animate: {
           enter: 'animated pulse',
           exit: 'animated fadeOutUp'
         },
-        delay: 0,
+        icon_type: 'img',
+        type: config.achievementType,
         onClose: function() {
           $.ajax(config.acceptAchievementsUrl, {
             type: 'post',
@@ -99,7 +94,7 @@ function digivolNotify(config) {
         }
       });
       achievementsNotifications[data.id] = achNot;
-      // slight hack to close the notification on click
+      // hack to close the notification on click
       achNot.$ele.find('[data-notify="url"]').click(function() {
         achNot.close();
       });

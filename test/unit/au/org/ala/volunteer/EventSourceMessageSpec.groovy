@@ -30,6 +30,21 @@ class EventSourceMessageSpec extends Specification {
 """
     }
 
+    void "test write multiline string data"() {
+        setup:
+        def msg = new EventSourceMessage(data:'potato potato\npotato potato\n potato potato')
+        def sw = new StringWriter()
+        when:
+        msg.writeTo(sw)
+
+        then:
+        sw.toString() == """data: potato potato
+data: potato potato
+data:  potato potato
+
+"""
+    }
+
     void "test write map data"() {
         setup:
         def d = [hello: "world\npotato", count: 2]

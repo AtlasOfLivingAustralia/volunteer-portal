@@ -4,8 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import groovy.transform.ToString
 
-import java.lang.reflect.Type
-
 @ToString
 class EventSourceMessage implements Writable {
 
@@ -29,7 +27,8 @@ class EventSourceMessage implements Writable {
         if (data != null) {
             switch (data) {
                 case String:
-                    out.write("data: $data\n")
+                    def strData = ((String)data).replace('\n', '\ndata: ')
+                    out.write("data: $strData\n")
                     break;
                 default:
                     out.write('data: ')
