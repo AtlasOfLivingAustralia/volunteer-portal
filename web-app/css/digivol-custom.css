@@ -472,7 +472,7 @@ a.fieldHelp {
 
 [data-notify="container"] > [data-notify="icon"] > img {
     height: auto;
-    width: 64px;
+    width: 40px;
     margin-right: 10px;
     float: left;
 }
