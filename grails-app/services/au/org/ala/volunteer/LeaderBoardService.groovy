@@ -129,8 +129,8 @@ class LeaderBoardService {
 
     List getTopNForInstitution(int count, Institution institution, List<String> ineligibleUsers = []) {
 
-        def scoreMap = getUserCountsForInstitution(institution, ActivityType.Transcribed)
-        def validatedMap = getUserCountsForInstitution(institution, ActivityType.Validated)
+        def scoreMap = getUserCountsForInstitution(institution, ActivityType.Transcribed, ineligibleUsers)
+        def validatedMap = getUserCountsForInstitution(institution, ActivityType.Validated, ineligibleUsers)
 
         // merge the validated map into the transcribed map, forming a total activity score for the superset of users
         validatedMap.each { kvp ->
@@ -229,13 +229,19 @@ class LeaderBoardService {
         return map
     }
 
-    private getUserCountsForInstitution(Institution institution, ActivityType activityType) {
+    private getUserCountsForInstitution(Institution institution, ActivityType activityType, List<String> exceptUsers = []) {
         def c = Task.createCriteria()
 
         def results = c {
             if (institution) {
                 project {
                     eq("institution", institution)
+                }
+            }
+
+            if (exceptUsers) {
+                not {
+                    inList("fully${activityType}By", exceptUsers)
                 }
             }
 
