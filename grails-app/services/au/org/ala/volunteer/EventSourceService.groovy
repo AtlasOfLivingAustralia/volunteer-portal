@@ -108,6 +108,11 @@ class EventSourceService {
         }
     }
 
+
+    def getOpenRequestsForUser(String userId) {
+        ongoingRequests[userId]?.size() ?: 0
+    }
+
     private def removeRequest(String userId, AsyncContext ac) {
         log.debug("Removing async context for $userId")
         ongoingRequests[userId]?.remove(ac)
@@ -139,7 +144,7 @@ class EventSourceService {
             final w = ac.response.writer
             msg.writeTo(w)
             if (w.checkError()) {
-                log.warn("Async Response Writer indicated an error")
+                log.debug("Async Response Writer indicated an error")
                 onError.call()
             } else {
                 w.flush()

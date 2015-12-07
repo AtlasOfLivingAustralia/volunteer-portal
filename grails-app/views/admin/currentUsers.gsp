@@ -17,7 +17,7 @@
           $scope.activities = [];
 
           function refreshActivity() {
-              $http.get('${createLink(controller: 'admin', action: 'userActivityFragment', format: 'json')}').then(function(resp) {
+              $http.get('${createLink(controller: 'admin', action: 'userActivityInfo', format: 'json')}').then(function(resp) {
                 $scope.activities = resp.data.activities;
                 $scope.lastRefreshed = new Date();
               });
@@ -56,6 +56,7 @@
                     <thead>
                     <tr>
                         <th>User</th>
+                        <th>Open ES</th>
                         <th>Started</th>
                         <th>Last Activity</th>
                         <th>Last Request</th>
@@ -64,6 +65,7 @@
                     <tbody>
                         <tr data-ng-repeat="activity in activities">
                             <td>{{activity.userId}}</td>
+                            <td>{{activity.openESRequests}}</td>
                             <td>{{activity.timeFirstActivity | date:'medium' }} (<span data-am-time-ago="activity.timeFirstActivity"></span>)</td>
                             <td>{{activity.timeLastActivity | date:'medium' }} (<span data-am-time-ago="activity.timeLastActivity"></span>)</td>
                             <td>{{activity.lastRequest}}</td>

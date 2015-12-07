@@ -34,7 +34,7 @@ public class EventSourceServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         final AsyncContext ac = req.startAsync();
-        ac.setTimeout(TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS));
+        ac.setTimeout(TimeUnit.MILLISECONDS.convert(2, TimeUnit.MINUTES));
 
         resp.flushBuffer();
 

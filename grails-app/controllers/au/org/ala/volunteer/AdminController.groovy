@@ -21,6 +21,7 @@ class AdminController {
     def fullTextIndexService
     def domainUpdateService
     def taskLoadService
+    def eventSourceService
 
     def index = {
         checkAdmin()
@@ -222,9 +223,18 @@ class AdminController {
     def currentUsers() {
     }
 
-    def userActivityFragment() {
+    def userActivityInfo() {
         def activities = UserActivity.list([sort:'timeLastActivity', order:'desc'])
-        respond([activities: activities])
+        def emailToIdMap = User.withCriteria {
+            inList('email', activities*.userId)
+            projections {
+                property('email')
+                property('userId')
+            }
+        }.toMap()
+        log.info("EmailToIdMap: $emailToIdMap")
+        def actWithOpenEventSources = activities*.properties.collect { it + [ openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '') ] }
+        respond([activities: actWithOpenEventSources])
     }
 
     def tools() {
