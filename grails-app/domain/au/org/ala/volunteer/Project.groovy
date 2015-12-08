@@ -45,6 +45,7 @@ class Project implements Serializable {
         template lazy: false
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
         harvestableByAla defaultValue: true
+        version defaultValue: '0'
     }
 
     static constraints = {
