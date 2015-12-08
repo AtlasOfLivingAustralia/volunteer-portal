@@ -69,7 +69,7 @@ class EventSourceService {
         ac.addListener(new AsyncListener() {
             @Override public void onComplete(AsyncEvent event) throws IOException { log.debug('Async onComplete'); removeRequest(userId, ac) }
             @Override public void onTimeout(AsyncEvent event) throws IOException { log.debug('Async onTimeout'); removeRequest(userId, ac) }
-            @Override public void onError(AsyncEvent event) throws IOException { log.warn('Async onError'); ac.complete(); removeRequest(userId, ac) }
+            @Override public void onError(AsyncEvent event) throws IOException { log.warn('Async onError'); removeRequest(userId, ac) }
             @Override public void onStartAsync(AsyncEvent event) throws IOException { log.debug("On Start Async") }
         })
         ongoingRequests.putIfAbsent(userId, new ConcurrentLinkedQueue<AsyncContext>())
@@ -116,6 +116,11 @@ class EventSourceService {
     private def removeRequest(String userId, AsyncContext ac) {
         log.debug("Removing async context for $userId")
         ongoingRequests[userId]?.remove(ac)
+        try {
+            ac.complete()
+        } catch (e) {
+            log.debug("Caught exception closing async context while removing request", e)
+        }
     }
 
     def sendToUser(String userId, EventSourceMessage msg) {
@@ -135,7 +140,14 @@ class EventSourceService {
         final i = v.iterator()
         while (i.hasNext()) {
             def ac = i.next()
-            sendMessage(ac, msg, { i.remove(); } )
+            sendMessage(ac, msg, {
+                i.remove()
+                try {
+                    ac.complete()
+                } catch (e) {
+                    log.debug("Caught exception closing async context while removing connection", e)
+                }
+            } )
         }
     }
 

@@ -29,6 +29,8 @@ class Project implements Serializable {
     Double mapInitLongitude
     Boolean harvestableByAla = true
 
+    Integer version
+
     def grailsApplication
     def grailsLinkGenerator
     //def assetResourceLocator
@@ -38,7 +40,6 @@ class Project implements Serializable {
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {
-        version false
         tasks cascade: 'all,delete-orphan'
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
