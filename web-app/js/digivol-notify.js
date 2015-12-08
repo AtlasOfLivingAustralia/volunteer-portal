@@ -3,6 +3,12 @@ function digivolNotify(config) {
 
   var source = new EventSource(config.eventSourceUrl);
 
+  var unloadHandler = function(e) {
+    if (source) source.close();
+  };
+
+  $( window ).on('unload', unloadHandler);
+
   source.addEventListener('error', function(e) {
     if (e.readyState == EventSource.CLOSED) {
       //console.debug("Eventsource closed", e);

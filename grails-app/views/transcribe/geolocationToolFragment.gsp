@@ -202,7 +202,7 @@
         var address = $(':input#address').val().replace(/\n/g, " ");
         if (geocoder && address) {
             //geocoder.getLocations(address, addAddressToPage);
-            quotaCount++
+            quotaCount++;
             geocoder.geocode({
                         'address': address,
                         region: 'AU'
@@ -380,17 +380,25 @@
 
         });
 
-        var $modal = $('#mapWidgets').parents('.modal');
-        if ($modal.length > 0) {
-            $modal.on('shown.bs.modal', function () {
+
+        function init() {
+            var $modal = $('#mapWidgets').parents('.modal');
+            if ($modal.length > 0) {
+                $modal.on('shown.bs.modal', function () {
+                    initializeGeolocateTool();
+                })
+            } else {
                 initializeGeolocateTool();
-            })
-        } else {
-            initializeGeolocateTool();
-            google.maps.event.trigger(map, "resize");
-            setTimeout(function () {
                 google.maps.event.trigger(map, "resize");
-            }, 500);
+                setTimeout(function () {
+                    google.maps.event.trigger(map, "resize");
+                }, 500);
+            }
+        }
+
+        if (gmapsReady) init();
+        else {
+            $(window).on('digivol.gmapsReady', init);
         }
 
         bvp.bindTooltips("a.geolocateHelp.fieldHelp", 600);
