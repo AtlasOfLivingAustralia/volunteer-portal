@@ -135,7 +135,7 @@
 
         map.panTo(marker.getPosition());
 
-        var localityStr = $(':input.verbatimLocality').val();
+        var localityStr = $(':input.verbatimLocality').val() || '';
 
 
         if (!$(':input#address').val()) {
@@ -145,14 +145,6 @@
                 var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
                 $(':input#address').val(interpretedLatLong);
             } else {
-                var country = $(":input.country").val();
-                if (country) {
-                    if (localityStr) {
-                        localityStr += ", " + country;
-                    } else {
-                        localityStr = country;
-                    }
-                }
 
                 var state = $(":input.stateProvince").val();
                 if (state) {
@@ -163,7 +155,16 @@
                     }
                 }
 
-                $(':input#address').val(localityStr);
+                var country = $(":input.country").val();
+                if (country) {
+                    if (localityStr) {
+                        localityStr += ", " + country;
+                    } else {
+                        localityStr = country;
+                    }
+                }
+
+                $(':input#address').val(localityStr.replace(/\s+/g, ' '));
             }
         }
         if (lat && lng) {
