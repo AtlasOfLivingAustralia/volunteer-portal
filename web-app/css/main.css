@@ -1109,7 +1109,6 @@ select[type="text"]:focus,
     padding-left: 5px;
     padding-right: 5px; }
 .transcribeSection.form-condensed .form-control, .form-condensed .form-control {
-  font-size: 12px;
   padding: 4px 4px; }
 
 section {

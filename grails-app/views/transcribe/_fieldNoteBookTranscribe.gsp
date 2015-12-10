@@ -2,40 +2,53 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
 <style>
-
+    .fontSizeButton {
+        line-height: 18px !important;
+    }
+    #journalPageButtons {
+        margin-bottom:5px;
+    }
 </style>
 
 <div class="row">
     <div class="col-md-12">
-        <span id="journalPageButtons">
-            <button type="button" class="btn btn-default btn-small" id="showPreviousJournalPage"
-                    title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img
-                    src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous journal page</button>
-            <button type="button" class="btn btn-default btn-small" id="showNextJournalPage"
-                    title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page <img
-                    src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
-            <button type="button" class="btn btn-default btn-small" id="rotateImage"
-                    title="Rotate the page 180 degrees">Rotate&nbsp;<img
-                    style="vertical-align: middle; margin: 0 !important;"
-                    src="${resource(dir: 'images', file: 'rotate.png')}"></button>
-            <button type="button" class="btn btn-default btn-small fontSizeButton pull-right" title="Large sized fonts"
-                    style="font-size: 18px">A</button>
-            <button type="button" class="btn btn-default btn-small fontSizeButton pull-right" title="Medium sized fonts"
-                    style="font-size: 15px">A</button>
-            <button type="button" class="btn btn-default btn-small fontSizeButton pull-right" title="Small sized fonts"
-                    style="font-size: 12px">A</button>
-        </span>
+        <div class="btn-toolbar" id="journalPageButtons">
+            <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-default" id="showPreviousJournalPage"
+                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img
+                        src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous journal page</button>
+                <button type="button" class="btn btn-default" id="showNextJournalPage"
+                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page <img
+                        src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
+                <button type="button" class="btn btn-default" id="rotateImage"
+                        title="Rotate the page 180 degrees">Rotate&nbsp;<img
+                        style="vertical-align: middle; margin: 0 !important;"
+                        src="${resource(dir: 'images', file: 'rotate.png')}"></button>
+            </div>
+
+            <div class="btn-group btn-group-sm pull-right">
+                <button type="button" class="btn btn-default fontSizeButton" title="Small sized fonts"
+                        style="font-size: 12px">A</button>
+                <button type="button" class="btn btn-default fontSizeButton" title="Medium sized fonts"
+                        style="font-size: 15px">A</button>
+                <button type="button" class="btn btn-default fontSizeButton" title="Large sized fonts"
+                        style="font-size: 18px">A</button>
+
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-12">
-        <div class="well well-sm">
+        <div class="panel panel-default">
+            <div class="panel-body">
             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                 <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
                     <g:imageViewer multimedia="${multimedia}"/>
                 </g:if>
             </g:each>
+            </div>
         </div>
     </div>
 </div>

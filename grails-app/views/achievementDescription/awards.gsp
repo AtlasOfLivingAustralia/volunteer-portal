@@ -44,8 +44,7 @@
                 <td>${award.user.displayName}</td>
                 <td>${award.awarded}</td>
                 <td>${award.userNotified}</td>
-                <td class="eligible-column"><r:img dir="images" file="spinner.gif" height="16px" width="16px"
-                                                   class="ajax-spinner"/></td>
+                <td class="eligible-column"><i class="fa fa-cog fa-spin ajax-spinner"></i></td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-danger rmAward"><i class="fa fa-times"></i></button>
                 </td>
@@ -64,9 +63,11 @@
 
                 <div class="col-md-6">
                     <input class="form-control" id="user" type="text" value="${displayName}" autocomplete="off"/>
-                    <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner"
-                           class="hidden"/>
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
+                </div>
+
+                <div class="col-md-3">
+                    <i id="ajax-spinner" class="fa fa-cog fa-spin hidden"></i>
                 </div>
             </div>
 

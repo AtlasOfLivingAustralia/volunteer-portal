@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.mappingtool.label" default="Administration - Mapping tool"/></title>
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady" async defer></script>
 </head>
 
 <body class="admin">
@@ -78,6 +78,12 @@
 
 
 <r:script type='text/javascript'>
+
+    var gmapsReady = false;
+    function onGmapsReady() {
+        gmapsReady = true;
+        $(window).trigger('digivol.gmapsReady');
+    }
 
     $(function() {
         $("#btnToggleFullData").click(function(e) {

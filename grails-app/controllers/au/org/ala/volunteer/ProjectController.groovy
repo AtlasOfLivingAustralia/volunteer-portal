@@ -79,7 +79,7 @@ class ProjectController {
                     }
                 }
             }
-            log.warn "roles = ${roles as JSON}"
+            log.debug "roles = ${roles as JSON}"
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
             def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc', max: 1])
@@ -682,6 +682,7 @@ class ProjectController {
         }
 
         projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
+        projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
         flash.message = "Background image settings updated."
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
@@ -691,6 +692,7 @@ class ProjectController {
         Project projectInstance = Project.get(params.id)
         if (projectInstance) {
             projectInstance.backgroundImageAttribution = null
+            projectInstance.backgroundImageOverlayColour = null
             projectInstance.setBackgroundImage(null,null)
         }
 

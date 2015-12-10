@@ -109,7 +109,7 @@ $(function() {
     notebook.loadContent();
     notebook.initMap();
 
-    // Every time a tab is selected the page is refreshed and the content loading is deferred bia Ajax
+    // Every time a tab is selected the page is refreshed and the content loading is deferred via Ajax
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         e.preventDefault();
         location.replace(notebook.updateQueryStringParameter(window.location.pathname, 'selectedTab', $(this).attr('tab-index')) + '#profileTabs');

@@ -43,13 +43,11 @@ class ActivityFilters {
         
         achievements(controller:'*', action:'*') {
             after = { Map model ->
-                log.debug("achievements filter")
-                //def projectSet = GormEventDebouncer.projectSet
+                log.debug("task debouncing")
+
                 def taskSet = GormEventDebouncer.taskSet
-                def deletedTasks = GormEventDebouncer.deletedTaskSet
-                //def fieldSet = GormEventDebouncer.fieldSet
+
                 try {
-                    domainUpdateService.onTasksDeleted(deletedTasks)
                     domainUpdateService.onTasksUpdated(taskSet)
                 } catch (Exception e) {
                     log.error("Exception while performing post request actions", e)

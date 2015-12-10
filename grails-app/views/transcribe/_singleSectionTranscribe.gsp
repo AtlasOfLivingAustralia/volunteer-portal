@@ -62,21 +62,23 @@
 %>
 <div class="row">
     <div class="col-md-12">
-        <div class="well well-sm transcribeSection">
-            <div class="row">
-                <div class="col-md-12">
-                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Details</span>
-                </div>
-                <g:set var="spanClass" value="${"col-md-${12 / columnCount}"}"/>
-                <g:each in="${columns}" var="column">
-                    <div class="${spanClass}">
-                        <g:each in="${column}" var="field">
-                            <g:renderFieldBootstrap tabindex="${field.displayOrder}" field="${field}" recordIdx="${0}"
-                                                    recordValues="${recordValues}" task="${taskInstance}" labelClass="col-md-4"
-                                                    valueClass="col-md-8"/>
-                        </g:each>
+        <div class="panel panel-default transcribeSection">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Details</span>
                     </div>
-                </g:each>
+                    <g:set var="spanClass" value="${"col-md-${12 / columnCount}"}"/>
+                    <g:each in="${columns}" var="column">
+                        <div class="${spanClass}">
+                            <g:each in="${column}" var="field">
+                                <g:renderFieldBootstrap tabindex="${field.displayOrder}" field="${field}" recordIdx="${0}"
+                                                        recordValues="${recordValues}" task="${taskInstance}" labelClass="col-md-4"
+                                                        valueClass="col-md-8"/>
+                            </g:each>
+                        </div>
+                    </g:each>
+                </div>
             </div>
         </div>
     </div>

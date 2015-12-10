@@ -2,16 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
-    <link rel="icon" type="image/x-icon" href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico"/>
-    <link rel="shortcut icon" type="image/x-icon"
-          href="http://www.ala.org.au/wp-content/themes/ala2011/images/favicon.ico"/>
+    <title><cl:pageTitle title="Image Viewer"/></title>
+    <r:external dir="images/" file="favicon.ico"/>
 
-    <link rel="stylesheet" type="text/css"
-          href="${resource(dir: 'css', file: 'bootstrap.css', plugin: 'ala-web-theme')}">
-
-    <r:require module="jquery"/>
-    <r:require module="bootstrap-js"/>
+    <r:require module="digivol" />
     <r:require module="panZoom"/>
     <r:require module="imageViewer"/>
 
@@ -42,33 +36,33 @@
 <body>
 <div class="container-fluid">
     <div id="imageViewerHeader">
-        <div class="row-fluid">
-            <div class="span12">
+        <div class="row">
+            <div class="col-xs-12">
                 <h4>${taskInstance?.project?.featuredLabel} - ${taskInstance?.externalIdentifier}</h4>
                 <cl:messages/>
             </div>
         </div>
 
-        <div class="row-fluid" style="margin-bottom: 10px">
+        <div class="row" style="margin-bottom: 10px">
 
-            <div class="span9" id="journalPageButtons">
-                <button class="btn btn-small" id="showPreviousJournalPage"
+            <div class="col-sm-9" id="journalPageButtons">
+                <button class="btn btn-default btn-small" id="showPreviousJournalPage"
                         title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
                     <img src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous
                 </button>
-                <button class="btn btn-small" id="showNextJournalPage"
+                <button class="btn btn-default btn-small" id="showNextJournalPage"
                         title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
                     show next <img src="${resource(dir: 'images', file: 'right_arrow.png')}">
                 </button>
-                <button class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees">
+                <button class="btn btn-default btn-small" id="rotateImage" title="Rotate the page 180 degrees">
                     Rotate&nbsp;<img src="${resource(dir: 'images', file: 'rotate.png')}">
                 </button>
-                <button class="btn btn-small" id="closeWindow" title="Close this window">
+                <button class="btn btn-default btn-small" id="closeWindow" title="Close this window">
                     Close
                 </button>
             </div>
 
-            <div class="span3">
+            <div class="col-sm-3">
                 <g:if test="${sequenceNumber >= 0}">
                     <span class="pull-right label label-info">Sequence number: ${sequenceNumber}</span>
                 </g:if>
@@ -77,15 +71,17 @@
         </div>
     </div>
 
-    <div class="row-fluid">
-        <div class="span12">
-            <div id="imageWell" class="well well-small">
-                <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
-                    <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
-                        <g:imageViewer multimedia="${multimedia}" hidePinImage="${true}"
-                                       hideShowInOtherWindow="${true}"/>
-                    </g:if>
-                </g:each>
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="imageWell" class="panel panel-default">
+                <div class="panel-body">
+                    <g:each in="${taskInstance?.multimedia}" var="multimedia" status="i">
+                        <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
+                            <g:imageViewer multimedia="${multimedia}" hidePinImage="${true}"
+                                           hideShowInOtherWindow="${true}"/>
+                        </g:if>
+                    </g:each>
+                </div>
             </div>
         </div>
     </div>
@@ -149,7 +145,7 @@ function rotateImage() {
 
         var height = $("#image-container").height();
 
-        $.ajax("${createLink(controller: 'transcribe', action: 'imageViewerFragment', params: [multimediaId: taskInstance.multimedia?.first()?.id])}&height=" + height +"&rotate=" + imageRotation + "&hideShowInOtherWindow=true&hidePinImage=true").done(function(html) {
+        $.ajax("${createLink(controller: 'transcribe', action: 'imageViewerFragment', params: [multimediaId: taskInstance?.multimedia?.first()?.id])}&height=" + height +"&rotate=" + imageRotation + "&hideShowInOtherWindow=true&hidePinImage=true").done(function(html) {
                         $("#image-parent-container").replaceWith(html);
                         setupPanZoom();
                     });

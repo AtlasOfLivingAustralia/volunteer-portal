@@ -406,41 +406,6 @@ table .btn-default:hover {
     text-align: justify;
 }
 
-@-webkit-keyframes colorPulse {
-    0% {background-color: #f2dede; transform: scale(1);}
-    50% {background-color: #d59595; transform: scale(1.2);}
-    100% {background-color: #f2dede; transform: scale(1);}
-}
-@-moz-keyframes colorPulse {
-    0% {background-color: #f2dede; transform: scale(1);}
-    50% {background-color: #d59595; transform: scale(1.2);}
-    100% {background-color: #f2dede; transform: scale(1);}
-}
-@-o-keyframes colorPulse {
-    0% {background-color: #f2dede; transform: scale(1);}
-    50% {background-color: #d59595; transform: scale(1.2);}
-    100% {background-color: #f2dede; transform: scale(1);}
-}
-@keyframes colorPulse {
-    0% {background-color: #f2dede; transform: scale(1);}
-    50% {background-color: #d59595; transform: scale(1.2);}
-    100% {background-color: #f2dede; transform: scale(1);}
-}
-
-.bvp-system-message {
-    -webkit-animation: colorPulse 2s 1;
-    -moz-animation: colorPulse 2s 1;
-    -o-animation: colorPulse 2s 1;
-    animation: colorPulse 2s 1;
-    -webkit-animation-delay: 2s;
-    -moz-animation-delay: 2s;
-    -o-animation-delay: 2s;
-    animation-delay: 2s;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    font-size: 1.5em;
-}
-
 a.fieldHelp {
     text-decoration: none;
     display: inline-block;
@@ -467,3 +432,15 @@ a.fieldHelp {
     /* inline-block space fix */
     margin-right:-4px;
 }
+
+/* notifications */
+
+[data-notify="container"] > [data-notify="icon"] > img {
+    height: auto;
+    min-height: 40px;
+    width: 40px;
+    margin-right: 10px;
+    float: left;
+}
+
+/* end notifications */

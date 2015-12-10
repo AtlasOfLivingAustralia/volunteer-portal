@@ -135,7 +135,7 @@
 
         map.panTo(marker.getPosition());
 
-        var localityStr = $(':input.verbatimLocality').val();
+        var localityStr = $(':input.verbatimLocality').val() || '';
 
 
         if (!$(':input#address').val()) {
@@ -145,14 +145,6 @@
                 var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
                 $(':input#address').val(interpretedLatLong);
             } else {
-                var country = $(":input.country").val();
-                if (country) {
-                    if (localityStr) {
-                        localityStr += ", " + country;
-                    } else {
-                        localityStr = country;
-                    }
-                }
 
                 var state = $(":input.stateProvince").val();
                 if (state) {
@@ -163,7 +155,16 @@
                     }
                 }
 
-                $(':input#address').val(localityStr);
+                var country = $(":input.country").val();
+                if (country) {
+                    if (localityStr) {
+                        localityStr += ", " + country;
+                    } else {
+                        localityStr = country;
+                    }
+                }
+
+                $(':input#address').val(localityStr.replace(/\s+/g, ' '));
             }
         }
         if (lat && lng) {
@@ -201,7 +202,7 @@
         var address = $(':input#address').val().replace(/\n/g, " ");
         if (geocoder && address) {
             //geocoder.getLocations(address, addAddressToPage);
-            quotaCount++
+            quotaCount++;
             geocoder.geocode({
                         'address': address,
                         region: 'AU'
@@ -379,17 +380,25 @@
 
         });
 
-        var $modal = $('#mapWidgets').parents('.modal');
-        if ($modal.length > 0) {
-            $modal.on('shown.bs.modal', function () {
+
+        function init() {
+            var $modal = $('#mapWidgets').parents('.modal');
+            if ($modal.length > 0) {
+                $modal.on('shown.bs.modal', function () {
+                    initializeGeolocateTool();
+                })
+            } else {
                 initializeGeolocateTool();
-            })
-        } else {
-            initializeGeolocateTool();
-            google.maps.event.trigger(map, "resize");
-            setTimeout(function () {
                 google.maps.event.trigger(map, "resize");
-            }, 500);
+                setTimeout(function () {
+                    google.maps.event.trigger(map, "resize");
+                }, 500);
+            }
+        }
+
+        if (gmapsReady) init();
+        else {
+            $(window).on('digivol.gmapsReady', init);
         }
 
         bvp.bindTooltips("a.geolocateHelp.fieldHelp", 600);

@@ -2,10 +2,10 @@ function labelAutocomplete(input, findUrl, ajaxSpinnerSelector, selectedCallback
     var url = findUrl;
 
     function showSpinner() {
-        $(ajaxSpinnerSelector).removeClass('disabled');
+        $(ajaxSpinnerSelector).removeClass('hidden');
     }
     function hideSpinner() {
-        $(ajaxSpinnerSelector).addClass('disabled');
+        $(ajaxSpinnerSelector).addClass('hidden');
     }
 
     var bh = new Bloodhound({

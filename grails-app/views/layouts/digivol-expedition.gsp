@@ -39,6 +39,11 @@
                 picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}"
             };
 </r:script>
+
+<g:render template="/layouts/notifications" />
+
+<g:render template="/layouts/ga" />
+
 <!-- JS resources-->
 <r:layoutResources/>
 

@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import org.apache.commons.lang.StringUtils
+import org.grails.plugins.metrics.groovy.Timed
 import org.imgscalr.Scalr
 
 import javax.imageio.ImageIO
@@ -76,6 +77,7 @@ class TaskService {
         projectTaskCounts.toMap()
     }
 
+    @Timed
     Map getProjectTranscriberCounts() {
         def volunteerCounts = Task.executeQuery(
             """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
@@ -84,6 +86,7 @@ class TaskService {
         volunteerCounts.toMap()
     }
 
+    @Timed
     Map getProjectValidatorCounts() {
         def volunteerCounts = Task.executeQuery(
                 """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount

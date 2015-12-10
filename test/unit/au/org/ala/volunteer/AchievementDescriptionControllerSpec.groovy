@@ -17,7 +17,7 @@ class AchievementDescriptionControllerSpec extends Specification {
     void "Test the index action returns the correct model"() {
 
         when: "The index action is executed"
-        controller.index()
+        controller.index(null)
 
         then: "The model is correct"
         !model.achievementDescriptionInstanceList

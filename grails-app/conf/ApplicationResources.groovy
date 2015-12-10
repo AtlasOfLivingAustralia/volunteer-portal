@@ -1,7 +1,7 @@
 modules = {
 
     'digivol' {
-        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip'
+        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications'
         resource url: '/css/main.css'
         resource url: '/css/digivol-custom.css'
     }
@@ -30,6 +30,13 @@ modules = {
     'digivol-image-resize' {
         dependsOn 'jquery.resizeAndCrop'
         resource url: '/js/imageResize.js'
+    }
+
+    'digivol-notifications' {
+        resource url: '/css/animate.css/3.4.0/animate.min.css'
+        resource url: '/js/eventsource/polyfill.js'
+        resource url: '/js/bootstrap-notify/3.1.3/bootstrap-notify.min.js'
+        resource url: '/js/digivol-notify.js'
     }
 
     'qtip' {

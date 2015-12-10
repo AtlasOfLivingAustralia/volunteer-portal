@@ -90,3 +90,5 @@ logs
 ### Sass ###
 .sass-cache/
 
+### Me ###
+local-deploy.sh

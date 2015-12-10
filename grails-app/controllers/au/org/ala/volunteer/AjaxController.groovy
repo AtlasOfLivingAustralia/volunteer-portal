@@ -159,7 +159,8 @@ class AjaxController {
         }
 
         def sw3 = new Stopwatch().start()
-        def asyncUserDetails = User.async.list().then { users ->
+        def asyncUserDetails = User.async.task {
+            def users = User.list()
             def serviceResults = [:]
             try {
                 serviceResults = authService.getUserDetailsById(users*.userId, true)
@@ -439,8 +440,8 @@ class AjaxController {
             return
         }
         def cu = userService.currentUser
-        def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
-        if (validAwards) achievementService.markAchievementsViewed(validAwards*.id)
+        //def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
+        achievementService.markAchievementsViewed(cu, longIds)
         render status: 204
     }
 

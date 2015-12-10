@@ -108,6 +108,14 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ${hasErrors(bean: frontPage, field: 'enableForum', 'has-error')}>
+                            <label for="numberOfContributors" class="control-label col-md-3"><g:message code="frontPage.numberOfContributors.label"
+                                                                                               default="The number of contributors to show on the front page"/></label>
+                            <div class="col-md-6">
+                                <g:field name="numberOfContributors" type="number" min="0" max="20" class="form-control" value="${frontPage.numberOfContributors}"/>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
                                 <g:submitButton name="save" class="save btn btn-primary"

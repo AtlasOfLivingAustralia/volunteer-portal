@@ -158,7 +158,7 @@
 
             <div class="col-sm-12">
                 <r:img dir="images/2.0/institutions/" file="logoAustMus@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoCSIRO@2x.png"/>
+                <r:img dir="images/2.0/institutions/" file="logoCSIRO.svg"/>
                 <r:img dir="images/2.0/institutions/" file="logoMelbourneVictoria@2x.png"/>
                 <r:img dir="images/2.0/institutions/" file="logoVermont@2x.png"/>
                 <r:img dir="images/2.0/institutions/" file="logoSmithsonian@2x.png"/>
@@ -234,59 +234,9 @@
 
 <g:render template="/layouts/associatedBrands" />
 
-<g:set var="cheevs" value="${cl.newAchievements()}"/>
-<g:if test="${cl.achievementsEnabled() && cheevs.size() > 0}">
-    <div id="achievement-notifier" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" data-target="#achievement-notifier" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Congratulations!  You just achieved...</h4>
-                </div>
+<g:render template="/layouts/notifications" />
 
-                <div class="modal-body">
-                    <div class="row row-centered">
-                        <g:each in="${cheevs}" var="ach">
-                            <div class="col-sm-12 col-md-6 col-centered">
-                                <div class="thumbnail">
-                                    <img class="img-responsive" src="${cl.achievementBadgeUrl(achievement: ach.achievement)}"
-                                         title="${ach.achievement.description}" alt="${ach.achievement.name}"/>
-
-                                    <div class="caption">
-                                        <h4>${ach.achievement.name}</h4>
-
-                                        <div>Awarded <prettytime:display date="${ach.awarded}"/></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </g:each>
-                    </div>
-
-                    <p>Visit <g:link controller="user"
-                                     action="notebook">your notebook</g:link> to see all your achievements.</p>
-                </div>
-
-                <div class="modal-footer">
-                    <button data-dismiss="modal" data-target="#achievement-notifier" class="btn btn-primary">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <r:script>
-        jQuery(function($) {
-            var cheevs = <cl:json value="${cheevs*.id}"/>;
-    var acceptUrl = "${g.createLink(controller: 'ajax', action: 'acceptAchievements')}";
-    $('#achievement-notifier').on('shown.bs.modal', function () {
-        $.ajax(acceptUrl, {
-            type: 'post',
-            data: { ids : cheevs },
-            dataType: 'json'
-        });
-    }).modal('show');
-});
-    </r:script>
-</g:if>
-
+<g:render template="/layouts/ga" />
 
 %{--<asset:javascript src="application.js" />--}%
 <r:script>

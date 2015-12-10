@@ -19,6 +19,7 @@ class Project implements Serializable {
     Integer leaderIconIndex = 0
     String featuredImageCopyright = null
     String backgroundImageAttribution = null
+    String backgroundImageOverlayColour = null
     Boolean inactive = false
     String collectionEventLookupCollectionCode
     String localityLookupCollectionCode
@@ -28,21 +29,23 @@ class Project implements Serializable {
     Double mapInitLongitude
     Boolean harvestableByAla = true
 
+    Integer version
+
     def grailsApplication
     def grailsLinkGenerator
-    def assetResourceLocator
+    //def assetResourceLocator
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label]
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {
-        version false
         tasks cascade: 'all,delete-orphan'
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
         harvestableByAla defaultValue: true
+        version defaultValue: '0'
     }
 
     static constraints = {
@@ -61,6 +64,7 @@ class Project implements Serializable {
         leaderIconIndex nullable: true
         featuredImageCopyright nullable: true
         backgroundImageAttribution nullable: true
+        backgroundImageOverlayColour nullable: true
         inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true

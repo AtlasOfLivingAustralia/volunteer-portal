@@ -13,8 +13,10 @@ class TaskIndexerJob {
 
     def execute() {
         try {
+            log.debug("Running Task Indexer Job")
             domainUpdateService.processTaskQueue()
             //fullTextIndexService.processIndexTaskQueue()
+            log.debug("Task Indexer Job complete")
         } catch (Exception ex) {
             log.error("Exception while processing task queue!", ex)
         }

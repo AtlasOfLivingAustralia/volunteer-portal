@@ -64,7 +64,7 @@ class AchievementDescriptionController {
 
         def userId = params.userId ?: userService.currentUserId
         def user = User.findByUserId(userId)
-        def eval = achievementService.evaluateAchievement(achievementDescriptionInstance, user, null)
+        def eval = achievementService.evaluateAchievement(achievementDescriptionInstance, userId)
         def cheevMap = ["$user.displayName": eval]
 
         request.withFormat {
@@ -185,7 +185,7 @@ class AchievementDescriptionController {
     def checkAward(AchievementDescription achievementDescriptionInstance) {
         def ids = (params.list('ids[]') ?: [])*.toLong()
         def users = User.findAllByIdInList(ids)
-        def result = users.collectEntries { [ (it.userId) : achievementService.evaluateAchievement(achievementDescriptionInstance, it, null) ] }
+        def result = users.collectEntries { [ (it.userId) : achievementService.evaluateAchievement(achievementDescriptionInstance, it.userId) ] }
         render result as JSON
     }
 
@@ -193,13 +193,22 @@ class AchievementDescriptionController {
     def awardAll(AchievementDescription achievementDescriptionInstance) {
 
         def awardedUsers = achievementDescriptionInstance.awards*.user*.id.toList()
-        def eligibleUsers = awardedUsers ? User.findAllByIdNotInList(awardedUsers) : User.all
+        def eligibleUsers = User.withCriteria {
+            if (awardedUsers) {
+                not { inList('id', awardedUsers) }
+            }
+            projections {
+                property('userId')
+            }
+        }
 
         def awards = eligibleUsers
-                        .findAll { achievementService.evaluateAchievement(achievementDescriptionInstance, it, null) }
-                        .collect { new AchievementAward(user: it, achievement: achievementDescriptionInstance, awarded: new Date()) }
+                        .findAll { achievementService.evaluateAchievement(achievementDescriptionInstance, it) }
+                        .collect { new AchievementAward(user: User.findByUserId(it), achievement: achievementDescriptionInstance, awarded: new Date()) }
 
         AchievementAward.saveAll(awards)
+
+        awards.each { event(AchievementService.ACHIEVEMENT_AWARDED, it) }
 
         request.withFormat {
             form multipartForm {
@@ -224,6 +233,8 @@ class AchievementDescriptionController {
 
         def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
         award.save flush: true
+
+        event(AchievementService.ACHIEVEMENT_AWARDED, award)
 
         request.withFormat {
             form multipartForm {

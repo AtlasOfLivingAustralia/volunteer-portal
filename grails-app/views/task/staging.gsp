@@ -138,7 +138,7 @@
                                 <p>
                                     Text files must match the following pattern:
                                 </p>
-                                <code>&lt;imageFilename&gt;__&ltDwC field name&gt;__&lt;record index&gt;.txt</code>
+                                <code>&lt;imageFilename&gt;__&lt;DwC field name&gt;__&lt;record index&gt;.txt</code>
                                 where:
                                 <ul>
                                     <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension

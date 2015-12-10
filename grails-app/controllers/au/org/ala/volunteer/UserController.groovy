@@ -2,12 +2,9 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
-import groovy.text.SimpleTemplateEngine
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms
-
 import java.text.SimpleDateFormat
 
 import static au.org.ala.volunteer.FullTextIndexService.*

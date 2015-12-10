@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 class FrontPage {
 
     Project projectOfTheDay
+    Integer numberOfContributors = 10
     Boolean useGlobalNewsItem = false
     
     String newsTitle
@@ -14,6 +15,10 @@ class FrontPage {
 
     String systemMessage
 
+    static mapping = {
+        numberOfContributors defaultValue: '10'
+    }
+
     static constraints = {
         newsTitle nullable: true, maxSize: 100
         newsBody nullable: true, maxSize: 1024
@@ -23,6 +28,7 @@ class FrontPage {
         enableTaskComments nullable:  true
         enableForum nullable: true
         projectOfTheDay nullable: true
+        numberOfContributors nullable: false, min: 0, max: 20
     }
 
     static FrontPage instance() {

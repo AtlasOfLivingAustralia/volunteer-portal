@@ -1,9 +1,11 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import groovy.transform.ToString
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 //@Transactional(readOnly = true)
@@ -20,19 +22,10 @@ class DomainUpdateService {
     // tasks that have been removed from the queue but not yet completed
     private AtomicInteger currentlyProcessing = new AtomicInteger(0)
 
-    def onTasksDeleted(Set<Long> deletedTasks) {
-        if (deletedTasks) {
-            fullTextIndexService.deleteTasks(deletedTasks)
-        }
-    }
-
     def onTasksUpdated(Set<Long> taskSet) {
-        def cheevs = []
         if (taskSet) {
-            fullTextIndexService.indexTasks(taskSet)
-            postIndexTaskActions(taskSet)
+            taskSet.each { scheduleTaskUpdate(it) }
         }
-        return cheevs
     }
 
     private def postIndexTaskActions(Set<Long> taskSet) {
@@ -40,10 +33,21 @@ class DomainUpdateService {
         if (settingsService.getSetting(SettingDefinition.EnableAchievementCalculations)) {
             // TODO Replace with withCriteria
             def involvedUserIds =
-                    Task.findAllByIdInList(taskSet.toList())
-                            .collect { [it.fullyTranscribedBy, it.fullyValidatedBy] }
-                            .flatten().findAll { it != null }
-                            .toSet()
+                    Task.withCriteria {
+                        inList('id', taskSet.toList())
+                        or {
+                            isNotNull('fullyTranscribedBy')
+                            isNotNull('fullyValidatedBy')
+                        }
+                        projections {
+                            property('fullyTranscribedBy')
+                            property('fullyValidatedBy')
+                        }
+                    }
+                    .collect { [it[0], it[1]] }
+                    .flatten().findAll { it != null }
+                    .toSet()
+
             def currentUserId
             if (RequestContextHolder.requestAttributes) {
                 currentUserId = userService.currentUserId
@@ -53,11 +57,8 @@ class DomainUpdateService {
             if (currentUserId) {
                 involvedUserIds.add(currentUserId)
             }
-            cheevs = taskSet.collect {
-                achievementService.evalAndRecordAchievements(involvedUserIds, it)
-            }.flatten()
+            cheevs = achievementService.evalAndRecordAchievements(involvedUserIds)
         }
-        taskSet.clear()
         cheevs
     }
 
@@ -93,53 +94,54 @@ class DomainUpdateService {
         Set<Long> deletes = new HashSet<>()
         Set<Long> updates = new HashSet<>()
         Set<Long> indexes = new HashSet<>()
+        Stopwatch sw = Stopwatch.createStarted()
 
         while (taskCount < maxTasks && (jobDescriptor = _backgroundQueue.poll()) != null) {
             if (jobDescriptor) {
                 switch (jobDescriptor) {
                     case DeleteTaskTask:
                         deletes.add(jobDescriptor.taskId)
-                        //fullTextIndexService.deleteTask(jobDescriptor.taskId)
-                        //taskCount++ // deletes for free
                         break
                     case UpdateTaskTask:
                         updates.add(jobDescriptor.taskId)
                         indexes.add(jobDescriptor.taskId)
                         taskCount++
+                        currentlyProcessing.set(indexes.size())
                         break
                     case IndexTaskTask:
                         indexes.add(jobDescriptor.taskId)
                         taskCount++
-                        //Task t = Task.get(jobDescriptor.taskId)
-                        //if (t) {
-                            //fullTextIndexService.indexTask(t)
-                        //}
+                        currentlyProcessing.set(indexes.size())
                         break
                     case UpdateProjectTask:
-                        def tasks = //Task.findAllByProjectId(jobDescriptor.projectId)
-                                Task.withCriteria {
-                                    project {
-                                        eq 'id', jobDescriptor.projectId
+                        def tasks = Task.withCriteria {
+                                        project {
+                                            eq 'id', jobDescriptor.projectId
+                                        }
+                                        projections {
+                                            property 'id'
+                                        }
                                     }
-                                    projections {
-                                        property 'id'
-                                    }
-                                }
                         updates.addAll(tasks)
                         indexes.addAll(tasks)
-                        taskCount+= tasks.size
+                        taskCount+= tasks.size()
+                        currentlyProcessing.set(indexes.size())
                         break
                     default:
                         log.warn("Unrecognised object ${jobDescriptor} on queue")
                 }
             }
         }
+        log.trace("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to get tasks from queue")
 
         currentlyProcessing.set(indexes.size())
+        log.debug("Took ${indexes.size()} jobs from quque, current queue length: $queueLength")
 
+        sw.reset().start()
         if (deletes) fullTextIndexService.deleteTasks(deletes)
         if (indexes) fullTextIndexService.indexTasks(indexes) { currentlyProcessing.decrementAndGet() }
         if (updates) postIndexTaskActions(updates)
+        if (deletes || indexes || updates) log.info("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to process ${deletes.size()} deletes, ${indexes.size()} indexes, ${updates.size()} post-index updates")
     }
 }
 
