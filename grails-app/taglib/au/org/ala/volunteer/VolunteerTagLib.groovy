@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.gson.GsonBuilder
 import grails.converters.JSON
 import grails.util.Environment
 import grails.util.Metadata
@@ -878,5 +879,17 @@ class VolunteerTagLib {
                 Integer.valueOf( hex.substring( 3, 5 ), 16 ) + "," +
                 Integer.valueOf( hex.substring( 5, 7 ), 16 )
         out << color
+    }
+
+    def gson = new GsonBuilder().create()
+
+    def analyticsTrackers = { attrs, body ->
+        def trackers = grailsApplication.config.digivol.trackers ?: []
+        switch (trackers) {
+            case String:
+                trackers = ((String)trackers).split(',')*.trim()
+        }
+        log.info("Trackers: ${trackers}")
+        out << gson.toJson(trackers)
     }
 }

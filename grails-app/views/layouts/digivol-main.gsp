@@ -236,6 +236,8 @@
 
 <g:render template="/layouts/notifications" />
 
+<g:render template="/layouts/ga" />
+
 %{--<asset:javascript src="application.js" />--}%
 <r:script>
     var BVP_JS_URLS = {

@@ -42,6 +42,8 @@
 
 <g:render template="/layouts/notifications" />
 
+<g:render template="/layouts/ga" />
+
 <!-- JS resources-->
 <r:layoutResources/>
 
