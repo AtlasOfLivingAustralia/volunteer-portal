@@ -32,6 +32,7 @@ public class EventSourceServlet extends HttpServlet {
         final String userId = Strings.nullToEmpty(userService.getCurrentUserId());
         resp.setContentType("text/event-stream");
         resp.setCharacterEncoding("UTF-8");
+        resp.setHeader("Connection", "close");
 
         final AsyncContext ac = req.startAsync();
         ac.setTimeout(0); // no timeout for an event stream.
