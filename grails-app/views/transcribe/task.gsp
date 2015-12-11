@@ -11,6 +11,13 @@
     <meta name="layout" content="digivol-transcribe"/>
 
     <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+    <script type="text/javascript">
+        var gmapsReady = false;
+        function onGmapsReady() {
+            gmapsReady = true;
+            $(window).trigger('digivol.gmapsReady');
+        }
+    </script>
     <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
     <r:require module="digivol-transcribe" />
     <r:require module="bvp-js" />
@@ -35,12 +42,6 @@
         <g:if test="${complete}">
             amplify.store("bvp_task_${complete}", null);
         </g:if>
-
-        var gmapsReady = false;
-        function onGmapsReady() {
-          gmapsReady = true;
-          $(window).trigger('digivol.gmapsReady');
-        }
 
         $(document).ready(function () {
 

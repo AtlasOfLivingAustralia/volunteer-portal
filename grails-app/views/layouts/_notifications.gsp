@@ -1,4 +1,5 @@
 <%@ page import="au.org.ala.volunteer.AchievementService; au.org.ala.volunteer.FrontPageService" %>
+<cl:isLoggedIn>
 <r:script>
     digivolNotify({
         eventSourceUrl: "${createLink(uri: '/es')}",
@@ -11,3 +12,4 @@
         achievementType: 'success'
     });
 </r:script>
+</cl:isLoggedIn>

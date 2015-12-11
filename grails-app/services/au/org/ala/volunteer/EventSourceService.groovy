@@ -32,7 +32,7 @@ class EventSourceService {
         keepalive.scheduleAtFixedRate({
             log.trace("Sending keep alive message")
             sendToEveryone(keepAliveMsg)
-        } as Runnable, 1, 1, TimeUnit.MINUTES)
+        } as Runnable, 15, 15, TimeUnit.SECONDS)
     }
 
     @PreDestroy
