@@ -31,11 +31,11 @@
 
             <td>
                 <g:link controller="task" action="showDetails" id="${taskInstance.id}" title="Show task details"><i
-                        class="icon-list-alt"></i></g:link>
+                        class="glyphicon glyphicon-list-alt"></i></g:link>
                 ${taskInstance.externalIdentifier}
                 <g:set var="lastView" value="${lockedMap[taskInstance.id]}"/>
                 <g:if test="${lastView}">
-                    <i class="icon-lock lastViewedTask" title="Locked by ${lastView.userId}"
+                    <i class="glyphicon glyphicon-lock lastViewedTask" title="Locked by ${lastView.userId}"
                        viewedTaskId="${lastView.id}"></i>
                 </g:if>
             </td>
