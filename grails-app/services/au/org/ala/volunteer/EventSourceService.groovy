@@ -16,6 +16,8 @@ import static grails.async.Promises.*
 
 class EventSourceService {
 
+    static final int QUEUE_CAPACITY = 16 // browsers will allow ~6 connections, so this is plenty.
+
     def userService
 
     static transactional = false
@@ -75,6 +77,12 @@ class EventSourceService {
         ongoingRequests.putIfAbsent(userId, new ConcurrentLinkedQueue<AsyncContext>())
         def q = ongoingRequests.get(userId)
         q.add(ac)
+
+        // kill oldest connections above threshold
+        while (q.size() > QUEUE_CAPACITY) {
+            def oldAc = q.poll()
+            if (oldAc) removeRequest(userId, oldAc)
+        }
 
         log.debug("Start event source for $userId")
 

@@ -889,7 +889,6 @@ class VolunteerTagLib {
             case String:
                 trackers = ((String)trackers).split(',')*.trim()
         }
-        log.info("Trackers: ${trackers}")
         out << gson.toJson(trackers)
     }
 }
