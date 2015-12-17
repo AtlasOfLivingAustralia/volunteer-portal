@@ -269,7 +269,7 @@ class AchievementService {
             if ((new Date() - award.awarded) < 1.minute ) {
                 message = "You were just awarded the ${award.achievement.name} achievement!"
             } else {
-                message = "You were awarded the ${award.achievement.name} achievement ${new PrettyTime().format(award.awarded)} ago!"
+                message = "You were awarded the ${award.achievement.name} achievement ${new PrettyTime().format(award.awarded)}!"
             }
         }
 
