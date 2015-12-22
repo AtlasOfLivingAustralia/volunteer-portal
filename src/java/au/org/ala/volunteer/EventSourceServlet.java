@@ -35,7 +35,7 @@ public class EventSourceServlet extends HttpServlet {
         resp.setHeader("Connection", "close");
 
         final AsyncContext ac = req.startAsync();
-        ac.setTimeout(0); // no timeout for an event stream.
+        ac.setTimeout(TimeUnit.HOURS.toMillis(1)); // long timeout for an event stream
 
         resp.flushBuffer();
 
