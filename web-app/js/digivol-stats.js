@@ -19,7 +19,7 @@ function digivolStats(config) {
 
       $scope.avatarUrl = function (user) {
         var email = user.email || "";
-        return "http://www.gravatar.com/avatar/" + email + "?s=40&d=mm"
+        return "//www.gravatar.com/avatar/" + email + "?s=40&d=mm"
       };
 
       $scope.userProfileUrl = function(user) {

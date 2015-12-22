@@ -29,10 +29,10 @@
     <div class="row">
         <div class="span6">
             <div class="media">
-                <a class="pull-left" href="http://en.gravatar.com/" class="external" target="_blank" id="gravitarLink"
+                <a class="pull-left" href="//en.gravatar.com/" class="external" target="_blank" id="gravitarLink"
                    title="To customise this avatar, register your email address at gravatar.com...">
                     <img id="gravatar"
-                         src="http://www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=125"
+                         src="//www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=125"
                          class="img-polaroid media-object"/> %{-- style="width:150px;" class="avatar" --}%
                 </a>
 
