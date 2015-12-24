@@ -422,21 +422,14 @@ class TaskLoadService {
                                 }
 
                             } catch (Exception ex) {
+                                log.error("Exception while creating new task for $taskDesc", ex)
                                 synchronized (_report) {
                                     _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: taskDesc, message: ex.toString(), time: Calendar.instance.time))
                                 }
                             }
                         }
                     }
-
-                    if (_cancel) {
-                        _loadQueue.clear();
-                    }
-
-                    _currentItemMessage = ""
-                    _currentBatchSize = 0;
-                    _currentBatchStart = null;
-                    _currentBatchInstigator = ""
+                    
                 } catch (Exception e) {
                     log.error("Exception running task loading async job", e)
                     def tl = []
@@ -445,6 +438,12 @@ class TaskLoadService {
                     tl.each {
                         _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: it, message: e.message, time: Calendar.instance.time))
                     }
+                } finally {
+                    _currentItemMessage = ""
+                    _currentBatchSize = 0;
+                    _currentBatchStart = null;
+                    _currentBatchInstigator = ""
+                    _loadQueue.clear();
                 }
             }
         }
