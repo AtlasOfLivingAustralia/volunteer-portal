@@ -443,7 +443,7 @@ class TaskLoadService {
                     _currentBatchSize = 0;
                     _currentBatchStart = null;
                     _currentBatchInstigator = ""
-                    _loadQueue.clear();
+                    if (_cancel) _loadQueue.clear()
                 }
             }
         }
