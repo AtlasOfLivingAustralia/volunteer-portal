@@ -71,15 +71,18 @@ class TranscribeController {
             // JS on the page is not run and there may be no active session when the form is
             // submitted.  There is code to detect this condition and restore data from
             // the web brower's local storage but it may not work correctly with all templates.
-            response.setHeader(HEADER_PRAGMA, "no-cache");
-            response.setDateHeader(HEADER_EXPIRES, 1L);
-            response.setHeader(HEADER_CACHE_CONTROL, "no-cache");
-            response.addHeader(HEADER_CACHE_CONTROL, "no-store");
+//            response.setHeader(HEADER_PRAGMA, "no-cache");
+//            response.setDateHeader(HEADER_EXPIRES, 1L);
+//            response.setHeader(HEADER_CACHE_CONTROL, "no-cache");
+//            response.addHeader(HEADER_CACHE_CONTROL, "no-store");
+            cache = false
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
-            render(view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
+            // view names that start with ng_ are v2 angular based templates so use the angular transcribe task
+            def view = project.template.viewName.startsWith("ng_") ? 'ngTask' : 'task'
+            render(view: view, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
         } else {
             redirect(view: 'list', controller: "task")
         }

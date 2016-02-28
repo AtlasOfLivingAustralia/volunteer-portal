@@ -39,6 +39,11 @@ modules = {
         resource url: '/js/digivol-notify.js'
     }
 
+    'digivol-angular-transcribe' {
+        dependsOn 'angular', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'angular-bootstrap-show-errors', 'angular-ui-bootstrap'
+        resource url: '/js/angular-transcribe.js'
+    }
+
     'qtip' {
         dependsOn "jquery"
         resource url:'/js/qtip.2.2.1/jquery.qtip.css'
@@ -250,6 +255,11 @@ modules = {
         resource url: '/js/angular/ui-router/0.2.15/angular-ui-router.min.js'
     }
 
+    'angular-ui-bootstrap' {
+        dependsOn 'angular', 'bootstrap'
+        resource url: '/js/angular/ui-bootstrap/1.1.1/ui-bootstrap-tpls-1.1.1.min.js'
+    }
+
     'angular-typeahead' {
         dependsOn 'jquery', 'angular', 'typeahead'
         resource url: '/js/angular/typeahead/0.2.4/angular-typeahead.min.js'
@@ -283,5 +293,15 @@ modules = {
     'angular-moment' {
         dependsOn 'angular', 'moment'
         resource url: '/js/angular/moment/1.0.0-beta.3/angular-moment.min.js'
+    }
+
+    'leaflet' {
+        resource url: '/js/leaflet/0.7.7/leaflet.js'
+        resource url: '/js/leaflet/0.7.7/leaflet.css'
+    }
+
+    'angular-ui-leaflet' {
+        dependsOn 'angular', 'leaflet'
+        resource url: '/js/angular/ui-leaflet/1.0.0/ui-leaflet.min.no-header.js'
     }
 }
