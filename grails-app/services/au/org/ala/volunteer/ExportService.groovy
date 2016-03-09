@@ -108,7 +108,7 @@ class ExportService {
 
         List<String> columnNames = []
 
-        if (project.template.viewParams.exportGroupByIndex) {
+        if (project.template.viewParams.exportGroupByIndex=="true") {
             fieldNames.each {
                 if (!(fieldIndexMap.containsKey(it) && fieldIndexMap[it])) columnNames << it
             }
@@ -177,7 +177,9 @@ class ExportService {
             datasetCategories.each { category ->
                 // Work out which fields are a repeating group...
                 def templateFields = TemplateField.findAllByTemplate(project.template)
-                def dataSetFields = templateFields.findAll { it.category == category }
+                def dataSetFields = templateFields.findAll {
+                                        it.category.name() == category
+                                    }
                 def dataSetFieldNames = dataSetFields.collect { it.fieldType.toString() }
                 // These fields are in a repeating group, and will be exported in a separate (normalized) file, so remove
                 // them from the list of columns to go in the main file...
