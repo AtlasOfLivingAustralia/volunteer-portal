@@ -40,45 +40,9 @@
     </div>
 </div>
 
-<div class="panel panel-default transcribeSection">
-    <div class="panel-body">
-        <div class="flightDetails row">
-            <div class="col-md-2">
-                <strong>Date</strong>
-            </div>
-
-            <div class="col-md-1"></div>
-
-            <div class="col-md-2">
-                <strong>Aircraft</strong>
-            </div>
-
-            <div class="col-md-7">
-                <strong>All text verbatim</strong>
-            </div>
-        </div>
-
-        <div class="flightDetails row">
-            <div class="col-md-2">
-                <g:renderFieldBootstrap fieldType="${DarwinCoreField.eventDate}" recordValues="${recordValues}"
-                                        task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12"
-                                        helpTooltipPosition="bottomLeft"/>
-            </div>
-
-            <div class="col-md-1"></div>
-
-            <div class="col-md-2">
-                <g:renderFieldBootstrap fieldType="${DarwinCoreField.fieldNumber}" recordValues="${recordValues}"
-                                        task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12"/>
-            </div>
-
-            <div class="col-md-7">
-                <g:renderFieldBootstrap fieldType="${DarwinCoreField.occurrenceRemarks}" recordValues="${recordValues}"
-                                        task="${taskInstance}" hideLabel="${true}" valueClass="col-md-12" rows="2"/>
-            </div>
-        </div>
-    </div>
-</div>
+<g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}"
+                              recordValues="${recordValues}" title="Identification"
+                              description="Observations Transcribe Identification"/>
 
 <g:set var="entriesField"
        value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
