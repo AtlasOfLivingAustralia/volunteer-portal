@@ -1,5 +1,11 @@
 modules = {
 
+    'admin-stats' {
+        dependsOn 'angular, jquery, jquery-ui'
+        resource url: '/js/admin-stats.js'
+    }
+
+
     'digivol' {
         dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications'
         resource url: '/css/main.css'

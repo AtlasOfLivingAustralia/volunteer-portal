@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import groovy.sql.Sql
-import java.nio.channels.CancelledKeyException
 
 class StatsService {
 
@@ -74,4 +73,204 @@ class StatsService {
         return results.sort { it.month };
 
     }
+
+    def getNewUser(String startDate, String endDate) {
+        String select ="""
+            SELECT  count (*) as newVolunteers,
+                    (SELECT count (*) FROM   vp_user) as totalVolunteers
+            FROM    vp_user
+            WHERE   created >= '$startDate' AND
+                    created <= '$endDate'
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def volunteerStats = [row.newVolunteers, row.totalVolunteers]
+            results.add(volunteerStats)
+        }
+
+        return results
+
+    }
+
+    def getActiveTasks(String startDate, String endDate) {
+
+        String select ="""
+            SELECT vp_user.display_name, count (*)
+            FROM   task, vp_user
+            WHERE  task.fully_transcribed_by = vp_user.user_id AND
+                   task.date_fully_transcribed IS NOT NULL AND
+                   task.date_fully_transcribed >= '$startDate' AND
+                   task.date_fully_transcribed <= '$endDate'
+            GROUP BY vp_user.display_name
+            ORDER BY count DESC;
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def transcriberTask = [row.display_name, row.count ]
+            results.add(transcriberTask)
+        }
+
+        return results
+    }
+
+    def getTasksGroupByVolunteerAndProject (String startDate, String endDate) {
+
+        String select ="""
+            SELECT vp_user.display_name, project.name, count (*)
+            FROM   task, vp_user, project
+            WHERE  task.fully_transcribed_by = vp_user.user_id AND
+                   task.project_id = project.id AND
+                   task.date_fully_transcribed IS NOT NULL AND
+                   task.date_fully_transcribed >= '$startDate' AND
+                   task.date_fully_transcribed <= '$endDate'
+            GROUP BY vp_user.display_name, project.name
+            ORDER BY count DESC;
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def transcriberTask = [row.display_name, row.name, row.count ]
+            results.add(transcriberTask)
+        }
+
+        return results;
+    }
+
+    def getTranscriptionsByDay(String startDate, String endDate) {
+
+        String select ="""
+                        SELECT DISTINCT transcribeDate as day,
+                            count(tmp.transcribeDate) as taskCount,
+                            MAX(transcribeDay),
+                            MAX(transcribeMonth)
+            FROM ( SELECT to_char(date_fully_transcribed, 'DD') as transcribeDay,
+                          to_char(date_fully_transcribed, 'MM') as transcribeMonth,
+                          to_char(date_fully_transcribed, 'DD/MM') as transcribeDate
+                   FROM task
+                   WHERE date_fully_transcribed is not null
+                   AND  date_fully_transcribed >= '$startDate'
+                   AND  task.date_fully_transcribed <= '$endDate' ) as tmp
+            group by transcribeDate
+            ORDER BY MAX(transcribeMonth), MAX(transcribeDay)
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def taskByDay = [row.day, row.taskCount ]
+            results.add(taskByDay)
+        }
+
+        return results
+    }
+
+    def getValidationsByDay(String startDate, String endDate) {
+
+        String select ="""
+            SELECT DISTINCT tmp.validateDate as day,
+                            count(tmp.validateDate) as taskCount,
+                            max(validateDay),
+                            max(validateMonth)
+            FROM ( SELECT to_char(date_fully_validated, 'DD/MM') as validateDate,
+                          to_char(date_fully_validated, 'DD') as validateDay,
+                          to_char(date_fully_validated, 'MM') as validateMonth
+                   FROM task
+                   WHERE date_fully_validated is not null
+                   AND  date_fully_validated >= '$startDate'
+                   AND  task.date_fully_validated <= '$endDate' ) as tmp
+            group by validateDate
+            order by max(validateMonth), max(validateDay)
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def taskByDay = [row.day, row.taskCount ]
+            results.add(taskByDay)
+        }
+
+        return results
+    }
+
+    def getTranscriptionsByInstitution() {
+
+        String select ="""
+            SELECT project.featured_owner featured_owner, count(project.name) as task_count
+            FROM task, project
+            WHERE task.project_id = project.id
+            AND task.fully_transcribed_by is NOT null
+            GROUP BY project.featured_owner
+            ORDER BY task_count DESC;
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def taskByInstitution = [row.featured_owner, row.task_count ]
+            results.add(taskByInstitution)
+        }
+
+        return results
+    }
+
+    def getValidationsByInstitution() {
+
+        String select ="""
+            SELECT project.featured_owner featured_owner, count(project.name) as task_count
+            FROM task, project
+            WHERE task.project_id = project.id
+            AND task.fully_validated_by is NOT null
+            GROUP BY project.featured_owner
+            ORDER BY task_count DESC;
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def validationsByInstitution = [row.featured_owner, row.task_count ]
+            results.add(validationsByInstitution)
+        }
+
+        return results
+    }
+
+    def getHourlyContributions(String startDate, String endDate) {
+
+        String select = """
+            SELECT  trim(leading ' ' from to_char(date_part('hour', updated)::numeric(4,2), '00D99')) as hour,
+                    round(count(*)/MAX(total)::numeric(10,2) * 100, 2) as contribution
+            FROM field,
+                 (SELECT count (*) as total
+                  FROM  field
+                  WHERE updated >= '$startDate'
+                  AND   updated <= '$endDate') as allContributions
+            WHERE  updated >= '$startDate'
+            AND updated <= '$endDate'
+            GROUP BY date_part('hour', updated)
+            ORDER BY date_part('hour', updated)
+        """
+
+        def results = []
+
+        def sql = new Sql(dataSource: dataSource)
+        sql.eachRow(select) { row ->
+            def validationsByInstitution = [row.hour, row.contribution ]
+            results.add(validationsByInstitution)
+        }
+
+        return results
+    }
+
 }
