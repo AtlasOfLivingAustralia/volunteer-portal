@@ -9,12 +9,13 @@ class StatsController {
     static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     def statsService
+    def settingsService
+    def leaderBoardService
 
     def index = {}
 
     def volunteerStats() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
         def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
 
@@ -27,7 +28,6 @@ class StatsController {
 
     def activeTranscribers() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
         def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
 
@@ -45,7 +45,6 @@ class StatsController {
 
     def transcriptionsByVolunteerAndProject() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
         def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
         def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
 
@@ -63,7 +62,6 @@ class StatsController {
 
     def transcriptionsByDay() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
         def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
         def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
 
@@ -80,7 +78,6 @@ class StatsController {
 
     def validationsByDay() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
         def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
         def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
 
@@ -97,7 +94,6 @@ class StatsController {
 
     def hourlyContributions() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
         def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
         def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
 
@@ -106,6 +102,31 @@ class StatsController {
         def headers = [[ id: "hour",   label: "Hour", type: "string" ],
                        [ id: "contribution",   label: "Contributions", type: "number" ]]
         def values = validatedTasks.collect { arr -> [ c: arr.collect { item -> [ v: item ] } ] }
+
+        def result = [cols: headers, rows: values]
+
+        render result as JSON
+    }
+
+    def historicalHonourBoard() {
+
+        def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
+        def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
+
+        def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
+
+        def maxRows = 20
+
+        def scoreList = leaderBoardService.getTopNForPeriod(sdf.parse(fromDate), sdf.parse(toDate), maxRows, null, ineligibleUsers)
+
+        def list = []
+        scoreList.each { kvp ->
+            list << [kvp.get("name"), kvp.get("score")]
+        }
+
+        def headers = [[ id: "name",   label: "Name", type: "string" ],
+                       [ id: "score",   label: "Score", type: "number" ]]
+        def values = list.collect { arr -> [ c: arr.collect { item -> [ v: item ] } ] }
 
         def result = [cols: headers, rows: values]
 

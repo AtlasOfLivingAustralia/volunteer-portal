@@ -165,17 +165,25 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><h4>DigiVol Volunteers</h4></div>
                                     <div class="panel-body">
                                         <h4>New Volunteers: {{newVolunteers}}</h4>
                                         <h4>Total Volunteers: {{totalVolunteers}}</h4>
-                                        <!--div piechart data="getNewVolunteerData()" title="" width="100%" height="100%" piehole="0.8" searchdate="{{searchDate}}"></div-->
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h4>Historical Honourboard</h4></div>
+                                    <div class="panel-body">
+                                        <div tablechart data="getHistoricalHonourBoard()" title="" width="100%" height="100%" searchdate="{{searchDate}}"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><h4>Active Transcribers</h4></div>
                                     <div class="panel-body">
@@ -189,8 +197,8 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><h4>Transcriptions By Day</h4></div>
                                     <div class="panel-body">
-                                        <div barchart data="getTranscriptionsByDay()" title="" width="100%" height="350" xaxis="Transcriptions count"
-                                             yaxis="Day" searchdate="{{searchDate}}"></div>
+                                        <div barchart data="getTranscriptionsByDay()" title="" width="100%" height="350" yaxis="Transcriptions count"
+                                             xaxis="Day" searchdate="{{searchDate}}"></div>
                                     </div>
                                 </div>
                             </div>
@@ -200,8 +208,8 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><h4>Validations By Day</h4></div>
                                     <div class="panel-body">
-                                        <div barchart data="getValidationsByDay()" title="" width="100%" height="350" xaxis="Validations count"
-                                             yaxis="Day" searchdate="{{searchDate}}"></div>
+                                        <div barchart data="getValidationsByDay()" title="" width="100%" height="350" yaxis="Validations count"
+                                             xaxis="Day" searchdate="{{searchDate}}"></div>
                                     </div>
                                 </div>
                             </div>
@@ -297,7 +305,8 @@
         validationsByDay: "${createLink(controller: 'stats', action: 'validationsByDay')}",
         transcriptionsByInstitution: "${createLink(controller: 'stats', action: 'transcriptionsByInstitution')}",
         validationsByInstitution: "${createLink(controller: 'stats', action: 'validationsByInstitution')}",
-        hourlyContributions: "${createLink(controller: 'stats', action: 'hourlyContributions')}"
+        hourlyContributions: "${createLink(controller: 'stats', action: 'hourlyContributions')}",
+        historicalHonourBoard: "${createLink(controller: 'stats', action: 'historicalHonourBoard')}"
     });
 </r:script>
 </body>

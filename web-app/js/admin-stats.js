@@ -72,6 +72,14 @@ function adminStats(config) {
                     $q.reject(response);
                 });
             },
+
+            getHistoricalHonourBoard: function (startDate, endDate) {
+                return $http.get(config.historicalHonourBoard, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+                    return response.data;
+                }, function (response) {
+                    $q.reject(response);
+                });
+            },
         };
     }]);
 
@@ -116,6 +124,10 @@ function adminStats(config) {
 
         $scope.getHourlyContributions = function () {
             return statService.getHourlyContributions($scope.startDate, $scope.endDate);
+        };
+
+        $scope.getHistoricalHonourBoard = function () {
+            return statService.getHistoricalHonourBoard($scope.startDate, $scope.endDate);
         };
 
         $scope.setDateRange = function () {
