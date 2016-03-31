@@ -178,8 +178,14 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><h4>Historical Honourboard</h4></div>
                                     <div class="panel-body">
-                                        <div tablechart data="getHistoricalHonourBoard()" title="" width="100%" height="100%" searchdate="{{searchDate}}"></div>
-                                    </div>
+                                        <span data-ng-if="loading"><cl:spinner/></span>
+                                        <span data-ng-if="!loading">
+                                            <div tablechart data="getHistoricalHonourBoard()" title="" width="100%" height="100%" searchdate="{{searchDate}}"></div>
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(historicalHonourBoard, 'historicalHonourBoard.csv')">
+                                                <span class="glyphicon glyphicon-download-alt"></span> Download
+                                            </button>
+                                        </span>
+                                   </div>
                                 </div>
                             </div>
 
@@ -188,6 +194,9 @@
                                     <div class="panel-heading"><h4>Active Transcribers</h4></div>
                                     <div class="panel-body">
                                         <div tablechart data="getActiveTranscribers()" title="" width="100%" height="100%" searchdate="{{searchDate}}"></div>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(activeTranscribers, 'activeTranscribers.csv')">
+                                            <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -199,6 +208,9 @@
                                     <div class="panel-body">
                                         <div barchart data="getTranscriptionsByDay()" title="" width="100%" height="350" yaxis="Transcriptions count"
                                              xaxis="Day" searchdate="{{searchDate}}"></div>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(transcriptionsByDay, 'transcriptionsByDay.csv')">
+                                            <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -210,6 +222,9 @@
                                     <div class="panel-body">
                                         <div barchart data="getValidationsByDay()" title="" width="100%" height="350" yaxis="Validations count"
                                              xaxis="Day" searchdate="{{searchDate}}"></div>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(validationsByDay, 'validationsByDay.csv')">
+                                            <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -220,6 +235,9 @@
                                     <div class="panel-heading"><h4>Transcriptions By Volunteer And Project</h4></div>
                                     <div class="panel-body">
                                         <div tablechart data="getTranscriptionsByVolunteerAndProject()" title="" width="100%" height="100%" searchdate="{{searchDate}}"></div>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(transcriptionsByVolunteerAndProject, 'transcriptionsByVolunteerAndProject.csv')">
+                                            <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -231,6 +249,9 @@
                                     <div class="panel-body">
                                         <div linechart data="getHourlyContributions()" title="" width="100%" height="350" xaxis="Hour"
                                              yaxis="Contributions" searchdate="{{searchDate}}"></div>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(hourlyContributions, 'hourlyContributions.csv')">
+                                            <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -273,6 +294,9 @@
                                     <div class="panel-body">
                                         <div tablechart data="getTranscriptionsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                              yaxis="Number of Transcriptions"></div>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(transcriptionsByInstitution, 'transcriptionsByInstitution.csv')">
+                                            <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -284,6 +308,9 @@
                                     <div class="panel-body">
                                         <div tablechart data="getValidationsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                              yaxis="Number of Validations"></div>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(validationsByInstitution, 'validationsByInstitution.csv')">
+                                            <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        </button>
                                     </div>
                                 </div>
                             </div>
