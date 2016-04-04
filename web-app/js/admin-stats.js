@@ -80,6 +80,7 @@ function adminStats(config) {
                     $q.reject(response);
                 });
             },
+
         };
     }]);
 
@@ -203,10 +204,14 @@ function adminStats(config) {
             getNewVolunteerData();
         };
 
-        $scope.exportToExcel = function (data, file) {
+        $scope.exportToExcel = function (data, reportType) {
             var dt = new google.visualization.DataTable(data);
             var csv =  dt.toCSV();
-            downloadCSV(csv, file);
+            if (downloadCSV(csv, reportType) == "failed") {
+                //request browser to trigger server api to download
+                var url = config.exportCSVReport + "?reportType=" + reportType + "&&startDate=" + $scope.startDate + "&&endDate=" + $scope.endDate
+                window.open(url, '_blank', '');
+            };
         }
 
     }]);
@@ -238,11 +243,12 @@ function adminStats(config) {
                 vAxis: {
                     title: $scope.yaxis
                 },
-                hAxis: {title: $scope.xaxis},
+                hAxis: {title: $scope.xaxis, slantedText:false},
                 width: $scope.width,
                 height: $scope.height,
                 lineWidth: 1,
-                chartArea:{left:70,top:20,bottom:0, height: "70%", width: "100%"}
+                colors: ['#76A7FA'],
+                chartArea:{left:50,top:20,bottom:0, height: "70%", width: "100%"}
             };
 
             var chart = new google.visualization.ColumnChart($elm[0]);
@@ -284,16 +290,26 @@ function adminStats(config) {
         chart.draw(data,options);
     }
 
-    function downloadCSV (csv_out, fileName) {
-        var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
-        var url  = window.URL || window.webkitURL;
-        var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
-        link.href = url.createObjectURL(blob);
-        link.download = fileName;
+    function downloadCSV (csv_out, reportType) {
 
-        var event = document.createEvent("MouseEvents");
-        event.initEvent("click", true, false);
-        link.dispatchEvent(event);
+        var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
+        var fileName = reportType + ".csv";
+        var link = document.createElement('a');
+
+        if (link.download !== undefined) {
+            link.setAttribute("href", window.URL.createObjectURL(blob));
+            link.setAttribute("download", fileName);
+            var event = document.createEvent("MouseEvents");
+            event.initEvent("click", true, false);
+            link.dispatchEvent(event);
+            return "success";
+        } else if (navigator.msSaveBlob) {
+            navigator.msSaveBlob(blob, fileName);
+            return "success";
+        } else {
+            return "failed";
+        }
+
     }
 
     // Extend DataTable functionality to include toCSV
