@@ -136,23 +136,33 @@
 <section id="user-progress">
     <div class="container" >
         <ul class="nav nav-tabs profile-tabs" role="tablist" id="profileTabsList">
-            <li role="presentation" class="${selectedTab == 0 || !selectedTab ? 'active' : ''}">
-                <a href="#transcribed-tasks" tab-index="0" content-url="${createLink(controller: 'user', action: 'transcribedTasksFragment', params: includeParams + [selectedTab: 0])}" aria-controls="transcribed-tasks" role="tab" data-toggle="tab">Transcribed Tasks</a>
-            </li>
+            <g:if test="${userInstance.userId == currentUser}">
+                <li role="presentation" class="${selectedTab == 0 || !selectedTab ? 'active' : ''}">
+                    <a id="notificationsTab" href="#notifications-tasks" tab-index="0" content-url="${createLink(controller: 'user', action: 'notificationsFragment', params: includeParams + [selectedTab: 0])}" aria-controls="notifications-tasks" role="tab" data-toggle="tab">
+                        Notifications
+                        <g:if test="${recentValidatedTaskCount > 0}">
+                            <span class="glyphicon glyphicon-bell" style="color:orangered"></span>
+                        </g:if>
+                    </a>
+                </li>
+            </g:if>
             <li role="presentation" class="${selectedTab == 1 ? 'active' : ''}">
-                <a href="#saved-tasks" tab-index="1" content-url="${createLink(controller: 'user', action: 'savedTasksFragment', params: includeParams + [selectedTab: 1])}" aria-controls="saved-tasks" role="tab" data-toggle="tab">Saved Tasks</a>
+                <a href="#transcribed-tasks" tab-index="1" content-url="${createLink(controller: 'user', action: 'transcribedTasksFragment', params: includeParams + [selectedTab: 1])}" aria-controls="transcribed-tasks" role="tab" data-toggle="tab">Transcribed Tasks</a>
+            </li>
+            <li role="presentation" class="${selectedTab == 2 ? 'active' : ''}">
+                <a href="#saved-tasks" tab-index="2" content-url="${createLink(controller: 'user', action: 'savedTasksFragment', params: includeParams + [selectedTab: 2])}" aria-controls="saved-tasks" role="tab" data-toggle="tab">Saved Tasks</a>
             </li>
             <cl:ifValidator>
-                <li role="presentation" class="${selectedTab == 2 ? 'active' : ''}">
-                    <a href="#validated-tasks" tab-index="2" content-url="${createLink(controller: 'user', action: 'validatedTasksFragment', params: includeParams + [selectedTab: 2])}" aria-controls="validated-tasks" role="tab" data-toggle="tab">Validated Tasks</a>
+                <li role="presentation" class="${selectedTab == 3 ? 'active' : ''}">
+                    <a href="#validated-tasks" tab-index="3" content-url="${createLink(controller: 'user', action: 'validatedTasksFragment', params: includeParams + [selectedTab: 3])}" aria-controls="validated-tasks" role="tab" data-toggle="tab">Validated Tasks</a>
                 </li>
             </cl:ifValidator>
-            <li role="presentation" class="${selectedTab == 3 ? 'active' : ''}">
-                <a href="#forum-messages" tab-index="3" content-url="${createLink(controller: 'forum', action: 'userCommentsFragment', params: [selectedTab: 3, id: params.id, max: params.max, offset: params.offset])}" aria-controls="forum-messages" role="tab" data-toggle="tab">Forum Activities</a>
+            <li role="presentation" class="${selectedTab == 4 ? 'active' : ''}">
+                <a href="#forum-messages" tab-index="4" content-url="${createLink(controller: 'forum', action: 'userCommentsFragment', params: [selectedTab: 4, id: params.id, max: params.max, offset: params.offset])}" aria-controls="forum-messages" role="tab" data-toggle="tab">Forum Activities</a>
             </li>
             <cl:ifAdmin>
-                <li role="presentation" class="${selectedTab == 4 ? 'active' : ''}">
-                    <a href="#user-settings" tab-index="4" aria-controls="user-settings" role="tab" data-toggle="tab">User Settings</a>
+                <li role="presentation" class="${selectedTab == 5 ? 'active' : ''}">
+                    <a href="#user-settings" tab-index="5" aria-controls="user-settings" role="tab" data-toggle="tab">User Settings</a>
                 </li>
             </cl:ifAdmin>
         </ul>
@@ -162,7 +172,17 @@
         <!-- Tab panes -->
         <div class="container">
             <div class="tab-content" id="profileTabsContent">
-                <div role="tabpanel" class="tab-pane active" id="transcribed-tasks">
+                <div role="tabpanel" class="tab-pane active" id="notifications-tasks">
+                    <div class="tab-pane-header">
+                        <div class="row">
+                            <div class="col-sm-4 search-results-count">
+                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="transcribed-tasks">
                     <div class="tab-pane-header">
                         <div class="row">
                             <div class="col-sm-4 search-results-count">

@@ -7,20 +7,19 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import java.text.SimpleDateFormat
 
-import static au.org.ala.volunteer.FullTextIndexService.*
-
 class UserController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def grailsApplication
     def taskService
-    UserService userService
+    def userService
     def logService
     def forumService
     def authService
     def fullTextIndexService
     def freemarkerService
+    def auditService
 
     static final ALA_HARVESTABLE = '''{
   "constant_score": {
@@ -223,7 +222,10 @@ class UserController {
         def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
 
         for (Task t : tasks) {
-            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy, projectId: t.projectId, project: t.project, projectName: t.project.name, dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated, dateValidated: t.dateFullyValidated]
+            String validator = User.findAllByUserId(t.fullyValidatedBy).displayName.toString().replace('[', '').replace(']', '')
+
+            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy,
+                           fullyValidatedBy: validator, projectId: t.projectId, project: t.project, projectName: t.project.name, dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated, dateValidated: t.dateFullyValidated]
 
             List<Field> taskFields = fieldsByTask[t]
             def catalogNumber = taskFields?.get(0)?.getAt(0)
@@ -251,7 +253,7 @@ class UserController {
 
             def sb = new StringBuilder(128)
             sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
-            sb.append(t.externalIdentifier).append(";").append(dateStr).append(";").append(t.id)
+            sb.append(t.externalIdentifier).append(";").append(dateStr).append(";").append(t.id).append(";").append(validator)
             taskRow.searchColumn = sb.toString().toLowerCase()
 
             viewList.add(taskRow)
@@ -284,28 +286,38 @@ class UserController {
 
     def taskListFragment = {
 
-        def selectedTab = params.int("selectedTab") ?: 0
+        final int numberOfDays = 90;
+
+        def selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
         def projectInstance = Project.get(params.int("projectId"))
         def userInstance = User.get(params.id)
 
         def tasks = []
+        def recentValidatedTaskCount = 0
+
+        if (userInstance.userId == userService.currentUserId) {
+            def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            def recentDate = sdf.format(new Date() - numberOfDays);
+            tasks = taskService.getRecentValidatedTasks(projectInstance, userInstance.userId, recentDate)
+            recentValidatedTaskCount = tasks.size()
+        }
 
         switch (selectedTab) {
-            case 0:
+            case 1:
                 if (projectInstance) {
                     tasks = Task.findAllByProjectAndFullyTranscribedBy(projectInstance, userInstance.userId)
                 } else {
                     tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
                 }  
                 break;
-            case 1:
+            case 2:
                 if (projectInstance) {
                     tasks = taskService.getRecentlySavedTasksByProject(userInstance.userId, projectInstance,[:])
                 } else {
                     tasks = taskService.getRecentlySavedTasks(userInstance.userId, [:])
                 }
                 break;
-            case 2:
+            case 3:
                 if (projectInstance) {
                     tasks = Task.findAllByProjectAndFullyValidatedBy(projectInstance, userInstance.userId)
                 } else {
@@ -317,10 +329,15 @@ class UserController {
 
         def isValidator = userService.isValidator(projectInstance)
 
-        [viewList: results.viewList, totalMatchingTasks: results.totalMatchingTasks, selectedTab: selectedTab, projectInstance: projectInstance, userInstance: userInstance]
+        [viewList: results.viewList, recentValidatedTaskCount: recentValidatedTaskCount,  totalMatchingTasks: results.totalMatchingTasks, selectedTab: selectedTab, projectInstance: projectInstance, userInstance: userInstance]
 
     }
 
+    def notificationsFragment() {
+        def userInstance = User.get(params.int("id"))
+
+        [userInstance: userInstance]
+    }
 
     def show = {
 
@@ -351,7 +368,7 @@ class UserController {
 
         def score = userService.getUserScore(userInstance)
 
-        int selectedTab = params.int("selectedTab") ?: 0
+        int selectedTab = (params.int("selectedTab") == null) ? ((userInstance.userId == currentUser)? 0: 1) : params.int("selectedTab")
 
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
@@ -559,7 +576,7 @@ class UserController {
   }
 }"""
 
-        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, taskCount.intValue(), rawResponse)
+        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, taskCount.intValue(), fullTextIndexService.rawResponse)
         sw.stop()
         log.info("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
         sw.reset().start()
@@ -586,6 +603,16 @@ class UserController {
         log.info("ajaxGetPoints| generateResults: ${sw.toString()}")
 
         render(data as JSON)
+    }
+
+    def showChangedFields () {
+        def task =  Task.get(params.id)
+
+        def fields = taskService.getChangedFields(task)
+
+        auditService.auditTaskViewing(task, userService.currentUser.userId)
+
+        [task: task, recordValues: fields.recordValues]
     }
 
     def notebookMainFragment() {
@@ -639,14 +666,14 @@ class UserController {
 
         sw.reset().start()
         def fieldObservationQuery = freemarkerService.runTemplate(FIELD_OBSERVATIONS, [userId: userInstance.userId])
-        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, hitsCount)
+        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
 
         sw.stop()
         log.info("notbookMainFragment.fieldObservationCount ${sw.toString()}")
 
         sw.reset().start()
         final validatedQuery = freemarkerService.runTemplate(VALIDATED_TASKS_FOR_USER, [userId: userInstance.userId])
-        def validatedCount = fullTextIndexService.rawSearch(validatedQuery, SearchType.COUNT, hitsCount)
+        def validatedCount = fullTextIndexService.rawSearch(validatedQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
         sw.stop()
         log.info("notbookMainFragment.validatedCount ${sw.toString()}")
 

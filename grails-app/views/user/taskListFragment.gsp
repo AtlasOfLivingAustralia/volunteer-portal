@@ -1,20 +1,27 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+
+<r:require module="bvp-js" />
+
 <div class="tab-pane-header">
     <div class="row">
-        <div class="col-sm-4 search-results-count">
-            <g:if test="${!totalMatchingTasks}">
+        <div class="col-sm-8 search-results-count">
+            <g:if test="${selectedTab > 0}">
                 <p><strong>${totalMatchingTasks} Tasks Found</strong></p>
+                 <g:if test="${projectInstance}">
+                     for ${projectInstance.featuredLabel}
+                 </g:if>
             </g:if>
             <g:else>
-                <p><strong>
-                ${totalMatchingTasks} Tasks Found
-                <g:if test="${projectInstance}">
-                    for ${projectInstance.featuredLabel}
+                <g:if test="${recentValidatedTaskCount > 0}">
+                    <p><strong>You have tasks that have been recently reviewed.</strong></p>
+                    Click on View button for the task to see the recent changes or validator's comment
                 </g:if>
-                </strong></p>
+                <g:else>
+                    <p><strong>You have no recently validated Tasks</strong></p>
+                </g:else>
             </g:else>
         </div>
-        <div class="col-sm-8 text-right">
+        <div class="col-sm-4 text-right">
 
             <div class="custom-search-input body">
                 <div class="input-group">
@@ -66,6 +73,13 @@
                           title="${message(code: 'task.validated.label', default: 'Validated')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
 
+        <g:if test="${selectedTab == 0}">
+            <g:sortableColumn property="validator"
+                              title="${message(code: 'task.validator.label', default: 'Validator')}"
+                              params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
+        </g:if>
+
+
         <g:sortableColumn property="status" title="${message(code: 'task.isValid.label', default: 'Status')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: center;"/>
 
@@ -96,28 +110,39 @@
             </td>
 
             <td style="text-align: center;">
+                ${taskInstance.fullyValidatedBy}
+            </td>
+
+
+            <td style="text-align: center;">
                 ${taskInstance.status}
             </td>
 
+
             <td style="text-align: center; width: 120px;">
                 <span>
-                    <g:if test="${taskInstance.fullyTranscribedBy}">
-                        <button class="btn btn-default btn-xs"
-                                onclick="location.href = '${createLink(controller:'task', action:'show', id:taskInstance.id)}'">View</button>
-                        <cl:ifValidator project="${taskInstance.project}">
-                            <g:if test="${taskInstance.status?.equalsIgnoreCase('validated')}">
-                                <button class="btn btn-default btn-xs"
-                                        onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Review</button>
-                            </g:if>
-                            <g:else>
-                                <button class="btn btn-default btn-xs"
-                                        onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Validate</button>
-                            </g:else>
-                        </cl:ifValidator>
+                    <g:if test="${(selectedTab > 0)}">
+                        <g:if test="${taskInstance.fullyTranscribedBy}">
+                            <button class="btn btn-default btn-xs"
+                                    onclick="location.href = '${createLink(controller:'task', action:'show', id:taskInstance.id)}'">View</button>
+                            <cl:ifValidator project="${taskInstance.project}">
+                                <g:if test="${taskInstance.status?.equalsIgnoreCase('validated')}">
+                                    <button class="btn btn-default btn-xs"
+                                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Review</button>
+                                </g:if>
+                                <g:else>
+                                    <button class="btn btn-default btn-xs"
+                                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Validate</button>
+                                </g:else>
+                            </cl:ifValidator>
+                        </g:if>
+                        <g:else>
+                            <button class="btn btn-small"
+                                    onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
+                        </g:else>
                     </g:if>
                     <g:else>
-                        <button class="btn btn-small"
-                                onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
+                        <button class="btn btn-default btn-xs btnViewNotificationTask" taskId="${taskInstance.id}" externalIdentifier="${taskInstance.externalIdentifier}">View</button>
                     </g:else>
                 </span>
             </td>
@@ -151,6 +176,32 @@
         }
     });
 
+    $(".btnViewNotificationTask").click(function(e) {
+        e.preventDefault();
+        var taskId = $(this).attr("taskId");
+        var externalIdentifier = $(this).attr("externalIdentifier");
+        showChangedValues(taskId, externalIdentifier);
+    });
+
+    function showChangedValues(taskId, externalIdentifier) {
+
+        bvp.showModal({
+            url: "${createLink(controller: 'user', action: 'showChangedFields')}" + "?id=" + taskId,
+            size: 'large',
+            title: 'Task id: ' + taskId + ' Image ID: ' + externalIdentifier,
+            buttons: {
+                close: {
+                    label: "Close",
+                    className: 'btn-default',
+                    callback: function () {
+                        window.location.reload();
+                    }
+
+                }
+            }
+        });
+    }
+
     $('[data-tooltip!=""]').qtip({ // Grab all elements with a non-blank data-tooltip attr.
         content: {
             attr: 'data-tooltip' // Tell qTip2 to look inside this attr for its content
@@ -160,4 +211,10 @@
     $('.sorting-header a').each(function() {
         $(this).attr('href', $(this).attr('href') + '#profileTabs');
     });
+
+    if (${recentValidatedTaskCount > 0}) {
+        $('#notificationsTab').html('Notifications <span class="glyphicon glyphicon-bell" style="color:red"></span>');
+    } else {
+        $('#notificationsTab').html('Notifications');
+    }
 </script>
