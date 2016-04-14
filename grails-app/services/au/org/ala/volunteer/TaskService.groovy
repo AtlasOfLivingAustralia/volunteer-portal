@@ -602,6 +602,7 @@ class TaskService {
                      $projectQuery
                      and fully_validated_by is not null
                      and date_fully_validated is not null
+                     and fully_validated_by != '$userId'
                      and is_valid is not null
                      and date_fully_transcribed >= '$fromDate' )
             AND updated > (select max(last_updated) from viewed_task where task_id = Field.task_id and user_id = '$userId')
