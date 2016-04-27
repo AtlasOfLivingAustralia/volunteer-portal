@@ -294,7 +294,7 @@ class TaskController {
                     log.debug "<task.show> userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
                     def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
-                    if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < grailsApplication.config.viewedTask.timeout) {
+                    if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
                         // task is already being viewed by another user (with timeout period)
                         log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
                         msg = "This task is being viewed/edited by another user, and is currently read-only"

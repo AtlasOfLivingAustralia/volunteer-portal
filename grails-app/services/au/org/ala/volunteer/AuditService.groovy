@@ -25,7 +25,7 @@ class AuditService {
         if (lastView) {
             log.debug "userId = " + currentUser + " || prevUserId = " + lastView.userId + " || prevLastView = " + lastView.lastView
             def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView
-            if (lastView.userId != currentUser && millisecondsSinceLastView < grailsApplication.config.viewedTask.timeout) {
+            if (lastView.userId != currentUser && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
                 return true
             }
         }
