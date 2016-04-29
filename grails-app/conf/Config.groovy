@@ -165,7 +165,7 @@ bie.baseURL = "http://bie.ala.org.au"
 bie.searchPath = "/search"
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 
-digivol.trackers = ['UA-4355440-1', 'UA-7855618-24']
+digivol.trackers = ['UA-4355440-1', 'UA-7855618-24', 'UA-64438237-2']
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = true
