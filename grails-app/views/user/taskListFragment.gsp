@@ -211,6 +211,12 @@
                     }
 
                 }
+            },
+            onClose: function() {
+                setTimeout(function () {
+                    window.location.href = window.location.href;
+                    window.location.reload(true);
+                }, 0);
             }
         });
     }
