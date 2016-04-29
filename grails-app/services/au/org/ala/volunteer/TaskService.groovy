@@ -20,6 +20,10 @@ class TaskService {
     def grailsLinkGenerator
     def fieldService
 
+    def unReadList
+
+    private final int numberOfRecentDays = 90;
+
     static transactional = true
 
   /**
@@ -579,7 +583,7 @@ class TaskService {
      * @fromDate date from when the task was transcribed
      * @return list of tasks
      */
-    List<Task> getRecentValidatedTasks (Project project, String userId, String fromDate) {
+    def getUnreadValidatedTasks (Project project, String userId) {
 
         def sw = new Stopwatch()
 
@@ -587,6 +591,9 @@ class TaskService {
             sw.start()
             log.info("Getting recently validated tasks. ")
         }
+
+        def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        def recentDate = new Date() - numberOfRecentDays;
 
         String projectQuery = ""
         if (project?.id && project?.id > 0) {
@@ -604,7 +611,7 @@ class TaskService {
                      and date_fully_validated is not null
                      and fully_validated_by != '$userId'
                      and is_valid is not null
-                     and date_fully_transcribed >= '$fromDate' )
+                     and date_fully_transcribed >= '$recentDate' )
             AND updated > (select max(last_updated) from viewed_task where task_id = Field.task_id and user_id = '$userId')
             AND transcribed_by_user_id != 'system'
             LIMIT 50
@@ -617,13 +624,41 @@ class TaskService {
             lists.add(row.task_id)
         }
 
-        def tasks = Task.findAllByIdInList(lists)
+        unReadList = lists
 
         if (log.isInfoEnabled()) {
             sw.stop()
             log.info("Returning validated tasks: " + sw.toString())
         }
 
+        return lists
+    }
+
+    List<Task> getRecentValidatedTasks (Project project, String transcriber) {
+
+        def sw = new Stopwatch()
+
+        if (log.isInfoEnabled()) {
+            sw.start()
+            log.info("Getting recently validated tasks. ")
+        }
+
+        def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        def recentDate = new Date() - numberOfRecentDays;
+
+        def tasks = Task.createCriteria().list() {
+            eq("fullyTranscribedBy", transcriber)
+            isNotNull("fullyValidatedBy")
+            isNotNull("dateFullyValidated")
+            isNotNull("isValid")
+            gt("dateFullyTranscribed", recentDate)
+            order('dateLastUpdated','desc')
+        }
+
+         if (log.isInfoEnabled()) {
+            sw.stop()
+            log.info("Returning validated tasks: " + sw.toString())
+        }
 
         return tasks
     }
@@ -656,8 +691,7 @@ class TaskService {
                 WHERE task_id = $taskId
                 AND transcribed_by_user_id = '$validatedByUserId'
                 AND name != 'recordedByID')
-            AND updated > (SELECT max(last_updated) FROM viewed_task WHERE task_id = Field.task_id AND user_id = '$transcribedByUserId')
-            AND transcribed_by_user_id != 'system'
+           AND transcribed_by_user_id != 'system'
           """
 
         def sql = new Sql(dataSource: dataSource)

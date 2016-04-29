@@ -140,8 +140,8 @@
                 <li role="presentation" class="${selectedTab == 0 || !selectedTab ? 'active' : ''}">
                     <a id="notificationsTab" href="#notifications-tasks" tab-index="0" content-url="${createLink(controller: 'user', action: 'notificationsFragment', params: includeParams + [selectedTab: 0])}" aria-controls="notifications-tasks" role="tab" data-toggle="tab">
                         Notifications
-                        <g:if test="${recentValidatedTaskCount > 0}">
-                            <span class="glyphicon glyphicon-bell" style="color:orangered"></span>
+                        <g:if test="${recentValidatedTaskCount > 0}" >
+                            <span class="glyphicon glyphicon-bell" style="color:red"></span>
                         </g:if>
                     </a>
                 </li>

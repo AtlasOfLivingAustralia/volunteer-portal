@@ -78,7 +78,8 @@
                     <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <span class="glyphicon glyphicon-user"></span>
-                            My Profile
+                           <!-- My Profile -->
+                            <cl:myProfileAlert/>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
 

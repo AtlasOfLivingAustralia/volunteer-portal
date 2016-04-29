@@ -49,6 +49,10 @@
 
         <g:set var="pageParams" value="${params}"/>
 
+        <g:if test="${(selectedTab == 0)}">
+          <td></td>
+        </g:if>
+
         <g:sortableColumn style="text-align: left" property="id"
                           title="${message(code: 'task.id.label', default: 'Id')}" params="${pageParams}"
                           action="show" controller="user" />
@@ -91,8 +95,16 @@
     <g:each in="${viewList}" status="i" var="taskInstance">
         <tr>
 
-            <td><g:link class="listLink" controller="task" action="show"
-                        id="${taskInstance.id}">${taskInstance.id}</g:link></td>
+            <g:if test="${(selectedTab == 0)}">
+                <td>
+                    <cl:readStatusIcon taskId="${taskInstance.id}"></cl:readStatusIcon>
+                </td>
+            </g:if>
+
+            <td>
+               <g:link class="listLink" controller="task" action="show"
+                       id="${taskInstance.id}">${taskInstance.id}</g:link>
+            </td>
 
             <td>${taskInstance.externalIdentifier}</td>
 
@@ -194,7 +206,8 @@
                     label: "Close",
                     className: 'btn-default',
                     callback: function () {
-                        window.location.reload();
+                        window.location.href = window.location.href;
+                        window.location.reload(true);
                     }
 
                 }

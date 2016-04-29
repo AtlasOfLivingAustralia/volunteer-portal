@@ -25,7 +25,7 @@ class VolunteerTagLib {
     def achievementService
     def taskService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert']
 
     /**
      * @attr title The page title
@@ -527,6 +527,36 @@ class VolunteerTagLib {
                 }
             }
         }
+    }
+
+    def myProfileAlert = { attrs, body ->
+        def userId = userService.currentUser.userId
+        def tasks =  taskService.getUnreadValidatedTasks (null, userId)
+        int taskCount = tasks.size()
+        if (taskCount > 0) {
+            out << 'My Profile <span class="badge badge-danger" style="color:white">' + taskCount + '</span>'
+        } else {
+            out << 'My Profile'
+        }
+    }
+
+    def readStatusIcon = { attrs, body ->
+        def unReadList = taskService.unReadList
+        if (attrs.taskId in (unReadList)) {
+            out << '<span class="glyphicon glyphicon-envelope"  style="color:#000192"></span>'
+        } else {
+            out << '<span class="glyphicon glyphicon-ok"></span>'
+        }
+    }
+
+    def newAlert = {
+        def unReadList = taskService.unReadList
+        def newAlert = 'Notebook'
+        int unReadCount = unReadList?.size()
+        if (unReadCount > 0) {
+            newAlert =  'Notebook <span class="badge badge-danger" style="color:white">' + unReadCount + '</span>'
+        }
+        out << newAlert
     }
 
     def spinner = { attrs, body ->

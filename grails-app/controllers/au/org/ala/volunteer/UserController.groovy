@@ -286,8 +286,6 @@ class UserController {
 
     def taskListFragment = {
 
-        final int numberOfDays = 90;
-
         def selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
         def projectInstance = Project.get(params.int("projectId"))
         def userInstance = User.get(params.id)
@@ -296,10 +294,8 @@ class UserController {
         def recentValidatedTaskCount = 0
 
         if (userInstance.userId == userService.currentUserId) {
-            def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            def recentDate = sdf.format(new Date() - numberOfDays);
-            tasks = taskService.getRecentValidatedTasks(projectInstance, userInstance.userId, recentDate)
-            recentValidatedTaskCount = tasks.size()
+            tasks = taskService.getRecentValidatedTasks(projectInstance, userInstance.userId)
+            recentValidatedTaskCount = taskService.unReadList?.size()
         }
 
         switch (selectedTab) {

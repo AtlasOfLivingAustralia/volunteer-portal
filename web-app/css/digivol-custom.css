@@ -444,3 +444,7 @@ a.fieldHelp {
 }
 
 /* end notifications */
+
+.badge-danger {
+    background-color: red;
+}
