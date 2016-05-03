@@ -503,36 +503,41 @@ class TranscribeTagLib {
 
         def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
 
-        mb.div(class:'well well-small transcribeSection') {
-            div(class:'row transcribeSectionHeader') {
-                div(class:'col-md-12') {
-                    span(class:'transcribeSectionHeaderLabel') {
-                        if (nextSectionNumberClosure) {
-                            mkp.yield("${nextSectionNumberClosure()}. ")
+        mb.div(class:'panel panel-default transcribeSection') {
+            div(class: 'panel-body') {
+                if ((attrs?.renderHeaderTitle == null) || (attrs.renderHeaderTitle == 'true')) {
+                    div(class: 'row transcribeSectionHeader') {
+                        div(class: 'col-md-12') {
+                            span(class: 'transcribeSectionHeaderLabel') {
+                                if (nextSectionNumberClosure) {
+                                    mkp.yield("${nextSectionNumberClosure()}. ")
+                                }
+                                mkp.yield(attrs.title)
+                            }
+                            if (bodyContent) {
+                                span() {
+                                    mkp.yieldUnescaped(bodyContent)
+                                }
+                            }
+                            span() {
+                                if (attrs.description) {
+                                    mkp.yieldUnescaped("&nbsp;&ndash;&nbsp;")
+                                    mkp.yield(attrs.description)
+                                }
+                            }
+                            a(class: 'closeSectionLink', href: '#') {
+                                mkp.yield('Shrink');
+                            }
                         }
-                        mkp.yield(attrs.title)
+
                     }
-                    if (bodyContent) {
-                        span() {
-                            mkp.yieldUnescaped(bodyContent)
-                        }
+                    div(class: 'transcribeSectionBody') {
+                        renderFieldsInColumns(columns, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
+                        mkp.yieldUnescaped("&nbsp;")
                     }
-                    span() {
-                        if (attrs.description) {
-                            mkp.yieldUnescaped("&nbsp;&ndash;&nbsp;")
-                            mkp.yield(attrs.description)
-                        }
-                    }
-                    a(class:'closeSectionLink', href:'#') {
-                        mkp.yield('Shrink');
-                    }
+                } else {
+                    renderFieldsInColumns(columns, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
                 }
-
-            }
-
-            div(class:'transcribeSectionBody') {
-                renderFieldsInColumns(columns, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
-                mkp.yieldUnescaped("&nbsp;")
             }
 
         }

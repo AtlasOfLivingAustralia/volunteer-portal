@@ -43,12 +43,12 @@
             <table class="table table-striped">
                 <tbody>
                     <tr>
-                        <th scope="row">Longitude:</th>
-                        <td id="infoLng"></td>
-                    </tr>
-                    <tr>
                         <th scope="row">Latitude:</th>
                         <td id="infoLat"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Longitude:</th>
+                        <td id="infoLng"></td>
                     </tr>
                     <tr>
                         <th scope="row">Location:</th>

@@ -11,10 +11,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.servlet.http.HttpServletRequest
 import java.util.concurrent.ConcurrentLinkedQueue
 
-import static au.org.ala.volunteer.FullTextIndexService.getHitsCount
-import static au.org.ala.volunteer.FullTextIndexService.getHitsCount
-import static au.org.ala.volunteer.FullTextIndexService.getHitsCount
-
 class UserService {
 
     def authService
@@ -24,8 +20,8 @@ class UserService {
     //def CustomPageRenderer customPageRenderer
     def groovyPageRenderer
     def messageSource
-    FreemarkerService freemarkerService
-    FullTextIndexService fullTextIndexService
+    def freemarkerService
+    def fullTextIndexService
 
     static transactional = true
 
@@ -487,7 +483,7 @@ class UserService {
 
         sw.reset().start()
         def fieldObservationQuery = freemarkerService.runTemplate(UserController.FIELD_OBSERVATIONS, [userId: model.userInstance.userId])
-        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, hitsCount)
+        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
 
         sw.stop()
         log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
@@ -508,8 +504,8 @@ class UserService {
 
         final matchAllQuery = UserController.MATCH_ALL
 
-        def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, hitsCount)
-        def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, hitsCount)
+        def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, fullTextIndexService.hitsCount)
+        def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
         def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
 
         sw.stop()

@@ -9,6 +9,8 @@ import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import groovy.sql.Sql
 
+import java.text.SimpleDateFormat
+
 class TaskService {
 
     javax.sql.DataSource dataSource
@@ -17,6 +19,10 @@ class TaskService {
     def multimediaService
     def grailsLinkGenerator
     def fieldService
+
+    def unReadList
+
+    private final int numberOfRecentDays = 90;
 
     static transactional = true
 
@@ -567,6 +573,152 @@ class TaskService {
                                          (lower(t.project.name) like :query or lower(t.externalIdentifier) like :query)""",
                                         [userId: userId, query: query], params)
         return tasks.toList()
+    }
+
+    /**
+     * Get tasks transcribed by this user which has recently been validated but have not yet been viewed by the transcriber.
+     *
+     * @project project (can be null in which case this returns tasks transcribed by the user
+     * @param use who transcribe this task
+     * @fromDate date from when the task was transcribed
+     * @return list of tasks
+     */
+    def getUnreadValidatedTasks (Project project, String userId) {
+
+        def sw = new Stopwatch()
+
+        if (log.isInfoEnabled()) {
+            sw.start()
+            log.info("Getting recently validated tasks. ")
+        }
+
+        def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        def recentDate = new Date() - numberOfRecentDays;
+
+        String projectQuery = ""
+        if (project?.id && project?.id > 0) {
+            projectQuery = " and project_id = " + project.id
+        }
+
+        String select = """
+           SELECT distinct(Field.task_id)
+            FROM Field
+            WHERE  Field.task_id in
+                    (SELECT id from task
+                     where fully_transcribed_by = '$userId'
+                     $projectQuery
+                     and fully_validated_by is not null
+                     and date_fully_validated is not null
+                     and fully_validated_by != '$userId'
+                     and is_valid is not null
+                     and date_fully_transcribed >= '$recentDate' )
+            AND updated > (select max(last_updated) from viewed_task where task_id = Field.task_id and user_id = '$userId')
+            AND transcribed_by_user_id != 'system'
+            LIMIT 50
+          """
+
+        def sql = new Sql(dataSource: dataSource)
+
+        def lists = []
+        sql.eachRow(select) {row ->
+            lists.add(row.task_id)
+        }
+
+        unReadList = lists
+
+        if (log.isInfoEnabled()) {
+            sw.stop()
+            log.info("Returning validated tasks: " + sw.toString())
+        }
+
+        return lists
+    }
+
+    List<Task> getRecentValidatedTasks (Project project, String transcriber) {
+
+        def sw = new Stopwatch()
+
+        if (log.isInfoEnabled()) {
+            sw.start()
+            log.info("Getting recently validated tasks. ")
+        }
+
+        def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        def recentDate = new Date() - numberOfRecentDays;
+
+        def tasks = Task.createCriteria().list() {
+            eq("fullyTranscribedBy", transcriber)
+            isNotNull("fullyValidatedBy")
+            isNotNull("dateFullyValidated")
+            isNotNull("isValid")
+            gt("dateFullyTranscribed", recentDate)
+            order('dateLastUpdated','desc')
+        }
+
+         if (log.isInfoEnabled()) {
+            sw.stop()
+            log.info("Returning validated tasks: " + sw.toString())
+        }
+
+        return tasks
+    }
+
+    /**
+     * Get the changes which the validator made.
+     *
+     * @task the task that is being selected
+     * @return list of changes. This is a hashmap of field name as key and list of old and new values
+     */
+    def getChangedFields (Task task) {
+
+        def sw = new Stopwatch()
+
+        if (log.isInfoEnabled()) {
+            sw.start()
+            log.info("Getting recently validated task field. ")
+        }
+
+        String transcribedByUserId = task.fullyTranscribedBy
+        String validatedByUserId = task.fullyValidatedBy
+        String taskId = task.id.toString()
+
+        String select = """
+            SELECT * FROM Field
+            WHERE task_id = $taskId
+            AND record_idx = 0
+            AND name IN (
+                SELECT name from Field
+                WHERE task_id = $taskId
+                AND transcribed_by_user_id = '$validatedByUserId'
+                AND name != 'recordedByID')
+           AND transcribed_by_user_id != 'system'
+          """
+
+        def sql = new Sql(dataSource: dataSource)
+
+        Map recordValues = new LinkedHashMap()
+        sql.eachRow(select) {row ->
+
+            Map merged = new LinkedHashMap();
+            Map values = new LinkedHashMap();
+            if (recordValues.get(row.name) != null) {
+                values = recordValues.get(row.name)
+            }
+            if (row.superceded) {
+                merged = [oldValue: row.value?:'', newValue: values?.newValue?: '', lastModifiedBy: User.findAllByUserId (row.transcribed_by_user_id).displayName.toString().replace('[', '').replace(']', '')]
+
+            } else {
+                merged = [oldValue: values?.oldValue?: '', newValue: row.value?:'', lastModifiedBy: User.findAllByUserId (row.transcribed_by_user_id).displayName.toString().replace('[', '').replace(']', '')]
+            }
+            recordValues.put(row.name, merged)
+        }
+
+        if (log.isInfoEnabled()) {
+            sw.stop()
+            log.info("Returning validated task fields: " + sw.toString())
+        }
+
+        return [recordValues: recordValues]
     }
 
 

@@ -25,7 +25,7 @@
                 <div class="col-lg-12">
                     <ul class="profile-links">
                         <li><a href="http://www.ala.org.au/my-profile" class="" target="_blank">View Profile</a></li>
-                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class="">Notebook</a></li>
+                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><cl:newAlert/></a></li>
                         <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.casServerName}/cas/logout", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class="">Logout</a></li>
                     </ul>
                 </div>
