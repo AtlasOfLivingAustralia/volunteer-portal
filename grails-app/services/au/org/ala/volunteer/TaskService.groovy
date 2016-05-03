@@ -592,7 +592,7 @@ class TaskService {
             log.info("Getting recently validated tasks. ")
         }
 
-        def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         def recentDate = new Date() - numberOfRecentDays;
 
         String projectQuery = ""
@@ -611,7 +611,7 @@ class TaskService {
                      and date_fully_validated is not null
                      and fully_validated_by != '$userId'
                      and is_valid is not null
-                     and date_fully_transcribed >= '$recentDate' )
+                     and date_fully_transcribed >= '${sdf.format(recentDate)}' )
             AND updated > (select max(last_updated) from viewed_task where task_id = Field.task_id and user_id = '$userId')
             AND transcribed_by_user_id != 'system'
             LIMIT 50
