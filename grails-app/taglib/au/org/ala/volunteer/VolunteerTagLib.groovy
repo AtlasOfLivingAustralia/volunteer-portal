@@ -553,7 +553,7 @@ class VolunteerTagLib {
         def unReadList = taskService.unReadList
         def newAlert = 'Notebook'
         int unReadCount = unReadList?.size()
-        if (unReadCount > 0) {
+        if (unReadCount) {
             newAlert =  'Notebook <span class="badge badge-danger" style="color:white">' + unReadCount + '</span>'
         }
         out << newAlert
