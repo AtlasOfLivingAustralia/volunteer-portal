@@ -81,8 +81,8 @@ class StatsController {
     }
 
     def getStatData (def reportType) {
-        def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
-        def toDateStr = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
+        def fromDate = (params?.startDate == null || params?.startDate=="")? sdf.format(new Date() - defaultDayDiff) : params.startDate
+        def toDateStr = (params?.endDate == null || params?.endDate=="")? sdf.format(new Date()) : params.endDate
 
         def nextDayDate = sdf.parse(toDateStr)
 

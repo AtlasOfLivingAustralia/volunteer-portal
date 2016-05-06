@@ -643,8 +643,8 @@ class TaskService {
             log.info("Getting recently validated tasks. ")
         }
 
-        def SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        def recentDate = new Date() - numberOfRecentDays;
+        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        def recentDate = sdf.parse(sdf.format(new Date() - numberOfRecentDays));
 
         def tasks = Task.createCriteria().list() {
             eq("fullyTranscribedBy", transcriber)

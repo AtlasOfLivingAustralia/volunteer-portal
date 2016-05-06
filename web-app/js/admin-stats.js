@@ -205,13 +205,13 @@ function adminStats(config) {
         };
 
         $scope.exportToExcel = function (data, reportType) {
-            var dt = new google.visualization.DataTable(data);
-            var csv =  dt.toCSV();
-            if (downloadCSV(csv, reportType) == "failed") {
+        //    var dt = new google.visualization.DataTable(data);
+        //    var csv =  dt.toCSV();
+        //    if (downloadCSV(csv, reportType) == "failed") {
                 //request browser to trigger server api to download
                 var url = config.exportCSVReport + "?reportType=" + reportType + "&&startDate=" + $scope.startDate + "&&endDate=" + $scope.endDate
                 window.open(url, '_blank', '');
-            };
+        //    };
         }
 
     }]);
@@ -243,12 +243,13 @@ function adminStats(config) {
                 vAxis: {
                     title: $scope.yaxis
                 },
-                hAxis: {title: $scope.xaxis, slantedText:false},
+                hAxis: {title: $scope.xaxis, slantedText:true},
                 width: $scope.width,
                 height: $scope.height,
                 lineWidth: 1,
+                legend: {position: 'none'},
                 colors: ['#76A7FA'],
-                chartArea:{left:50,top:20,bottom:0, height: "70%", width: "100%"}
+                chartArea:{left:60,top:10,bottom:60, height: "40%", width: "100%"}
             };
 
             var chart = new google.visualization.ColumnChart($elm[0]);
@@ -280,7 +281,7 @@ function adminStats(config) {
                 colors: ['#a52714'],
                 legend: {position: 'none'},
                 lineWidth: 1,
-                chartArea:{left:70,top:20,bottom:0, height: "70%", width: "100%"}
+                chartArea:{left:60,top:10,bottom:60, height: "40%", width: "100%"}
 
             };
 

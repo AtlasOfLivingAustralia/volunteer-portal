@@ -295,7 +295,7 @@
                                     <div class="panel-body">
                                         <div tablechart data="getTranscriptionsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                              yaxis="Number of Transcriptions"></div>
-                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(transcriptionsByInstitution, 'transcriptionsByInstitution.csv')">
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(transcriptionsByInstitution, 'transcriptionsByInstitution')">
                                             <span class="glyphicon glyphicon-download-alt"></span> Download
                                         </button>
                                     </div>
@@ -309,7 +309,7 @@
                                     <div class="panel-body">
                                         <div tablechart data="getValidationsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                              yaxis="Number of Validations"></div>
-                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(validationsByInstitution, 'validationsByInstitution.csv')">
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="exportToExcel(validationsByInstitution, 'validationsByInstitution')">
                                             <span class="glyphicon glyphicon-download-alt"></span> Download
                                         </button>
                                     </div>
