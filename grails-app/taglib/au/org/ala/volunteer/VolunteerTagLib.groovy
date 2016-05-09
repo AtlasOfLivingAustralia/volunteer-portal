@@ -530,11 +530,15 @@ class VolunteerTagLib {
     }
 
     def myProfileAlert = { attrs, body ->
-        def userId = userService.currentUser.userId
-        def tasks =  taskService.getUnreadValidatedTasks (null, userId)
-        int taskCount = tasks.size()
-        if (taskCount > 0) {
-            out << 'My Profile <span class="badge badge-danger" style="color:white">' + taskCount + '</span>'
+        def userId = userService.currentUser?.userId
+        if (userId) {
+            def tasks =  taskService.getUnreadValidatedTasks (null, userId)
+            int taskCount = tasks.size()
+            if (taskCount > 0) {
+                out << 'My Profile <span class="badge badge-danger" style="color:white">' + taskCount + '</span>'
+            } else {
+                out << 'My Profile'
+            }
         } else {
             out << 'My Profile'
         }
