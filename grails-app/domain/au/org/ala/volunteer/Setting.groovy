@@ -12,4 +12,8 @@ class Setting {
         comments nullable: true
     }
 
+    static mapping = {
+        value type: 'text'
+    }
+
 }
