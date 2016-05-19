@@ -29,6 +29,8 @@
     border-top-color: #d3d3d3;
 }
 
+.form-control.latlon { width: 4em; }
+
 </style>
 
 <r:script>
@@ -60,6 +62,7 @@
                 var fieldCount = 0;
                 for (fieldIndex in entries[entryIndex]) {
                     var e = entries[entryIndex][fieldIndex];
+                    var id = "recordValues-" + entryIndex + "-" + e.name;
                     var name = "recordValues." + entryIndex + "." + e.name;
                     if (fieldIndex == 0) {
                       htmlStr += '<strong>' + (parseInt(entryIndex) + 1) + '.</strong>&nbsp;';
@@ -74,9 +77,29 @@
                     htmlStr += '</label> ';
 
                     if (e.fieldType == 'textarea') {
-                      htmlStr += '<textarea name="' + name + '" rows="2" id="' + name + '" class="' + e.name + ' form-control">' + e.value + '</textarea>';
+                      htmlStr += '<textarea name="' + name + '" rows="2" id="' + id + '" class="' + e.name + ' form-control">' + e.value + '</textarea>';
+                    } else if (e.fieldType == 'latLong') {
+                      htmlStr += '<input type="text" id="'+id+'-degrees" name="'+name+'.degrees" placeholder="D" class="' + e.name + ' degrees form-control latlon" value="' + e.value + '" data-field="'+id+'" />'%{--validationRule="${field.validationRule}"--}%
+                      htmlStr += '<input type="text" id="'+id+'-minutes" name="'+name+'.minutes" placeholder="M" class="' + e.name + ' minutes form-control latlon" value="' + e.value + '" data-field="'+id+'" />'%{--validationRule="${field.validationRule}"--}%
+                      htmlStr += '<input type="text" id="'+id+'-seconds" name="'+name+'.seconds" placeholder="S" class="' + e.name + ' seconds form-control latlon" value="' + e.value + '" data-field="'+id+'" />'%{--validationRule="${field.validationRule}"--}%
+                      // omg
+                      var directionFrom
+                      if ((e.name).match(/lat/i)) {
+                        directionFrom = ['N', 'S']
+                      } else {
+                        directionFrom = ['E', 'W']
+                      }
+                      htmlStr += '<select class="form-control direction latlon" id="'+id+'-direction" name="'+name+'.direction" data-field="'+id+'">'
+                      for (var i=0; i < directionFrom.length; ++i) {
+                        htmlStr += '<option value="'+directionFrom[i]+'" '
+                        if (e.value == directionFrom[i]) {
+                          htmlStr += 'selected'
+                        }
+                        htmlStr += '>'+directionFrom[i]+'</option>'
+                      }
+                      htmlStr += '</select><input type="hidden" name="' + name + '" value="' + e.value + '" id="' + id + '" />'
                     } else {
-                      htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + ' form-control"/>';
+                      htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + id + '" class="' + e.name + ' form-control"/>';
                     }
 
                     htmlStr += '</div> ';
@@ -100,7 +123,7 @@
         for (entryIndex in entries) {
             for (fieldIndex in entries[entryIndex]) {
                 var e = entries[entryIndex][fieldIndex];
-                e.value = $('#recordValues\\.' + entryIndex + '\\.' + e.name).val();
+                e.value = $('#recordValues-' + entryIndex + '-' + e.name).val();
             }
         }
     }
@@ -142,6 +165,19 @@ $(window).keydown(function(event) {
         event.preventDefault();
         return false;
     }
+});
+
+$('#observationFields').change('.form-control.latlon', function(e) {
+  var $this = $(e.target);
+  var field = $this.data('field');
+  var $field = $('#' + field);
+  var deg = parseFloat($('#'+field+'-degrees').val()) || 0;
+  var min = parseFloat($('#'+field+'-minutes').val()) || 0;
+  var sec = parseFloat($('#'+field+'-seconds').val()) || 0;
+  var dir = $('#'+field+'-direction').val();
+  var total = deg + (min / 60.0) + (sec / 3600.0);
+  if (dir == 'W' || dir == 'S') { total *= -1 }
+  $field.val(total);
 });
 
 $("#btnAddRow").click(function(e) {
