@@ -50,6 +50,28 @@
 </g:each>
     ];
 
+    function toDecimalDegrees(deg, min, sec, dir) {
+      var total = deg + (min / 60.0) + (sec / 3600.0);
+      if (dir == 'W' || dir == 'S') { total *= -1 }
+      return total;
+    }
+
+    function decimalToDegrees(dec) {
+      if (dec == null || dec == '') return dec;
+      return Math.floor(Math.abs(dec));
+    }
+
+    function decimalToMinutes(dec) {
+      if (dec == null || dec == '') return dec;
+      return Math.floor((Math.abs(dec) * 60) % 60);
+    }
+
+    function decimalToSeconds(dec) {
+      if (dec == null || dec == '') return dec;
+      return (Math.abs(dec) * 3600) % 60;
+    }
+
+
     function renderEntries() {
         try {
             var htmlStr ="";
@@ -70,7 +92,7 @@
 
                     htmlStr += '<div class="form-group">';
 
-                    htmlStr += '<label for="' + name + '">' + e.label;
+                    htmlStr += '<label for="' + id + '">' + e.label;
                     if (e.helpText) {
                       htmlStr += '<a href="#" class="btn btn-default btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><i class="fa fa-question help-container"></i></a>';
                     }
@@ -79,20 +101,23 @@
                     if (e.fieldType == 'textarea') {
                       htmlStr += '<textarea name="' + name + '" rows="2" id="' + id + '" class="' + e.name + ' form-control">' + e.value + '</textarea>';
                     } else if (e.fieldType == 'latLong') {
-                      htmlStr += '<input type="text" id="'+id+'-degrees" name="'+name+'.degrees" placeholder="D" class="' + e.name + ' degrees form-control latlon" value="' + e.value + '" data-field="'+id+'" />'%{--validationRule="${field.validationRule}"--}%
-                      htmlStr += '<input type="text" id="'+id+'-minutes" name="'+name+'.minutes" placeholder="M" class="' + e.name + ' minutes form-control latlon" value="' + e.value + '" data-field="'+id+'" />'%{--validationRule="${field.validationRule}"--}%
-                      htmlStr += '<input type="text" id="'+id+'-seconds" name="'+name+'.seconds" placeholder="S" class="' + e.name + ' seconds form-control latlon" value="' + e.value + '" data-field="'+id+'" />'%{--validationRule="${field.validationRule}"--}%
+                      htmlStr += '<input type="text" id="'+id+'-degrees" name="'+name+'.degrees" placeholder="D" class="' + e.name + ' degrees form-control latlon" value="' + decimalToDegrees(e.value) + '" data-field="'+id+'" />'
+                      htmlStr += '<input type="text" id="'+id+'-minutes" name="'+name+'.minutes" placeholder="M" class="' + e.name + ' minutes form-control latlon" value="' + decimalToMinutes(e.value) + '" data-field="'+id+'" />'
+                      htmlStr += '<input type="text" id="'+id+'-seconds" name="'+name+'.seconds" placeholder="S" class="' + e.name + ' seconds form-control latlon" value="' + decimalToSeconds(e.value) + '" data-field="'+id+'" />'%{--validationRule="${field.validationRule}"--}%
                       // omg
-                      var directionFrom
+                      var directionFrom;
+                      var direction;
                       if ((e.name).match(/lat/i)) {
+                        direction = e.value < 0 ? 'S' : 'N'
                         directionFrom = ['N', 'S']
                       } else {
+                        direction = e.value < 0 ? 'W' : 'E'
                         directionFrom = ['E', 'W']
                       }
                       htmlStr += '<select class="form-control direction latlon" id="'+id+'-direction" name="'+name+'.direction" data-field="'+id+'">'
                       for (var i=0; i < directionFrom.length; ++i) {
                         htmlStr += '<option value="'+directionFrom[i]+'" '
-                        if (e.value == directionFrom[i]) {
+                        if (direction == directionFrom[i]) {
                           htmlStr += 'selected'
                         }
                         htmlStr += '>'+directionFrom[i]+'</option>'
@@ -175,9 +200,7 @@ $('#observationFields').change('.form-control.latlon', function(e) {
   var min = parseFloat($('#'+field+'-minutes').val()) || 0;
   var sec = parseFloat($('#'+field+'-seconds').val()) || 0;
   var dir = $('#'+field+'-direction').val();
-  var total = deg + (min / 60.0) + (sec / 3600.0);
-  if (dir == 'W' || dir == 'S') { total *= -1 }
-  $field.val(total);
+  $field.val(toDecimalDegrees(deg,min,sec,dir));
 });
 
 $("#btnAddRow").click(function(e) {
