@@ -54,7 +54,7 @@ var bvp = {};
 
         // hook the back button so that it closes the window. Only works on browsers that support window.history and window.history.popstate
         if (window.history && window.history.pushState) {
-            window.history.pushState({'bvp-modal':opts.url}, opts.title)
+            window.history.pushState({'bvp-modal':opts.url}, opts.title);
             window.onpopstate = function(event) {
                 lib.hideModal();
             };
