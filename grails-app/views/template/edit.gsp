@@ -36,16 +36,16 @@
                     }, {});
                     var $viewParamsJSON = $('#viewParamsJSON');
                     var str = $viewParamsJSON.val();
-                    var params = JSON.parse(str);
+                    var params = jsonToParams(str);
                     _.extend(params, formObj);
-                    var jsonString = JSON.stringify(params);
+                    var jsonString = paramsToJson(params);
                     $viewParamsJSON.val(jsonString);
                 });
 
                 function addDefaults() {
                     var $viewParamsJSON = $('#viewParamsJSON');
                     var str = $viewParamsJSON.val();
-                    var params = JSON.parse(str);
+                    var params = jsonToParams(str);
                     $('#row-view-params-form').find('[data-default]').each(function() {
                         var $this = $(this);
                         var name = $this.attr('name');
@@ -54,13 +54,30 @@
                             params[name] = $this.data('default');
                         }
                     });
-                    var jsonString = JSON.stringify(params);
+                    var jsonString = paramsToJson(params);
                     $viewParamsJSON.val(jsonString);
+                }
+
+                function jsonToParams(json) {
+                  return JSON.parse(json, function(k,v) {
+                      if (k === '') { return v; }
+                      if (v === 'true') { return true; }
+                      if (v === 'false') { return false; }
+                      return v;
+                    });
+                }
+
+                function paramsToJson(params) {
+                    return JSON.stringify(params, function(k,v) {
+                      if (typeof v === 'boolean') { return v.toString(); }
+                      return v;
+                    }, 2);
+
                 }
 
                 function syncParamsFields() {
                     var str = $('#viewParamsJSON').val();
-                    var params = JSON.parse(str);
+                    var params = jsonToParams(str);
                     var $paramsForm = $('#row-view-params-form');
                     _.each(_.keys(params), function(k) {
                         $paramsForm.find('[name="'+k+'"]').each(function(i,e) {

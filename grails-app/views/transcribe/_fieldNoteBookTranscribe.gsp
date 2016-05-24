@@ -142,7 +142,7 @@
                 <div class="panel-body">
                     <div class="row transcribeSectionHeader">
                         <div class="col-md-12">
-                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  Where a species or common name appears in the text please enter any relevant information into the fields below</span>
+                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  ${taskInstance.project.template?.viewParams?.transcribeSectionHeader ?: g.message(code: 'fieldNoteBookTranscribe.transcribeSectionHeader.default', default:  'Where a species or common name appears in the text please enter any relevant information into the fields below')}</span>
                             <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                         </div>
                     </div>
