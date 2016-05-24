@@ -68,7 +68,7 @@
 
     function decimalToSeconds(dec) {
       if (dec == null || dec == '') return dec;
-      return (Math.abs(dec) * 3600) % 60;
+      return bvp.round((Math.abs(dec) * 3600) % 60, 5);
     }
 
 
