@@ -91,6 +91,11 @@ var bvp = {};
     lib.escapeIdPart = function(id) {
         return id.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
     };
+    
+    lib.round = function(n, places) {
+        var factor = 10 * places;
+        return Math.round(n * factor) / factor;
+    };
 
     lib.bindTooltips = function(selector, width) {
 

@@ -49,6 +49,9 @@
                             <div class="col-md-6">
                                 <g:textField class="form-control" name="fieldTypeClassifier" value="${templateFieldInstance?.fieldTypeClassifier}"/>
                             </div>
+                            <div class="col-md-4">
+                                <cl:helpText><g:message code="field.classifier.help" default="Distinguishes multiple fields with the same type but only works on select templates"/></cl:helpText>
+                            </div>
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}">

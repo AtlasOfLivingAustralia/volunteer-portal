@@ -7,7 +7,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="fieldTypeClassifier">Classifier:</label>
+        <label class="control-label" for="fieldTypeClassifier">Classifier:<cl:helpText><g:message code="field.classifier.help" default="Distinguishes multiple fields with the same type but only works on select templates"/></cl:helpText></label>
         <g:textField class="form-control" name="fieldTypeClassifier" value=""/>
     </div>
 

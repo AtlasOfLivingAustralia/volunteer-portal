@@ -33,7 +33,7 @@ class TemplateController {
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'template.label', default: 'Template'), templateInstance.id])}"
-            redirect(action: "show", id: templateInstance.id)
+            redirect(action: "edit", id: templateInstance.id)
         }
         else {
             render(view: "create", model: [templateInstance: templateInstance])
@@ -89,7 +89,7 @@ class TemplateController {
 
             if (!templateInstance.hasErrors() && templateInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'template.label', default: 'Template'), templateInstance.id])}"
-                redirect(action: "show", id: templateInstance.id)
+                redirect(action: "edit", id: templateInstance.id)
             } else {
                 render(view: "edit", model: [templateInstance: templateInstance])
             }
@@ -116,7 +116,7 @@ class TemplateController {
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
-                redirect(action: "show", id: params.id)
+                redirect(action: "edit", id: params.id)
             }
         }
         else {
