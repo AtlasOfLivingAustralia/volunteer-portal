@@ -538,16 +538,16 @@ class UserController {
     }
 
     def ajaxGetPoints() {
-        Stopwatch sw = new Stopwatch();
+        Stopwatch sw = Stopwatch.createStarted()
         sw.start()
         def userInstance = User.get(params.int("id"))
         sw.stop()
-        log.info("ajaxGetPoints| User.get(): ${sw.toString()}")
+        log.debug("ajaxGetPoints| User.get(): ${sw.toString()}")
         sw.reset().start()
 
         Long taskCount = Task.countByFullyTranscribedBy(userInstance.userId)
         sw.stop()
-        log.info("ajaxGetPoints| Task.countByFullyTranscribedBy(): ${sw.toString()}")
+        log.debug("ajaxGetPoints| Task.countByFullyTranscribedBy(): ${sw.toString()}")
         sw.reset().start()
 
         final query = """{
@@ -574,7 +574,7 @@ class UserController {
 
         def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, taskCount.intValue(), fullTextIndexService.rawResponse)
         sw.stop()
-        log.info("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
+        log.debug("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
         sw.reset().start()
 
         def data = searchResponse.hits.hits.collect { hit ->
@@ -596,7 +596,7 @@ class UserController {
         }
 
         sw.stop()
-        log.info("ajaxGetPoints| generateResults: ${sw.toString()}")
+        log.debug("ajaxGetPoints| generateResults: ${sw.toString()}")
 
         render(data as JSON)
     }
@@ -612,11 +612,10 @@ class UserController {
     }
 
     def notebookMainFragment() {
-        Stopwatch sw = new Stopwatch();
         def userInstance = User.get(params.int("id"))
         //def simpleTemplateEngine = new SimpleTemplateEngine()
+        Stopwatch sw = Stopwatch.createStarted()
         def c = Task.createCriteria()
-        sw.start()
         def expeditions = c {
             eq("fullyTranscribedBy", userInstance.userId)
             projections {
@@ -625,17 +624,17 @@ class UserController {
         }
         sw.stop()
 
-        log.info("notebookMainFragment.projectCount ${sw.toString()}")
+        log.debug("notebookMainFragment.projectCount ${sw.toString()}")
 
         sw.reset().start()
         def score = userService.getUserScore(userInstance)
         sw.stop()
-        log.info("notebookMainFragment.getUserScore ${sw.toString()}")
+        log.debug("notebookMainFragment.getUserScore ${sw.toString()}")
 
         sw.reset().start()
         def recentAchievements = AchievementAward.findAllByUser(userInstance, [sort:'awarded', order:'desc', max: 3])
         sw.stop()
-        log.info("notebookMainFragment.recentAchievements ${sw.toString()}")
+        log.debug("notebookMainFragment.recentAchievements ${sw.toString()}")
 
         sw.reset().start()
         final query = freemarkerService.runTemplate(ALA_HARVESTABLE, [userId: userInstance.userId])
@@ -646,8 +645,8 @@ class UserController {
         }.sort { m -> m[1] }
         def totalSpeciesCount = speciesList2.size()
         sw.stop()
-        log.info("notebookMainFragment.speciesList2 ${sw.toString()}")
-        log.info("specieslist2: ${speciesList2}")
+        log.debug("notebookMainFragment.speciesList2 ${sw.toString()}")
+        log.debug("specieslist2: ${speciesList2}")
 
         sw.reset().start()
 
@@ -658,20 +657,20 @@ class UserController {
         def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
 
         sw.stop()
-        log.info("notbookMainFragment.percentage ${sw.toString()}")
+        log.debug("notbookMainFragment.percentage ${sw.toString()}")
 
         sw.reset().start()
         def fieldObservationQuery = freemarkerService.runTemplate(FIELD_OBSERVATIONS, [userId: userInstance.userId])
         def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
 
         sw.stop()
-        log.info("notbookMainFragment.fieldObservationCount ${sw.toString()}")
+        log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
 
         sw.reset().start()
         final validatedQuery = freemarkerService.runTemplate(VALIDATED_TASKS_FOR_USER, [userId: userInstance.userId])
         def validatedCount = fullTextIndexService.rawSearch(validatedQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
         sw.stop()
-        log.info("notbookMainFragment.validatedCount ${sw.toString()}")
+        log.debug("notbookMainFragment.validatedCount ${sw.toString()}")
 
         [userInstance: userInstance, expeditionCount: expeditions ? expeditions[0] : 0, score: score,
          recentAchievements: recentAchievements, speciesList: speciesList2, fieldObservationCount: fieldObservationCount,
