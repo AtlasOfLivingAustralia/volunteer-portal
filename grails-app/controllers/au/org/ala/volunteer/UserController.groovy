@@ -539,7 +539,6 @@ class UserController {
 
     def ajaxGetPoints() {
         Stopwatch sw = Stopwatch.createStarted()
-        sw.start()
         def userInstance = User.get(params.int("id"))
         sw.stop()
         log.debug("ajaxGetPoints| User.get(): ${sw.toString()}")
