@@ -1,0 +1,30 @@
+{
+  "name": "digivol",
+  "description": "ALA / AM transcription platform",
+  "version": "3.1.6",
+  "homepage": "http://volunteer.ala.org.au",
+  "contributors": [
+    {
+      "name": "Simon Bear",
+      "web": "https://github.com/sbearcsiro"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "Atlas of Living Australia",
+      "web": "https://github.com/AtlasOfLivingAustralia?tab=members"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AtlasOfLivingAustralia/volunteer-portal"
+  },
+  "bugs": {
+    "url": "https://github.com/AtlasOfLivingAustralia/volunteer-portal/issues"
+  },
+  "license": "MPL-2.0",
+  "devDependencies": {
+  },
+  "dependencies": {
+  }
+}
