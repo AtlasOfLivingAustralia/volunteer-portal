@@ -352,11 +352,13 @@ log4j = {
                 rollingFile name: "tomcatLog", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.INFO
                 rollingFile name: "access", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.INFO
                 rollingFile name: "cas", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-cas.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
+                rollingFile name: "debugLog", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-debug.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
             development {
                 console name: "tomcatLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
                 console name: "access", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
                 console name: "cas", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
+                console name: "debugLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
             }
             test {
                 rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
@@ -379,6 +381,11 @@ log4j = {
             cas: [
                     'au.org.ala.cas',
                     'org.jasig.cas'
+            ]
+
+    debug   additivity: false,
+            debugLog: [
+                    'grails.app.services.au.org.ala.volunteer.TaskService'
             ]
     
     error   'org.codehaus.groovy.grails.web.servlet',  //  controllers
