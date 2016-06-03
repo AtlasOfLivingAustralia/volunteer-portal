@@ -10,6 +10,7 @@ modules = {
         dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications'
         resource url: '/css/main.css'
         resource url: '/css/digivol-custom.css'
+        resource url: '/js/digivol-unread.js'
     }
 
     'digivol-stats' {
@@ -19,7 +20,7 @@ modules = {
     }
 
     'digivol-notebook' {
-        dependsOn 'digivol', 'marker-clusterer'
+        dependsOn 'digivol', 'marker-clusterer', 'angular-ui-bootstrap', 'angular-marked', 'angular-sanitize'
         resource url: 'js/digivol-notebook.js'
     }
 
@@ -226,6 +227,10 @@ modules = {
         resource url: 'js/moment/2.10.6/moment.min.js'
     }
 
+    "marked" {
+        resource url: 'js/marked/0.3.5/marked.js'
+    }
+
     "livestamp" {
         dependsOn 'jquery', 'moment'
         resource url: 'js/livestamp/1.1.2/livestamp.min.js'
@@ -247,13 +252,26 @@ modules = {
     }
 
     'angular' {
-        resource url: 'js/angular/1.4.7/angular.min.js'
-        resource url: 'js/angular/1.4.7/angular-csp.css'
+        resource url: 'js/angular/1.5.6/angular-csp.css'
+        resource url: 'js/angular/1.5.6/angular.min.js'
+        resource url: 'js/angular/1.5.6/angular-animate.min.js'
+        resource url: 'js/angular/1.5.6/angular-aria.min.js'
+        resource url: 'js/angular/1.5.6/angular-touch.min.js'
+    }
+
+    'angular-sanitize' {
+        resource url: 'js/angular/1.5.6/angular-sanitize.min.js'
     }
 
     'angular-ui-router' {
         dependsOn 'angular'
         resource url: '/js/angular/ui-router/0.2.15/angular-ui-router.min.js'
+    }
+
+    'angular-ui-bootstrap' {
+        dependsOn 'bootstrap-css', 'angular'
+        resource url: '/js/angular/ui-bootstrap/1.3.3/ui-bootstrap-csp.css'
+        resource url: '/js/angular/ui-bootstrap/1.3.3/ui-bootstrap-tpls-1.3.3.min.js'
     }
 
     'angular-typeahead' {
@@ -289,5 +307,10 @@ modules = {
     'angular-moment' {
         dependsOn 'angular', 'moment'
         resource url: '/js/angular/moment/1.0.0-beta.3/angular-moment.min.js'
+    }
+
+    'angular-marked' {
+        dependsOn 'angular', 'marked'
+        resource url: '/js/angular/angular-marked/1.2.0/angular-marked.min.js'
     }
 }
