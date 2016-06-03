@@ -29,14 +29,14 @@
     <g:if test="${!disableHonourBoard}">
     <div class="panel panel-default leaderboard">
         <!-- Default panel contents -->
-        <h2 class="heading">Honour Board <g:link controller="leaderBoard" action="describeBadges" class="pull-right"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
+        <h2 class="heading"><g:message code="honour.board.label" /> <g:link controller="leaderBoard" action="describeBadges" class="pull-right"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
         <!-- Table -->
         <table class="table">
             <thead>
             <tr>
-                <th colspan="2">Day Tripper</th>
+                <th colspan="2"><g:message code="daily.leader.label" /></th>
                 <th class="view-more"><g:link controller="leaderBoard" action="topList"
-                                              params="[category: 'daily', institutionId: institutionId]">View Top 20</g:link></th>
+                                              params="[category: 'daily', institutionId: institutionId]"><g:message code="leaderboard.viewTop20.label" /></g:link></th>
             </tr>
             </thead>
             <tbody>
@@ -57,9 +57,9 @@
             </tbody>
             <thead>
             <tr>
-                <th colspan="2">Weekly Wonder</th>
+                <th colspan="2"><g:message code="weekly.leader.label" /></th>
                 <th class="view-more"><g:link controller="leaderBoard" action="topList"
-                                              params="[category: 'weekly', institutionId: institutionId]">View Top 20</g:link></th>
+                                              params="[category: 'weekly', institutionId: institutionId]"><g:message code="leaderboard.viewTop20.label" /></g:link></th>
             </tr>
             </thead>
             <tbody>
@@ -80,9 +80,9 @@
             </tbody>
             <thead>
             <tr>
-                <th colspan="2">Monthly Maestro</th>
+                <th colspan="2"><g:message code="monthly.leader.label" /></th>
                 <th class="view-more"><g:link controller="leaderBoard" action="topList"
-                                              params="[category: 'monthly', institutionId: institutionId]">View Top 20</g:link></th>
+                                              params="[category: 'monthly', institutionId: institutionId]"><g:message code="leaderboard.viewTop20.label" /></g:link></th>
             </tr>
             </thead>
             <tbody>
@@ -104,9 +104,9 @@
             </tbody>
             <thead>
             <tr>
-                <th colspan="2">${instName} Legend</th>
+                <th colspan="2">${instName} <g:message code="alltime.leader.label" /></th>
                 <th class="view-more"><g:link controller="leaderBoard" action="topList"
-                                              params="[category: 'alltime', institutionId: institutionId]">View Top 20</g:link></th>
+                                              params="[category: 'alltime', institutionId: institutionId]"><g:message code="leaderboard.viewTop20.label" /></g:link></th>
             </tr>
             </thead>
             <tbody>
@@ -131,7 +131,7 @@
     </g:if>
 
     <h2 class="heading">
-        Latest Contributions<span data-ng-if="loading"> <cl:spinner/></span>
+        <g:message code="latest.contributions.label" /><span data-ng-if="loading"> <cl:spinner/></span>
     </h2>
     <ul class="media-list"
         data-ng-repeat="contributor in contributors"
@@ -148,7 +148,7 @@
                 <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
                 <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
 
-                <p>Transcribed <span>{{contributor.transcribedItems}}</span> items from the <a
+                <p><g:message code="transcribed.label" /> <span>{{contributor.transcribedItems}}</span> <g:message code="items.from.the" /> <a
                         data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a></p>
 
                 <div class="transcribed-thumbs">
@@ -156,7 +156,7 @@
                     <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
                 </div>
                 <a class="btn btn-link btn-xs join" role="button"
-                   data-ng-href="{{projectUrl(contributor)}}">Join expedition »</a>
+                   data-ng-href="{{projectUrl(contributor)}}"><g:message code="join.expedition.label" /> »</a>
             </div>
         </li>
         %{-- Begin template for forum message contribution --}%
@@ -173,11 +173,11 @@
                 <div class="transcribed-thumbs">
                     <img data-ng-src="{{contributor.thumbnailUrl}}">
                 </div>
-                <a class="btn btn-link btn-xs join" data-ng-href="{{contributor.topicUrl}}" role="button">Join discussion »</a>
+                <a class="btn btn-link btn-xs join" data-ng-href="{{contributor.topicUrl}}" role="button"><g:message code="join.discussion.label" /> »</a>
             </div>
         </li>
     </ul>
-    <g:link controller="user" action="list">View all contributors »</g:link>
+    <g:link controller="user" action="list"><g:message code="view.all.contributors.label" /> »</g:link>
 </section>
 <r:script>
 digivolStats({
