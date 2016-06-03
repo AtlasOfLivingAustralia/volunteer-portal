@@ -10,7 +10,6 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
 @AlaSecured("ROLE_VP_ADMIN")
-@Transactional(readOnly = true)
 class AchievementDescriptionController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", uploadBadgeImage: "POST", award: "POST", awardAll: "POST", enable: "POST"]
@@ -31,7 +30,6 @@ class AchievementDescriptionController {
         respond new AchievementDescription()
     }
 
-    @Transactional
     def save(AchievementDescription achievementDescriptionInstance) {
         if (achievementDescriptionInstance == null) {
             notFound()
@@ -75,7 +73,6 @@ class AchievementDescriptionController {
         }
     }
 
-    @Transactional
     def update(AchievementDescription achievementDescriptionInstance) {
         if (achievementDescriptionInstance == null) {
             notFound()
@@ -100,7 +97,6 @@ class AchievementDescriptionController {
         }
     }
 
-    @Transactional
     def delete(AchievementDescription achievementDescriptionInstance) {
 
         if (achievementDescriptionInstance == null) {
@@ -133,7 +129,6 @@ class AchievementDescriptionController {
         achievementService.evaluateAchievement(AchievementDescription.get(achievementId), User.get(userId), taskId)
     }
 
-    @Transactional
     def uploadBadgeImage() {
         def id = params.long("id");
         def achievement = id ? AchievementDescription.get(id) : null
@@ -189,7 +184,6 @@ class AchievementDescriptionController {
         render result as JSON
     }
 
-    @Transactional
     def awardAll(AchievementDescription achievementDescriptionInstance) {
 
         def awardedUsers = achievementDescriptionInstance.awards*.user*.id.toList()
@@ -219,7 +213,6 @@ class AchievementDescriptionController {
         }
     }
 
-    @Transactional
     def award(AchievementDescription achievementDescriptionInstance) {
 
         def userId = params.userId
@@ -245,7 +238,6 @@ class AchievementDescriptionController {
         }
     }
 
-    @Transactional
     def unawardAll(AchievementDescription achievementDescriptionInstance) {
         def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
         log.info("Removing awarded achievements: ${awards.join('\n')}")
@@ -261,7 +253,6 @@ class AchievementDescriptionController {
         }
     }
 
-    @Transactional
     def unaward(AchievementDescription achievementDescriptionInstance) {
         def awardIds = params.list('ids[]')*.toLong()
         def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
@@ -301,7 +292,6 @@ class AchievementDescriptionController {
         render users as JSON
     }
 
-    @Transactional
     def enable(AchievementDescription achievementDescriptionInstance) {
         def enabledParam = params.boolean('enabled') ?: false
         achievementDescriptionInstance.enabled = enabledParam

@@ -10,7 +10,6 @@ import retrofit.RetrofitError
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
 @AlaSecured("ROLE_VP_ADMIN")
 class InstitutionAdminController {
 
@@ -28,7 +27,6 @@ class InstitutionAdminController {
         respond new Institution(params)
     }
 
-    @Transactional
     def save(Institution institutionInstance) {
         if (institutionInstance == null) {
             notFound()
@@ -55,7 +53,6 @@ class InstitutionAdminController {
         respond institutionInstance, model: [newsItems: newsItems]
     }
 
-    @Transactional
     def updateNewsItems() {
         def institutionInstance = Institution.get(params.id)
         if (!institutionInstance) {
@@ -70,7 +67,6 @@ class InstitutionAdminController {
         redirect(action: 'editNewsItems', id: institutionInstance.id)
     }
 
-    @Transactional
     def update(Institution institutionInstance) {
         if (institutionInstance == null) {
             notFound()
@@ -88,7 +84,6 @@ class InstitutionAdminController {
 
     }
 
-    @Transactional
     def delete(Institution institutionInstance) {
 
         if (institutionInstance == null) {
@@ -114,7 +109,6 @@ class InstitutionAdminController {
         }
     }
 
-    @Transactional
     def quickCreate(String cid) {
         def existing = Institution.executeQuery("select id from Institution where collectoryUid = :cid", [cid: cid])
         if (existing) {
