@@ -18,7 +18,7 @@
 
 <body>
 
-<cl:headerContent title="${message(code: 'default.about.label', default: 'How can I volunteer?')}"
+<cl:headerContent title="${message(code: 'default.getInvolved.label')}"
                   selectedNavItem="getinvolved"/>
 
 <p>

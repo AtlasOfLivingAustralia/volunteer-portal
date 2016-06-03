@@ -79,7 +79,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <span class="glyphicon glyphicon-user"></span>
                            <!-- My Profile -->
-                            <cl:myProfileAlert/>
+                            My Profile <span class="validatedCount"></span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
 
@@ -244,7 +244,8 @@
     var BVP_JS_URLS = {
                 selectProjectFragment: "${createLink(controller: 'project', action: 'findProjectFragment')}",
                 webappRoot: "${resource(dir: '/')}",
-                picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}"
+                picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}",
+                unreadValidatedCount: "${createLink(controller:'user', action: 'unreadValidatedTasks')}"
             };
 </r:script>
 %{--<asset:deferredScripts/>--}%

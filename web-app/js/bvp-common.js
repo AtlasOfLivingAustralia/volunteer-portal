@@ -150,7 +150,7 @@ var bvp = {};
             }).bind('click', function(e){ e.preventDefault(); return false; });
 
         });
-    }
+    };
 
     lib.submitWithWebflowEvent = function(jqButton, event) {
 

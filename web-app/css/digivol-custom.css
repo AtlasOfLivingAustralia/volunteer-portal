@@ -445,6 +445,6 @@ a.fieldHelp {
 
 /* end notifications */
 
-.badge-danger {
-    background-color: red;
+.label-as-badge {
+    border-radius: 1em;
 }
