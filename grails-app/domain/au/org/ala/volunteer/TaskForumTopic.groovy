@@ -7,4 +7,8 @@ class TaskForumTopic extends ForumTopic {
     static constraints = {
         task nullable: false
     }
+
+    static mapping = {
+        task lazy: false
+    }
 }
