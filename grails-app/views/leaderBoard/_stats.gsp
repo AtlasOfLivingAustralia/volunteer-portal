@@ -1,7 +1,7 @@
 <r:require modules="digivol, digivol-stats, livestamp"/>
 <g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
-<section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl" class="ng-cloak">
+<section id="digivol-stats" ng-controller="StatsCtrl" class="ng-cloak">
     <g:if test="${!disableStats}">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->

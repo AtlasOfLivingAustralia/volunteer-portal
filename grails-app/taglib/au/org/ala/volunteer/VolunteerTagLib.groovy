@@ -529,38 +529,13 @@ class VolunteerTagLib {
         }
     }
 
-    def myProfileAlert = { attrs, body ->
-        def userId = userService.currentUser?.userId
-        if (userId) {
-            def tasks =  taskService.getUnreadValidatedTasks (null, userId)
-            int taskCount = tasks.size()
-            if (taskCount > 0) {
-                out << 'My Profile <span class="badge badge-danger" style="color:white">' + taskCount + '</span>'
-            } else {
-                out << 'My Profile'
-            }
-        } else {
-            out << 'My Profile'
-        }
-    }
-
     def readStatusIcon = { attrs, body ->
-        def unReadList = taskService.unReadList
+        def unReadList = taskService.getUnreadValidatedTasks(attrs.project, userService.currentUser?.userId)
         if (attrs.taskId in (unReadList)) {
             out << '<span class="glyphicon glyphicon-envelope"  style="color:#000192"></span>'
         } else {
             out << '<span class="glyphicon glyphicon-ok"></span>'
         }
-    }
-
-    def newAlert = {
-        def unReadList = taskService.unReadList
-        def newAlert = 'Notebook'
-        int unReadCount = unReadList?.size()
-        if (unReadCount) {
-            newAlert =  'Notebook <span class="badge badge-danger" style="color:white">' + unReadCount + '</span>'
-        }
-        out << newAlert
     }
 
     def spinner = { attrs, body ->

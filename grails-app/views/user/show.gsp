@@ -6,14 +6,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
+    <g:set var="entityName" value="${message(code: 'user.label')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <gvisualization:apiImport/>
     <r:require module="digivol-notebook"/>
 </head>
 
-<body>
+<body data-ng-app="notebook">
 <cl:headerContent hideTitle="true"
         title="${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? " (that's you!)" : ''}"
         crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
@@ -132,118 +132,44 @@
 
 </cl:headerContent>
 
-<g:set var="includeParams" value="${params.findAll { it.key != 'selectedTab' }}"/>
-<section id="user-progress">
-    <div class="container" >
-        <ul class="nav nav-tabs profile-tabs" role="tablist" id="profileTabsList">
-            <g:if test="${userInstance.userId == currentUser}">
-                <li role="presentation" class="${selectedTab == 0 || !selectedTab ? 'active' : ''}">
-                    <a id="notificationsTab" href="#notifications-tasks" tab-index="0" content-url="${createLink(controller: 'user', action: 'notificationsFragment', params: includeParams + [selectedTab: 0])}" aria-controls="notifications-tasks" role="tab" data-toggle="tab">
-                        Notifications
-                        <g:if test="${recentValidatedTaskCount > 0}" >
-                            <span class="glyphicon glyphicon-bell" style="color:red"></span>
-                        </g:if>
-                    </a>
-                </li>
-            </g:if>
-            <li role="presentation" class="${selectedTab == 1 ? 'active' : ''}">
-                <a href="#transcribed-tasks" tab-index="1" content-url="${createLink(controller: 'user', action: 'transcribedTasksFragment', params: includeParams + [selectedTab: 1])}" aria-controls="transcribed-tasks" role="tab" data-toggle="tab">Transcribed Tasks</a>
-            </li>
-            <li role="presentation" class="${selectedTab == 2 ? 'active' : ''}">
-                <a href="#saved-tasks" tab-index="2" content-url="${createLink(controller: 'user', action: 'savedTasksFragment', params: includeParams + [selectedTab: 2])}" aria-controls="saved-tasks" role="tab" data-toggle="tab">Saved Tasks</a>
-            </li>
-            <cl:ifValidator>
-                <li role="presentation" class="${selectedTab == 3 ? 'active' : ''}">
-                    <a href="#validated-tasks" tab-index="3" content-url="${createLink(controller: 'user', action: 'validatedTasksFragment', params: includeParams + [selectedTab: 3])}" aria-controls="validated-tasks" role="tab" data-toggle="tab">Validated Tasks</a>
-                </li>
-            </cl:ifValidator>
-            <li role="presentation" class="${selectedTab == 4 ? 'active' : ''}">
-                <a href="#forum-messages" tab-index="4" content-url="${createLink(controller: 'forum', action: 'userCommentsFragment', params: [selectedTab: 4, id: params.id, max: params.max, offset: params.offset])}" aria-controls="forum-messages" role="tab" data-toggle="tab">Forum Activities</a>
-            </li>
-            <cl:ifAdmin>
-                <li role="presentation" class="${selectedTab == 5 ? 'active' : ''}">
-                    <a href="#user-settings" tab-index="5" aria-controls="user-settings" role="tab" data-toggle="tab">User Settings</a>
-                </li>
-            </cl:ifAdmin>
-        </ul>
-    </div>
-
-    <div class="tab-content-bg">
-        <!-- Tab panes -->
-        <div class="container">
-            <div class="tab-content" id="profileTabsContent">
-                <div role="tabpanel" class="tab-pane active" id="notifications-tasks">
-                    <div class="tab-pane-header">
-                        <div class="row">
-                            <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
-                            </div>
+<section id="user-progress" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
+    <uib-tabset active="nbtCtrl.selectedTab" template-url="notebookTabSet.html">
+        <uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">
+            <uib-tab-heading>
+                <g:message code="notebook.tabs.notifications.heading" /> <i ng-show="unreadCount > 0" class="fa fa-bell text-danger"></i>
+            </uib-tab-heading>
+            <task-list selected-tab="nbtCtrl.selectedTab" tab-index="0" max="nbtCtrl.tabs[0].max" offset="nbtCtrl.tabs[0].offset" sort="nbtCtrl.tabs[0].sort" order="nbtCtrl.tabs[0].order" query="nbtCtrl.tabs[0].query"></task-list>
+        </uib-tab>
+        <uib-tab heading="${message(code:"notebook.tabs.transcribed.heading")}" index="1" select="nbtCtrl.selectTab(1)">
+            <task-list selected-tab="nbtCtrl.selectedTab" tab-index="1" max="nbtCtrl.tabs[1].max" offset="nbtCtrl.tabs[1].offset" sort="nbtCtrl.tabs[1].sort" order="nbtCtrl.tabs[1].order" query="nbtCtrl.tabs[1].query"></task-list>
+        </uib-tab>
+        <uib-tab heading="${message(code:"notebook.tabs.saved.heading")}" index="2" select="nbtCtrl.selectTab(2)">
+            <task-list selected-tab="nbtCtrl.selectedTab" tab-index="2" max="nbtCtrl.tabs[2].max" offset="nbtCtrl.tabs[2].offset" sort="nbtCtrl.tabs[2].sort" order="nbtCtrl.tabs[2].order" query="nbtCtrl.tabs[2].query"></task-list>
+        </uib-tab>
+        <uib-tab ng-if="nbtCtrl.isValidator" heading="${message(code:"notebook.tabs.validated.heading")}" index="3" select="nbtCtrl.selectTab(3)">
+            <task-list selected-tab="nbtCtrl.selectedTab" tab-index="3" max="nbtCtrl.tabs[3].max" offset="nbtCtrl.tabs[3].offset" sort="nbtCtrl.tabs[3].sort" order="nbtCtrl.tabs[3].order" query="nbtCtrl.tabs[3].query"></task-list>
+        </uib-tab>
+        <uib-tab heading="${message(code:"notebook.tabs.forum.heading")}" index="4" select="nbtCtrl.selectTab(4)">
+            <forum-posts selected-tab="nbtCtrl.selectedTab" tab-index="4"max="nbtCtrl.tabs[4].max" offset="nbtCtrl.tabs[4].offset" sort="nbtCtrl.tabs[4].sort" order="nbtCtrl.tabs[4].order"></forum-posts>
+        </uib-tab>
+        <uib-tab ng-if="nbtCtrl.isAdmin" heading="${message(code:"notebook.tabs.user.heading")}" index="5">
+            <div class="tab-pane-header">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-info" style="margin-bottom: 0px">
+                            <%-- TODO Pull this from user details service --%>
+                            &nbsp;<g:message code="user.email.label" />:&nbsp;<a href="mailto:${userInstance.email}">${userInstance.email}</a>
                         </div>
+                        <br/>
+                        <g:link class="btn btn-success" controller="user" action="editRoles"
+                                id="${userInstance.id}"><g:message code="user.roles.manage.label" /></g:link>
+                        <g:link class="btn btn-success" controller="user" action="edit"
+                                id="${userInstance.id}"><g:message code="user.details.edit.label" /></g:link>
                     </div>
                 </div>
-
-                <div role="tabpanel" class="tab-pane" id="transcribed-tasks">
-                    <div class="tab-pane-header">
-                        <div class="row">
-                            <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="saved-tasks">
-                    <div class="tab-pane-header">
-                        <div class="row">
-                            <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="validated-tasks">
-                    <div class="tab-pane-header">
-                        <div class="row">
-                            <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="forum-messages">
-                    <div class="tab-pane-header">
-                        <div class="row">
-                            <div class="col-sm-4 search-results-count">
-                                <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <cl:ifAdmin>
-                <div role="tabpanel" class="tab-pane" id="user-settings">
-                    <div class="tab-pane-header">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="alert alert-info" style="margin-bottom: 0px">
-                                    <%-- TODO Pull this from user details service --%>
-                                    &nbsp;Email:&nbsp;<a href="mailto:${userInstance.email}">${userInstance.email}</a>
-                                </div>
-                                <br/>
-                                <g:link class="btn btn-success" controller="user" action="editRoles"
-                                        id="${userInstance.id}">Manage user roles</g:link>
-                                <g:link class="btn btn-success" controller="user" action="edit"
-                                        id="${userInstance.id}">Edit user details</g:link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                </cl:ifAdmin>
             </div>
-        </div>
-    </div>
+        </uib-tab>
+    </uib-tabset>
 
 </section>
 
@@ -264,6 +190,273 @@
          infowindow-url="${createLink(controller: 'task', action: 'details')}">
     </div>
 </section>
+
+<script type="text/ng-template" id="notebookTabSet.html">
+<div>
+    <div class="container">
+        <ul class="nav nav-{{tabset.type || 'tabs'}}" ng-class="{'nav-stacked': vertical, 'nav-justified': justified}"
+            ng-transclude></ul>
+    </div>
+
+    <div class="tab-content-bg">
+        <div class="container">
+            <div class="tab-content">
+                <div class="tab-pane"
+                     ng-repeat="tab in tabset.tabs"
+                     ng-class="{active: tabset.active === tab.index}"
+                     uib-tab-content-transclude="tab">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+<script type="text/ng-template" id="taskList.html">
+<div class="tab-pane-header" ng-show="$ctrl.cancelPromise != null" >
+    <div class="row">
+        <div class="col-sm-8 search-results-count">
+            <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
+        </div>
+    </div>
+</div>
+<div ng-show="$ctrl.cancelPromise == null">
+<div class="tab-pane-header">
+    <div class="row">
+        <div class="col-sm-8 search-results-count">
+            <p ng-show="$ctrl.selectedTab > 0"><strong>{{$ctrl.data.totalMatchingTasks }} <g:message code="notebook.taskList.heading" /></strong> <span ng-show="$ctrl.project"><g:message code="notebook.tasklist.heading.projectSuffix" /></span></p>
+            <p ng-show="$ctrl.selectedTab == 0 && $ctrl.data.recentValidatedCount > 0"><strong><g:message code="notebook.taskList.reviewedHeading" /></strong> <g:message code="notebook.taskList.reviewHeading.suffix" /></p>
+            <p ng-show="$ctrl.selectedTab == 0 && $ctrl.data.recentValidatedCount == 0"><strong><g:message code="notebook.taskList.emptyReviewedHeading" /></strong></p>
+        </div>
+        <div class="col-sm-4 text-right">
+            <div class="custom-search-input body">
+                <div class="input-group">
+                    <input type="text" id="searchbox" ng-model="$ctrl.query" name="searchbox" class="form-control input-lg" placeholder="${message(code:"default.search.label")}" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button" ng-click="$ctrl.doSearch">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="pull-right search-help">
+                <button class="btn btn-info pull-right"
+                        uib-tooltip="${message(code:"notebook.taskList.searchHelp")}"><span
+                        class="help-container"><i class="fa fa-question"></i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr class="sorting-header">
+
+                <td ng-show="$ctrl.selectedTab == 0"></td>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('id')">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'id', sorting: true})" class="btn"><g:message code="task.id.label" /></a>
+                </th>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('externalIdentifier')">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'externalIdentifier', sorting: true})" class="btn"><g:message code="task.externalIdentifier.label" /></a>
+                </th>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('catalogNumber')">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'catalogNumber', sorting: true})" class="btn"><g:message code="task.catalogNumber.label" /></a>
+                </th>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('projectName')">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'projectName', sorting: true})" class="btn"><g:message code="project.name.label" /></a>
+                </th>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('dateTranscribed')">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'dateTranscribed', sorting: true})" class="btn"><g:message code="task.dateFullyTranscribed.label" /></a>
+                </th>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('dateValidated')">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'dateValidated', sorting: true})" class="btn"><g:message code="task.dateFullyValidated.label" /></a>
+                </th>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('validator')"
+                    ng-show="$ctrl.selectedTab == 0">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'validator', sorting: true})" class="btn"><g:message code="task.validator.label" /></a>
+                </th>
+
+                <th class="sortable" ng-class="$ctrl.sortedClasses('status')">
+                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'status', sorting: true})" class="btn"><g:message code="task.isValid.label" /></a>
+                </th>
+
+                <th style="text-align: center; vertical-align: middle;"><g:message code="notebook.tasklist.tableAction.label" /></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
+
+                <td ng-show="$ctrl.tabIndex == 0">
+                    %{--<span class="glyphicon glyphicon-envelope"  style="color:#000192"></span>--}%
+                    %{--<cl:readStatusIcon taskId="${taskInstance.id}"></cl:readStatusIcon>--}%
+                    <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>
+                    <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>
+                </td>
+
+                <td>
+                    <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}" class="listLink">{{ taskInstance.id }}</a>
+                </td>
+
+                <td>{{taskInstance.externalIdentifier}}</td>
+
+                <td>{{taskInstance.catalogNumber}}</td>
+
+                <td>
+                    <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ taskInstance.projectId }}" class="listLink">{{ taskInstance.projectName }}</a>
+                </td>
+
+                <td>
+                    {{ taskInstance.dateTranscribed | date : 'medium' }}
+                </td>
+
+                <td>
+                    {{ taskInstance.dateValidated | date : 'medium' }}
+                </td>
+
+                <td style="text-align: center;" ng-show="$ctrl.tabIndex == 0">
+                    {{ taskInstance.fullyValidatedBy }}
+                </td>
+
+
+                <td style="text-align: center;">
+                    {{ taskInstance.status }}
+                </td>
+
+                <td style="text-align: center; width: 120px;">
+                    <span ng-show="$ctrl.tabIndex > 0"> <!-- notebook.tasklist.tableAction.label -->
+                        <a ng-show="taskInstance.fullyTranscribedBy" class="btn btn-default btn-xs"
+                           ng-href="${createLink(controller: 'task', action:'show')}/{{taskInstance.id}}">
+                            <g:message code="action.view.label" />
+                        </a>
+                        <a ng-show="taskInstance.fullyTranscribedBy && isValidator(taskInstance.project)" class="btn btn-default btn-xs"
+                           ng-href="${createLink(controller: 'validate', action:'task')}/{{taskInstance.id}}">
+                            <span ng-show="taskInstance.status == 'validated'"><g:message code="action.review.label" /></span>
+                            <span ng-hide="taskInstance.status == 'validated'"><g:message code="action.validate.label" /></span>
+                        </a>
+                        <a ng-hide="taskInstance.fullyTranscribedBy" class="btn btn-default btn-small"
+                           ng-href="${createLink(controller:'transcribe', action:'task')}/{{taskInstance.id}}">
+                            <g:message code="action.transcribe.label" />
+                        </a>
+                    </span>
+                    <span ng-hide="$ctrl.tabIndex > 0">
+                        <button class="btn btn-default btn-xs btnViewNotificationTask"
+                                ng-click="$ctrl.viewNotifications(taskInstance)"
+                                data-taskId="{{taskInstance.id}}" data-externalIdentifier="{{taskInstance.externalIdentifier}}">
+                            <g:message code="action.view.label" />
+                        </button>
+                    </span>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pagination">
+    <uib-pagination total-items="$ctrl.data.totalMatchingTasks" items-per-page="$ctrl.max" max-size="$ctrl.maxSize" boundary-link-numbers="true"
+                    ng-model="$ctrl.page" ng-change="$ctrl.pageChanged()"
+                    previous-text="&laquo;" next-text="&raquo;"></uib-pagination>
+</div>
+</div>
+</script>
+
+<script id="forumPosts.html" type="text/ng-template">
+    <div>
+        <div ng-show="$ctrl.cancelPromise != null">
+            <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
+        </div>
+        <table ng-show="$ctrl.data.messages" class="forum-table table table-striped table-condensed table-bordered" style="width:100%">
+            <tbody>
+                <tr ng-repeat-start="mt in $ctrl.data.messages track by mt.topic.id" style="background-color: #f0f0e8; color: black; height: 15px;">
+                    <th colspan="2">
+                        <h4 style="padding-bottom: 10px">
+                            <g:message code="forumTopic.label" />: <a ng-href="${createLink(controller: 'forum', action: 'viewForumTopic')}/{{ mt.topic.id }}">{{ mt.topic.title }} </a>
+                            <span ng-show="mt.topicProject"><g:message code="project.label" />: <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ mt.topicProject.id }}">{{ mt.topicProject.id }}</a></span>
+                            <span ng-show="mt.topicTask"><g:message code="task.label" />: <a ng-href="${createLink(controller: 'project', action: 'show')}/{{ mt.topicTask.id }}">{{ mt.topicTask.externalIdentifier }}</a></span>
+                        </h4>
+                    </th>
+                </tr>
+                <tr ng-repeat="m in mt.messages track by m.message.id" ng-class="{ 'author-is-moderator-row': m.isUserForumModerator }" ng-repeat-end>
+                    <td class="forumNameColumn">
+                        <a ng-hide="$ctrl.hideUsername" ng-href="${link(controller: 'user', action: 'show')}/{{ m.message.user.id}}">{{ m.userProps.displayName }}</a>
+                        <br />
+                        <span class="forumMessageDate">{{ m.message.date | date : 'medium' }}</span>
+                        <br ng-show="m.isUserForumModerator" />
+                        <span ng-show="m.isUserForumModerator" class="moderator-label"><g:message code="moderator.label" /></span>
+                    </td>
+                    <td style="vertical-align: middle" marked="m.message.text"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <uib-pagination total-items="$ctrl.data.totalCount" items-per-page="$ctrl.max" max-size="$ctrl.maxSize" boundary-link-numbers="true"
+                            ng-model="$ctrl.page" ng-change="$ctrl.pageChanged()"
+                            previous-text="&laquo;" next-text="&raquo;"></uib-pagination>
+        </div>
+    </div>
+</script>
+
+<script id="viewNotifications.html" type="text/ng-template">
+<p><i>Last Modified By: {{ $ctrl.recordValues[0].lastModifiedBy }}</i> </p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <td style="color:#307991"><g:message code="modal.notifications.changed" default="What changed?"/></td>
+            <td style="color:#307991"><g:message code="modal.notifications.previous" default="Previous Values"/></td>
+            <td style="color:#307991"><g:message code="modal.notifications.changes" default="Recent changes"/></td>
+        </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="recordValue in $ctrl.recordValues">
+                <td>
+                    %{--${TemplateField.findAllByTemplateAndFieldType(Project.findAllById(task.projectId).template, recordValue.getKey())?.uiLabel?.toString().replace('[','').replace(']', '')?:(DarwinCoreField.(recordValue.getKey())).label}--}%
+                    {{ recordValue.label }}
+                </td>
+
+                <td>
+                    %{--<g:message code="${recordValue.getValue()?.oldValue.toString().replaceAll('\n','<br/>\n')}" encodeAs="raw"></g:message>--}%
+                    {{ recordValue.oldValue | marked }}
+                </td>
+
+                <td>
+                    %{--<g:message code="${recordValue.getValue()?.newValue.toString().replaceAll('\n','<br/>\n')}" encodeAs="raw"></g:message>--}%
+                    {{ recordValue.newValue | marked }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</script>
+
+<r:script>
+    var json = <cl:json value="${[
+        selectedTab: selectedTab,
+        userInstance: userInstance,
+        projectInstance: projectInstance,
+        isValidator: isValidator,
+        isAdmin: isAdmin,
+        isCurrentUser: userInstance?.userId == currentUser,
+        max: params.max,
+        offset: params.offset,
+        sort: params.sort,
+        order: params.order,
+        query: params.q,
+        taskListUrl: createLink(controller: 'user', action: 'taskListFragment', id: userInstance.id),
+        forumPostsUrl: createLink(controller: 'forum', action: 'userComments', id: userInstance.id)
+]}" />
+    digivolNotebooksTabs(json);
+</r:script>
 
 </body>
 </html>

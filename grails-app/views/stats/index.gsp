@@ -119,7 +119,7 @@
     </r:script>
 </head>
 
-<body class="admin">
+<body class="admin" data-ng-app="statApp">
 
 
 <cl:headerContent title="Statistics" selectedNavItem="bvpadmin">
@@ -130,7 +130,7 @@
     %>
 </cl:headerContent>
 
-<div ng-app = 'statApp' ng-controller = 'statsCtrl'>
+<div ng-controller="statsCtrl">
 <div class="row">
     <div class="col-md-12">
         <div class="container">

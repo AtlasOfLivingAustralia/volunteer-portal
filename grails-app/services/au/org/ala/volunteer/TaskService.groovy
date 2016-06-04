@@ -1,28 +1,30 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
+import grails.transaction.NotTransactional
 import org.apache.commons.lang.StringUtils
 import org.grails.plugins.metrics.groovy.Timed
 import org.imgscalr.Scalr
 
 import javax.imageio.ImageIO
+import javax.sql.DataSource
 import java.awt.image.BufferedImage
 import groovy.sql.Sql
 
+import java.sql.Connection
 import java.text.SimpleDateFormat
 
 class TaskService {
 
-    javax.sql.DataSource dataSource
+    DataSource dataSource
     def logService
     def grailsApplication
     def multimediaService
     def grailsLinkGenerator
     def fieldService
+    def i18nService
 
-    def unReadList
-
-    private final int numberOfRecentDays = 90;
+    private static final int NUMBER_OF_RECENT_DAYS = 90;
 
     static transactional = true
 
@@ -575,68 +577,152 @@ class TaskService {
         return tasks.toList()
     }
 
+    private final static List<String> getNotificationWithClauses(projectQuery, boolean unseenOnly = true) { [
+"""transcribed_and_validated_tasks AS (
+SELECT *
+FROM task t
+WHERE
+  t.fully_transcribed_by = :userId
+  AND t.fully_validated_by is not null
+  AND t.fully_validated_by != :userId
+  AND t.is_valid is not null
+  AND t.date_fully_transcribed >= (CURRENT_DATE - $NUMBER_OF_RECENT_DAYS)
+  ${unseenOnly ? "AND t.date_fully_validated > (SELECT max(vt.last_updated) FROM viewed_task vt WHERE vt.task_id = t.id and vt.user_id = :userId)" : ""}
+  $projectQuery
+)""",
+"""transcribed_fields AS (
+  SELECT *
+  FROM field
+  WHERE
+    superceded = TRUE
+    AND transcribed_by_user_id = :userId
+    AND task_id IN (SELECT id FROM transcribed_and_validated_tasks)
+)""", //--AND updated >= (CURRENT_DATE - $NUMBER_OF_RECENT_DAYS)
+"""validated_fields AS (
+  SELECT *
+  FROM field
+  WHERE
+    superceded = FALSE
+    AND transcribed_by_user_id <> :userId
+
+    AND task_id IN (SELECT id FROM transcribed_and_validated_tasks)
+)""", //--AND updated >= (CURRENT_DATE - $NUMBER_OF_RECENT_DAYS)
+"""updated_task_ids AS (
+  SELECT DISTINCT f.task_id
+    FROM transcribed_fields f
+      JOIN validated_fields f2 ON f.task_id = f2.task_id AND f.name = f2.name AND f.record_idx = f2.record_idx
+    WHERE
+      CASE
+      WHEN char_length(f.value) <= 255 AND char_length(f2.value) <= 255
+        THEN levenshtein_less_equal(f.value, f2.value, 2) >= 3
+      ELSE TRUE
+      END
+)""",
+"""validator_notes_task_ids AS (
+    SELECT DISTINCT f.task_id
+    FROM field f
+    WHERE
+      f.name = 'validatorNotes'
+      AND f.value IS NOT NULL
+      AND f.value <> ''
+      AND f.transcribed_by_user_id <> :userId
+      AND task_id IN (SELECT id FROM transcribed_and_validated_tasks)
+)"""//--AND f.updated >= (CURRENT_DATE - $NUMBER_OF_RECENT_DAYS)
+    ]}
+
     /**
      * Get tasks transcribed by this user which has recently been validated but have not yet been viewed by the transcriber.
      *
-     * @project project (can be null in which case this returns tasks transcribed by the user
-     * @param use who transcribe this task
-     * @fromDate date from when the task was transcribed
+     * @param project (can be null in which case this returns tasks transcribed by the user
+     * @param userId of the user that transcribed the tasks
+     * @param taskIds optional list of task ids to check
      * @return list of tasks
      */
     def getUnreadValidatedTasks (Project project, String userId) {
 
-        def sw = new Stopwatch()
+        def sw = Stopwatch.createStarted()
 
-        if (log.isInfoEnabled()) {
-            sw.start()
-            log.info("Getting recently validated tasks. ")
-        }
+        log.debug("Getting recently validated tasks.")
 
-        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        def recentDate = new Date() - numberOfRecentDays;
+        String limitClause = 'LIMIT 50'
 
         String projectQuery = ""
         if (project?.id && project?.id > 0) {
-            projectQuery = " and project_id = " + project.id
+            projectQuery = "AND project_id = :projectId"
         }
 
         String select = """
-           SELECT distinct(Field.task_id)
-            FROM Field
-            WHERE  Field.task_id in
-                    (SELECT id from task
-                     where fully_transcribed_by = '$userId'
-                     $projectQuery
-                     and fully_validated_by is not null
-                     and date_fully_validated is not null
-                     and fully_validated_by != '$userId'
-                     and is_valid is not null
-                     and date_fully_transcribed >= '${sdf.format(recentDate)}' )
-            AND updated > (select max(last_updated) from viewed_task where task_id = Field.task_id and user_id = '$userId')
-            AND transcribed_by_user_id != 'system'
-            LIMIT 50
-          """
+WITH
+${getNotificationWithClauses(projectQuery).join(',\n')}
+(SELECT * FROM updated_task_ids) UNION (SELECT * FROM validator_notes_task_ids)
+"""
 
-        def sql = new Sql(dataSource: dataSource)
+        def sql = new Sql(dataSource)
 
-        def lists = []
-        sql.eachRow(select) {row ->
-            lists.add(row.task_id)
-        }
+        def lists = sql.rows(select, [userId: userId, projectId: project?.id]).collect { row ->  row.task_id }
 
-        unReadList = lists
-
-        if (log.isInfoEnabled()) {
-            sw.stop()
-            log.info("Returning validated tasks: " + sw.toString())
-        }
+        log.debug("Returning validated tasks: " + sw.stop())
 
         return lists
     }
 
+    def getLastViewedBeforeValidation(Project project, String userId, List<Integer> taskIds) {
+        if (project) {
+            Task.executeQuery("""
+    SELECT t.id
+    FROM Task t
+    WHERE
+        t.id IN :taskIds
+        AND project = :project
+        AND t.dateFullyValidated > (SELECT max(vt.lastUpdated) FROM ViewedTask vt WHERE vt.task.id = t.id and vt.userId = :userId)
+    """, [taskIds: taskIds, userId: userId, project: project])
+        } else {
+            Task.executeQuery("""
+    SELECT t.id
+    FROM Task t
+    WHERE
+        t.id IN :taskIds
+        AND t.dateFullyValidated > (SELECT max(vt.lastUpdated) FROM ViewedTask vt WHERE vt.task.id = t.id and vt.userId = :userId)
+    """, [taskIds: taskIds, userId: userId])
+        }
+    }
+
+    private static String toPgArrayText(List<?> l) {
+        '{' + l.join(',') + '}'
+    }
+
+    def countUnreadValidatedTasks (Project project, String userId) {
+        if (!userId) {
+            return 0
+        }
+        def sw = Stopwatch.createStarted()
+        log.debug("Getting recently validated task count.")
+
+        String projectQuery = ""
+        if (project?.id && project?.id > 0) {
+            projectQuery = "AND t.project_id = :projectId"
+        }
+
+        String select = """
+WITH
+${getNotificationWithClauses(projectQuery).join(',\n')}
+SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validator_notes_task_ids) AS ids
+  """
+
+        def sql = new Sql(dataSource)
+
+        log.debug("countUnreadValidatedTasks query:\n$select")
+
+        def count = sql.firstRow(select, [userId: userId, projectId: project?.id]).values()[0]
+
+        log.debug("Returning validated task count: " + sw.stop())
+
+        return count
+    }
+
     List<Task> getRecentValidatedTasks (Project project, String transcriber) {
 
-        def sw = new Stopwatch()
+        def sw = Stopwatch.createUnstarted()
 
         if (log.isInfoEnabled()) {
             sw.start()
@@ -644,7 +730,7 @@ class TaskService {
         }
 
         def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        def recentDate = sdf.parse(sdf.format(new Date() - numberOfRecentDays));
+        def recentDate = sdf.parse(sdf.format(new Date() - NUMBER_OF_RECENT_DAYS));
 
         def tasks = Task.createCriteria().list() {
             eq("fullyTranscribedBy", transcriber)
@@ -671,14 +757,11 @@ class TaskService {
      */
     def getChangedFields (Task task) {
 
-        def sw = new Stopwatch()
+        def sw = Stopwatch.createStarted()
+        sw.start()
+        log.info("Getting recently validated task field.")
 
-        if (log.isInfoEnabled()) {
-            sw.start()
-            log.info("Getting recently validated task field. ")
-        }
-
-        String transcribedByUserId = task.fullyTranscribedBy
+        //String transcribedByUserId = task.fullyTranscribedBy
         String validatedByUserId = task.fullyValidatedBy
         String taskId = task.id.toString()
 
@@ -694,13 +777,13 @@ class TaskService {
            AND transcribed_by_user_id != 'system'
           """
 
-        def sql = new Sql(dataSource: dataSource)
+        def sql = new Sql(dataSource)
 
         Map recordValues = new LinkedHashMap()
         sql.eachRow(select) {row ->
 
-            Map merged = new LinkedHashMap();
-            Map values = new LinkedHashMap();
+            Map merged
+            Map values = [:];
             if (recordValues.get(row.name) != null) {
                 values = recordValues.get(row.name)
             }
@@ -713,10 +796,7 @@ class TaskService {
             recordValues.put(row.name, merged)
         }
 
-        if (log.isInfoEnabled()) {
-            sw.stop()
-            log.info("Returning validated task fields: " + sw.toString())
-        }
+        log.info("Returning validated task fields: ${sw.stop()}")
 
         return [recordValues: recordValues]
     }
@@ -1086,6 +1166,210 @@ class TaskService {
             results.next = findByProjectAndFieldValue(task.project, "sequenceNumber", formatSequence(sequenceNumber + 1))
         }
 
+        return results
+    }
+
+    @NotTransactional // handle the read only transaction at the sql level
+    // TODO Upgrade to Grails 3.1 and use Gradle, Flyway, JOOQ instead of this GORM rubbish
+    // Or upgrade Elastic Search, add additional fields to the index for user display names and the like
+    // and use it to search.
+    /**
+     * Gets a view list of tasks for the user notebook feature.
+     * This method uses plain SQL because to use array aggregations, joins on derived tables and joins
+     * on non foreign key fields.  It attempts to build a query to load the data for 1 of 4 tabs using
+     * essentially the same query with different filter criteria.  The tabs are:
+     *
+     *  0 - "My notifications"
+     *  1 - "Transcribed tasks"
+     *  2 - "Saved tasks"
+     *  3 - "Validated tasks"
+     *
+     *  Additionally, it provides paging, so it runs 2 queries, one that selects the total count and
+     *  another to select just the records for the current page.  Sorting is also supported using
+     *  a strict set of columns.
+     *
+     * @param selectedTab - the index of the tab to load data for: 0 for notifications
+     * @param user - the user to get the data for
+     * @param project - the project to get the data for or null for no project
+     * @param query - The search query that will exact match some fields
+     * @params offset - The offset to fetch
+     * @params max - The number of documents to return (1-100)
+     * @params sort - The sort column
+     * @params order - 'asc'ending or 'desc'ending
+     */
+    Map getTaskViewList(int selectedTab, User user, Project project, String query, Integer offset, Integer max, String sort, String order) {
+        Stopwatch sw = Stopwatch.createStarted()
+        // DEFAULTS FOR MAX, OFFSET
+        if (!offset) offset = 0
+        max = Math.max(Math.min(max ?: 0, 100), 1)
+
+        // SELECTED TAB
+        final projectFilter = ' AND project_id = :project '
+        String filter
+        String additionalJoins = ''
+        String dateTranscribed = 't.date_fully_transcribed'
+        List<String> withClauses = [
+                """catalog_numbers AS (
+                      SELECT f.task_id, ARRAY_AGG(f.value) as catalog_number
+                      FROM field f
+                      WHERE f.name = 'catalogNumber'
+                      AND superceded = false
+                      GROUP BY f.task_id
+                    )""".stripIndent()
+        ]
+        switch (selectedTab) {
+            case 0:
+                // transcribed tasks that are recently validated
+                withClauses += getNotificationWithClauses(project ? projectFilter : '', false)
+                additionalJoins = 'JOIN (SELECT * FROM updated_task_ids UNION SELECT * FROM validator_notes_task_ids) AS ids ON t.id = ids.task_id'
+                filter = 'TRUE' // filter occurs by joining with the updated and validator notes task ids.
+                break
+            case 1:
+                filter = 't.fully_transcribed_by = :userId'
+                break
+            case 2:
+                withClauses += """saved_tasks AS (
+                                      SELECT f.task_id, MAX(f.updated) as date_last_updated
+                                      FROM field f
+                                      WHERE f.superceded = false
+                                      AND f.transcribed_by_user_id = :userId
+                                      GROUP BY f.task_id
+                                    )""".stripIndent()
+                filter = 't.fully_transcribed_by is null'
+                additionalJoins = 'JOIN saved_tasks s ON s.task_id = t.id'
+                dateTranscribed = "COALESCE($dateTranscribed, s.date_last_updated)"
+                break
+            case 3:
+                filter = 'fully_validated_by = :userId'
+                break
+            default:
+                throw new IllegalArgumentException("selectedTab must be between 0 and 3")
+        }
+        if (project) {
+            filter += ' AND project_id = :project '
+        }
+
+        // SORTING
+        final validSorts = [
+                'id': 't.id',
+                'externalIdentfier': 't.external_identfier',
+                'catalogNumber': 'catalog_number',
+                'projectName': 'project_name',
+                'dateTranscribed': 'date_transcribed',
+                'dateValidated': 't.date_fully_validated',
+                'validator': 'validator',
+                'status': 'status'
+        ].withDefault { 'date_transcribed' }
+        def sortColumn = validSorts[sort]
+        if (!'asc'.equalsIgnoreCase(order)) order = 'desc'
+
+        final validatedStatus = i18nService.message(code: 'status.validated', default: 'Validated')
+        final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'Invalidated')
+        final transcribedStatus = i18nService.message(code: 'status.transcribed', default: 'Transcribed')
+        final savedStatus = i18nService.message(code: 'status.saved', default: 'Saved')
+
+        final statusSnippet = """
+            CASE WHEN t.is_valid = true THEN '$validatedStatus'
+                 WHEN t.is_valid = false THEN '$invalidatedStatus'
+                WHEN t.fully_transcribed_by IS NOT NULL THEN '$transcribedStatus'
+                ELSE '$savedStatus'
+            END""".stripIndent()
+
+        final querySnippet
+        if (query) {
+            querySnippet = """AND (
+p.name = :query
+OR t.id::VARCHAR = :query
+OR c.catalog_number @> ARRAY[ :query ]
+OR p.name = :query
+OR t.external_identifier = :query
+OR vu.display_name = :query
+OR ($statusSnippet) = :query
+)
+"""
+        } else {
+            querySnippet = ''
+        }
+
+        def withClause = "WITH \n${withClauses.join(',\n')}"
+        def selectClause = """
+SELECT
+t.*,
+    tu.display_name AS "transcriber_display_name",
+    vu.display_name AS "validator_display_name",
+    c.catalog_number[1] AS "catalog_number",
+    p.name AS "project_name",
+    $statusSnippet AS "status",
+    $dateTranscribed AS "date_transcribed"
+"""
+        def countClause = "SELECT count(t.id)"
+        def queryClause = """
+FROM task t
+    JOIN project p ON t.project_id = p.id
+    LEFT OUTER JOIN catalog_numbers c on c.task_id = t.id
+    LEFT OUTER JOIN vp_user tu ON t.fully_transcribed_by = tu.user_id
+    LEFT OUTER JOIN vp_user vu on t.fully_validated_by = vu.user_id
+    $additionalJoins
+WHERE
+$filter
+$querySnippet
+"""
+        def pagingClause = """
+ORDER BY $sortColumn $order;
+"""
+        def results = [:]
+
+        final params = [userId: user.userId, project: project?.id]
+        final countQuery = """
+$withClause
+$countClause
+$queryClause
+"""
+        log.info("Count query:\n$countQuery")
+
+        final rowsQuery = """
+$withClause
+$selectClause
+$queryClause
+$pagingClause
+"""
+        log.debug("View list query:\n$rowsQuery")
+        log.debug("Params: $params")
+        log.debug("Took ${sw.stop()} to generate queries")
+        sw.reset().start()
+
+        final sql = new Sql(dataSource)
+        sql.withTransaction { Connection connection ->
+            countQuery = countQuery.replaceAll(/\s+/, ' ')
+            log.debug("Minified count query: $countQuery")
+            results.totalMatchingTasks = sql.firstRow(params, countQuery).values()[0]
+            log.debug("Took ${sw.stop()} to generate total count")
+            sw.reset().start()
+            rowsQuery = rowsQuery.replaceAll(/\s+/, ' ')
+            log.debug("Minified view list query: $rowsQuery")
+            results.viewList = sql.rows(rowsQuery, params, offset, max).collect { row ->
+                [ id: row.id,
+                  externalIdentifier: row.external_identifier,
+                  fullyTranscribedBy: row.fully_transcribed_by,
+                  fullyValidatedBy: row.validator_display_name,
+                  projectId: row.project_id,
+                  projectName: row.project_name,
+                  dateTranscribed: row.date_transcribed,
+                  dateValidated: row.date_fully_validated,
+                  catalogNumber: row.catalog_number,
+                  status: row.status
+                ]
+            }
+            log.debug("Took ${sw.stop()} to generate view list")
+
+            // add additional info for notifications tab
+            if (selectedTab == 0 && results.viewList) {
+                def ids = results.viewList.collect { it.id }
+                def unreadIds = getLastViewedBeforeValidation(project, user.userId, ids)
+
+                results.viewList.each { it.unread = unreadIds.contains(it.id) }
+            }
+        }
         return results
     }
 

@@ -1,20 +1,29 @@
+def dev = grails.util.GrailsUtil.isDevelopmentEnv()
+
 modules = {
 
     'admin-stats' {
-        dependsOn 'angular, jquery, jquery-ui'
+        dependsOn 'digivol-module', 'jquery', 'jquery-ui'
         resource url: '/js/admin-stats.js'
     }
 
 
     'digivol' {
-        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications'
+        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications', 'digivol-module'
         resource url: '/css/main.css'
         resource url: '/css/digivol-custom.css'
-        resource url: '/js/digivol-unread.js'
+    }
+
+    'digivol-module' {
+        dependsOn 'angular'
+        resource url: '/js/digivol-module.js'
+        if (!dev) {
+            resource url: '/js/digivol-module-production.js'
+        }
     }
 
     'digivol-stats' {
-        dependsOn 'angular'
+        dependsOn 'digivol-module'
         resource url: '/js/digivol-stats.js'
         resource url: '/css/digivol-stats.css'
     }

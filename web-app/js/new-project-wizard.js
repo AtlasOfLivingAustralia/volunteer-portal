@@ -82,7 +82,7 @@ function createProjectModule(config) {
 
   var findConfigLabelWithId = _.partial(findLabelWithId, config.labels);
 
-  var wizard = angular.module('projectWizard', ['ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors']);
+  var wizard = angular.module('projectWizard', ['digivol', 'ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors']);
   wizard.constant('stagingId', config.stagingId);
 
   wizard.config([

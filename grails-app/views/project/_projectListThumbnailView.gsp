@@ -10,10 +10,10 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"><i class="icon-cog icon-white"></i>&nbsp;Expedition settings</a>
+                            <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"><i class="icon-cog icon-white"></i>&nbsp;<g:message code="expedition.settings.label" /></a>
                         </li>
                         <li>
-                            <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"><i class="icon-wrench icon-white"></i>&nbsp;Expedition administration</a>
+                            <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"><i class="icon-wrench icon-white"></i>&nbsp;<g:message code="expedition.administration.label" /></a>
                         </li>
                     </ul>
                 </div>

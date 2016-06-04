@@ -6,9 +6,13 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
+import javax.servlet.http.HttpServletResponse
+
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+
 class TaskController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST", viewTask: "POST"]
     public static final String PROJECT_LIST_STATE_SESSION_KEY = "project.admin.list.state"
     public static final String PROJECT_LIST_LAST_PROJECT_ID_KEY = "project.admin.list.lastProjectId"
 
@@ -20,6 +24,7 @@ class TaskController {
     def userService
     def grailsApplication
     def stagingService
+    def auditService
 
     def load() {
         [projectList: Project.list()]
@@ -872,6 +877,11 @@ class TaskController {
 
         taskService.resetValidationStatus(taskInstance)
         redirect(action:'showDetails', id: taskInstance.id)
+    }
+
+    def viewTask(Task task) {
+        auditService.auditTaskViewing(task, userService.currentUser.userId)
+        respond status: SC_NO_CONTENT
     }
 
 }

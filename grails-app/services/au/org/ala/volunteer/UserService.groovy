@@ -3,12 +3,15 @@ package au.org.ala.volunteer
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
+import grails.transaction.Transactional
+import groovy.sql.Sql
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
+import java.sql.Connection
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class UserService {

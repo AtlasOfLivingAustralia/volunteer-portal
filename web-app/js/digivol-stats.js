@@ -1,5 +1,5 @@
 function digivolStats(config) {
-  var stats = angular.module('stats',[]);
+  var stats = angular.module('digivol');
 
   stats.controller('StatsCtrl', [
     '$scope', '$http', '$log',

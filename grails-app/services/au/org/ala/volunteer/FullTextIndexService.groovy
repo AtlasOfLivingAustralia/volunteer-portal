@@ -95,6 +95,8 @@ class FullTextIndexService {
     }
 
     private LinkedHashMap<String, Serializable> esObjectFromTask(Task task) {
+//        User validator = task.fullyValidatedBy ? User.findByUserId(task.fullyValidatedBy) : null
+//        User transcriber = task.fullyTranscribedBy ? User.findByUserId(task.fullyTranscribedBy) : null
         def data = [
                 id                  : task.id,
                 projectid           : task.project.id,

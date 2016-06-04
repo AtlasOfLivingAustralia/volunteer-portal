@@ -5,14 +5,14 @@
 <div class="tab-pane-header">
     <div class="row">
         <div class="col-sm-8 search-results-count">
-            <g:if test="${selectedTab > 0}">
-                <p><strong>${totalMatchingTasks} Tasks Found</strong></p>
-                 <g:if test="${projectInstance}">
-                     for ${projectInstance.featuredLabel}
+            <g:if test="${taskListResultInstance.selectedTab > 0}">
+                <p><strong>${taskListResultInstance.totalMatchingTasks} Tasks Found</strong></p>
+                 <g:if test="${taskListResultInstance.projectInstance}">
+                     for ${taskListResultInstance.projectInstance.featuredLabel}
                  </g:if>
             </g:if>
             <g:else>
-                <g:if test="${recentValidatedTaskCount > 0}">
+                <g:if test="${taskListResultInstance.recentValidatedTaskCount > 0}">
                     <p><strong>You have tasks that have been recently reviewed.</strong></p>
                     Click on View button for the task to see the recent changes or validator's comment
                 </g:if>
@@ -49,7 +49,7 @@
 
         <g:set var="pageParams" value="${params}"/>
 
-        <g:if test="${(selectedTab == 0)}">
+        <g:if test="${(taskListResultInstance.selectedTab == 0)}">
           <td></td>
         </g:if>
 
@@ -77,7 +77,7 @@
                           title="${message(code: 'task.validated.label', default: 'Validated')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
 
-        <g:if test="${selectedTab == 0}">
+        <g:if test="${taskListResultInstance.selectedTab == 0}">
             <g:sortableColumn property="validator"
                               title="${message(code: 'task.validator.label', default: 'Validator')}"
                               params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
@@ -92,10 +92,10 @@
     </tr>
     </thead>
     <tbody>
-    <g:each in="${viewList}" status="i" var="taskInstance">
+    <g:each in="${taskListResultInstance.viewList}" status="i" var="taskInstance">
         <tr>
 
-            <g:if test="${(selectedTab == 0)}">
+            <g:if test="${(taskListResultInstance.selectedTab == 0)}">
                 <td>
                     <cl:readStatusIcon taskId="${taskInstance.id}"></cl:readStatusIcon>
                 </td>
@@ -133,7 +133,7 @@
 
             <td style="text-align: center; width: 120px;">
                 <span>
-                    <g:if test="${(selectedTab > 0)}">
+                    <g:if test="${(taskListResultInstance.selectedTab > 0)}">
                         <g:if test="${taskInstance.fullyTranscribedBy}">
                             <button class="btn btn-default btn-xs"
                                     onclick="location.href = '${createLink(controller:'task', action:'show', id:taskInstance.id)}'">View</button>
@@ -165,8 +165,8 @@
 </table>
 </div>
 <div class="pagination">
-    <g:paginate total="${totalMatchingTasks}" id="${userInstance?.id}"
-                params="${params + [selectedTab: selectedTab]}" action="show" controller="user" fragment="profileTabs"/>
+    <g:paginate total="${taskListResultInstance.totalMatchingTasks}" id="${taskListResultInstance.userInstance?.id}"
+                params="${params + [selectedTab: taskListResultInstance.selectedTab]}" action="show" controller="user" fragment="profileTabs"/>
 </div>
 
 <script>
@@ -176,7 +176,7 @@
 
     doSearch = function () {
         var searchTerm = $('#searchbox').val()
-        var link = "${createLink(controller: 'user', action: 'show', id: userInstance?.id)}?q=" + searchTerm + "&selectedTab=${selectedTab ?: 0}&projectId=${projectInstance?.id ?: ''}"
+        var link = "${createLink(controller: 'user', action: 'show', id: taskListResultInstance.userInstance?.id)}?q=" + searchTerm + "&selectedTab=${taskListResultInstance.selectedTab ?: 0}&projectId=${taskListResultInstance.projectInstance?.id ?: ''}"
         window.location.href = link;
     };
 
@@ -231,7 +231,7 @@
         $(this).attr('href', $(this).attr('href') + '#profileTabs');
     });
 
-    if (${recentValidatedTaskCount > 0}) {
+    if (${taskListResultInstance.recentValidatedTaskCount > 0}) {
         $('#notificationsTab').html('Notifications <span class="glyphicon glyphicon-bell" style="color:red"></span>');
     } else {
         $('#notificationsTab').html('Notifications');

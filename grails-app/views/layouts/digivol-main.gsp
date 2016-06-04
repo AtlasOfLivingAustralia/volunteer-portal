@@ -25,7 +25,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app')}">
+<body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app', default: 'digivol')}">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -79,7 +79,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <span class="glyphicon glyphicon-user"></span>
                            <!-- My Profile -->
-                            My Profile <span class="validatedCount"></span>
+                            <g:message code="action.myProfile" /> <span ng-show="unreadCount > 0" class="label label-danger label-as-badge">{{ unreadCount > 50 ? '50+' : unreadCount }}</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
 
