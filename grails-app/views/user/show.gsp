@@ -213,20 +213,24 @@
 </script>
 
 <script type="text/ng-template" id="taskList.html">
-<div class="tab-pane-header" ng-show="$ctrl.cancelPromise != null" >
+<a id="tasklist-top-{{ $ctrl.tabIndex }}"></a>
+<div class="tab-pane-header" ng-show="$ctrl.firstLoad" >
     <div class="row">
         <div class="col-sm-8 search-results-count">
             <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
         </div>
     </div>
 </div>
-<div ng-show="$ctrl.cancelPromise == null">
+<div ng-show="!$ctrl.firstLoad" ng-class="{ 'tab-content-loading': $ctrl.cancelPromise }">
 <div class="tab-pane-header">
     <div class="row">
         <div class="col-sm-8 search-results-count">
-            <p ng-show="$ctrl.selectedTab > 0"><strong>{{$ctrl.data.totalMatchingTasks }} <g:message code="notebook.taskList.heading" /></strong> <span ng-show="$ctrl.project"><g:message code="notebook.tasklist.heading.projectSuffix" /></span></p>
-            <p ng-show="$ctrl.selectedTab == 0 && $ctrl.data.recentValidatedCount > 0"><strong><g:message code="notebook.taskList.reviewedHeading" /></strong> <g:message code="notebook.taskList.reviewHeading.suffix" /></p>
-            <p ng-show="$ctrl.selectedTab == 0 && $ctrl.data.recentValidatedCount == 0"><strong><g:message code="notebook.taskList.emptyReviewedHeading" /></strong></p>
+            <p>
+                <span ng-show="$ctrl.tabIndex > 0"><strong>{{$ctrl.data.totalMatchingTasks }} <g:message code="notebook.taskList.heading" /></strong> <span ng-show="$ctrl.project"><g:message code="notebook.tasklist.heading.projectSuffix" /></span></span>
+                <span ng-show="$ctrl.tabIndex == 0 && $ctrl.data.recentValidatedCount > 0"><strong><g:message code="notebook.taskList.reviewedHeading" /></strong> <g:message code="notebook.taskList.reviewHeading.suffix" /></span>
+                <span ng-show="$ctrl.tabIndex == 0 && $ctrl.data.recentValidatedCount == 0"><strong><g:message code="notebook.taskList.emptyReviewedHeading" /></strong></span>
+                <span ng-show="$ctrl.cancelPromise"><i class="fa fa-cog fa-spin fa-2x"></i></span>
+            </p>
         </div>
         <div class="col-sm-4 text-right">
             <div class="custom-search-input body">
@@ -253,7 +257,7 @@
         <thead>
             <tr class="sorting-header">
 
-                <td ng-show="$ctrl.selectedTab == 0"></td>
+                <td ng-show="$ctrl.tabIndex == 0"></td>
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('id')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'id', sorting: true})" class="btn"><g:message code="task.id.label" /></a>
@@ -296,8 +300,6 @@
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
                 <td ng-show="$ctrl.tabIndex == 0">
-                    %{--<span class="glyphicon glyphicon-envelope"  style="color:#000192"></span>--}%
-                    %{--<cl:readStatusIcon taskId="${taskInstance.id}"></cl:readStatusIcon>--}%
                     <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>
                     <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>
                 </td>
@@ -369,6 +371,7 @@
 </script>
 
 <script id="forumPosts.html" type="text/ng-template">
+    <a id="forumlist-top"></a>
     <div>
         <div ng-show="$ctrl.cancelPromise != null">
             <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>

@@ -128,7 +128,7 @@ function digivolNotebooksTabs(config) {
         }
     }
 
-    function TaskListController($http, $log, $q, $scope, $uibModal, taskListUrl) {
+    function TaskListController($anchorScroll, $http, $log, $q, $scope, $uibModal, taskListUrl) {
         var $ctrl = this;
 
         $ctrl.data = null;
@@ -136,6 +136,11 @@ function digivolNotebooksTabs(config) {
         $ctrl.page = $ctrl.offset / $ctrl.max;
         $ctrl.cancelPromise = null;
         $ctrl.maxSize = 5;
+
+        $ctrl.sort = $ctrl.sort || 'dateTranscribed';
+        $ctrl.order = $ctrl.order || 'desc';
+
+        $ctrl.firstLoad = true;
         
         $ctrl.load = function(args) {
             if (args) {
@@ -167,8 +172,9 @@ function digivolNotebooksTabs(config) {
                 timeout: $ctrl.cancelPromise.promise
             }).then(function(response) {
                 $ctrl.cancelPromise = null;
-                console.debug(response);
+                //$log.debug(response);
                 $ctrl.data = response.data;
+                $ctrl.firstLoad = false;
             });
         };
 
@@ -197,7 +203,9 @@ function digivolNotebooksTabs(config) {
         
         $ctrl.pageChanged = function() {
             $ctrl.offset = ($ctrl.page - 1) * $ctrl.max;
-            $ctrl.load();
+            $ctrl.load().then(function() {
+                $anchorScroll('tasklist-top-' + $ctrl.tabIndex);
+            });
         };
 
         $ctrl.sortedClasses = function(column) {
@@ -215,7 +223,7 @@ function digivolNotebooksTabs(config) {
         );
     }
 
-    function ForumPostsController($http, $q, $scope, forumCommentsUrl) {
+    function ForumPostsController($anchorScroll, $http, $q, $scope, forumCommentsUrl) {
         var $ctrl = this;
 
         $ctrl.data = null;
@@ -251,7 +259,9 @@ function digivolNotebooksTabs(config) {
 
         $ctrl.pageChanged = function() {
             $ctrl.offset = ($ctrl.page - 1) * $ctrl.max;
-            $ctrl.load();
+            $ctrl.load().then(function() {
+                $anchorScroll('forumlist-top');
+            });
         };
 
         $scope.$watch(
@@ -281,7 +291,7 @@ function digivolNotebooksTabs(config) {
       .controller('viewNotificationsModalCtrl', ['$uibModalInstance', 'taskInstance', ViewNotificationsModalCtrl])
       .component('taskList', {
         templateUrl: 'taskList.html',
-        controller: ['$http', '$log', '$q', '$scope', '$uibModal', 'taskListUrl', TaskListController],
+        controller: ['$anchorScroll', '$http', '$log', '$q', '$scope', '$uibModal', 'taskListUrl', TaskListController],
         bindings: {
             //'viewList': '<',
             //'recentValidatedTaskCount': '<',
@@ -299,7 +309,7 @@ function digivolNotebooksTabs(config) {
       })
       .component('forumPosts', {
         templateUrl: 'forumPosts.html',
-        controller: ['$http', '$q', '$scope', 'forumPostsUrl', ForumPostsController],
+        controller: ['$anchorScroll', '$http', '$q', '$scope', 'forumPostsUrl', ForumPostsController],
         bindings: {
             'tabIndex': '<',
             'selectedTab': '<',

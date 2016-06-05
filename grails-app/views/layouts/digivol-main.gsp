@@ -25,7 +25,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app', default: 'digivol')}">
+<body class="${pageProperty(name: 'body.class')} ng-cloak" data-ng-app="${pageProperty(name: 'body.data-ng-app', default: 'digivol')}">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -240,14 +240,7 @@
 <g:render template="/layouts/ga" />
 
 %{--<asset:javascript src="application.js" />--}%
-<r:script>
-    var BVP_JS_URLS = {
-                selectProjectFragment: "${createLink(controller: 'project', action: 'findProjectFragment')}",
-                webappRoot: "${resource(dir: '/')}",
-                picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}",
-                unreadValidatedCount: "${createLink(controller:'user', action: 'unreadValidatedTasks')}"
-            };
-</r:script>
+<g:render template="/layouts/jsUrls" />
 %{--<asset:deferredScripts/>--}%
 <!-- JS resources-->
 <r:layoutResources/>

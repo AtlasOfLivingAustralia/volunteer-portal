@@ -448,3 +448,8 @@ a.fieldHelp {
 .label-as-badge {
     border-radius: 1em;
 }
+
+.tab-content-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}

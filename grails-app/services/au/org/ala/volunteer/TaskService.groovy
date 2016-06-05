@@ -1347,7 +1347,9 @@ $pagingClause
             sw.reset().start()
             rowsQuery = rowsQuery.replaceAll(/\s+/, ' ')
             log.debug("Minified view list query: $rowsQuery")
-            results.viewList = sql.rows(rowsQuery, params, offset, max).collect { row ->
+            log.debug("Max: $max, offset: $offset")
+            // groovy sql requires offset to be different to SQL offset.
+            results.viewList = sql.rows(rowsQuery, params, (offset ?: 0) + 1, max).collect { row ->
                 [ id: row.id,
                   externalIdentifier: row.external_identifier,
                   fullyTranscribedBy: row.fully_transcribed_by,
