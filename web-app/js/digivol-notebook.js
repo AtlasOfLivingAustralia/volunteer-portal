@@ -128,7 +128,7 @@ function digivolNotebooksTabs(config) {
         }
     }
 
-    function TaskListController($anchorScroll, $http, $log, $q, $scope, $uibModal, taskListUrl) {
+    function TaskListController($anchorScroll, $http, $log, $q, $scope, $uibModal, $window, taskListUrl) {
         var $ctrl = this;
 
         $ctrl.data = null;
@@ -175,6 +175,9 @@ function digivolNotebooksTabs(config) {
                 //$log.debug(response);
                 $ctrl.data = response.data;
                 $ctrl.firstLoad = false;
+            }, function(error) {
+                $log.error("couldn't load data for tab", error);
+                $window.alert("An error occured, please refresh the page and try again.");
             });
         };
 
@@ -182,7 +185,7 @@ function digivolNotebooksTabs(config) {
             var modalInstance = $uibModal.open({
                 // animation: $scope.animationsEnabled,
                 templateUrl: 'viewNotifications.html',
-                controller: 'ViewNotificationsModalCtrl',
+                controller: 'viewNotificationsModalCtrl',
                 controllerAs: '$ctrl',
                 bindToController: true,
                 //size: size,
@@ -223,7 +226,7 @@ function digivolNotebooksTabs(config) {
         );
     }
 
-    function ForumPostsController($anchorScroll, $http, $q, $scope, forumCommentsUrl) {
+    function ForumPostsController($anchorScroll, $http, $log, $q, $scope, $window, forumCommentsUrl) {
         var $ctrl = this;
 
         $ctrl.data = null;
@@ -252,8 +255,11 @@ function digivolNotebooksTabs(config) {
                 timeout: $ctrl.cancelPromise.promise
             }).then(function(response) {
                 $ctrl.cancelPromise = null;
-                console.debug(response);
+                $log.debug(response);
                 $ctrl.data = response.data;
+            }, function(error) {
+                $log.error("couldn't load data for forum tab", error);
+                $window.alert("An error occured, please refresh the page and try again.");
             });
         };
 
@@ -291,7 +297,7 @@ function digivolNotebooksTabs(config) {
       .controller('viewNotificationsModalCtrl', ['$uibModalInstance', 'taskInstance', ViewNotificationsModalCtrl])
       .component('taskList', {
         templateUrl: 'taskList.html',
-        controller: ['$anchorScroll', '$http', '$log', '$q', '$scope', '$uibModal', 'taskListUrl', TaskListController],
+        controller: ['$anchorScroll', '$http', '$log', '$q', '$scope', '$uibModal', '$window', 'taskListUrl', TaskListController],
         bindings: {
             //'viewList': '<',
             //'recentValidatedTaskCount': '<',
@@ -309,7 +315,7 @@ function digivolNotebooksTabs(config) {
       })
       .component('forumPosts', {
         templateUrl: 'forumPosts.html',
-        controller: ['$anchorScroll', '$http', '$q', '$scope', 'forumPostsUrl', ForumPostsController],
+        controller: ['$anchorScroll', '$http', '$log', '$q', '$scope', '$window', 'forumPostsUrl', ForumPostsController],
         bindings: {
             'tabIndex': '<',
             'selectedTab': '<',

@@ -19,4 +19,8 @@ digivolModule.run(['$http', '$log', '$rootScope', function($http, $log, $rootSco
   } else {
     $log.warn("Unread validated count URL is not defined!")
   }
+}]).run(['$anchorScroll', function($anchorScroll) {
+  $anchorScroll.yOffset = function() {
+    return angular.element('.navbar.navbar-fixed-top') || 0;
+  }
 }]);
