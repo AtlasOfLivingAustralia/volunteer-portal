@@ -29,7 +29,7 @@ modules = {
     }
 
     'digivol-notebook' {
-        dependsOn 'digivol', 'marker-clusterer', 'angular-ui-bootstrap', 'angular-marked', 'angular-sanitize'
+        dependsOn 'digivol', 'marker-clusterer', 'angular-ui-bootstrap', 'angular-marked', 'angular-sanitize', 'underscore'
         resource url: 'js/digivol-notebook.js'
     }
 

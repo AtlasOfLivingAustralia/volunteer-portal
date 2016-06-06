@@ -191,7 +191,7 @@
     </div>
 </section>
 
-<script type="text/ng-template" id="notebookTabSet.html">
+<script id="notebookTabSet.html" type="text/ng-template">
 <div>
     <div class="container">
         <ul class="nav nav-{{tabset.type || 'tabs'}}" ng-class="{'nav-stacked': vertical, 'nav-justified': justified}"
@@ -212,16 +212,16 @@
 </div>
 </script>
 
-<script type="text/ng-template" id="taskList.html">
+<script id="taskList.html" type="text/ng-template">
 <a id="tasklist-top-{{ $ctrl.tabIndex }}"></a>
 <div class="tab-pane-header" ng-show="$ctrl.firstLoad" >
     <div class="row">
         <div class="col-sm-8 search-results-count">
-            <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
+            <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> <g:message code="loading.label" /></strong></p>
         </div>
     </div>
 </div>
-<div ng-show="!$ctrl.firstLoad" ng-class="{ 'tab-content-loading': $ctrl.cancelPromise }">
+<div class="ng-cloak" ng-show="!$ctrl.firstLoad" ng-class="{ 'tab-content-loading': $ctrl.cancelPromise }">
 <div class="tab-pane-header">
     <div class="row">
         <div class="col-sm-8 search-results-count">
@@ -374,7 +374,7 @@
     <a id="forumlist-top"></a>
     <div>
         <div ng-show="$ctrl.cancelPromise != null">
-            <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> Loading ...</strong></p>
+            <p><strong><i class="fa fa-cog fa-spin fa-2x"></i> <g:message code="loading.label" /></strong></p>
         </div>
         <table ng-show="$ctrl.data.messages" class="forum-table table table-striped table-condensed table-bordered" style="width:100%">
             <tbody>
@@ -408,38 +408,59 @@
 </script>
 
 <script id="viewNotifications.html" type="text/ng-template">
-<p><i>Last Modified By: {{ $ctrl.recordValues[0].lastModifiedBy }}</i> </p>
-
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead>
-        <tr>
-            <td style="color:#307991"><g:message code="modal.notifications.changed" default="What changed?"/></td>
-            <td style="color:#307991"><g:message code="modal.notifications.previous" default="Previous Values"/></td>
-            <td style="color:#307991"><g:message code="modal.notifications.changes" default="Recent changes"/></td>
-        </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="recordValue in $ctrl.recordValues">
-                <td>
-                    %{--${TemplateField.findAllByTemplateAndFieldType(Project.findAllById(task.projectId).template, recordValue.getKey())?.uiLabel?.toString().replace('[','').replace(']', '')?:(DarwinCoreField.(recordValue.getKey())).label}--}%
-                    {{ recordValue.label }}
-                </td>
-
-                <td>
-                    %{--<g:message code="${recordValue.getValue()?.oldValue.toString().replaceAll('\n','<br/>\n')}" encodeAs="raw"></g:message>--}%
-                    {{ recordValue.oldValue | marked }}
-                </td>
-
-                <td>
-                    %{--<g:message code="${recordValue.getValue()?.newValue.toString().replaceAll('\n','<br/>\n')}" encodeAs="raw"></g:message>--}%
-                    {{ recordValue.newValue | marked }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<div class="modal-header">
+    <button type="button" class="close" aria-label="Close" ng-click="$ctrl.close()"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title">Changes for {{ $ctrl.taskInstance.externalIdentifier }}</h3>
 </div>
+<div ng-show="$ctrl.loading" class="modal-body">
+    <p>
+        <g:message code="loading.label" /> <i class="fa fa-2x fa-cog fa-spin"></i>
+    </p>
+</div>
+<div ng-show="$ctrl.error" class="modal-body">
+    <p>
+        <g:message code="error.generic.label" /> <i class="fa fa-2x fa-frown-o"></i>
+    </p>
+</div>
+<div ng-hide="$ctrl.loading || $ctrl.error" class="modal-body">
+    <div class="row" >
+        <div class="col-sm-12">
+            <p><i><g:message code="task.validatedBy.label" />: {{ $ctrl.validatorDisplayName }}</i> </p>
+        </div>
+    </div>
 
+    <div class="row" ng-show="$ctrl.validatorNotes">
+        <div class="col-sm-3">
+            <strong><g:message code="field.validatorNotes.label" /></strong>
+        </div>
+        <div class="col-sm-9" marked="$ctrl.validatorNotes">
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <td style="color:#307991"><g:message code="modal.notifications.changed" /></td>
+                <td style="color:#307991"><g:message code="modal.notifications.previous" /></td>
+                <td style="color:#307991"><g:message code="modal.notifications.changes" /></td>
+            </tr>
+            </thead>
+            <tbody ng-repeat="(recordIdx, recordValues) in $ctrl.recordValues">
+                <tr ng-repeat="recordValue in recordValues">
+                    <td>
+                        {{ recordValue.label }}
+                    </td>
+                    <td marked="recordValue.oldValue"></td>
+                    <td marked="recordValue.newValue"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.close()">OK</button>
+</div>
 </script>
 
 <r:script>
@@ -456,7 +477,9 @@
         order: params.order,
         query: params.q,
         taskListUrl: createLink(controller: 'user', action: 'taskListFragment', id: userInstance.id),
-        forumPostsUrl: createLink(controller: 'forum', action: 'userComments', id: userInstance.id)
+        forumPostsUrl: createLink(controller: 'forum', action: 'userComments', id: userInstance.id),
+        changedFieldsUrl: createLink(controller: 'task', action: 'showChangedFields'),
+        auditViewUrl: createLink(controller: 'task', action: 'viewTask')
 ]}" />
     digivolNotebooksTabs(json);
 </r:script>

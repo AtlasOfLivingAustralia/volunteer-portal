@@ -79,7 +79,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <span class="glyphicon glyphicon-user"></span>
                            <!-- My Profile -->
-                            <g:message code="action.myProfile" /> <span ng-show="unreadCount > 0" class="label label-danger label-as-badge">{{ unreadCount > 50 ? '50+' : unreadCount }}</span>
+                            <g:message code="action.myProfile" /> <span ng-show="unreadCount > 0" class="ng-cloak label label-danger label-as-badge" ng-bind="unreadCount > 50 ? '50+' : unreadCount"></span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
 

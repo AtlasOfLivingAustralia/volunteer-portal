@@ -25,7 +25,7 @@
                 <div class="col-lg-12">
                     <ul class="profile-links">
                         <li><a href="http://www.ala.org.au/my-profile" class="" target="_blank"><g:message code="action.viewProfile" /></a></li>
-                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span ng-show="unreadCount > 0" class="label label-danger label-as-badge">{{ unreadCount > 50 ? '50+' : unreadCount }}</span></a></li>
+                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span ng-show="unreadCount > 0" class="label label-danger label-as-badge" ng-bind="unreadCount > 50 ? '50+' : unreadCount"></span></a></li>
                         <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.casServerName}/cas/logout", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class="">Logout</a></li>
                     </ul>
                 </div>

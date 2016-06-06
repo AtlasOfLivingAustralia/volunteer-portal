@@ -23,6 +23,7 @@ class TaskService {
     def grailsLinkGenerator
     def fieldService
     def i18nService
+    def userService
 
     private static final int NUMBER_OF_RECENT_DAYS = 90;
 
@@ -758,47 +759,71 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
     def getChangedFields (Task task) {
 
         def sw = Stopwatch.createStarted()
-        sw.start()
-        log.info("Getting recently validated task field.")
+        log.debug("Getting recently validated task field.")
 
-        //String transcribedByUserId = task.fullyTranscribedBy
+        String transcribedByUserId = task.fullyTranscribedBy
         String validatedByUserId = task.fullyValidatedBy
-        String taskId = task.id.toString()
+        String validatorDisplayName = userService.detailsForUserId(validatedByUserId)?.displayName
+        Template template = task.project.template
 
         String select = """
-            SELECT * FROM Field
-            WHERE task_id = $taskId
-            AND record_idx = 0
-            AND name IN (
-                SELECT name from Field
-                WHERE task_id = $taskId
-                AND transcribed_by_user_id = '$validatedByUserId'
-                AND name != 'recordedByID')
-           AND transcribed_by_user_id != 'system'
+WITH superceded_fields AS (
+  SELECT "name", record_idx, "value" AS transcriber_value, updated AS transcriber_updated
+  FROM field
+  WHERE
+    task_id = :taskId
+    AND superceded = true
+    AND transcribed_by_user_id <> 'system'
+    --AND transcribed_by_user_id = :userId
+    AND ("name", "record_idx", "updated") IN (
+      SELECT "name", "record_idx", max(updated)
+      FROM field
+      WHERE
+        task_id = :taskId
+        AND superceded = true
+        AND transcribed_by_user_id <> 'system'
+        --AND transcribed_by_user_id = :userId
+      GROUP BY "name", record_idx
+    )
+),
+validated_fields AS (
+    SELECT "name", record_idx, "value" as validator_value, updated AS validator_updated
+    FROM field
+    WHERE
+      task_id = :taskId
+      AND superceded = false
+      AND field.transcribed_by_user_id = :validatorId
+      AND ("name", "record_idx", "updated") IN (
+        SELECT "name", "record_idx", max(updated)
+        FROM field
+        WHERE
+          task_id = :taskId
+          AND superceded = false
+          AND transcribed_by_user_id = :validatorId
+        GROUP BY "name", record_idx
+      )
+)
+SELECT *
+FROM superceded_fields o NATURAL JOIN validated_fields
+ORDER BY record_idx, name;
           """
 
         def sql = new Sql(dataSource)
 
-        Map recordValues = new LinkedHashMap()
-        sql.eachRow(select) {row ->
+        log.debug("Running SQL to find differences: $select")
+        final recordValues = sql.rows(select, [taskId: task.id, userId: transcribedByUserId, validatorId: validatedByUserId]).collect { row ->
+            final String fieldName = row["name"]
+            final dwcField
+            try { dwcField = fieldName as DarwinCoreField } catch (e) { dwcField = null }
+            final label = TemplateField.findByTemplateAndFieldType(template, dwcField)?.uiLabel ?: dwcField?.label ?: fieldName
+            [name: row["name"], label: label, recordIdx: row['record_idx'], oldValue: row['transcriber_value'] ?: '', newValue: row['validator_value'] ?: '', lastModified: row["validator_updated"]]
+        }.groupBy { it.recordIdx }
 
-            Map merged
-            Map values = [:];
-            if (recordValues.get(row.name) != null) {
-                values = recordValues.get(row.name)
-            }
-            if (row.superceded) {
-                merged = [oldValue: row.value?:'', newValue: values?.newValue?: '', lastModifiedBy: User.findAllByUserId (row.transcribed_by_user_id).displayName.toString().replace('[', '').replace(']', '')]
+        def validatorNotes = Field.findByTaskAndNameAndSuperceded(task, 'validatorNotes', false)?.value
 
-            } else {
-                merged = [oldValue: values?.oldValue?: '', newValue: row.value?:'', lastModifiedBy: User.findAllByUserId (row.transcribed_by_user_id).displayName.toString().replace('[', '').replace(']', '')]
-            }
-            recordValues.put(row.name, merged)
-        }
+        log.debug("Returning validated task fields: ${sw.stop()}")
 
-        log.info("Returning validated task fields: ${sw.stop()}")
-
-        return [recordValues: recordValues]
+        return [recordValues: recordValues, validatorDisplayName: validatorDisplayName, validatorNotes: validatorNotes]
     }
 
 

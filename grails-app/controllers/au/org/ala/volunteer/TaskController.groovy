@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST
 
 class TaskController {
 
@@ -879,7 +880,22 @@ class TaskController {
         redirect(action:'showDetails', id: taskInstance.id)
     }
 
+    def showChangedFields(Task task) {
+        if (!task || !task.id) {
+            response.sendError(SC_BAD_REQUEST, "must provide a task id")
+            return
+        }
+        def fields = taskService.getChangedFields(task)
+        respond(fields)
+    }
+
     def viewTask(Task task) {
+        if (!task || !task.id) {
+            response.sendError(SC_BAD_REQUEST, "must provide a task id")
+            return
+        }
+        def userId = userService.currentUser?.userId
+        log.debug("Adding task view for $userId with task $task")
         auditService.auditTaskViewing(task, userService.currentUser.userId)
         respond status: SC_NO_CONTENT
     }

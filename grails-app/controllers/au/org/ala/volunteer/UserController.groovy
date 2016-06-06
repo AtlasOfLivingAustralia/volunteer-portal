@@ -319,7 +319,6 @@ class UserController {
 
         def isValidator = userService.isValidator(projectInstance)
 
-        log.info(results)
         def result = new TaskListResult(
                 viewList                : results.viewList,
 //                recentValidatedTaskCount: recentValidatedTaskCount,
@@ -330,6 +329,7 @@ class UserController {
                 isValidator             : isValidator
         )
 
+        log.debug(result)
         respond(result)
     }
 
@@ -611,16 +611,6 @@ class UserController {
         log.debug("ajaxGetPoints| generateResults: ${sw.toString()}")
 
         render(data as JSON)
-    }
-
-    def showChangedFields () {
-        def task =  Task.get(params.id)
-
-        def fields = taskService.getChangedFields(task)
-
-        auditService.auditTaskViewing(task, userService.currentUser.userId)
-
-        [task: task, recordValues: fields.recordValues]
     }
 
     def notebookMainFragment() {
