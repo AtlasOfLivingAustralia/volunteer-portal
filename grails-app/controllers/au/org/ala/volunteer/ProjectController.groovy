@@ -991,7 +991,7 @@ class ProjectController {
         }
 
         if (!params.sort) {
-            params.sort = 'created'
+            params.sort = 'id'
             params.order = 'asc'
         }
         if (!params.max) {
@@ -1018,7 +1018,8 @@ class ProjectController {
             }
             new ArchiveProject(project: it, size: sizes[it.id].size, percentTranscribed: transcribed, percentValidated: validated)
         }
-        respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total])
+
+        respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total, 'imageStoreStats': projectService.imageStoreStats()])
     }
 
     def archive(Project project) {

@@ -15,8 +15,25 @@
         ]
 
     %>
+
 </cl:headerContent>
 <div class="container" role="main">
+    <div class="panel panel-default">
+        <table class="table table-condensed">
+            <tr>
+                <th><g:message code="system.space.usable" default="Usable space"/></th>
+                <th><g:message code="system.space.free" default="Free space"/></th>
+                <th><g:message code="system.space.total" default="Total space"/></th>
+                <th><g:message code="system.space.percentFull" default="Percent full"/></th>
+            </tr>
+            <tr>
+                <td><cl:formatFileSize size="${imageStoreStats.usable}"/></td>
+                <td><cl:formatFileSize size="${imageStoreStats.free}"/></td>
+                <td><cl:formatFileSize size="${imageStoreStats.total}"/></td>
+                <td>${((imageStoreStats.total - imageStoreStats.free) / imageStoreStats.total) * 100.0}%</td>
+            </tr>
+        </table>
+    </div>
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
@@ -24,20 +41,22 @@
                     <table class="table table-striped table-hover">
                         <thead>
                         <tr>
+                            <g:sortableColumn property="id"
+                                              title="${message(code: 'project.id.label', default: 'Id')}"/>
+
                             <g:sortableColumn property="name"
                                               title="${message(code: 'project.name.label')}"/>
 
-                            <g:sortableColumn property="percentTranscribed"
-                                              title="${message(code: 'project.archive.percentTranscribed.label', default: 'Transcribed %')}"/>
+                            <th><span><g:message code="project.archive.percentTranscribed.label" default="Transcribed %" /></span></th>
 
-                            <g:sortableColumn property="percentValidated"
-                                              title="${message(code: 'project.archive.percentValidated.label', default: 'Validated %')}"/>
+
+                            <th><span><g:message code="project.archive.percentValidated.label" default="Validated %" /></span></th>
 
                             <g:sortableColumn property="created"
                                               title="${message(code: 'project.dateCreated.label', default: 'Date Created')}"/>
 
-                            <g:sortableColumn property="size"
-                                              title="${message(code: 'project.archive.size.label', default: 'Size')}"/>
+
+                            <th><span><g:message code="project.archive.size.label" default="Size" /></span></th>
 
                             <th></th>
 
@@ -46,6 +65,9 @@
                         <tbody>
                         <g:each in="${archiveProjectInstanceList}" status="i" var="projectInstance">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                                <td style="vertical-align: middle;">
+                                    ${projectInstance.project.id}
+                                </td>
                                 <td style="vertical-align: middle;">
                                     <g:link action="edit" id="${projectInstance.project.id}">${fieldValue(bean: projectInstance.project, field: "name")}</g:link>
                                 </td>

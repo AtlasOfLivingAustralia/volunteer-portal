@@ -9,6 +9,8 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.plugins.metrics.groovy.Timed
 
 import javax.imageio.ImageIO
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -400,6 +402,11 @@ class ProjectService {
                 [(it.id) : [error: e, size: -1]]
             }
         }
+    }
+
+    def imageStoreStats() {
+        final f = new File(grailsApplication.config.images.home)
+        [total: f.totalSpace, free: f.freeSpace, usable: f.usableSpace]
     }
 
     def calculateCompletion(List<Project> projects) {
