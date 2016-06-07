@@ -50,6 +50,7 @@
                         <a href="${createLink(action: 'migrateProjectsToInstitutions')}"
                            class="btn btn-default">Expedition-Institution migration tool</a>
                         <a href="${createLink(action: 'stagingTasks')}" class="btn btn-default">Manage staging queue</a>
+                        <g:link controller="project" action="archiveList" class="btn btn danger">Archive Expeditions</g:link>
                     </div>
                 </div>
             </div>

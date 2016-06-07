@@ -7,6 +7,7 @@ import grails.util.Metadata
 import groovy.time.TimeCategory
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
+import org.apache.commons.io.FileUtils
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -25,7 +26,7 @@ class VolunteerTagLib {
     def achievementService
     def taskService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize']
 
     /**
      * @attr title The page title
@@ -899,5 +900,10 @@ class VolunteerTagLib {
                 trackers = ((String)trackers).split(',')*.trim()
         }
         out << gson.toJson(trackers)
+    }
+
+    Closure formatFileSize = { attrs, body ->
+        def size = attrs.remove('size')
+        return FileUtils.byteCountToDisplaySize(size)
     }
 }

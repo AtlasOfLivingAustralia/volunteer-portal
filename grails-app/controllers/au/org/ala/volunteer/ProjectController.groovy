@@ -6,9 +6,15 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
+
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+
 class ProjectController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST",
+                             archive: "POST",
                              wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
     static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
@@ -956,6 +962,9 @@ class ProjectController {
     }
 
     def wizardCreate(String id) {
+        if (!userService.isAdmin()) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+        }
         try {
             def body = request.getJSON()
             def descriptor = NewProjectDescriptor.fromJson(id, body)
@@ -974,4 +983,75 @@ class ProjectController {
             projectStagingService.purgeProject(new NewProjectDescriptor(stagingId: id))
         }
     }
+
+    def archiveList() {
+        if (!userService.isAdmin()) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            return
+        }
+
+        if (!params.sort) {
+            params.sort = 'created'
+            params.order = 'asc'
+        }
+        if (!params.max) {
+            params.max = 10
+        }
+
+        def projects = Project.findAllByArchived(false, params)
+        def total = Project.countByArchived(false)
+        def sizes = projectService.projectSize(projects)
+        def completions = projectService.calculateCompletion(projects)
+
+        log.info("Completions: $completions")
+
+        List<ArchiveProject> projectsWithSize = projects.collect {
+            final counts = completions[it.id]
+            final transcribed
+            final validated
+            if (counts) {
+                transcribed = (counts.transcribed / counts.total) * 100.0
+                validated = (counts.validated / counts.total) * 100.0
+            } else {
+                transcribed = 0.0
+                validated = 0.0
+            }
+            new ArchiveProject(project: it, size: sizes[it.id].size, percentTranscribed: transcribed, percentValidated: validated)
+        }
+        respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total])
+    }
+
+    def archive(Project project) {
+        if (!userService.isAdmin()) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            return
+        }
+
+        try {
+            projectService.archiveProject(project)
+            project.archived = true
+            log.info("${project.name} (id=${project.id}) archived")
+            respond status: SC_NO_CONTENT
+        } catch (e) {
+            log.error("Couldn't archive project $project", e)
+            response.sendError(SC_INTERNAL_SERVER_ERROR, "An error occured while archiving ${project.name}")
+        }
+    }
+
+    def downloadImageArchive(Project project) {
+        if (!userService.isAdmin()) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            return
+        }
+        response.contentType = 'application/zip'
+        response.setHeader('Content-Disposition', "attachment; filename=\"${project.id}-${project.name}-images.zip\"")
+        final os = response.outputStream
+        try {
+            projectService.writeArchive(project, os)
+        } catch (e) {
+            log.error("Exception while creating image archive for $project")
+            //os.close()
+        }
+    }
+
 }

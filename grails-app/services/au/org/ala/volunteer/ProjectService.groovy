@@ -2,12 +2,13 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.plugins.metrics.groovy.Timed
 
 import javax.imageio.ImageIO
-import java.util.concurrent.TimeUnit
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -387,6 +388,71 @@ class ProjectService {
         } catch (Exception ex) {
             log.error("Could not check and resize expedition image for $projectInstance", ex)
             return false
+        }
+    }
+
+    def projectSize(List<Project> projects) {
+        projects.collectEntries {
+            final projectPath = new File(grailsApplication.config.images.home, it.id.toString())
+            try {
+                [(it.id) : [size: projectPath.directorySize(), error: null]]
+            } catch (e) {
+                [(it.id) : [error: e, size: -1]]
+            }
+        }
+    }
+
+    def calculateCompletion(List<Project> projects) {
+        Task.withCriteria {
+            'in'('project', projects)
+
+            projections {
+                groupProperty('project')
+                count('id', 'total')
+                count('fullyTranscribedBy', 'transcribed')
+                count('fullyValidatedBy', 'validated')
+            }
+        }.collectEntries { row ->
+            [(row[0].id): [ total: row[1], transcribed: row[2], validated: row[3] ] ]
+        }
+    }
+
+    def writeArchive(Project project, OutputStream outputStream) {
+        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        def zos = new ZipArchiveOutputStream(outputStream)
+        zos.withStream {
+            addToZip(zos, projectPath, '')
+        }
+    }
+
+    def archiveProject(Project project) {
+        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        def result = projectPath.deleteDir()
+        if (!result) {
+            log.warn("Couldn't delete images for $project")
+            throw new IOException("Couldn't delete images for $project")
+        }
+    }
+
+    static def addToZip(ZipArchiveOutputStream zos, File path, String entryPath) {
+        String entryName = entryPath + path.getName();
+        ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName);
+
+        zos.putArchiveEntry(zipEntry);
+
+        if (path.isFile()) {
+            path.withInputStream { fis ->
+                zos << fis
+            }
+        } else {
+            zos.closeArchiveEntry();
+            File[] children = path.listFiles();
+
+            if (children != null) {
+                for (File child : children) {
+                    addToZip(zos, child.absoluteFile, "$entryName/");
+                }
+            }
         }
     }
 

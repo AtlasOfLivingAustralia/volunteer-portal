@@ -28,6 +28,7 @@ class Project implements Serializable {
     Double mapInitLatitude
     Double mapInitLongitude
     Boolean harvestableByAla = true
+    Boolean archived = false
 
     Integer version
 
@@ -46,6 +47,7 @@ class Project implements Serializable {
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
         harvestableByAla defaultValue: true
         version defaultValue: '0'
+        archived defaultValue: 'false'
     }
 
     static constraints = {
