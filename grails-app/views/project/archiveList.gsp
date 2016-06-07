@@ -16,6 +16,7 @@
 
     %>
 
+    <h2><g:message code="project.archived.description" /></h2>
 </cl:headerContent>
 <div class="container" role="main">
     <div class="panel panel-default">
@@ -104,7 +105,7 @@ jQuery(function($) {
        var $this = $(this);
        var href = $this.data('href');
        var name = $this.data('projectName');
-       bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?", function(result) {
+       bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
            if (result) {
                $.post(href).then(function() {
                    window.location.reload();
