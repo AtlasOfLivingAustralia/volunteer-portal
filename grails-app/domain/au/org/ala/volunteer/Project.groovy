@@ -1,9 +1,5 @@
 package au.org.ala.volunteer
 
-import com.google.common.io.ByteStreams
-import com.google.common.io.Files
-import org.springframework.web.multipart.MultipartFile
-
 class Project implements Serializable {
 
     String name
@@ -30,6 +26,9 @@ class Project implements Serializable {
     Boolean harvestableByAla = true
     Boolean archived = false
 
+    Date dateCreated
+    Date lastUpdated
+
     Integer version
 
     def grailsApplication
@@ -41,6 +40,7 @@ class Project implements Serializable {
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {
+        autoTimestamp true
         tasks cascade: 'all,delete-orphan'
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false

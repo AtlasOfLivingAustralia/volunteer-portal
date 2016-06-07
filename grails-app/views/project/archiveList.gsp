@@ -34,7 +34,7 @@
                                               title="${message(code: 'project.archive.percentValidated.label', default: 'Validated %')}"/>
 
                             <g:sortableColumn property="created"
-                                              title="${message(code: 'project.created.label', default: 'Created')}"/>
+                                              title="${message(code: 'project.dateCreated.label', default: 'Date Created')}"/>
 
                             <g:sortableColumn property="size"
                                               title="${message(code: 'project.archive.size.label', default: 'Size')}"/>
@@ -55,7 +55,7 @@
                                 <td style="vertical-align: middle;">${fieldValue(bean: projectInstance, field: "percentValidated")}</td>
 
                                 <td style="vertical-align: middle;"><g:formatDate type="date" style="medium"
-                                        date="${projectInstance.project.created}"/></td>
+                                        date="${projectInstance.project.dateCreated}"/></td>
 
                                 <td style="vertical-align: middle;"><cl:formatFileSize size="${projectInstance.size}"/></td>
 
