@@ -245,7 +245,7 @@
         <g:if test="${bgImage}">
             <div class="row">
                 <div class="col-sm-12 image-origin">
-                    <p><g:if test="${projectInstance.backgroundImageAttribution}">Image by ${projectInstance.backgroundImageAttribution}</g:if></p>
+                    <p><g:if test="${projectInstance.backgroundImageAttribution}"><g:message code="image.attribution.prefix" /> ${projectInstance.backgroundImageAttribution}</g:if></p>
                 </div>
             </div>
         </g:if>
