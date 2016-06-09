@@ -475,7 +475,7 @@ class UserController {
             redirect(action: "show")
         }
 
-        [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list()]
+        [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list(sort: 'name', order: 'asc')]
     }
 
     def updateRoles = {
