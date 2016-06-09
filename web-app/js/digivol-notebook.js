@@ -113,6 +113,10 @@ function digivolNotebooksTabs(config) {
                   $ctrl.userInstance['isValidator'] = config.isValiator;
                   $ctrl.userInstance['isAdmin'] = config.isAdmin;
               }
+              $scope.$on('unreadValidationViewed', function (event, taskInstance) {
+                  // hack to get this out to the non-angular parts of the app
+                  $(document).triggerHandler('unreadValidationViewed', {taskInstance: taskInstance});
+              });
           }];
 
     var taskListController = [

@@ -5,17 +5,14 @@
     <meta name="section" content="home"/>
     <title><cl:pageTitle title="Home"/></title>
     <content tag="disableBreadcrumbs">true</content>
-    %{--<content tag="primaryColour">#0097d4</content>--}%
     <content tag="selectedNavItem">bvp</content>
     <r:require modules="digivol-image-resize"/>
 </head>
 
 <body>
-<!-- Main jumbotron for a primary marketing message or call to action -->
-
 <div class="a-feature home">
     <div class="container">
-        <h1><g:message code="index.heading.line1" default="Decipher our collections,"/><br/><g:message code="index.heading.line2" default="discover hidden archives"/><br/><g:message code="index.heading.line3" default="and contribute to knowledge"/></h1>
+        <h1><g:message code="index.heading.line1" /><br/><g:message code="index.heading.line2"/><br/><g:message code="index.heading.line3"/></h1>
 
         <h2><g:message code="index.subheading" /></h2>
 
@@ -27,7 +24,7 @@
 
         <div class="row">
             <div class="col-sm-12 image-origin">
-                <p><g:message code="index.hero.attribution" /></p>
+                <p><g:message code="image.attribution.prefix" /> <g:message code="index.hero.attribution" /></p>
             </div>
         </div>
     </div>
@@ -36,7 +33,7 @@
 <a name="expeditionList" class="expeditionListAnchor"></a>
 <section id="what-you-do" class="dark">
     <div class="container">
-        <h2 class="heading"><g:message code="index.whatyoudo.title" default="Join a virtual expedition of…"/></h2>
+        <h2 class="heading"><g:message code="index.whatyoudo.title" /></h2>
 
         <div class="row">
             <div class="col-sm-1 col-xs-4">
@@ -44,9 +41,9 @@
             </div>
 
             <div class="col-sm-3 col-xs-8">
-                <h3><g:message code="index.whatyoudo.specimens.title" default="Collection labels"/></h3>
+                <h3><g:message code="index.whatyoudo.specimens.title" /></h3>
 
-                <p><g:message code="index.whatyoudo.specimens.body" default="Capture data from specimen and object labels to make it accessible for scientific and cultural research."/></p>
+                <p><g:message code="index.whatyoudo.specimens.body" /></p>
                 <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
             </div>
 
@@ -55,9 +52,9 @@
             </div>
 
             <div class="col-sm-3 col-xs-8">
-                <h3><g:message code="index.whatyoudo.fieldjournals.title" default="Historical documents"/></h3>
+                <h3><g:message code="index.whatyoudo.fieldjournals.title" /></h3>
 
-                <p><g:message code="index.whatyoudo.fieldjournals.body" default="Transcribe text and capture data from historical documents to make them digitally accessible."/></p>
+                <p><g:message code="index.whatyoudo.fieldjournals.body" /></p>
                 <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Field notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
             </div>
 
@@ -66,9 +63,9 @@
             </div>
 
             <div class="col-sm-3 col-xs-8">
-                <h3><g:message code="index.whatyoudo.cameratraps.title" default="Images"/></h3>
+                <h3><g:message code="index.whatyoudo.cameratraps.title" /></h3>
 
-                <p><g:message code="index.whatyoudo.cameratraps.title" default="Identify and tag images of animals and collection objects to support information discovery and research."/></p>
+                <p><g:message code="index.whatyoudo.cameratraps.body" /></p>
                 <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Camera traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
 
             </div>

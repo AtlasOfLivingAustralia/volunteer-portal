@@ -9,9 +9,10 @@ modules = {
 
 
     'digivol' {
-        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications', 'digivol-module'
+        dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications'
         resource url: '/css/main.css'
         resource url: '/css/digivol-custom.css'
+        resource url: '/js/digivol-main.js'
     }
 
     'digivol-module' {
@@ -29,7 +30,7 @@ modules = {
     }
 
     'digivol-notebook' {
-        dependsOn 'digivol', 'marker-clusterer', 'angular-ui-bootstrap', 'angular-marked', 'angular-sanitize', 'underscore'
+        dependsOn 'digivol', 'digivol-module', 'marker-clusterer', 'angular-ui-bootstrap', 'angular-marked', 'angular-sanitize', 'underscore'
         resource url: 'js/digivol-notebook.js'
     }
 
@@ -39,7 +40,7 @@ modules = {
     }
 
     'digivol-new-project-wizard' {
-        dependsOn 'angular', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead' // 'angular-typeahead',
+        dependsOn 'digivol-module', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead' // 'angular-typeahead',
         resource url: '/js/new-project-wizard.js'
     }
 
@@ -261,6 +262,7 @@ modules = {
     }
 
     'angular' {
+        dependsOn 'jquery'
         resource url: 'js/angular/1.5.6/angular-csp.css'
         resource url: 'js/angular/1.5.6/angular.min.js'
         resource url: 'js/angular/1.5.6/angular-animate.min.js'
