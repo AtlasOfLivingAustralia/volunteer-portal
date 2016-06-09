@@ -257,7 +257,7 @@
         <thead>
             <tr class="sorting-header">
 
-                <td ng-show="$ctrl.tabIndex == 0"></td>
+                <th ng-if="$ctrl.tabIndex == 0"></th>
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('id')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'id', sorting: true})" class="btn"><g:message code="task.id.label" /></a>
@@ -299,7 +299,7 @@
         <tbody>
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
-                <td ng-show="$ctrl.tabIndex == 0">
+                <td ng-if="$ctrl.tabIndex == 0">
                     <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>
                     <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>
                 </td>
@@ -307,8 +307,10 @@
                 <td>
                     <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}" class="listLink">{{ taskInstance.id }}</a>
                 </td>
-
-                <td>{{taskInstance.externalIdentifier}}</td>
+                <td>
+                    <a ng-if="taskInstance.isValidator" ng-href="${createLink(controller: 'task', action: 'showDetails')}/{{ taskInstance.id }}" title="${g.message(code: 'task.details.button.label')}"><i class="glyphicon glyphicon-list-alt"></i></a>
+                    {{taskInstance.externalIdentifier}}
+                </td>
 
                 <td>{{taskInstance.catalogNumber}}</td>
 

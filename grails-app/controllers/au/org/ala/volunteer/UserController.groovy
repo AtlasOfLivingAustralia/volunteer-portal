@@ -319,6 +319,10 @@ class UserController {
 
         def isValidator = userService.isValidator(projectInstance)
 
+        results.viewList.each {
+            it['isValidator'] = userService.isValidatorForProjectId(it.projectId)
+        }
+
         def result = new TaskListResult(
                 viewList                : results.viewList,
 //                recentValidatedTaskCount: recentValidatedTaskCount,

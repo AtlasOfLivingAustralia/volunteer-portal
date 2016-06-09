@@ -30,7 +30,7 @@
         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
             <td>
-                <g:link controller="task" action="showDetails" id="${taskInstance.id}" title="Show task details"><i
+                <g:link controller="task" action="showDetails" id="${taskInstance.id}" title="${g.message(code: 'task.details.button.label')}"><i
                         class="glyphicon glyphicon-list-alt"></i></g:link>
                 ${taskInstance.externalIdentifier}
                 <g:set var="lastView" value="${lockedMap[taskInstance.id]}"/>

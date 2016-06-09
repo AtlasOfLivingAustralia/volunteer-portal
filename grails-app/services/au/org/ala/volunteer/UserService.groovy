@@ -151,6 +151,15 @@ class UserService {
      * @return
      */
     public boolean isValidator(Project project) {
+        isValidatorForProjectId(project?.id)
+    }
+
+    /**
+     * returns true if the current user can validate tasks from the specified project
+     * @param project
+     * @return
+     */
+    public boolean isValidatorForProjectId(Long projectId) {
 
         def userId = currentUserId
 
@@ -176,7 +185,7 @@ class UserService {
         if (user) {
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
             def role = user.userRoles.find {
-                it.role.id == validatorRole.id && (it.project == null || project == null || it.project.id == project?.id)
+                it.role.id == validatorRole.id && (it.project == null || projectId == null || it.project.id == projectId)
             }
             if (role) {
                 // a role exists for the current user and the specified project (or the user has a role with a null project
