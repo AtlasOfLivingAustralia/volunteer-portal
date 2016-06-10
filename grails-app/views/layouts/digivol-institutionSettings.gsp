@@ -2,12 +2,10 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
     <title>Edit Institution ${institutionInstance?.name}</title>
-    <r:require modules="bootstrap-switch, bootbox"/>
+    <r:require modules="bootstrap-switch, bootbox, tinymce-simple"/>
 </head>
 
 <body class="admin">
-
-<tinyMce:resources/>
 
 <cl:headerContent hideTitle="${true}" selectedNavItem="bvpadmin">
     <%

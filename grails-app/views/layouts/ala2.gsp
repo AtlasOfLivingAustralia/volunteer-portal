@@ -35,17 +35,9 @@
     <g:javascript library="application"/>
     %{--<g:javascript library="jquery.tools.min"/>--}%
 
-    <tinyMce:resources/>
+    <r:require modules="tinymce-simple" />
 
     <script type="text/javascript">
-
-        tinyMCE.init({
-            mode: "textareas",
-            theme: "advanced",
-            editor_selector: "mceadvanced",
-            theme_advanced_toolbar_location: "top",
-            convert_urls: false
-        });
 
         $.ajaxSetup({
             cache: false

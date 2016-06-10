@@ -40,7 +40,7 @@ modules = {
     }
 
     'digivol-new-project-wizard' {
-        dependsOn 'digivol-module', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead' // 'angular-typeahead',
+        dependsOn 'digivol-module', 'angular-sanitize', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead', 'angular-ui-tinymce' // 'angular-typeahead',
         resource url: '/js/new-project-wizard.js'
     }
 
@@ -104,6 +104,15 @@ modules = {
 
     'timezone' {
         resource url: '/js/jstz-1.0.4.min.js'
+    }
+
+    'tinymce' {
+        resource url: '/js/tinymce/4.3.13/tinymce.min.js'
+    }
+
+    'tinymce-simple' {
+        dependsOn 'tinymce'
+        resource url: '/js/tinymce4-simple.js'
     }
 
     'amplify' {
@@ -276,7 +285,7 @@ modules = {
 
     'angular-ui-router' {
         dependsOn 'angular'
-        resource url: '/js/angular/ui-router/0.2.15/angular-ui-router.min.js'
+        resource url: '/js/angular/ui-router/0.3.1/angular-ui-router.min.js'
     }
 
     'angular-ui-bootstrap' {
@@ -323,5 +332,10 @@ modules = {
     'angular-marked' {
         dependsOn 'angular', 'marked'
         resource url: '/js/angular/angular-marked/1.2.0/angular-marked.min.js'
+    }
+
+    'angular-ui-tinymce' {
+        dependsOn 'angular', 'tinymce'
+        resource url: '/js/angular/ui-tinymce/0.0.16/tinymce.min.js'
     }
 }

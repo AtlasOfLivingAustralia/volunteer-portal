@@ -6,19 +6,7 @@
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title>Create Expedition</title>
 
-    <tinyMce:resources/>
-
-    <r:script type="text/javascript">
-
-        tinyMCE.init({
-            mode: "textareas",
-            theme: "advanced",
-            editor_selector: "mceadvanced",
-            theme_advanced_toolbar_location: "top",
-            convert_urls: false
-        });
-
-    </r:script>
+    <r:require modules="tinymce-simple" />
 
     <style type="text/css">
 
@@ -66,11 +54,7 @@
                                                             default="Description"/></label>
                     </td>
                     <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'description', 'errors')}">
-                        %{--<g:textArea name="description" cols="40" rows="5" value="${projectInstance?.description}" />--}%
-                        <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10"
-                                              style="width:500px;">
-                            ${projectInstance?.description}
-                        </tinyMce:renderEditor>
+                        <g:textArea name="description" class="mce" rows="10" cols="60" value="${projectInstance?.description}" />
                     </td>
                 </tr>
 
@@ -81,11 +65,7 @@
                     </td>
                     <td valign="top"
                         class="value ${hasErrors(bean: projectInstance, field: 'tutorialLinks', 'errors')}">
-                        %{--<g:textArea name="tutorialLinks" cols="40" rows="5" value="${projectInstance?.tutorialLinks}" />--}%
-                        <tinyMce:renderEditor type="advanced" name="tutorialLinks" cols="60" rows="10"
-                                              style="width:500px;">
-                            ${projectInstance?.tutorialLinks}
-                        </tinyMce:renderEditor>
+                        <g:textArea name="tutorialLinks" cols="60" rows="10" class="mce" value="${projectInstance?.tutorialLinks}" />
                     </td>
                 </tr>
 

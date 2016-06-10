@@ -14,17 +14,9 @@
 
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
 
-    <tinyMce:resources/>
+    <r:require modules="tinymce-simple"/>
 
     <r:script type="text/javascript">
-
-            tinyMCE.init({
-                mode: "textareas",
-                theme: "advanced",
-                editor_selector: "mceadvanced",
-                theme_advanced_toolbar_location : "top",
-                convert_urls : false
-            });
 
             function confirmDeleteAllTasks() {
                 return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?");

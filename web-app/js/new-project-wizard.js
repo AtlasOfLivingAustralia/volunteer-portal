@@ -53,6 +53,7 @@ function createProjectModule(config) {
     var map = arguments.length <= 12 || arguments[12] === undefined ? new Map() : arguments[12];
     var picklistId = arguments.length <= 13 || arguments[13] === undefined ? null : arguments[13];
     var labelIds = arguments.length <= 14 || arguments[14] === undefined ? [] : arguments[14];
+    var tutorialLinks = arguments.length <= 15 || arguments[15] === undefined ? [] : arguments[15];
 
     _classCallCheck(this, ProjectDefintion);
 
@@ -72,6 +73,7 @@ function createProjectModule(config) {
 
     this.picklistId = picklistId;
     this.labelIds = labelIds;
+    this.tutorialLinks = tutorialLinks;
   };
   /* end generated */
 
@@ -82,7 +84,7 @@ function createProjectModule(config) {
 
   var findConfigLabelWithId = _.partial(findLabelWithId, config.labels);
 
-  var wizard = angular.module('projectWizard', ['digivol', 'ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors']);
+  var wizard = angular.module('projectWizard', ['ngSanitize', 'digivol', 'ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors', 'ui.tinymce']);
   wizard.constant('stagingId', config.stagingId);
 
   wizard.config([
@@ -221,7 +223,10 @@ function createProjectModule(config) {
         return (result.length > 0 ? result : null);
       }
 
-      $rootScope.$on("$stateChangeError", console.log.bind(console));
+      $rootScope.$on("$stateChangeError",
+        function(event, toState, toParams, fromState, fromParams, error) {
+          $log.error(event, toState, toParams, fromState, fromParams, error);
+        });
 
       $rootScope.back = function () {
         $http.post(config.autosaveUrl, project);
@@ -322,7 +327,7 @@ function createProjectModule(config) {
         $scope.project[type] = null;
         Upload.upload({
           url: config.imageUploadUrl,
-          data: {image: file, type: type},
+          data: {image: file, type: type}
         }).then(function (resp) {
           var cb = Math.random();
           $scope.project[type] = resp.data.imageUrl + '?cb='+cb; // cb for cache busting
@@ -418,6 +423,17 @@ function createProjectModule(config) {
         $scope.labels.splice($scope.labels.indexOf(l), 1);
         var labelIdx = project.labelIds.indexOf(l.id);
         if (labelIdx < 0) project.labelIds.splice(labelIdx, 1);
+      };
+      
+      $scope.tinymceOptions = {
+        convert_urls: false,
+        plugins: 'link anchor hr charmap',
+        menubar: false,
+        toolbar: [
+          'styleselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | fontsizeselect ',
+          'undo redo | link unlink anchor hr charmap'
+        ],
+        statusbar: false
       };
     }
   ]);

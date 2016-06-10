@@ -352,6 +352,13 @@ span.label i.remove {
         </div>
 
         <div class="form-group">
+        <label class="col-sm-3 control-label" id="tutorial-links-label">Tutorial Links</label>
+        <div class="col-sm-9">
+            <textarea ui-tinymce="tinymceOptions" aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
+        </div>
+    </div>
+
+        <div class="form-group">
             <div class="col-sm-offset-3 col-sm-6">
                 <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
                 <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Back</button>
@@ -470,6 +477,10 @@ span.label i.remove {
                         <dv-label data-ng-repeat="label in labels" label="label"></dv-label>
                     </div>
                 </td>
+            </tr>
+            <tr>
+                <td class="prop-name">Tutorials</td>
+                <td class="prop-value" ng-bind-html="project.tutorialLinks"></td>
             </tr>
 
         </table>

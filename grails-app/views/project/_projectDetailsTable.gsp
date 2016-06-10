@@ -14,10 +14,7 @@
             <label for="description"><g:message code="project.description.label" default="Description"/></label>
         </td>
         <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'description', 'errors')}">
-            %{--<g:textArea name="description" cols="40" rows="5" value="${projectInstance?.description}" />--}%
-            <tinyMce:renderEditor type="advanced" name="description" cols="60" rows="10" style="width:500px;">
-                ${projectInstance?.description}
-            </tinyMce:renderEditor>
+            <g:textArea name="description" class="mce" rows="10" cols="60" value="${projectInstance?.description}" />
         </td>
     </tr>
 
@@ -26,10 +23,7 @@
             <label for="description"><g:message code="project.tutorialLinks.label" default="Tutorial Links"/></label>
         </td>
         <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tutorialLinks', 'errors')}">
-            %{--<g:textArea name="tutorialLinks" cols="40" rows="5" value="${projectInstance?.tutorialLinks}" />--}%
-            <tinyMce:renderEditor type="advanced" name="tutorialLinks" cols="60" rows="10" style="width:500px;">
-                ${projectInstance?.tutorialLinks}
-            </tinyMce:renderEditor>
+            <g:textArea name="tutorialLinks" cols="60" rows="10" class="mce" value="${projectInstance?.tutorialLinks}" />
         </td>
     </tr>
 

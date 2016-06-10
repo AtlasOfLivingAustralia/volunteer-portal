@@ -1,6 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
-<tinyMce:resources/>
-<r:require module="bootstrap-colorpicker" />
+<r:require modules="bootstrap-colorpicker, tinymce-simple" />
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'name', 'has-error')}">
     <label class="control-label col-md-3" for="name">
         <g:message code="institution.name.label" default="Name"/>
@@ -35,9 +34,7 @@
         <g:message code="institution.description.label" default="Description"/>
     </label>
     <div class="col-md-7">
-        <tinyMce:renderEditor type="advanced" name="description" rows="10" class="form-control">
-            ${institutionInstance?.description}
-        </tinyMce:renderEditor>
+        <g:textArea name="description" rows="10" class="mce form-control" value="${institutionInstance?.description}" />
     </div>
 </div>
 
@@ -110,13 +107,6 @@
 </g:if>
 <r:script>
     jQuery(function ($) {
-        tinyMCE.init({
-            mode: "textareas",
-            theme: "advanced",
-            editor_selector: "mceadvanced",
-            theme_advanced_toolbar_location: "top",
-            convert_urls: false
-        });
         $('.colpick').colorpicker();
     });
 </r:script>

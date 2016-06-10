@@ -242,8 +242,8 @@ grails.hibernate.pass.readonly = false
 grails.hibernate.osiv.readonly = false
 
 // tiny mce loads its own files, so don't hash it
-grails.resources.mappers.hashandcache.excludes= ['plugins/tiny-mce-3.4.9/**/*']
-grails.resources.adhoc.excludes = ['plugins/tiny-mce-3.4.9/**/*.*']
+grails.resources.mappers.hashandcache.excludes= ['/js/tinymce/**/*']
+//grails.resources.adhoc.excludes = ['/js/tinymce/**/*.*']
 //grails.assets.excludes	["tiny_mce/src/*.js"]
 
 bvp.tmpdir="/data/${appName}/config/"
