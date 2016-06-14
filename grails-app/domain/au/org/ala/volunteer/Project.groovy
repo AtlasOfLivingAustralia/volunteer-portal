@@ -1,9 +1,13 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.sanitizer.SanitizedHtml
+
 class Project implements Serializable {
 
     String name
+    @SanitizedHtml
     String description
+    @SanitizedHtml
     String tutorialLinks
     Boolean showMap = true
     Date created

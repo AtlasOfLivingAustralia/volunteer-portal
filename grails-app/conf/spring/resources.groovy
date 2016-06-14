@@ -1,6 +1,4 @@
 import au.org.ala.volunteer.ApplicationContextHolder
-import au.org.ala.volunteer.BVPSecurePluginFilter
-//import au.org.ala.volunteer.CustomPageRenderer
 import au.org.ala.volunteer.collectory.CollectoryClientFactoryBean
 
 // Place your Spring DSL code here

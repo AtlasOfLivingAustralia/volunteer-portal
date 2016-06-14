@@ -113,10 +113,10 @@ span.label i.remove {
             </div>
         
             <div class="form-group required" show-errors>
-                <label class="col-sm-3 control-label" for="longDescription">Long description</label>
+                <label class="col-sm-3 control-label" id="long-description-label">Long description</label>
         
                 <div class="col-sm-6">
-                    <textarea rows="8" class="form-control" name="longDescription" id="longDescription"
+                    <textarea ui-tinymce aria-labelledby="long-description-label" aria-label="Long description" rows="8" class="form-control" name="longDescription"
                                 data-ng-model="project.longDescription" required="required" data-ng-required="true"></textarea>
                 </div>
 
@@ -354,7 +354,7 @@ span.label i.remove {
         <div class="form-group">
         <label class="col-sm-3 control-label" id="tutorial-links-label">Tutorial Links</label>
         <div class="col-sm-9">
-            <textarea ui-tinymce="tinymceOptions" aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
+            <textarea ui-tinymce aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
         </div>
     </div>
 
@@ -397,7 +397,7 @@ span.label i.remove {
             </tr>
             <tr>
                 <td class="prop-name">Long description</td>
-                <td class="prop-value">{{::project.longDescription}}</td>
+                <td class="prop-value" ng-bind-html="project.longDescription"></td>
             </tr>
             <tr>
                 <td class="prop-name">Template</td>

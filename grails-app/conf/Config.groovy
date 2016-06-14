@@ -361,9 +361,10 @@ log4j = {
                 console name: "debugLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
             }
             test {
-                rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
+                rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
                 rollingFile name: "access", maxFileSize: '1MB', file: "/tmp/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
                 rollingFile name: "cas", maxFileSize: '1MB', file: "${loggingDir}/${appName}-cas.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
+                rollingFile name: "debugLog", maxFileSize: '1MB', file: "/tmp/${appName}-debug.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
         }
     }

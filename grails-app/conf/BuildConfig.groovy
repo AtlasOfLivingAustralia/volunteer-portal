@@ -47,6 +47,7 @@ grails.project.dependency.resolution = {
         compile 'org.elasticsearch:elasticsearch:1.3.5'
         compile 'net.sf.opencsv:opencsv:2.3'
         compile 'org.freemarker:freemarker:2.3.23'
+        compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
     }
 

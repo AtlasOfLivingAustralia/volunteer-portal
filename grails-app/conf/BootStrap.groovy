@@ -5,7 +5,10 @@ import groovy.sql.*
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.datastore.mapping.core.Datastore
 import org.hibernate.FlushMode
+import au.org.ala.volunteer.sanitizer.SanitizedHtml
+import au.org.ala.volunteer.sanitizer.ValueConverterListener
 
 class BootStrap {
 
@@ -17,24 +20,27 @@ class BootStrap {
     def authService
     def fullTextIndexService
     def dataSource
+    def sanitizerService
 
     def init = { servletContext ->
 
-        ensureFuzzyStrMatchExtension();
+        ensureFuzzyStrMatchExtension()
 
-        defineMetaMethods();
+        addSanitizer()
 
-        prepareFrontPage();
+        defineMetaMethods()
 
-        preparePickLists();
+        prepareFrontPage()
 
-        prepareValidationRules();
+        preparePickLists()
 
-        prepareProjectTypes();
+        prepareValidationRules()
 
-        fixTaskLastViews();
+        prepareProjectTypes()
 
-        prepareDefaultLabels();
+        fixTaskLastViews()
+
+        prepareDefaultLabels()
 
         // add system user
         if (!User.findByUserId('system')) {
@@ -168,6 +174,14 @@ class BootStrap {
 
         FrontPage.metaClass.'static'.getFeaturedProject = {->
             FrontPage.list()[0]?.featuredProject
+        }
+    }
+
+    private void addSanitizer() {
+        final ctx = grailsApplication.mainContext
+        ctx.getBeansOfType(Datastore).values().each { Datastore d ->
+            log.info "Adding listener for datastore: ${d}"
+            ctx.addApplicationListener(ValueConverterListener.of(d, SanitizedHtml, String, sanitizerService.&sanitize))
         }
     }
 

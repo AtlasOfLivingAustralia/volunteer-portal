@@ -86,6 +86,16 @@ function createProjectModule(config) {
 
   var wizard = angular.module('projectWizard', ['ngSanitize', 'digivol', 'ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors', 'ui.tinymce']);
   wizard.constant('stagingId', config.stagingId);
+  wizard.value('uiTinymceConfig', {
+    convert_urls: false,
+    plugins: 'link anchor hr charmap',
+    menubar: false,
+    toolbar: [
+      'styleselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | fontsizeselect ',
+      'undo redo | link unlink anchor hr charmap'
+    ],
+    statusbar: false
+  });
 
   wizard.config([
     '$stateProvider', '$urlRouterProvider', 'uiGmapGoogleMapApiProvider', 'showErrorsConfigProvider',
@@ -423,17 +433,6 @@ function createProjectModule(config) {
         $scope.labels.splice($scope.labels.indexOf(l), 1);
         var labelIdx = project.labelIds.indexOf(l.id);
         if (labelIdx < 0) project.labelIds.splice(labelIdx, 1);
-      };
-      
-      $scope.tinymceOptions = {
-        convert_urls: false,
-        plugins: 'link anchor hr charmap',
-        menubar: false,
-        toolbar: [
-          'styleselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | fontsizeselect ',
-          'undo redo | link unlink anchor hr charmap'
-        ],
-        statusbar: false
       };
     }
   ]);
