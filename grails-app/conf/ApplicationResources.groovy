@@ -107,7 +107,7 @@ modules = {
     }
 
     'tinymce' {
-        resource url: '/js/tinymce/4.3.13/tinymce.min.js'
+        resource url: '/js/tinymce/4.3.13/tinymce.min.js', exclude: "*"
     }
 
     'tinymce-simple' {
