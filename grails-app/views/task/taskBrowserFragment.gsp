@@ -26,11 +26,6 @@
     color: white;
 }
 
-#taskBrowserImage {
-    height: 200px;
-    width: 670px;
-}
-
 #taskBrowserImage img {
     max-width: inherit !important;
 }
@@ -63,18 +58,18 @@
 
         <div>
             <span style="padding: 5px; float: left">
-                <button class="btn btn-small" id="show_prev_task"><img
+                <button class="btn btn-default btn-sm" id="show_prev_task"><img
                         src="${resource(dir: 'images', file: 'left_arrow.png')}">&nbsp;Previous</button>
-                <button class="btn btn-small" id="show_next_task">Next&nbsp;<img
+                <button class="btn btn-default btn-sm" id="show_next_task">Next&nbsp;<img
                         src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
                 <span id="task_location"></span>
             </span>
             <span style="padding: 5px;float:right">
                 <span style="color: white;">Label text:</span>
                 <span><g:textField style="width:120px;margin-bottom: 0" name="search_text" id="search_text"/></span>
-                <button class="btn btn-small" style="margin-right: 10px" id="search_button">Search</button>
-                <button class="btn btn-small" id="copy_task_data">Copy</button>
-                <button class="btn btn-small" id="cancel_button">Cancel</button>
+                <button class="btn btn-default btn-sm" style="margin-right: 10px" id="search_button">Search</button>
+                <button class="btn btn-default btn-sm" id="copy_task_data">Copy</button>
+                <button class="btn btn-default btn-sm" id="cancel_button">Cancel</button>
             </span>
         </div>
         <hr/>
@@ -110,8 +105,8 @@
     }
 
     function loadTask(taskIndex) {
-        $("#task_list").attr("currentTaskIndex", taskIndex)
-        var taskId = $("#task_" + taskIndex).attr("task_id")
+        $("#task_list").attr("currentTaskIndex", taskIndex);
+        var taskId = $("#task_" + taskIndex).attr("task_id");
         var taskUrl = "${createLink(controller: 'task', action:'taskDetailsFragment')}?taskId=" + taskId + "&taskIndex=" + taskIndex;
         $.ajax({
             url: taskUrl, success: function (data) {

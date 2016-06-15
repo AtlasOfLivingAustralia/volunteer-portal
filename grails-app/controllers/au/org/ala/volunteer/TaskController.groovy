@@ -450,7 +450,7 @@ class TaskController {
                 and {
                     eq("task", task)
                     eq("superceded", false)
-                    eq("transcribedByUserId", userId)
+//                    eq("transcribedByUserId", userId)
                 }
             }
 
