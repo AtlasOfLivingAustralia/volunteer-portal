@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
+import org.apache.commons.compress.archivers.zip.Zip64Mode
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
@@ -13,6 +14,8 @@ import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
+import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
+import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
 
 @Transactional
 class ProjectService {
@@ -395,12 +398,16 @@ class ProjectService {
 
     def projectSize(List<Project> projects) {
         projects.collectEntries {
-            final projectPath = new File(grailsApplication.config.images.home, it.id.toString())
-            try {
-                [(it.id) : [size: projectPath.directorySize(), error: null]]
-            } catch (e) {
-                [(it.id) : [error: e, size: -1]]
-            }
+            [(it.id) : projectSize(it)]
+        }
+    }
+
+    def projectSize(Project project) {
+        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        try {
+            [size: projectPath.directorySize(), error: null]
+        } catch (e) {
+            [error: e, size: -1]
         }
     }
 
@@ -427,8 +434,14 @@ class ProjectService {
     def writeArchive(Project project, OutputStream outputStream) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         def zos = new ZipArchiveOutputStream(outputStream)
+        zos.encoding = 'UTF-8'
+        zos.fallbackToUTF8 = true
+        zos.createUnicodeExtraFields = NOT_ENCODEABLE
+        zos.useLanguageEncodingFlag = true
+        zos.useZip64 = AsNeeded
         zos.withStream {
             addToZip(zos, projectPath, '')
+            zos.finish()
         }
     }
 

@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import grails.converters.*
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -985,6 +986,7 @@ class ProjectController {
     }
 
     def archiveList() {
+        final sw = Stopwatch.createStarted()
         if (!userService.isAdmin()) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
             return
@@ -999,11 +1001,21 @@ class ProjectController {
         }
 
         def projects = Project.findAllByArchived(false, params)
+        sw.stop()
+        log.info("archiveList: findAllByArchived = $sw")
+        sw.reset().start()
         def total = Project.countByArchived(false)
+        sw.stop()
+        log.info("archiveList: countByArchived = $sw")
+        sw.reset().start()
         def sizes = projectService.projectSize(projects)
+        sw.stop()
+        log.info("archiveList: projectSize = $sw")
+        sw.reset().start()
         def completions = projectService.calculateCompletion(projects)
-
-        log.info("Completions: $completions")
+        sw.stop()
+        log.info("archiveList: calculateCompletion = $sw")
+        sw.reset().start()
 
         List<ArchiveProject> projectsWithSize = projects.collect {
             final counts = completions[it.id]

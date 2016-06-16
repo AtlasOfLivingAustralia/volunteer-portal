@@ -99,11 +99,16 @@ class ValueConverterListener<T> extends AbstractPersistenceEventListener {
         Class<?> type = field.getType()
         if (converterType == type) {
             T value = (T) obj[field.name]
-            T newValue = converter(value)
-            if (value != newValue) {
-                log.info("Converted $value to $newValue for ${field.name} on $obj")
+            if (value != null) {
+                T newValue = converter(value)
+                if (value != newValue) {
+                    log.info("Converted $value to $newValue for ${field.name} on $obj")
+                }
+                return ConvertResult.success(newValue)
+            } else {
+                // Don't convert null values.
+                return ConvertResult.failed
             }
-            return ConvertResult.success(newValue)
         } else {
             log.debug("${obj.class}.${field.name} is a $type, not a ${converterType}")
             return ConvertResult.failed
