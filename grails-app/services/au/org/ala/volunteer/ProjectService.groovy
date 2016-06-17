@@ -456,21 +456,20 @@ class ProjectService {
 
     static def addToZip(ZipArchiveOutputStream zos, File path, String entryPath) {
         String entryName = entryPath + path.getName();
-        ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName);
-
-        zos.putArchiveEntry(zipEntry);
 
         if (path.isFile()) {
+            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName);
+            zos.putArchiveEntry(zipEntry);
             path.withInputStream { fis ->
                 zos << fis
             }
-        } else {
-            zos.closeArchiveEntry();
-            File[] children = path.listFiles();
+            zos.closeArchiveEntry()
+        } else if (path.isDirectory()) {
+            File[] children = path.listFiles()
 
             if (children != null) {
                 for (File child : children) {
-                    addToZip(zos, child.absoluteFile, "$entryName/");
+                    addToZip(zos, child.absoluteFile, "$entryName/")
                 }
             }
         }
