@@ -80,7 +80,7 @@
                                 <td style="vertical-align: middle;"><g:formatDate type="date" style="medium"
                                         date="${projectInstance.project.dateCreated}"/></td>
 
-                                <td style="vertical-align: middle;"><cl:formatFileSize size="${projectInstance.size}"/></td>
+                                <td style="vertical-align: middle;"><span class="archive-list-file-size" data-id="${projectInstance.project.id}"><i class="fa fa-2x fa-cog fa-spin"></i></span></td>
 
                                 <td>
                                     <g:link action="downloadImageArchive" id="${projectInstance.project.id}" class="btn btn-default btn-sm"><i class="fa fa-download"></i></g:link>
@@ -101,18 +101,25 @@
 </div>
 <r:script>
 jQuery(function($) {
-   $('.archive-project').click(function(e) {
-       var $this = $(this);
-       var href = $this.data('href');
-       var name = $this.data('projectName');
-       bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
-           if (result) {
-               $.post(href).then(function() {
-                   window.location.reload();
-               });
-           }
-       });
-   });
+  $('.archive-project').click(function(e) {
+    var $this = $(this);
+    var href = $this.data('href');
+    var name = $this.data('projectName');
+    bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
+      if (result) {
+        $.post(href).then(function() {
+        window.location.reload();
+        });
+      }
+    });
+  });
+  $('.archive-list-file-size').each(function() {
+    var $this = $(this);
+    var id = $this.data('id');
+    $.getJSON('${g.createLink(controller: 'project', action: 'projectSize')}/' + id).then(function(data) {
+      $this.text(data.size);
+    });
+  })
 });
 </r:script>
 </body>

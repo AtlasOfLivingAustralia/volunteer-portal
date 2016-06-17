@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.*
+import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
@@ -1002,19 +1003,19 @@ class ProjectController {
 
         def projects = Project.findAllByArchived(false, params)
         sw.stop()
-        log.info("archiveList: findAllByArchived = $sw")
+        log.debug("archiveList: findAllByArchived = $sw")
         sw.reset().start()
         def total = Project.countByArchived(false)
         sw.stop()
-        log.info("archiveList: countByArchived = $sw")
-        sw.reset().start()
-        def sizes = projectService.projectSize(projects)
-        sw.stop()
-        log.info("archiveList: projectSize = $sw")
+        log.debug("archiveList: countByArchived = $sw")
+//        sw.reset().start()
+//        def sizes = projectService.projectSize(projects)
+//        sw.stop()
+//        log.debug("archiveList: projectSize = $sw")
         sw.reset().start()
         def completions = projectService.calculateCompletion(projects)
         sw.stop()
-        log.info("archiveList: calculateCompletion = $sw")
+        log.debug("archiveList: calculateCompletion = $sw")
         sw.reset().start()
 
         List<ArchiveProject> projectsWithSize = projects.collect {
@@ -1028,10 +1029,15 @@ class ProjectController {
                 transcribed = 0.0
                 validated = 0.0
             }
-            new ArchiveProject(project: it, size: sizes[it.id].size, percentTranscribed: transcribed, percentValidated: validated)
+            new ArchiveProject(project: it, /*size: sizes[it.id].size,*/ percentTranscribed: transcribed, percentValidated: validated)
         }
 
         respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total, 'imageStoreStats': projectService.imageStoreStats()])
+    }
+
+    def projectSize(Project project) {
+        def size = [size: FileUtils.byteCountToDisplaySize(projectService.projectSize(project).size)]
+        respond(size)
     }
 
     def archive(Project project) {
@@ -1062,7 +1068,7 @@ class ProjectController {
         try {
             projectService.writeArchive(project, os)
         } catch (e) {
-            log.error("Exception while creating image archive for $project")
+            log.error("Exception while creating image archive for $project", e)
             //os.close()
         }
     }
