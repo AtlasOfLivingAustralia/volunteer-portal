@@ -4,15 +4,13 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 
 class ActivityFilters {
 
-    def achievementService
     def userService
     def securityPrimitives
-    def fullTextIndexService
     def settingsService
     def domainUpdateService
 
     def filters = {
-        allButAjax(controller:'*', controllerExclude:'ajax', action:'*') {
+        allButAjax(controller:'*', controllerExclude:'ajax', action:'*', actionExclude: 'unreadValidatedTasks') {
             before = {
 
                 if (!grailsApplication.config.bvp.user.activity.monitor.enabled) {

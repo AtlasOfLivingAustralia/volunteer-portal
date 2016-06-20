@@ -1073,4 +1073,33 @@ class ProjectController {
         }
     }
 
+    def summary(Project project) {
+        /*
+        {
+          "project": "Name of project or expidition",
+          "contributors": "Number of individual users",
+          "numberOfSubjects": "Number of total assets/specimens/subjects",
+          "percentComplete": "0-100",
+          "firstContribution": "UTC Timestamp",
+          "lastContribution": "UTC Timestamp"
+        }
+         */
+        def completions = projectService.calculateCompletion([project])[project.id]
+        def numberOfSubjects = completions?.total
+        def percentComplete = numberOfSubjects > 0 ? ((completions?.transcribed as Double) / ((numberOfSubjects ?: 1.0) as Double)) * 100.0 : 0.0
+        def contributors = projectService.calculateNumberOfTranscribers(project)
+        def dates = projectService.calculateStartAndEndTranscriptionDates(project)
+//        projectService.
+        def result = [
+                project: project.name,
+                contributors: contributors,
+                numberOfSubjects: numberOfSubjects,
+                percentComplete: percentComplete,
+                firstContribution: dates?.start,
+                lastContribution: dates?.end
+        ]
+
+        respond result
+    }
+
 }

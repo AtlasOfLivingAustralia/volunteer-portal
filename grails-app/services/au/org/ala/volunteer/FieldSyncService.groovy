@@ -84,7 +84,7 @@ class FieldSyncService {
      * @param fieldValues
      * @return
      */
-    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = []) {
+    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = [], String userIp = null) {
         //sync
         def idx = 0
         def hasMore = true
@@ -185,6 +185,7 @@ class FieldSyncService {
             // Only set it if it hasn't already been set. The rules are the first person to save gets the transcription
             if (!task.fullyTranscribedBy) {
                 task.fullyTranscribedBy = transcriberUserId
+                task.fullyTranscribedIpAddress = userIp
                 def user = User.findByUserId(transcriberUserId)
                 user.transcribedCount++
                 user.save(flush: true)

@@ -475,4 +475,24 @@ class ProjectService {
         }
     }
 
+    def calculateNumberOfTranscribers(Project project) {
+        Task.createCriteria().get {
+            eq('project', project)
+            isNotNull('fullyTranscribedBy')
+            projections {
+                countDistinct('fullyTranscribedBy')
+            }
+        }
+    }
+
+    def calculateStartAndEndTranscriptionDates(Project project) {
+        def result = Task.createCriteria().list {
+            eq('project', project)
+            projections {
+                max('dateFullyTranscribed')
+                min('dateFullyTranscribed')
+            }
+        }
+        return result ? [start: result[0][1], end: result[0][0]] : null
+    }
 }

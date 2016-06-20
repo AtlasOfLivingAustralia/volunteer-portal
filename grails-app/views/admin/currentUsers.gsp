@@ -56,6 +56,7 @@
                     <thead>
                     <tr>
                         <th>User</th>
+                        <th>IP</th>
                         <th>Open ES</th>
                         <th>Started</th>
                         <th>Last Activity</th>
@@ -65,6 +66,7 @@
                     <tbody>
                         <tr data-ng-repeat="activity in activities">
                             <td>{{activity.userId}}</td>
+                            <td><a ng-href="//freegeoip.net/json/{{activity.ip}}">{{activity.ip}}</a></td>
                             <td>{{activity.openESRequests}}</td>
                             <td>{{activity.timeFirstActivity | date:'medium' }} (<span data-am-time-ago="activity.timeFirstActivity"></span>)</td>
                             <td>{{activity.timeLastActivity | date:'medium' }} (<span data-am-time-ago="activity.timeLastActivity"></span>)</td>

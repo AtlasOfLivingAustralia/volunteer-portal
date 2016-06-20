@@ -9,13 +9,13 @@ class UrlMappings {
 		"/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
         name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
 
-        "/$controller/$action?/$id?"{
+        "/$controller/$action?/$id?(.$format)?"{
 			constraints {
 				// apply constraints here
 			}
 		}
 
-        "/ws/$action?/$id?"(controller: 'ajax')
+        "/ws/$action?/$id?(.$format)?"(controller: 'ajax')
 
 		"500"(view:'/error')
 	}

@@ -1,7 +1,7 @@
 package au.org.ala.volunteer.collectory;
 
 import org.springframework.beans.factory.FactoryBean;
-import retrofit.RestAdapter;
+import retrofit2.Retrofit;
 
 public class CollectoryClientFactoryBean implements FactoryBean<CollectoryClient> {
 
@@ -9,7 +9,7 @@ public class CollectoryClientFactoryBean implements FactoryBean<CollectoryClient
 
     @Override
     public CollectoryClient getObject() throws Exception {
-        return new RestAdapter.Builder().setEndpoint(endpoint).build().create(CollectoryClient.class);
+        return new Retrofit.Builder().baseUrl(endpoint).build().create(CollectoryClient.class);
     }
 
     @Override

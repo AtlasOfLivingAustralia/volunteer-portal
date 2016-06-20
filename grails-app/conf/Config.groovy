@@ -333,6 +333,11 @@ grails {
                 diskPersistent false
                 diskExpiryThreadIntervalSeconds 120
             }
+            cache {
+                name 'geoip'
+                eternal false
+                timeToLiveSeconds 86400
+            }
             diskStore {
                 temp true
             }

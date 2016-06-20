@@ -294,7 +294,8 @@ class UserService {
         }
 
         def now = new Date()
-        _userActivityQueue.add(new UserActivity(userId: userId, lastRequest: action.toString(), timeFirstActivity: now, timeLastActivity: now))
+        def ip = request.remoteAddr
+        _userActivityQueue.add(new UserActivity(userId: userId, lastRequest: action.toString(), timeFirstActivity: now, timeLastActivity: now, ip: ip))
     }
 
     @NotTransactional
@@ -315,6 +316,7 @@ class UserService {
                         // update the existing one
                         existing.timeLastActivity = activity.timeLastActivity
                         existing.lastRequest = activity.lastRequest
+                        existing.ip = activity.ip
                     } else {
                         activity.save()
                     }
