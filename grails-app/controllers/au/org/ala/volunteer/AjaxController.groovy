@@ -522,7 +522,7 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             def itemMM = mm[id] ? mm[id][0] : null
             def thumbnailUrl = itemMM?.thumbUrl ?: itemMM?.url
             def userDetails = usersDetails.users[transcriber]
-            def displayName = userDetails?.displayName ?: User.findByUserId(transcriber).displayName
+            def displayName = userDetails?.displayName ?: User.findByUserId(transcriber)?.displayName ?: ''
             def userState = userDetails?.props?.state
             def userCity = userDetails?.props?.city
             def fields = allFields[id]
