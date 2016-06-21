@@ -586,7 +586,7 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
 
     private static Date toTimestamp(String timestamp) {
         final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
-        final Timestamp result
+        final Date result
         if (timestamp.isNumber()) {
             final dateLong = timestamp as Long
             // determine if this is unix time or java time
