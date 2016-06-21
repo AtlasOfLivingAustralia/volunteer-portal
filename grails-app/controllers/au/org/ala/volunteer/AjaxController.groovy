@@ -586,16 +586,16 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
         fields?.findAll { it.name == name && it.value }?.sort { it.recordIdx }?.collect { it.value }?.join(', ')
     }
 
-    private static Date toTimestamp(String timestamp) {
+    private static Timestamp toTimestamp(String timestamp) {
         final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
-        final Date result
+        final Timestamp result
         if (timestamp.isNumber()) {
             final dateLong = timestamp as Long
             // determine if this is unix time or java time
             final factor = dateLong > 1000000000000 ? 0 : 1000
             result = new Timestamp(dateLong * factor)
         } else {
-            result = format.parse(timestamp)
+            result = format.parse(timestamp).toTimestamp()
         }
         return result
     }
