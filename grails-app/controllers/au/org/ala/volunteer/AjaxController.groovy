@@ -537,10 +537,12 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             def date = getNamedFieldValues(fields, 'eventDate') ?: getNamedFieldValues(fields, 'dateIdentified') ?: getNamedFieldValues(fields, 'verbatimEventDate') ?: getNamedFieldValues(fields, 'measurementDeterminedDate')
             def recordedBy = getNamedFieldValues(fields, 'recordedBy')
 
-            if (taxon && recordedBy) it.description = "$displayName transcribed a $taxon recorded by $recordedBy from the ${it.project} expedition"
-            else if (taxon) it.description = "$displayName transcribed a $taxon from the ${it.project} project"
-            else if (recordedBy) it.description = "$displayName transcribed a record recorded by $recordedBy from the ${it.project} expedition"
-            else it.description = "$displayName transcribed a record from the ${it.project} expedition"
+            final lowerProjectName = it.project.toString().toLowerCase()
+            final descriptionSuffix = lowerProjectName.endsWith('expedition') || lowerProjectName.endsWith('project') ? ' expedition' : ''
+            if (taxon && recordedBy) it.description = "$displayName transcribed a $taxon recorded by $recordedBy from the ${it.project}$descriptionSuffix"
+            else if (taxon) it.description = "$displayName transcribed a $taxon from the ${it.project}$descriptionSuffix"
+            else if (recordedBy) it.description = "$displayName transcribed a record recorded by $recordedBy from the ${it.project}$descriptionSuffix"
+            else it.description = "$displayName transcribed a record from the ${it.project}$descriptionSuffix"
 
             if (thumbnailUrl) it.subject.thumbnailUrl = thumbnailUrl
             if (displayName) it.contributor.transcriber = displayName
@@ -582,7 +584,7 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
         fields?.findAll { it.name == name && it.value }?.sort { it.recordIdx }?.collect { it.value }?.join(', ')
     }
 
-    private static Timestamp toTimestamp(String timestamp) {
+    private static Date toTimestamp(String timestamp) {
         final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
         final Timestamp result
         if (timestamp.isNumber()) {
