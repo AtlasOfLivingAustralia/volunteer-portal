@@ -152,7 +152,7 @@
                         data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a></p>
 
                 <div class="transcribed-thumbs">
-                    <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}">
+                    <a data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-href="{{taskSummaryUrl(thumb)}}"><img data-ng-src="{{thumb.thumbnailUrl}}"></a>
                     <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
                 </div>
                 <a class="btn btn-link btn-xs join" role="button"
@@ -184,6 +184,7 @@ digivolStats({
 statsUrl: "${createLink(controller: 'index', action: 'stats')}",
 projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
 userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
+taskSummaryUrl: "${createLink(controller: 'task', action: 'summary', id: -1)}",
 institutionId: ${institutionId ?: -1},
 projectId: ${projectId ?: -1},
 maxContributors: ${maxContributors ?: 5},

@@ -26,6 +26,7 @@ class TaskController {
     def grailsApplication
     def stagingService
     def auditService
+    def multimediaService
 
     def load() {
         [projectList: Project.list()]
@@ -396,6 +397,48 @@ class TaskController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
             redirect(action: "list")
         }
+    }
+
+    def summary(Task task) {
+        /*
+        {
+          "filename": "filename",
+          "thumbnail": "thumbnail",
+          "image": "image",
+          "externalId": "externalId",
+          "transcriber": "transcriber",
+          "dateTranscribed": "dateTranscribed",
+          "validator": "validator",
+          "dateValidated": "dateValidated",
+          "valid": "isValid",
+          "fields": {
+            [
+              { "name", "value", ...}, ...
+            ]
+          }
+        }
+         */
+        if (!task) {
+            response.sendError(404, "Task not found")
+            return
+        }
+
+        final fields = Field.findAllByTaskAndSuperceded(task, false)
+        final mm = task.multimedia.first()
+
+        final result = [
+                    filename: task.externalIdentifier,
+                    thumbnail: multimediaService.getImageThumbnailUrl(mm, true),
+                    image: multimediaService.getImageUrl(mm),
+                    transcriber: userService.detailsForUserId(task.fullyTranscribedBy)?.displayName,
+                    dateTranscribed: task.dateFullyTranscribed,
+                    validator: userService.detailsForUserId(task.fullyValidatedBy)?.displayName,
+                    dateValidated: task.dateFullyValidated,
+                    valid: task.isValid,
+                    records: fields.groupBy { it.recordIdx }.sort { it.key }.collect { it.value.collectEntries { [(it.name): it.value] } }
+                ]
+
+        respond result, model: [taskInstance: task]
     }
 
     def showImage() {

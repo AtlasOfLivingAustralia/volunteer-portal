@@ -494,7 +494,7 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
                 guid: id,
                 timestamp: timestamp,
                 subject: [
-                    link: createLink(absolute: true, controller: 'task', action: 'showDetails', id: id),
+                    link: createLink(absolute: true, controller: 'task', action: 'summary', id: id),
                 ],
                 contributor: [
                     id: transcriber,
@@ -507,13 +507,24 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             ]
         }
 
-        def allFields = Field.where {
-            task.id in ids && superceded == false
-        }.collect { field ->
-            [id: field.taskId, recordIdx: field.recordIdx, name: field.name, value: field.value]
-        }.groupBy { it.id }
-        def usersDetails = authService.getUserDetailsById(ids, true) ?: [users:[:]]
-        def mm = Multimedia.where { task.id in ids }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
+        final allFields
+        final usersDetails
+        final mm
+        if (ids) {
+            allFields = Field.where {
+                task.id in ids && superceded == false
+            }.collect { field ->
+                [id: field.taskId, recordIdx: field.recordIdx, name: field.name, value: field.value]
+            }.groupBy { it.id }
+            usersDetails = authService.getUserDetailsById(transcribers, true) ?: [users:[:]]
+            mm = Multimedia.where { task.id in ids }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
+        } else {
+            allFields = [:]
+            usersDetails = [users:[]]
+            mm = [:]
+        }
+
+
 
         final invalidState = 'N/A'
         final defaultCountry = 'Australia' // we don't record country, so use this if we have a state, todo externalise
@@ -525,8 +536,8 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             def thumbnailUrl = itemMM?.thumbUrl ?: itemMM?.url
             def userDetails = usersDetails.users[transcriber]
             def displayName = userDetails?.displayName ?: User.findByUserId(transcriber)?.displayName ?: ''
-            def userState = userDetails?.props?.state
-            def userCity = userDetails?.props?.city
+            def userState = userDetails?.state
+            def userCity = userDetails?.city
             def fields = allFields[id]
             def taxon = getNamedFieldValues(fields, 'scientificName') ?: getNamedFieldValues(fields, 'vernacularName')
             def locality = getNamedFieldValues(fields, 'locality')

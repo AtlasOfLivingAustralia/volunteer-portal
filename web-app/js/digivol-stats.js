@@ -36,6 +36,12 @@ function digivolStats(config) {
         return Math.max(contrib.transcribedItems - 5, 0);
       };
 
+
+      $scope.taskSummaryUrl = function(thumb) {
+        var id = thumb.id || "";
+        return config.taskSummaryUrl.replace('-1', id);
+      };
+
       var p = $http.get(config.statsUrl, {
         params: {
           institutionId: config.institutionId,
