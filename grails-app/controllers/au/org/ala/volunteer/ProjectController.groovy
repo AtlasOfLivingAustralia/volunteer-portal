@@ -1073,7 +1073,7 @@ class ProjectController {
         }
     }
 
-    def summary(Project project) {
+    def summary() {
         /*
         {
           "project": "Name of project or expidition",
@@ -1084,6 +1084,19 @@ class ProjectController {
           "lastContribution": "UTC Timestamp"
         }
          */
+        final Project project
+        def id = params.id
+        if (id.isLong()) {
+            project = Project.get(id as Long)
+        } else {
+            project = Project.findByName(id)
+        }
+
+        if (!project) {
+            response.sendError(404, "project not found")
+            return
+        }
+
         def completions = projectService.calculateCompletion([project])[project.id]
         def numberOfSubjects = completions?.total
         def percentComplete = numberOfSubjects > 0 ? ((completions?.transcribed as Double) / ((numberOfSubjects ?: 1.0) as Double)) * 100.0 : 0.0

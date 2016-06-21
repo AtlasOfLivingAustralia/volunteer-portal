@@ -472,13 +472,14 @@ class AjaxController {
         final ids = []
 
         def items = sql.rows("""
-select t.id as id, p.name as project_name, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp, t.fully_transcribed_ip_address as ip_address
+select t.id as id, p.name as project_name, p.id as project_id, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp, t.fully_transcribed_ip_address as ip_address
 from task t
 inner join project p on t.project_id = p.id
 where (t.date_fully_transcribed <= :end) and (t.date_fully_transcribed > :start)
 order by t.date_fully_transcribed ASC
 LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageSize, rowStart: rowStart).collect { row ->
             def id = row.id
+            def projectId = row.project_id
             def projectName = row.project_name
             def transcriber = row.transcriber
             def timestamp = row.timestamp
@@ -488,6 +489,7 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             ids << id
             [
                 id: id,
+                projectId: projectId,
                 project: projectName,
                 guid: id,
                 timestamp: timestamp,
@@ -537,7 +539,7 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             def date = getNamedFieldValues(fields, 'eventDate') ?: getNamedFieldValues(fields, 'dateIdentified') ?: getNamedFieldValues(fields, 'verbatimEventDate') ?: getNamedFieldValues(fields, 'measurementDeterminedDate')
             def recordedBy = getNamedFieldValues(fields, 'recordedBy')
 
-            final lowerProjectName = it.project.toString().toLowerCase()
+            final lowerProjectName = it.project.toLowerCase().trim()
             final descriptionSuffix = lowerProjectName.endsWith('expedition') || lowerProjectName.endsWith('project') ? ' expedition' : ''
             if (taxon && recordedBy) it.description = "$displayName transcribed a $taxon recorded by $recordedBy from the ${it.project}$descriptionSuffix"
             else if (taxon) it.description = "$displayName transcribed a $taxon from the ${it.project}$descriptionSuffix"
