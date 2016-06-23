@@ -483,7 +483,7 @@ class AjaxController {
             def transcriber = task.fullyTranscribedBy
             def timestamp = task.dateFullyTranscribed
             def ipAddress = task.fullyTranscribedIpAddress
-            def uuid = task.transcribedUUID
+            def uuid = task.transcribedUUID.toString()
 
             transcribers << transcriber
             ids << id
