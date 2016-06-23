@@ -1,7 +1,3 @@
-%{--<r:require module="jquery"/>--}%
-%{--<r:require module="panZoom" />--}%
-%{--<r:layoutResources disposition="head"/>--}%
-%{--<r:layoutResources disposition="defer" />--}%
 <style type="text/css">
 
 #task_browser_controls, #current_task_header {
