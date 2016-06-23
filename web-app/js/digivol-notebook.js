@@ -41,7 +41,8 @@ var notebook = {
                     position: latlng,
                     map: notebook.map,
                     title: "record: " + task.taskId,
-                    animation: google.maps.Animation.DROP
+                    animation: google.maps.Animation.DROP,
+                    icon: BVP_JS_URLS.singleMarkerPath
                 });
                 markers.push(marker);
                 google.maps.event.addListener(marker, 'click', function () {
@@ -51,7 +52,7 @@ var notebook = {
                 });
             }); // end each
 
-            new MarkerClusterer(notebook.map, markers, { maxZoom: 18 });
+            new MarkerClusterer(notebook.map, markers, { maxZoom: 18, imagePath: BVP_JS_URLS.markersPath });
         }
 
         /**

@@ -22,7 +22,7 @@
                 return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?");
             }
 
-            google.load("maps", "3.3", {other_params: "sensor=false"});
+            google.load("maps", "3.23", {other_params: ""});
             var map, infowindow;
             var mapListenerActive = true;
 

@@ -139,12 +139,15 @@ class ProjectController {
             if (taskList.size() > 0) {
                 def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
                 def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList, params))
+                def cats = fieldListToMap(fieldService.getLatestFieldsWithTasks("catalogNumber", taskList, params))
                 long endQ  = System.currentTimeMillis();
                 log.debug("DB query took " + (endQ - startQ) + " ms")
                 log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
                 taskList.eachWithIndex { tsk, i ->
                     def jsonObj = [:]
                     jsonObj.put("id",tsk.id)
+                    jsonObj.put("filename",tsk.externalIdentifier)
+                    jsonObj.put("cat", cats[tsk.id])
 
                     if (lats.containsKey(tsk.id) && lngs.containsKey(tsk.id)) {
                         jsonObj.put("lat",lats.get(tsk.id))
