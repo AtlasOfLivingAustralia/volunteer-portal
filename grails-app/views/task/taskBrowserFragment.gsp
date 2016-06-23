@@ -1,3 +1,7 @@
+%{--<r:require module="jquery"/>--}%
+%{--<r:require module="panZoom" />--}%
+%{--<r:layoutResources disposition="head"/>--}%
+%{--<r:layoutResources disposition="defer" />--}%
 <style type="text/css">
 
 #task_browser_controls, #current_task_header {
@@ -24,6 +28,11 @@
 
 #task_location {
     color: white;
+}
+
+#taskBrowserImage {
+    height: 220px;
+    width: 670px;
 }
 
 #taskBrowserImage img {
@@ -187,7 +196,7 @@
         $('#tasklist_container').html("");
         $('#task_content').html("Searching for tasks...");
 
-        var taskFindUrl = "${createLink(controller: 'task', action:'taskBrowserTaskList')}?taskId=" + ${taskInstance?.id};
+        var taskFindUrl = "${createLink(controller: 'task', action:'taskBrowserTaskList', params: [taskId: taskInstance?.id])}";
         var searchText = $("#search_text").val();
         if (searchText) {
             taskFindUrl += "&search_text=" + encodeURIComponent(searchText);
@@ -245,7 +254,7 @@
 
     findTasks();
 
-    var target = $("#taskBrowserImage img");
+    var target = $("#taskBrowserImage").find("img");
 
     target.panZoom({
         pan_step: 10,
