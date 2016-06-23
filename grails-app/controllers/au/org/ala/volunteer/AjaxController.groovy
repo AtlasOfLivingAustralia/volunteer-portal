@@ -8,7 +8,6 @@ import com.google.gson.Gson
 import grails.converters.JSON
 import grails.converters.XML
 import groovy.time.TimeCategory
-import org.hibernate.ScrollMode
 
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -445,107 +444,170 @@ class AjaxController {
         render status: 204
     }
 
-    def wedigbio(Long since, Long after, Long before) {
+    def transcriptionFeed(String dateStart, String dateEnd, Long rowStart) {
+        final sw = Stopwatch.createStarted()
+        final udsw = Stopwatch.createUnstarted()
+        final Date startTs
+        final Date endTs
+        final pageSize = 100
+        final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
+        format.timeZone = TimeZone.getTimeZone('UTC')
+        rowStart = rowStart ?: 0
 
-        def sw = new Stopwatch().start()
-        def udsw = new Stopwatch()
-
-        def beforeTs, afterTs
-
-        if ((before == null) != (after == null)) {
-            def error = [error: "Both from and to must be specified"]
-            respond((Object)error, status: 400)
-            return
-        } else if (before && after) {
-            beforeTs = new Timestamp(before)
-            afterTs = new Timestamp(after)
-        } else if (since) {
-            beforeTs = new Timestamp(System.currentTimeMillis())
-            afterTs = new Timestamp(since)
+        if (dateStart) {
+            startTs = toTimestamp(dateStart)
         } else {
-            beforeTs = new Timestamp(System.currentTimeMillis())
-            use (TimeCategory) {
-                afterTs = new Timestamp((new Date() - 1.hour).time)
-            }
+            startTs = new Timestamp(0) // Jan 1, 1970 UTC
         }
-
-        log.info("Before $beforeTs, after $afterTs")
-
-        def results = []
+        if (dateEnd) {
+            endTs = toTimestamp(dateEnd)
+        } else {
+            endTs = new Timestamp(System.currentTimeMillis())
+        }
 
         def sql = new Sql(dataSource)
 
-        sql.eachRow("""
-select t.id as id, p.name as project_name, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp
+        final count = Task.countByDateFullyTranscribedBetween(startTs, endTs)
+        final transcribers = []
+        final ids = []
+
+        def items = sql.rows("""
+select t.id as id, p.name as project_name, p.id as project_id, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp, t.fully_transcribed_ip_address as ip_address
 from task t
 inner join project p on t.project_id = p.id
-where (t.date_fully_transcribed <= $beforeTs) and (t.date_fully_transcribed > $afterTs)""") { row ->
+where (t.date_fully_transcribed <= :end) and (t.date_fully_transcribed > :start)
+order by t.date_fully_transcribed ASC
+LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageSize, rowStart: rowStart).collect { row ->
             def id = row.id
+            def projectId = row.project_id
             def projectName = row.project_name
             def transcriber = row.transcriber
             def timestamp = row.timestamp
+            def ipAddress = row.ip_address
 
-            udsw.start()
-            def details = authService.getUserForUserId(transcriber, true)
-            udsw.stop()
-            def urls = [] , species = [], cities = [], counties = [], states = [], countries = []
-
-            sql.eachRow("select file_path from multimedia where task_id = $id") { mrow ->
-                urls << multimediaService.getImageUrl(mrow.file_path)
-            }
-
-            sql.eachRow("select value from field where task_id = $id and name = 'scientificName'") { frow ->
-                species << frow.value
-            }
-
-            if (!species) {
-                sql.eachRow("select value from field where task_id = $id and name = 'vernacularName'") { frow ->
-                    species << frow.value
-                }
-            }
-
-            sql.eachRow("select value from field where task_id = $id and name = 'municipality'") { frow ->
-                cities << frow.value
-            }
-
-            sql.eachRow("select value from field where task_id = $id and name = 'county'") { frow ->
-                cities << frow.value
-            }
-
-            sql.eachRow("select value from field where task_id = $id and name = 'stateProvince'") { frow ->
-                states << frow.value
-            }
-
-            sql.eachRow("select value from field where task_id = $id and name = 'country'") { frow ->
-                countries << frow.value
-            }
-
-            results << [
-                    transcription_id: id,
-                    transcription_center: 'digivol',
-                    project_name: projectName,
-                    user_id: transcriber,
-                    user_name: details?.displayName,
-                    user_ip_address: null,
-                    user_city: details?.city,
-                    user_state: details?.state,
-                    subject_id: null,
-                    specimen_url: createLink(absolute: true, controller: 'task', action: 'showDetails', id: id), //createLink(absolute: true, controller: 'forum', action: 'taskTopic', params: [taskId: t.id]),
-                    specimen_image_url: urls,
-                    transcription_timestamp: timestamp.time,
-                    transcribed_city: cities,
-                    transcribed_county: counties,
-                    transcribed_state: states,
-                    transcribed_country: countries,
-                    transcribed_species: species
+            transcribers << transcriber
+            ids << id
+            [
+                id: id,
+                projectId: projectId,
+                project: projectName,
+                guid: id,
+                timestamp: timestamp,
+                subject: [
+                    link: createLink(absolute: true, controller: 'task', action: 'summary', id: id),
+                ],
+                contributor: [
+                    id: transcriber,
+//                    decimalLatitude: "Lat. of collecting event",
+//                    decimalLongitude: "Long. of collecting event",
+                    ipAddress: ipAddress
+                ],
+                transcriptionContent: [:],
+                discretionaryState: "Transcribed"
             ]
+        }
+
+        final allFields
+        final usersDetails
+        final mm
+        if (ids) {
+            allFields = Field.where {
+                task.id in ids && superceded == false
+            }.collect { field ->
+                [id: field.taskId, recordIdx: field.recordIdx, name: field.name, value: field.value]
+            }.groupBy { it.id }
+            usersDetails = authService.getUserDetailsById(transcribers, true) ?: [users:[:]]
+            mm = Multimedia.where { task.id in ids }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
+        } else {
+            allFields = [:]
+            usersDetails = [users:[]]
+            mm = [:]
+        }
+
+
+
+        final invalidState = 'N/A'
+        final defaultCountry = 'Australia' // we don't record country, so use this if we have a state, todo externalise
+
+        items.each {
+            def id = it.id
+            def transcriber = it.contributor.id
+            def itemMM = mm[id] ? mm[id][0] : null
+            def thumbnailUrl = itemMM?.thumbUrl ?: itemMM?.url
+            def userDetails = usersDetails.users[transcriber]
+            def displayName = userDetails?.displayName ?: User.findByUserId(transcriber)?.displayName ?: ''
+            def userState = userDetails?.state
+            def userCity = userDetails?.city
+            def fields = allFields[id]
+            def taxon = getNamedFieldValues(fields, 'scientificName') ?: getNamedFieldValues(fields, 'vernacularName')
+            def locality = getNamedFieldValues(fields, 'locality')
+            def municipality = getNamedFieldValues(fields, 'municipality')
+            def county = getNamedFieldValues(fields, 'county')
+            def stateProvince = getNamedFieldValues(fields, 'stateProvince')
+            def country = getNamedFieldValues(fields, 'country')
+            def longitude = getNamedFieldValues(fields, 'decimalLongitude') ?: getNamedFieldValues(fields, 'verbatimLongitude')
+            def latitude = getNamedFieldValues(fields, 'decimalLatitude') ?: getNamedFieldValues(fields, 'verbatimLatitude')
+            def date = getNamedFieldValues(fields, 'eventDate') ?: getNamedFieldValues(fields, 'dateIdentified') ?: getNamedFieldValues(fields, 'verbatimEventDate') ?: getNamedFieldValues(fields, 'measurementDeterminedDate')
+            def recordedBy = getNamedFieldValues(fields, 'recordedBy')
+
+            final lowerProjectName = it.project.toLowerCase().trim()
+            final descriptionSuffix = lowerProjectName.endsWith('expedition') || lowerProjectName.endsWith('project') ? ' expedition' : ''
+            if (taxon && recordedBy) it.description = "$displayName transcribed a $taxon recorded by $recordedBy from the ${it.project}$descriptionSuffix"
+            else if (taxon) it.description = "$displayName transcribed a $taxon from the ${it.project}$descriptionSuffix"
+            else if (recordedBy) it.description = "$displayName transcribed a record recorded by $recordedBy from the ${it.project}$descriptionSuffix"
+            else it.description = "$displayName transcribed a record from the ${it.project}$descriptionSuffix"
+
+            if (thumbnailUrl) it.subject.thumbnailUrl = thumbnailUrl
+            if (displayName) it.contributor.transcriber = displayName
+            if (userState && userState != invalidState) it.contributor.physicalLocation = [
+                    country: defaultCountry,
+                    state: userState,
+                    municipality: userCity
+            ]
+            if (taxon) it.transcriptionContent.taxon = taxon
+            if (locality) it.transcriptionContent.locality = locality
+            if (municipality) it.transcriptionContent.municipality = municipality
+            if (county) it.transcriptionContent.county = county
+            if (stateProvince) it.transcriptionContent.province = stateProvince
+            if (country) it.transcriptionContent.country = country
+            if (longitude) it.transcriptionContent.long = longitude
+            if (latitude) it.transcriptionContent.lat = latitude
+            if (date) it.transcriptionContent.date = date
+            if (recordedBy) it.transcriptionContent.collector = recordedBy
         }
 
         sw.stop()
 
-        log.info("Took ${sw} to get ${results.size()} results since $after.  ${sw.elapsed(TimeUnit.MILLISECONDS) / (results.size() ?: 1)}ms / result.")
-        log.info("Userdetails took ${udsw} for ${results.size()}.  ${udsw.elapsed(TimeUnit.MILLISECONDS) / (results.size() ?: 1)}ms / result.")
+        log.info("Took $sw to get ${items.size()} results since $startTs.  ${sw.elapsed(TimeUnit.MILLISECONDS) / (items.size() ?: 1)}ms / result.")
+        log.info("Userdetails took $udsw for ${items.size()}.  ${udsw.elapsed(TimeUnit.MILLISECONDS) / (items.size() ?: 1)}ms / result.")
+
+        final results = [
+            numFound: count,
+            start: rowStart,
+            rows: items.size(),
+            items: items
+        ]
 
         respond results
+    }
+
+
+
+    private static def getNamedFieldValues(List fields, String name) {
+        fields?.findAll { it.name == name && it.value }?.sort { it.recordIdx }?.collect { it.value }?.join(', ')
+    }
+
+    private static Timestamp toTimestamp(String timestamp) {
+        final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
+        final Timestamp result
+        if (timestamp.isNumber()) {
+            final dateLong = timestamp as Long
+            // determine if this is unix time or java time
+            final factor = dateLong > 1000000000000 ? 0 : 1000
+            result = new Timestamp(dateLong * factor)
+        } else {
+            result = format.parse(timestamp).toTimestamp()
+        }
+        return result
     }
 }

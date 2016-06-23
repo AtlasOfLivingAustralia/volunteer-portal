@@ -112,10 +112,7 @@
         <label class="control-label col-md-3" for="description">Long description</label>
 
         <div class="col-md-9">
-            <tinyMce:renderEditor type="advanced" name="description" rows="10" class="form-control">
-                ${projectInstance.description}
-            </tinyMce:renderEditor>
-            %{--<g:textArea rows="8" class="input-xxlarge" name="description"  value="${projectInstance.description}" />--}%
+            <g:textArea name="description" class="mce form-control" rows="10" value="${projectInstance?.description}" />
         </div>
     </div>
 
@@ -180,16 +177,5 @@
 
 </g:form>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        tinyMCE.init({
-            mode: "textareas",
-            theme: "advanced",
-            editor_selector: "mceadvanced",
-            theme_advanced_toolbar_location: "top",
-            convert_urls: false
-        });
-    });
-</script>
 </body>
 </html>

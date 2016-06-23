@@ -20,7 +20,7 @@
     <div class="thumbnail display-inline-block">
         <img src="${projectInstance?.featuredImage}" class="img-responsive" style="width: 600px;"/>
         <div class="caption">
-            &copy; ${projectInstance.featuredImageCopyright}
+            <g:message code="image.attribution.prefix" /> ${projectInstance.featuredImageCopyright}
         </div>
     </div>
 </div>

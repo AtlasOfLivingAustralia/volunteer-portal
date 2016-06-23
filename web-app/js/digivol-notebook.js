@@ -1,9 +1,6 @@
 "use strict";
 
 var notebook = {
-    // Tab indexes that do not require Ajax loading for its content
-    nonAjaxTabs: ["4"],
-
     map: null,
 
     infowindow: null,
@@ -73,45 +70,279 @@ var notebook = {
             });
 
         }
-    },
-
-    /**
-     * Function to load tabs content via Ajax if required
-     */
-    loadContent: function () {
-        var currentSelectedTab = $('#profileTabsList li.active a');
-        // This is a workaround to show the static content of the tab that was selected when no Ajax is involved
-        $('#profileTabsList li:eq(0) a').tab('show');
-        currentSelectedTab.tab('show');
-        if ($.inArray(currentSelectedTab.attr('tab-index'), notebook.nonAjaxTabs) == -1) {
-            var url = $('#profileTabsList li.active a').attr('content-url');
-            $.ajax(url).done(function (content) {
-                $("#profileTabsContent .tab-pane.active").html(content);
-            });
-        }
-    },
-
-    /**
-     * Function to add a query string parameter safely
-     */
-    updateQueryStringParameter: function (uri, key, value) {
-        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-        if (uri.match(re)) {
-            return uri.replace(re, '$1' + key + "=" + value + '$2');
-        } else {
-            return uri + separator + key + "=" + value;
-        }
     }
 };
 
 $(function() {
-    notebook.loadContent();
     notebook.initMap();
-
-    // Every time a tab is selected the page is refreshed and the content loading is deferred via Ajax
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        e.preventDefault();
-        location.replace(notebook.updateQueryStringParameter(window.location.pathname, 'selectedTab', $(this).attr('tab-index')) + '#profileTabs');
-    });
 });
+
+
+function digivolNotebooksTabs(config) {
+
+    var nb = angular.module('notebook', ['digivol', 'ui.bootstrap', 'ngSanitize', 'hc.marked']);
+
+    nb.value('taskListUrl', config.taskListUrl);
+    nb.value('forumPostsUrl', config.forumPostsUrl);
+    nb.value('changedFieldsUrl', config.changedFieldsUrl);
+    nb.value('auditViewUrl', config.auditViewUrl);
+
+    var notebookTabsController =
+      ['$log', '$scope',
+          function NotebookTabsController($log, $scope) {
+              var $ctrl = this;
+              angular.extend($ctrl, config);
+              $ctrl.tabs = [];
+              for (var i = 0; i < 5; ++i) {
+                  if (i == config.selectedTab) {
+                      $ctrl.tabs.push({
+                          max: config.max || 10,
+                          sort: config.sort,
+                          offset: config.offset || 0,
+                          order: config.order,
+                          query: config.query
+                      });
+                  } else {
+                      $ctrl.tabs.push({
+                          max: 10,
+                          offset: 0
+                      })
+                  }
+              }
+              if ($ctrl.userInstance) {
+                  $ctrl.userInstance['isValidator'] = config.isValiator;
+                  $ctrl.userInstance['isAdmin'] = config.isAdmin;
+              }
+              $scope.$on('unreadValidationViewed', function (event, taskInstance) {
+                  // hack to get this out to the non-angular parts of the app
+                  $(document).triggerHandler('unreadValidationViewed', {taskInstance: taskInstance});
+              });
+          }];
+
+    var taskListController = [
+    '$anchorScroll', '$http', '$log', '$q', '$scope', '$uibModal', '$window', 'taskListUrl',
+        function TaskListController($anchorScroll, $http, $log, $q, $scope, $uibModal, $window, taskListUrl) {
+            var $ctrl = this;
+
+            $ctrl.data = null;
+
+            $ctrl.page = $ctrl.offset / $ctrl.max;
+            $ctrl.cancelPromise = null;
+            $ctrl.maxSize = 5;
+
+            $ctrl.sort = $ctrl.sort || 'dateTranscribed';
+            $ctrl.order = $ctrl.order || 'desc';
+
+            $ctrl.firstLoad = true;
+
+            $ctrl.load = function (args) {
+                if (args) {
+                    if (args.sorting) {
+                        args.sorting = undefined;
+                        if (args.sort == $ctrl.sort) {
+                            $ctrl.order = $ctrl.order == 'asc' ? 'desc' : 'asc';
+                        }
+                    }
+                    angular.extend($ctrl, args);
+                }
+                var params = {
+                    selectedTab: $ctrl.tabIndex,
+                    max: $ctrl.max,
+                    sort: $ctrl.sort,
+                    offset: $ctrl.offset,
+                    order: $ctrl.order,
+                    q: $ctrl.query
+                };
+                if ($ctrl.project) {
+                    params['projId'] = $ctrl.project.id;
+                }
+                if ($ctrl.cancelPromise != null) {
+                    $ctrl.cancelPromise.resolve();
+                }
+                $ctrl.cancelPromise = $q.defer();
+                return $http.get(taskListUrl, {
+                    params: params,
+                    timeout: $ctrl.cancelPromise.promise
+                }).then(function (response) {
+                    $ctrl.cancelPromise = null;
+                    //$log.debug(response);
+                    $ctrl.data = response.data;
+                    $ctrl.firstLoad = false;
+                }, function (error) {
+                    $log.error("couldn't load data for tab", error);
+                    $window.alert("An error occured, please refresh the page and try again.");
+                });
+            };
+
+            $ctrl.viewNotifications = function (taskInstance) {
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'viewNotifications.html',
+                    controller: 'viewNotificationsModalCtrl',
+                    controllerAs: '$ctrl',
+                    bindToController: true,
+                    resolve: {
+                        taskInstance: function () {
+                            return taskInstance;
+                        }
+                    }
+                });
+            };
+
+            if ($ctrl.tabIndex == 0) {
+                $scope.$on('unreadValidationViewed', function (event, taskInstance) {
+                    if ($ctrl.data) {
+                        _.chain($ctrl.data.viewList).filter(function (t) {
+                            return t.id == taskInstance.id;
+                        }).each(function (t) {
+                            t.unread = false;
+                        });
+                    }
+                });
+            }
+            $ctrl.pageChanged = function () {
+                $ctrl.offset = ($ctrl.page - 1) * $ctrl.max;
+                $anchorScroll('tasklist-top-' + $ctrl.tabIndex);
+                $ctrl.load();
+            };
+
+            $ctrl.sortedClasses = function (column) {
+                return column == $ctrl.sort ? ['sorted', $ctrl.order] : [];
+            };
+
+            // watch the selectedTab value to initiate lazy loading of tab contents
+            $scope.$watch(
+              function (scope) {
+                  return $ctrl.selectedTab;
+              },
+              function (newValue, oldValue) {
+                  if (newValue == $ctrl.tabIndex && $ctrl.data == null) {
+                      $ctrl.load();
+                  }
+              }
+            );
+        }];
+
+    var forumPostsController = [
+        '$anchorScroll', '$http', '$log', '$q', '$scope', '$window', 'forumPostsUrl',
+        function ForumPostsController($anchorScroll, $http, $log, $q, $scope, $window, forumCommentsUrl) {
+            var $ctrl = this;
+
+            $ctrl.data = null;
+
+            $ctrl.page = $ctrl.offset / $ctrl.max;
+            $ctrl.cancelPromise = null;
+            $ctrl.maxSize = 5;
+
+            $ctrl.load = function () {
+
+                var params = {
+                    max: $ctrl.max,
+                    sort: $ctrl.sort,
+                    offset: $ctrl.offset,
+                    order: $ctrl.order
+                };
+                if ($ctrl.project) {
+                    params['projId'] = $ctrl.project.id;
+                }
+                if ($ctrl.cancelPromise != null) {
+                    $ctrl.cancelPromise.resolve();
+                }
+                $ctrl.cancelPromise = $q.defer();
+                return $http.get(forumCommentsUrl, {
+                    params: params,
+                    timeout: $ctrl.cancelPromise.promise
+                }).then(function (response) {
+                    $ctrl.cancelPromise = null;
+                    $log.debug(response);
+                    $ctrl.data = response.data;
+                }, function (error) {
+                    $log.error("couldn't load data for forum tab", error);
+                    $window.alert("An error occured, please refresh the page and try again.");
+                });
+            };
+
+            $ctrl.pageChanged = function () {
+                $ctrl.offset = ($ctrl.page - 1) * $ctrl.max;
+                $anchorScroll('forumlist-top');
+                $ctrl.load();
+            };
+
+            $scope.$watch(
+              function (scope) {
+                  return $ctrl.selectedTab;
+              },
+              function (newValue, oldValue) {
+                  if (newValue == $ctrl.tabIndex && $ctrl.data == null) {
+                      $ctrl.load();
+                  }
+              }
+            );
+        }];
+
+    var viewNotificationsModalCtrl =
+      ['$http', '$log', '$rootScope', '$scope', '$uibModalInstance', 'auditViewUrl', 'changedFieldsUrl', 'taskInstance',
+          function ViewNotificationsModalCtrl($http, $log, $rootScope, $scope, $uibModalInstance, auditViewUrl, changedFieldsUrl, taskInstance) {
+              var $ctrl = this;
+              $ctrl.taskInstance = taskInstance;
+
+              $ctrl.loading = true;
+              $ctrl.error = null;
+
+              $http.get(changedFieldsUrl + "/" + taskInstance.id).then(
+                function (response) {
+                    $ctrl.loading = false;
+                    $ctrl.error = false;
+                    angular.extend($ctrl, response.data);
+                },
+                function (error) {
+                    $ctrl.loading = false;
+                    $ctrl.error = true;
+                    $log.error("couldn't get changed fields", error);
+                }
+              ).then(function () {
+                  if (taskInstance.unread) {
+                      $http.post(auditViewUrl + '/' + taskInstance.id).then(function () {
+                          $rootScope.$broadcast('unreadValidationViewed', taskInstance);
+                      });
+                  }
+              });
+
+              $ctrl.close = function () {
+                  $uibModalInstance.close();
+              };
+          }];
+
+    nb.controller('notebookTabsController', notebookTabsController)
+      .controller('viewNotificationsModalCtrl', viewNotificationsModalCtrl)
+      .component('taskList', {
+        templateUrl: 'taskList.html',
+        controller: taskListController,
+        bindings: {
+            //'viewList': '<',
+            //'recentValidatedTaskCount': '<',
+            //'totalMatchingTasks': '<',
+            'tabIndex': '<',
+            'selectedTab': '<',
+            'project': '<',
+            'user': '<',
+            'query': '<',
+            'max': '<',
+            'sort': '<',
+            'offset': '<',
+            'order': '<'
+        }
+      })
+      .component('forumPosts', {
+        templateUrl: 'forumPosts.html',
+        controller: forumPostsController,
+        bindings: {
+            'tabIndex': '<',
+            'selectedTab': '<',
+            'max': '<',
+            'sort': '<',
+            'offset': '<',
+            'order': '<'
+        }
+      });
+}
+

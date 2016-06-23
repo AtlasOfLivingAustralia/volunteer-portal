@@ -6,19 +6,7 @@
     <g:set var="entityName" value="${message(code: 'newsItem.label', default: 'NewsItem')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
 
-    <tinyMce:resources/>
-
-    <r:script type="text/javascript">
-
-        tinyMCE.init({
-            mode: "textareas",
-            theme: "advanced",
-            editor_selector: "mceadvanced",
-            theme_advanced_toolbar_location: "top",
-            convert_urls: false
-        });
-
-    </r:script>
+    <r:require modules="tinymce-simple" />
 
 </head>
 
@@ -70,10 +58,7 @@
                             <label for="body" class="control-label col-md-2"><g:message code="newsItem.body.label" default="Body"/></label>
 
                             <div class="col-md-8">
-                                <tinyMce:renderEditor type="advanced" name="body" rows="10" class="form-control">
-                                    ${newsItemInstance?.body}
-                                </tinyMce:renderEditor>
-
+                                <g:textArea name="body" rows="10" class="mce form-control" value="${newsItemInstance?.body}" />
                             </div>
                         </div>
 

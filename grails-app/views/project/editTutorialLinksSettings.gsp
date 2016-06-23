@@ -17,9 +17,7 @@
 
     <div class="form-group">
         <div class="col-md-12">
-            <tinyMce:renderEditor type="advanced" name="tutorialLinks" rows="10" class="form-control">
-                ${projectInstance?.tutorialLinks}
-            </tinyMce:renderEditor>
+            <g:textArea name="tutorialLinks" class="mce form-control" rows="10" value="${projectInstance?.tutorialLinks}" />
         </div>
 
     </div>
@@ -33,16 +31,5 @@
 
 </g:form>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        tinyMCE.init({
-            mode: "textareas",
-            theme: "advanced",
-            editor_selector: "mceadvanced",
-            theme_advanced_toolbar_location: "top",
-            convert_urls: false
-        });
-    });
-</script>
 </body>
 </html>

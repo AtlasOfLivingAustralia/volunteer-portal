@@ -33,7 +33,7 @@ class MultimediaService {
         return filePath ? "${grailsApplication.config.server.url}${filePath}" : ''
     }
 
-    public String getImageThumbnailUrl(Multimedia media) {
+    public String getImageThumbnailUrl(Multimedia media, boolean absolute = false) {
         if (media == null) {
             log.warn("getImageThumbnailUrl called for null media object")
             return grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg')
@@ -46,7 +46,7 @@ class MultimediaService {
             return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
         } else {
             log.warn("Thumbnail requested for $media but $file doesn't exist")
-            return grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+            return grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg', absolute: absolute)
         }
     }
 

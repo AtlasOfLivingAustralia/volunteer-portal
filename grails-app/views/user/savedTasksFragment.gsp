@@ -1,1 +1,0 @@
-<g:include action="taskListFragment" id="${params.id}"/>

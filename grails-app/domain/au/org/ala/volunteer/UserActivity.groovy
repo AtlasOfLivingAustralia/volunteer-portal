@@ -4,6 +4,7 @@ class UserActivity {
 
     String userId
     String lastRequest
+    String ip
     Date timeLastActivity
     Date timeFirstActivity
 
@@ -12,6 +13,7 @@ class UserActivity {
         lastRequest nullable: false, maxSize: 4096
         timeLastActivity nullable: false
         timeFirstActivity nullable: false
+        ip nullable: true
     }
 
     static mapping = {

@@ -660,6 +660,10 @@ h2.body-heading {
     color: #222; }
 .media-list .transcribed-thumbs {
   margin-bottom: 5px; }
+  .media-list .transcribed-thumbs img {
+    max-width: 100%;
+    height: auto;
+    width: 40px; }
   .media-list .transcribed-thumbs img, .media-list .transcribed-thumbs a {
     margin: 0 5px 10px 0; }
   .media-list .transcribed-thumbs a {

@@ -7,4 +7,8 @@ class ProjectForumTopic extends ForumTopic {
     static constraints = {
         project nullable: false
     }
+
+    static mapping = {
+        project lazy: false
+    }
 }

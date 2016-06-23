@@ -1,5 +1,5 @@
 function digivolStats(config) {
-  var stats = angular.module('stats',[]);
+  var stats = angular.module('stats', ['digivol']);
 
   stats.controller('StatsCtrl', [
     '$scope', '$http', '$log',
@@ -34,6 +34,12 @@ function digivolStats(config) {
 
       $scope.additionalTranscribedThumbs = function(contrib) {
         return Math.max(contrib.transcribedItems - 5, 0);
+      };
+
+
+      $scope.taskSummaryUrl = function(thumb) {
+        var id = thumb.id || "";
+        return config.taskSummaryUrl.replace('-1', id);
       };
 
       var p = $http.get(config.statsUrl, {

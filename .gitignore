@@ -92,3 +92,6 @@ logs
 
 ### Me ###
 local-deploy.sh
+
+### Node ###
+node_modules

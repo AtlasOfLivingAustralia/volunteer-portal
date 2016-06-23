@@ -7,6 +7,7 @@ class Task implements Serializable {
     String externalUrl
     String fullyTranscribedBy
     Date dateFullyTranscribed
+    String fullyTranscribedIpAddress
     String fullyValidatedBy
     Date dateFullyValidated
     Boolean isValid
@@ -32,6 +33,7 @@ class Task implements Serializable {
         externalUrl nullable: true
         fullyTranscribedBy nullable: true
         dateFullyTranscribed nullable: true
+        fullyTranscribedIpAddress nullable: true
         fullyValidatedBy nullable: true
         dateFullyValidated nullable: true
         isValid nullable: true

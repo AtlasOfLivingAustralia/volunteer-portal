@@ -1,11 +1,14 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.sanitizer.SanitizedHtml
+
 class NewsItem implements Serializable {
 
     Institution institution
     Project project
     String title
     String shortDescription
+    @SanitizedHtml
     String body
     Date created
     String createdBy

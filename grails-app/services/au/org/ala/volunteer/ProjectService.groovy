@@ -2,14 +2,20 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
+import org.apache.commons.compress.archivers.zip.Zip64Mode
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.plugins.metrics.groovy.Timed
 
 import javax.imageio.ImageIO
-import java.util.concurrent.TimeUnit
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
+import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
+import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
 
 @Transactional
 class ProjectService {
@@ -390,4 +396,103 @@ class ProjectService {
         }
     }
 
+    def projectSize(List<Project> projects) {
+        projects.collectEntries {
+            [(it.id) : projectSize(it)]
+        }
+    }
+
+    def projectSize(Project project) {
+        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        try {
+            [size: projectPath.directorySize(), error: null]
+        } catch (e) {
+            [error: e, size: -1]
+        }
+    }
+
+    def imageStoreStats() {
+        final f = new File(grailsApplication.config.images.home)
+        [total: f.totalSpace, free: f.freeSpace, usable: f.usableSpace]
+    }
+
+    def calculateCompletion(List<Project> projects) {
+        Task.withCriteria {
+            'in'('project', projects)
+
+            projections {
+                groupProperty('project')
+                count('id', 'total')
+                count('fullyTranscribedBy', 'transcribed')
+                count('fullyValidatedBy', 'validated')
+            }
+        }.collectEntries { row ->
+            [(row[0].id): [ total: row[1], transcribed: row[2], validated: row[3] ] ]
+        }
+    }
+
+    def writeArchive(Project project, OutputStream outputStream) {
+        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        def zos = new ZipArchiveOutputStream(outputStream)
+        zos.encoding = 'UTF-8'
+        zos.fallbackToUTF8 = true
+        zos.createUnicodeExtraFields = NOT_ENCODEABLE
+        zos.useLanguageEncodingFlag = true
+        zos.useZip64 = AsNeeded
+        zos.withStream {
+            addToZip(zos, projectPath, '')
+            zos.finish()
+        }
+    }
+
+    def archiveProject(Project project) {
+        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        def result = projectPath.deleteDir()
+        if (!result) {
+            log.warn("Couldn't delete images for $project")
+            throw new IOException("Couldn't delete images for $project")
+        }
+    }
+
+    static def addToZip(ZipArchiveOutputStream zos, File path, String entryPath) {
+        String entryName = entryPath + path.getName();
+
+        if (path.isFile()) {
+            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName);
+            zos.putArchiveEntry(zipEntry);
+            path.withInputStream { fis ->
+                zos << fis
+            }
+            zos.closeArchiveEntry()
+        } else if (path.isDirectory()) {
+            File[] children = path.listFiles()
+
+            if (children != null) {
+                for (File child : children) {
+                    addToZip(zos, child.absoluteFile, "$entryName/")
+                }
+            }
+        }
+    }
+
+    def calculateNumberOfTranscribers(Project project) {
+        Task.createCriteria().get {
+            eq('project', project)
+            isNotNull('fullyTranscribedBy')
+            projections {
+                countDistinct('fullyTranscribedBy')
+            }
+        }
+    }
+
+    def calculateStartAndEndTranscriptionDates(Project project) {
+        def result = Task.createCriteria().list {
+            eq('project', project)
+            projections {
+                max('dateFullyTranscribed')
+                min('dateFullyTranscribed')
+            }
+        }
+        return result ? [start: result[0][1], end: result[0][0]] : null
+    }
 }

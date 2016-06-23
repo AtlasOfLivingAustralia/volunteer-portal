@@ -1,12 +1,11 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
     <title>Edit Project ${projectInstance?.name}</title>
-    <r:require module="bootstrap-switch"/>
+    <r:require modules="bootstrap-switch, tinymce-simple"/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>
 
 <body class="admin">
-<tinyMce:resources/>
 <div class="container">
 
     <cl:headerContent hideTitle="${true}" title="${message(code: 'default.project.label', default: 'Edit Project')}" selectedNavItem="bvpadmin">

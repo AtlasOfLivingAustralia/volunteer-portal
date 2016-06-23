@@ -6,26 +6,26 @@
                     <g:ifPageProperty name="page.includeBack">
                         <g:set var="includeBackGrey" value="${false}"/>
                         <g:ifPageProperty name="page.includeBackGrey" equals="true"><g:set var="includeBackGrey" value="${true}"/></g:ifPageProperty>
-                        <a href="${g.pageProperty(name:'page.backHref')}" class="btn btn-hollow transcription-back ${includeBackGrey ? 'grey' :''}">Back</a>
+                        <a href="${g.pageProperty(name:'page.backHref')}" class="btn btn-hollow transcription-back ${includeBackGrey ? 'grey' :''}"><g:message code="action.back" /></a>
                     </g:ifPageProperty>
                 </div>
                 <div class="col-sm-6">
                     <div class="digivol-tab">
-                        <a href="${g.createLink(uri:"/")}" class="tab-brand">A <r:img dir="images/2.0/" file="logoDigivolInverted.png" /> Expedition</a>
+                        <a href="${g.createLink(uri:"/")}" class="tab-brand">A <r:img dir="images/2.0/" file="logoDigivolInverted.png" /> <g:message code="suffix.expedition" /></a>
                         <ul class="navbar-short">
                         <!-- Logged In Starts -->
                             <cl:isNotLoggedIn>
                                 <li>
-                                    <a href="${grailsApplication.config.casServerName}/cas/login?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> Log in</a>
+                                    <a href="${grailsApplication.config.casServerName}/cas/login?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> <g:message code="action.login" /></a>
                                 </li>
 
-                                <li><a href="#">Register</a></li>
+                                <li><a href="#"><g:message code="action.register" /></a></li>
                             </cl:isNotLoggedIn>
                             <cl:isLoggedIn>
                                 <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         <span class="glyphicon glyphicon-user"></span>
-                                        My Profile
+                                        <g:message code="action.myProfile" />
                                         <span class="glyphicon glyphicon-chevron-down"></span>
                                     </a>
 

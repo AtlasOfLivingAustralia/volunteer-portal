@@ -545,6 +545,28 @@ class ForumController {
         [userInstance: userInstance, messages: messages]
     }
 
+    def userComments() {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        def id = params.int("id")
+        def userInstance = User.get(id)
+        def messages = forumService.getMessagesForUser(userInstance, params)
+        def totalCount = messages.totalCount
+        def xformMessages = messages.groupBy { it.topic }.collect {
+            def topic = it.key
+            def tms = it.value
+            [ topicTask: (topic instanceof TaskForumTopic) ? topic.task : null, // the default json renderer doesn't put the task or project fields in the output but I don't really care about fixing this properly right now.
+              topicProject: (topic instanceof ProjectForumTopic) ? topic.project : (topic instanceof TaskForumTopic) ? topic.task.project : null,
+              topic: topic,
+              messages: tms.collect {[
+                      message: it,
+                      userProps: userService.detailsForUserId(it.user?.userId),
+                      isUserForumModerator: userService.isUserForumModerator(it.user, it.topic instanceof ProjectForumTopic ? it.topic.project : null ) as Boolean
+                  ]}
+            ]
+        }
+        render([totalCount: totalCount, messages: xformMessages] as JSON)
+    }
+
     def markdownHelp() {
 
         def items = []

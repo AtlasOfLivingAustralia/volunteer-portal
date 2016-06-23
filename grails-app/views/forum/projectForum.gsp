@@ -152,7 +152,7 @@
                                 <img src="${projectInstance.featuredImage}" alt="${projectInstance.name}" title="${projectInstance.name}">
                                 <g:if test="${projectInstance.featuredImageCopyright}">
                                     <div class="caption">
-                                    &copy; ${projectInstance.featuredImageCopyright}
+                                        <g:message code="image.attribution.prefix" /> ${projectInstance.featuredImageCopyright}
                                     </div>
                                 </g:if>
                             </div>

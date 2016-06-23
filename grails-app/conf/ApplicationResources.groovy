@@ -1,7 +1,9 @@
+def dev = grails.util.GrailsUtil.isDevelopmentEnv()
+
 modules = {
 
     'admin-stats' {
-        dependsOn 'angular, jquery, jquery-ui'
+        dependsOn 'digivol-module', 'jquery', 'jquery-ui'
         resource url: '/js/admin-stats.js'
     }
 
@@ -10,16 +12,25 @@ modules = {
         dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications'
         resource url: '/css/main.css'
         resource url: '/css/digivol-custom.css'
+        resource url: '/js/digivol-main.js'
+    }
+
+    'digivol-module' {
+        dependsOn 'angular'
+        resource url: '/js/digivol-module.js'
+        if (!dev) {
+            resource url: '/js/digivol-module-production.js'
+        }
     }
 
     'digivol-stats' {
-        dependsOn 'angular'
+        dependsOn 'digivol-module'
         resource url: '/js/digivol-stats.js'
         resource url: '/css/digivol-stats.css'
     }
 
     'digivol-notebook' {
-        dependsOn 'digivol', 'marker-clusterer'
+        dependsOn 'digivol', 'digivol-module', 'marker-clusterer', 'angular-ui-bootstrap', 'angular-marked', 'angular-sanitize', 'underscore'
         resource url: 'js/digivol-notebook.js'
     }
 
@@ -29,7 +40,7 @@ modules = {
     }
 
     'digivol-new-project-wizard' {
-        dependsOn 'angular', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead' // 'angular-typeahead',
+        dependsOn 'digivol-module', 'angular-sanitize', 'angular-ui-router', 'angular-qtip', 'angular-google-maps', 'ng-file-upload', 'angular-bootstrap-show-errors', 'typeahead', 'angular-ui-tinymce' // 'angular-typeahead',
         resource url: '/js/new-project-wizard.js'
     }
 
@@ -93,6 +104,15 @@ modules = {
 
     'timezone' {
         resource url: '/js/jstz-1.0.4.min.js'
+    }
+
+    'tinymce' {
+        resource url: '/js/tinymce/4.3.13/tinymce.min.js', exclude: "*"
+    }
+
+    'tinymce-simple' {
+        dependsOn 'tinymce'
+        resource url: '/js/tinymce4-simple.js'
     }
 
     'amplify' {
@@ -226,6 +246,10 @@ modules = {
         resource url: 'js/moment/2.10.6/moment.min.js'
     }
 
+    "marked" {
+        resource url: 'js/marked/0.3.5/marked.js'
+    }
+
     "livestamp" {
         dependsOn 'jquery', 'moment'
         resource url: 'js/livestamp/1.1.2/livestamp.min.js'
@@ -247,13 +271,27 @@ modules = {
     }
 
     'angular' {
-        resource url: 'js/angular/1.4.7/angular.min.js'
-        resource url: 'js/angular/1.4.7/angular-csp.css'
+        dependsOn 'jquery'
+        resource url: 'js/angular/1.5.6/angular-csp.css'
+        resource url: 'js/angular/1.5.6/angular.min.js'
+        resource url: 'js/angular/1.5.6/angular-animate.min.js'
+        resource url: 'js/angular/1.5.6/angular-aria.min.js'
+        resource url: 'js/angular/1.5.6/angular-touch.min.js'
+    }
+
+    'angular-sanitize' {
+        resource url: 'js/angular/1.5.6/angular-sanitize.min.js'
     }
 
     'angular-ui-router' {
         dependsOn 'angular'
-        resource url: '/js/angular/ui-router/0.2.15/angular-ui-router.min.js'
+        resource url: '/js/angular/ui-router/0.3.1/angular-ui-router.min.js'
+    }
+
+    'angular-ui-bootstrap' {
+        dependsOn 'bootstrap-css', 'angular'
+        resource url: '/js/angular/ui-bootstrap/1.3.3/ui-bootstrap-csp.css'
+        resource url: '/js/angular/ui-bootstrap/1.3.3/ui-bootstrap-tpls-1.3.3.min.js'
     }
 
     'angular-typeahead' {
@@ -289,5 +327,15 @@ modules = {
     'angular-moment' {
         dependsOn 'angular', 'moment'
         resource url: '/js/angular/moment/1.0.0-beta.3/angular-moment.min.js'
+    }
+
+    'angular-marked' {
+        dependsOn 'angular', 'marked'
+        resource url: '/js/angular/angular-marked/1.2.0/angular-marked.min.js'
+    }
+
+    'angular-ui-tinymce' {
+        dependsOn 'angular', 'tinymce'
+        resource url: '/js/angular/ui-tinymce/0.0.16/tinymce.min.js'
     }
 }

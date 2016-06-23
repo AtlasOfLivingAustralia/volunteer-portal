@@ -64,6 +64,7 @@
     </div>
 </cl:headerContent>
 
+<section id="main-content">
 <g:if test="${!taskInstance}">
     <div class="alert alert-danger">
         Task is null!
@@ -72,26 +73,28 @@
 <g:else>
     <div class="container-fluid">
         <div class="row-fluid">
-            <div class="span6">
-                <div class="imageDiv">
-                    <g:set var="multimedia" value="${taskInstance?.multimedia?.first()}"/>
-                    <g:imageViewer multimedia="${multimedia}"/>
-                </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="imageDiv">
+                            <g:set var="multimedia" value="${taskInstance?.multimedia?.first()}"/>
+                            <g:imageViewer multimedia="${multimedia}"/>
+                        </div>
 
-                <div class="well well-small">
-                    <a class="btn btn-small"
-                       href="${createLink(action: 'show', id: taskInstance?.id)}">Transcribe/Validate Task</a>
-                    <cl:ifAdmin>
-                        <a class="btn btn-small btn-warning"
-                           href="${createLink(action: 'resetTranscribedStatus', id: taskInstance?.id)}">Reset transcribed status</a>
-                        <a class="btn btn-small btn-warning"
-                           href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}">Reset validated status</a>
-                    </cl:ifAdmin>
+                        <a class="btn btn-default btn-small"
+                           href="${createLink(action: 'show', id: taskInstance?.id)}">Transcribe/Validate Task</a>
+                        <cl:ifAdmin>
+                            <a class="btn btn-small btn-warning"
+                               href="${createLink(action: 'resetTranscribedStatus', id: taskInstance?.id)}">Reset transcribed status</a>
+                            <a class="btn btn-small btn-warning"
+                               href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}">Reset validated status</a>
+                        </cl:ifAdmin>
+                    </div>
                 </div>
             </div>
 
-            <div class="span6">
-                <div class="well well-small">
+            <div class="col-sm-12 col-md-6">
+                <div class="panel panel-default">
                     <table class="table">
                         <tr>
                             <td>ID</td>
@@ -194,9 +197,12 @@
         </div>
 
         <div class="row-fluid">
-            <div class="span12">
-                <h3>Fields</h3>
-                <table class="table table-bordered table-condensed">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3>Fields</h3>
+                    </div>
+                    <table class="table table-bordered table-condensed">
                     <thead>
                     <g:sortableColumn property="id" title="Id"/>
                     <g:sortableColumn property="name" title="Field"/>
@@ -224,10 +230,12 @@
                     </g:each>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
 </g:else>
+</section>
 </body>
 <r:script>
 

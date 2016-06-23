@@ -9,8 +9,6 @@ import spock.lang.Specification
 @TestFor(FreemarkerService)
 class FreemarkerServiceSpec extends Specification {
 
-    def freemarkerService
-
     def setup() {
     }
 
@@ -25,9 +23,9 @@ class FreemarkerServiceSpec extends Specification {
     }
   }
 }'''
-        def t1 = freemarkerService.getTemplate(templateText)
-        def t2 = freemarkerService.getTemplate(templateText)
+        def t1 = service.getTemplate(templateText)
+        def t2 = service.getTemplate(templateText)
 
-        assertTrue(t1 == t2)
+        assertTrue(t1.is(t2))
     }
 }

@@ -2,15 +2,12 @@ package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import au.org.ala.web.AlaSecured
-import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
-import retrofit.RetrofitError
+import retrofit2.Call
 
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
 @AlaSecured("ROLE_VP_ADMIN")
 class InstitutionAdminController {
 
@@ -28,7 +25,6 @@ class InstitutionAdminController {
         respond new Institution(params)
     }
 
-    @Transactional
     def save(Institution institutionInstance) {
         if (institutionInstance == null) {
             notFound()
@@ -55,7 +51,6 @@ class InstitutionAdminController {
         respond institutionInstance, model: [newsItems: newsItems]
     }
 
-    @Transactional
     def updateNewsItems() {
         def institutionInstance = Institution.get(params.id)
         if (!institutionInstance) {
@@ -70,7 +65,6 @@ class InstitutionAdminController {
         redirect(action: 'editNewsItems', id: institutionInstance.id)
     }
 
-    @Transactional
     def update(Institution institutionInstance) {
         if (institutionInstance == null) {
             notFound()
@@ -88,7 +82,6 @@ class InstitutionAdminController {
 
     }
 
-    @Transactional
     def delete(Institution institutionInstance) {
 
         if (institutionInstance == null) {
@@ -114,7 +107,6 @@ class InstitutionAdminController {
         }
     }
 
-    @Transactional
     def quickCreate(String cid) {
         def existing = Institution.executeQuery("select id from Institution where collectoryUid = :cid", [cid: cid])
         if (existing) {
@@ -122,16 +114,27 @@ class InstitutionAdminController {
             render status: SEE_OTHER
             return
         }
-        CollectoryProviderDto collectoryObject = null;
+        CollectoryProviderDto collectoryObject
         try {
 
+            Call<? extends CollectoryProviderDto> call
             if (cid.toLowerCase().startsWith("in")) {
-                collectoryObject = collectoryClient.getInstitution(cid)
+                call = collectoryClient.getInstitution(cid)
             } else {
-                collectoryObject = collectoryClient.getCollection(cid)
+                call = collectoryClient.getCollection(cid)
             }
-        } catch (RetrofitError e) {
-            render status: e.networkError ? INTERNAL_SERVER_ERROR : BAD_REQUEST
+            def response = call.execute()
+            if (!response.isSuccessful()) {
+                render status: BAD_REQUEST
+                return
+            }
+
+            collectoryObject = response.body()
+
+        } catch (IOException e) {
+            log.error("Couldn't connect to collectory", e)
+            render status: INTERNAL_SERVER_ERROR
+            return
         }
         def institutionInstance = new Institution(
                 name: collectoryObject.name,

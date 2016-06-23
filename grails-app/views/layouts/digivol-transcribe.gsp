@@ -25,7 +25,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')?:'digivol'}">
+<body class="${pageProperty(name: 'body.class')?:'digivol'} ng-cloak" data-ng-app="${pageProperty(name: 'body.data-ng-app', default: 'digivol')}">
 
 <g:render template="/layouts/condensedNav" />
 
@@ -44,13 +44,7 @@
 
 <g:render template="/layouts/ga" />
 
-<r:script>
-    var BVP_JS_URLS = {
-                selectProjectFragment: "${createLink(controller: 'project', action: 'findProjectFragment')}",
-                webappRoot: "${resource(dir: '/')}",
-                picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}"
-            };
-</r:script>
+<g:render template="/layouts/jsUrls" />
 <!-- JS resources-->
 <r:layoutResources/>
 

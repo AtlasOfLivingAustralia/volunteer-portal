@@ -1,13 +1,13 @@
 package au.org.ala.volunteer
 
-import com.google.common.io.ByteStreams
-import com.google.common.io.Files
-import org.springframework.web.multipart.MultipartFile
+import au.org.ala.volunteer.sanitizer.SanitizedHtml
 
 class Project implements Serializable {
 
     String name
+    @SanitizedHtml
     String description
+    @SanitizedHtml
     String tutorialLinks
     Boolean showMap = true
     Date created
@@ -28,6 +28,10 @@ class Project implements Serializable {
     Double mapInitLatitude
     Double mapInitLongitude
     Boolean harvestableByAla = true
+    Boolean archived = false
+
+    Date dateCreated
+    Date lastUpdated
 
     Integer version
 
@@ -40,12 +44,14 @@ class Project implements Serializable {
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {
+        autoTimestamp true
         tasks cascade: 'all,delete-orphan'
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
         harvestableByAla defaultValue: true
         version defaultValue: '0'
+        archived defaultValue: 'false'
     }
 
     static constraints = {

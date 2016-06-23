@@ -38,14 +38,17 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        runtime 'org.postgresql:postgresql:9.3-1104-jdbc41'
+        runtime 'org.postgresql:postgresql:9.4.1208.jre7'
         compile 'org.imgscalr:imgscalr-lib:4.2'
-        compile 'com.squareup.retrofit:retrofit:1.6.1'
+        compile 'com.squareup.retrofit2:retrofit:2.1.0'
+        compile 'com.squareup.retrofit2:converter-gson:2.1.0'
         compile 'com.google.guava:guava:17.0'
+        compile 'org.apache.commons:commons-compress:1.11'
         compile 'org.apache.commons:commons-pool2:2.4.2'
         compile 'org.elasticsearch:elasticsearch:1.3.5'
         compile 'net.sf.opencsv:opencsv:2.3'
         compile 'org.freemarker:freemarker:2.3.23'
+        compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
     }
 
@@ -55,7 +58,8 @@ grails.project.dependency.resolution = {
         runtime ":cache-ehcache:1.0.4"
         compile ":cache-headers:1.1.7"
         build ':tomcat:7.0.55.3'
-        runtime ':hibernate4:4.3.10'
+        compile ':hibernate4:4.3.10'
+        compile ":postgresql-extensions:4.6.1"
         compile ':platform-core:1.0.0'
 
         runtime ":jquery:1.11.1"
@@ -74,7 +78,6 @@ grails.project.dependency.resolution = {
         compile ":markdown:1.1.1"
         runtime ":pretty-time:2.1.3.Final-1.0.1"
         runtime ":quartz:1.0.2"
-        runtime ":tiny-mce:3.4.9"
         runtime ":webxml:1.4.1"
 
         runtime ':twitter-bootstrap:3.3.5'

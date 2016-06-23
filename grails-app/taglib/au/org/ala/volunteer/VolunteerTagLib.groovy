@@ -7,6 +7,7 @@ import grails.util.Metadata
 import groovy.time.TimeCategory
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
+import org.apache.commons.io.FileUtils
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -25,7 +26,7 @@ class VolunteerTagLib {
     def achievementService
     def taskService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize']
 
     /**
      * @attr title The page title
@@ -529,38 +530,13 @@ class VolunteerTagLib {
         }
     }
 
-    def myProfileAlert = { attrs, body ->
-        def userId = userService.currentUser?.userId
-        if (userId) {
-            def tasks =  taskService.getUnreadValidatedTasks (null, userId)
-            int taskCount = tasks.size()
-            if (taskCount > 0) {
-                out << 'My Profile <span class="badge badge-danger" style="color:white">' + taskCount + '</span>'
-            } else {
-                out << 'My Profile'
-            }
-        } else {
-            out << 'My Profile'
-        }
-    }
-
     def readStatusIcon = { attrs, body ->
-        def unReadList = taskService.unReadList
+        def unReadList = taskService.getUnreadValidatedTasks(attrs.project, userService.currentUser?.userId)
         if (attrs.taskId in (unReadList)) {
             out << '<span class="glyphicon glyphicon-envelope"  style="color:#000192"></span>'
         } else {
             out << '<span class="glyphicon glyphicon-ok"></span>'
         }
-    }
-
-    def newAlert = {
-        def unReadList = taskService.unReadList
-        def newAlert = 'Notebook'
-        int unReadCount = unReadList?.size()
-        if (unReadCount) {
-            newAlert =  'Notebook <span class="badge badge-danger" style="color:white">' + unReadCount + '</span>'
-        }
-        out << newAlert
     }
 
     def spinner = { attrs, body ->
@@ -924,5 +900,10 @@ class VolunteerTagLib {
                 trackers = ((String)trackers).split(',')*.trim()
         }
         out << gson.toJson(trackers)
+    }
+
+    Closure formatFileSize = { attrs, body ->
+        def size = attrs.remove('size')
+        return FileUtils.byteCountToDisplaySize(size)
     }
 }

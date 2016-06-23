@@ -242,8 +242,11 @@ grails.hibernate.pass.readonly = false
 grails.hibernate.osiv.readonly = false
 
 // tiny mce loads its own files, so don't hash it
-grails.resources.mappers.hashandcache.excludes= ['plugins/tiny-mce-3.4.9/**/*']
-grails.resources.adhoc.excludes = ['plugins/tiny-mce-3.4.9/**/*.*']
+grails.resources.mappers.hashandcache.excludes = ['/js/tinymce/**/*']
+grails.resources.mappers.zip.excludes = ['/js/tinymce/**/*']
+grails.resources.mappers.bundle.excludes = ['/js/tinymce/**/*']
+grails.resources.mappers.yuijsminify.excludes = ['/js/tinymce/**/*']
+//grails.resources.adhoc.excludes = ['/js/tinymce/**/*.*']
 //grails.assets.excludes	["tiny_mce/src/*.js"]
 
 bvp.tmpdir="/data/${appName}/config/"
@@ -330,6 +333,11 @@ grails {
                 diskPersistent false
                 diskExpiryThreadIntervalSeconds 120
             }
+            cache {
+                name 'geoip'
+                eternal false
+                timeToLiveSeconds 86400
+            }
             diskStore {
                 temp true
             }
@@ -352,16 +360,19 @@ log4j = {
                 rollingFile name: "tomcatLog", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.INFO
                 rollingFile name: "access", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.INFO
                 rollingFile name: "cas", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-cas.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
+                rollingFile name: "debugLog", maxFileSize: '10MB', maxBackupIndex: 4, file: "${loggingDir}/${appName}-debug.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
             development {
                 console name: "tomcatLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
                 console name: "access", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
                 console name: "cas", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
+                console name: "debugLog", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
             }
             test {
-                rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
+                rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")//, threshold: Level.DEBUG
                 rollingFile name: "access", maxFileSize: '1MB', file: "/tmp/${appName}-session-access.log", layout: pattern(conversionPattern: "%d %m%n")//, threshold: Level.DEBUG
                 rollingFile name: "cas", maxFileSize: '1MB', file: "${loggingDir}/${appName}-cas.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
+                rollingFile name: "debugLog", maxFileSize: '1MB', file: "/tmp/${appName}-debug.log", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
         }
     }
@@ -379,6 +390,11 @@ log4j = {
             cas: [
                     'au.org.ala.cas',
                     'org.jasig.cas'
+            ]
+
+    debug   additivity: false,
+            debugLog: [
+                    'grails.app.services.au.org.ala.volunteer.TaskService'
             ]
     
     error   'org.codehaus.groovy.grails.web.servlet',  //  controllers

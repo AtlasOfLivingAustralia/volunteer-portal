@@ -197,13 +197,13 @@
         </div>
         <div class="row">
             <div class="col-sm-8">
-                <h1>${projectInstance.name}</h1>
+                <h1>${projectInstance.name}<g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if><g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="project.inactive" /></span></small></g:if></h1>
                 <div id="projectDescription" class="hidden">
                     <p>${raw(projectInstance.description)}</p><!-- end description -->
                     <a href="#" title="read more" class="readmore">Read more »</a>
                 </div>
                 <div class="cta-primary">
-                    <g:if test="${!projectInstance.inactive}">
+                    <g:if test="${percentComplete < 100}">
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="glyphicon glyphicon-arrow-right"></span></a>
                         <g:if test="${projectInstance.tutorialLinks}">
                             <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow ${oldClass} tutorial">View tutorial</a>
@@ -245,7 +245,7 @@
         <g:if test="${bgImage}">
             <div class="row">
                 <div class="col-sm-12 image-origin">
-                    <p><g:if test="${projectInstance.backgroundImageAttribution}">Image by ${projectInstance.backgroundImageAttribution}</g:if></p>
+                    <p><g:if test="${projectInstance.backgroundImageAttribution}"><g:message code="image.attribution.prefix" /> ${projectInstance.backgroundImageAttribution}</g:if></p>
                 </div>
             </div>
         </g:if>

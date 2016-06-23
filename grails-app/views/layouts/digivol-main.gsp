@@ -79,7 +79,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <span class="glyphicon glyphicon-user"></span>
                            <!-- My Profile -->
-                            <cl:myProfileAlert/>
+                            <g:message code="action.myProfile" /> <span class="hidden unread-count label label-danger label-as-badge"></span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
 
@@ -130,22 +130,22 @@
 
 <section id="why" class="white">
     <div class="container">
-        <h2 class="heading"><g:message code="layout.whyinvolved.heading" default="Why you should get involved?"/></h2>
+        <h2 class="heading"><g:message code="layout.whyinvolved.heading" /></h2>
 
         <div class="row">
             <div class="col-sm-4">
-                <h3><g:message code="layout.whyinvolved.contribute.heading" default="Contribute to knowledge"/></h3>
-                <p><g:message code="layout.whyinvolved.contribute.body" default="Help researchers better understand the diversity of plant and animal life."/></p>
+                <h3><g:message code="layout.whyinvolved.contribute.heading" /></h3>
+                <p><g:message code="layout.whyinvolved.contribute.body" /></p>
             </div>
 
             <div class="col-sm-4">
-                <h3><g:message code="layout.whyinvolved.volunteer.heading" default="Be an online volunteer"/></h3>
-                <p><g:message code="layout.whyinvolved.volunteer.body" default="Be part of an active community that supports and contributes to science and culture."/></p>
+                <h3><g:message code="layout.whyinvolved.volunteer.heading" /></h3>
+                <p><g:message code="layout.whyinvolved.volunteer.body" /></p>
             </div>
 
             <div class="col-sm-4">
-                <h3><g:message code="layout.whyinvolved.accessible.heading" default="Make data accessible"/></h3>
-                <p><g:message code="layout.whyinvolved.accessible.body" default="Unlock collections and extend the reach of information around the world."/></p>
+                <h3><g:message code="layout.whyinvolved.accessible.heading" /></h3>
+                <p><g:message code="layout.whyinvolved.accessible.body" /></p>
             </div>
         </div>
     </div>
@@ -240,13 +240,7 @@
 <g:render template="/layouts/ga" />
 
 %{--<asset:javascript src="application.js" />--}%
-<r:script>
-    var BVP_JS_URLS = {
-                selectProjectFragment: "${createLink(controller: 'project', action: 'findProjectFragment')}",
-                webappRoot: "${resource(dir: '/')}",
-                picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}"
-            };
-</r:script>
+<g:render template="/layouts/jsUrls" />
 %{--<asset:deferredScripts/>--}%
 <!-- JS resources-->
 <r:layoutResources/>

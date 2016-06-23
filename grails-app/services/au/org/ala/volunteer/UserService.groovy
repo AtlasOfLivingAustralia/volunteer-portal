@@ -3,12 +3,15 @@ package au.org.ala.volunteer
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
+import grails.transaction.Transactional
+import groovy.sql.Sql
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
+import java.sql.Connection
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class UserService {
@@ -148,6 +151,15 @@ class UserService {
      * @return
      */
     public boolean isValidator(Project project) {
+        isValidatorForProjectId(project?.id)
+    }
+
+    /**
+     * returns true if the current user can validate tasks from the specified project
+     * @param project
+     * @return
+     */
+    public boolean isValidatorForProjectId(Long projectId) {
 
         def userId = currentUserId
 
@@ -173,7 +185,7 @@ class UserService {
         if (user) {
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
             def role = user.userRoles.find {
-                it.role.id == validatorRole.id && (it.project == null || project == null || it.project.id == project?.id)
+                it.role.id == validatorRole.id && (it.project == null || projectId == null || it.project.id == projectId)
             }
             if (role) {
                 // a role exists for the current user and the specified project (or the user has a role with a null project
@@ -282,7 +294,8 @@ class UserService {
         }
 
         def now = new Date()
-        _userActivityQueue.add(new UserActivity(userId: userId, lastRequest: action.toString(), timeFirstActivity: now, timeLastActivity: now))
+        def ip = request.remoteAddr
+        _userActivityQueue.add(new UserActivity(userId: userId, lastRequest: action.toString(), timeFirstActivity: now, timeLastActivity: now, ip: ip))
     }
 
     @NotTransactional
@@ -303,6 +316,7 @@ class UserService {
                         // update the existing one
                         existing.timeLastActivity = activity.timeLastActivity
                         existing.lastRequest = activity.lastRequest
+                        existing.ip = activity.ip
                     } else {
                         activity.save()
                     }

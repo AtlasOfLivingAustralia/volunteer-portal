@@ -75,7 +75,7 @@ class ValidateController {
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project))
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')
@@ -96,7 +96,7 @@ class ValidateController {
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project))
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')

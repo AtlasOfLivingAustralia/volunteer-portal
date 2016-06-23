@@ -145,17 +145,17 @@ class InstitutionService {
 
         CollectoryProviderDto provider = null
         if (uid?.toLowerCase()?.startsWith("in")) {
-            provider = collectoryClient.getInstitution("$uid")
+            provider = collectoryClient.getInstitution(uid).execute().body()
         } else if (uid?.toLowerCase()?.startsWith("co")) {
-            provider = collectoryClient.getCollection("$uid")
+            provider = collectoryClient.getCollection(uid).execute().body()
         }
 
         return provider
     }
 
     public List<CollectoryDto> getCombinedInsitutionsAndCollections() {
-        def results = collectoryClient.getInstitutions()
-        def collections = collectoryClient.getCollections()
+        def results = collectoryClient.getInstitutions().execute().body()
+        def collections = collectoryClient.getCollections().execute().body()
         // Merge the two lists
         results.addAll(collections)
         results.sort { it.name }

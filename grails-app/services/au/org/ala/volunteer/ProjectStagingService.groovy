@@ -27,6 +27,7 @@ class ProjectStagingService {
         project.mapInitZoomLevel = projectDescriptor.mapInitZoomLevel
         project.featuredImageCopyright = projectDescriptor.imageCopyright
         project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
+        project.tutorialLinks = projectDescriptor.tutorialLinks
         project.inactive = true
 
         if (projectDescriptor.labelIds) {

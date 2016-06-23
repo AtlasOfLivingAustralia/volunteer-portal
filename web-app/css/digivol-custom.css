@@ -343,19 +343,12 @@ table .btn-default:hover {
 
 /*** LeaderBoard ***/
 
-/** img-responsive without display: block */
-.media-list .transcribed-thumbs img {
-    max-width: 100%;
-    height: auto;
-}
-
 #digivol-stats {
     padding: 0;
     margin: 0;
 }
 
 /** fix img sizes so stuff doesn't shift on load */
-.media-list .transcribed-thumbs img,
 #digivol-stats .avatar {
     width: 40px;
 }
@@ -445,6 +438,11 @@ a.fieldHelp {
 
 /* end notifications */
 
-.badge-danger {
-    background-color: red;
+.label-as-badge {
+    border-radius: 1em;
+}
+
+.tab-content-loading {
+    opacity: 0.5;
+    pointer-events: none;
 }

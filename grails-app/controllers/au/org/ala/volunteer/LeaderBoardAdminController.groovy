@@ -4,7 +4,6 @@ import au.org.ala.web.AlaSecured
 import grails.converters.JSON
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
 @AlaSecured("ROLE_VP_ADMIN")
 class LeaderBoardAdminController {
 
@@ -37,15 +36,13 @@ class LeaderBoardAdminController {
 
         render users as JSON
     }
-    
-    @Transactional
+
     def addIneligibleUser(int id) {
         settingsService.setSetting(SettingDefinition.IneligibleLeaderBoardUsers.key, 
                 settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers) + (Integer.toString(id)))
         render status: 204
     }
-    
-    @Transactional
+
     def removeIneligibleUser(int id) {
         settingsService.setSetting(SettingDefinition.IneligibleLeaderBoardUsers.key,
                 settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers) - (Integer.toString(id)))

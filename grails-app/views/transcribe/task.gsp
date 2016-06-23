@@ -199,6 +199,7 @@
                     width:700,
                     height:600,
                     hideHeader: false,
+                    size: 'large',
                     title: 'Previously transcribed tasks'
                 });
 

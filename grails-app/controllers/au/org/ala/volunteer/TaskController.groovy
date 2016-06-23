@@ -6,9 +6,14 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
+import javax.servlet.http.HttpServletResponse
+
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST
+
 class TaskController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST", viewTask: "POST"]
     public static final String PROJECT_LIST_STATE_SESSION_KEY = "project.admin.list.state"
     public static final String PROJECT_LIST_LAST_PROJECT_ID_KEY = "project.admin.list.lastProjectId"
 
@@ -20,6 +25,8 @@ class TaskController {
     def userService
     def grailsApplication
     def stagingService
+    def auditService
+    def multimediaService
 
     def load() {
         [projectList: Project.list()]
@@ -392,6 +399,48 @@ class TaskController {
         }
     }
 
+    def summary(Task task) {
+        /*
+        {
+          "filename": "filename",
+          "thumbnail": "thumbnail",
+          "image": "image",
+          "externalId": "externalId",
+          "transcriber": "transcriber",
+          "dateTranscribed": "dateTranscribed",
+          "validator": "validator",
+          "dateValidated": "dateValidated",
+          "valid": "isValid",
+          "fields": {
+            [
+              { "name", "value", ...}, ...
+            ]
+          }
+        }
+         */
+        if (!task) {
+            response.sendError(404, "Task not found")
+            return
+        }
+
+        final fields = Field.findAllByTaskAndSuperceded(task, false)
+        final mm = task.multimedia.first()
+
+        final result = [
+                    filename: task.externalIdentifier,
+                    thumbnail: multimediaService.getImageThumbnailUrl(mm, true),
+                    image: multimediaService.getImageUrl(mm),
+                    transcriber: userService.detailsForUserId(task.fullyTranscribedBy)?.displayName,
+                    dateTranscribed: task.dateFullyTranscribed,
+                    validator: userService.detailsForUserId(task.fullyValidatedBy)?.displayName,
+                    dateValidated: task.dateFullyValidated,
+                    valid: task.isValid,
+                    records: fields.groupBy { it.recordIdx }.sort { it.key }.collect { it.value.collectEntries { [(it.name): it.value] } }
+                ]
+
+        respond result, model: [taskInstance: task]
+    }
+
     def showImage() {
 
         if (params.id) {
@@ -444,7 +493,7 @@ class TaskController {
                 and {
                     eq("task", task)
                     eq("superceded", false)
-                    eq("transcribedByUserId", userId)
+//                    eq("transcribedByUserId", userId)
                 }
             }
 
@@ -872,6 +921,26 @@ class TaskController {
 
         taskService.resetValidationStatus(taskInstance)
         redirect(action:'showDetails', id: taskInstance.id)
+    }
+
+    def showChangedFields(Task task) {
+        if (!task || !task.id) {
+            response.sendError(SC_BAD_REQUEST, "must provide a task id")
+            return
+        }
+        def fields = taskService.getChangedFields(task)
+        respond(fields)
+    }
+
+    def viewTask(Task task) {
+        if (!task || !task.id) {
+            response.sendError(SC_BAD_REQUEST, "must provide a task id")
+            return
+        }
+        def userId = userService.currentUser?.userId
+        log.debug("Adding task view for $userId with task $task")
+        auditService.auditTaskViewing(task, userService.currentUser.userId)
+        respond status: SC_NO_CONTENT
     }
 
 }

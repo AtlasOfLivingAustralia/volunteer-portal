@@ -4,7 +4,6 @@ package au.org.ala.volunteer
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
 class LabelController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
@@ -37,7 +36,6 @@ class LabelController {
 //        respond new Label(params)
 //    }
 
-    @Transactional
     def save(Label labelInstance) {
         if (!checkAdmin()) {
             redirect(controller: 'frontPage')
@@ -69,7 +67,6 @@ class LabelController {
 //        respond labelInstance
 //    }
 
-    @Transactional
     def update(Label labelInstance) {
         if (!checkAdmin()) {
             redirect(controller: 'frontPage')
@@ -97,7 +94,6 @@ class LabelController {
         }
     }
 
-    @Transactional
     def delete(Label labelInstance) {
 
         if (labelInstance == null) {

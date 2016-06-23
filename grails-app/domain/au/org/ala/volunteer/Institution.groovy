@@ -1,11 +1,15 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.sanitizer.SanitizedHtml
+
 class Institution implements Serializable {
 
     Long id
     String name
     String acronym  // optional
+    @SanitizedHtml
     String shortDescription // markdown, optional
+    @SanitizedHtml
     String description // markdown, optional
     String contactName // optional
     String contactEmail // optional

@@ -1,6 +1,6 @@
 function adminStats(config) {
 
-    var app = angular.module('statApp', []);
+    var app = angular.module('statApp', ['digivol']);
 
     app.config(['$httpProvider', function ($httpProvider) {
         // enable http caching

@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 class UserController {
 
@@ -222,10 +223,18 @@ class UserController {
         def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
 
         for (Task t : tasks) {
-            String validator = User.findAllByUserId(t.fullyValidatedBy).displayName.toString().replace('[', '').replace(']', '')
+            String validator = User.findByUserId(t.fullyValidatedBy).displayName
 
-            def taskRow = [id: t.id, externalIdentifier:t.externalIdentifier, fullyTranscribedBy: t.fullyTranscribedBy,
-                           fullyValidatedBy: validator, projectId: t.projectId, project: t.project, projectName: t.project.name, dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated, dateValidated: t.dateFullyValidated]
+            def taskRow = [id: t.id,
+                           externalIdentifier:t.externalIdentifier,
+                           fullyTranscribedBy: t.fullyTranscribedBy,
+                           fullyValidatedBy: validator,
+                           projectId: t.projectId,
+                           project: t.project,
+                           projectName: t.project.name,
+                           dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated,
+                           dateValidated: t.dateFullyValidated
+            ]
 
             List<Field> taskFields = fieldsByTask[t]
             def catalogNumber = taskFields?.get(0)?.getAt(0)
@@ -251,7 +260,7 @@ class UserController {
             dateStr += ";" + (t.dateFullyValidated ? sdf.format(t.dateFullyValidated) : "")
             dateStr += ";" + (t.dateLastUpdated ? sdf.format(t.dateLastUpdated) : "")
 
-            def sb = new StringBuilder(128)
+            def sb = new StringBuilder(512)
             sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
             sb.append(t.externalIdentifier).append(";").append(dateStr).append(";").append(t.id).append(";").append(validator)
             taskRow.searchColumn = sb.toString().toLowerCase()
@@ -284,49 +293,48 @@ class UserController {
         [totalMatchingTasks: totalMatchingTasks, viewList: viewList]
     }
 
-    def taskListFragment = {
+    def unreadValidatedTasks() {
+        def projId = params.long('projId')
+        def project = null
+        if (projId) {
+            project = Project.get(projId)
+        }
+        def userId = params.get('userId', userService.currentUser?.userId)
+        def results = [count: taskService.countUnreadValidatedTasks(project, userId)]
+        respond(results)
+    }
 
-        def selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
+    def taskListFragment() {
+
+        def selectedTab = params.int("selectedTab", 1)
         def projectInstance = Project.get(params.int("projectId"))
         def userInstance = User.get(params.id)
 
-        def tasks = []
-        def recentValidatedTaskCount = 0
+        def results = taskService.getTaskViewList(selectedTab, userInstance, projectInstance, params.query ?: '', params.int('offset', 0), params.int('max', 10), params.sort, params.order)
+//        def recentValidatedTaskCount = 0
 
-        if (userInstance.userId == userService.currentUserId) {
-            tasks = taskService.getRecentValidatedTasks(projectInstance, userInstance.userId)
-            recentValidatedTaskCount = taskService.unReadList?.size()
-        }
-
-        switch (selectedTab) {
-            case 1:
-                if (projectInstance) {
-                    tasks = Task.findAllByProjectAndFullyTranscribedBy(projectInstance, userInstance.userId)
-                } else {
-                    tasks = Task.findAllByFullyTranscribedBy(userInstance.userId)
-                }  
-                break;
-            case 2:
-                if (projectInstance) {
-                    tasks = taskService.getRecentlySavedTasksByProject(userInstance.userId, projectInstance,[:])
-                } else {
-                    tasks = taskService.getRecentlySavedTasks(userInstance.userId, [:])
-                }
-                break;
-            case 3:
-                if (projectInstance) {
-                    tasks = Task.findAllByProjectAndFullyValidatedBy(projectInstance, userInstance.userId)
-                } else {
-                    tasks = Task.findAllByFullyValidatedBy(userInstance.userId)
-                }
-        }
-
-        def results = createViewList(tasks, params)
+//        if (userInstance.userId == userService.currentUserId) {
+//            recentValidatedTaskCount = taskService.countUnreadValidatedTasks(projectInstance, userInstance.userId)
+//        }
 
         def isValidator = userService.isValidator(projectInstance)
 
-        [viewList: results.viewList, recentValidatedTaskCount: recentValidatedTaskCount,  totalMatchingTasks: results.totalMatchingTasks, selectedTab: selectedTab, projectInstance: projectInstance, userInstance: userInstance]
+        results.viewList.each {
+            it['isValidator'] = userService.isValidatorForProjectId(it.projectId)
+        }
 
+        def result = new TaskListResult(
+                viewList                : results.viewList,
+//                recentValidatedTaskCount: recentValidatedTaskCount,
+                totalMatchingTasks      : results.totalMatchingTasks,
+                selectedTab             : selectedTab,
+                projectInstance         : projectInstance,
+                userInstance            : userInstance,
+                isValidator             : isValidator
+        )
+
+        log.debug(result)
+        respond(result)
     }
 
     def notificationsFragment() {
@@ -335,9 +343,9 @@ class UserController {
         [userInstance: userInstance]
     }
 
-    def show = {
+    def show(User userInstance) {
 
-        def userInstance = User.get(params.int("id"))
+        //def userInstance = User.get(params.int("id"))
         def currentUser = userService.currentUserId
 
         if (!userInstance) {
@@ -370,8 +378,17 @@ class UserController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
             redirect(action: "list")
         } else {
-            Map myModel = [   userInstance: userInstance, currentUser: currentUser, project: projectInstance, totalTranscribedTasks: totalTranscribedTasks,
-                achievements: achievements, validatedCount: userService.getValidatedCount(userInstance, projectInstance), score:score, selectedTab: selectedTab,
+            Map myModel = [
+                    userInstance         : userInstance,
+                    currentUser          : currentUser,
+                    project              : projectInstance,
+                    totalTranscribedTasks: totalTranscribedTasks,
+                    achievements         : achievements,
+                    validatedCount       : userService.getValidatedCount(userInstance, projectInstance),
+                    score                : score,
+                    selectedTab          : selectedTab,
+                    isValidator          : userService.isValidator(projectInstance),
+                    isAdmin              : userService.isAdmin()
             ]
 
             userService.appendNotebookFunctionalityToModel(myModel)
@@ -462,7 +479,7 @@ class UserController {
             redirect(action: "show")
         }
 
-        [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list()]
+        [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list(sort: 'name', order: 'asc')]
     }
 
     def updateRoles = {
@@ -539,7 +556,6 @@ class UserController {
 
     def ajaxGetPoints() {
         Stopwatch sw = Stopwatch.createStarted()
-        sw.start()
         def userInstance = User.get(params.int("id"))
         sw.stop()
         log.debug("ajaxGetPoints| User.get(): ${sw.toString()}")
@@ -599,16 +615,6 @@ class UserController {
         log.debug("ajaxGetPoints| generateResults: ${sw.toString()}")
 
         render(data as JSON)
-    }
-
-    def showChangedFields () {
-        def task =  Task.get(params.id)
-
-        def fields = taskService.getChangedFields(task)
-
-        auditService.auditTaskViewing(task, userService.currentUser.userId)
-
-        [task: task, recordValues: fields.recordValues]
     }
 
     def notebookMainFragment() {
