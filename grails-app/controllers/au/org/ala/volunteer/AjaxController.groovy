@@ -7,7 +7,6 @@ import com.google.common.collect.Sets
 import com.google.gson.Gson
 import grails.converters.JSON
 import grails.converters.XML
-import groovy.time.TimeCategory
 
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -444,46 +443,47 @@ class AjaxController {
         render status: 204
     }
 
-    def transcriptionFeed(String dateStart, String dateEnd, Long rowStart) {
+    def transcriptionFeed(String timestampStart, String timestampEnd, Integer rowStart, String sort) {
         final sw = Stopwatch.createStarted()
         final udsw = Stopwatch.createUnstarted()
         final Date startTs
         final Date endTs
         final pageSize = 100
-        final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
-        format.timeZone = TimeZone.getTimeZone('UTC')
+        sort = sort ?: 'dateFullyTranscribed'
+        final sortOrder = params.order ?: 'desc'
         rowStart = rowStart ?: 0
 
-        if (dateStart) {
-            startTs = toTimestamp(dateStart)
+        log.info("Transcription Feed Start")
+
+        if (timestampStart) {
+            startTs = toTimestamp(timestampStart)
         } else {
             startTs = new Timestamp(0) // Jan 1, 1970 UTC
         }
-        if (dateEnd) {
-            endTs = toTimestamp(dateEnd)
+        if (timestampEnd) {
+            endTs = toTimestamp(timestampEnd)
         } else {
             endTs = new Timestamp(System.currentTimeMillis())
         }
-
-        def sql = new Sql(dataSource)
 
         final count = Task.countByDateFullyTranscribedBetween(startTs, endTs)
         final transcribers = []
         final ids = []
 
-        def items = sql.rows("""
-select t.id as id, p.name as project_name, p.id as project_id, t.fully_transcribed_by as transcriber, t.date_fully_transcribed as timestamp, t.fully_transcribed_ip_address as ip_address
-from task t
-inner join project p on t.project_id = p.id
-where (t.date_fully_transcribed <= :end) and (t.date_fully_transcribed > :start)
-order by t.date_fully_transcribed ASC
-LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageSize, rowStart: rowStart).collect { row ->
-            def id = row.id
-            def projectId = row.project_id
-            def projectName = row.project_name
-            def transcriber = row.transcriber
-            def timestamp = row.timestamp
-            def ipAddress = row.ip_address
+        def items = Task.withCriteria {
+            between('dateFullyTranscribed', startTs, endTs)
+            join('project')
+            maxResults(pageSize)
+            firstResult(rowStart)
+            order(sort, sortOrder)
+        }.collect { task ->
+            def id = task.id
+            def projectId = task.project.id
+            def projectName = task.project.name
+            def transcriber = task.fullyTranscribedBy
+            def timestamp = task.dateFullyTranscribed
+            def ipAddress = task.fullyTranscribedIpAddress
+            def uuid = task.transcribedUUID
 
             transcribers << transcriber
             ids << id
@@ -491,10 +491,10 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
                 id: id,
                 projectId: projectId,
                 project: projectName,
-                guid: id,
+                guid: uuid,
                 timestamp: timestamp,
                 subject: [
-                    link: createLink(absolute: true, controller: 'task', action: 'summary', id: id),
+                    link: createLink(absolute: true, controller: 'task', action: 'show', id: id),
                 ],
                 contributor: [
                     id: transcriber,
@@ -507,6 +507,8 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             ]
         }
 
+        log.debug("Transcription feed got tasks ${sw}")
+
         final allFields
         final usersDetails
         final mm
@@ -516,15 +518,15 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             }.collect { field ->
                 [id: field.taskId, recordIdx: field.recordIdx, name: field.name, value: field.value]
             }.groupBy { it.id }
+            udsw.start()
             usersDetails = authService.getUserDetailsById(transcribers, true) ?: [users:[:]]
+            udsw.stop()
             mm = Multimedia.where { task.id in ids }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
         } else {
             allFields = [:]
             usersDetails = [users:[]]
             mm = [:]
         }
-
-
 
         final invalidState = 'N/A'
         final defaultCountry = 'Australia' // we don't record country, so use this if we have a state, todo externalise
@@ -598,7 +600,6 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
     }
 
     private static Timestamp toTimestamp(String timestamp) {
-        final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
         final Timestamp result
         if (timestamp.isNumber()) {
             final dateLong = timestamp as Long
@@ -606,6 +607,7 @@ LIMIT :pageSize OFFSET :rowStart""", start: startTs, end: endTs, pageSize: pageS
             final factor = dateLong > 1000000000000 ? 0 : 1000
             result = new Timestamp(dateLong * factor)
         } else {
+            final format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
             result = format.parse(timestamp).toTimestamp()
         }
         return result
