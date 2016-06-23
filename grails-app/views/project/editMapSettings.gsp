@@ -79,7 +79,7 @@
 
 <script type='text/javascript'>
 
-    google.load("maps", "3.3", {other_params: "sensor=false"});
+    google.load("maps", "3.23", {other_params: ""});
 
     var map, infowindow;
     var mapListenerActive = true;

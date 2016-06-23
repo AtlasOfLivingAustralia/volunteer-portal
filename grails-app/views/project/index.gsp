@@ -20,7 +20,7 @@
 
     <r:script>
 
-        google.load("maps", "3.3", {other_params: "sensor=false"});
+        google.load("maps", "3.23", {other_params: ""});
         var map, infowindow;
 
         function loadMap() {
@@ -66,7 +66,8 @@
                     var marker = new google.maps.Marker({
                         position: latlng,
                         //map: map,
-                        title: "record: " + task.cat
+                        title: "record: " + (task.cat || task.filename),
+                        icon: BVP_JS_URLS.singleMarkerPath
                     });
                     markers.push(marker);
                     google.maps.event.addListener(marker, 'click', function () {
@@ -76,7 +77,7 @@
                     });
                     //bounds.extend(latlng);
                 }); // end each
-                var markerCluster = new MarkerClusterer(map, markers, { maxZoom: 18 });
+                var markerCluster = new MarkerClusterer(map, markers, { maxZoom: 18, imagePath: BVP_JS_URLS.markersPath });
 
                 //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO: fix properly
             }

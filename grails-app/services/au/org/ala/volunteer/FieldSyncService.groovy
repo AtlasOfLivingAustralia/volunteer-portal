@@ -193,6 +193,9 @@ class FieldSyncService {
             if (!task.dateFullyTranscribed) {
                 task.dateFullyTranscribed = now
             }
+            if (!task.transcribedUUID) {
+                task.transcribedUUID = UUID.randomUUID()
+            }
         }
 
         if (markAsFullyValidated) {
@@ -205,6 +208,9 @@ class FieldSyncService {
             }
             if (!task.dateFullyValidated) {
                 task.dateFullyValidated = now
+            }
+            if (!task.validatedUUID) {
+                task.validatedUUID = UUID.randomUUID()
             }
         }
 

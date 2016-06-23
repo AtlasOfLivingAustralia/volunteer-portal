@@ -259,7 +259,8 @@ var GMaps = (function($) {
         var outside = options.outside;
         var base_options = {
           position: new google.maps.LatLng(options.lat, options.lng),
-          map: null
+          map: null,
+          icon: BVP_JS_URLS.singleMarkerPath
         };
         delete options.lat;
         delete options.lng;
