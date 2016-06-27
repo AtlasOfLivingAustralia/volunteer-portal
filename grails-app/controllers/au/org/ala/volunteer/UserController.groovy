@@ -372,7 +372,7 @@ class UserController {
 
         def score = userService.getUserScore(userInstance)
 
-        int selectedTab = (params.int("selectedTab") == null) ? ((userInstance.userId == currentUser)? 0: 1) : params.int("selectedTab")
+        int selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
 
         if (!userInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
