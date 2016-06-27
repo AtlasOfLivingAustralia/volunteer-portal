@@ -553,7 +553,7 @@ class AjaxController {
             def recordedBy = getNamedFieldValues(fields, 'recordedBy')
 
             final lowerProjectName = it.project.toLowerCase().trim()
-            final descriptionSuffix = lowerProjectName.endsWith('expedition') || lowerProjectName.endsWith('project') ? ' expedition' : ''
+            final descriptionSuffix = lowerProjectName.endsWith('expedition') || lowerProjectName.endsWith('project') ? '' : ' expedition'
             if (taxon && recordedBy) it.description = "$displayName transcribed a $taxon recorded by $recordedBy from the ${it.project}$descriptionSuffix"
             else if (taxon) it.description = "$displayName transcribed a $taxon from the ${it.project}$descriptionSuffix"
             else if (recordedBy) it.description = "$displayName transcribed a record recorded by $recordedBy from the ${it.project}$descriptionSuffix"
