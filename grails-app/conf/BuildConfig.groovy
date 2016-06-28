@@ -65,12 +65,20 @@ grails.project.dependency.resolution = {
         runtime ":jquery:1.11.1"
         runtime ":jquery-ui:1.10.4"
 
-        runtime ':resources:1.2.14'
-        if (Environment.current == Environment.PRODUCTION) {
-            runtime ":zipped-resources:1.0.1"
-            runtime ":cached-resources:1.1"
-            runtime ":yui-minify-resources:0.1.5"
-        }
+        compile "org.grails.plugins:asset-pipeline:2.9.1"
+        compile "org.grails.plugins:angular-annotate-asset-pipeline:2.4.1"
+        compile "org.grails.plugins:angular-template-asset-pipeline:2.2.7"
+        compile "org.grails.plugins:i18n-asset-pipeline:1.0.6"
+        compile "org.grails.plugins:sass-asset-pipeline:2.9.1"
+        //compile "org.grails.plugins:babel-asset-pipeline:1.4.5"
+        //compile "org.grails.plugins:asset-autoprefixer:1.3.0"
+
+//        runtime ':resources:1.2.14'
+//        if (Environment.current == Environment.PRODUCTION) {
+//            runtime ":zipped-resources:1.0.1"
+//            runtime ":cached-resources:1.1"
+//            runtime ":yui-minify-resources:0.1.5"
+//        }
 
         runtime ":mail:1.0.7"
         runtime ":csv:0.3.1"

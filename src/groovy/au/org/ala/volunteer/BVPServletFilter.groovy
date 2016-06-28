@@ -25,6 +25,7 @@ class BVPServletFilter implements Filter  {
         addPattern(".*/css/.*")
         addPattern(".*/images/.*")
         addPattern(".*/monitoring")
+        addPattern(".*/assets/.*")
     }
 
     private void addPattern(String pattern) {

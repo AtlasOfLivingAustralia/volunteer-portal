@@ -8,15 +8,18 @@
     <cl:addApplicationMetaTags/>
     <meta name="description" content="Atlas of Living Australia"/>
     <meta name="author" content="Atlas of Living Australia"/>
-    <r:external dir="images/" file="favicon.ico"/>
+    %{--<r:external dir="images/" file="favicon.ico"/>--}%
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
-    <r:require modules="digivol, bvp-js, bootbox"/>
+    %{--<r:require modules="digivol, bvp-js, bootbox"/>--}%
+    <asset:stylesheet href="digivol.css"/>
     <g:layoutHead/>
-    <r:layoutResources/>
+    %{--<r:layoutResources/>--}%
 
     <g:render template="/layouts/commonCss" />
+    <g:render template="/layouts/jsUrls" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -36,7 +39,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <g:link uri="/" class="navbar-brand"><r:img dir="images/2.0/" file="logoDigivol.png"/></g:link>
+            <g:link uri="/" class="navbar-brand"><asset:image src="logoDigivol.png"/></g:link>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
@@ -153,16 +156,16 @@
 
 <section id="logos-institutions">
     <div class="container">
-        <h2 class="heading">Institutions using digivol</h2>
+        <h2 class="heading">Institutions using DigiVol</h2>
 
         <div class="row">
 
             <div class="col-sm-12">
-                <r:img dir="images/2.0/institutions/" file="logoAustMus@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoCSIRO.svg"/>
-                <r:img dir="images/2.0/institutions/" file="logoMelbourneVictoria@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoVermont@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoSmithsonian@2x.png"/>
+                <asset:image src="institutions/logoAustMus@2x.png"/>
+                <asset:image src="institutions/logoCSIRO.svg"/>
+                <asset:image src="institutions/logoMelbourneVictoria@2x.png"/>
+                <asset:image src="institutions/logoVermont@2x.png"/>
+                <asset:image src="institutions/logoSmithsonian@2x.png"/>
             </div>
 
         </div>
@@ -177,8 +180,8 @@
 
             <div class="row footer-header">
                 <div class="col-sm-12">
-                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><r:img
-                            dir="images/2.0/" file="logoDigivolInverted.png"/></a>
+                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image
+                            src="logoDigivolInverted.png"/></a>
 
                     <div class="social-icons pull-right">
                         <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
@@ -191,7 +194,7 @@
                 <div class="col-sm-3">
                     <h3>Expeditions</h3>
                     <ul>
-                        <li><a href="${g.createLink(controller: 'project', action: 'list')}">View all expeditions</a></li>
+                        <li><g:link controller="project" action="list">View all expeditions</g:link></li>
                     </ul>
                 </div>
 
@@ -239,10 +242,10 @@
 
 <g:render template="/layouts/ga" />
 
-%{--<asset:javascript src="application.js" />--}%
-<g:render template="/layouts/jsUrls" />
-%{--<asset:deferredScripts/>--}%
+<asset:javascript src="digivol.js" />
+%{--<asset:javascript src="bootbox.js" />--}%
 <!-- JS resources-->
-<r:layoutResources/>
+%{--<r:layoutResources/>--}%
+<asset:deferredScripts/>
 </body>
 </html>
