@@ -5,7 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
     <r:require modules="bootstrap-file-input, bootbox"/>
-    <r:script type='text/javascript'>
+    <asset:script type='text/javascript'>
 
             $(document).ready(function () {
 
@@ -101,7 +101,7 @@
 
             });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">

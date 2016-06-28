@@ -1,4 +1,3 @@
-<r:require modules="admin-stats, livestamp"/>
 <<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
@@ -6,8 +5,8 @@
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <gvisualization:apiImport/>
-
-    <r:script type="text/javascript">
+    <asset:javascript src="admin-stats, livestamp"/>
+    <asset:script type="text/javascript">
             // Load the Visualization API and the piechart package.
             google.load('visualization', '1.0', {'packages': ['corechart']});
             google.load('visualization', '1.0', {'packages': ['table']});
@@ -116,7 +115,7 @@
                 });
             }
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin" data-ng-app="statApp">
@@ -324,7 +323,7 @@
 </div>
     </div>
 
-<r:script>
+<asset:script>
     adminStats({
         volunteerStatsURL: "${createLink(controller: 'stats', action: 'volunteerStats')}",
         activeTranscribersURL: "${createLink(controller: 'stats', action: 'activeTranscribers')}",
@@ -337,6 +336,6 @@
         historicalHonourBoard: "${createLink(controller: 'stats', action: 'historicalHonourBoard')}",
         exportCSVReport: "${createLink(controller: 'stats', action: 'exportCSVReport')}"
     });
-</r:script>
+</asset:script>
 </body>
 </html>

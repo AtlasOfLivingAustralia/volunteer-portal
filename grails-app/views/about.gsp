@@ -6,7 +6,7 @@
     <meta name="section" content="home"/>
     <title><cl:pageTitle title="About"/></title>
     <content tag="selectedNavItem">bvp</content>
-    <r:style>
+    <style>
     a[name]:before {
         display: block;
         content: " ";
@@ -14,7 +14,7 @@
         height: 83px;
         visibility: hidden;
     }
-    </r:style>
+    </style>
 </head>
 <body>
 
@@ -133,7 +133,7 @@
                 </p>
                 <h2 class="body-heading"><a name="examples">Examples</a></h2>
                 <p>
-                    <r:img uri="/images/digivol-example.png" class="img-responsive"/>
+                    <asset:image src="digivol-example.png" class="img-responsive"/>
                 </p>
 
             </div>

@@ -33,7 +33,7 @@
 
 </style>
 
-<r:script>
+<asset:script>
     var entries = [
     <g:each in="${0..numItems}" var="i">
     [
@@ -209,4 +209,4 @@ $("#btnAddRow").click(function(e) {
 renderEntries();
 });
 
-</r:script>
+</asset:script>

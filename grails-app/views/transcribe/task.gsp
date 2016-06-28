@@ -27,7 +27,7 @@
     <r:require module="transcribeWidgets"/>
     <r:require module="amplify"/>
 
-    <r:script>
+    <asset:script>
 
             // global Object
             var VP_CONF = {
@@ -362,7 +362,7 @@
                 }
             }
 
-    </r:script>
+    </asset:script>
 
     <style type="text/css">
 
@@ -645,7 +645,7 @@
     </div>
 </div>
 </body>
-<r:script>
+<asset:script>
 
     <g:each in="${ValidationRule.list()}" var="rule">
         transcribeValidation.rules.${rule.name} = {
@@ -899,5 +899,5 @@
         return !validationResults.hasWarnings && !validationResults.hasErrors;
     }
 
-</r:script>
+</asset:script>
 </html>

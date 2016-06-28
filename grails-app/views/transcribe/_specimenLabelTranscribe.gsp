@@ -280,7 +280,7 @@
 
 </div>
 
-<r:script>
+<asset:script>
 
     $("#show_collection_event_selector").click(function(e) {
         e.preventDefault();
@@ -501,4 +501,4 @@ var html = "This specimen is linked with an existing collection event: <br/>" + 
 
     updateBindStatus();
 
-</r:script>
+</asset:script>

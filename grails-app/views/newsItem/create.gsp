@@ -6,7 +6,7 @@
     <g:set var="entityName" value="${message(code: 'newsItem.label', default: 'NewsItem')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
 
-    <r:require modules="tinymce-simple" />
+    <asset:javascript src="tinymce-simple" />
 
 </head>
 

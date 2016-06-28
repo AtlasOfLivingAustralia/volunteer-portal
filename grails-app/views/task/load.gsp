@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'record.label', default: 'Record')}"/>
     <title>CSV Image Upload</title>
     <r:require modules="qtip"/>
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
         $(document).ready(function () {
             // tootltip on help icon
             $("a.fieldHelp").qtip({
@@ -37,7 +37,7 @@
                 return false;
             });
         });
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="two-column-right">

@@ -2,8 +2,9 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <r:require modules="institution-dropdown,labelAutocomplete"/>
-    <r:script type="text/javascript">
+    <asset:stylesheet src="institution-dropdown, label-autocomplete"/>
+    <asset:javascript src="institution-dropdown, label-autocomplete"/>
+    <asset:script type="text/javascript">
         jQuery(function($) {
             var institutions = <cl:json value="${institutions}"/>;
             var nameToId = <cl:json value="${institutionsMap}"/>;
@@ -53,8 +54,8 @@
 
             $('#labels').on('click', 'span.label i.delete-label', onDeleteClick);
         });
-    </r:script>
-    <r:style>
+    </asset:script>
+    <style>
     div#labels {
     padding-top: 4px;
     padding-bottom: 4px;
@@ -65,7 +66,7 @@
     i.delete-label {
     cursor: pointer;
     }
-    </r:style>
+    </style>
 </head>
 
 <body>

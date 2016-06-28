@@ -5,7 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
         function doSearch() {
             var query = $("#searchbox").val();
             location.href = "?q=" + query;
@@ -23,7 +23,7 @@
             $("#searchbox").focus();
 
         }); // end .ready()
-    </r:script>
+    </asset:script>
 
 </head>
 

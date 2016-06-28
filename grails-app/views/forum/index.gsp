@@ -21,7 +21,7 @@
 
 <body>
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
             function renderTab(tabIndex, q, offset, max, sort, order) {
                 // var $tabs = $('#tabControl').tabs();
@@ -84,7 +84,7 @@
 
             });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="${message(code: 'default.forum.label', default: 'DigiVol Forum')}" selectedNavItem="forum">
 </cl:headerContent>

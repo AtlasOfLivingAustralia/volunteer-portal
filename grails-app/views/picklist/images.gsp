@@ -19,7 +19,7 @@
         outline: none;
     }
     </style>
-    <r:require modules="underscore, font-awesome"/>
+    <asset:javascript src="underscore"/>
 </head>
 
 <body>

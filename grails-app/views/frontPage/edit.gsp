@@ -3,7 +3,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="frontPage.label" default="Front Page Configuration"/></title>
-    <r:require module="bvp-js"/>
+    <asset:javascript src="bvp-js"/>
 </head>
 
 <body class="admin">
@@ -130,7 +130,7 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
 
     $(document).ready(function () {
 
@@ -147,7 +147,7 @@
         });
     });
 
-</r:script>
+</asset:script>
 
 </body>
 </html>

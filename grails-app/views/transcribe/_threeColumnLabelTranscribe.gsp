@@ -118,7 +118,7 @@
 </div>
 
 
-<r:script>
+<asset:script>
 
     $(document).ready(function () {
         $(".tutorialLinks a").each(function (index, element) {
@@ -126,4 +126,4 @@
         });
     });
 
-</r:script>
+</asset:script>

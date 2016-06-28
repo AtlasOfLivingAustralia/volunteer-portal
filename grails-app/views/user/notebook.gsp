@@ -93,7 +93,7 @@
 </body>
 </html>
 
-<r:script>
+<asset:script>
 
     var map, infowindow;
     google.load("maps", "3.3", {other_params: "sensor=false"});
@@ -222,4 +222,4 @@
 
     }
 
-</r:script>
+</asset:script>

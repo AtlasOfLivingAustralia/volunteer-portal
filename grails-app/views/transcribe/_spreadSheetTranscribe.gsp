@@ -111,7 +111,7 @@
     </g:each>
 </div>
 
-<r:script>
+<asset:script>
 
     var spreadsheetDataView = null;
     var grid = null;
@@ -346,4 +346,4 @@ var renderItem = function(item) {
       });
       createDataItemsFromInputs();
     }
-</r:script>
+</asset:script>

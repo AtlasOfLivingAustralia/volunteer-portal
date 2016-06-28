@@ -91,11 +91,11 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
     });
-</r:script>
+</asset:script>
 </body>
 </html>

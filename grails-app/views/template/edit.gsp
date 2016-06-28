@@ -7,7 +7,7 @@
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
 
     <r:require modules="underscore, font-awesome"/>
-    <r:script>
+    <asset:script>
 
             $(document).ready(function() {
 
@@ -107,7 +107,7 @@
 
             });
 
-    </r:script>
+    </asset:script>
 
 </head>
 
@@ -201,7 +201,7 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
     var _result = false;
     $(function() {
         $('#deleteButton').on('click', function(e) {
@@ -218,6 +218,6 @@
             }
         });
     });
-</r:script>
+</asset:script>
 </body>
 </html>

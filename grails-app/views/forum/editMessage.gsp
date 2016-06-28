@@ -22,7 +22,7 @@
 
 <body class="forum">
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
             $(function () {
 
@@ -33,7 +33,7 @@
 
             });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="${message(code: 'forum.project.editMessage', default: 'Edit Message')}" selectedNavItem="forum" hideTitle="${true}">
     <vpf:forumNavItems topic="${forumMessage?.topic}"

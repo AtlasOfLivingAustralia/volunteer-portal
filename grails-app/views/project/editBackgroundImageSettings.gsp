@@ -2,7 +2,8 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <r:require modules="bootstrap-file-input, bootbox, bootstrap-colorpicker"/>
+    <asset:stylesheet src="bootstrap-colorpicker"/>
+    <asset:javascript src="bootstrap-file-input, bootbox, bootstrap-colorpicker"/>
 </head>
 
 <body>

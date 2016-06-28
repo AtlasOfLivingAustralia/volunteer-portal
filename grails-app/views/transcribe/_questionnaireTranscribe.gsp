@@ -184,7 +184,7 @@
     {{#selected}}<span><img src="{{src}}" style="height:20px;width:20px;vertical-align:baseline;"></img> {{value}}</span>{{^last}}, {{/last}}{{/selected}}
 </script>
 
-<r:script>
+<asset:script>
     jQuery(function($) {
         var active = 0;
         var interview = true;
@@ -359,4 +359,4 @@
         transcribeValidation.validateFields();
         markSeenFields();
     });
-</r:script>
+</asset:script>

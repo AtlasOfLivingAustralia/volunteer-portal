@@ -7,8 +7,9 @@
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title><cl:pageTitle title="${g.message(code:"default.list.label", args:['Expedition'])}"/></title>
 
-    <r:require modules="digivol-image-resize"/>
-    <r:script>
+    <asset:stylesheet src="digivol-image-resize"/>
+    <asset:javascript src="digivol-image-resize"/>
+    <asset:script>
 
         $(function() {
 
@@ -57,7 +58,7 @@
             }
         });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="digivol">

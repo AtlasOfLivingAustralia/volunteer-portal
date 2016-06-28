@@ -5,7 +5,8 @@
     <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:require modules="labelAutocomplete"/>
+    <asset:stylesheet src="label-autocomplete"/>
+    <asset:javascript src="label-autocomplete"/>
 </head>
 
 <body>
@@ -81,7 +82,7 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
 $(function($) {
 
     var ids = <cl:json value="${achievementDescriptionInstance.awards*.user*.id}"/>;
@@ -128,6 +129,6 @@ $(function($) {
         return null;
     }, 'displayName');
 });
-</r:script>
+</asset:script>
 </body>
 </html>

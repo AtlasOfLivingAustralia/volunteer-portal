@@ -3,15 +3,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="leaderBoardAdmin.label" default="Honour Board Configuration"/></title>
-    <r:require modules="labelAutocomplete"/>
-    <r:style>
+    <asset:stylesheet src="label-autocomplete"/>
+    <asset:javascript src="label-autocomplete"/>
+    <style>
         li.user > span {
             margin-right: 5px;
         }
         i.icon-remove {
             cursor: pointer;
         }
-    </r:style>
+    </style>
 </head>
 
 <body class="admin">
@@ -30,7 +31,7 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Ineligible Honour Board users <r:img dir="images" file="spinner.gif" height="16px" width="16px"
+                            <h4>Ineligible Honour Board users <asset:image src="spinner.gif" height="16px" width="16px"
                                                             id="ajax-spinner" class="hidden"/></h4>
                             <hr/>
                         </div>
@@ -63,7 +64,7 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
 
 
 
@@ -118,7 +119,7 @@
         $('#user-list').on('click', 'li.user i.fa-times', onDeleteClick);
     });
 
-</r:script>
+</asset:script>
 
 </body>
 </html>

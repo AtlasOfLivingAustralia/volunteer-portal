@@ -87,7 +87,7 @@
     </div>
 </div>
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -153,7 +153,7 @@ function rotateImage() {
                 }
             }
 
-</r:script>
+</asset:script>
 
 <!-- JS resources-->
 <r:layoutResources/>

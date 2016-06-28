@@ -19,7 +19,7 @@
         outline: none;
     }
     </style>
-    <r:require modules="underscore, font-awesome"/>
+    <asset:javascript src="underscore"/>
 </head>
 
 <body>
@@ -70,7 +70,7 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
     jQuery(function ($) {
 
         var reader = new FileReader();
@@ -97,7 +97,7 @@
         });
 
     });
-</r:script>
+</asset:script>
 </div>
 <div class="container-fluid">
     <div class="row-fluid">

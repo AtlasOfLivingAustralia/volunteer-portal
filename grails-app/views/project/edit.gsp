@@ -14,9 +14,9 @@
 
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
 
-    <r:require modules="tinymce-simple"/>
+    <asset:javascript src="tinymce-simple" />
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
 
             function confirmDeleteAllTasks() {
                 return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?");
@@ -97,7 +97,7 @@
                 });
             });
 
-    </r:script>
+    </asset:script>
 
     <style type="text/css">
 

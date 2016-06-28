@@ -2,7 +2,8 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
     <title>Edit Institution ${institutionInstance?.name}</title>
-    <r:require modules="bootstrap-switch, bootbox, tinymce-simple"/>
+    <asset:stylesheet src="bootstrap-switch"/>
+    <asset:javascript src="bootstrap-switch, bootbox, tinymce-simple"/>
 </head>
 
 <body class="admin">

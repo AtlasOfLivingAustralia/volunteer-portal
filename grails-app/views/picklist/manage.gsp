@@ -6,7 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
-    <r:require modules="underscore, bootstrap-file-input"/>
+    <asset:javascript src="underscore, bootstrap-file-input"/>
 </head>
 
 <body class="admin">
@@ -142,7 +142,7 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
 
             $(document).ready(function() {
 
@@ -192,7 +192,8 @@
                     // detect field char
                     var fc = $picklist.val().trim().charAt(0);
                     var ifn = (fc == '"' || fc == "'") ? function(s) { return s.indexOf(fc, 1); } : function(s) { return 0; };
-                    var lines = _.sortBy(_.compact($picklist.val().split(/\r?\n/)), function(v) { return v.substring(1, ifn(v)); });
+                    //var lines = _.sortBy(_.compact($picklist.val().split(/\r?\n/)), function(v) { return v.substring(1, ifn(v)); });
+                    var lines = _.chain($picklist.val().split(/\r?\n/)).compact().sortBy(function(v) { return v.substring(1, ifn(v)); });
                     $picklist.val(lines.join('\n'));
                 });
 
@@ -218,6 +219,6 @@
             // Initialize input type file
             $('input[type=file]').bootstrapFileInput();
 
-</r:script>
+</asset:script>
 </body>
 </html>

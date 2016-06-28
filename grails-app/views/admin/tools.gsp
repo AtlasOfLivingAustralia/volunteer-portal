@@ -4,11 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
-    <style type="text/css">
-    </style>
-    <r:require module="bootbox"/>
-    <r:require modules="codemirror-json, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>
-    <r:script type='text/javascript'>
+    <asset:stylesheet src="codemirror-monokai"/>
+    <asset:javascript src="bootbox"/>
+    <asset:javascript src="codemirror-js, codemirror-sublime"/>
+    <asset:script type='text/javascript'>
 
         jQuery(function ($) {
             $('button.confirmation-required').click(function (e) {
@@ -26,7 +25,7 @@
             });
         });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">
@@ -150,7 +149,7 @@
     </div>
 </div>
 </body>
-<r:script>
+<asset:script>
 
 
         $(document).ready(function() {
@@ -194,5 +193,5 @@
             aEditor.getDoc().setValue(q.a ? JSON.stringify(q.a, null, 2) : "");
         });
 
-</r:script>
+</asset:script>
 </html>

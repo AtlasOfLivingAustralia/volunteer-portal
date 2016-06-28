@@ -1,7 +1,8 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
     <title>Edit Project ${projectInstance?.name}</title>
-    <r:require modules="bootstrap-switch, tinymce-simple"/>
+    <asset:stylesheet src="bootstrap-switch"/>
+    <asset:javascript src="bootstrap-switch, tinymce-simple"/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>
 

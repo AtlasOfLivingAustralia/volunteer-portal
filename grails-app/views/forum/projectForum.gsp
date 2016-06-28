@@ -34,8 +34,8 @@
 
 <body class="forum">
 
-<r:require module="url"/>
-<r:script type="text/javascript">
+<asset:javascript src="uri"/>
+<asset:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -131,7 +131,7 @@
 
     });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="Expedition Forum" selectedNavItem="forum">
     <%

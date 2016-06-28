@@ -6,10 +6,10 @@
     <title><g:message code="admin.label" default="Administration - Current users"/></title>
     <style type="text/css">
     </style>
-    <r:require modules="angular-moment" />
-    <r:script type='text/javascript'>
+    <asset:javascript src="angular-moment" />
+    <asset:script type='text/javascript'>
 
-    angular.module('currentUsers', ['angularMoment'])
+    angular.module('currentUsers', ['digivol', 'angularMoment'])
       .controller("CurrentUsersCtrl",
         [ '$scope', '$interval', '$http',
         function($scope, $interval, $http) {
@@ -28,7 +28,7 @@
         }
     ]);
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin" data-ng-app="currentUsers">

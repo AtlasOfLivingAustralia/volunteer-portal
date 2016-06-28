@@ -16,9 +16,9 @@
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
-    <r:require modules="dotdotdot, bootbox"/>
+    <asset:javascript src="dotdotdot, bootbox"/>
 
-    <r:script>
+    <asset:script>
 
         google.load("maps", "3.23", {other_params: ""});
         var map, infowindow;
@@ -166,7 +166,7 @@
             });
         }
 
-    </r:script>
+    </asset:script>
 
     <style type="text/css">
 

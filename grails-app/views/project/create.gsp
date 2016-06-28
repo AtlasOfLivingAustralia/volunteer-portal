@@ -6,7 +6,7 @@
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title>Create Expedition</title>
 
-    <r:require modules="tinymce-simple" />
+    <asset:javascript src="tinymce-simple" />
 
     <style type="text/css">
 

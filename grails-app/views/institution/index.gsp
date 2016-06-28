@@ -8,8 +8,9 @@
     <content tag="pageType">institution</content>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-    <r:require modules="digivol-image-resize"/>
-    <r:script>
+    <asset:stylesheet src="digivol-image-resize"/>
+    <asset:javascript src="digivol-image-resize"/>
+    <asset:script>
 
         $(document).ready(function () {
 
@@ -33,7 +34,7 @@
             window.location = url;
         }
 
-    </r:script>
+    </asset:script>
 
 </head>
 

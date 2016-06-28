@@ -4,19 +4,9 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><cl:pageTitle title="Create a new Expedition"/></title>
 
-    <r:require module="digivol-new-project-wizard" />
+    <asset:stylesheet src="digivol-new-project-wizard" />
+    <asset:javascript src="digivol-new-project-wizard" />
 
-    <r:style>
-.angular-google-map-container { height: 400px; }
-
-.angular-google-map-container img {
-    max-width: none !important;
-    max-height: none !important;
-}
-span.label i.remove {
-    cursor: pointer;
-}
-    </r:style>
 </head>
 
 <body class="admin" data-ng-app="projectWizard">
@@ -536,7 +526,7 @@ span.label i.remove {
     <span class="label" data-ng-class="colour()" title="{{label.category}}">{{label.value}} <i
             data-ng-if="hasRemove" class="glyphicon glyphicon-remove glyphicon-white remove" data-ng-click="remove({label: label})" data-label-id="{{label.id}}"></i></span>
     </script>
-<r:script>
+<asset:script>
   createProjectModule({
      stagingId: '${stagingId.encodeAsJavaScript()}',
      cancelUrl: '${createLink(controller: 'project', action: 'wizardCancel', id: id)}',
@@ -554,7 +544,7 @@ span.label i.remove {
      projectTypes: <cl:json value="${projectTypes}" />,
      projectImageUrl: '${projectImageUrl.encodeAsJavaScript()}'
   });
-</r:script>
+</asset:script>
 </div>
 </body>
 </html>

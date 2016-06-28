@@ -1,5 +1,9 @@
 <%@ page import="au.org.ala.volunteer.AggregationType; au.org.ala.volunteer.AchievementType; au.org.ala.volunteer.AchievementDescription" %>
-<r:require modules="codemirror-json, codemirror-groovy, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>
+<head>
+    <asset:stylesheet src="codemirror-monokai" />
+    <asset:javascript src="jquery, codemirror-js, codemirror-groovy, codemirror-sublime" />
+</head>
+%{--<r:require modules="codemirror-json, codemirror-groovy, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>--}%
 
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'has-error')} required">
     <label class="control-label col-md-3" for="name">
@@ -92,7 +96,7 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
 jQuery(function($) {
     var id = "${achievementDescriptionInstance?.id ?: 0}"
     var badgeBase = "${cl.achievementBadgeBase()}";
@@ -235,4 +239,4 @@ jQuery(function($) {
     });
 
 });
-</r:script>
+</asset:script>

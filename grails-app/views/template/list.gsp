@@ -13,7 +13,7 @@
     }
 
     </style>
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
 
             $(function() {
 
@@ -43,7 +43,7 @@
 
             });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">

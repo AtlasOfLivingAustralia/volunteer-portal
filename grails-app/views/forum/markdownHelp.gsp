@@ -13,10 +13,10 @@
 
     <style type="text/css">
     </style>
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
         $(document).ready(function () {
         });
-    </r:script>
+    </asset:script>
 
 </head>
 

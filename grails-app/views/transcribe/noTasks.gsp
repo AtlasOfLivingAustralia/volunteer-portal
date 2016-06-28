@@ -6,7 +6,7 @@
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title>Thank you - we are done for now!</title>
     <r:require module="amplify"/>
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
             $(document).ready(function () {
                 // clear the temporarily saved state, now that it is known that the task was saved
                 amplify.store("bvp_task_${taskInstance?.id}", null);
@@ -14,7 +14,7 @@
             amplify.store("bvp_task_${complete}", null);
         </g:if>
         });
-    </r:script>
+    </asset:script>
 
 </head>
 

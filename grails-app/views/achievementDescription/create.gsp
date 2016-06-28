@@ -5,7 +5,7 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:javascript src="bootstrap-file-input"/>
 </head>
 
 <body class="admin">
@@ -42,11 +42,11 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
     });
-</r:script>
+</asset:script>
 </body>
 </html>

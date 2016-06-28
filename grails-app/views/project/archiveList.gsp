@@ -99,7 +99,7 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
 jQuery(function($) {
   $('.archive-project').click(function(e) {
     var $this = $(this);
@@ -121,6 +121,6 @@ jQuery(function($) {
     });
   })
 });
-</r:script>
+</asset:script>
 </body>
 </html>

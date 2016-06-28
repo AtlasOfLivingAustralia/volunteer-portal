@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <g:setProvider library="jquery"/>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:javascript src="bootstrap-file-input"/>
 </head>
 
 <body>
@@ -62,7 +62,7 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
 
             $(function() {
                 $("#btnUploadLogoImage").click(function(e) {
@@ -74,6 +74,6 @@
                 });
             });
 
-</r:script>
+</asset:script>
 </body>
 </html>

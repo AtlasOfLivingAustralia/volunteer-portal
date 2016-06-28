@@ -3,8 +3,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.stagingQueue.label" default="Administration - Staging Tasks"/></title>
-    <r:require module="bootbox"/>
-    <r:script type='text/javascript'>
+    <asset:javascript src="bootbox"/>
+    <asset:script type='text/javascript'>
 
         jQuery(function ($) {
             $('#button-bar').find('button.btn-danger').click(function (e) {
@@ -16,7 +16,7 @@
             })
         })
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">

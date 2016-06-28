@@ -465,7 +465,7 @@
 </div>
 </script>
 
-<r:script>
+<asset:script>
     var json = <cl:json value="${[
         selectedTab: selectedTab,
         userInstance: userInstance,
@@ -484,7 +484,7 @@
         auditViewUrl: createLink(controller: 'task', action: 'viewTask')
 ]}" />
     digivolNotebooksTabs(json);
-</r:script>
+</asset:script>
 
 </body>
 </html>

@@ -247,7 +247,7 @@ grails.resources.mappers.zip.excludes = ['/js/tinymce/**/*']
 grails.resources.mappers.bundle.excludes = ['/js/tinymce/**/*']
 grails.resources.mappers.yuijsminify.excludes = ['/js/tinymce/**/*']
 //grails.resources.adhoc.excludes = ['/js/tinymce/**/*.*']
-grails.assets.excludes	["/js/tinymce/**/*.js"]
+grails.assets.excludes	["/tinymce/**/*.js"]
 grails.assets.minifyOptions.excludes = ["**/*.min.js"]
 
 bvp.tmpdir="/data/${appName}/config/"

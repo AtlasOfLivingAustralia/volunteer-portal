@@ -6,7 +6,7 @@
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
         $(document).ready(function () {
 
             $("#searchButton").click(function (e) {
@@ -27,7 +27,7 @@
             var query = $("#q").val()
             location.href = "?q=" + query;
         }
-    </r:script>
+    </asset:script>
 
 </head>
 

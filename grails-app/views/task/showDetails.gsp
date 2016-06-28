@@ -20,14 +20,14 @@
     <r:require module="panZoom"/>
     <r:require module="imageViewer"/>
 
-    <r:script>
+    <asset:script>
 
 
         $(document).ready(function () {
             setupPanZoom();
         });
 
-    </r:script>
+    </asset:script>
 
     <style type="text/css">
 
@@ -237,7 +237,7 @@
 </g:else>
 </section>
 </body>
-<r:script>
+<asset:script>
 
         $(document).ready(function() {
 
@@ -248,5 +248,5 @@
 
         });
 
-</r:script>
+</asset:script>
 </html>

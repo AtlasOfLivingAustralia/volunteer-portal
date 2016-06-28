@@ -3,7 +3,8 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:require modules="bootstrap-switch"/>
+    <asset:stylesheet src="bootstrap-switch"/>
+    <asset:javascript src="bootstrap-switch"/>
 </head>
 
 <body class="admin">

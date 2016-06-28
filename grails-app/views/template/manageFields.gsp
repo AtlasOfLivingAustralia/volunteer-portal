@@ -6,7 +6,7 @@
     <title><g:message code="admin.label" default="Administration"/></title>
     <r:require modules="jquery-ui, bootbox, bootstrap-file-input, qtip, bvp-js"/>
 
-    <r:script>
+    <asset:script>
 
             $(document).ready(function() {
 
@@ -126,7 +126,7 @@
 
             });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">

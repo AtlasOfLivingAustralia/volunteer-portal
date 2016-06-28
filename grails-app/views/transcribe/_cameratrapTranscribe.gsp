@@ -346,7 +346,7 @@
     </div>
 </script>
 
-<r:script>
+<asset:script>
 var imageInfos = <cl:json value="${animalInfos.infos}"/>;
 
 var items = <cl:json value="${animalInfos.items}"/>;
@@ -356,4 +356,4 @@ var recordValues = <cl:json value="${recordValues}"/>;
 var placeholders = <cl:json value="${placeholders}"/>;
 
 cameratrap(imageInfos, items, recordValues, placeholders);
-</r:script>
+</asset:script>

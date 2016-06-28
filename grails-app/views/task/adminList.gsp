@@ -7,7 +7,7 @@
     <title>Expedition administration</title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -77,7 +77,7 @@
         function validateInSeparateWindow(taskId) {
             window.open("${createLink(controller: 'validate', action: 'task').encodeAsJavaScript()}/" + taskId, "bvp_validate_window");
             }
-    </r:script>
+    </asset:script>
 </head>
 
 <body>

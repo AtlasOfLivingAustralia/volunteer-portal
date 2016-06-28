@@ -18,13 +18,13 @@
     <r:require module="panZoom"/>
     <r:require module="imageViewer"/>
 
-    <r:script>
+    <asset:script>
 
         $(document).ready(function () {
             setupPanZoom();
         });
 
-    </r:script>
+    </asset:script>
 
     <style type="text/css">
 
@@ -203,7 +203,7 @@
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 </body>
-<r:script>
+<asset:script>
 
         $(document).ready(function() {
 
@@ -214,5 +214,5 @@
 
         });
 
-</r:script>
+</asset:script>
 </html>

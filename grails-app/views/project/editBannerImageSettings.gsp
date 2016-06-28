@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:javascript src="bootstrap-file-input"/>
 </head>
 
 <body>

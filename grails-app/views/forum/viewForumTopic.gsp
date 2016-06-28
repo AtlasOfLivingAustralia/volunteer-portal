@@ -5,7 +5,8 @@
     <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-    <r:require module="panZoom"/>
+    <asset:stylesheet src="jquery-ui"/>
+    <asset:javascript src="pan-zoom"/>
 
     <style type="text/css">
 
@@ -50,7 +51,7 @@
         </div>
     </div>
 </div>
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
     $(function () {
 
@@ -99,6 +100,6 @@
 
     });
 
-</r:script>
+</asset:script>
 </body>
 </html>
