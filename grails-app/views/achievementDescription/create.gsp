@@ -5,7 +5,8 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <asset:javascript src="bootstrap-file-input"/>
+    <asset:stylesheet src="codemirror-monokai" />
+    <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 </head>
 
 <body class="admin">

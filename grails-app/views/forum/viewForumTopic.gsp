@@ -5,8 +5,7 @@
     <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:styleshhet src="forum.css"/>
-    <asset:stylesheet src="jquery-ui"/>
-    <asset:javascript src="pan-zoom"/>
+        <asset:stylesheet src="image-viewer"/>
 
     <style type="text/css">
 

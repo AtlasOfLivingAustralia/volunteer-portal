@@ -14,6 +14,7 @@
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
     %{--<r:require module="digivol"/>--}%
+    <asset:stylesheet href="digivol.css"/>
     <g:layoutHead/>
     %{--<r:layoutResources/>--}%
 
@@ -38,8 +39,9 @@
 
 <g:render template="/layouts/ga" />
 
+<asset:javascript src="digivol.js" />
 <!-- JS resources-->
-%{--<r:layoutResources/>--}%
+<asset:deferredScripts/>
 
 </body>
 </html>

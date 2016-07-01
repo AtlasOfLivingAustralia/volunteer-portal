@@ -8,7 +8,6 @@
 <head>
     <asset:stylesheet src="slickgrid"/>
 </head>
-<asset:javascript src="slickgrid, underscore"/>
 
 <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
 
@@ -113,7 +112,8 @@
         </div>
     </g:each>
 </div>
-
+<asset:javascript src="underscore" asset-defer=""/>
+<asset:javascript src="slickgrid" asset-defer=""/>
 <asset:script>
 
     var spreadsheetDataView = null;

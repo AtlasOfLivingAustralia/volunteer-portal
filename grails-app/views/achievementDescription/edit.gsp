@@ -5,7 +5,8 @@
     <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <asset:javascript src="bootstrap-file-input"/>
+    <asset:stylesheet src="codemirror-monokai" />
+    <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 </head>
 
 <body>

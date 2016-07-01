@@ -3,7 +3,6 @@
 <head>
     <asset:stylesheet src="cameratrap"/>
 </head>
-<asset:javascript src="cameratrap"/>
 <div id="ct-container" >
 
     <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}"/>
@@ -348,7 +347,7 @@
         <a class="carousel-control right" href="#ct-full-image-carousel" data-slide="next">&rsaquo;</a>
     </div>
 </script>
-
+<asset:javascript src="cameratrap" asset-defer=""/>
 <asset:script>
 var imageInfos = <cl:json value="${animalInfos.infos}"/>;
 

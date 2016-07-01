@@ -1,8 +1,8 @@
 //= encoding UTF-8
-//= requre jquery
-//= require underscore
+//  assume jquery
+//  assume underscore
+//  assume bootbox
 //= require dotdotdot
-//= require bootbox
 //= require transitionend
 //= require_self
 function cameratrap(smImageInfos, smItems, recordValues, placeholders) {

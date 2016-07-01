@@ -5,6 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
+    <asset:stylesheet src="bootstrap-colorpicker"/>
 </head>
 
 <body class="admin">

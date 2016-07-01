@@ -1,5 +1,5 @@
 //= encoding UTF-8
-//= require jquery
+//  assume jquery
 //= require jquery-ui
 //= require_self
 function setupInstitutionAutocomplete(jqElement, idFieldSelector, iconSelector, linkSelector, institutions, nameToId, instBaseUrl) {

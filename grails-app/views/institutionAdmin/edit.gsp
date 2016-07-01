@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <g:setProvider library="jquery"/>
-    <asset:javascript src="bootstrap-file-input"/>
+    <asset:stylesheet src="bootstrap-colorpicker"/>
 </head>
 
 <body>
@@ -62,6 +62,7 @@
         </div>
     </div>
 </div>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script>
 
             $(function() {

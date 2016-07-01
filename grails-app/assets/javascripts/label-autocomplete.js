@@ -1,6 +1,6 @@
 //= encoding UTF-8
-//= require bootstrap
-//= require jquery
+//  assume bootstrap
+//  assume jquery
 //= require typeahead
 //= require_self
 function labelAutocomplete(input, findUrl, ajaxSpinnerSelector, selectedCallback, listTextKey) {

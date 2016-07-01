@@ -1,4 +1,4 @@
 //= encoding UTF-8
-//= require jquery
-//= require bootstrap
+//  assume jquery
+//  assume bootstrap
 //= require bootbox/4.4.0/bootbox.js

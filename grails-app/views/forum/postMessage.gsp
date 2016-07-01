@@ -5,6 +5,7 @@
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:styleshhet src="forum.css"/>
+    <asset:stylesheet src="image-viewer"/>
 
     <style type="text/css">
 

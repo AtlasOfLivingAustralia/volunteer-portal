@@ -1,3 +1,3 @@
 //= encoding UTF-8
-//= require jquery
+//  assume jquery
 //= require bootstrap-switch/bootstrap-switch.js

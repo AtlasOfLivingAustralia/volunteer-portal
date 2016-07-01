@@ -1,8 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
-<head>
-    <asset:stylesheet src="bootstrap-colorpicker"/>
-</head>
-<asset:javascript src="bootstrap-colorpicker, tinymce-simple" />
+<asset:javascript src="bootstrap-colorpicker, tinymce-simple" asset-defer=""/>
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'name', 'has-error')}">
     <label class="control-label col-md-3" for="name">
         <g:message code="institution.name.label" default="Name"/>

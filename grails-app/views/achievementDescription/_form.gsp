@@ -1,10 +1,4 @@
 <%@ page import="au.org.ala.volunteer.AggregationType; au.org.ala.volunteer.AchievementType; au.org.ala.volunteer.AchievementDescription" %>
-<head>
-    <asset:stylesheet src="codemirror-monokai" />
-    <asset:javascript src="jquery, codemirror-js, codemirror-groovy, codemirror-sublime" />
-</head>
-%{--<r:require modules="codemirror-json, codemirror-groovy, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>--}%
-
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'has-error')} required">
     <label class="control-label col-md-3" for="name">
         <g:message code="achievementDescription.name.label" default="Name"/>
@@ -95,7 +89,7 @@
         <div class="bar" style="width: 0%;"></div>
     </div>
 </div>
-
+<asset:javascript src="jquery, codemirror-js, codemirror-groovy, codemirror-sublime" asset-defer=""/>
 <asset:script>
 jQuery(function($) {
     var id = "${achievementDescriptionInstance?.id ?: 0}"
