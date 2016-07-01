@@ -1,4 +1,4 @@
 //= encoding UTF-8
-//= require jquery
+//  assume jquery
 //= require moment
 //= require livestamp/1.1.2/livestamp.min.js

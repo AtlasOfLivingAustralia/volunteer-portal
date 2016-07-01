@@ -4,19 +4,7 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia - Forum formatting help</title>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'public.css')}"/>
-
-    %{--<script type="text/javascript" src="${resource(dir: 'js/jquery-ui-1.9.1.custom/js', file: 'jquery-1.8.2.js')}"></script>--}%
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
-
-    <style type="text/css">
-    </style>
-    <asset:script type="text/javascript">
-        $(document).ready(function () {
-        });
-    </asset:script>
+    <asset:styleshhet src="forum.css"/>
 
 </head>
 

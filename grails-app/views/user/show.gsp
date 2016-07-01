@@ -10,7 +10,8 @@
     <title><g:message code="default.show.label" args="[entityName]"/></title>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <gvisualization:apiImport/>
-    <r:require module="digivol-notebook"/>
+    <asset:stylesheet src="angular-ui-bootstrap"/>
+    <asset:javascript src="digivol-notebook"/>
 </head>
 
 <body data-ng-app="notebook">

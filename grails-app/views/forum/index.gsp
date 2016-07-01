@@ -42,7 +42,7 @@
                 }
 
                 if (baseUrl && selector) {
-                    $(selector).html('<div>Retrieving list of topics... <img src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
+                    $(selector).html('<div>Retrieving list of topics... <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
                     baseUrl += "?selectedTab=" + tabIndex;
                     if (q) {
                         baseUrl += "&q=" + q;

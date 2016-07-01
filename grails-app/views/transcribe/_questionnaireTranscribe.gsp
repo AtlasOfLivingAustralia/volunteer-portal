@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-<r:require modules="dotdotdot, mustache-util, bootbox"/>
+<asset:javascript src="dotdotdot, mustache, bootbox"/>
 
     %{--<div class="span12">--}%
         %{--<span id="journalPageButtons">--}%

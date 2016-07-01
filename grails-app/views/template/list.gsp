@@ -4,7 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
-    <r:require modules="jquery-ui, bootbox, bvp-js"/>
+    <asset:stylesheet src="jquery-ui"/>
+    <asset:javascript src="jquery-ui, bootbox"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
     <style type="text/css">
 

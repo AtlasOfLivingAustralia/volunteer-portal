@@ -1,8 +1,5 @@
 %{--<r:require modules="digivol, digivol-stats, livestamp"/>--}%
 %{-- include CSS and JS assets in calling page --}%
-<head>
-    <asset:stylesheet src="digivol-stats.css" />
-</head>
 <g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
 <section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl" class="ng-cloak">
@@ -183,7 +180,7 @@
     </ul>
     <g:link controller="user" action="list"><g:message code="view.all.contributors.label" /> »</g:link>
 </section>
-<asset:javascript src="digivol-stats.js" />
+<asset:javascript src="digivol-stats.js" asset-defer=""/>
 <asset:script>
 digivolStats({
 statsUrl: "${createLink(controller: 'index', action: 'stats')}",

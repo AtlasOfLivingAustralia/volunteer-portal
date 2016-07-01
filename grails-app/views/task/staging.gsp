@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <r:require modules="bootstrap-file-input, bootbox"/>
+    <asset:javascript src="bootstrap-file-input, bootbox"/>
     <asset:script type='text/javascript'>
 
             $(document).ready(function () {

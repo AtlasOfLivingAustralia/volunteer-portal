@@ -16,9 +16,10 @@
 
     <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
-    <r:require module="bootstrap-js"/>
-    <r:require module="panZoom"/>
-    <r:require module="imageViewer"/>
+    <asset:stylesheet src="image-viewer"/>
+    <asset:javascript src="bootstrap"/>
+    %{--<asset:javascript src="pan-zoom"/>--}%
+    <asset:javascript src="image-viewer"/>
 
     <asset:script>
 

@@ -1,0 +1,145 @@
+table.forum-table {
+	width:100%;
+	border:1px solid #d1d1d1;
+}
+table.forum-table thead th {
+	font-weight:bold;
+	background-color:#f0f0e8;
+	text-align:left;
+}
+table.forum-table th, table.forum-table td {
+	border-bottom:1px solid #d1d1d1;
+}
+table.forum-table thead th {
+	padding:12px 6px;
+	vertical-align:middle;
+}
+
+table.forum-table td {
+	padding:0 6px 6px 6px;
+	vertical-align:middle;
+}
+table.forum-table td img {
+	/*margin-top:6px;*/
+    padding: 2px;
+}
+
+table.forum-table tbody th {
+	padding: 12px 0 0 12px;
+	border-bottom:none;
+}
+table.forum-table td.type {
+	text-align:center;
+}
+table.forum-table td.type img {
+	display:block;
+	margin:0 auto 6px auto;
+	padding:0;
+	text-align:center;
+}
+
+table.forum-table td a.button {
+    margin-top: 5px;
+}
+
+table.forum-table td a.button[disabled=true], table.forum-table td a:hover.button[disabled=true]  {
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+    cursor: default;
+}
+
+.forumNameColumn {
+    width: 200px;
+    text-align: center;
+}
+
+.forumUsername {
+    font-weight: bold;
+}
+
+.forumMessageDate {
+    font-size: x-small;
+}
+
+blockquote {
+  border-left: 5px solid #a9a9a9;
+  background-color: #f5f5f5;
+  padding: 5px;
+  margin-top: 5px;
+  font-style: normal;
+}
+
+blockquote p {
+    padding: 0;
+}
+
+td p {
+    padding-bottom: 0px;
+}
+
+.originalMessageButtons {
+    margin-top: 10px;
+}
+
+.messagePreview {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #a9a9a9;
+}
+
+.sticky td:nth-of-type(2) {
+    font-weight: bold;
+}
+
+tr.Important td:nth-of-type(2) a {
+    color: #008000;
+    font-weight: bold;
+}
+
+tr.Warning td:nth-of-type(2) a {
+    color: #0000ff;
+    font-weight: bold;
+}
+
+tr.Critical td:nth-of-type(2) a {
+    color: #ff4500;
+    font-weight: bold;
+}
+
+
+.newTopicFields textarea {
+  width: 100%;
+}
+
+.newTopicFields h2 {
+  margin-top: 10px;
+  margin-bottom: 2px;
+  padding-bottom: 2px;
+}
+
+.moderatorOptions {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #a9a9a9;
+  padding: 10px;
+}
+
+.moderatorOptions label {
+  display: inline-block;
+  width: 120px;
+}
+
+.moderator-label {
+    color: royalblue;
+    font-size: smaller;
+}
+
+.author-is-moderator-row {
+    background-color:#f5f5f5;
+}
+
+.forum-tab-title {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+

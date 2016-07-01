@@ -6,7 +6,8 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'record.label', default: 'Record')}"/>
     <title>CSV Image Upload</title>
-    <r:require modules="qtip"/>
+    <asset:stylesheet src="qtip"/>
+    <asset:javascript src="qtip"/>
     <asset:script type="text/javascript">
         $(document).ready(function () {
             // tootltip on help icon

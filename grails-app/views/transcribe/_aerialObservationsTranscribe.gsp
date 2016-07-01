@@ -14,15 +14,15 @@
         <div class="col-md-12">
             <span id="journalPageButtons">
                 <button type="button" class="btn btn-small" id="showPreviousJournalPage"
-                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><img
-                        src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous journal page</button>
+                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
+                        src="left_arrow.png" /> show previous journal page</button>
                 <button type="button" class="btn btn-small" id="showNextJournalPage"
-                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page <img
-                        src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
+                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page
+                        <asset:image src="right_arrow.png" /></button>
                 <button type="button" class="btn btn-small" id="rotateImage"
-                        title="Rotate the page 180 degrees">Rotate&nbsp;<img
+                        title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
                         style="vertical-align: middle; margin: 0 !important;"
-                        src="${resource(dir: 'images', file: 'rotate.png')}"></button>
+                        src="rotate.png" /></button>
             </span>
         </div>
     </div>

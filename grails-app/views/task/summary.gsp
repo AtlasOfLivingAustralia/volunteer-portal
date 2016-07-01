@@ -14,9 +14,9 @@
     <meta property="og:image"         content="${stringInstanceMap.thumbnail}" />
 
 
-    <r:require module="bootstrap-js"/>
-    <r:require module="panZoom"/>
-    <r:require module="imageViewer"/>
+    <asset:stylesheet src="image-viewer"/>
+    <asset:javascript src="bootstrap"/>
+    <asset:javascript src="image-viewer"/>
 
     <asset:script>
 

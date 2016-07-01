@@ -4,7 +4,7 @@
 <head>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+    <asset:styleshhet src="forum.css"/>
 
     <style type="text/css">
 
@@ -92,7 +92,7 @@
                             <div class="messageReply" author="<cl:userDetails id="${reply?.user?.userId}" displayName="true"/>"
                                  style="border: 1px solid #a9a9a9; margin: 3px; padding: 3px; background: white">
                                 <div style="background-color: #3a5c83; color: white">
-                                    <img src="${resource(dir: '/images', file: 'reply.png')}" style="vertical-align: bottom"/>
+                                    <asset:image src="reply.png" style="vertical-align: bottom"/>
                                     On ${formatDate(date: reply.date, format: 'dd MMM yyyy')} at ${formatDate(date: reply.date, format: 'HH:mm:ss')} <strong><cl:userDetails
                                         id="${reply?.user?.userId}" displayName="true"/></strong> wrote:
                                 </div>

@@ -15,7 +15,7 @@
     <title><cl:pageTitle title="${(projectInstance.name ?: 'Atlas of Living Australia') + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
-    <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
+    <asset:javascript src="markerclusterer.js" />
     <asset:javascript src="dotdotdot, bootbox"/>
 
     <asset:script>

@@ -4,7 +4,7 @@
 <g:set var="collectionEventInsitutionCode"
        value="${taskInstance?.project?.collectionEventLookupCollectionCode ?: taskInstance?.project.featuredOwner}"/>
 
-<r:require module="gmaps"/>
+<asset:javascript src="jquery, gmaps"/>
 
 <div class="container-fluid">
     <div class="row">

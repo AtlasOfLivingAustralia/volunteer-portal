@@ -8,8 +8,7 @@
     <content tag="pageType">institution</content>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-    <asset:stylesheet src="digivol-image-resize"/>
-    <asset:javascript src="digivol-image-resize"/>
+    <asset:stylesheet src="digivol-image-resize.css"/>
     <asset:script>
 
         $(document).ready(function () {
@@ -200,5 +199,6 @@
         </div>
     </div>
 </section>
+<asset:javascript src="digivol-image-resize.js" asset-defer="" />
 </body>
 </html>

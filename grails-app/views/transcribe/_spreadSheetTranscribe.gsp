@@ -5,7 +5,10 @@
 %>
 
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-<r:require modules="slickgrid, underscore"/>
+<head>
+    <asset:stylesheet src="slickgrid"/>
+</head>
+<asset:javascript src="slickgrid, underscore"/>
 
 <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
 

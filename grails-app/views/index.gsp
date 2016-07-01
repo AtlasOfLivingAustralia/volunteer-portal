@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="layout" content="digivol-main"/>
@@ -9,7 +9,6 @@
     <asset:stylesheet src="digivol-image-resize.css" />
     <asset:stylesheet src="digivol-stats.css" />
 </head>
-
 <body>
 <div class="a-feature home">
     <div class="container">
@@ -138,7 +137,6 @@
     </div>
 </section>
 <a name="learnMore"></a>
-<asset:javascript src="digivol-image-resize.js" />
-<asset:javascript src="digivol-stats.js" />
+<asset:javascript src="digivol-image-resize.js" asset-defer="" />
 </body>
 </html>

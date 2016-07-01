@@ -19,13 +19,13 @@
         }
     </script>
     <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
-    <r:require module="digivol-transcribe" />
-    <r:require module="bvp-js" />
-    <r:require module="panZoom"/>
-    <r:require module="jqZoom"/>
-    <r:require module="imageViewer"/>
-    <r:require module="transcribeWidgets"/>
-    <r:require module="amplify"/>
+    <asset:stylesheet src="image-viewer"/>
+    <asset:stylesheet src="transcribe-widgets"/>
+    <asset:javascript src="bootbox" />
+    %{--<r:require module="jqZoom"/>--}%
+    <asset:javascript src="image-viewer"/>
+    <asset:javascript src="transcribe-widgets"/>
+    <asset:javascript src="amplify"/>
 
     <asset:script>
 

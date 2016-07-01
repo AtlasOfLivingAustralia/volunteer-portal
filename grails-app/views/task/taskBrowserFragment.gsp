@@ -63,10 +63,10 @@
 
         <div>
             <span style="padding: 5px; float: left">
-                <button class="btn btn-default btn-sm" id="show_prev_task"><img
-                        src="${resource(dir: 'images', file: 'left_arrow.png')}">&nbsp;Previous</button>
-                <button class="btn btn-default btn-sm" id="show_next_task">Next&nbsp;<img
-                        src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>
+                <button class="btn btn-default btn-sm" id="show_prev_task"><asset:image
+                        src="left_arrow.png">&nbsp;Previous</button>
+                <button class="btn btn-default btn-sm" id="show_next_task">Next&nbsp;<asset:image
+                        src="right_arrow.png"></button>
                 <span id="task_location"></span>
             </span>
             <span style="padding: 5px;float:right">

@@ -193,7 +193,7 @@
         <td></td>
         <td>
             <span>
-                <span style="padding-left:7px; padding-top: 8px; padding-right: 5px; padding-bottom: 11px; background-image: url(${resource(dir: '/images', file: 'warning-button.png')})">
+                <span style="padding-left:7px; padding-top: 8px; padding-right: 5px; padding-bottom: 11px; background-image: url(${asset.assetPath(src: 'warning-button.png')})">
                     <g:actionSubmit class="delete btn btn-danger" action="deleteTasks" value="Delete all tasks"
                                     onclick="return confirmDeleteAllTasks()"/>
                 </span>

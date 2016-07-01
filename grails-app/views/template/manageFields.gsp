@@ -4,7 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <r:require modules="jquery-ui, bootbox, bootstrap-file-input, qtip, bvp-js"/>
+    <asset:stylesheet src="jquery-ui, qtip"/>
+    <asset:javascript src="jquery-ui, bootbox, bootstrap-file-input, qtip"/>
 
     <asset:script>
 

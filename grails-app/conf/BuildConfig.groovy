@@ -59,19 +59,19 @@ grails.project.dependency.resolution = {
         compile ":cache-headers:1.1.7"
         build ':tomcat:7.0.55.3'
         compile ':hibernate4:4.3.10'
-        compile ":postgresql-extensions:4.6.1"
-        compile ':platform-core:1.0.0'
+        //compile ":postgresql-extensions:4.6.1"
+        //compile ':platform-core:1.0.0'
 
         runtime ":jquery:1.11.1"
         runtime ":jquery-ui:1.10.4"
 
         compile "org.grails.plugins:asset-pipeline:2.9.1"
-        compile "org.grails.plugins:angular-annotate-asset-pipeline:2.4.1"
-        compile "org.grails.plugins:angular-template-asset-pipeline:2.2.7"
-        compile "org.grails.plugins:i18n-asset-pipeline:1.0.6"
-        compile "org.grails.plugins:sass-asset-pipeline:2.9.1"
-        //compile "org.grails.plugins:babel-asset-pipeline:1.4.5"
-        //compile "org.grails.plugins:asset-autoprefixer:1.3.0"
+//        compile "org.grails.plugins:angular-annotate-asset-pipeline:2.4.1"
+//        compile "org.grails.plugins:angular-template-asset-pipeline:2.2.7"
+//        compile "org.grails.plugins:i18n-asset-pipeline:1.0.6"
+//        compile "org.grails.plugins:sass-asset-pipeline:2.9.1"
+//        compile "org.grails.plugins:babel-asset-pipeline:1.4.5"
+//        compile "org.grails.plugins:asset-autoprefixer:1.3.0"
 
 //        runtime ':resources:1.2.14'
 //        if (Environment.current == Environment.PRODUCTION) {
