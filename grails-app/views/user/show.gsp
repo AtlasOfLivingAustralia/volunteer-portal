@@ -10,8 +10,6 @@
     <title><g:message code="default.show.label" args="[entityName]"/></title>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <gvisualization:apiImport/>
-    <asset:stylesheet src="angular-ui-bootstrap"/>
-    <asset:javascript src="digivol-notebook"/>
 </head>
 
 <body data-ng-app="notebook">
@@ -465,8 +463,8 @@
     <button class="btn btn-primary" type="button" ng-click="$ctrl.close()">OK</button>
 </div>
 </script>
-
-<asset:script>
+<asset:javascript src="digivol-notebook" asset-defer=""/>
+<asset:script type="text/javascript">
     var json = <cl:json value="${[
         selectedTab: selectedTab,
         userInstance: userInstance,

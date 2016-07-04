@@ -1,10 +1,11 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-
+<g:applyLayout name="digivol-task">
+    <content tag="templateView">
 <g:set var="collectionEventInsitutionCode"
        value="${taskInstance?.project?.collectionEventLookupCollectionCode ?: taskInstance?.project.featuredOwner}"/>
 
-<asset:javascript src="jquery, gmaps"/>
+<asset:javascript src="gmaps"/>
 
 <div class="container-fluid">
     <div class="row">
@@ -502,3 +503,5 @@ var html = "This specimen is linked with an existing collection event: <br/>" + 
     updateBindStatus();
 
 </asset:script>
+    </content>
+</g:applyLayout>

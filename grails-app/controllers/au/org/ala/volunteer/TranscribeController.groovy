@@ -79,7 +79,7 @@ class TranscribeController {
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
-            render(view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
+            render(view: 'templateViews/' + project.template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
         } else {
             redirect(view: 'list', controller: "task")
         }

@@ -3,12 +3,15 @@
 <%
     PicklistService picklistService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.PicklistService').newInstance()
 %>
-
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
+<g:set var="sectionNumber" value="${1}"/>
+<g:set var="nextSectionNumber" value="${{ sectionNumber++ }}"/>
+<g:applyLayout name="digivol-task" model="[taskInstance: taskInstance, template: template, recordValues: recordValues, validator: validator, isReadOnly: isReadOnly, complete: complete, sectionNumber: sectionNumber, nextSectionNumber: nextSectionNumber]">
 <head>
     <asset:stylesheet src="slickgrid"/>
 </head>
 
+    <content tag="templateView">
 <g:set var="entriesField" value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
 
 <g:if test="${!entriesField}">
@@ -350,3 +353,5 @@ var renderItem = function(item) {
       createDataItemsFromInputs();
     }
 </asset:script>
+    </content>
+</g:applyLayout>

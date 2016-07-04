@@ -11,12 +11,12 @@ class TemplateService {
     def getAvailableTemplateViews() {
         def views = []
         if (grailsApplication.isWarDeployed()) {
-            findWarGsps '/WEB-INF/grails-app/views/transcribe', views
+            findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
         } else {
-            findDevGsps 'grails-app/views/transcribe', views
+            findDevGsps 'grails-app/views/transcribe/templateViews', views
         }
 
-        def pattern = Pattern.compile("^transcribe/_(.*Transcribe)[.]gsp\$")
+        def pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
 
         def results = []
         views.each { String viewName ->

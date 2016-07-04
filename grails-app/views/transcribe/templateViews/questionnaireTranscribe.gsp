@@ -1,37 +1,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-<asset:javascript src="dotdotdot, mustache, bootbox"/>
-
-    %{--<div class="span12">--}%
-        %{--<span id="journalPageButtons">--}%
-
-            %{--<button type="button" class="btn btn-small" id="showPreviousJournalPage"--}%
-                    %{--title="displays page in new window"--}%
-                    %{--data-container="body" ${prevTask ? '' : 'disabled="true"'}><img--}%
-                    %{--src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous</button>--}%
-            %{--<button type="button" class="btn btn-small" id="showNextJournalPage" title="displays page in new window"--}%
-                    %{--data-container="body" ${nextTask ? '' : 'disabled="true"'}>show next <img--}%
-                    %{--src="${resource(dir: 'images', file: 'right_arrow.png')}"></button>--}%
-            %{--<button type="button" class="btn btn-small" id="rotateImage" title="Rotate the page 180 degrees"--}%
-                    %{--data-container="body">Rotate&nbsp;<img style="vertical-align: middle; margin: 0 !important;"--}%
-                                                           %{--src="${resource(dir: 'images', file: 'rotate.png')}">--}%
-            %{--</button>--}%
-            %{--<button type="button" class="btn btn-small bvp-submit-button" id="showNextFromProject">Skip</button>--}%
-            %{--<g:if test="${validator}">--}%
-                %{--<g:if test="${validator}">--}%
-                    %{--<a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>--}%
-                %{--</g:if>--}%
-            %{--</g:if>--}%
-            %{--<g:else>--}%
-                %{--<button type="button" class="btn btn-small" id="btnSavePartial"--}%
-                        %{--class="btn bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save draft')}</button>--}%
-                %{--<button type="button" class="btn btn-small" id="btnQuit"--}%
-                        %{--class="btn bvp-quit-button">${message(code: 'default.button.quit.label', default: 'Quit')}</button>--}%
-            %{--</g:else>--}%
-            %{--<vpf:taskTopicButton task="${taskInstance}" class="btn-info btn-small"/>--}%
-        %{--</span>--}%
-    %{--</div>--}%
-
+<g:applyLayout name="digivol-task">
+    <content tag="templateView">
         <div class="col-sm-6">
             <div class="media-container">
                 <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
@@ -62,30 +32,6 @@
                     </div>
                 </div>
             </div>
-            %{--<div id="qa-questions-pager" class="pagination text-center" style="height:36px;">--}%
-                %{--<ul style="margin-bottom: 6px;">--}%
-                    %{--<li><a href="#qaCarousel" data-slide="prev" style="width:69px;">&larr; Previous</a></li>--}%
-                    %{--<g:each in="${fieldList}" var="f" status="st">--}%
-                        %{--<g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}"/>--}%
-                        %{--<li class="${isActive}"><a href="#qaCarousel" data-target="#qaCarousel"--}%
-                                                   %{--data-slide-to="${st}">${st + 1}</a></li>--}%
-                    %{--</g:each>--}%
-                    %{--<li class="${validator ? 'active' : ''}"><a href="#qaCarousel" class="summary"--}%
-                                                                %{--title="${message(code: 'questionnarie.summary.button.tooltip', default: 'Click any time to view and submit your choices')}"--}%
-                                                                %{--data-container="body" data-target="#qaCarousel"--}%
-                                                                %{--data-slide-to="${fieldList.size()}">Summary</a></li>--}%
-                    %{--${fieldList.size()+1}--}%
-                    %{--<li>--}%
-                        %{--<a id="carousel-control-right" href="#qaCarousel" data-slide="next"--}%
-                           %{--style="width:69px;">Next &rarr;</a>--}%
-                        %{--<g:if test="${!validator}">--}%
-                            %{--<button type="button" id="btnSave"--}%
-                                    %{--class="btn btn-primary bvp-submit-button" ${'disabled="true"'}--}%
-                                    %{--style="width:94px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0; display: none;">${message(code: 'transcribe.button.shortsubmit.label', default: 'Submit')}</button>--}%
-                        %{--</g:if>--}%
-                    %{--</li>--}%
-                %{--</ul>--}%
-            %{--</div>--}%
             <div class="row"> %{-- style="margin-bottom: 10px;" --}%
                 <div id="qaCarousel" class="carousel slide" data-interval="" style="min-height: 382px">
                     <div class="carousel-inner">
@@ -183,7 +129,9 @@
 <script id="image-select-display" type="x-tmpl-mustache">
     {{#selected}}<span><img src="{{src}}" style="height:20px;width:20px;vertical-align:baseline;"></img> {{value}}</span>{{^last}}, {{/last}}{{/selected}}
 </script>
-
+        <asset:javascript src="dotdotdot" asset-defer=""/>
+        <asset:javascript src="mustache" asset-defer="" />
+        <asset:javascript src="bootbox" asset-defer="" />
 <asset:script>
     jQuery(function($) {
         var active = 0;
@@ -360,3 +308,5 @@
         markSeenFields();
     });
 </asset:script>
+    </content>
+</g:applyLayout>

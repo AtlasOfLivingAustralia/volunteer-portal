@@ -1,9 +1,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-
-<style type="text/css">
-</style>
-
+<g:applyLayout name="digivol-task">
+<content tag="templateView">
 <div class="container-fluid">
 
     <div class="row-fluid">
@@ -87,3 +85,5 @@
     </div>
 
 </div>
+</content>
+</g:applyLayout>

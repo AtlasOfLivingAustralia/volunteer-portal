@@ -418,9 +418,9 @@ log4j = {
             'au.org.ala.cas.util'
             
     info    'grails.app',
-            'au.org.ala'
+            'au.org.ala',
+            'asset.pipeline'
 
-    debug   'asset.pipeline'
 
 //    debug   'org.apache.http.headers',
 //            'org.apache.http.wire'

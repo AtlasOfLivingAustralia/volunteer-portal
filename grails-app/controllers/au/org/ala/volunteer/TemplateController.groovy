@@ -267,7 +267,7 @@ class TemplateController {
         def recordValues = [:]
         def imageMetaData = [0: [width: 2048, height: 1433]]
 
-        render(view: '/transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData, isPreview: true])
+        render(view: '/transcribe/templateViews/' + templateInstance.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData, isPreview: true])
     }
 
     def exportFieldsAsCSV() {

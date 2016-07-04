@@ -5,7 +5,7 @@
     <title><cl:pageTitle title="Create a new Expedition"/></title>
 
     <asset:stylesheet src="digivol-new-project-wizard" />
-    <asset:javascript src="digivol-new-project-wizard" />
+    <asset:javascript src="digivol-new-project-wizard" asset-defer="" />
 
 </head>
 

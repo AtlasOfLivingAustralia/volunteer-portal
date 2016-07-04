@@ -1,6 +1,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-
+<g:applyLayout name="digivol-task">
+    <content tag="templateView">
 <div class="row">
     <div class="col-md-8">
         <div class="panel panel-default">
@@ -95,3 +96,5 @@
                               recordValues="${recordValues}" title="Identification"
                               description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
 
+    </content>
+</g:applyLayout>

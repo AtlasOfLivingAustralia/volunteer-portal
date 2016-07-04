@@ -1,6 +1,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-
+<g:applyLayout name="digivol-task">
+<head>
 <style>
     .fontSizeButton {
         line-height: 18px !important;
@@ -9,7 +10,8 @@
         margin-bottom:5px;
     }
 </style>
-
+</head>
+<content tag="templateView">
 <div class="row">
     <div class="col-md-12">
         <div class="btn-toolbar" id="journalPageButtons">
@@ -198,3 +200,5 @@
     });
 
 </script>
+</content>
+</g:applyLayout>

@@ -1,11 +1,12 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-body">
+<g:applyLayout name="digivol-task">
+    <content tag="templateView">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel panel-default">
+                    <div class="panel-body">
                     <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
                     <g:imageViewer multimedia="${multimedia}"/>
                 </div>
@@ -152,3 +153,5 @@
                                   description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
 
 </div>
+</content>
+</g:applyLayout>

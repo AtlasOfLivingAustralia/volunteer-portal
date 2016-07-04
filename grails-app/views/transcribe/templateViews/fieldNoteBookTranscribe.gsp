@@ -1,6 +1,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-
+<g:applyLayout name="digivol-task">
+    <head>
 <style>
     .fontSizeButton {
         line-height: 18px !important;
@@ -9,13 +10,14 @@
         margin-bottom:5px;
     }
 </style>
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="btn-toolbar" id="journalPageButtons">
-            <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-default" id="showPreviousJournalPage"
-                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
+    </head>
+    <content tag="templateView">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="btn-toolbar" id="journalPageButtons">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-default" id="showPreviousJournalPage"
+                            title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
                         src="left_arrow.png" /> show previous journal page</button>
                 <button type="button" class="btn btn-default" id="showNextJournalPage"
                         title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page
@@ -230,3 +232,5 @@
     });
 
 </script>
+    </content>
+</g:applyLayout>
