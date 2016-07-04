@@ -4,104 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <asset:javascript src="bootstrap-file-input, bootbox"/>
-    <asset:script type='text/javascript'>
-
-            $(document).ready(function () {
-
-                bvp.bindTooltips("a.fieldHelp", 650);
-
-                $(".btnDeleteImage").click(function(e) {
-                    var imageName = $(this).attr("imageName");
-                    if (imageName) {
-                        window.location = "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=" + imageName;
-                    }
-                });
-
-
-                $(".btnDeleteShadowFile").click(function(e) {
-                    var filename = $(this).attr("filename");
-                    if (filename) {
-                        window.location = "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=" + filename;
-                    }
-                });
-
-
-                $(".btnAddFieldDefinition").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title: "Add field definition",
-                        url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}"
-                    }
-                    bvp.showModal(options);
-                });
-
-                $(".btnEditField").click(function(e) {
-                    e.preventDefault();
-                    var fieldId = $(this).parents("[fieldDefinitionId]").attr("fieldDefinitionId");
-                    if (fieldId) {
-                        var options = {
-                            title: "Edit field definition",
-                            url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}&fieldDefinitionId=" + fieldId
-                        };
-                        bvp.showModal(options);
-                    }
-                });
-
-                $(".btnDeleteField").click(function(e) {
-                    var fieldId = $(this).parents("[fieldDefinitionId]").attr("fieldDefinitionId");
-                    if (fieldId) {
-                        window.location = "${createLink(controller: 'task', action: 'deleteFieldDefinition', params: [projectId: projectInstance.id])}&fieldDefinitionId=" + fieldId;
-                    }
-                });
-
-                $("#btnLoadTasks").click(function(e) {
-                    e.preventDefault();
-                    window.location = "${createLink(controller: 'task', action: 'loadStagedTasks', params: [projectId: projectInstance.id])}";
-                });
-
-                $("#btnExportTasksCSV").click(function(e) {
-                    e.preventDefault();
-                    window.open("${createLink(controller: "task", action: 'exportStagedTasksCSV', params: [projectId: projectInstance.id])}", "ExportCSV");
-                });
-
-                $("#btnUploadDataFile").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title: "Upload a data file",
-                        url:"${createLink(action: 'uploadDataFileFragment', params: [projectId: projectInstance.id])}"
-                    }
-                    bvp.showModal(options);
-
-                });
-
-                $("#btnClearDataFile").click(function(e) {
-                    e.preventDefault();
-                    window.location = "${createLink(controller: 'task', action: 'clearStagedDataFile', params: [projectId: projectInstance.id])}";
-                });
-
-                $("#btnClearStagingArea").click(function(e) {
-                    e.preventDefault();
-                    bootbox.confirm('Are you sure you wish to delete all images from the staging area?', function(result) {
-                        if (result) {
-                            window.location = "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}";
-                        }
-                    });
-                });
-
-                $("#btnSelectImages").click(function(e) {
-                    e.preventDefault();
-                    var opts = {
-                        title:"Upload images to the staging area",
-                        url: "${createLink(action: "selectImagesForStagingFragment", params: [projectId: projectInstance.id])}"
-                    };
-
-                    bvp.showModal(opts);
-                });
-
-            });
-
-    </asset:script>
 </head>
 
 <body class="admin">
@@ -321,5 +223,104 @@
         </div>
     </div>
 </div>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:script type='text/javascript'>
+
+    $(document).ready(function () {
+
+        bvp.bindTooltips("a.fieldHelp", 650);
+
+        $(".btnDeleteImage").click(function(e) {
+            var imageName = $(this).attr("imageName");
+            if (imageName) {
+                window.location = "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=" + imageName;
+                    }
+                });
+
+
+                $(".btnDeleteShadowFile").click(function(e) {
+                    var filename = $(this).attr("filename");
+                    if (filename) {
+                        window.location = "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=" + filename;
+                    }
+                });
+
+
+                $(".btnAddFieldDefinition").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title: "Add field definition",
+                        url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}"
+                    }
+                    bvp.showModal(options);
+                });
+
+                $(".btnEditField").click(function(e) {
+                    e.preventDefault();
+                    var fieldId = $(this).parents("[fieldDefinitionId]").attr("fieldDefinitionId");
+                    if (fieldId) {
+                        var options = {
+                            title: "Edit field definition",
+                            url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}&fieldDefinitionId=" + fieldId
+                        };
+                        bvp.showModal(options);
+                    }
+                });
+
+                $(".btnDeleteField").click(function(e) {
+                    var fieldId = $(this).parents("[fieldDefinitionId]").attr("fieldDefinitionId");
+                    if (fieldId) {
+                        window.location = "${createLink(controller: 'task', action: 'deleteFieldDefinition', params: [projectId: projectInstance.id])}&fieldDefinitionId=" + fieldId;
+                    }
+                });
+
+                $("#btnLoadTasks").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller: 'task', action: 'loadStagedTasks', params: [projectId: projectInstance.id])}";
+                });
+
+                $("#btnExportTasksCSV").click(function(e) {
+                    e.preventDefault();
+                    window.open("${createLink(controller: "task", action: 'exportStagedTasksCSV', params: [projectId: projectInstance.id])}", "ExportCSV");
+                });
+
+                $("#btnUploadDataFile").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title: "Upload a data file",
+                        url:"${createLink(action: 'uploadDataFileFragment', params: [projectId: projectInstance.id])}"
+                    }
+                    bvp.showModal(options);
+
+                });
+
+                $("#btnClearDataFile").click(function(e) {
+                    e.preventDefault();
+                    window.location = "${createLink(controller: 'task', action: 'clearStagedDataFile', params: [projectId: projectInstance.id])}";
+                });
+
+                $("#btnClearStagingArea").click(function(e) {
+                    e.preventDefault();
+                    bootbox.confirm('Are you sure you wish to delete all images from the staging area?', function(result) {
+                        if (result) {
+                            window.location = "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}";
+                        }
+                    });
+                });
+
+                $("#btnSelectImages").click(function(e) {
+                    e.preventDefault();
+                    var opts = {
+                        title:"Upload images to the staging area",
+                        url: "${createLink(action: "selectImagesForStagingFragment", params: [projectId: projectInstance.id])}"
+                    };
+
+                    bvp.showModal(opts);
+                });
+
+            });
+
+</asset:script>
 </body>
 </html>

@@ -6,7 +6,6 @@
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <asset:stylesheet src="label-autocomplete"/>
-    <asset:javascript src="label-autocomplete"/>
 </head>
 
 <body>
@@ -81,7 +80,7 @@
         </g:form>
     </div>
 </div>
-
+<asset:javascript src="label-autocomplete" asset-defer=""/>
 <asset:script>
 $(function($) {
 

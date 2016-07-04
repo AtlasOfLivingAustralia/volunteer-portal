@@ -10,7 +10,7 @@
 <head>
     <meta name="layout" content="digivol-transcribe"/>
 
-    <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+    <g:layoutTitle default="${cl.pageTitle(title:"${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}"}" />
     <script type="text/javascript">
         var gmapsReady = false;
         function onGmapsReady() {
@@ -21,6 +21,7 @@
     <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
     <asset:stylesheet src="image-viewer"/>
     <asset:stylesheet src="transcribe-widgets" />
+    <g:layoutHead/>
 
     <style type="text/css">
 
@@ -140,7 +141,7 @@
                                 <div class="row transcribeSectionHeader">
                                     <div class="col-sm-12">
                                         <span class="transcribeSectionHeaderLabel"><g:if
-                                                test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
+                                                test="${!template.viewParams.hideSectionNumbers}">${request.nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
                                         <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                                     </div>
                                 </div>

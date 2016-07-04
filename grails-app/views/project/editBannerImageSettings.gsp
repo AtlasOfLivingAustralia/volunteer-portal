@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <asset:javascript src="bootstrap-file-input"/>
 </head>
 
 <body>
@@ -55,13 +54,14 @@
     </div>
 
 </g:form>
-<script type='text/javascript'>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:script type='text/javascript'>
     $(function () {
 
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
     });
-</script>
+</asset:script>
 
 </body>
 </html>

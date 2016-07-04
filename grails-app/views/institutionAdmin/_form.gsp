@@ -1,5 +1,4 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
-<asset:javascript src="bootstrap-colorpicker, tinymce-simple" asset-defer=""/>
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'name', 'has-error')}">
     <label class="control-label col-md-3" for="name">
         <g:message code="institution.name.label" default="Name"/>
@@ -105,6 +104,8 @@
         </div>
     </div>
 </g:if>
+<asset:javascript src="bootstrap-colorpicker" asset-defer="" />
+<asset:javascript src="tinymce-simple" asset-defer=""/>
 <asset:script>
     jQuery(function ($) {
         $('.colpick').colorpicker();

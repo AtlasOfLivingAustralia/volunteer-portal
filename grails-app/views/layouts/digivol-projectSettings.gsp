@@ -2,7 +2,7 @@
 <head>
     <title>Edit Project ${projectInstance?.name}</title>
     <asset:stylesheet src="bootstrap-switch"/>
-    <asset:javascript src="bootstrap-switch, tinymce-simple"/>
+    <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>
 
@@ -95,7 +95,9 @@
         </div>
     </div>
 </div>
-<script>
+<asset:javascript src="bootstrap-switch" asset-defer="" />
+<asset:javascript src="tinymce-simple" asset-defer="" />
+<asset:script type="text/javascript">
     $(document).ready(function () {
         $("#btnDeleteProject").click(function (e) {
             e.preventDefault();
@@ -113,6 +115,6 @@
         });
 
     });
-</script>
+</asset:script>
 </body>
 </g:applyLayout>

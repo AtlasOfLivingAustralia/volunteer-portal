@@ -1,7 +1,8 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-<g:applyLayout name="digivol-task">
+<g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
+        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
         <style type="text/css">
         #image-container {
             height: 100px;

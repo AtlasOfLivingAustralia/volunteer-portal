@@ -5,8 +5,6 @@
     <title><cl:pageTitle title="Create a new Expedition"/></title>
 
     <asset:stylesheet src="digivol-new-project-wizard" />
-    <asset:javascript src="digivol-new-project-wizard" asset-defer="" />
-
 </head>
 
 <body class="admin" data-ng-app="projectWizard">
@@ -526,6 +524,7 @@
     <span class="label" data-ng-class="colour()" title="{{label.category}}">{{label.value}} <i
             data-ng-if="hasRemove" class="glyphicon glyphicon-remove glyphicon-white remove" data-ng-click="remove({label: label})" data-label-id="{{label.id}}"></i></span>
     </script>
+<asset:javascript src="digivol-new-project-wizard" asset-defer="" />
 <asset:script>
   createProjectModule({
      stagingId: '${stagingId.encodeAsJavaScript()}',

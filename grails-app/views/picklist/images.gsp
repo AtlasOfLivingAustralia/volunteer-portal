@@ -19,7 +19,6 @@
         outline: none;
     }
     </style>
-    <asset:javascript src="underscore"/>
 </head>
 
 <body>
@@ -76,5 +75,6 @@
             </table>
         </div>
     </div>
-
+    <asset:javascript src="underscore" asset-defer=""/>
 </body>
+</html>

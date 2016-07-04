@@ -3,81 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <asset:javascript src="amplify"/>
     <title>Expedition administration</title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
-
-    <asset:script type="text/javascript">
-
-            $(document).ready(function () {
-
-                $(".lastViewedTask").click(function(e) {
-                    e.preventDefault();
-                    var viewedTaskId = $(this).attr("viewedTaskId");
-                    if (viewedTaskId) {
-                        var options = {
-                            title: "Last view for task",
-                            url: "${createLink(action: 'viewedTaskFragment').encodeAsJavaScript()}?viewedTaskId=" + viewedTaskId
-                        };
-                        bvp.showModal(options);
-                    }
-                });
-
-                $("#searchButton").click(function (e) {
-                    e.preventDefault();
-                    doSearch();
-                });
-
-                $("#projectAdminSearch").keyup(function (e) {
-                    if (e.keyCode == 13) {
-                        e.preventDefault();
-                        doSearch();
-                    }
-                });
-
-                $("#btnExportAll").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'Export all tasks',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
-                });
-
-                $("#btnExportTranscribed").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'Export transcribed tasks',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
-
-                });
-
-                $("#btnExportValidated").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'Export validated tasks',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
-                });
-
-        <g:if test="${params.lastTaskId}">
-            amplify.store("bvp_task_${params.lastTaskId}", null);
-        </g:if>
-
-        }); // end .ready()
-
-        function doSearch() {
-            var query = $("#projectAdminSearch").val();
-            location.href = "?q=" + query;
-        }
-
-        function validateInSeparateWindow(taskId) {
-            window.open("${createLink(controller: 'validate', action: 'task').encodeAsJavaScript()}/" + taskId, "bvp_validate_window");
-            }
-    </asset:script>
 </head>
 
 <body>
@@ -188,5 +115,77 @@
     </div>
 </div>
 </div>
+<asset:javascript src="amplify" asset-defer=""/>
+<asset:script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $(".lastViewedTask").click(function(e) {
+            e.preventDefault();
+            var viewedTaskId = $(this).attr("viewedTaskId");
+            if (viewedTaskId) {
+                var options = {
+                    title: "Last view for task",
+                    url: "${createLink(action: 'viewedTaskFragment').encodeAsJavaScript()}?viewedTaskId=" + viewedTaskId
+                        };
+                        bvp.showModal(options);
+                    }
+                });
+
+                $("#searchButton").click(function (e) {
+                    e.preventDefault();
+                    doSearch();
+                });
+
+                $("#projectAdminSearch").keyup(function (e) {
+                    if (e.keyCode == 13) {
+                        e.preventDefault();
+                        doSearch();
+                    }
+                });
+
+                $("#btnExportAll").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title:'Export all tasks',
+                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id]).encodeAsJavaScript()}"
+                    };
+                    bvp.showModal(options);
+                });
+
+                $("#btnExportTranscribed").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title:'Export transcribed tasks',
+                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id]).encodeAsJavaScript()}"
+                    };
+                    bvp.showModal(options);
+
+                });
+
+                $("#btnExportValidated").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title:'Export validated tasks',
+                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id]).encodeAsJavaScript()}"
+                    };
+                    bvp.showModal(options);
+                });
+
+    <g:if test="${params.lastTaskId}">
+        amplify.store("bvp_task_${params.lastTaskId}", null);
+    </g:if>
+
+    }); // end .ready()
+
+    function doSearch() {
+        var query = $("#projectAdminSearch").val();
+        location.href = "?q=" + query;
+    }
+
+    function validateInSeparateWindow(taskId) {
+        window.open("${createLink(controller: 'validate', action: 'task').encodeAsJavaScript()}/" + taskId, "bvp_validate_window");
+            }
+</asset:script>
 </body>
 </html>

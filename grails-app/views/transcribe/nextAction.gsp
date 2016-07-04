@@ -6,7 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title><cl:pageTitle title="Task saved"/></title>
-    <asset:javascript src="amplify"/>
+    <asset:javascript src="amplify" asset-defer=""/>
     <asset:script type="text/javascript">
             $(document).ready(function () {
                 $("li#goBack button").click(function (e) {

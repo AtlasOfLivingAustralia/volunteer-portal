@@ -10,6 +10,6 @@ div#labels {
 div#labels > span.label {
     margin: 2px;
 }
-i.icon-remove {
+i.icon-remove, i.delete-label {
     cursor: pointer;
 }

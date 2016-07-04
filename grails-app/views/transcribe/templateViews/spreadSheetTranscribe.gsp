@@ -4,10 +4,11 @@
     PicklistService picklistService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.PicklistService').newInstance()
 %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-<g:set var="sectionNumber" value="${1}"/>
-<g:set var="nextSectionNumber" value="${{ sectionNumber++ }}"/>
-<g:applyLayout name="digivol-task" model="[taskInstance: taskInstance, template: template, recordValues: recordValues, validator: validator, isReadOnly: isReadOnly, complete: complete, sectionNumber: sectionNumber, nextSectionNumber: nextSectionNumber]">
+<g:set scope="request" var="sectionNumber" value="${1}"/>
+<g:set scope="request" var="nextSectionNumber" value="${{ request.sectionNumber++ }}"/>
+<g:applyLayout name="digivol-task" model="${pageScope.variables}">
 <head>
+    <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
     <asset:stylesheet src="slickgrid"/>
 </head>
 

@@ -3,7 +3,6 @@
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
     <asset:stylesheet src="bootstrap-colorpicker"/>
-    <asset:javascript src="bootstrap-file-input, bootbox, bootstrap-colorpicker"/>
 </head>
 
 <body>
@@ -79,7 +78,10 @@
     </div>
 
 </g:form>
-<script type='text/javascript'>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:javascript src="bootstrap-colorpicker" asset-defer=""/>
+<asset:script type='text/javascript'>
     $(function () {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
@@ -100,7 +102,7 @@
             $('#backgroundImageOverlayColour').parent('.colpick').colorpicker('setValue', 'rgba(0,0,0,0.5)');
         });
     });
-</script>
+</asset:script>
 
 </body>
 </html>

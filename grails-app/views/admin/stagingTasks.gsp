@@ -3,20 +3,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.stagingQueue.label" default="Administration - Staging Tasks"/></title>
-    <asset:javascript src="bootbox"/>
-    <asset:script type='text/javascript'>
-
-        jQuery(function ($) {
-            $('#button-bar').find('button.btn-danger').click(function (e) {
-                bootbox.confirm("Are you sure you want to " + e.target.dataset.message + "?", e.target.dataset.cancel, e.target.dataset.confirm, function (result) {
-                    if (result) {
-                        window.open(e.target.dataset.href, "_self");
-                    }
-                })
-            })
-        })
-
-    </asset:script>
 </head>
 
 <body class="admin">
@@ -92,4 +78,19 @@
         </div>
     </div>
 </div>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:script type='text/javascript'>
+
+    jQuery(function ($) {
+        $('#button-bar').find('button.btn-danger').click(function (e) {
+            bootbox.confirm("Are you sure you want to " + e.target.dataset.message + "?", e.target.dataset.cancel, e.target.dataset.confirm, function (result) {
+                if (result) {
+                    window.open(e.target.dataset.href, "_self");
+                }
+            })
+        })
+    })
+
+</asset:script>
 </body>
+</html>

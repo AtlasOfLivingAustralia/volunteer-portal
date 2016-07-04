@@ -6,7 +6,6 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
-    <asset:javascript src="underscore, bootstrap-file-input"/>
 </head>
 
 <body class="admin">
@@ -142,6 +141,8 @@
         </div>
     </div>
 </div>
+<asset:javascript src="underscore" asset-defer="" />
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script>
 
             $(document).ready(function() {

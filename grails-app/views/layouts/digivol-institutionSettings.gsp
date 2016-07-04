@@ -3,7 +3,7 @@
 <head>
     <title>Edit Institution ${institutionInstance?.name}</title>
     <asset:stylesheet src="bootstrap-switch"/>
-    <asset:javascript src="bootstrap-switch, bootbox, tinymce-simple"/>
+    <g:layoutHead/>
 </head>
 
 <body class="admin">
@@ -52,5 +52,8 @@
         </div>
     </div>
 </div>
+<asset:javascript src="bootstrap-switch" asset-defer="" />
+<asset:javascript src="bootbox" asset-defer="" />
+<asset:javascript src="tinymce-simple" asset-defer=""/>
 </body>
 </g:applyLayout>

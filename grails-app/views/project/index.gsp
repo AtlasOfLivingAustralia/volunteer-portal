@@ -15,158 +15,6 @@
     <title><cl:pageTitle title="${(projectInstance.name ?: 'Atlas of Living Australia') + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
-    <asset:javascript src="markerclusterer.js" />
-    <asset:javascript src="dotdotdot, bootbox"/>
-
-    <asset:script>
-
-        google.load("maps", "3.23", {other_params: ""});
-        var map, infowindow;
-
-        function loadMap() {
-
-            var mapElement = $("#recordsMap");
-
-            if (!mapElement) {
-                return;
-            }
-
-            var myOptions = {
-                scaleControl: true,
-                center: new google.maps.LatLng(${projectInstance.mapInitLatitude ?: -24.766785},${projectInstance.mapInitLongitude ?: 134.824219}), // defaults to centre of Australia
-                zoom: ${projectInstance.mapInitZoomLevel ?: 3},
-                minZoom: 1,
-                streetViewControl: false,
-                scrollwheel: false,
-                mapTypeControl: true,
-                mapTypeControlOptions: {
-                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-                },
-                navigationControl: true,
-                navigationControlOptions: {
-                    style: google.maps.NavigationControlStyle.SMALL // DEFAULT
-                },
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-
-            map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
-            infowindow = new google.maps.InfoWindow();
-            // load markers via JSON web service
-            var tasksJsonUrl = "${createLink(controller: "project", action: 'tasksToMap', id: params.id)}";
-            $.get(tasksJsonUrl, {}, drawMarkers);
-        }
-
-        function drawMarkers(data) {
-
-            if (data) {
-                //var bounds = new google.maps.LatLngBounds();
-                var markers = [];
-                $.each(data, function (i, task) {
-                    var latlng = new google.maps.LatLng(task.lat, task.lng);
-                    var marker = new google.maps.Marker({
-                        position: latlng,
-                        //map: map,
-                        title: "record: " + (task.cat || task.filename),
-                        icon: BVP_JS_URLS.singleMarkerPath
-                    });
-                    markers.push(marker);
-                    google.maps.event.addListener(marker, 'click', function () {
-                        infowindow.setContent("[loading...]");
-                        // load info via AJAX call
-                        load_content(marker, task.id);
-                    });
-                    //bounds.extend(latlng);
-                }); // end each
-                var markerCluster = new MarkerClusterer(map, markers, { maxZoom: 18, imagePath: BVP_JS_URLS.markersPath });
-
-                //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO: fix properly
-            }
-        }
-
-        function load_content(marker, id) {
-            $.ajax({
-
-                url: "${createLink(controller: 'task', action: 'details')}/" + id,
-                success: function (data) {
-                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber + "</div>";
-                    infowindow.close();
-                    infowindow.setContent(content);
-                    infowindow.open(map, marker);
-                }
-            });
-        }
-
-        function resizeMap() {
-            var mapDiv = $("#recordsMap");
-            if (mapDiv) {
-                var newSize = $('#sidebarDiv').width() - 20;
-                mapDiv.css("max-width", "" + newSize + "px")
-                mapDiv.css("max-height", "" + newSize + "px")
-                mapDiv.css("width", "" + newSize + "px")
-                mapDiv.css("height", "" + newSize + "px")
-            }
-        }
-
-        $(document).ready(function () {
-            <g:if test="${projectInstance.showMap}">
-                loadMap();
-                //resizeMap();
-
-                $(window).resize(function(e) {
-                    //resizeMap();
-                });
-            </g:if>
-
-            $("#btnShowIconSelector").click(function(e) {
-                e.preventDefault();
-                showIconSelector();
-            });
-
-            /*
-             * Truncate the project description text
-             */
-            var descriptionDiv = "#projectDescription";
-            $(descriptionDiv).removeClass("hidden"); // prevent content jumping
-            $(descriptionDiv).dotdotdot({
-                after: "a.readmore",
-                height: 200,
-                callback: function( isTruncated, orgContent ) {
-                    console.log("isTruncated", isTruncated);
-                    if (!isTruncated) {
-                        $("a.readmore").addClass("hidden");
-                    }
-                },
-            });
-            // read more link to show full description
-            $("a.readmore").click(function(e) {
-                e.preventDefault();
-                var content = $(descriptionDiv).triggerHandler("originalContent");
-                $(descriptionDiv).trigger("destroy");
-                $(descriptionDiv).html( content );
-                $(descriptionDiv + " a.readmore").addClass('hidden');
-            });
-
-            // Show tutorial modal if content is present
-            $(".tutorial").click(function(e) {
-                if ($(this).attr('href') == "#tutorial") {
-                    e.preventDefault();
-                    var content = $("#tutorialContent").html();
-                    bootbox.alert(content);
-                }
-
-            });
-        });
-
-        function showIconSelector() {
-            bvp.showModal({
-                url: "${createLink(action: 'projectLeaderIconSelectorFragment', id: projectInstance.id)}",
-                    width:800,
-                    height:500,
-                    title: 'Select Expedition Leader Icon'
-            });
-        }
-
-    </asset:script>
 
     <style type="text/css">
 
@@ -333,5 +181,158 @@
         </div>
     </div>
 </section>
+<asset:javascript src="markerclusterer.js" asset-defer=""/>
+<asset:javascript src="dotdotdot" asset-defer=""/>
+<asset:javascript src="bootbox" asset-defer=""/>
+
+<asset:script>
+
+    google.load("maps", "3.23", {other_params: ""});
+    var map, infowindow;
+
+    function loadMap() {
+
+        var mapElement = $("#recordsMap");
+
+        if (!mapElement) {
+            return;
+        }
+
+        var myOptions = {
+            scaleControl: true,
+            center: new google.maps.LatLng(${projectInstance.mapInitLatitude ?: -24.766785},${projectInstance.mapInitLongitude ?: 134.824219}), // defaults to centre of Australia
+                zoom: ${projectInstance.mapInitZoomLevel ?: 3},
+                minZoom: 1,
+                streetViewControl: false,
+                scrollwheel: false,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+                },
+                navigationControl: true,
+                navigationControlOptions: {
+                    style: google.maps.NavigationControlStyle.SMALL // DEFAULT
+                },
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
+            infowindow = new google.maps.InfoWindow();
+            // load markers via JSON web service
+            var tasksJsonUrl = "${createLink(controller: "project", action: 'tasksToMap', id: params.id)}";
+            $.get(tasksJsonUrl, {}, drawMarkers);
+        }
+
+        function drawMarkers(data) {
+
+            if (data) {
+                //var bounds = new google.maps.LatLngBounds();
+                var markers = [];
+                $.each(data, function (i, task) {
+                    var latlng = new google.maps.LatLng(task.lat, task.lng);
+                    var marker = new google.maps.Marker({
+                        position: latlng,
+                        //map: map,
+                        title: "record: " + (task.cat || task.filename),
+                        icon: BVP_JS_URLS.singleMarkerPath
+                    });
+                    markers.push(marker);
+                    google.maps.event.addListener(marker, 'click', function () {
+                        infowindow.setContent("[loading...]");
+                        // load info via AJAX call
+                        load_content(marker, task.id);
+                    });
+                    //bounds.extend(latlng);
+                }); // end each
+                var markerCluster = new MarkerClusterer(map, markers, { maxZoom: 18, imagePath: BVP_JS_URLS.markersPath });
+
+                //map.fitBounds(bounds);  // breaks with certain data so removing for now TODO: fix properly
+            }
+        }
+
+        function load_content(marker, id) {
+            $.ajax({
+
+                url: "${createLink(controller: 'task', action: 'details')}/" + id,
+                success: function (data) {
+                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber + "</div>";
+                    infowindow.close();
+                    infowindow.setContent(content);
+                    infowindow.open(map, marker);
+                }
+            });
+        }
+
+        function resizeMap() {
+            var mapDiv = $("#recordsMap");
+            if (mapDiv) {
+                var newSize = $('#sidebarDiv').width() - 20;
+                mapDiv.css("max-width", "" + newSize + "px")
+                mapDiv.css("max-height", "" + newSize + "px")
+                mapDiv.css("width", "" + newSize + "px")
+                mapDiv.css("height", "" + newSize + "px")
+            }
+        }
+
+        $(document).ready(function () {
+    <g:if test="${projectInstance.showMap}">
+        loadMap();
+        //resizeMap();
+
+        $(window).resize(function(e) {
+            //resizeMap();
+        });
+    </g:if>
+
+    $("#btnShowIconSelector").click(function(e) {
+        e.preventDefault();
+        showIconSelector();
+    });
+
+    /*
+     * Truncate the project description text
+     */
+    var descriptionDiv = "#projectDescription";
+    $(descriptionDiv).removeClass("hidden"); // prevent content jumping
+    $(descriptionDiv).dotdotdot({
+        after: "a.readmore",
+        height: 200,
+        callback: function( isTruncated, orgContent ) {
+            console.log("isTruncated", isTruncated);
+            if (!isTruncated) {
+                $("a.readmore").addClass("hidden");
+            }
+        },
+    });
+    // read more link to show full description
+    $("a.readmore").click(function(e) {
+        e.preventDefault();
+        var content = $(descriptionDiv).triggerHandler("originalContent");
+        $(descriptionDiv).trigger("destroy");
+        $(descriptionDiv).html( content );
+        $(descriptionDiv + " a.readmore").addClass('hidden');
+    });
+
+    // Show tutorial modal if content is present
+    $(".tutorial").click(function(e) {
+        if ($(this).attr('href') == "#tutorial") {
+            e.preventDefault();
+            var content = $("#tutorialContent").html();
+            bootbox.alert(content);
+        }
+
+    });
+});
+
+function showIconSelector() {
+    bvp.showModal({
+        url: "${createLink(action: 'projectLeaderIconSelectorFragment', id: projectInstance.id)}",
+                    width:800,
+                    height:500,
+                    title: 'Select Expedition Leader Icon'
+            });
+        }
+
+</asset:script>
 </body>
 </html>

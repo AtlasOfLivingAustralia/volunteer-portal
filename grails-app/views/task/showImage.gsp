@@ -7,10 +7,6 @@
 
     <asset:stylesheet src="digivol" />
     <asset:stylesheet src="image-viewer"/>
-    <asset:javascript src="digivol" />
-    <asset:javascript src="image-viewer"/>
-
-
     <style type="text/css">
 
     button:disabled {
@@ -48,14 +44,14 @@
             <div class="col-sm-9" id="journalPageButtons">
                 <button class="btn btn-default btn-small" id="showPreviousJournalPage"
                         title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
-                    <asset:image src="left_arrow.png"> show previous
+                    <asset:image src="left_arrow.png"/> show previous
                 </button>
                 <button class="btn btn-default btn-small" id="showNextJournalPage"
                         title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
-                    show next <asset:image src="right_arrow.png">
+                    show next <asset:image src="right_arrow.png"/>
                 </button>
                 <button class="btn btn-default btn-small" id="rotateImage" title="Rotate the page 180 degrees">
-                    Rotate&nbsp;<asset:image src="rotate.png">
+                    Rotate&nbsp;<asset:image src="rotate.png"/>
                 </button>
                 <button class="btn btn-default btn-small" id="closeWindow" title="Close this window">
                     Close
@@ -86,6 +82,8 @@
         </div>
     </div>
 </div>
+<asset:javascript src="digivol" />
+<asset:javascript src="image-viewer" />
 
 <asset:script type="text/javascript">
 

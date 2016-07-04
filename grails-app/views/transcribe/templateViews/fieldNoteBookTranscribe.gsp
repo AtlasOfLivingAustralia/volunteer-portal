@@ -1,15 +1,16 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
-<g:applyLayout name="digivol-task">
+<g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-<style>
-    .fontSizeButton {
-        line-height: 18px !important;
-    }
-    #journalPageButtons {
-        margin-bottom:5px;
-    }
-</style>
+        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <style>
+            .fontSizeButton {
+                line-height: 18px !important;
+            }
+            #journalPageButtons {
+                margin-bottom:5px;
+            }
+        </style>
     </head>
     <content tag="templateView">
     <div class="row">

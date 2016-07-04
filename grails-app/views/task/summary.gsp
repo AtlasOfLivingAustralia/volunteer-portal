@@ -12,20 +12,7 @@
     <meta property="og:title"         content="${taskInstance.project.name }Task Details - ${taskInstance.externalIdentifier}" />
     %{--<meta property="og:description"   content="Your description" />--}%
     <meta property="og:image"         content="${stringInstanceMap.thumbnail}" />
-
-
     <asset:stylesheet src="image-viewer"/>
-    <asset:javascript src="bootstrap"/>
-    <asset:javascript src="image-viewer"/>
-
-    <asset:script>
-
-        $(document).ready(function () {
-            setupPanZoom();
-        });
-
-    </asset:script>
-
     <style type="text/css">
 
     .imageDiv {
@@ -203,6 +190,15 @@
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 </body>
+<asset:javascript src="bootstrap" asset-defer=""/>
+<asset:javascript src="image-viewer" asset-defer=""/>
+<asset:script type="text/javascript">
+
+    $(document).ready(function () {
+        setupPanZoom();
+    });
+
+</asset:script>
 <asset:script>
 
         $(document).ready(function() {

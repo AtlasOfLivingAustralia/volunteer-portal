@@ -5,27 +5,6 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
     <asset:stylesheet src="codemirror-monokai"/>
-    <asset:javascript src="bootbox"/>
-    <asset:javascript src="codemirror-js, codemirror-sublime"/>
-    <asset:script type='text/javascript'>
-
-        jQuery(function ($) {
-            $('button.confirmation-required').click(function (e) {
-                var confirm = e.target.dataset.confirm || 'Confirm';
-                var cancel = e.target.dataset.cancel || 'Cancel';
-                bootbox.confirm({
-                    message: "Are you sure you want to " + e.target.dataset.message,
-                    callback: function (result) {
-                        if (result) {
-                            window.open(e.target.dataset.href, "_self");
-                        }
-                    }
-
-                });
-            });
-        });
-
-    </asset:script>
 </head>
 
 <body class="admin">
@@ -149,7 +128,28 @@
     </div>
 </div>
 </body>
-<asset:script>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:javascript src="codemirror-js-sublime" asset-defer="" />
+<asset:script type='text/javascript'>
+
+    jQuery(function ($) {
+        $('button.confirmation-required').click(function (e) {
+            var confirm = e.target.dataset.confirm || 'Confirm';
+            var cancel = e.target.dataset.cancel || 'Cancel';
+            bootbox.confirm({
+                message: "Are you sure you want to " + e.target.dataset.message,
+                callback: function (result) {
+                    if (result) {
+                        window.open(e.target.dataset.href, "_self");
+                    }
+                }
+
+            });
+        });
+    });
+
+</asset:script>
+<asset:script type='text/javascript'>
 
 
         $(document).ready(function() {

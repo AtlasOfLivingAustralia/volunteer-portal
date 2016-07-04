@@ -14,91 +14,6 @@
 
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
 
-    <asset:javascript src="tinymce-simple" />
-
-    <asset:script type="text/javascript">
-
-            function confirmDeleteAllTasks() {
-                return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?");
-            }
-
-            google.load("maps", "3.23", {other_params: ""});
-            var map, infowindow;
-            var mapListenerActive = true;
-
-            function loadMap() {
-
-                var mapElement = $("#recordsMap");
-
-                if (!mapElement) {
-                    return;
-                }
-
-                var myOptions = {
-                    scaleControl: false,
-                    center: new google.maps.LatLng(${initLatitude}, ${initLongitude}),
-                    zoom: ${initZoom},
-                    minZoom: 1,
-                    streetViewControl: false,
-                    scrollwheel: true,
-                    mapTypeControl: false,
-                    navigationControl: true,
-                    navigationControlOptions: {
-                        style: google.maps.NavigationControlStyle.SMALL // DEFAULT
-                    },
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-
-                map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
-
-                google.maps.event.addListener(map, 'zoom_changed', function() {
-                    if (mapListenerActive) {
-                        updateFieldsFromMap();
-                    }
-                });
-
-                google.maps.event.addListener(map, 'center_changed', function() {
-                    if (mapListenerActive) {
-                        updateFieldsFromMap();
-                    }
-                });
-            }
-
-            function updateFieldsFromMap() {
-                var zoomLevel = map.getZoom();
-
-                $("#mapZoomLevel").val(zoomLevel);
-
-                var center = map.getCenter();
-                $("#mapLatitude").val(center.lat());
-                $("#mapLongitude").val(center.lng());
-            }
-
-            function updateMapFromFields() {
-
-                try {
-                    mapListenerActive = false;
-                    map.setZoom(parseInt($('#mapInitZoomLevel').val()));
-                    var lat =  parseFloat($("#mapLatitude").val());
-                    var lng = parseFloat($("#mapLongitude").val());
-                    map.setCenter(new google.maps.LatLng(lat, lng));
-                } finally {
-                    mapListenerActive = true;
-                }
-            }
-
-            $(document).ready(function() {
-                loadMap();
-                updateFieldsFromMap();
-
-                $("#btnUpdateMap").click(function(e) {
-                    e.preventDefault();
-                    updateMapFromFields();
-                });
-            });
-
-    </asset:script>
-
     <style type="text/css">
 
     .table tr td {
@@ -229,5 +144,88 @@
         </table>
     </div>
 </div>
+<asset:javascript src="tinymce-simple" asset-defer=""/>
+<asset:script type="text/javascript">
+
+    function confirmDeleteAllTasks() {
+        return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?");
+            }
+
+            google.load("maps", "3.23", {other_params: ""});
+            var map, infowindow;
+            var mapListenerActive = true;
+
+            function loadMap() {
+
+                var mapElement = $("#recordsMap");
+
+                if (!mapElement) {
+                    return;
+                }
+
+                var myOptions = {
+                    scaleControl: false,
+                    center: new google.maps.LatLng(${initLatitude}, ${initLongitude}),
+                    zoom: ${initZoom},
+                    minZoom: 1,
+                    streetViewControl: false,
+                    scrollwheel: true,
+                    mapTypeControl: false,
+                    navigationControl: true,
+                    navigationControlOptions: {
+                        style: google.maps.NavigationControlStyle.SMALL // DEFAULT
+                    },
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+
+                map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
+
+                google.maps.event.addListener(map, 'zoom_changed', function() {
+                    if (mapListenerActive) {
+                        updateFieldsFromMap();
+                    }
+                });
+
+                google.maps.event.addListener(map, 'center_changed', function() {
+                    if (mapListenerActive) {
+                        updateFieldsFromMap();
+                    }
+                });
+            }
+
+            function updateFieldsFromMap() {
+                var zoomLevel = map.getZoom();
+
+                $("#mapZoomLevel").val(zoomLevel);
+
+                var center = map.getCenter();
+                $("#mapLatitude").val(center.lat());
+                $("#mapLongitude").val(center.lng());
+            }
+
+            function updateMapFromFields() {
+
+                try {
+                    mapListenerActive = false;
+                    map.setZoom(parseInt($('#mapInitZoomLevel').val()));
+                    var lat =  parseFloat($("#mapLatitude").val());
+                    var lng = parseFloat($("#mapLongitude").val());
+                    map.setCenter(new google.maps.LatLng(lat, lng));
+                } finally {
+                    mapListenerActive = true;
+                }
+            }
+
+            $(document).ready(function() {
+                loadMap();
+                updateFieldsFromMap();
+
+                $("#btnUpdateMap").click(function(e) {
+                    e.preventDefault();
+                    updateMapFromFields();
+                });
+            });
+
+</asset:script>
 </body>
 </html>

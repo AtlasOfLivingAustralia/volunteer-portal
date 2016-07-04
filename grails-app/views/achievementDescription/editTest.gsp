@@ -6,7 +6,6 @@
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <asset:stylesheet src="label-autocomplete"/>
-    <asset:javascript src="label-autocomplete"/>
 </head>
 
 <body>
@@ -66,6 +65,7 @@
         </div>
     </g:form>
 </div>
+<asset:javascript src="label-autocomplete" asset-defer=""/>
 <asset:script>
     $(function($) {
         var url = "${createLink(controller: 'leaderBoardAdmin', action: 'findEligibleUsers')}";

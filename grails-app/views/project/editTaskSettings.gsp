@@ -50,7 +50,7 @@
 
 </div>
 
-<script type='text/javascript'>
+<asset:script type='text/javascript'>
 
     $(document).ready(function () {
 
@@ -64,7 +64,7 @@
         });
     });
 
-</script>
+</asset:script>
 
 </body>
 </html>

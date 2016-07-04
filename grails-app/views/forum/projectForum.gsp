@@ -34,7 +34,7 @@
 
 <body class="forum">
 
-<asset:javascript src="uri"/>
+<asset:javascript src="uri" asset-defer=""/>
 <asset:script type="text/javascript">
 
             $(document).ready(function () {

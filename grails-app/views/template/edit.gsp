@@ -5,15 +5,106 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
+</head>
 
-    <asset:javascript src="underscore"/>
-    <asset:script>
+<body class="admin">
+<div class="container">
+    <cl:headerContent title="${message(code: 'default.edit.label', args: [entityName])} - ${templateInstance.name}" selectedNavItem="bvpadmin">
+        <%
+            pageScope.crumbs = [
+                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+            ]
+        %>
+        <div>
+            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
+        </div>
+    </cl:headerContent>
 
-            $(document).ready(function() {
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <g:hasErrors bean="${templateInstance}">
+                        <div class="errors">
+                            <g:renderErrors bean="${templateInstance}" as="list"/>
+                        </div>
+                    </g:hasErrors>
+                    <g:form method="post" class="form-horizontal">
+                        <g:hiddenField name="id" value="${templateInstance?.id}"/>
+                        <g:hiddenField name="version" value="${templateInstance?.version}"/>
 
-                $("#btnPreview").click(function(e) {
-                    e.preventDefault();
-                    window.open("${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}", "TemplatePreview");
+                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
+                            <label for="name" class="col-md-3 control-label"><g:message code="template.name.label" default="Name"/></label>
+                            <div class="col-md-6">
+                                <g:textField name="name" class="form-control" maxlength="200" value="${templateInstance?.name}"/>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-default" id="btnEditFields">Edit Fields</button>
+                                <button class="btn btn-default" id="btnPreview">Preview Template</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'viewName', 'has-error')}">
+                            <label for="viewName" class="col-md-3 control-label"><g:message code="template.viewName.label" default="View Name"/></label>
+                            <div class="col-md-6">
+                                <g:if test="${availableViews}">
+                                    <g:select from="${availableViews}" name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
+                                </g:if>
+                                <g:else>
+                                    <g:textField name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
+                                </g:else>
+                            </div>
+                        </div>
+
+                        <div id="row-view-params-form" style="display: none;">
+
+                        </div>
+
+                        <div id="row-view-params-json"
+                             class="form-group ${hasErrors(bean: templateInstance, field: 'viewParams', 'error')}">
+                            <label class="col-md-3 control-label" for="viewParamsJSON"><g:message code="template.viewparams.label"
+                                                                                         default="Template View Parameters:"/></label>
+
+                            <div class="col-md-6">
+                                <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control"
+                                            value="${templateInstance.viewParams as grails.converters.JSON}"></g:textArea>
+                            </div>
+                        </div>
+
+                        <div id="row-view-params-json" class="form-group">
+                            <label class="col-md-3 control-label"><g:message code="template.project.label"
+                                                                                  default="Projects that use this template:"/></label>
+
+                            <div class="col-md-6">
+                                <g:each in="${templateInstance?.project ?}" var="p">
+                                    <li class="form-control-static"><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+                                </g:each>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-9">
+                                <g:actionSubmit class="btn btn-primary" action="update"
+                                                value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                                <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
+                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+                            </div>
+                        </div>
+                    </g:form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<asset:javascript src="underscore" asset-defer=""/>
+<asset:script type="text/javascript">
+
+    $(document).ready(function() {
+
+        $("#btnPreview").click(function(e) {
+            e.preventDefault();
+            window.open("${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}", "TemplatePreview");
                 });
 
                 $("#btnEditFields").click(function(e) {
@@ -107,100 +198,7 @@
 
             });
 
-    </asset:script>
-
-</head>
-
-<body class="admin">
-<div class="container">
-    <cl:headerContent title="${message(code: 'default.edit.label', args: [entityName])} - ${templateInstance.name}" selectedNavItem="bvpadmin">
-        <%
-            pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
-            ]
-        %>
-        <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
-        </div>
-    </cl:headerContent>
-
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <g:hasErrors bean="${templateInstance}">
-                        <div class="errors">
-                            <g:renderErrors bean="${templateInstance}" as="list"/>
-                        </div>
-                    </g:hasErrors>
-                    <g:form method="post" class="form-horizontal">
-                        <g:hiddenField name="id" value="${templateInstance?.id}"/>
-                        <g:hiddenField name="version" value="${templateInstance?.version}"/>
-
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
-                            <label for="name" class="col-md-3 control-label"><g:message code="template.name.label" default="Name"/></label>
-                            <div class="col-md-6">
-                                <g:textField name="name" class="form-control" maxlength="200" value="${templateInstance?.name}"/>
-                            </div>
-                            <div class="col-md-3">
-                                <button class="btn btn-default" id="btnEditFields">Edit Fields</button>
-                                <button class="btn btn-default" id="btnPreview">Preview Template</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'viewName', 'has-error')}">
-                            <label for="viewName" class="col-md-3 control-label"><g:message code="template.viewName.label" default="View Name"/></label>
-                            <div class="col-md-6">
-                                <g:if test="${availableViews}">
-                                    <g:select from="${availableViews}" name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
-                                </g:if>
-                                <g:else>
-                                    <g:textField name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
-                                </g:else>
-                            </div>
-                        </div>
-
-                        <div id="row-view-params-form" style="display: none;">
-
-                        </div>
-
-                        <div id="row-view-params-json"
-                             class="form-group ${hasErrors(bean: templateInstance, field: 'viewParams', 'error')}">
-                            <label class="col-md-3 control-label" for="viewParamsJSON"><g:message code="template.viewparams.label"
-                                                                                         default="Template View Parameters:"/></label>
-
-                            <div class="col-md-6">
-                                <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control"
-                                            value="${templateInstance.viewParams as grails.converters.JSON}"></g:textArea>
-                            </div>
-                        </div>
-
-                        <div id="row-view-params-json" class="form-group">
-                            <label class="col-md-3 control-label"><g:message code="template.project.label"
-                                                                                  default="Projects that use this template:"/></label>
-
-                            <div class="col-md-6">
-                                <g:each in="${templateInstance?.project ?}" var="p">
-                                    <li class="form-control-static"><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
-                                </g:each>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-9">
-                                <g:actionSubmit class="btn btn-primary" action="update"
-                                                value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
-                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                            </div>
-                        </div>
-                    </g:form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+</asset:script>
 <asset:script>
     var _result = false;
     $(function() {

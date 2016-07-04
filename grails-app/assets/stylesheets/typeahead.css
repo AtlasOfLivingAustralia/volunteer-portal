@@ -1,4 +1,8 @@
 /*
  *= encoding UTF-8
  *= require typeahead/0.11.1/typeaheadjs.css
+ *= require_self
  */
+.tt-hint {
+    padding: 5px 8px;
+}

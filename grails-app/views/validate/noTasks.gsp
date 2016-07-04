@@ -5,7 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title>Thank you - we are done for now!</title>
-    <asset:javascript src="amplify"/>
+    <asset:javascript src="amplify" asset-defer=""/>
     <asset:script type="text/javascript">
             $(document).ready(function () {
                 // clear the temporarily saved state, now that it is known that the task was saved

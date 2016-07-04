@@ -5,9 +5,6 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'newsItem.label', default: 'NewsItem')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-
-    <asset:javascript src="tinymce-simple" />
-
 </head>
 
 <body class="admin">
@@ -74,5 +71,6 @@
         </div>
     </div>
 </div>
+<asset:javascript src="tinymce-simple" asset-defer="" />
 </body>
 </html>

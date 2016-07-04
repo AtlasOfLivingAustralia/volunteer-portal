@@ -6,7 +6,6 @@
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
     <asset:stylesheet src="codemirror-monokai" />
-    <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 </head>
 
 <body class="admin">
@@ -43,6 +42,7 @@
         </div>
     </div>
 </div>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script>
     $(function() {
         // Initialize input type file

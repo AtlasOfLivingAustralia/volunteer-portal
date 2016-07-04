@@ -7,38 +7,6 @@
     <g:set var="entityName" value="${message(code: 'record.label', default: 'Record')}"/>
     <title>CSV Image Upload</title>
     <asset:stylesheet src="qtip"/>
-    <asset:javascript src="qtip"/>
-    <asset:script type="text/javascript">
-        $(document).ready(function () {
-            // tootltip on help icon
-            $("a.fieldHelp").qtip({
-                tip: true,
-                position: {
-                    corner: {
-                        target: 'topMiddle',
-                        tooltip: 'bottomLeft'
-                    }
-                },
-                style: {
-                    width: 400,
-                    padding: 8,
-                    background: 'white', //'#f0f0f0',
-                    color: 'black',
-                    textAlign: 'left',
-                    border: {
-                        width: 4,
-                        radius: 5,
-                        color: '#E66542'// '#E66542' '#DD3102'
-                    },
-                    tip: 'bottomLeft',
-                    name: 'light' // Inherit the rest of the attributes from the preset light style
-                }
-            }).bind('click', function (e) {
-                e.preventDefault();
-                return false;
-            });
-        });
-    </asset:script>
 </head>
 
 <body class="two-column-right">
@@ -100,6 +68,37 @@
         </div>
     </g:form>
 </div>
-
+<asset:javascript src="qtip" asset-defer=""/>
+<asset:script type="text/javascript">
+    $(document).ready(function () {
+        // tootltip on help icon
+        $("a.fieldHelp").qtip({
+            tip: true,
+            position: {
+                corner: {
+                    target: 'topMiddle',
+                    tooltip: 'bottomLeft'
+                }
+            },
+            style: {
+                width: 400,
+                padding: 8,
+                background: 'white', //'#f0f0f0',
+                color: 'black',
+                textAlign: 'left',
+                border: {
+                    width: 4,
+                    radius: 5,
+                    color: '#E66542'// '#E66542' '#DD3102'
+                },
+                tip: 'bottomLeft',
+                name: 'light' // Inherit the rest of the attributes from the preset light style
+            }
+        }).bind('click', function (e) {
+            e.preventDefault();
+            return false;
+        });
+    });
+</asset:script>
 </body>
 </html>

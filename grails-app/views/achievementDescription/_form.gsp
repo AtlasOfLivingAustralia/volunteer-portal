@@ -89,7 +89,7 @@
         <div class="bar" style="width: 0%;"></div>
     </div>
 </div>
-<asset:javascript src="jquery, codemirror-js, codemirror-groovy, codemirror-sublime" asset-defer=""/>
+<asset:javascript src="codemirror-groovy-js-sublime" asset-defer=""/>
 <asset:script>
 jQuery(function($) {
     var id = "${achievementDescriptionInstance?.id ?: 0}"

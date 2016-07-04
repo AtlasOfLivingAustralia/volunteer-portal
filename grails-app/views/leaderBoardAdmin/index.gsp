@@ -4,7 +4,6 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="leaderBoardAdmin.label" default="Honour Board Configuration"/></title>
     <asset:stylesheet src="label-autocomplete"/>
-    <asset:javascript src="label-autocomplete"/>
     <style>
         li.user > span {
             margin-right: 5px;
@@ -63,7 +62,7 @@
         </div>
     </div>
 </div>
-
+<asset:javascript src="label-autocomplete" asset-defer=""/>
 <asset:script>
 
 

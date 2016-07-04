@@ -1,5 +1,7 @@
 //= encoding UTF-8
-//= require jquery, jquery-ui, digivol-module
+//  assume jquery
+//= require jquery-ui
+//= require digivol-module
 //= require_self
 function adminStats(config) {
 
@@ -82,7 +84,7 @@ function adminStats(config) {
         }, function (response) {
           $q.reject(response);
         });
-      },
+      }
 
     };
   }]);

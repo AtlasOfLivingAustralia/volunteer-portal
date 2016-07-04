@@ -4,7 +4,6 @@
            value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
-    <asset:javascript src="bootstrap-switch"/>
 </head>
 
 <body class="admin">
@@ -55,5 +54,6 @@
         </div>
     </div>
 </div>
+<asset:javascript src="bootstrap-switch" asset-defer=""/>
 </body>
 </g:applyLayout>

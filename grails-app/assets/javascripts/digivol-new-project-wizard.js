@@ -1,5 +1,14 @@
 //= encoding UTF-8
-//= require digivol-module, angular-sanitize, angular-ui-router, angular-qtip, angular-google-maps, ng-file-upload, angular-bootstrap-show-errors, typeahead, angular-ui-tinymce
+//= require digivol-module
+//= require angular/angular-sanitize
+//= require angular/angular-ui-router
+//= require angular/angular-ui-tinymce
+//= require angular/angular-qtip
+//= require angular/angular-google-maps
+//= require angular/ng-file-upload
+//= require angular/angular-bootstrap-show-errors
+//= require angular/angular-typeahead
+//= require underscore
 //= require_self
 function createProjectModule(config) {
   'use strict';
@@ -87,7 +96,7 @@ function createProjectModule(config) {
 
   var findConfigLabelWithId = _.partial(findLabelWithId, config.labels);
 
-  var wizard = angular.module('projectWizard', ['ngSanitize', 'digivol', 'ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors', 'ui.tinymce']);
+  var wizard = angular.module('projectWizard', ['digivol', 'ngSanitize', 'ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors', 'ui.tinymce']);
   wizard.constant('stagingId', config.stagingId);
   wizard.value('uiTinymceConfig', {
     convert_urls: false,

@@ -77,7 +77,7 @@
 
 <script type='text/javascript' src='https://www.google.com/jsapi'></script>
 
-<script type='text/javascript'>
+<asset:script type='text/javascript'>
 
     google.load("maps", "3.23", {other_params: ""});
 
@@ -164,6 +164,6 @@
         }
     }
 
-</script>
+</asset:script>
 </body>
 </html>

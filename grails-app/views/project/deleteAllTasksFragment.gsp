@@ -12,7 +12,7 @@
         <div class="control-group">
             <div class="controls">
                 <g:form controller="project" action="deleteTasks" id="${projectInstance.id}">
-                    <button class="btn" id="btnCancelDeleteAllTasks">Cancel</button>
+                    <button class="btn btn-default" id="btnCancelDeleteAllTasks">Cancel</button>
                     <button class="btn btn-primary" type="submit">Delete all tasks</button>
                 </g:form>
             </div>

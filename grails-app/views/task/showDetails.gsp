@@ -17,19 +17,6 @@
     <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
     <asset:stylesheet src="image-viewer"/>
-    <asset:javascript src="bootstrap"/>
-    %{--<asset:javascript src="pan-zoom"/>--}%
-    <asset:javascript src="image-viewer"/>
-
-    <asset:script>
-
-
-        $(document).ready(function () {
-            setupPanZoom();
-        });
-
-    </asset:script>
-
     <style type="text/css">
 
     tr.fieldrow[superceded="true"] td {
@@ -238,6 +225,17 @@
 </g:else>
 </section>
 </body>
+<asset:javascript src="bootstrap"/>
+<asset:javascript src="image-viewer"/>
+
+<asset:script type="text/javascript">
+
+
+    $(document).ready(function () {
+        setupPanZoom();
+    });
+
+</asset:script>
 <asset:script>
 
         $(document).ready(function() {
