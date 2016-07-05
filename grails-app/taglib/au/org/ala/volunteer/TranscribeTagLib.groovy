@@ -403,9 +403,10 @@ class TranscribeTagLib {
                 }
             }
             if (attrs.height) {
-                mb.script(type:"text/javascript") {
-                    mkp.yieldUnescaped("   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );")
-                }
+                asset.script([type: 'text/javascript', 'asset-defer': ''], "   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );" )
+//                mb.script(type:"text/javascript") {
+//                    mkp.yieldUnescaped("   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );")
+//                }
             }
         }
     }
@@ -501,7 +502,7 @@ class TranscribeTagLib {
 
         def bodyContent = body()
 
-        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
+        def nextSectionNumberClosure = this.&nextSectionNumber
 
         mb.div(class:'panel panel-default transcribeSection') {
             div(class: 'panel-body') {
@@ -569,8 +570,6 @@ class TranscribeTagLib {
         def mb = new MarkupBuilder(out)
 
         def bodyContent = body()
-
-        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
 
         renderFieldsInColumns(1, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
 
@@ -707,6 +706,17 @@ class TranscribeTagLib {
         }
 
         out << m
+    }
+
+    private def nextSectionNumber() {
+        def sectionNumber = ++(request.getAttribute('sectionNumber') ?: 0)
+        request.setAttribute('sectionNumber', sectionNumber)
+        return sectionNumber
+    }
+
+    def sectionNumber = { attrs, body ->
+        def sectionNumber = nextSectionNumber()
+        out << sectionNumber
     }
 
 }

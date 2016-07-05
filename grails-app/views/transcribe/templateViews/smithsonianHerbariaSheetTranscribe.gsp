@@ -64,14 +64,14 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-md-6">
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection details</span>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection details</span>
                 <g:renderCategoryFieldsColumn columns="1" category="${FieldCategory.collectionEvent}"
                                               task="${taskInstance}" recordValues="${recordValues}"
                                               title="Collection details"/>
             </div>
 
             <div class="col-md-6">
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Location details</span>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Location details</span>
                 <g:renderCategoryFieldsColumn columns="1" category="${FieldCategory.location}" task="${taskInstance}"
                                               recordValues="${recordValues}" title="Location details"/>
             </div>

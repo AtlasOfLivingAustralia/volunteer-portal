@@ -55,7 +55,7 @@
     <div class="well well-small transcribeSection">
         <div class="row transcribeSectionHeader">
             <div class="col-md-12">
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Enter the month from the top of the page</span>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Enter the month from the top of the page</span>
                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
             </div>
         </div>
@@ -79,7 +79,7 @@
 <div class="well well-small transcribeSection">
     <div class="row transcribeSectionHeader">
         <div class="col-md-12">
-            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.
+            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.
                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
         </div>
     </div>

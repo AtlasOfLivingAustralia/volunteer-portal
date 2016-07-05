@@ -53,7 +53,8 @@
         </div>
     </div>
 </div>
-<asset:javascript src="angular-moment" asset-defer=""/>
+<asset:javascript src="digivol-module" asset-defer="" />
+<asset:javascript src="angular/angular-moment" asset-defer=""/>
 <asset:script type='text/javascript'>
 
     angular.module('currentUsers', ['digivol', 'angularMoment'])

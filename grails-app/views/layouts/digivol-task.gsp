@@ -10,12 +10,19 @@
 <head>
     <meta name="layout" content="digivol-transcribe"/>
 
-    <g:layoutTitle default="${cl.pageTitle(title:"${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}"}" />
+    <g:layoutTitle default="${cl.pageTitle(title:"${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}" />
     <script type="text/javascript">
         var gmapsReady = false;
         function onGmapsReady() {
-            gmapsReady = true;
-            $(window).trigger('digivol.gmapsReady');
+            notify();
+        }
+        function notify() {
+            if (typeof $ != 'undefined') {
+                gmapsReady = true;
+                $(window).trigger('digivol.gmapsReady');
+            } else {
+                window.setTimeout(notify);
+            }
         }
     </script>
     <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
@@ -125,10 +132,6 @@
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
 
-                %{--<g:set var="sectionNumber" value="${1}"/>--}%
-
-                %{--<g:set var="nextSectionNumber" value="${{ sectionNumber++ }}"/>--}%
-
                 <g:pageProperty name="page.templateView"/>
 
                 %{--<g:render template="/transcribe/${template.viewName}"--}%
@@ -141,7 +144,7 @@
                                 <div class="row transcribeSectionHeader">
                                     <div class="col-sm-12">
                                         <span class="transcribeSectionHeaderLabel"><g:if
-                                                test="${!template.viewParams.hideSectionNumbers}">${request.nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
+                                                test="${!template.viewParams.hideSectionNumbers}"><g:sectionNumber />. </g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
                                         <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                                     </div>
                                 </div>
@@ -303,12 +306,12 @@
         </div>
     </div>
 </div>
-</body>
 <asset:javascript src="bootbox" asset-defer=""/>
+<asset:javascript src="jquery-ui" asset-defer=""/>
 <asset:javascript src="image-viewer" asset-defer=""/>
-<asset:javascript src="transcribe-widgets" asset-defer=""/>
+<asset:javascript src="transcribe/transcribe-widgets" asset-defer=""/>
 <asset:javascript src="amplify" asset-defer=""/>
-<asset:script>
+<asset:script type="text/javascript">
 
     // global Object
     var VP_CONF = {
@@ -644,7 +647,7 @@
             }
 
 </asset:script>
-<asset:script>
+<asset:script type="text/javascript">
 
     <g:each in="${ValidationRule.list()}" var="rule">
         transcribeValidation.rules.${rule.name} = {
@@ -899,4 +902,5 @@
     }
 
 </asset:script>
+</body>
 </html>

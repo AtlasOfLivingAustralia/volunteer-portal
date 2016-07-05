@@ -57,7 +57,7 @@
             <div class="panel-body">
                 <g:set var="allTextField"
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
                 <a href="#" class="btn btn-default btn-xs fieldHelp"
                    title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
                         class="help-container fa fa-question"></i></a>

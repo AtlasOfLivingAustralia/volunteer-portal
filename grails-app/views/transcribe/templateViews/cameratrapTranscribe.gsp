@@ -350,17 +350,13 @@
                 <a class="carousel-control right" href="#ct-full-image-carousel" data-slide="next">&rsaquo;</a>
             </div>
         </script>
-        <asset:javascript src="cameratrap" asset-defer=""/>
-        <asset:script>
-        var imageInfos = <cl:json value="${animalInfos.infos}"/>;
-
-        var items = <cl:json value="${animalInfos.items}"/>;
-
-        var recordValues = <cl:json value="${recordValues}"/>;
-
-        var placeholders = <cl:json value="${placeholders}"/>;
-
-        cameratrap(imageInfos, items, recordValues, placeholders);
+        <asset:javascript src="transcribe/cameratrap" asset-defer=""/>
+        <asset:script type="text/javascript">
+            var imageInfos = <cl:json value="${animalInfos.infos}"/>;
+            var items = <cl:json value="${animalInfos.items}"/>;
+            var recordValues = <cl:json value="${recordValues}"/>;
+            var placeholders = <cl:json value="${placeholders}"/>;
+            cameratrap(imageInfos, items, recordValues, placeholders);
         </asset:script>
     </content>
 </g:applyLayout>

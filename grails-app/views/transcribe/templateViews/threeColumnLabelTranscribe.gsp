@@ -62,7 +62,7 @@
                             <span class="pull-right">
                                 <g:fieldHelp field="${allTextField}" tooltipPosition="bottomLeft"/>
                             </span>
-                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
                             <g:textArea class="form-control" validationRule="${allTextField?.validationRule}"
                                         name="recordValues.0.occurrenceRemarks"
                                         value="${recordValues?.get(0)?.occurrenceRemarks}"
@@ -100,13 +100,13 @@
             <div class="col-md-9">
                 <div class="row">
                     <div class="col-md-6">
-                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection Location</span>
+                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection Location</span>
                         <g:renderCategoryFieldsColumn category="${FieldCategory.location}" task="${taskInstance}"
                                                       recordValues="${recordValues}" title="Collection Location"/>
                     </div>
 
                     <div class="col-md-6">
-                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Miscellaneous</span>
+                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Miscellaneous</span>
                         <g:renderCategoryFieldsColumn category="${FieldCategory.miscellaneous}" task="${taskInstance}"
                                                       recordValues="${recordValues}" title="Miscellaneous Event"/>
                     </div>

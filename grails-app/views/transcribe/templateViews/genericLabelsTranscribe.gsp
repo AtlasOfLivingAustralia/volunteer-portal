@@ -58,7 +58,7 @@
                 <div class="panel-body">
                     <g:set var="allTextField"
                            value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
+                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
                     <a href="#" class="btn btn-default btn-xs fieldHelp"
                        title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
                             class="fa fa-question help-container"></i></a>
@@ -86,7 +86,7 @@
         <div class="panel-body">
             <div class="row transcribeSectionHeader">
                 <div class="col-md-12">
-                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
+                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
                     <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                 </div>
             </div>

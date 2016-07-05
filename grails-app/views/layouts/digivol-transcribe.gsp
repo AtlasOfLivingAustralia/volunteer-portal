@@ -28,7 +28,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')?:'digivol'} ng-cloak" data-ng-app="${pageProperty(name: 'body.data-ng-app', default: 'digivol')}">
+<body class="${pageProperty(name: 'body.class')?:'digivol'}">
 
 <g:render template="/layouts/condensedNav" />
 

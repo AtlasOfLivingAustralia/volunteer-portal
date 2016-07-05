@@ -135,7 +135,7 @@
         <asset:javascript src="dotdotdot" asset-defer=""/>
         <asset:javascript src="mustache" asset-defer="" />
         <asset:javascript src="bootbox" asset-defer="" />
-<asset:script>
+<asset:script type="text/javascript">
     jQuery(function($) {
         var active = 0;
         var interview = true;

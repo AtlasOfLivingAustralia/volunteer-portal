@@ -8,7 +8,7 @@
 <g:set var="collectionEventInsitutionCode"
        value="${taskInstance?.project?.collectionEventLookupCollectionCode ?: taskInstance?.project.featuredOwner}"/>
 
-<asset:javascript src="gmaps" asset-defer=""/>
+%{--<asset:javascript src="gmaps" asset-defer=""/>--}%
 
 <div class="container-fluid">
     <div class="row">
@@ -43,9 +43,7 @@
                         <span>
                             <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
                                     style="">Copy values from a previous task</button>
-                            <a href="#" class="btn btn-default btn-xs fieldHelp"
-                               title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
-                                    class="help-container fa fa-question">
+                            <a href="#" class="btn btn-default btn-xs fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i class="help-container fa fa-question"></i></a>
                         </span>
 
                         <div style="display: none;">
@@ -64,7 +62,7 @@
                         <g:set var="allTextField"
                                value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                         <div class="col-md-12">
-                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
                         </div>
 
                         <div class="col-md-12" style="margin-top: 5px">
@@ -120,7 +118,7 @@
         <div class="panel-body">
             <div class="row transcribeSectionHeader">
                 <div class="col-md-12">
-                    <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
+                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
                     <a class="closeSectionLink" href="#">Shrink</a>
                 </div>
             </div>
@@ -411,8 +409,7 @@
             var url = "${createLink(controller: 'locality', action: 'getLocalityJSON')}?externalLocalityId=" + externalLocalityId;
             $.ajax(url).done(function (locality) {
                 var localityDesc = '<span>' + renderLocalityDescription(locality) + '</span>';
-                var html = "This specimen is linked with an existing Locality: <br/>" + localityDesc + '<span
-        style="float:right"><a href="#" id="unlinkLocality">Undo</a></span>'
+                var html = "This specimen is linked with an existing Locality: <br/>" + localityDesc + '<span style="float:right"><a href="#" id="unlinkLocality">Undo</a></span>'
                 $("#boundLocality").html(html).css("display","block");
                 $("#unlinkLocality").click(function(e) {
                     e.preventDefault();
@@ -437,8 +434,7 @@
             var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${collectionEventInsitutionCode}";
             $.ajax(url).done(function (collectionEvent) {
                 var eventDesc = '<span>' + renderLocalityDescription(collectionEvent) + '<br/>' + collectionEvent.collector + " (" + collectionEvent.eventDate + ")";
-var html = "This specimen is linked with an existing collection event: <br/>" + eventDesc + '</span><span
-        style="float:right"><a href="#" id="unlinkCollectionEvent">Undo</a></span>'
+                var html = "This specimen is linked with an existing collection event: <br/>" + eventDesc + '</span><span style="float:right"><a href="#" id="unlinkCollectionEvent">Undo</a></span>'
                 $("#boundCollectionEvent").html(html).css("display","block");
                 $("#unlinkCollectionEvent").click(function(e) {
                     e.preventDefault();

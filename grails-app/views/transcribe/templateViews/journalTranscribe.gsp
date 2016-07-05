@@ -56,7 +56,7 @@
             <div class="span12">
                 <g:set var="allTextField"
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
                 <a href="#" class="btn btn-default btn-xs fieldHelp" tooltipPosition="bottomLeft"
                    title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
                         class="fa fa-question help-container"></i></a>
@@ -76,7 +76,7 @@
     <div class="well well-small transcribeSection">
         <div class="row-fluid transcribeSectionHeader">
             <div class="span12">
-                <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  For each entry on the field note, please transcribe information into the following fields.</span>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />.  For each entry on the field note, please transcribe information into the following fields.</span>
                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
             </div>
         </div>

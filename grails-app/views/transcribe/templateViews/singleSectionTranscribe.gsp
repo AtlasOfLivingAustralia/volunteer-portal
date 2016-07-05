@@ -67,7 +67,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Details</span>
+                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Details</span>
                     </div>
                     <g:set var="spanClass" value="${"col-md-${12 / columnCount}"}"/>
                     <g:each in="${columns}" var="column">

@@ -224,9 +224,8 @@
     </div>
 </g:else>
 </section>
-</body>
-<asset:javascript src="bootstrap"/>
-<asset:javascript src="image-viewer"/>
+<asset:javascript src="bootstrap" asset-defer=""/>
+<asset:javascript src="image-viewer" asset-defer=""/>
 
 <asset:script type="text/javascript">
 
@@ -236,16 +235,17 @@
     });
 
 </asset:script>
-<asset:script>
+<asset:script type="text/javascript">
 
-        $(document).ready(function() {
+    $(document).ready(function() {
 
-            $("#showImageWindow").click(function(e) {
-                e.preventDefault();
-                window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance?.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
+        $("#showImageWindow").click(function(e) {
+            e.preventDefault();
+            window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance?.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
             });
 
         });
 
 </asset:script>
+</body>
 </html>

@@ -67,7 +67,7 @@
                         <div class="col-md-12">
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the left hand page into this box as it appears</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe all text from the left hand page into this box as it appears</span>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
                                title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
                                tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
@@ -92,7 +92,7 @@
                         <div class="col-md-12">
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. Transcribe all text from the right hand page into this box as it appears</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe all text from the right hand page into this box as it appears</span>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
                                title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
                                     class="fa fa-question help-container"></i></a>
@@ -120,7 +120,7 @@
                         <g:set var="allTextField"
                                value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                         <div class="col-md-12">
-                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
                                title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
                                tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
@@ -145,7 +145,7 @@
                 <div class="panel-body">
                     <div class="row transcribeSectionHeader">
                         <div class="col-md-12">
-                            <span class="transcribeSectionHeaderLabel">${nextSectionNumber()}.  ${taskInstance.project.template?.viewParams?.transcribeSectionHeader ?: g.message(code: 'fieldNoteBookTranscribe.transcribeSectionHeader.default', default:  'Where a species or common name appears in the text please enter any relevant information into the fields below')}</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />.  ${taskInstance.project.template?.viewParams?.transcribeSectionHeader ?: g.message(code: 'fieldNoteBookTranscribe.transcribeSectionHeader.default', default:  'Where a species or common name appears in the text please enter any relevant information into the fields below')}</span>
                             <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
 </g:if>
 
 
-<script>
+<asset:script type="text/javascript">
 
     $(document).ready(function () {
         $(".fontSizeButton").click(function (e) {
@@ -232,6 +232,6 @@
 
     });
 
-</script>
+</asset:script>
     </content>
 </g:applyLayout>
