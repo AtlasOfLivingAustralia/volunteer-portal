@@ -7,7 +7,7 @@ function adminStats(config) {
         $httpProvider.defaults.cache = true;
     }]);
 
-    app.service('statService', ['$http', '$q', function($http, $q) {
+    app.service('StatsService', ['$http', '$q', function($http, $q) {
         return {
             getVolunteer: function (startDate, endDate) {
                 return $http.get(config.volunteerStatsURL, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
@@ -84,7 +84,7 @@ function adminStats(config) {
         };
     }]);
 
-    app.controller('statsCtrl', ['$scope', 'statService', '$log', function ($scope, statService, $log) {
+    app.controller('statsCtrl', ['$scope', 'StatsService', '$log', function ($scope, StatsService, $log) {
 
         $scope.searchDate = [$scope.startDate, $scope.endDate];
 
@@ -204,7 +204,7 @@ function adminStats(config) {
             getNewVolunteerData();
         };
 
-        $scope.exportToExcel = function (data, reportType) {
+        $scope.exportToCSV = function (data, reportType) {
         //    var dt = new google.visualization.DataTable(data);
         //    var csv =  dt.toCSV();
         //    if (downloadCSV(csv, reportType) == "failed") {

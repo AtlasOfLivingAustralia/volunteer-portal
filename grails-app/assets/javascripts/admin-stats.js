@@ -1,18 +1,20 @@
 //= encoding UTF-8
 //  assume jquery
-//= require jquery-ui
+//  ?? require jquery-ui ??
 //= require digivol-module
+//= require angular/angular-google-charts
+//= require angular/angular-ui-bootstrap
 //= require_self
 function adminStats(config) {
 
-  var app = angular.module('statApp', ['digivol']);
+  var app = angular.module('statApp', ['digivol', 'ui.bootstrap', 'googlechart']);
 
   app.config(['$httpProvider', function ($httpProvider) {
     // enable http caching
     $httpProvider.defaults.cache = true;
   }]);
 
-  app.service('statService', ['$http', '$q', function($http, $q) {
+  app.service('StatsService', ['$http', '$q', function($http, $q) {
     return {
       getVolunteer: function (startDate, endDate) {
         return $http.get(config.volunteerStatsURL, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
@@ -84,29 +86,43 @@ function adminStats(config) {
         }, function (response) {
           $q.reject(response);
         });
+      },
+
+      getValidationsByMonth: function () {
+        return $http.get(config.validationsByMonth).then(function (response) { return response.data });
+      },
+
+      getTranscriptionsByMonth: function () {
+        return $http.get(config.transcriptionsByMonth).then(function (response) { return response.data });
       }
 
     };
   }]);
 
-  app.controller('statsCtrl', ['$scope', 'statService', '$log', function ($scope, statService, $log) {
+  app.controller('StatsCtrl', ['$scope', 'StatsService', '$log', function ($scope, StatsService, $log) {
 
-    $scope.searchDate = [$scope.startDate, $scope.endDate];
+    var self = this;
+
+    self.searchDate = [self.startDate, self.endDate];
+
+    self.active = 0;
 
     // Used to hold csv data
-    $scope.activeTranscribers = "";
-    $scope.transcriptionsByVolunteerAndProject = "";
-    $scope.transcriptionsByDay ="";
-    $scope.validationsByDay = "";
-    $scope.transcriptionsByInstitution = "";
-    $scope.validationsByInstitution = "";
-    $scope.hourlyContributions = "";
-    $scope.historicalHonourBoard = "";
+    self.activeTranscribers = "";
+    self.transcriptionsByVolunteerAndProject = "";
+    self.transcriptionsByDay ="";
+    self.validationsByDay = "";
+    self.transcriptionsByInstitution = "";
+    self.validationsByInstitution = "";
+    self.hourlyContributions = "";
+    self.historicalHonourBoard = "";
+    self.formats = ['yyyy/MM/dd', 'dd/MM/yyyy'];
+    self.format = self.formats[0];
 
     var getNewVolunteerData = function () {
-      var stats = statService.getVolunteer($scope.startDate, $scope.endDate);
+      var stats = StatsService.getVolunteer(self.startDate, self.endDate);
       stats.then(function(data){
-        angular.extend($scope, data);
+        angular.extend(self, data);
       }, function (resp) {
         $log.error("Error from getting data in getVolunteer", resp);
       });
@@ -114,10 +130,10 @@ function adminStats(config) {
 
     getNewVolunteerData();
 
-    $scope.getActiveTranscribers = function () {
-      var stats = statService.getActiveTranscribers($scope.startDate, $scope.endDate);
+    self.getActiveTranscribers = function () {
+      var stats = StatsService.getActiveTranscribers(self.startDate, self.endDate);
       return stats.then(function(data) {
-        $scope.activeTranscribers = data;
+        self.activeTranscribers = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getActiveTranscriber", resp);
@@ -125,10 +141,10 @@ function adminStats(config) {
       });
     };
 
-    $scope.getTranscriptionsByVolunteerAndProject = function () {
-      var stat = statService.getTranscriptionsByVolunteerAndProject($scope.startDate, $scope.endDate);
+    self.getTranscriptionsByVolunteerAndProject = function () {
+      var stat = StatsService.getTranscriptionsByVolunteerAndProject(self.startDate, self.endDate);
       return stat.then(function(data) {
-        $scope.transcriptionsByVolunteerAndProject = data;
+        self.transcriptionsByVolunteerAndProject = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getTranscriptionsByVolunteerAndProject", resp);
@@ -136,10 +152,10 @@ function adminStats(config) {
       });
     };
 
-    $scope.getTranscriptionsByDay = function () {
-      var stat = statService.getTranscriptionsByDay($scope.startDate, $scope.endDate);
+    self.getTranscriptionsByDay = function () {
+      var stat = StatsService.getTranscriptionsByDay(self.startDate, self.endDate);
       return stat.then(function(data) {
-        $scope.transcriptionsByDay = data;
+        self.transcriptionsByDay = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getTranscriptionsByDay", resp);
@@ -147,10 +163,10 @@ function adminStats(config) {
       });
     };
 
-    $scope.getValidationsByDay = function () {
-      var stat = statService.getValidationsByDay($scope.startDate, $scope.endDate);
+    self.getValidationsByDay = function () {
+      var stat = StatsService.getValidationsByDay(self.startDate, self.endDate);
       return stat.then(function(data) {
-        $scope.validationsByDay = data;
+        self.validationsByDay = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getValidationsByDay", resp);
@@ -158,10 +174,10 @@ function adminStats(config) {
       });
     };
 
-    $scope.getTranscriptionsByInstitution = function () {
-      var stat = statService.getTranscriptionsByInstitution();
+    self.getTranscriptionsByInstitution = function () {
+      var stat = StatsService.getTranscriptionsByInstitution();
       return stat.then(function(data) {
-        $scope.transcriptionsByInstitution = data;
+        self.transcriptionsByInstitution = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getTranscriptionsByInstitution", resp);
@@ -169,10 +185,10 @@ function adminStats(config) {
       });
     };
 
-    $scope.getValidationsByInstitution = function () {
-      var stat = statService.getValidationsByInstitution();
+    self.getValidationsByInstitution = function () {
+      var stat = StatsService.getValidationsByInstitution();
       return stat.then(function(data) {
-        $scope.validationsByInstitution = data;
+        self.validationsByInstitution = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getValidationsByInstitution", resp);
@@ -180,10 +196,10 @@ function adminStats(config) {
       });
     };
 
-    $scope.getHourlyContributions = function () {
-      var stat = statService.getHourlyContributions($scope.startDate, $scope.endDate);
+    self.getHourlyContributions = function () {
+      var stat = StatsService.getHourlyContributions(self.startDate, self.endDate);
       return stat.then(function(data) {
-        $scope.hourlyContributions = data;
+        self.hourlyContributions = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getHourlyContributions", resp);
@@ -191,25 +207,66 @@ function adminStats(config) {
       });
     };
 
-    $scope.getHistoricalHonourBoard = function () {
-      $scope.loading = true;
-      var stat = statService.getHistoricalHonourBoard($scope.startDate, $scope.endDate);
+    self.getHistoricalHonourBoard = function () {
+      self.loading = true;
+      var stat = StatsService.getHistoricalHonourBoard(self.startDate, self.endDate);
       return stat.then(function(data) {
-        $scope.historicalHonourBoard = data;
-        $scope.loading = false;
+        self.historicalHonourBoard = data;
+        self.loading = false;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getHistoricalHonourBoard", resp);
         return resp;
       });
     };
+    
+    self.loadMonthlyStats = function() {
+      if (!self.transcriptionsByMonth.loaded) {
+        StatsService.getTranscriptionsByMonth().then(function(data) {
+          self.transcriptionsByMonth.data = data;
+          self.transcriptionsByMonth.loaded = true;
+        })
+      }
+      if (!self.validationsByMonth.loaded) {
+        StatsService.getValidationsByMonth().then(function(data) {
+          self.validationsByMonth.data = data;
+          self.validationsByMonth.loaded = true;
+        })
+      }
+    };
 
-    $scope.setDateRange = function () {
-      $scope.searchDate = [$scope.startDate, $scope.endDate];
+    self.transcriptionsByMonth = {
+      loaded: false,
+      data: [],
+      type: 'ColumnChart',
+      options: {
+        hAxis: { slantedText:true },
+        lineWidth: 1,
+        legend: {position: 'none'},
+        colors: ['#76A7FA'],
+        chartArea:{left:60,top:10,bottom:60, height: "40%", width: "100%"}
+      }
+    };
+    
+    self.validationsByMonth = {
+      loaded: false,
+      data: {},
+      type: 'ColumnChart',
+      options: {
+        hAxis: { slantedText:true },
+        lineWidth: 1,
+        legend: {position: 'none'},
+        colors: ['#76A7FA'],
+        chartArea:{left:60,top:10,bottom:60, height: "40%", width: "100%"}
+      }
+    };
+    
+    self.setDateRange = function () {
+      self.searchDate = [self.startDate, self.endDate];
       getNewVolunteerData();
     };
 
-    $scope.exportToExcel = function (data, reportType) {
+    self.exportToCSV = function (data, reportType) {
       //    var dt = new google.visualization.DataTable(data);
       //    var csv =  dt.toCSV();
       //    if (downloadCSV(csv, reportType) == "failed") {
@@ -223,6 +280,7 @@ function adminStats(config) {
 
   function drawGoogleChart($scope, jsonString, $elm, type) {
     var data = new google.visualization.DataTable(jsonString);
+    var chart;
 
     if (type == 'table') {
       //Setchartoptions
@@ -239,7 +297,7 @@ function adminStats(config) {
         }
       };
 
-      var chart = new google.visualization.Table($elm[0]);
+      chart = new google.visualization.Table($elm[0]);
 
     } else if (type == "barchart") {
 
@@ -257,7 +315,7 @@ function adminStats(config) {
         chartArea:{left:60,top:10,bottom:60, height: "40%", width: "100%"}
       };
 
-      var chart = new google.visualization.ColumnChart($elm[0]);
+      chart = new google.visualization.ColumnChart($elm[0]);
 
     } else  if (type == "piechart") {
 
@@ -268,12 +326,12 @@ function adminStats(config) {
         pieHole: $scope.pieHole,
         pieSliceText: 'value',
         pieSliceTextStyle: {
-          color: 'black',
+          color: 'black'
         }
 
       };
 
-      var chart = new google.visualization.PieChart($elm[0]);
+      chart = new google.visualization.PieChart($elm[0]);
 
     } else if (type == 'linechart') {
       var options = {
@@ -290,7 +348,7 @@ function adminStats(config) {
 
       };
 
-      var chart = new google.visualization.LineChart($elm[0]);
+      chart = new google.visualization.LineChart($elm[0]);
     }
 
     chart.draw(data,options);
@@ -347,7 +405,7 @@ function adminStats(config) {
     }
 
     return csv_out;
-  }
+  };
 
   app.directive('tablechart', ['$timeout', function ($timeout) {
     return {

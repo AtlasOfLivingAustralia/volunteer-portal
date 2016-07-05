@@ -131,7 +131,7 @@
 
 </cl:headerContent>
 
-<section id="user-progress" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
+<section id="user-progress" class="in-body" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
     <uib-tabset active="nbtCtrl.selectedTab" template-url="notebookTabSet.html">
         %{--<uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">--}%
             %{--<uib-tab-heading>--}%
@@ -190,26 +190,7 @@
     </div>
 </section>
 
-<script id="notebookTabSet.html" type="text/ng-template">
-<div>
-    <div class="container">
-        <ul class="nav nav-{{tabset.type || 'tabs'}}" ng-class="{'nav-stacked': vertical, 'nav-justified': justified}"
-            ng-transclude></ul>
-    </div>
-
-    <div class="tab-content-bg">
-        <div class="container">
-            <div class="tab-content">
-                <div class="tab-pane"
-                     ng-repeat="tab in tabset.tabs"
-                     ng-class="{active: tabset.active === tab.index}"
-                     uib-tab-content-transclude="tab">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</script>
+<g:render template="/common/angularBootstrapTabSet" />
 
 <script id="taskList.html" type="text/ng-template">
 <a id="tasklist-top-{{ $ctrl.tabIndex }}"></a>
