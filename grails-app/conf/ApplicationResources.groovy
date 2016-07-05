@@ -12,7 +12,7 @@ modules = {
         dependsOn 'bootstrap', 'jquery', 'font-awesome', 'qtip', 'digivol-notifications'
         resource url: '/css/main.css'
         resource url: '/css/digivol-custom.css'
-        resource url: '/js/digivol-main.js'
+//        resource url: '/js/digivol-main.js'
     }
 
     'digivol-module' {

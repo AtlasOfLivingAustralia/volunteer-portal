@@ -134,12 +134,12 @@
 
 <section id="user-progress" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
     <uib-tabset active="nbtCtrl.selectedTab" template-url="notebookTabSet.html">
-        <uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">
-            <uib-tab-heading>
-                <g:message code="notebook.tabs.notifications.heading" /> <i ng-show="unreadCount > 0" class="fa fa-bell text-danger"></i>
-            </uib-tab-heading>
-            <task-list selected-tab="nbtCtrl.selectedTab" tab-index="0" max="nbtCtrl.tabs[0].max" offset="nbtCtrl.tabs[0].offset" sort="nbtCtrl.tabs[0].sort" order="nbtCtrl.tabs[0].order" query="nbtCtrl.tabs[0].query"></task-list>
-        </uib-tab>
+        %{--<uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">--}%
+            %{--<uib-tab-heading>--}%
+                %{--<g:message code="notebook.tabs.notifications.heading" /> <i ng-show="unreadCount > 0" class="fa fa-bell text-danger"></i>--}%
+            %{--</uib-tab-heading>--}%
+            %{--<task-list selected-tab="nbtCtrl.selectedTab" tab-index="0" max="nbtCtrl.tabs[0].max" offset="nbtCtrl.tabs[0].offset" sort="nbtCtrl.tabs[0].sort" order="nbtCtrl.tabs[0].order" query="nbtCtrl.tabs[0].query"></task-list>--}%
+        %{--</uib-tab>--}%
         <uib-tab heading="${message(code:"notebook.tabs.transcribed.heading")}" index="1" select="nbtCtrl.selectTab(1)">
             <task-list selected-tab="nbtCtrl.selectedTab" tab-index="1" max="nbtCtrl.tabs[1].max" offset="nbtCtrl.tabs[1].offset" sort="nbtCtrl.tabs[1].sort" order="nbtCtrl.tabs[1].order" query="nbtCtrl.tabs[1].query"></task-list>
         </uib-tab>
