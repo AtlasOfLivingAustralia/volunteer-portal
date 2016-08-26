@@ -13,6 +13,17 @@
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
             <label>
+                <g:checkBox name="hideNotesSection" value="${true}" />
+                <g:message code="template.hideNotesSection.label" default="Hide Notes Section" />
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-md-offset-3 col-md-6">
+        <div class="checkbox">
+            <label>
                 <g:checkBox name="hideSectionNumbers" value="${true}"/>
                 <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers"/>
             </label>

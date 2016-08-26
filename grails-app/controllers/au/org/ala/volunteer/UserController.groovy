@@ -539,7 +539,7 @@ class UserController {
     }
 
     def notebook() {
-
+        userService.registerCurrentUser()
         def userInstance = userService.currentUser
         if (params.int("id")) {
             userInstance = User.get(params.int("id"))

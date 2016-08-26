@@ -473,55 +473,57 @@
                 <g:render template="/transcribe/${template.viewName}"
                           model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}"/>
 
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-default transcribeSection">
-                            <div class="panel-body">
-                                <div class="row transcribeSectionHeader">
-                                    <div class="col-sm-12">
-                                        <span class="transcribeSectionHeaderLabel"><g:if
-                                                test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
-                                        <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
-                                    </div>
-                                </div>
-
-                                <div class="transcribeSectionBody">
-                                    <div class="row">
-
-                                        <div class="col-sm-6">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    ${(validator) ? 'Transcriber' : 'Your'} Notes
-                                                </div>
-
-                                                <div class="col-sm-8">
-                                                    <g:textArea name="recordValues.0.transcriberNotes"
-                                                                value="${recordValues?.get(0)?.transcriberNotes}"
-                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
-                                                </div>
-                                            </div>
+                <g:if test="${!template.viewParams.hideNotesSection}">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="panel panel-default transcribeSection">
+                                <div class="panel-body">
+                                    <div class="row transcribeSectionHeader">
+                                        <div class="col-sm-12">
+                                            <span class="transcribeSectionHeaderLabel"><g:if
+                                                    test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
+                                            <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                                         </div>
+                                    </div>
 
-                                        <div class="col-sm-6">
-                                            <g:if test="${validator}">
+                                    <div class="transcribeSectionBody">
+                                        <div class="row">
+
+                                            <div class="col-sm-6">
                                                 <div class="row">
-                                                    <div class="col-sm-4">Validator Notes</div>
+                                                    <div class="col-sm-4">
+                                                        ${(validator) ? 'Transcriber' : 'Your'} Notes
+                                                    </div>
 
                                                     <div class="col-sm-8">
-                                                        <g:textArea name="recordValues.0.validatorNotes"
-                                                                    value="${recordValues?.get(0)?.validatorNotes}"
-                                                                    id="recordValues.0.validatorNotes" rows="5" cols="40"
-                                                                    class="form-control"/>
+                                                        <g:textArea name="recordValues.0.transcriberNotes"
+                                                                    value="${recordValues?.get(0)?.transcriberNotes}"
+                                                                    id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
                                                     </div>
                                                 </div>
-                                            </g:if>
+                                            </div>
+
+                                            <div class="col-sm-6">
+                                                <g:if test="${validator}">
+                                                    <div class="row">
+                                                        <div class="col-sm-4">Validator Notes</div>
+
+                                                        <div class="col-sm-8">
+                                                            <g:textArea name="recordValues.0.validatorNotes"
+                                                                        value="${recordValues?.get(0)?.validatorNotes}"
+                                                                        id="recordValues.0.validatorNotes" rows="5" cols="40"
+                                                                        class="form-control"/>
+                                                        </div>
+                                                    </div>
+                                                </g:if>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </g:if>
 
                 <g:if test="${!isReadonly}">
                     <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
