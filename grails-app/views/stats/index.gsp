@@ -210,68 +210,6 @@
     google.load('visualization', '1.0', {'packages': ['corechart']});
     google.load('visualization', '1.0', {'packages': ['table']});
     google.load('visualization', '1.0', {'packages':['bar']});
-
-     $(document).ready(function (e) {
-
-            %{--var target = $(e.target).attr('href');--}%
-            %{--if (target == '#reportsByMonth') {--}%
-                %{--transcriptionsByMonth();--}%
-                %{--validationsByMonth();--}%
-            %{--}--}%
-        %{--});--}%
-
-    });
-
-    function transcriptionsByMonth() {
-        $.ajax("${createLink(controller: 'ajax', action: 'statsTranscriptionsByMonth')}").done(function (data) {
-                    // Create the data table.
-                    var table = new google.visualization.DataTable();
-                    table.addColumn('string', 'Month');
-                    table.addColumn('number', 'Transcriptions');
-                    for (key in data) {
-                        var value = data[key]
-                        table.addRow([value.month, value.count])
-                    }
-
-                    // Set chart options
-                    var options = {
-                        //'title': 'Transcriptions by month',
-                        backgroundColor: '#F5F2E3',
-                        vAxis: {title: "Transcriptions"},
-                        hAxis: {title: "Month"},
-                        height: 400
-                    };
-
-                    // Instantiate and draw our chart, passing in some options.
-                    var chart = new google.visualization.ColumnChart(document.getElementById('transcriptionsByMonth')).draw(table, options);
-                });
-            }
-
-            function validationsByMonth() {
-                $.ajax("${createLink(controller: 'ajax', action: 'statsValidationsByMonth')}").done(function (data) {
-                    // Create the data table.
-                    var table = new google.visualization.DataTable();
-                    table.addColumn('string', 'Month');
-                    table.addColumn('number', 'Validations');
-                    for (key in data) {
-                        var value = data[key]
-                        table.addRow([value.month, value.count])
-                    }
-
-                    // Set chart options
-                    var options = {
-                        //'title': 'Validations by month',
-                        backgroundColor: '#F5F2E3',
-                        vAxis: {title: "Validations"},
-                        hAxis: {title: "Month"},
-                        height: 400
-                    };
-
-                    // Instantiate and draw our chart, passing in some options.
-                    var chart = new google.visualization.ColumnChart(document.getElementById('validationsByMonth')).draw(table, options);
-                });
-            }
-
 </asset:script>
 <asset:javascript src="admin-stats" asset-defer=""/>
 <asset:script>
