@@ -27,7 +27,7 @@ SELECT t.fully_transcribed_by
 FROM task t
 GROUP BY t.fully_transcribed_by
 HAVING
-  sum(CASE WHEN date_fully_transcribed < (current_timestamp - interval '2 years') THEN 1 ELSE 0 END) < 5
+  sum(CASE WHEN date_fully_transcribed < (current_timestamp - interval '1 day') THEN 1 ELSE 0 END) < 5
   AND
   count(date_fully_transcribed) >= 5;
 """).collect { it[0] })
