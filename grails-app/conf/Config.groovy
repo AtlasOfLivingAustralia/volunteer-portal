@@ -261,6 +261,7 @@ environments {
         images.home = '/data/volunteer-portal'
         ala.image.service.url = "http://images.ala.org.au/"
         images.urlPrefix = "/data/volunteer-portal/"
+//        digest.enabled = true
     }
     test {
         grails.serverURL = "http://volunteer-dev.ala.org.au"
@@ -298,8 +299,9 @@ grails.plugins.twitterbootstrap.fixtaglib = true
 environments {
     development {
         grails.mail.disabled = true
-        grails.mail.host = "fake.ala.org.au"
-        grails.mail.overrideAddress = "your.email@here.com"
+        grails.mail.host = "localhost"
+        grails.mail.port = 1025
+//        grails.mail.overrideAddress = "your.email@here.com"
         grails.resources.debug = true
     }
     production {

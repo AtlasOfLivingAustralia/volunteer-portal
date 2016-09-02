@@ -357,6 +357,10 @@ class UserService {
      * Get the user details for a list of user ids
      */
     def detailsForUserIds(List<String> userIds) {
+        if (!userIds) {
+            return []
+        }
+
         def serviceResults
         try {
             serviceResults = authService.getUserDetailsById(userIds)
