@@ -141,10 +141,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-xs-12 form-group">
-                                <label>Additional Notes</label>
-                                <textarea class="form-control" rows="4" placeholder="Enter any notes that can help with validation"></textarea>
-                            </div>
                         </div>
                     </div>
                 </div>
