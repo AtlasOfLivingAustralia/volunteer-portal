@@ -12,13 +12,13 @@ class NewUserDigestNotifierJob {
     def description = "Notify admin users about new users who have completed their first five transcriptions"
 
     static triggers = {
-        cron name: 'updateUsersTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
-//        cron name: 'updateUsersTrigger', cronExpression: '/30 * * * * ?' // 6:00am
+        cron name: 'newUsersDigestTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
+//        cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // 6:00am
     }
 
     def execute() {
-        log.info("New User Digest Notifier job starting at ${new Date()}")
         if (grailsApplication.config.digest.enabled) {
+            log.info("New User Digest Notifier job starting at ${new Date()}")
             try {
                 def sql = new Sql(dataSource)
 
@@ -33,11 +33,12 @@ HAVING
 """).collect { it[0] })
 
                 def users = User.findAllByUserIdInList(newTranscribers*.userId)
-                log.debug("Found new users $users")
 
                 if (users) {
+                    def recipient = grailsApplication.config.digest.address ?: "Rhiannon.Stephens@austmus.gov.au"
+                    log.info("Emailling $recipient with new transcribers: $users")
                     mailService.sendMail {
-                        to grailsApplication.config.digest.address ?: "Rhiannon.Stephens@austmus.gov.au"
+                        to
                         subject "DigiVol: New Transcribers"
                         body( view:"/mail/newTranscribers",
                                 model: [newTranscribers: users])
