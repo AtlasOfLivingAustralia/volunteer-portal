@@ -12,8 +12,8 @@ class NewUserDigestNotifierJob {
     def description = "Notify admin users about new users who have completed their first five transcriptions"
 
     static triggers = {
-//        cron name: 'newUsersDigestTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
-        cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // 6:00am
+        cron name: 'newUsersDigestTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
+//        cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // 6:00am
     }
 
     def execute() {
