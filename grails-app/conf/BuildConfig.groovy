@@ -38,7 +38,7 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        runtime 'org.postgresql:postgresql:9.4.1208.jre7'
+        runtime 'org.postgresql:postgresql:9.4.1212.jre7'
         compile 'org.imgscalr:imgscalr-lib:4.2'
         compile 'com.squareup.retrofit2:retrofit:2.1.0'
         compile 'com.squareup.retrofit2:converter-gson:2.1.0'
