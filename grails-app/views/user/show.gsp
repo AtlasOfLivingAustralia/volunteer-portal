@@ -341,10 +341,10 @@
                            ng-href="${createLink(controller: 'task', action:'show')}/{{taskInstance.id}}">
                             <g:message code="action.view.label" />
                         </a>
-                        <a ng-show="taskInstance.fullyTranscribedBy && isValidator(taskInstance.project)" class="btn btn-default btn-xs"
+                        <a ng-show="taskInstance.fullyTranscribedBy && taskInstance.isValidator" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller: 'validate', action:'task')}/{{taskInstance.id}}">
-                            <span ng-show="taskInstance.status == 'validated'"><g:message code="action.review.label" /></span>
-                            <span ng-hide="taskInstance.status == 'validated'"><g:message code="action.validate.label" /></span>
+                            <span ng-show="taskInstance.status == 'Validated'"><g:message code="action.review.label" /></span>
+                            <span ng-hide="taskInstance.status == 'Validated'"><g:message code="action.validate.label" /></span>
                         </a>
                         <a ng-hide="taskInstance.fullyTranscribedBy" class="btn btn-default btn-small"
                            ng-href="${createLink(controller:'transcribe', action:'task')}/{{taskInstance.id}}">
