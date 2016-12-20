@@ -42,7 +42,7 @@ grails.project.dependency.resolution = {
         compile 'org.imgscalr:imgscalr-lib:4.2'
         compile 'com.squareup.retrofit2:retrofit:2.1.0'
         compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-        compile 'com.google.guava:guava:17.0'
+        compile 'com.google.guava:guava:19.0'
         compile 'org.apache.commons:commons-compress:1.11'
         compile 'org.apache.commons:commons-pool2:2.4.2'
         compile 'org.elasticsearch:elasticsearch:1.3.5'
@@ -65,7 +65,7 @@ grails.project.dependency.resolution = {
         runtime ":jquery:1.11.1"
         runtime ":jquery-ui:1.10.4"
 
-        compile "org.grails.plugins:asset-pipeline:2.9.1"
+        compile "org.grails.plugins:asset-pipeline:2.11.6-SNAPSHOT"
 //        compile "org.grails.plugins:angular-annotate-asset-pipeline:2.4.1"
 //        compile "org.grails.plugins:angular-template-asset-pipeline:2.2.7"
 //        compile "org.grails.plugins:i18n-asset-pipeline:1.0.6"
