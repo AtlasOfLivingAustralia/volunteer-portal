@@ -4,7 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <r:require modules="bootstrap-file-input"/>
 </head>
 
 <body class="admin">
@@ -90,12 +89,12 @@
         </div>
     </div>
 </div>
-
-<r:script>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:script>
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
     });
-</r:script>
+</asset:script>
 </body>
 </html>

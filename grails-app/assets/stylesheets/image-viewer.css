@@ -1,0 +1,126 @@
+/*= encoding UTF-8
+ *= require jquery-ui
+ *= require_self
+ */
+#image-container, #image-parent-container {
+    background-color: #a9a9a9;
+}
+
+#image-container {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+}
+
+#image-container img {
+    max-width: inherit !important;
+}
+
+.imageviewer-controls {
+    position: absolute;
+    bottom: 7px;
+    left: 10px;
+    background: url('../images/map-control.png') no-repeat;
+    height: 63px;
+    width: 100px;
+    opacity: 0.9;
+}
+
+.imageviewer-controls a {
+    height: 18px;
+    width: 18px;
+    display: block;
+    text-indent: -999em;
+    position: absolute;
+    outline: none;
+}
+
+.imageviewer-controls a:hover {
+    background: #535353;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+}
+
+.imageviewer-controls a.left {
+    left: 39px;
+    top: 22px;
+}
+
+.imageviewer-controls a.right {
+    left: 79px;
+    top: 22px;
+}
+
+.imageviewer-controls a.up {
+    left: 59px;
+    top: 2px;
+}
+
+.imageviewer-controls a.down {
+    left: 59px;
+    top: 42px;
+}
+
+.imageviewer-controls a.zoom {
+    left: 2px;
+    top: 8px;
+    height: 21px;
+    width: 21px;
+}
+
+.imageviewer-controls a.back {
+    left: 2px;
+    top: 31px;
+    height: 21px;
+    width: 21px;
+}
+
+.pin-image-control {
+    position: absolute;
+    bottom: 7px;
+    right: 7px;
+    background: url('../images/pin-image.png') no-repeat;
+    height: 24px;
+    width: 24px;
+    opacity: 0.9;
+}
+
+.pin-image-control a {
+    height: 24px;
+    width: 24px;
+    display: block;
+    text-indent: -999em;
+    position: absolute;
+    outline: none;
+}
+
+.pin-image-control a:hover {
+    background: #535353;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+}
+
+.show-image-control {
+    position: absolute;
+    bottom: 37px;
+    right: 7px;
+    background: url('../images/image-window.png') no-repeat;
+    height: 24px;
+    width: 24px;
+    opacity: 0.9;
+}
+
+.show-image-control a {
+    height: 24px;
+    width: 24px;
+    display: block;
+    text-indent: -999em;
+    position: absolute;
+    outline: none;
+}
+
+.show-image-control a:hover {
+    background: #535353;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+}

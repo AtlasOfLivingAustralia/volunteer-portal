@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.AchievementService; au.org.ala.volunteer.FrontPageService" %>
 <cl:isLoggedIn>
-<r:script>
+<asset:script>
     digivolNotify({
         eventSourceUrl: "${createLink(uri: '/es')}",
         acceptAchievementsUrl: "${createLink(controller: 'ajax', action: 'acceptAchievements')}",
@@ -11,5 +11,5 @@
         alertIconClass: "fa fa-exclamation-circle",
         achievementType: 'success'
     });
-</r:script>
+</asset:script>
 </cl:isLoggedIn>

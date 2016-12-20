@@ -247,7 +247,8 @@ grails.resources.mappers.zip.excludes = ['/js/tinymce/**/*']
 grails.resources.mappers.bundle.excludes = ['/js/tinymce/**/*']
 grails.resources.mappers.yuijsminify.excludes = ['/js/tinymce/**/*']
 //grails.resources.adhoc.excludes = ['/js/tinymce/**/*.*']
-//grails.assets.excludes	["tiny_mce/src/*.js"]
+grails.assets.excludes	["/tinymce/**/*.js"]
+grails.assets.minifyOptions.excludes = ["**/*.min.js"]
 
 bvp.tmpdir="/data/${appName}/config/"
 
@@ -417,7 +418,9 @@ log4j = {
             'au.org.ala.cas.util'
             
     info    'grails.app',
-            'au.org.ala'
+            'au.org.ala',
+            'asset.pipeline'
+
 
 //    debug   'org.apache.http.headers',
 //            'org.apache.http.wire'

@@ -1,0 +1,128 @@
+.itemgrid { overflow: hidden; margin-bottom: 10px; }
+.itemgrid .item,
+.itemgrid .griditem {
+    float: left;
+    width: 160px;
+    margin: 5px 10px;
+}
+
+.imageSelectWidget a.thumbnail.selected,
+.imageSelectWidget a.thumbnail.selected:hover {
+    border: 2px solid #df4a21;
+    margin: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(239,75,33,.6);
+    -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(239,75,33,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(239,75,33,.6);
+}
+
+.imageSelectWidget a.thumbnail {
+    margin: 1px;
+}
+
+/* Disable focus transitions inside the qa carousel because
+   they interfere with the carousel slide transitions */
+#qaCarousel.carousel a.thumbnail.selected, #qaCarousel.carousel a.thumbnail{
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+#qaCarousel.carousel textarea,
+#qaCarousel.carousel input[type="text"],
+#qaCarousel.carousel input[type="password"],
+#qaCarousel.carousel input[type="datetime"],
+#qaCarousel.carousel input[type="datetime-local"],
+#qaCarousel.carousel input[type="date"],
+#qaCarousel.carousel input[type="month"],
+#qaCarousel.carousel input[type="time"],
+#qaCarousel.carousel input[type="week"],
+#qaCarousel.carousel input[type="number"],
+#qaCarousel.carousel input[type="email"],
+#qaCarousel.carousel input[type="url"],
+#qaCarousel.carousel input[type="search"],
+#qaCarousel.carousel input[type="tel"],
+#qaCarousel.carousel input[type="color"],
+#qaCarousel.carousel .uneditable-input {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+/* Move the QA template paging indicators to the bottom and darken the colour */
+#qaCarousel.carousel .carousel-indicators-container {
+    position: absolute;
+    left: 50%;
+    right: unset;
+    bottom: -10px;
+}
+
+#qaCarousel.carousel .carousel-indicators-container > .carousel-indicators {
+    top: inherit;
+    top: initial;
+    top: unset;
+    right: inherit;
+    right: initial;
+    right: unset;
+    position: relative;
+    margin-left: -50%;
+}
+
+#qaCarousel .carousel-indicators .active {
+    background-color: #000;
+}
+
+#qaCarousel .itemgrid .item, #qaCarousel .itemgrid .griditem {
+    width: 110px;
+}
+
+#qaCarousel .bvpBadge img {
+    width: 100px;
+    height: 100px;
+}
+
+/* Make image viewer bigger for QA transcribe */
+.tall-image #image-container {
+    height: 500px;
+}
+
+.fourthree-image #image-container {
+    height: 476px;
+    height: 476px;
+}
+
+#qaCarousel .carousel-indicators li {
+    background-color: #333;
+    background-color: rgba(30, 30, 30, 0.25);
+    cursor: pointer;
+}
+
+.carousel-control {
+    text-decoration: none;
+}
+
+.qt-row {
+    min-height: 200px;
+}
+
+#qaCarousel.carousel .carousel-control {
+    top: inherit;
+    top: initial;
+    top: unset;
+    left: 30%;
+}
+
+#qaCarousel.carousel .carousel-control.right {
+    left: auto;
+    right: 30%;
+}
+
+.btn, #qaCarousel .carousel-control, #qaCarousel .carousel-indicators {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

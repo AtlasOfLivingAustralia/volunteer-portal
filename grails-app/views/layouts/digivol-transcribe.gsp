@@ -8,15 +8,18 @@
     <cl:addApplicationMetaTags/>
     <meta name="description" content="Atlas of Living Australia"/>
     <meta name="author" content="Atlas of Living Australia"/>
-    <r:external dir="images/" file="favicon.ico"/>
+    %{--<r:external dir="images/" file="favicon.ico"/>--}%
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
-    <r:require module="digivol"/>
+    <asset:stylesheet href="digivol.css"/>
+    %{--<r:require module="digivol"/>--}%
     <g:layoutHead/>
-    <r:layoutResources/>
+    %{--<r:layoutResources/>--}%
 
     <g:render template="/layouts/commonCss" />
+    <g:render template="/layouts/jsUrls" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -25,7 +28,7 @@
     <![endif]-->
 </head>
 
-<body class="${pageProperty(name: 'body.class')?:'digivol'} ng-cloak" data-ng-app="${pageProperty(name: 'body.data-ng-app', default: 'digivol')}">
+<body class="${pageProperty(name: 'body.class')?:'digivol'}">
 
 <g:render template="/layouts/condensedNav" />
 
@@ -44,9 +47,9 @@
 
 <g:render template="/layouts/ga" />
 
-<g:render template="/layouts/jsUrls" />
+<asset:javascript src="digivol.js" />
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 
 </body>
 </html>

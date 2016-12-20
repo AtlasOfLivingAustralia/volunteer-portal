@@ -16,19 +16,7 @@
 
     <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
-    <r:require module="bootstrap-js"/>
-    <r:require module="panZoom"/>
-    <r:require module="imageViewer"/>
-
-    <r:script>
-
-
-        $(document).ready(function () {
-            setupPanZoom();
-        });
-
-    </r:script>
-
+    <asset:stylesheet src="image-viewer"/>
     <style type="text/css">
 
     tr.fieldrow[superceded="true"] td {
@@ -236,17 +224,28 @@
     </div>
 </g:else>
 </section>
-</body>
-<r:script>
+<asset:javascript src="bootstrap" asset-defer=""/>
+<asset:javascript src="image-viewer" asset-defer=""/>
 
-        $(document).ready(function() {
+<asset:script type="text/javascript">
 
-            $("#showImageWindow").click(function(e) {
-                e.preventDefault();
-                window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance?.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
+
+    $(document).ready(function () {
+        setupPanZoom();
+    });
+
+</asset:script>
+<asset:script type="text/javascript">
+
+    $(document).ready(function() {
+
+        $("#showImageWindow").click(function(e) {
+            e.preventDefault();
+            window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance?.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
             });
 
         });
 
-</r:script>
+</asset:script>
+</body>
 </html>

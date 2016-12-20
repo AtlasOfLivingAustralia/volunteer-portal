@@ -71,7 +71,7 @@ ${newsItems?.size() ?: 0} news items
     </tbody>
 </table>
 
-<script type='text/javascript'>
+<asset:script type='text/javascript'>
     $(function () {
 
         $('input:checkbox').bootstrapSwitch({
@@ -94,6 +94,6 @@ ${newsItems?.size() ?: 0} news items
             });
         });
     });
-</script>
+</asset:script>
 </body>
 </html>

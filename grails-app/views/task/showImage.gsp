@@ -3,12 +3,10 @@
 <html>
 <head>
     <title><cl:pageTitle title="Image Viewer"/></title>
-    <r:external dir="images/" file="favicon.ico"/>
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
-    <r:require module="digivol" />
-    <r:require module="panZoom"/>
-    <r:require module="imageViewer"/>
-
+    <asset:stylesheet src="digivol" />
+    <asset:stylesheet src="image-viewer"/>
     <style type="text/css">
 
     button:disabled {
@@ -29,8 +27,6 @@
 
     </style>
 
-    <r:layoutResources/>
-
 </head>
 
 <body>
@@ -48,14 +44,14 @@
             <div class="col-sm-9" id="journalPageButtons">
                 <button class="btn btn-default btn-small" id="showPreviousJournalPage"
                         title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
-                    <img src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous
+                    <asset:image src="left_arrow.png"/> show previous
                 </button>
                 <button class="btn btn-default btn-small" id="showNextJournalPage"
                         title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
-                    show next <img src="${resource(dir: 'images', file: 'right_arrow.png')}">
+                    show next <asset:image src="right_arrow.png"/>
                 </button>
                 <button class="btn btn-default btn-small" id="rotateImage" title="Rotate the page 180 degrees">
-                    Rotate&nbsp;<img src="${resource(dir: 'images', file: 'rotate.png')}">
+                    Rotate&nbsp;<asset:image src="rotate.png"/>
                 </button>
                 <button class="btn btn-default btn-small" id="closeWindow" title="Close this window">
                     Close
@@ -86,8 +82,10 @@
         </div>
     </div>
 </div>
+<asset:javascript src="digivol" />
+<asset:javascript src="image-viewer" />
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -153,10 +151,10 @@ function rotateImage() {
                 }
             }
 
-</r:script>
+</asset:script>
 
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 
 </body>
 </html>

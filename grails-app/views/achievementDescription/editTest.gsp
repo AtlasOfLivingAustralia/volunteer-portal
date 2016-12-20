@@ -5,7 +5,7 @@
     <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:require modules="labelAutocomplete"/>
+    <asset:stylesheet src="label-autocomplete"/>
 </head>
 
 <body>
@@ -46,7 +46,7 @@
             <div class="form-group">
                 <label class="control-label col-md-3" for="user">
                     <g:message code="user.label" default="User"/>
-                    <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner"
+                    <asset:image src="spinner.gif" height="16px" width="16px" id="ajax-spinner"
                            class="hidden"/>
                 </label>
 
@@ -65,7 +65,8 @@
         </div>
     </g:form>
 </div>
-<r:script>
+<asset:javascript src="label-autocomplete" asset-defer=""/>
+<asset:script>
     $(function($) {
         var url = "${createLink(controller: 'leaderBoardAdmin', action: 'findEligibleUsers')}";
 
@@ -76,6 +77,6 @@
             return null;
         }, 'displayName');
     });
-</r:script>
+</asset:script>
 </body>
 </html>

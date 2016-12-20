@@ -1,0 +1,448 @@
+/* Custom styles to fit new look&feel */
+/**************************************/
+
+.display-inline-block {
+    display: inline-block;
+}
+
+.display-block {
+    display: block;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.word-wrap-break-word {
+    /*Despite what Intellij says this CSS property does exist*/
+    word-break: break-word;
+}
+
+.a-feature.home {
+    background-image: url(../images/feature-digivol-b.jpg);
+}
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+h2.heading {
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+h2.heading > div.subheading {
+    text-transform:lowercase;
+    margin-top: 10px;
+}
+
+.expedition-inactive {
+    opacity: .5;
+}
+
+.expedition-thumb-settings-btn-group, .institution-settings-btn {
+    position: absolute;
+    z-index: 10;
+    right: 25px;
+    top: 10px;
+}
+
+div.pagination {
+    width: 100%;
+    text-align: center;
+}
+
+.pagination > li > a, .pagination > li > span {
+    color: #d5502a;
+}
+
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+    background-color: #d5502a;
+    border-color: #d5502a;
+}
+
+
+/** special closable label tags */
+
+.currentFilter {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #d5502a;
+}
+
+.tag {
+    font-size: 12px;
+    padding: .3em .4em .4em;
+    margin: 0 .1em;
+}
+.tag a {
+    color: #bbb;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.tag a:hover {
+    opacity: 1.0
+}
+.tag .remove {
+    vertical-align: bottom;
+    top: 0;
+}
+.tag a {
+    margin: 0 0 0 .3em;
+}
+.tag a .glyphicon-white {
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.search-help {
+    padding-top: 4px;
+}
+
+.search-results-count {
+    font-size: larger;
+}
+
+#profileTabsContent {
+    min-height: 650px;
+}
+
+input[type='checkbox'].form-control {
+    box-shadow: none;
+    height: 28px;
+}
+
+/*** Begin - Styles for tables ***/
+table .sortable a:visited, .sortable a:link, .sortable a:active, .sortable a:hover {
+    border:none;
+    box-shadow: none;
+    position:relative;
+}
+
+table .sorted a:visited, .sorted a:link, .sorted a:active, .sorted a:hover {
+    font-weight: bold;
+    padding-left: 12px;
+}
+
+table .sorted.desc a:before {
+    content: '\f078';
+    font-family: FontAwesome;
+    left:-5px;
+    position:absolute;
+}
+
+table .sorted.asc a:before {
+    content: '\f077';
+    font-family: FontAwesome;
+    left:-5px;
+    position:absolute;
+}
+
+table .btn-default {
+    border: solid 1px #ccc;
+    background-color: #fff;
+}
+
+table .btn-default:hover {
+    background-color: #e6e6e6;
+}
+/*** End - Styles for tables ***/
+
+/*** Begin - Admin ***/
+
+.admin h1 {
+    font-size: 2.5em !important;
+}
+
+.admin .a-feature.simple-header {
+    padding: 1em 0;
+}
+
+.admin #page-header {
+    margin-top: 90px;
+    margin-bottom: 20px;
+}
+
+.admin .container .panel {
+    margin: 2em 0;
+}
+
+.admin table tbody tr td {
+    vertical-align: middle;
+}
+
+.admin .btn-default {
+    border: solid 1px #ccc;
+    background-color: #fff;
+}
+
+.admin .btn-default:hover {
+    background-color: #e6e6e6;
+}
+
+.admin .btn-primary {
+    margin-top: 0;
+}
+
+.admin .modal .modal-header {
+    padding: 15px;
+}
+
+.admin table.template-fields {
+    margin-top: 1.5em;
+}
+
+.admin .form-control {
+    height: 34px;
+}
+
+.admin .modal input {
+     margin-bottom: 0;
+}
+
+.admin input.form-control:focus {
+    border-color: #66AFE9;
+    outline: 0px none;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+}
+
+.admin textarea.form-control {
+    height: auto;
+}
+
+.admin .grails-date select {
+    display: inline-block;
+}
+
+.admin .list-group-item.active a {
+    color: white;
+}
+
+.admin .panel.subpanel {
+    margin-top: 0;
+}
+
+.admin .control-label.text-left {
+    text-align: left !important;
+}
+
+.admin .label {
+    position: relative;
+    display: inline-block;
+    padding: .2em .6em .3em;
+    top: 0;
+    left: 0;
+}
+
+.admin .twitter-typeahead {
+    width: 100%;
+}
+
+.admin #mapWidgets #mapCanvas {
+    height: 400px;
+}
+
+.admin .task-staging h4 {
+    font-size:16px;
+}
+
+.admin .numberCircle {
+    border-radius: 50%;
+    padding: 2px 8px;
+    background: #fff;
+    border: 2px solid #666;
+    color: #666;
+    text-align: center;
+    font-size: 18px;
+}
+
+.admin .upload-images-tooltip {
+    min-width: 700px;
+}
+/*** End - Admin ***/
+
+/*** Begin - Forum ***/
+
+.contact .panel, .forum .panel, .tutorial .panel {
+    margin-top: 20px;
+}
+
+.forum #searchResults {
+    padding-top: 2em;
+}
+
+.forum .task-summary {
+    height: 440px;
+    overflow-y: scroll
+}
+
+.forum .btn-default {
+    border: solid 1px #ccc;
+    background-color: #fff;
+}
+
+.forum .btn-default:hover {
+    background-color: #e6e6e6;
+}
+
+.forum .project-forum .thumbnail {
+    margin-top: 20px;
+}
+
+.forum .project-forum .thumbnail .caption{
+    padding: 10px 20px;
+
+}
+
+.forum .project-forum .tabbable {
+    background-color: #f6f6f6;
+    padding-top: 2em;
+    padding-left: 1em;
+}
+
+.forum .form-control {
+    min-height: 34px;
+}
+
+.forum select.form-control {
+    height: 34px;
+}
+
+.forum input.form-control:focus {
+    border-color: #66AFE9;
+    outline: 0px none;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+}
+
+/*** End - Forum ***/
+
+/*** LeaderBoard ***/
+
+#digivol-stats {
+    padding: 0;
+    margin: 0;
+}
+
+/** fix img sizes so stuff doesn't shift on load */
+#digivol-stats .avatar {
+    width: 40px;
+}
+
+#digivol-stats .avatar {
+    height: 40px;
+}
+
+/*** End - LeaderBoard ***/
+
+.expedition #projectDescriptionX {
+    max-height: 120px;
+    overflow-y: scroll;
+}
+
+#recordsMap {
+    min-height: 400px;
+    z-index: 0;
+}
+
+.projectActionLinks {
+    margin-top: 20px;
+}
+
+.expedition-team .roleList {
+    min-height: 120px;
+}
+
+.expedition-team .roleIcon {
+    margin-top: 20px;
+}
+
+.thumbnail a.thumbImg  {
+    display: block;
+    text-align: center;
+    min-height: 226px;
+}
+
+.thumbnail .projectDescription {
+    min-height: 44px;
+}
+
+.image-origin p {
+    min-height: 1em;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+a.fieldHelp {
+    text-decoration: none;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.form-control.required .control-label {
+    font-weight: bold;
+}
+
+.form-group.required .control-label:after {
+    content:"*";
+}
+
+/* centered columns styles */
+.row-centered {
+    text-align:center;
+}
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+
+/* notifications */
+
+[data-notify="container"] > [data-notify="icon"] > img {
+    height: auto;
+    min-height: 40px;
+    width: 40px;
+    margin-right: 10px;
+    float: left;
+}
+
+/* end notifications */
+
+.label-as-badge {
+    border-radius: 1em;
+}
+
+.tab-content-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}

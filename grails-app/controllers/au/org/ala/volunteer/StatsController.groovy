@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat
 class StatsController {
 
     static int defaultDayDiff = 7;
-    static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    static dateFormats = ["yyyy-MM-dd'T'hh:mm:ss.SSSXXX", "dd/MM/yyyy"]
 
     def statsService
     def settingsService
@@ -16,8 +16,8 @@ class StatsController {
     def index = {}
 
     def volunteerStats() {
-        def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
-        def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
+        def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
+        def toDate = params?.date('endDate', dateFormats) ?: new Date()
         def userList = statsService.getNewUser(fromDate, toDate)
         def result = [newVolunteers: userList[0][0], totalVolunteers: userList[0][1]]
         render result as JSON
@@ -81,17 +81,8 @@ class StatsController {
     }
 
     def getStatData (def reportType) {
-        def fromDate = (params?.startDate == null || params?.startDate=="")? sdf.format(new Date() - defaultDayDiff) : params.startDate
-        def toDateStr = (params?.endDate == null || params?.endDate=="")? sdf.format(new Date()) : params.endDate
-
-        def nextDayDate = sdf.parse(toDateStr)
-
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(nextDayDate)
-        cal.add(Calendar.DATE, 1)
-        nextDayDate = cal.getTime()
-
-        def toDate = sdf.format(nextDayDate)
+        def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
+        def toDate = (params?.date('endDate', dateFormats) ?: new Date()) + 1
 
         def header = []
         def statsData = []
@@ -142,7 +133,7 @@ class StatsController {
 
                 def maxRows = 20
 
-                def scoreList = leaderBoardService.getTopNForPeriod(sdf.parse(fromDate), sdf.parse(toDate), maxRows, null, ineligibleUsers)
+                def scoreList = leaderBoardService.getTopNForPeriod(fromDate, toDate, maxRows, null, ineligibleUsers)
 
                 scoreList.each { kvp ->
                     statsData << [kvp.get("name"), kvp.get("score")]

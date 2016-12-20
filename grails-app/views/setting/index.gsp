@@ -5,7 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
 
-    <r:script type='text/javascript'>
+    <asset:script type='text/javascript'>
 
             $(document).ready(function() {
                 $(".btnEditSetting").click(function(e) {
@@ -17,7 +17,7 @@
                 });
             });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">

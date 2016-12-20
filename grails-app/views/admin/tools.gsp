@@ -4,29 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
-    <style type="text/css">
-    </style>
-    <r:require module="bootbox"/>
-    <r:require modules="codemirror-json, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>
-    <r:script type='text/javascript'>
-
-        jQuery(function ($) {
-            $('button.confirmation-required').click(function (e) {
-                var confirm = e.target.dataset.confirm || 'Confirm';
-                var cancel = e.target.dataset.cancel || 'Cancel';
-                bootbox.confirm({
-                    message: "Are you sure you want to " + e.target.dataset.message,
-                    callback: function (result) {
-                        if (result) {
-                            window.open(e.target.dataset.href, "_self");
-                        }
-                    }
-
-                });
-            });
-        });
-
-    </r:script>
+    <asset:stylesheet src="codemirror-monokai"/>
 </head>
 
 <body class="admin">
@@ -150,7 +128,28 @@
     </div>
 </div>
 </body>
-<r:script>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:javascript src="codemirror-js-sublime" asset-defer="" />
+<asset:script type='text/javascript'>
+
+    jQuery(function ($) {
+        $('button.confirmation-required').click(function (e) {
+            var confirm = e.target.dataset.confirm || 'Confirm';
+            var cancel = e.target.dataset.cancel || 'Cancel';
+            bootbox.confirm({
+                message: "Are you sure you want to " + e.target.dataset.message,
+                callback: function (result) {
+                    if (result) {
+                        window.open(e.target.dataset.href, "_self");
+                    }
+                }
+
+            });
+        });
+    });
+
+</asset:script>
+<asset:script type='text/javascript'>
 
 
         $(document).ready(function() {
@@ -194,5 +193,5 @@
             aEditor.getDoc().setValue(q.a ? JSON.stringify(q.a, null, 2) : "");
         });
 
-</r:script>
+</asset:script>
 </html>

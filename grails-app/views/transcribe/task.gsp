@@ -19,350 +19,8 @@
         }
     </script>
     <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
-    <r:require module="digivol-transcribe" />
-    <r:require module="bvp-js" />
-    <r:require module="panZoom"/>
-    <r:require module="jqZoom"/>
-    <r:require module="imageViewer"/>
-    <r:require module="transcribeWidgets"/>
-    <r:require module="amplify"/>
-
-    <r:script>
-
-            // global Object
-            var VP_CONF = {
-                taskId: "${taskInstance?.id}",
-                picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}",
-                updatePicklistUrl: "${createLink(controller: 'picklistItem', action: 'updateLocality')}",
-                nextTaskUrl: "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id)}",
-                isReadonly: "${isReadonly}",
-                isValid: ${(taskInstance?.isValid) ? "true" : "false"}
-        };
-
-        <g:if test="${complete}">
-            amplify.store("bvp_task_${complete}", null);
-        </g:if>
-
-        $(document).ready(function () {
-
-            jQuery.fn.extend({
-
-                insertAtCaret: function(myValue) {
-
-                    return this.each(function(i) {
-                        if (document.selection) {
-                            //For browsers like Internet Explorer
-                            this.focus();
-                            var sel = document.selection.createRange();
-                            sel.text = myValue;
-                            this.focus();
-                        } else if (this.selectionStart || this.selectionStart == '0') {
-                            //For browsers like Firefox and Webkit based
-                            var startPos = this.selectionStart;
-                            var endPos = this.selectionEnd;
-                            var scrollTop = this.scrollTop;
-                            this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
-                            this.focus();
-                            this.selectionStart = startPos + myValue.length;
-                            this.selectionEnd = startPos + myValue.length;
-                            this.scrollTop = scrollTop;
-                        } else {
-                            this.value += myValue;
-                            this.focus();
-                        }
-                    });
-                }
-            });
-
-            $(".transcribeForm").submit(function(eventObj) {
-                if (!transcribeWidgets.evaluateBeforeSubmitHooks(eventObj)) {
-                  return false;
-                }
-
-                transcribeWidgets.prepareFieldWidgetsForSubmission();
-
-                // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
-                saveFormState();
-
-                return true;
-            });
-
-
-            // display previous journal page in new window
-            $("#showPreviousJournalPage").click(function(e) {
-                e.preventDefault();
-        <g:if test="${prevTask}">
-            var uri = "${createLink(controller: 'task', action: 'showImage', id: prevTask.id)}"
-                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
-                        if (window.focus) {
-                            newwindow.focus()
-                        }
-        </g:if>
-        });
-
-        // display next journal page in new window
-        $("#showNextJournalPage").click(function(e) {
-            e.preventDefault();
-        <g:if test="${nextTask}">
-            var uri = "${createLink(controller: 'task', action: 'showImage', id: nextTask.id)}"
-                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
-                        if (window.focus) {
-                            newwindow.focus()
-                        }
-        </g:if>
-        });
-
-        $("#rotateImage").click(function(e) {
-            e.preventDefault();
-            rotateImage();
-        });
-
-        $(".btnCopyFromPreviousTask").click(function(e) {
-            e.preventDefault();
-            showPreviousTaskBrowser();
-        });
-
-        $("#btnGeolocate").click(function(e) {
-            e.preventDefault();
-            showGeolocationTool();
-        });
-
-        $("#showImageWindow").click(function(e) {
-            e.preventDefault();
-            window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
-                });
-
-                suppressReturnKey();
-                bindAutocomplete();
-                bindSymbolButtons();
-                bvp.bindTooltips();
-                bvp.disableBackspace();
-                bindShrinkExpandLinks();
-                setupPanZoom();
-                applyReadOnlyIfRequired();
-                bindGlobalKeyHandlers();
-                transcribeWidgets.initializeTranscribeWidgets();
-
-            }); // end Document.ready
-
-            function suppressReturnKey() {
-                $('input,select').keypress(function(event) {
-                    return event.keyCode != 13;
-                });
-            }
-
-            function bindGlobalKeyHandlers() {
-
-                $(document).keypress(function(event) {
-                    if ((event.which == 115 || event.which == 19) && event.ctrlKey && event.shiftKey) {
-                        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save')}");
-                        e.preventDefault();
-                    }
-                    return true;
-                });
-
-            }
-
-            function applyReadOnlyIfRequired() {
-        <g:if test="${isReadonly}">
-            $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
-        </g:if>
-        }
-
-        function showGeolocationTool() {
-            bvp.showModal({
-                url: "${createLink(controller: 'transcribe', action: 'geolocationToolFragment')}",
-                    size: 'large',
-                    //height: 500,
-                    //hideHeader: true,
-                    title: 'Mapping Tool',
-                    buttons: {
-                      close: {
-                        label: "Close & cancel",
-                        className: 'btn-default'
-                      },
-                      copy: {
-                        label: 'Copy Values to main form <i class="fa fa-check fa-sm"></i>',
-                        className: 'btn-primary',
-                        callback: function () {
-                          setLocationFields(); // via geolocationtoolfragment
-                        }
-                      }
-                    }
-                });
-            }
-
-            function showPreviousTaskBrowser() {
-
-                bvp.showModal({
-                    url: "${raw(createLink(controller: 'task', action: 'taskBrowserFragment', params: [projectId: taskInstance?.project?.id, taskId: taskInstance?.id]))}",
-                    width:700,
-                    height:600,
-                    hideHeader: false,
-                    size: 'large',
-                    title: 'Previously transcribed tasks'
-                });
-
-            }
-
-            function bindShrinkExpandLinks() {
-
-                $(".closeSectionLink").click(function (e) {
-                    e.preventDefault();
-                    var body = $(this).closest(".transcribeSection").find(".transcribeSectionBody");
-                    if (body) {
-                        if (body.css('display') == 'none') {
-                            body.css('display', 'block');
-                            $(this).text("Shrink")
-                        } else {
-                            body.css('display', 'none');
-                            $(this).text("Expand")
-                        }
-                    }
-                });
-            }
-
-            function bindSymbolButtons() {
-
-                var selector = $(".insert-symbol-button");
-
-                selector.each(function (index) {
-                    $(this).html($(this).attr("symbol"));
-                    $(this).attr("tabindex", "-1");
-                }).click(function (e) {
-                    e.preventDefault();
-                    var input = $("#recordValues\\.0\\.occurrenceRemarks");
-                    $(input).insertAtCaret($(this).attr('symbol'));
-                    $(input).focus();
-                }).keypress(function(event) {
-                    return event.keyCode != 13;
-                });
-
-            }
-
-            function bindAutocompleteToElement(inputElement) {
-                var picklistId = inputElement.data('picklist-id');
-                var matches = [];
-                var inputElementId = inputElement.attr('id');
-                if (inputElementId) {
-                    matches = inputElementId.match(/^recordValues[.](\d+)[.](\w+)$/);
-                } else if (window.console) {
-                    console.warn("Element doesn't have id: ", inputElement);
-                }
-                if (picklistId || matches.length > 1) {
-                    var fieldName = matches[2];
-                    var fieldIndex = matches[1];
-
-                    var picklist = picklistId ? "&picklistId=" + picklistId : "&picklist=" + fieldName;
-
-                    var autoCompleteOptions = {
-                        disabled: false,
-                        minLength: 2,
-                        delay: 200,
-                        select: function(event, ui) {
-                            var item = ui.item.data;
-
-                            if (fieldName == 'recordedBy') {
-                                var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
-                                if (matches.length > 0) {
-                                    var recordIdx = matches[1];
-                                    var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
-                                    $(elemSelector).val(item.key).attr('collector_name', item.name);;
-                                }
-                            }
-                        },
-                        source: function(request, response) {
-                            var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}" + picklist + "&q=" + request.term;
-                            $.ajax(url).done(function(data) {
-                                var rows = new Array();
-                                if (data.autoCompleteList) {
-                                    var list = data.autoCompleteList;
-                                    for (var i = 0; i < list.length; i++) {
-                                        rows[i] = {
-                                            value: list[i].name,
-                                            label: list[i].name,
-                                            data: list[i]
-                                        };
-                                    }
-                                }
-                                if (response) {
-                                    response(rows);
-                                }
-                            });
-                        }
-                    };
-                    inputElement.autocomplete(autoCompleteOptions);
-                }
-            }
-
-            function bindAutocomplete() {
-
-                $("input.autocomplete,textarea.autocomplete").not('.noAutoComplete').each(function(index) {
-
-                    var inputElement = $(this);
-                    bindAutocompleteToElement(inputElement);
-                });
-
-                $("input.recordedBy").blur(function(e) {
-                    // If the value of the recordedBy field does not match the name in the collector_name attribute
-                    // of the recordedByID element it means that the collector name no longer matches the id, so the id
-                    // must be cleared.
-                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
-                    var value = $(this).val();
-                    if (matches.length > 0) {
-                        var recordIdx = matches[1];
-                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
-                        var collectorName = $(elemSelector).attr("collector_name");
-                        if (value != collectorName) {
-                            $(elemSelector).val('');
-                            $(elemSelector).attr("collector_name", "");
-                        }
-                    }
-                });
-
-            }
-
-            function disableSection(classSelector) {
-                $(classSelector + " :input").attr("disabled", "true");
-                $(classSelector).css("opacity", "0.5");
-            }
-
-            function enableSection(classSelector) {
-                $(classSelector + " :input").removeAttr("disabled");
-                $(classSelector).css("opacity", "1");
-            }
-
-            function setFieldValue(fieldName, value) {
-                var id = "recordValues\\.0\\." + fieldName;
-                $("#" + id).val(value);
-            }
-
-            function getFieldValue(fieldName) {
-                var id = "recordValues\\.0\\." + fieldName;
-                return $("#" + id).val();
-            }
-
-            var imageRotation = 0;
-
-            function rotateImage() {
-                var image = $("#image-container img");
-                if (image) {
-                    imageRotation += 90;
-                    if (imageRotation >= 360) {
-                        imageRotation = 0;
-                    }
-
-                    var height = $("#image-container").height();
-
-                    $.ajax("${createLink(controller: 'transcribe', action: 'imageViewerFragment', params: [multimediaId: taskInstance.multimedia?.first()?.id])}&height=" + height +"&rotate=" + imageRotation).done(function(html) {
-                        $("#image-parent-container").replaceWith(html);
-                        setupPanZoom();
-                    });
-
-                }
-            }
-
-    </r:script>
+    <asset:stylesheet src="image-viewer"/>
+    <asset:stylesheet src="transcribe-widgets"/>
 
     <style type="text/css">
 
@@ -419,6 +77,7 @@
     }
 
     </style>
+    <g:layoutHead/>
 
 </head>
 
@@ -645,7 +304,347 @@
     </div>
 </div>
 </body>
-<r:script>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:javascript src="image-viewer" asset-defer=""/>
+<asset:javascript src="transcribe-widgets" asset-defer=""/>
+<asset:javascript src="amplify" asset-defer=""/>
+<asset:script>
+
+    // global Object
+    var VP_CONF = {
+        taskId: "${taskInstance?.id}",
+                picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}",
+                updatePicklistUrl: "${createLink(controller: 'picklistItem', action: 'updateLocality')}",
+                nextTaskUrl: "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id)}",
+                isReadonly: "${isReadonly}",
+                isValid: ${(taskInstance?.isValid) ? "true" : "false"}
+    };
+
+    <g:if test="${complete}">
+        amplify.store("bvp_task_${complete}", null);
+    </g:if>
+
+    $(document).ready(function () {
+
+        jQuery.fn.extend({
+
+            insertAtCaret: function(myValue) {
+
+                return this.each(function(i) {
+                    if (document.selection) {
+                        //For browsers like Internet Explorer
+                        this.focus();
+                        var sel = document.selection.createRange();
+                        sel.text = myValue;
+                        this.focus();
+                    } else if (this.selectionStart || this.selectionStart == '0') {
+                        //For browsers like Firefox and Webkit based
+                        var startPos = this.selectionStart;
+                        var endPos = this.selectionEnd;
+                        var scrollTop = this.scrollTop;
+                        this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
+                        this.focus();
+                        this.selectionStart = startPos + myValue.length;
+                        this.selectionEnd = startPos + myValue.length;
+                        this.scrollTop = scrollTop;
+                    } else {
+                        this.value += myValue;
+                        this.focus();
+                    }
+                });
+            }
+        });
+
+        $(".transcribeForm").submit(function(eventObj) {
+            if (!transcribeWidgets.evaluateBeforeSubmitHooks(eventObj)) {
+              return false;
+            }
+
+            transcribeWidgets.prepareFieldWidgetsForSubmission();
+
+            // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
+            saveFormState();
+
+            return true;
+        });
+
+
+        // display previous journal page in new window
+        $("#showPreviousJournalPage").click(function(e) {
+            e.preventDefault();
+    <g:if test="${prevTask}">
+        var uri = "${createLink(controller: 'task', action: 'showImage', id: prevTask.id)}"
+                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        if (window.focus) {
+                            newwindow.focus()
+                        }
+    </g:if>
+    });
+
+    // display next journal page in new window
+    $("#showNextJournalPage").click(function(e) {
+        e.preventDefault();
+    <g:if test="${nextTask}">
+        var uri = "${createLink(controller: 'task', action: 'showImage', id: nextTask.id)}"
+                        var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
+                        if (window.focus) {
+                            newwindow.focus()
+                        }
+    </g:if>
+    });
+
+    $("#rotateImage").click(function(e) {
+        e.preventDefault();
+        rotateImage();
+    });
+
+    $(".btnCopyFromPreviousTask").click(function(e) {
+        e.preventDefault();
+        showPreviousTaskBrowser();
+    });
+
+    $("#btnGeolocate").click(function(e) {
+        e.preventDefault();
+        showGeolocationTool();
+    });
+
+    $("#showImageWindow").click(function(e) {
+        e.preventDefault();
+        window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
+                });
+
+                suppressReturnKey();
+                bindAutocomplete();
+                bindSymbolButtons();
+                bvp.bindTooltips();
+                bvp.disableBackspace();
+                bindShrinkExpandLinks();
+                setupPanZoom();
+                applyReadOnlyIfRequired();
+                bindGlobalKeyHandlers();
+                transcribeWidgets.initializeTranscribeWidgets();
+
+            }); // end Document.ready
+
+            function suppressReturnKey() {
+                $('input,select').keypress(function(event) {
+                    return event.keyCode != 13;
+                });
+            }
+
+            function bindGlobalKeyHandlers() {
+
+                $(document).keypress(function(event) {
+                    if ((event.which == 115 || event.which == 19) && event.ctrlKey && event.shiftKey) {
+                        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save')}");
+                        e.preventDefault();
+                    }
+                    return true;
+                });
+
+            }
+
+            function applyReadOnlyIfRequired() {
+    <g:if test="${isReadonly}">
+        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+    </g:if>
+    }
+
+    function showGeolocationTool() {
+        bvp.showModal({
+            url: "${createLink(controller: 'transcribe', action: 'geolocationToolFragment')}",
+                    size: 'large',
+                    //height: 500,
+                    //hideHeader: true,
+                    title: 'Mapping Tool',
+                    buttons: {
+                      close: {
+                        label: "Close & cancel",
+                        className: 'btn-default'
+                      },
+                      copy: {
+                        label: 'Copy Values to main form <i class="fa fa-check fa-sm"></i>',
+                        className: 'btn-primary',
+                        callback: function () {
+                          setLocationFields(); // via geolocationtoolfragment
+                        }
+                      }
+                    }
+                });
+            }
+
+            function showPreviousTaskBrowser() {
+
+                bvp.showModal({
+                    url: "${raw(createLink(controller: 'task', action: 'taskBrowserFragment', params: [projectId: taskInstance?.project?.id, taskId: taskInstance?.id]))}",
+                    width:700,
+                    height:600,
+                    hideHeader: false,
+                    size: 'large',
+                    title: 'Previously transcribed tasks'
+                });
+
+            }
+
+            function bindShrinkExpandLinks() {
+
+                $(".closeSectionLink").click(function (e) {
+                    e.preventDefault();
+                    var body = $(this).closest(".transcribeSection").find(".transcribeSectionBody");
+                    if (body) {
+                        if (body.css('display') == 'none') {
+                            body.css('display', 'block');
+                            $(this).text("Shrink")
+                        } else {
+                            body.css('display', 'none');
+                            $(this).text("Expand")
+                        }
+                    }
+                });
+            }
+
+            function bindSymbolButtons() {
+
+                var selector = $(".insert-symbol-button");
+
+                selector.each(function (index) {
+                    $(this).html($(this).attr("symbol"));
+                    $(this).attr("tabindex", "-1");
+                }).click(function (e) {
+                    e.preventDefault();
+                    var input = $("#recordValues\\.0\\.occurrenceRemarks");
+                    $(input).insertAtCaret($(this).attr('symbol'));
+                    $(input).focus();
+                }).keypress(function(event) {
+                    return event.keyCode != 13;
+                });
+
+            }
+
+            function bindAutocompleteToElement(inputElement) {
+                var picklistId = inputElement.data('picklist-id');
+                var matches = [];
+                var inputElementId = inputElement.attr('id');
+                if (inputElementId) {
+                    matches = inputElementId.match(/^recordValues[.](\d+)[.](\w+)$/);
+                } else if (window.console) {
+                    console.warn("Element doesn't have id: ", inputElement);
+                }
+                if (picklistId || matches.length > 1) {
+                    var fieldName = matches[2];
+                    var fieldIndex = matches[1];
+
+                    var picklist = picklistId ? "&picklistId=" + picklistId : "&picklist=" + fieldName;
+
+                    var autoCompleteOptions = {
+                        disabled: false,
+                        minLength: 2,
+                        delay: 200,
+                        select: function(event, ui) {
+                            var item = ui.item.data;
+
+                            if (fieldName == 'recordedBy') {
+                                var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                                if (matches.length > 0) {
+                                    var recordIdx = matches[1];
+                                    var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
+                                    $(elemSelector).val(item.key).attr('collector_name', item.name);;
+                                }
+                            }
+                        },
+                        source: function(request, response) {
+                            var url = VP_CONF.picklistAutocompleteUrl + "?taskId=${taskInstance.id}" + picklist + "&q=" + request.term;
+                            $.ajax(url).done(function(data) {
+                                var rows = new Array();
+                                if (data.autoCompleteList) {
+                                    var list = data.autoCompleteList;
+                                    for (var i = 0; i < list.length; i++) {
+                                        rows[i] = {
+                                            value: list[i].name,
+                                            label: list[i].name,
+                                            data: list[i]
+                                        };
+                                    }
+                                }
+                                if (response) {
+                                    response(rows);
+                                }
+                            });
+                        }
+                    };
+                    inputElement.autocomplete(autoCompleteOptions);
+                }
+            }
+
+            function bindAutocomplete() {
+
+                $("input.autocomplete,textarea.autocomplete").not('.noAutoComplete').each(function(index) {
+
+                    var inputElement = $(this);
+                    bindAutocompleteToElement(inputElement);
+                });
+
+                $("input.recordedBy").blur(function(e) {
+                    // If the value of the recordedBy field does not match the name in the collector_name attribute
+                    // of the recordedByID element it means that the collector name no longer matches the id, so the id
+                    // must be cleared.
+                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
+                    var value = $(this).val();
+                    if (matches.length > 0) {
+                        var recordIdx = matches[1];
+                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
+                        var collectorName = $(elemSelector).attr("collector_name");
+                        if (value != collectorName) {
+                            $(elemSelector).val('');
+                            $(elemSelector).attr("collector_name", "");
+                        }
+                    }
+                });
+
+            }
+
+            function disableSection(classSelector) {
+                $(classSelector + " :input").attr("disabled", "true");
+                $(classSelector).css("opacity", "0.5");
+            }
+
+            function enableSection(classSelector) {
+                $(classSelector + " :input").removeAttr("disabled");
+                $(classSelector).css("opacity", "1");
+            }
+
+            function setFieldValue(fieldName, value) {
+                var id = "recordValues\\.0\\." + fieldName;
+                $("#" + id).val(value);
+            }
+
+            function getFieldValue(fieldName) {
+                var id = "recordValues\\.0\\." + fieldName;
+                return $("#" + id).val();
+            }
+
+            var imageRotation = 0;
+
+            function rotateImage() {
+                var image = $("#image-container img");
+                if (image) {
+                    imageRotation += 90;
+                    if (imageRotation >= 360) {
+                        imageRotation = 0;
+                    }
+
+                    var height = $("#image-container").height();
+
+                    $.ajax("${createLink(controller: 'transcribe', action: 'imageViewerFragment', params: [multimediaId: taskInstance.multimedia?.first()?.id])}&height=" + height +"&rotate=" + imageRotation).done(function(html) {
+                        $("#image-parent-container").replaceWith(html);
+                        setupPanZoom();
+                    });
+
+                }
+            }
+
+</asset:script>
+<asset:script>
 
     <g:each in="${ValidationRule.list()}" var="rule">
         transcribeValidation.rules.${rule.name} = {
@@ -899,5 +898,5 @@
         return !validationResults.hasWarnings && !validationResults.hasErrors;
     }
 
-</r:script>
+</asset:script>
 </html>

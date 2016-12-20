@@ -17,6 +17,9 @@ section {
 	&.darker {
 		background-color: black;
 	}
+	&.in-body {
+		padding: 0;
+	}
 }
 section#expedition-feature {
 	background-color: white;
@@ -79,7 +82,4 @@ section#footer {
 }
 section#map {
 	min-height: 300px;
-}
-section#user-progress {
-	padding: 0;
 }

@@ -106,7 +106,7 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
             $(function($) {
                 var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
                 $('#quick-create-modal').on('shown.bs.modal', function (e) {
@@ -148,6 +148,6 @@
                     });
                 });
             });
-</r:script>
+</asset:script>
 </body>
 </html>

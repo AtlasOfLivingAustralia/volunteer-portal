@@ -331,7 +331,7 @@ class TaskController {
 
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-                render(view: '/transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
+                render(view: '/transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
             }
         }
     }

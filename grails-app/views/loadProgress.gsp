@@ -6,7 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>--}%
 
-    <r:script type="text/javascript">
+    <asset:script>
 
           (function poll() {
              setTimeout(function() {
@@ -43,7 +43,7 @@
 
               }, 1000);
           })();
-    </r:script>
+    </asset:script>
 
 </head>
 

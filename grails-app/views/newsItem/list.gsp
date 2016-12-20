@@ -88,10 +88,10 @@
         </div>
     </div>
 </div>
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
     $("th > a").addClass("btn")
     $("th.sorted > a").addClass("active")
-</r:script>
+</asset:script>
 
 </body>
 </html>

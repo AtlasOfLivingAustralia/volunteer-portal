@@ -63,7 +63,7 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
             jQuery(function($) {
                 $('#migrate-button').click(postData);
 
@@ -88,6 +88,6 @@
                     alert("Migration failed, please reload and try again");
                 }
             });
-</r:script>
+</asset:script>
 </body>
 </html>

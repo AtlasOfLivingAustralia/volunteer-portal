@@ -121,12 +121,12 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
     $(function() {
         $('.grails-date select').each(function(){
             $(this).addClass('form-control');
         });
     });
-</r:script>
+</asset:script>
 </body>
 </html>

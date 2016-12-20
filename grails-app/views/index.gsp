@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="layout" content="digivol-main"/>
@@ -6,9 +6,9 @@
     <title><cl:pageTitle title="Home"/></title>
     <content tag="disableBreadcrumbs">true</content>
     <content tag="selectedNavItem">bvp</content>
-    <r:require modules="digivol-image-resize"/>
+    <asset:stylesheet src="digivol-image-resize.css" />
+    <asset:stylesheet src="digivol-stats.css" />
 </head>
-
 <body>
 <div class="a-feature home">
     <div class="container">
@@ -37,7 +37,7 @@
 
         <div class="row">
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconLabels.png" class="img-responsive"/>
+                <asset:image src="iconLabels.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -48,7 +48,7 @@
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconNotes.png" class="img-responsive"/>
+                <asset:image src="iconNotes.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -59,7 +59,7 @@
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconWild.png" class="img-responsive"/>
+                <asset:image src="iconWild.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -137,5 +137,6 @@
     </div>
 </section>
 <a name="learnMore"></a>
+<asset:javascript src="digivol-image-resize.js" asset-defer="" />
 </body>
 </html>

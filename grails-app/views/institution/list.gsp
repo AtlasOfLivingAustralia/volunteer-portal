@@ -9,7 +9,7 @@
         border-top: none;
     }
     </style>
-    <r:script>
+    <asset:script>
 
             $(function() {
 
@@ -63,7 +63,7 @@
                 window.location = url;
             }
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="digivol">

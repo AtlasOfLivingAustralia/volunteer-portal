@@ -1,7 +1,4 @@
 <%@ page import="au.org.ala.volunteer.Field; au.org.ala.volunteer.TemplateField" %>
-<r:require module="jquery"/>
-<r:require module="imageViewer"/>
-
 <div class="row">
 
     <div class="col-md-6">
@@ -40,13 +37,9 @@
     </div>
 
 </div>
-
-<r:script>
-
+<asset:javascript src="image-viewer" asset-defer=""/>
+<asset:script>
     $(document).ready(function () {
         setupPanZoom();
     });
-
-
-
-</r:script>
+</asset:script>

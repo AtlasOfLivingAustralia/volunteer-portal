@@ -3,25 +3,18 @@
 <head>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-    <r:require module="panZoom"/>
-
-    <r:script type="text/javascript">
-
-            $(document).ready(function () {
-
-                <g:if test="${taskInstance}">
-
-        $("#btnViewTask").click(function(e) {
-            e.preventDefault();
-            window.location = "${createLink(controller: 'task', action: 'show', id: taskInstance.id)}";
-                });
-
-    </g:if>
-
+    <asset:styleshhet src="forum.css"/>
+    <asset:stylesheet src="image-viewer"/>
+    <g:if test="${taskInstance}">
+    <asset:script type="text/javascript">
+        $(document).ready(function () {
+            $("#btnViewTask").click(function(e) {
+                e.preventDefault();
+                window.location = "${createLink(controller: 'task', action: 'show', id: taskInstance.id)}";
+            });
         });
-
-    </r:script>
+    </asset:script>
+    </g:if>
 
 </head>
 

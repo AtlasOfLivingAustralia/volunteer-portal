@@ -19,7 +19,6 @@
         outline: none;
     }
     </style>
-    <r:require modules="underscore, font-awesome"/>
 </head>
 
 <body>
@@ -69,35 +68,6 @@
         </div>
     </div>
 </div>
-
-<r:script>
-    jQuery(function ($) {
-
-        var reader = new FileReader();
-
-        reader.onprogress = function (e) {
-            var percentage = Math.round((e.loaded * 100) / e.total);
-            $('#progress-div .bar').css('width', percentage + '%');
-        };
-
-        reader.onload = function (e) {
-            var text = reader.result;
-            $('#progress-div .bar').css('width', '100%');
-            $('#csv').val(text);
-            $('#upload-form').submit();
-        };
-
-        $('#upload').click(function (e) {
-
-            $('#progress-div,#upload-div').toggleClass('hidden');
-
-            var files = $('#csv-input')[0].files;
-
-            reader.readAsText(files[0]);
-        });
-
-    });
-</r:script>
 </div>
 <div class="container-fluid">
     <div class="row-fluid">
@@ -154,5 +124,34 @@
             </table>
         </div>
     </div>
+    <asset:javascript src="underscore" asset-defer=""/>
+    <asset:script>
+        jQuery(function ($) {
 
+            var reader = new FileReader();
+
+            reader.onprogress = function (e) {
+                var percentage = Math.round((e.loaded * 100) / e.total);
+                $('#progress-div .bar').css('width', percentage + '%');
+            };
+
+            reader.onload = function (e) {
+                var text = reader.result;
+                $('#progress-div .bar').css('width', '100%');
+                $('#csv').val(text);
+                $('#upload-form').submit();
+            };
+
+            $('#upload').click(function (e) {
+
+                $('#progress-div,#upload-div').toggleClass('hidden');
+
+                var files = $('#csv-input')[0].files;
+
+                reader.readAsText(files[0]);
+            });
+
+        });
+    </asset:script>
 </body>
+</html>

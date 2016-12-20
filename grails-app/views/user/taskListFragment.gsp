@@ -1,7 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<r:require module="bvp-js" />
-
 <div class="tab-pane-header">
     <div class="row">
         <div class="col-sm-8 search-results-count">

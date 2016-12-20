@@ -81,7 +81,7 @@
 <div>
     An example specimen page:
     <div>
-        <img class="img-polaroid" src="${resource(dir: "images/getinvolved", file: "bvp_getinvolved_screen1.png")}"/>
+        <asset:image class="img-polaroid" src="bvp_getinvolved_screen1.png"/>
     </div>
 </div>
 </p>
@@ -90,7 +90,7 @@
 <div>
     An example journal:
     <div>
-        <img class="img-polaroid" src="${resource(dir: "images/getinvolved", file: "bvp_getinvolved_screen2.png")}"/>
+        <asset:image class="img-polaroid" src="bvp_getinvolved_screen2.png"/>
     </div>
 </div>
 </p>

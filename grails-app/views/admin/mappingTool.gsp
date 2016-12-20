@@ -77,7 +77,7 @@
 </div>
 
 
-<r:script type='text/javascript'>
+<asset:script type='text/javascript'>
 
     var gmapsReady = false;
     function onGmapsReady() {
@@ -127,6 +127,6 @@
 
     }
 
-</r:script>
+</asset:script>
 </body>
 </html>

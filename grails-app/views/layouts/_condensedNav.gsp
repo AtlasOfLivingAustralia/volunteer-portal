@@ -11,7 +11,7 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="digivol-tab">
-                        <a href="${g.createLink(uri:"/")}" class="tab-brand">A <r:img dir="images/2.0/" file="logoDigivolInverted.png" /> <g:message code="suffix.expedition" /></a>
+                        <g:link uri="/" class="tab-brand">A <asset:image src="logoDigivolInverted.png" /> <g:message code="suffix.expedition" /></g:link>
                         <ul class="navbar-short">
                         <!-- Logged In Starts -->
                             <cl:isNotLoggedIn>
