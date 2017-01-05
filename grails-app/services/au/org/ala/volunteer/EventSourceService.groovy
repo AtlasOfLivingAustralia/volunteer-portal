@@ -167,7 +167,7 @@ class EventSourceService {
                 log.debug("Async Response Writer indicated an error")
                 onError.call()
             } else {
-                w.flush()
+//                w.flush()
                 ac.response.flushBuffer()
             }
         } catch (IOException e) {
