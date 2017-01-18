@@ -25,6 +25,8 @@ class NewProjectDescriptor implements Serializable {
     List<Long> labelIds = []
     String tutorialLinks
 
+    String createdBy
+
     static NewProjectDescriptor fromJson(String s, def p) {
         new NewProjectDescriptor(
                 stagingId: s,
@@ -43,7 +45,8 @@ class NewProjectDescriptor implements Serializable {
                 mapInitZoomLevel: p.map.zoom,
                 picklistId: p.picklistId,
                 labelIds: p.labelIds,
-                tutorialLinks: p.tutorialLinks
+                tutorialLinks: p.tutorialLinks,
+                createdBy: p.createdBy
         )
     }
 }

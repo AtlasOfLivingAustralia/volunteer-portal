@@ -1,15 +1,14 @@
 package au.org.ala.volunteer
 
+import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.gson.GsonBuilder
 import grails.converters.JSON
 import grails.util.Environment
 import grails.util.Metadata
 import groovy.time.TimeCategory
-import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 class VolunteerTagLib {
@@ -905,5 +904,20 @@ class VolunteerTagLib {
     Closure formatFileSize = { attrs, body ->
         def size = attrs.remove('size')
         return FileUtils.byteCountToDisplaySize(size)
+    }
+
+    /**
+     * Display text describing who created the project and the date it was created on.
+     * parameters
+     * project - required - project instance
+     */
+    def projectCreatedBy = { attrs, body ->
+        Project project = attrs.project
+        User user = project.createdBy
+
+        if(user){
+            String date = g.formatDate(date:project.dateCreated, format: "dd MMMM, yyyy")
+            out << "<small>Created by <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> on ${date}.</small>"
+        }
     }
 }

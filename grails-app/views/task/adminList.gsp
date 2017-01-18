@@ -17,7 +17,7 @@
                 [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
         ]
     %>
-
+    <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>
     <div>
         <cl:ifAdmin>
             <div class="btn-group">

@@ -18,6 +18,7 @@
         %>
         <h1>Expedition Settings - ${projectInstance.name} <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted>
         </small></h1>
+        <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>
     </cl:headerContent>
 
     <div class="panel panel-default">

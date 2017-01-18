@@ -972,6 +972,7 @@ class ProjectController {
         }
         try {
             def body = request.getJSON()
+            body.createdBy = userService.getCurrentUserId()
             def descriptor = NewProjectDescriptor.fromJson(id, body)
 
             log.debug("Attempting to create project with descriptor: $descriptor")

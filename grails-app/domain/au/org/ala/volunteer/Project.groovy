@@ -35,6 +35,8 @@ class Project implements Serializable {
 
     Integer version
 
+    User createdBy
+
     def grailsApplication
     def grailsLinkGenerator
     //def assetResourceLocator
@@ -80,6 +82,7 @@ class Project implements Serializable {
         mapInitLatitude nullable: true
         mapInitLongitude nullable: true
         harvestableByAla nullable: true
+        createdBy nullable: true
     }
 
     public String toString() {
