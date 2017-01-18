@@ -4,7 +4,7 @@
 <head>
     <title><cl:pageTitle title="${projectInstance.name} Forum"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <asset:styleshhet src="forum.css"/>
+    <asset:stylesheet src="forum.css"/>
 
     <style type="text/css">
 

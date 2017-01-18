@@ -4,8 +4,8 @@
 <head>
     <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <asset:styleshhet src="forum.css"/>
-        <asset:stylesheet src="image-viewer"/>
+    <asset:stylesheet src="forum.css"/>
+    <asset:stylesheet src="image-viewer"/>
 
     <style type="text/css">
 

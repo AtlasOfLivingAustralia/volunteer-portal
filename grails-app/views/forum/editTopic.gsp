@@ -4,7 +4,7 @@
 <head>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <asset:styleshhet src="forum.css"/>
+    <asset:stylesheet src="forum.css"/>
 </head>
 
 <body class="forum">
