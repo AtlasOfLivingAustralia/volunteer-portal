@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 
 class ProjectSummaryFilter {
 

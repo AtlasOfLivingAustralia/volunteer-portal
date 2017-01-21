@@ -1,14 +1,15 @@
-import au.org.ala.volunteer.*
-import com.google.common.io.Resources
-import grails.converters.JSON
-import groovy.sql.*
-import org.apache.commons.lang.StringUtils
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONObject
-import org.grails.datastore.mapping.core.Datastore
-import org.hibernate.FlushMode
+package au.org.ala.volunteer
+
 import au.org.ala.volunteer.sanitizer.SanitizedHtml
 import au.org.ala.volunteer.sanitizer.ValueConverterListener
+import com.google.common.io.Resources
+import grails.converters.JSON
+import groovy.sql.Sql
+import org.apache.commons.lang.StringUtils
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
+import org.hibernate.FlushMode
 
 class BootStrap {
 
@@ -262,7 +263,9 @@ class BootStrap {
                 a.collect { new Label(category: k, value: it) }.findAll { !labelSet.contains(it) }
             }.flatten()
             log.info("Adding ${newLabels.size()} new labels")
-            log.debug("Adding ${newLabels.join('\n')}")
+            if (newLabels) {
+                log.debug("Adding ${newLabels.join('\n')}")
+            }
             if (newLabels) Label.saveAll(newLabels)
         } else {
             log.debug("Skipping default labels")

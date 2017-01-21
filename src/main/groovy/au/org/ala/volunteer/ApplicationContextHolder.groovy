@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
+import grails.core.GrailsApplication
+import grails.plugins.GrailsPluginManager
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 

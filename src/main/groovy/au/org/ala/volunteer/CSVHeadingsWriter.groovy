@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
-import org.grails.plugins.csv.CSVWriter
-import org.grails.plugins.csv.CSVWriterColumnsBuilder
+import grails.plugins.csv.CSVWriter
+import grails.plugins.csv.CSVWriterColumnsBuilder
 
 /**
  * Writes CSV content to a given writer, using a definition DSL.

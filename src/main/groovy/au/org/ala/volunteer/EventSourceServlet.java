@@ -1,21 +1,29 @@
 package au.org.ala.volunteer;
 
 import com.google.common.base.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class EventSourceServlet extends HttpServlet {
 
-    private EventSourceService eventSourceService;
-    private UserService userService;
+    private final EventSourceService eventSourceService;
+    private final UserService userService;
+
+    @Autowired
+    public EventSourceServlet(EventSourceService eventSourceService, UserService userService) {
+        this.eventSourceService = eventSourceService;
+        this.userService = userService;
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -23,8 +31,8 @@ public class EventSourceServlet extends HttpServlet {
 
         System.out.println("EventSource Servlet init");
 
-        eventSourceService = (EventSourceService) ApplicationContextHolder.getBean("eventSourceService");
-        userService = (UserService) ApplicationContextHolder.getBean("userService");
+//        eventSourceService = (EventSourceService) ApplicationContextHolder.getBean("eventSourceService");
+//        userService = (UserService) ApplicationContextHolder.getBean("userService");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
+import grails.core.GrailsApplication;
 
 /**
  * Provides role names that could be overridden in external config
@@ -15,7 +15,7 @@ public class CASRoles {
 
     private CASRoles() {
         // grab a reference to the grailsApplication
-        this.grailsApplication = new Task().domainClass.grailsApplication
+        this.grailsApplication = ApplicationContextHolder.grailsApplication
     }
 
     public static synchronized CASRoles getInstance() {
