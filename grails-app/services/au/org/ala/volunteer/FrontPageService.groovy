@@ -1,10 +1,12 @@
 package au.org.ala.volunteer
 
-import grails.events.Listener
+import reactor.spring.context.annotation.Consumer
+import reactor.spring.context.annotation.Selector
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
+@Consumer
 class FrontPageService {
 
     public static final String ALERT_MESSAGE = 'alertMessage'
@@ -32,7 +34,7 @@ class FrontPageService {
         new EventSourceMessage(event: ALERT_MESSAGE, data: message)
     }
 
-    @Listener(topic=FrontPageService.ALERT_MESSAGE)
+    @Selector(FrontPageService.ALERT_MESSAGE)
     void alertMessage(String alert) {
         try {
             log.debug("On Alert Message")

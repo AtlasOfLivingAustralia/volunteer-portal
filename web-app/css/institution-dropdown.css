@@ -1,6 +1,0 @@
-/*
- *= require jquery-ui
- */
-.ui-state-hover, .ui-widget-content .ui-state-hover {
-    border: none;
-}

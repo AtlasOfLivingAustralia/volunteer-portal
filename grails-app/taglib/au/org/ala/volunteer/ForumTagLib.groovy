@@ -3,14 +3,12 @@ package au.org.ala.volunteer
 import com.naleid.grails.MarkdownService
 import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
-import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class ForumTagLib {
 
     static namespace = 'vpf'
 
     UserService userService
-    GrailsApplication grailsApplication
     MarkdownService markdownService
     TaskService taskService
     MultimediaService multimediaService

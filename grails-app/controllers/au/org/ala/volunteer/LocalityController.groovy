@@ -8,14 +8,14 @@ class LocalityController {
     def localityService;
     def logService;
 
-    def index = { }
+    def index() { }
 
-    def load = {
+    def load() {
         def collectionCodes = localityService.getCollectionCodes()
         [collectionCodes: collectionCodes]
     }
 
-    def loadCSV = {
+    def loadCSV() {
         def collectionCode = params.collectionCode;
         MultipartFile f = request.getFile('csvfile')
 
@@ -26,13 +26,13 @@ class LocalityController {
         render(view: 'load')
     }
 
-    def searchFragment = {
+    def searchFragment() {
         def taskInstance = Task.get(params.long("taskId"))
         def verbatimLocality = params["verbatimLocality"] as String
         [taskInstance: taskInstance, verbatimLocality: verbatimLocality]
     }
 
-    def searchResultsFragment = {
+    def searchResultsFragment() {
         def taskInstance = Task.get(params.long("taskId"))
         if (taskInstance) {
             def q = params.searchLocality;
@@ -42,7 +42,7 @@ class LocalityController {
         }
     }
 
-    def getLocalityJSON = {
+    def getLocalityJSON() {
         Locality locality = null;
         if (params.localityId) {
             locality = Locality.get(params.long("localityId"))

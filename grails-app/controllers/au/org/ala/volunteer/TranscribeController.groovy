@@ -8,7 +8,6 @@ class TranscribeController {
     private static final String HEADER_EXPIRES = "Expires";
     private static final String HEADER_CACHE_CONTROL = "Cache-Control";
 
-    def grailsApplication
     def fieldSyncService
     def auditService
     def taskService
@@ -17,7 +16,7 @@ class TranscribeController {
 
     static allowedMethods = [saveTranscription: "POST"]
 
-    def index = {
+    def index() {
         if (params.id) {
             log.debug("index redirect to showNextFromProject: " + params.id)
             redirect(action: "showNextFromProject", id: params.id)
@@ -28,7 +27,7 @@ class TranscribeController {
 
     }
 
-    def task = {
+    def task() {
 
         def taskInstance = Task.get(params.int('id'))
         def currentUserId = userService.currentUserId
@@ -85,7 +84,7 @@ class TranscribeController {
         }
     }
 
-    def showNextAction = {
+    def showNextAction() {
         log.debug("rendering view: nextAction")
         def taskInstance = Task.get(params.id)
         render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: userService.currentUserId])
@@ -175,7 +174,7 @@ class TranscribeController {
     /**
      * Show the next task for the supplied project.
      */
-    def showNextFromProject = {
+    def showNextFromProject() {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
 

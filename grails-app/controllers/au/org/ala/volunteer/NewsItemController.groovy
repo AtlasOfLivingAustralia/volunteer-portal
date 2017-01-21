@@ -6,11 +6,11 @@ class NewsItemController {
 
     def userService
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = params.sort ?: 'created'
         params.order = params.order ?: 'desc'
@@ -39,7 +39,7 @@ class NewsItemController {
         [newsItemInstanceList: newsItems, newsItemInstanceTotal: newsItems?.size(), projectInstance: project, institutionInstance: institution]
     }
 
-    def create = {
+    def create() {
         def currentUserId = userService.currentUserId
         if (currentUserId != null && userService.isAdmin()) {
             def newsItemInstance = new NewsItem()
@@ -51,7 +51,7 @@ class NewsItemController {
         }
     }
 
-    def save = {
+    def save() {
         def projectId = params.int("project")
         def institutionId = params.int("institution")
         params.project = null
@@ -80,7 +80,7 @@ class NewsItemController {
         }
     }
 
-    def show = {
+    def show() {
         def newsItemInstance = NewsItem.get(params.id)
         if (!newsItemInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
@@ -108,7 +108,7 @@ class NewsItemController {
         }
     }
 
-    def update = {
+    def update() {
         def currentUserId = userService.currentUserId
         if (currentUserId != null && userService.isAdmin()) {
             def newsItemInstance = NewsItem.get(params.id)
@@ -147,7 +147,7 @@ class NewsItemController {
         }
     }
 
-    def delete = {
+    def delete() {
         def newsItemInstance = NewsItem.get(params.id)
         if (newsItemInstance) {
             def fromProjectId = newsItemInstance.project?.id

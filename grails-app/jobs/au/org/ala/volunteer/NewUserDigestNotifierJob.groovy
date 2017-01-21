@@ -5,7 +5,6 @@ import groovy.sql.Sql
 class NewUserDigestNotifierJob {
     def userService
     def mailService
-    def grailsApplication
     def dataSource
     def concurrent = false
 

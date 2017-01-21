@@ -8,8 +8,8 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <gvisualization:apiImport/>
+    %{--<script src='https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}' async defer ></script>--}%
+    <gvisualization:apiImport/> %{-- Also provides maps api scripts --}%
 </head>
 
 <body data-ng-app="notebook">

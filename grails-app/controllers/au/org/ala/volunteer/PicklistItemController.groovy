@@ -48,7 +48,7 @@ class PicklistItemController {
         render([] as JSON)
     }
 
-    def updateLocality = {
+    def updateLocality () {
         def picklist = Picklist.findByName("verbatimLocality")
         def name = params.name
         def picklistItems = PicklistItem.findAllByValueIlikeAndPicklist("%"+name+"%", picklist)
@@ -69,11 +69,11 @@ class PicklistItemController {
         }
     }
 
-    def index = {
+    def index () {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list () {
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
 
         def picklistInstance = Picklist.get(params.id)
@@ -83,13 +83,13 @@ class PicklistItemController {
         [picklistItemInstanceList: picklistItemInstanceList, picklistItemInstanceTotal: picklistItemInstanceList.size(), picklistInstance: picklistInstance]
     }
 
-    def create = {
+    def create () {
         def picklistItemInstance = new PicklistItem()
         picklistItemInstance.properties = params
         return [picklistItemInstance: picklistItemInstance]
     }
 
-    def save = {
+    def save () {
         def picklistItemInstance = new PicklistItem(params)
         if (picklistItemInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'picklistItem.label', default: 'PicklistItem'), picklistItemInstance.id])}"
@@ -100,7 +100,7 @@ class PicklistItemController {
         }
     }
 
-    def show = {
+    def show () {
         def picklistItemInstance = PicklistItem.get(params.id)
         if (!picklistItemInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklistItem.label', default: 'PicklistItem'), params.id])}"
@@ -111,7 +111,7 @@ class PicklistItemController {
         }
     }
 
-    def edit = {
+    def edit () {
         def picklistItemInstance = PicklistItem.get(params.id)
         if (!picklistItemInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklistItem.label', default: 'PicklistItem'), params.id])}"
@@ -122,7 +122,7 @@ class PicklistItemController {
         }
     }
 
-    def update = {
+    def update () {
         def picklistItemInstance = PicklistItem.get(params.id)
         if (picklistItemInstance) {
             if (params.version) {
@@ -149,7 +149,7 @@ class PicklistItemController {
         }
     }
 
-    def delete = {
+    def delete () {
         def picklistItemInstance = PicklistItem.get(params.id)
         if (picklistItemInstance) {
             try {

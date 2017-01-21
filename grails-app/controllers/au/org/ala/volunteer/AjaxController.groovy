@@ -13,8 +13,8 @@ import java.text.SimpleDateFormat
 import groovy.sql.Sql
 import javax.sql.DataSource
 import java.sql.ResultSet
-import org.grails.plugins.csv.CSVWriter
-import org.grails.plugins.csv.CSVWriterColumnsBuilder
+import grails.plugins.csv.CSVWriter
+import grails.plugins.csv.CSVWriterColumnsBuilder
 
 import java.util.concurrent.TimeUnit
 

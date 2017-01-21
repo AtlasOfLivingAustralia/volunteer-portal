@@ -4,22 +4,22 @@ class FieldController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [fieldInstanceList: Field.list(params), fieldInstanceTotal: Field.count()]
     }
 
-    def create = {
+    def create() {
         def fieldInstance = new Field()
         fieldInstance.properties = params
         return [fieldInstance: fieldInstance]
     }
 
-    def save = {
+    def save() {
         def fieldInstance = new Field(params)
         if (fieldInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'field.label', default: 'Field'), fieldInstance.id])}"
@@ -30,7 +30,7 @@ class FieldController {
         }
     }
 
-    def show = {
+    def show() {
         def fieldInstance = Field.get(params.id)
         if (!fieldInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'field.label', default: 'Field'), params.id])}"
@@ -41,7 +41,7 @@ class FieldController {
         }
     }
 
-    def edit = {
+    def edit() {
         def fieldInstance = Field.get(params.id)
         if (!fieldInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'field.label', default: 'Field'), params.id])}"
@@ -52,7 +52,7 @@ class FieldController {
         }
     }
 
-    def update = {
+    def update() {
         def fieldInstance = Field.get(params.id)
         if (fieldInstance) {
             if (params.version) {
@@ -79,7 +79,7 @@ class FieldController {
         }
     }
 
-    def delete = {
+    def delete() {
         def fieldInstance = Field.get(params.id)
         if (fieldInstance) {
             try {

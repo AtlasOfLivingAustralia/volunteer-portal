@@ -4,7 +4,6 @@ class TaskIndexerJob {
 
     def domainUpdateService
     //def fullTextIndexService
-    def grailsApplication
     def concurrent = false
 
     static triggers = {

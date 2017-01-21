@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.AchievementService; au.org.ala.volunteer.FrontPageService" %>
 <cl:isLoggedIn>
-<asset:script>
+<asset:script type="text/javascript">
     digivolNotify({
         eventSourceUrl: "${createLink(uri: '/es')}",
         acceptAchievementsUrl: "${createLink(controller: 'ajax', action: 'acceptAchievements')}",

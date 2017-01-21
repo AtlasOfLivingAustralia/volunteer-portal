@@ -25,7 +25,8 @@
             }
         }
     </script>
-    <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
+    <cl:googleMapsScript callback="onGmapsReady"/>
+    %{--<script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>--}%
     <asset:stylesheet src="image-viewer"/>
     <asset:stylesheet src="transcribe-widgets" />
     <g:layoutHead/>

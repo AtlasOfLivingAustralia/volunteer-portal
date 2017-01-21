@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
-    <asset:stylesheet src="codemirror-monokai"/>
+    <asset:stylesheet src="codemirror/codemirror-monokai.css"/>
 </head>
 
 <body class="admin">
@@ -76,10 +76,10 @@
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="query" name="query" rows="10">{
-            "query_string": {
-                "query": "query string"
-            }
-        }</textarea>
+    "query_string": {
+        "query": "query string"
+    }
+}</textarea>
                                     </div>
                                 </div>
 
@@ -103,14 +103,14 @@
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="aggregation" name="aggregation" rows="10">{
-            "&lt;aggregation_name>" : {
-                "&lt;aggregation_type>" : {
-                    &lt;aggregation_body>
-                }
-                [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
-            }
-            [,"&lt;aggregation_name_2>" : { ... } ]*
-        }</textarea>
+    "&lt;aggregation_name>" : {
+        "&lt;aggregation_type>" : {
+            &lt;aggregation_body>
+        }
+        [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
+    }
+    [,"&lt;aggregation_name_2>" : { ... } ]*
+}</textarea>
                                     </div>
                                 </div>
 
@@ -129,7 +129,7 @@
 </div>
 </body>
 <asset:javascript src="bootbox" asset-defer=""/>
-<asset:javascript src="codemirror-js-sublime" asset-defer="" />
+<asset:javascript src="codemirror/codemirror-js-sublime" asset-defer="" />
 <asset:script type='text/javascript'>
 
     jQuery(function ($) {

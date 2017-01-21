@@ -14,7 +14,7 @@
     <meta name="layout" content="digivol-expedition"/>
     <title><cl:pageTitle title="${(projectInstance.name ?: 'Atlas of Living Australia') + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
-    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <cl:googleMapsScript callback="onGmapsReady" if="${projectInstance.showMap}"/>
 
     <style type="text/css">
 
@@ -104,7 +104,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-6">
-                    <g:render template="../project/projectSummaryProgressBar" model="${[projectSummary: projectSummary]}"/>
+                    <g:render template="projectSummaryProgressBar" model="${[projectSummary: projectSummary]}"/>
                 </div>
 
                 <div class="col-sm-3 col-xs-6">
@@ -187,8 +187,18 @@
 
 <asset:script>
 
-    google.load("maps", "3.23", {other_params: ""});
     var map, infowindow;
+
+    function onGmapsReady() {
+        jQuery(function($) {
+             loadMap();
+            //resizeMap();
+
+            $(window).resize(function(e) {
+                //resizeMap();
+            });
+        });
+    }
 
     function loadMap() {
 
@@ -275,14 +285,6 @@
         }
 
         $(document).ready(function () {
-    <g:if test="${projectInstance.showMap}">
-        loadMap();
-        //resizeMap();
-
-        $(window).resize(function(e) {
-            //resizeMap();
-        });
-    </g:if>
 
     $("#btnShowIconSelector").click(function(e) {
         e.preventDefault();

@@ -3,21 +3,19 @@ package au.org.ala.volunteer
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
-import org.grails.plugins.metrics.groovy.Timed
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class IndexController {
 
     def userService
-    def grailsApplication
     def projectService
     def leaderBoardService
     def multimediaService
     def institutionService
 
-    @Timed
     def index() {
+        log.debug("Index Controller, Index action")
         def frontPage = FrontPage.instance()
 
         // News item
@@ -39,11 +37,11 @@ class IndexController {
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }
 
-    def leaderBoardFragment = {
+    def leaderBoardFragment() {
         [:]
     }
 
-    def statsFragment = {
+    def statsFragment() {
         // Stats
         def totalTasks = Task.count()
         def completedTasks = Task.countByFullyTranscribedByIsNotNull()

@@ -4,7 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.mappingtool.label" default="Administration - Mapping tool"/></title>
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady" async defer></script>
+    <cl:googleMapsScript callback="onGmapsReady"/>
+    %{--<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady" async defer></script>--}%
 </head>
 
 <body class="admin">

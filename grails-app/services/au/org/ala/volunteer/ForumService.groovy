@@ -1,11 +1,11 @@
 package au.org.ala.volunteer
 
 import grails.orm.PagedResultList
+import grails.transaction.Transactional
 import groovy.time.TimeDuration
 
+@Transactional
 class ForumService {
-
-    static transactional = true
 
     def logService
     def grailsApplication

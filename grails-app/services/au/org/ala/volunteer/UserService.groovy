@@ -5,7 +5,7 @@ import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.sql.Sql
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest
 import java.sql.Connection
 import java.util.concurrent.ConcurrentLinkedQueue
 
+@Transactional
 class UserService {
 
     def authService
@@ -25,8 +26,6 @@ class UserService {
     def messageSource
     def freemarkerService
     def fullTextIndexService
-
-    static transactional = true
 
     private static Queue<UserActivity> _userActivityQueue = new ConcurrentLinkedQueue<UserActivity>()
 

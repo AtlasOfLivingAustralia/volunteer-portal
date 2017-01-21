@@ -5,7 +5,7 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <asset:stylesheet src="codemirror-monokai" />
+    <asset:stylesheet src="codemirror/codemirror-monokai.css" />
 </head>
 
 <body class="admin">

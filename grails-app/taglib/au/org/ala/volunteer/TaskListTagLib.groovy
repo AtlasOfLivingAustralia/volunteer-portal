@@ -4,7 +4,6 @@ import groovy.time.TimeCategory
 
 class TaskListTagLib {
 
-    def grailsApplication
     def multimediaService
 
   def renderTaskList = { attrs, body ->

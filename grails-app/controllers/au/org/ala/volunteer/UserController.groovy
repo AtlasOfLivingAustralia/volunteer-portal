@@ -2,17 +2,15 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import java.text.SimpleDateFormat
-import java.util.regex.Pattern
 
 class UserController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def grailsApplication
     def taskService
     def userService
     def logService
@@ -77,24 +75,24 @@ class UserController {
   }
 }'''
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def logout = {
+    def logout() {
         log.info "Invalidating Session (UserController.logout): ${session.id}"
         session.invalidate()
         redirect(url:"${params.casUrl}?url=${params.appUrl}")
     }
 
-    def myStats = {
+    def myStats() {
       userService.registerCurrentUser()
       def currentUser = userService.currentUserId
       def userInstance = User.findByUserId(currentUser)
       redirect(action: "show", id: userInstance.id, params: params )
     }
 
-    def list = {
+    def list() {
 
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (!params.sort){
@@ -122,7 +120,7 @@ class UserController {
         [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
     }
 
-    def project = {
+    def project() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             params.max = Math.min(params.max ? params.int('max') : 10, 100)
@@ -153,13 +151,13 @@ class UserController {
         }
     }
 
-    def create = {
+    def create() {
         def userInstance = new User()
         userInstance.properties = params
         return [userInstance: userInstance]
     }
 
-    def save = {
+    def save() {
         def userInstance = new User(params)
         if (userInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])}"
@@ -333,7 +331,7 @@ class UserController {
                 isValidator             : isValidator
         )
 
-        log.debug(result)
+        log.debug("$result")
         respond(result)
     }
 
@@ -416,7 +414,7 @@ class UserController {
         return [userInstance: userInstance, roles: roles, userDetails: authService.getUserForUserId(userInstance.getUserId())]
     }
 
-    def update = {
+    def update() {
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
         if (userInstance && currentUser && (userService.isAdmin() || currentUser == userInstance.userId)) {
@@ -444,7 +442,7 @@ class UserController {
         }
     }
 
-    def delete = {
+    def delete() {
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
         if (userInstance && currentUser && userService.isAdmin()) {
@@ -464,7 +462,7 @@ class UserController {
         }
     }
 
-    def editRoles = {
+    def editRoles() {
 
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
@@ -482,7 +480,7 @@ class UserController {
         [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list(sort: 'name', order: 'asc')]
     }
 
-    def updateRoles = {
+    def updateRoles() {
         def userInstance = User.get(params.id)
 
         if (!userInstance) {

@@ -2,16 +2,16 @@ package au.org.ala.volunteer
 
 class FrontPageController {
 
-    def index = {
+    def index() {
 
         redirect(action: "edit", params: params)
     }
 
-    def edit = {
+    def edit() {
         ['frontPage':FrontPage.instance()]
     }
 
-    def save = {
+    def save() {
         def frontPage = FrontPage.instance();
 
         frontPage.projectOfTheDay = Project.get(Long.parseLong(params['projectOfTheDay']))
@@ -34,7 +34,7 @@ class FrontPageController {
         log.info("System Message update: $systemMessageUpdated and ${frontPage.systemMessage}")
         if (systemMessageUpdated) {
             log.info("Sending Alert Message event with ${frontPage.systemMessage}")
-            event(FrontPageService.ALERT_MESSAGE, frontPage.systemMessage)
+            notify(FrontPageService.ALERT_MESSAGE, frontPage.systemMessage)
         }
 
         flash.message = "${message(code: 'default.updated.message', args: [message(code: 'frontPage.label', default: 'Front Page'), ''])}"

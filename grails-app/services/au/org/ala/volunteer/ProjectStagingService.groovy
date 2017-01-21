@@ -98,11 +98,11 @@ class ProjectStagingService {
     }
 
     def getProjectImageUrl(NewProjectDescriptor project) {
-        return grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-image.jpg"
+        return grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-image.jpg"
     }
 
     def getProjectBackgroundImageUrl(NewProjectDescriptor project) {
-        return grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-background-image.jpg"
+        return grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-background-image.jpg"
     }
 
     private String getProjectImagePath(NewProjectDescriptor project) {

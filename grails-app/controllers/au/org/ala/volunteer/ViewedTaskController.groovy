@@ -4,22 +4,22 @@ class ViewedTaskController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [viewedTaskInstanceList: ViewedTask.list(params), viewedTaskInstanceTotal: ViewedTask.count()]
     }
 
-    def create = {
+    def create() {
         def viewedTaskInstance = new ViewedTask()
         viewedTaskInstance.properties = params
         return [viewedTaskInstance: viewedTaskInstance]
     }
 
-    def save = {
+    def save() {
         def viewedTaskInstance = new ViewedTask(params)
         if (viewedTaskInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'viewedTask.label', default: 'ViewedTask'), viewedTaskInstance.id])}"
@@ -30,7 +30,7 @@ class ViewedTaskController {
         }
     }
 
-    def show = {
+    def show() {
         def viewedTaskInstance = ViewedTask.get(params.id)
         if (!viewedTaskInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'viewedTask.label', default: 'ViewedTask'), params.id])}"
@@ -41,7 +41,7 @@ class ViewedTaskController {
         }
     }
 
-    def edit = {
+    def edit() {
         def viewedTaskInstance = ViewedTask.get(params.id)
         if (!viewedTaskInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'viewedTask.label', default: 'ViewedTask'), params.id])}"
@@ -52,7 +52,7 @@ class ViewedTaskController {
         }
     }
 
-    def update = {
+    def update() {
         def viewedTaskInstance = ViewedTask.get(params.id)
         if (viewedTaskInstance) {
             if (params.version) {
@@ -79,7 +79,7 @@ class ViewedTaskController {
         }
     }
 
-    def delete = {
+    def delete() {
         def viewedTaskInstance = ViewedTask.get(params.id)
         if (viewedTaskInstance) {
             try {

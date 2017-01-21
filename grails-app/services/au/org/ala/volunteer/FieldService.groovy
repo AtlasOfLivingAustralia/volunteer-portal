@@ -1,8 +1,9 @@
 package au.org.ala.volunteer
 
-class FieldService {
+import grails.transaction.Transactional
 
-    static transactional = true
+@Transactional
+class FieldService {
 
     List getLatestFieldsWithTasks(String fieldName, List<Task> taskList, Map params) {
         if (!taskList) {

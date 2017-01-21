@@ -2,8 +2,8 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
+import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
-import org.grails.plugins.metrics.groovy.Timed
 import org.imgscalr.Scalr
 
 import javax.imageio.ImageIO
@@ -14,6 +14,7 @@ import groovy.sql.Sql
 import java.sql.Connection
 import java.text.SimpleDateFormat
 
+@Transactional
 class TaskService {
 
     DataSource dataSource
@@ -25,9 +26,7 @@ class TaskService {
     def i18nService
     def userService
 
-    private static final int NUMBER_OF_RECENT_DAYS = 90;
-
-    static transactional = true
+    private static final int NUMBER_OF_RECENT_DAYS = 90
 
   /**
    * This could be a large result set for a system with many registered users.
@@ -86,7 +85,6 @@ class TaskService {
         projectTaskCounts.toMap()
     }
 
-    @Timed
     Map getProjectTranscriberCounts() {
         def volunteerCounts = Task.executeQuery(
             """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
@@ -95,7 +93,6 @@ class TaskService {
         volunteerCounts.toMap()
     }
 
-    @Timed
     Map getProjectValidatorCounts() {
         def volunteerCounts = Task.executeQuery(
                 """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount

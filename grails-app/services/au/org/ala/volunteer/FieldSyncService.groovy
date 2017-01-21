@@ -1,10 +1,10 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
 import org.apache.commons.lang3.StringUtils
 
+@Transactional
 class FieldSyncService {
-
-    static transactional = true
 
     def logService
     def fullTextIndexService
