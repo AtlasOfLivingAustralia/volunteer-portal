@@ -6,32 +6,34 @@ in biodiversity collections, field notebooks and survey sheets.
 
 ##Running
 
-To run up a vagrant instance of DigiVol you can use the volunteer_portal_instance ansible playbook from the
-[AtlasOfLivingAustralia/ala-install] repository.  This will deploy a pre-compiled version from the ALA Maven repository.
+The ansible inventories are currently out of date.  You can run DigiVol manually by using gradle to build:
 
-*NOTE: Both [vagrant] and [ansible] must be installed first.*
-
-First, setup an extra variables file with the database password, eg `nano ~/digivol-password.yml`:
-
-```yaml
-volunteers_db_password: "YOUR_PASSWORD_HERE"
+```bash
+./gradlew assemble
+java -jar build/libs/volunteer-portal-*.war
+open http://devt.ala.org.au:8080/
 ```
 
-Then setup the VM and run the playbook:
+~~To run up a vagrant instance of DigiVol you can use the volunteer_portal_instance ansible playbook from the
+[AtlasOfLivingAustralia/ala-install] repository.  This will deploy a pre-compiled version from the ALA Maven repository.~~
+
+~~*NOTE: Both [vagrant] and [ansible] must be installed first.*~~
+
+~~Then setup the VM and run the playbook:~~
 
 ```bash
 git clone https://github.com/AtlasOfLivingAustralia/ala-install.git
 cd ala-install/vagrant/ubuntu-trusty
 vagrant up
 cd ../../ansible
-ansible-playbook -i inventories/vagrant --user vagrant --private-key ~/.vagrant.d/insecure_private_key --sudo -e ~/digivol-passwword.json volunteer-portal.yml
+ansible-playbook -i inventories/vagrant --user vagrant --private-key ~/.vagrant.d/insecure_private_key --sudo volunteer-portal.yml
 ```
 
-Deploying to a server can be done similarly, though you will need to define an ansible inventory first.
+~~Deploying to a server can be done similarly, though you will need to define an ansible inventory first.~~
 
 ##Contributing
 
-DigiVol is a [Grails] v2.3.11 based web application.  It uses [PostgreSQL] for data storage.  Development follows the 
+DigiVol is a [Grails] v3.2.4 based web application.  It requires [PostgreSQL] for data storage.  Development follows the 
 [git flow] workflow.
 
 For git flow operations you may like to use the `git-flow` command line tools.  Either install [Atlassian SourceTree]

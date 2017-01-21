@@ -28,6 +28,7 @@ local-deploy.sh
 node_modules
 
 # Grails
+.asscache
 .sass-cache
 .slcache
 /logs/
