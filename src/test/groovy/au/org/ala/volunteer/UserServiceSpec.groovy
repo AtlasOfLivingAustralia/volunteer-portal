@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.web.AuthService
 import au.org.ala.web.UserDetails
 import grails.test.mixin.Mock
@@ -13,14 +14,17 @@ class UserServiceSpec extends Specification {
     //def mockAuthService
 
     def setup() {
-        User potato = new User(userId: '1234', email: 'email@example.com', displayName: 'Mr Potato Head', created: new Date())
-        User smitty = new User(userId: '1235', email: 'smitty@smitty.com', displayName: 'Smitty', created: new Date())
+        User potato = new User(userId: '1234', email: 'email@example.com', firstName: 'Mr Potato', lastName: 'Head', created: new Date())
+        User smitty = new User(userId: '1235', email: 'smitty@smitty.com', firstName: 'Smitty', lastName: 'Smitty', created: new Date())
 
-        new User(userId: '545', email: 'zjxs@zjxs.org', displayName: 'ZJXS', created: new Date()).save()
-        new User(userId: '546', email: 'clvf@clvf.net', displayName: 'CLVF', created: new Date()).save()
+        def zjxs = new User(userId: '545', email: 'zjxs@zjxs.org', firstName: 'ZJXS', created: new Date())
+        def clvf = new User(userId: '546', email: 'clvf@clvf.net', firstName: 'CLVF', created: new Date())
 
         potato.save()
         smitty.save()
+
+        zjxs.save()
+        clvf.save()
     }
 
     def cleanup() {
@@ -28,9 +32,9 @@ class UserServiceSpec extends Specification {
 
     def "test propsForUserId with authService success"() {
         setup:
-        def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserForUserId(1) { String id -> sleep(100); new UserDetails(userId: id, userName: 'potato@potato.com', displayName: 'Potato Head, Esq.')}
-        service.authService = mockAuthService.createMock()
+        def mockAuthService = Stub(AuthService)
+        mockAuthService.getUserForUserId(_) >> { String id -> new UserDetails(userId: id, userName: 'potato@potato.com', firstName: 'Potato', lastName: 'Head, Esq.')}
+        service.authService = mockAuthService
 
         when:
         def x = service.detailsForUserId('1234')
@@ -43,9 +47,9 @@ class UserServiceSpec extends Specification {
 
     def "test propsForUserId with authService null"() {
         setup:
-        def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserForUserId(1) { String id -> sleep(100); null}
-        service.authService = mockAuthService.createMock()
+        def mockAuthService = Stub(AuthService)
+        mockAuthService.getUserForUserId(_) >> { String id -> null}
+        service.authService = mockAuthService
 
         when:
         def x = service.detailsForUserId('4321')
@@ -58,9 +62,9 @@ class UserServiceSpec extends Specification {
 
     def "test propsForUserId with authService exception"() {
         setup:
-        def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserForUserId(1) { String id -> throw new IOException("Network failure")}
-        service.authService = mockAuthService.createMock()
+        def mockAuthService = Stub(AuthService)
+        mockAuthService.getUserForUserId(_) >> { String id -> throw new IOException("Network failure")}
+        service.authService = mockAuthService
 
         when:
         def x = service.detailsForUserId('1234')
@@ -73,9 +77,9 @@ class UserServiceSpec extends Specification {
 
     def "test updateAllUsers"() {
         setup:
-        def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserDetailsById(1) { List<String> ids -> usersForUserIds(ids) }
-        service.authService = mockAuthService.createMock()
+        def mockAuthService = Stub(AuthService)
+        mockAuthService.getUserDetailsById(_, _) >> { List<String> ids -> usersForUserIds(ids) }
+        service.authService = mockAuthService
 
         when:
         service.updateAllUsers()
@@ -86,14 +90,14 @@ class UserServiceSpec extends Specification {
         p.email == 'potato@potato.org'
         p.displayName == 'Señor Potato'
         s.email == 'smitty@smitty.com'
-        s.displayName == 'Smitty'
+        s.displayName == 'Smitty Smitty'
     }
 
     def "test propsForUserIds"() {
         setup:
-        def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserDetailsById(1) { List<String> ids -> [ users: [ '545': new UserDetails(userId: '545', userName: 'test.email@potato.org', displayName: 'Display Name') ], success: true, missingIds: [] ] }
-        service.authService = mockAuthService.createMock()
+        def mockAuthService = Stub(AuthService)
+        mockAuthService.getUserDetailsById(_) >> { List<String> ids -> new UserDetailsFromIdListResponse(users: ['545': new UserDetails(userId: '545', userName: 'test.email@potato.org', firstName: 'Display', lastName: 'Name') ], success: true, invalidIds: [] ) }
+        service.authService = mockAuthService
 
         when:
 
@@ -105,9 +109,9 @@ class UserServiceSpec extends Specification {
 
     def "test propsForUserIds with missing ids"() {
         setup:
-        def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserDetailsById(1) { List<String> ids -> [ users: [ '545': new UserDetails(userId: '545', userName: 'test.email@potato.org', displayName: 'Display Name') ], success: true, invalidIds: [546] ] }
-        service.authService = mockAuthService.createMock()
+        def mockAuthService = Stub(AuthService)
+        mockAuthService.getUserDetailsById(_) >> { List<String> ids -> new UserDetailsFromIdListResponse( users: [ '545': new UserDetails(userId: '545', userName: 'test.email@potato.org', firstName: 'Display', lastName: 'Name') ], success: true, invalidIds: [546] ) }
+        service.authService = mockAuthService
 
         when:
 
@@ -119,9 +123,9 @@ class UserServiceSpec extends Specification {
 
     def "test propsForUserIds with failed service call"() {
         setup:
-        def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserDetailsById(1) { List<String> ids -> null }
-        service.authService = mockAuthService.createMock()
+        def mockAuthService = Stub(AuthService)
+        mockAuthService.getUserDetailsById(_) >> { List<String> ids -> throw new IOException() }
+        service.authService = mockAuthService
 
         when:
 
@@ -132,13 +136,11 @@ class UserServiceSpec extends Specification {
     }
 
     private static usersForUserIds(List<String> ids) {
-        sleep(100) // simulate some network latency
-
-        [
-                users: ['1234': new UserDetails(userId: '1234', userName: 'potato@potato.org', displayName: 'Señor Potato'),
-                 '1235': new UserDetails(userId: '1235', userName: 'smitty@smitty.com', displayName: 'Smitty')],
+        new UserDetailsFromIdListResponse(
+                users: ['1234': new UserDetails(userId: '1234', userName: 'potato@potato.org', firstName: 'Señor', lastName: 'Potato'),
+                 '1235': new UserDetails(userId: '1235', userName: 'smitty@smitty.com', firstName: 'Smitty', lastName: 'Smitty')],
             success: true,
             invalidIds: [545, 546]
-        ]
+        )
     }
 }

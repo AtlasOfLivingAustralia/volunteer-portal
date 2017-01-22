@@ -19,8 +19,8 @@ class UserSpec extends Specification {
         grailsApplication.config.images.home = "/tmp/"
         mockDomain(User)
         date = new Date()
-        u1 = new User(userId: "1234", displayName: "Dude User", email: "dude.user@ala.org.au", created: date)
-        u2 = new User(userId: "1235", displayName: "Sweet User", email: "sweet.user@ala.org.au", created: date)
+        u1 = new User(userId: "1234", firstName: "Dude", lastName: "User", email: "dude.user@ala.org.au", created: date)
+        u2 = new User(userId: "1235", firstName: "Sweet", lastName: "User", email: "sweet.user@ala.org.au", created: date)
         [u1,u2]*.save(flush: true)
     }
 
@@ -41,7 +41,7 @@ class UserSpec extends Specification {
 
         when: 'the equals arg is an equal object'
         d = u1
-        def d2 = new User(userId: "1234", displayName: "User Dude", email: "user.dude@ala.org.au", created: date)
+        def d2 = new User(userId: "1234", firstName: "User", lastName: "Dude", email: "user.dude@ala.org.au", created: date)
 
         then: 'equals succeeds but does not throw an exception'
         d == d2

@@ -45,7 +45,7 @@ class BootStrap {
 
         // add system user
         if (!User.findByUserId('system')) {
-            User u = new User(userId: 'system', email: ' support@ala.org.au', displayName: 'System User')
+            User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
         }
 
         def internalRoles = [BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR, BVPRole.SITE_ADMIN]

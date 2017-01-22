@@ -8,10 +8,35 @@ import spock.lang.*
 @Mock(AchievementDescription)
 class AchievementDescriptionControllerSpec extends Specification {
 
+    def setup() {
+        controller.achievementService = Stub(AchievementService)
+        controller.userService = Stub(AchievementService)
+    }
+
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
+        params["name"] = 'badge'
+        params['description'] = 'badge'
+        params['badge'] = 'badge'
+        params['enabled'] = 'false'
+        params['type'] = AchievementType.ELASTIC_SEARCH_QUERY
+        params['searchQuery'] = '''{
+    "filtered" : {
+        "filter" : {
+            "range" : {
+                "dateFullyValidated" : {
+                    "gt" : now-2M
+                }
+            }
+        }
+    }
+}'''
+        params['count'] = '50'
+        params['aggregationQuery'] = null
+        params['aggregationType'] = null
+        params['code'] = ''
+
     }
 
     void "Test the index action returns the correct model"() {
@@ -36,6 +61,7 @@ class AchievementDescriptionControllerSpec extends Specification {
 
         when: "The save action is executed with an invalid instance"
         request.contentType = FORM_CONTENT_TYPE
+        request.method = 'POST'
         def achievementDescription = new AchievementDescription()
         achievementDescription.validate()
         controller.save(achievementDescription)
@@ -52,25 +78,28 @@ class AchievementDescriptionControllerSpec extends Specification {
         controller.save(achievementDescription)
 
         then: "A redirect is issued to the show action"
-        response.redirectedUrl == '/achievementDescription/show/1'
+        response.redirectedUrl == '/admin/achievements/show/1'
         controller.flash.message != null
         AchievementDescription.count() == 1
     }
 
     void "Test that the show action returns the correct model"() {
         when: "The show action is executed with a null domain"
+        request.method = 'GET'
         controller.show(null)
 
         then: "A 404 error is returned"
         response.status == 404
 
         when: "A domain instance is passed to the show action"
+        response.reset()
         populateValidParams(params)
         def achievementDescription = new AchievementDescription(params)
+        achievementDescription.id = 2
         controller.show(achievementDescription)
 
         then: "A model is populated containing the domain instance"
-        model.achievementDescriptionInstance == achievementDescription
+        response.redirectUrl == '/admin/achievements/edit/2'
     }
 
     void "Test that the edit action returns the correct model"() {
@@ -92,10 +121,11 @@ class AchievementDescriptionControllerSpec extends Specification {
     void "Test the update action performs an update on a valid domain instance"() {
         when: "Update is called for a domain instance that doesn't exist"
         request.contentType = FORM_CONTENT_TYPE
+        request.method = 'PUT'
         controller.update(null)
 
         then: "A 404 error is returned"
-        response.redirectedUrl == '/achievementDescription/index'
+        response.redirectedUrl == '/admin/achievements/index'
         flash.message != null
 
 
@@ -116,17 +146,18 @@ class AchievementDescriptionControllerSpec extends Specification {
         controller.update(achievementDescription)
 
         then: "A redirect is issues to the show action"
-        response.redirectedUrl == "/achievementDescription/show/$achievementDescription.id"
+        response.redirectedUrl == "/admin/achievements/edit/${achievementDescription.id}"
         flash.message != null
     }
 
     void "Test that the delete action deletes an instance if it exists"() {
         when: "The delete action is called for a null instance"
         request.contentType = FORM_CONTENT_TYPE
+        request.method = 'DELETE'
         controller.delete(null)
 
         then: "A 404 is returned"
-        response.redirectedUrl == '/achievementDescription/index'
+        response.redirectedUrl == '/admin/achievements/index'
         flash.message != null
 
         when: "A domain instance is created"
@@ -142,7 +173,7 @@ class AchievementDescriptionControllerSpec extends Specification {
 
         then: "The instance is deleted"
         AchievementDescription.count() == 0
-        response.redirectedUrl == '/achievementDescription/index'
+        response.redirectedUrl == '/admin/achievements/index'
         flash.message != null
     }
 }

@@ -38,7 +38,6 @@ beans = {
         servlet = bean(EventSourceServlet)
         urlMappings = [ '/es' ]
         asyncSupported = true
-
     }
 
 }

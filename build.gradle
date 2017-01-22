@@ -69,11 +69,11 @@ dependencies {
 
     // Additional Plugins
     compile 'org.grails.plugins:cache:3.0.3'
-    compile 'org.grails.plugins:cache-headers:2.0.0-SNAPSHOT' //check
+    compile 'org.grails.plugins:cache-headers:2.0.0.ALA-SNAPSHOT'
     compile 'org.grails.plugins:csv:1.0'
-    compile 'org.grails.plugins:postgresql-extensions:4.6.6' //check
+    compile 'org.grails.plugins:postgresql-extensions:4.6.6' // check if needed
     compile 'org.grails.plugins:mail:2.0.0.RC6'
-    compile 'org.grails.plugins:grails-executor:0.4' // check
+    compile 'org.grails.plugins:grails-executor:0.4' // check if needed
     compile 'org.grails.plugins:grails-markdown:3.0.0' // may need modifications?
     compile 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?
     compile 'org.grails.plugins:quartz:2.0.9'
@@ -117,34 +117,19 @@ assets {
 }
 
 def gitSha() {
-    def p = 'git rev-parse --short HEAD'.execute([], project.rootDir)
-    p.waitFor()
-    if (p.exitValue() != 0) {
-        final text = p.errorStream.text
-        logger.warn(text)
-        return text
-    }
-
-    return p.text.trim()
+    execOutput 'git rev-parse --short HEAD'
 }
 
 def gitTimestamp() {
-    def p = 'git log -n 1 --format=%at'.execute([], rootDir)
-    p.waitFor()
-    if (p.exitValue() != 0) {
-        final text = p.errorStream.text
-        logger.warn(text)
-        return text
-    }
-
-    return p.text.trim()
+    execOutput 'git log -n 1 --format=%at'
 }
 
 def gitBranch() {
-    def branch = ""
-    def p = "git rev-parse --abbrev-ref HEAD".execute()
-//    p.in.eachLine { line -> branch = line }
-//    p.err.eachLine { line -> println line }
+    execOutput 'git rev-parse --abbrev-ref HEAD'
+}
+
+String execOutput(String exec) {
+    def p = exec.execute([], rootDir)
     p.waitFor()
     if (p.exitValue() != 0) {
         final text = p.errorStream.text

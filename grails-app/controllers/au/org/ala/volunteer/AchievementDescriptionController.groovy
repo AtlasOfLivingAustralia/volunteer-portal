@@ -23,7 +23,11 @@ class AchievementDescriptionController {
     }
 
     def show(AchievementDescription achievementDescriptionInstance) {
-        redirect action: 'edit', id: achievementDescriptionInstance.id
+        if (!achievementDescriptionInstance) {
+            notFound()
+        } else {
+            redirect action: 'edit', id: achievementDescriptionInstance.id
+        }
     }
     
     def create() {

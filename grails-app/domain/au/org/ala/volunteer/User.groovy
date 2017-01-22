@@ -4,11 +4,22 @@ class User {
 
   String userId
   String email
-  String displayName
+  String firstName
+  String lastName
   String organisation
   Integer transcribedCount = 0   //the number of tasks completed by the user
   Integer validatedCount = 0     // the number of task completed by this user and then validated by a validator
   Date created               //set to the date when the user first contributed
+
+  String getDisplayName() {
+    firstName && lastName ? "$firstName $lastName" : (firstName ?: lastName)
+  }
+
+  void setDisplayName(String displayName) {
+    log.error("Can't set displayName anymore")
+  }
+
+  static transients = ['displayName']
 
   static hasMany = [userRoles:UserRole, achievementAwards: AchievementAward]
 
@@ -22,6 +33,8 @@ class User {
     transcribedCount nullable: true
     validatedCount nullable: true
     organisation nullable: true
+    firstName nullable: true
+    lastName nullable: true
     userId maxSize: 200
     email maxSize: 200
   }
