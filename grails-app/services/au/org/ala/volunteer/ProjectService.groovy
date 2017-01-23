@@ -6,8 +6,7 @@ import org.apache.commons.compress.archivers.zip.Zip64Mode
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.plugins.metrics.groovy.Timed
+import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.imageio.ImageIO
 import java.nio.file.FileSystem
@@ -132,7 +131,6 @@ class ProjectService {
 
     }
 
-    @Timed
     public List<ProjectSummary> getFeaturedProjectList() {
 
         Stopwatch sw = Stopwatch.createStarted()
@@ -202,7 +200,7 @@ class ProjectService {
         }
 
         // Default, if all else fails
-        def iconImage = grailsLinkGenerator.resource(dir:'/images/2.0/images', file:'iconLabels.png')
+        def iconImage = grailsLinkGenerator.resource(file:'/iconLabels.png')
         def iconLabel = 'Specimens'
 
         if (project.projectType) {

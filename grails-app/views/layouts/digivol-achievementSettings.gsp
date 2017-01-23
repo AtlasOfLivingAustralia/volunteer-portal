@@ -4,11 +4,12 @@
            value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
+    <g:layoutHead />
 </head>
 
 <body class="admin">
 
-<cl:headerContent title="${achievementDescriptionInstance.name}" hideTitle="true" selectedNavItem="bvpadmin">
+<cl:headerContent title="${achievementDescriptionInstance?.name}" hideTitle="true" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
@@ -38,7 +39,7 @@
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
                         <div class="panel-heading text-right" >
-                            <h4 class="pull-left">${achievementDescriptionInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                            <h4 class="pull-left">${achievementDescriptionInstance?.name} - <g:pageProperty name="page.pageTitle"/></h4>
                             <div class="btn-group">
                                 <g:pageProperty name="page.adminButtonBar"/>
                             </div>
@@ -55,5 +56,6 @@
     </div>
 </div>
 <asset:javascript src="bootstrap-switch" asset-defer=""/>
+
 </body>
 </g:applyLayout>

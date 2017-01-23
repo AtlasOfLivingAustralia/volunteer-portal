@@ -135,7 +135,7 @@ class DomainUpdateService {
         log.trace("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to get tasks from queue")
 
         currentlyProcessing.set(indexes.size())
-        log.debug("Took ${indexes.size()} jobs from quque, current queue length: $queueLength")
+        log.debug("Took ${indexes.size()} jobs from queue, current queue length: $queueLength")
 
         sw.reset().start()
         if (deletes) fullTextIndexService.deleteTasks(deletes)

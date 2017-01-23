@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
@@ -12,23 +11,23 @@ class TemplateController {
     def templateFieldService
     def templateService
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [templateInstanceList: Template.list(params), templateInstanceTotal: Template.count()]
     }
 
-    def create = {
+    def create() {
         def templateInstance = new Template()
         templateInstance.author = userService.currentUserId
         templateInstance.properties = params
         return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
-    def save = {
+    def save() {
         params.author = userService.currentUserId
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
@@ -40,7 +39,7 @@ class TemplateController {
         }
     }
 
-    def show = {
+    def show() {
         def templateInstance = Template.get(params.id)
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -51,7 +50,7 @@ class TemplateController {
         }
     }
 
-    def edit = {
+    def edit() {
         def templateInstance = Template.get(params.id)
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -63,7 +62,7 @@ class TemplateController {
         }
     }
 
-    def update = {
+    def update() {
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             if (params.version) {
@@ -99,7 +98,7 @@ class TemplateController {
         }
     }
 
-    def delete = {
+    def delete() {
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             try {

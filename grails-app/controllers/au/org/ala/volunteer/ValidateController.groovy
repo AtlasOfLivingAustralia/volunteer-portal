@@ -7,9 +7,8 @@ class ValidateController {
     def taskService
     def userService
     def logService
-    def grailsApplication
 
-    def task = {
+    def task() {
         def taskInstance = Task.get(params.id)
         def currentUser = userService.currentUserId
         userService.registerCurrentUser()
@@ -64,7 +63,7 @@ class ValidateController {
     /**
      * Mark a task as validated, hence removing it from the list of tasks to be validated.
      */
-    def validate = {
+    def validate() {
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
@@ -85,7 +84,7 @@ class ValidateController {
     /**
      * To do determine actions if the validator chooses not to validate
      */
-    def dontValidate = {
+    def dontValidate() {
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
@@ -103,7 +102,7 @@ class ValidateController {
         }
     }
 
-    def skip = {
+    def skip() {
         def taskInstance = Task.get(params.id)
         if (taskInstance != null) {
             redirect(action: 'showNextFromProject', id:taskInstance.project.id)
@@ -113,7 +112,7 @@ class ValidateController {
         }
     }
 
-    def showNextFromProject = {
+    def showNextFromProject() {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
 
@@ -140,14 +139,14 @@ class ValidateController {
         }
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         def tasks = Task.findAllByFullyTranscribedByIsNotNull(params)
         def taskInstanceTotal = Task.countByFullyTranscribedByIsNotNull()
         render(view: '../task/list', model: [tasks: tasks, taskInstanceTotal: taskInstanceTotal])
     }
 
-    def listForProject = {
+    def listForProject() {
         def projectInstance = Task.get(params.id)
         def tasks = Task.executeQuery("""select t from Task t
          where t.project = :project and t.fullyTranscribedBy is not null""",

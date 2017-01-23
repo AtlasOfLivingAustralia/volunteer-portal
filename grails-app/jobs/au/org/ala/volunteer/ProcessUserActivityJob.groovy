@@ -4,7 +4,6 @@ package au.org.ala.volunteer
 class ProcessUserActivityJob {
 
     def userService
-    def grailsApplication
     def concurrent = false
 
     static triggers = {

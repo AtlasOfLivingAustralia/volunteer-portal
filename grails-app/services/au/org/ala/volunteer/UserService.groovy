@@ -1,19 +1,23 @@
 package au.org.ala.volunteer
 
+import au.org.ala.cas.util.AuthenticationUtils
+import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.sql.Sql
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.http.HttpServletRequest
 import java.sql.Connection
 import java.util.concurrent.ConcurrentLinkedQueue
 
+@Transactional
 class UserService {
 
     def authService
@@ -26,8 +30,6 @@ class UserService {
     def freemarkerService
     def fullTextIndexService
 
-    static transactional = true
-
     private static Queue<UserActivity> _userActivityQueue = new ConcurrentLinkedQueue<UserActivity>()
 
     /**
@@ -36,6 +38,8 @@ class UserService {
     def registerCurrentUser() {
         def userId = currentUserId
         def displayName = authService.displayName
+        def firstName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_FIRST_NAME)
+        def lastName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_LAST_NAME)
         log.info("Checking user is registered: ${displayName} (UserId=${userId})")
         if (userId) {
             if (User.findByUserId(userId) == null) {
@@ -44,7 +48,8 @@ class UserService {
                 user.userId = userId
                 user.email = currentUserEmail
                 user.created = new Date()
-                user.displayName = displayName
+                user.firstName = firstName
+                user.lastName = lastName
                 user.save(flush: true)
                 // Notify admins that a new user has registered
                 notifyNewUser(user)
@@ -66,7 +71,7 @@ class UserService {
     def getUserCounts(List<String> ineligibleUsers = []) {
         def args = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
         def users = User.executeQuery("""
-            select new map(displayName as displayName, email as email, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
+            select new map(concat(firstName, ' ', lastName) as displayName, email as email, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
             from User
             where (transcribedCount + validatedCount) > 0
             ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
@@ -361,7 +366,7 @@ class UserService {
             return []
         }
 
-        def serviceResults
+        UserDetailsFromIdListResponse serviceResults
         try {
             serviceResults = authService.getUserDetailsById(userIds)
         } catch (Exception e) {
@@ -393,10 +398,11 @@ class UserService {
             'in' 'userId', ids
             projections {
                 property 'userId'
-                property 'displayName'
+                property 'firstName'
+                property 'lastName'
                 property 'email'
             }
-        }.collect { new UserDetails( displayName: it[1], userId: it[0], userName: it[2] ) }
+        }.collect { new UserDetails( firstName: it[1], lastName: it[2], userId: it[0], userName: it[3] ) }
     }
 
     List<String> getEmailAddressesForIds(List<String> userIds) {
@@ -459,7 +465,7 @@ class UserService {
         def users = User.all
 
         def ids = users*.userId
-        def results
+        UserDetailsFromIdListResponse results
         try {
             results = authService.getUserDetailsById(ids, true)
         } catch (Exception e) {
@@ -470,8 +476,9 @@ class UserService {
         if (results) {
             users.each {
                 def result = results.users[it.userId]
-                if (result && (result.displayName != it.displayName || result.userName != it.email || result.organisation != it.organisation)) {
-                    it.displayName = result.displayName
+                if (result && (result.firstName != it.firstName || result.lastName != it.lastName || result.userName != it.email || result.organisation != it.organisation)) {
+                    it.firstName = result.firstName
+                    it.lastName = result.lastName
                     it.email = result.userName
                     it.organisation = result.organisation
                     updates << it

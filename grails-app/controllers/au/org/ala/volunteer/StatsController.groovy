@@ -13,7 +13,7 @@ class StatsController {
     def settingsService
     def leaderBoardService
 
-    def index = {}
+    def index() {}
 
     def volunteerStats() {
         def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff

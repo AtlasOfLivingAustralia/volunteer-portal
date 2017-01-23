@@ -8,6 +8,9 @@ import grails.util.Metadata
 import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
+import org.grails.web.mapping.CachingLinkGenerator
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.servlet.support.RequestDataValueProcessor
 
 import java.text.SimpleDateFormat
 
@@ -16,7 +19,6 @@ class VolunteerTagLib {
     static namespace = 'cl'
 
     def userService
-    def grailsApplication
     def settingsService
     def multimediaService
     def markdownService
@@ -180,25 +182,6 @@ class VolunteerTagLib {
             mb.mkp.yieldUnescaped("&nbsp;")
         }
     }
-
-    /**
-     * Show map of records based on UID
-     *
-     * - content is loaded by ajax calls
-     */
-    def recordsMap = {
-        out <<
-            "<div class='recordsMap'>" +
-            " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-            " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-            "</div>" +
-            "<div class='learnMaps'><span class='asterisk-container'><a href='${grailsApplication.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
-
-        /*out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-                "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-                "</div>"*/
-    }
-
 
     /**
      * Writes a para with date last updated.
@@ -556,10 +539,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -587,10 +570,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -812,12 +795,29 @@ class VolunteerTagLib {
      * Updated to use properties provided by build-info plugin
      */
     def addApplicationMetaTags = { attrs ->
-        def metaList = ['app.version', 'app.grails.version', 'build.date', 'scm.version', 'environment.TRAVIS_JDK_VERSION', 'environment.TRAVIS_REPO_SLUG', 'environment.TRAVIS_BUILD_NUMBER', 'environment.TRAVIS_TAG', 'environment.TRAVIS_BRANCH', 'environment.TRAVIS_COMMIT']
+        def metaList = [
+                'app.version', 
+                'app.grailsVersion',
+                'build.ci',
+                'build.date', 
+                'build.jdk', 
+                'build.number', 
+                'git.branch', 
+                'git.commit',
+                'git.slug', 
+                'git.tag', 
+                'git.timestamp'
+        ]
         def mb = new MarkupBuilder(out)
 
         mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
-            mb.meta(name:it, content: g.meta(name:it))
+            def content = g.meta(name: 'info.' + it)
+            if (content) {
+                mb.meta(name:it, content: content)
+            } else {
+                log.debug("info.$it not found in meta info")
+            }
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }
@@ -841,7 +841,7 @@ class VolunteerTagLib {
     }
 
     def buildDate = { attrs ->
-        def bd = Metadata.current['build.date']
+        def bd = Metadata.current['info.build.date']
         log.debug("Build Date type is ${bd?.class?.name}")
         def df = new SimpleDateFormat('MMM d, yyyy')
         if (bd) {
@@ -920,4 +920,35 @@ class VolunteerTagLib {
             out << "<small>Created by <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> on ${date}.</small>"
         }
     }
+
+    @Value('${google.maps.key}')
+    String mapsApiKey
+
+    /**
+     * Insert a script tag for the google maps api using the google.maps.key property if one
+     * is set.
+     * @attr callback The callback function to use
+     */
+    def googleMapsScript = { attrs, body ->
+//        %{--<script src='https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}' async defer ></script>--}%
+//        def url = "http://maps.google.com/maps/api/js?v=3"
+        if ( attrs.containsKey('if') && !attrs.remove('if') ) return
+        def url = "https://maps.googleapis.com/maps/api/js"
+        def opts = [:]
+        def callback = attrs.remove('callback')
+        if (callback) {
+            opts['callback'] = callback
+        }
+        if (mapsApiKey) {
+            opts['key'] = mapsApiKey
+        } else {
+            log.warn("No google.maps.key config settings was found.")
+        }
+
+        if (opts) {
+            url += "?" + opts.collect { "$it.key=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
+        }
+        out << "<script type=\"text/javascript\" src=\"$url\" async defer></script>"
+    }
+
 }

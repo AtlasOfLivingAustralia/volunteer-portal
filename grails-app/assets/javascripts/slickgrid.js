@@ -260,7 +260,7 @@
       $input.datepicker({
         showOn: "button",
         buttonImageOnly: true,
-        buttonImage: BVP_JS_URLS.webappRoot + "js/slickgrid/images/calendar.gif",
+        buttonImage: BVP_JS_URLS.slickgridCalendarImagePath,
         dateFormat: 'yy-mm-dd',
         changeMonth: true,
         changeYear: true,

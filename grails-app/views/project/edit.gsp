@@ -10,7 +10,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>
+    <link rel="stylesheet" href="${resource(file: '/css/vp.css')}"/>
 
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
 

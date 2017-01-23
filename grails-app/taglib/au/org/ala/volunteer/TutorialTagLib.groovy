@@ -22,14 +22,14 @@ class TutorialTagLib {
      * @param file The image file in the images/tutorial directory
      */
     def screenshot = { attrs, body ->
-        out << '<br/><img class="screenshot" src="' + resource(dir:'images/tutorials', file: attrs.file) + '" />'
+        out << '<br/><img class="screenshot" src="' + resource(file:"/images/tutorials/${attrs.file}") + '" />'
     }
 
     /**
      * @param file The image file in the images/tutorial directory
      */
     def img = { attrs, body ->
-        out << '<br /><img class="inlineImage" src="' + resource(dir:'images/tutorials', file: attrs.file) + '" />'
+        out << '<br /><img class="inlineImage" src="' + resource(file:"images/tutorials/${attrs.file}") + '" />'
     }
 
     String stripBrackets(String s) {

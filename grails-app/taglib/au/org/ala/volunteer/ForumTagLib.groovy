@@ -3,14 +3,12 @@ package au.org.ala.volunteer
 import com.naleid.grails.MarkdownService
 import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
-import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class ForumTagLib {
 
     static namespace = 'vpf'
 
     UserService userService
-    GrailsApplication grailsApplication
     MarkdownService markdownService
     TaskService taskService
     MultimediaService multimediaService
@@ -56,7 +54,7 @@ class ForumTagLib {
                         }
                         th(style: 'text-align: right; vertical-align: middle; width: 150px') {
                             if (topic.locked) {
-                                mb.img(style: 'vertical-align: middle', src: resource(dir: '/images', file: 'lock.png'))
+                                mb.img(style: 'vertical-align: middle', src: resource(file: '/lock.png'))
                                 mkp.yield("Topic is locked")
                             } else {
                                 mb.a(id:'btnReply', class:'btn btn-primary') {

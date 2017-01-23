@@ -1,12 +1,12 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
 import groovy.sql.Sql
 
 import javax.sql.DataSource
 
+@Transactional
 class StatsService {
-
-    static transactional = true
 
     def grailsApplication
     DataSource dataSource

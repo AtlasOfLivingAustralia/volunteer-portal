@@ -7,22 +7,22 @@ class MultimediaController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [multimediaInstanceList: Multimedia.list(params), multimediaInstanceTotal: Multimedia.count()]
     }
 
-    def create = {
+    def create() {
         def multimediaInstance = new Multimedia()
         multimediaInstance.properties = params
         return [multimediaInstance: multimediaInstance]
     }
 
-    def save = {
+    def save() {
         def multimediaInstance = new Multimedia(params)
         if (multimediaInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'multimedia.label', default: 'Multimedia'), multimediaInstance.id])}"
@@ -33,7 +33,7 @@ class MultimediaController {
         }
     }
 
-    def show = {
+    def show() {
         def multimediaInstance = Multimedia.get(params.id)
         if (!multimediaInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'multimedia.label', default: 'Multimedia'), params.id])}"
@@ -44,7 +44,7 @@ class MultimediaController {
         }
     }
 
-    def edit = {
+    def edit() {
         def multimediaInstance = Multimedia.get(params.id)
         if (!multimediaInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'multimedia.label', default: 'Multimedia'), params.id])}"
@@ -55,7 +55,7 @@ class MultimediaController {
         }
     }
 
-    def update = {
+    def update() {
         def multimediaInstance = Multimedia.get(params.id)
         if (multimediaInstance) {
             if (params.version) {
@@ -82,7 +82,7 @@ class MultimediaController {
         }
     }
 
-    def delete = {
+    def delete() {
         def multimediaInstance = Multimedia.get(params.id)
         if (multimediaInstance) {
             try {

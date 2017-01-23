@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.web.json.JSONArray; au.org.ala.volunteer.Project" %>
+<%@ page import="org.grails.web.json.JSONArray; au.org.ala.volunteer.Project" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -50,7 +50,7 @@
                             <tr settingKey="${setting.key}">
                                 <td>${setting.key}</td>
                                 <td>${setting.defaultValue}</td>
-                                <td><strong>${values[setting] instanceof org.codehaus.groovy.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
+                                <td><strong>${values[setting] instanceof org.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
                                 <td>${setting.description}</td>
                                 <td><button class="btn btn-default btnEditSetting">Change</button></td>
                             </tr>

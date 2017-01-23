@@ -4,7 +4,7 @@ class PublicController {
 
     def logService
 
-    def index = { }
+    def index() { }
 
     /**
      * Do logouts through this app so we can invalidate the session.
@@ -12,7 +12,7 @@ class PublicController {
      * @param casUrl the url for logging out of cas
      * @param appUrl the url to redirect back to after the logout
      */
-    def logout = {
+    def logout() {
         log.info "Invalidating Session (PublicController.logout): ${session.id}"
         session.invalidate()
         redirect(url: "${params.casUrl}?url=${params.appUrl}")

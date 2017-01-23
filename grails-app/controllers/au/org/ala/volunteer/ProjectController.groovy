@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 import com.google.common.base.Stopwatch
 import grails.converters.*
 import org.apache.commons.io.FileUtils
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
@@ -24,7 +24,6 @@ class ProjectController {
     static final LABEL_COLOURS = ["label-success", "label-warning", "label-danger", "label-info", "label-primary", "label-default"]
     public static final int MAX_BACKGROUND_SIZE = 512 * 1024
 
-    def grailsApplication
     def taskService
     def fieldService
     def logService
@@ -41,7 +40,7 @@ class ProjectController {
     /**
      * Project home page - shows stats, etc.
      */
-    def index = {
+    def index() {
         def projectInstance = Project.get(params.id)
 
         String currentUserId = null
@@ -55,7 +54,7 @@ class ProjectController {
         } else {
             // project info
             def taskCount = Task.countByProject(projectInstance)
-            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:'dateLastUpdated', order:'desc'])
+            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
             def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
             def expedition = grailsApplication.config.expedition
             def roles = [] //  List of Map
@@ -170,7 +169,7 @@ class ProjectController {
     /**
      * Output list of email addresses for a given project
      */
-    def mailingList = {
+    def mailingList() {
         def projectInstance = Project.get(params.id)
 
         if (projectInstance && userService.isAdmin()) {
@@ -244,7 +243,7 @@ class ProjectController {
     /**
      * Produce an export file
      */
-    def exportCSV = {
+    def exportCSV() {
         def projectInstance = Project.get(params.id)
         boolean transcribedOnly = params.transcribed?.toBoolean()
         boolean validatedOnly = params.validated?.toBoolean()
@@ -286,13 +285,13 @@ class ProjectController {
         }
     }
 
-    def deleteTasks = {
+    def deleteTasks() {
         def projectInstance = Project.get(params.id)
         projectService.deleteTasksForProject(projectInstance, true)
         redirect(action: "edit", id: projectInstance?.id)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 24, 1000)
 
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
@@ -311,7 +310,7 @@ class ProjectController {
         ]
     }
 
-    def create = {
+    def create() {
         def currentUser = userService.currentUserId
         if (currentUser != null && userService.isAdmin()) {
             def projectInstance = new Project()
@@ -333,7 +332,7 @@ class ProjectController {
         }
     }
 
-    def save = {
+    def save() {
         def projectInstance = new Project(params)
 
         if (!projectInstance.template) {
@@ -360,7 +359,7 @@ class ProjectController {
     /**
      * Redirects a image for the supplied project
      */
-    def showImage = {
+    def showImage() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             params.max = 1
@@ -371,7 +370,7 @@ class ProjectController {
         }
     }
 
-    def show = {
+    def show() {
         def projectInstance = Project.get(params.id)
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -381,7 +380,7 @@ class ProjectController {
         }
     }
 
-    def edit = {
+    def edit() {
         def currentUser = userService.currentUserId
         if (currentUser != null && userService.isAdmin()) {
             redirect(action:"editGeneralSettings", params: params)
@@ -606,7 +605,7 @@ class ProjectController {
     }
 
 
-    def delete = {
+    def delete() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             try {
@@ -625,7 +624,7 @@ class ProjectController {
         }
     }
     
-    def uploadFeaturedImage = {
+    def uploadFeaturedImage() {
         def projectInstance = Project.get(params.id)
 
         if(request instanceof MultipartHttpServletRequest) {
@@ -659,7 +658,7 @@ class ProjectController {
         redirect(action: "editBannerImageSettings", id: params.id)
     }
 
-    def uploadBackgroundImage = {
+    def uploadBackgroundImage() {
         def projectInstance = Project.get(params.id)
 
         if(request instanceof MultipartHttpServletRequest) {
@@ -719,7 +718,7 @@ class ProjectController {
         redirect(action:'edit', id:projectInstance?.id)
     }
 
-    def setLeaderIconIndex = {
+    def setLeaderIconIndex() {
         if (params.id) {
             def project = Project.get(params.id)
             if (project) {

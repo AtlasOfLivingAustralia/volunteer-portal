@@ -99,10 +99,12 @@ class Project implements Serializable {
         def localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-image.jpg"
         def file = new File(localPath)
         if (!file.exists()) {
-            return grailsLinkGenerator.resource([dir: '/images/banners', file:'default-expedition-large.jpg'])
+            return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
 
         } else {
-            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-image.jpg"
+            def urlPrefix = grailsApplication.config.images.urlPrefix
+            def infix = urlPrefix.endsWith('/') ? '' : '/'
+            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${id}/expedition-image.jpg"
         }
     }
 

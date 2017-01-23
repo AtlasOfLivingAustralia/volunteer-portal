@@ -8,7 +8,7 @@ class Field implements Serializable {
   Integer recordIdx
   String transcribedByUserId
   String validatedByUserId
-  boolean superceded = false
+  Boolean superceded = false
   Date created = new Date()
   Date updated = new Date()
 

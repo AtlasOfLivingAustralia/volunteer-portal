@@ -1,15 +1,15 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
+import grails.transaction.Transactional
 
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 import org.springframework.context.i18n.LocaleContextHolder
 
+@Transactional
 class ExportService {
-
-    static transactional = true
 
     def grailsApplication
     def grailsLinkGenerator
