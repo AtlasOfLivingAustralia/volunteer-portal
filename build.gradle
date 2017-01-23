@@ -3,11 +3,12 @@ import org.apache.tools.ant.filters.ReplaceTokens
 buildscript {
     repositories {
         mavenLocal()
+        maven { url "https://nexus.ala.org.au/content/groups/public/" }
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.12.4"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.12.10.ALA-SNAPSHOT"
         classpath "org.grails.plugins:hibernate5:6.0.4"
     }
 }
@@ -18,6 +19,7 @@ buildscript {
 
 version "4.0-SNAPSHOT"
 group "au.org.ala"
+description "Digivol application"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
@@ -25,13 +27,17 @@ apply plugin:"war"
 apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
+apply plugin:"maven-publish"
+
+ext {
+    set "tomcat.version", "8.5.11" // force this version due to a conflict between hibernate and tomcat 8.5.9, remove when upgrading grails version to 3.2.5+
+}
 
 repositories {
     mavenLocal()
     maven { url "https://nexus.ala.org.au/content/groups/public/" }
     maven { url "https://repo.grails.org/grails/core" }
     jcenter()
-//    maven { url "https://dl.bintray.com/sachinverma/plugins/"}
 }
 
 dependencyManagement {
@@ -57,7 +63,7 @@ dependencies {
     compile "org.hibernate:hibernate-ehcache:5.1.2.Final"
     console "org.grails:grails-console"
     profile "org.grails.profiles:web"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.12.4"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.12.10.ALA-SNAPSHOT"
 //    runtime "com.h2database:h2"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
@@ -88,7 +94,7 @@ dependencies {
 //    compile 'org.webjars:font-awesome:4.7.0'
 
     // Dependencies
-    runtime 'org.postgresql:postgresql:9.4.1212.jre7'
+    runtime 'org.postgresql:postgresql:9.4.1212'
     compile 'org.imgscalr:imgscalr-lib:4.2'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
@@ -110,10 +116,25 @@ bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
 }
 
+bootRepackage {
+    enabled = true
+    executable = true
+//    classifier = 'exec'
+
+    embeddedLaunchScriptProperties = [
+                    initInfoDescription: project.description,
+                    initInfoShortDescription: project.name,
+                    initInfoProvides: jar.baseName,
+//                    mode: 'service'
+            ]
+}
+
 assets {
     minifyJs = true
     minifyCss = true
-    includes = ["fonts/*", "node_modules/*", "lib/*"]
+    excludes = ['codemirror/**/*.html', "**/*.min.js", "**/*.min.css", "angular/*/i18n/**", "**/*.map"]
+//    includes = ["fonts/*", "node_modules/*", "lib/*"]
+//    excludes = ["**/*.min.js", "**/*"]
 }
 
 def gitSha() {
@@ -156,6 +177,41 @@ processResources {
                 'info.git.tag' : envProp('TRAVIS_TAG'),
                 'info.git.timestamp' : gitTimestamp()
         ])
+    }
+}
+
+publish {
+    dependsOn assemble
+}
+
+publishing {
+    repositories {
+        maven {
+            name 'Nexus'
+            url "https://nexus.ala.org.au/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases' }"
+            credentials {
+                username = System.getenv('TRAVIS_DEPLOY_USERNAME')
+                password = System.getenv('TRAVIS_DEPLOY_PASSWORD')
+            }
+        }
+    }
+    publications {
+        mavenJar(MavenPublication) {
+            pom.withXml {
+                def pomNode = asNode()
+                pomNode.dependencyManagement.replaceNode {}
+
+                // simply remove dependencies without a version
+                // version-less dependencies are handled with dependencyManagement
+                // see https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/8 for more complete solutions
+                pomNode.dependencies.dependency.findAll {
+                    it.version.text().isEmpty()
+                }.each {
+                    it.replaceNode {}
+                }
+            }
+            from components.web
+        }
     }
 }
 

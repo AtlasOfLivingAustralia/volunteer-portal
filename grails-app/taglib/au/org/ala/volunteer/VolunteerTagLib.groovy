@@ -8,7 +8,9 @@ import grails.util.Metadata
 import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
+import org.grails.web.mapping.CachingLinkGenerator
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.servlet.support.RequestDataValueProcessor
 
 import java.text.SimpleDateFormat
 
@@ -180,25 +182,6 @@ class VolunteerTagLib {
             mb.mkp.yieldUnescaped("&nbsp;")
         }
     }
-
-    /**
-     * Show map of records based on UID
-     *
-     * - content is loaded by ajax calls
-     */
-    def recordsMap = {
-        out <<
-            "<div class='recordsMap'>" +
-            " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-            " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-            "</div>" +
-            "<div class='learnMaps'><span class='asterisk-container'><a href='${grailsApplication.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
-
-        /*out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-                "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-                "</div>"*/
-    }
-
 
     /**
      * Writes a para with date last updated.
@@ -556,10 +539,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -587,10 +570,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -949,7 +932,6 @@ class VolunteerTagLib {
     def googleMapsScript = { attrs, body ->
 //        %{--<script src='https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}' async defer ></script>--}%
 //        def url = "http://maps.google.com/maps/api/js?v=3"
-        log.error("GOOGLE MAPS SCRIPT START")
         if ( attrs.containsKey('if') && !attrs.remove('if') ) return
         def url = "https://maps.googleapis.com/maps/api/js"
         def opts = [:]
@@ -967,7 +949,6 @@ class VolunteerTagLib {
             url += "?" + opts.collect { "$it.key=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
         }
         out << "<script type=\"text/javascript\" src=\"$url\" async defer></script>"
-        log.error("GOOGLE MAPS SCRIPT END")
     }
 
 }

@@ -356,10 +356,10 @@ class TranscribeTagLib {
 
             if (!imageMetaData) {
 
-                def sampleFile = grailsApplication.mainContext.getResource("images/sample-task.jpg").file
+                def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg").file
 
 
-                def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
+                def sampleUrl = resource(file:'/sample-task.jpg')
                 imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
                 mb.div(class:'alert alert-danger') {
                     button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
@@ -676,7 +676,7 @@ class TranscribeTagLib {
         } else if (task?.project) {
             out << task.project.featuredImage
         } else {
-            out << grailsLinkGenerator.resource( dir: 'images/2.0/', file: 'logoDigivolGrey.png' )
+            out << grailsLinkGenerator.resource( file: '/logoDigivolGrey.png' )
         }
     }
 

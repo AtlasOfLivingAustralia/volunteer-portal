@@ -200,7 +200,7 @@ class ProjectService {
         }
 
         // Default, if all else fails
-        def iconImage = grailsLinkGenerator.resource(dir:'/images/2.0/images', file:'iconLabels.png')
+        def iconImage = grailsLinkGenerator.resource(file:'/iconLabels.png')
         def iconLabel = 'Specimens'
 
         if (project.projectType) {

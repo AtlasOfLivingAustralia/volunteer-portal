@@ -54,7 +54,7 @@ class ForumTagLib {
                         }
                         th(style: 'text-align: right; vertical-align: middle; width: 150px') {
                             if (topic.locked) {
-                                mb.img(style: 'vertical-align: middle', src: resource(dir: '/images', file: 'lock.png'))
+                                mb.img(style: 'vertical-align: middle', src: resource(file: '/lock.png'))
                                 mkp.yield("Topic is locked")
                             } else {
                                 mb.a(id:'btnReply', class:'btn btn-primary') {

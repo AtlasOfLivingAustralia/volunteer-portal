@@ -18,7 +18,7 @@ class Multimedia implements Serializable {
   }
 
   static constraints = {
-    created maxSize: 19, nullable: true
+    created nullable: true
     creator nullable: true, maxSize: 200
     filePath nullable: true, maxSize: 200
     filePathToThumbnail nullable: true, maxSize: 200

@@ -124,6 +124,9 @@ headerAndFooter:
 ala:
     baseURL: "http://www.ala.org.au"
     skin: "digivol-main"
+    image:
+        service:
+            url: http://images.ala.org.au
 
 bie:
     baseURL: "http://bie.ala.org.au"
@@ -178,63 +181,47 @@ digivol:
         - 'UA-7855618-24'
         - 'UA-64438237-2'
 
-environments:
-    development:
-        grails:
-            serverURL: http://devt.ala.org.au:8080/digivol
-            mail:
-                disabled: true
-                host: localhost
-                port: 1025
-                #overrideAddress: your.email@here.com
-        server:
-            url: http://devt.ala.org.au
-            contextPath: /digivol
-        security:
-            cas:
-                appServerName: http://devt.ala.org.au:8080
-        images:
-            home: /data/volunteer-portal
-            urlPrefix: data/volunteer-portal/
-        ala:
-            image:
-                service:
-                    url: http://images.ala.org.au
-#            digest:
-#                enabled: true
-    test:
-        grails:
-            serverURL: http://volunteer-dev.ala.org.au
-        server:
-            url: http://volunteer-dev.ala.org.au
-        security:
-            cas:
-                appServerName: http://volunteer-dev.ala.org.au
-        images:
-            home: /data/volunteer-portal
-            urlPrefix: data/volunteer-portal/
-        ala:
-            image:
-                service:
-                    url: http://images.ala.org.au
-    production:
-        grails:
-            serverURL: http://volunteer.ala.org.au
-            mail:
-                host: localhost
-                port: 25
-        server:
-            url: http://volunteer.ala.org.au
-        security:
-            cas:
-                appServerName: http://volunteer.ala.org.au
-        images:
-            home: /data/volunteer-portal
-            urlPrefix: data/volunteer-portal/
-        ala:
-            image:
-                service:
-                    url: http://images.ala.org.au
+#environments:
+#    development:
+#        grails:
+#            serverURL: http://devt.ala.org.au:8080/digivol
+#            mail:
+#                disabled: true
+#                host: localhost
+#                port: 1025
+#                #overrideAddress: your.email@here.com
+#        server:
+#            url: http://devt.ala.org.au
+#            contextPath: /digivol
+#        security:
+#            cas:
+#                appServerName: http://devt.ala.org.au:8080
+#    test:
+#        grails:
+#            serverURL: http://volunteer-dev.ala.org.au
+#        server:
+#            url: http://volunteer-dev.ala.org.au
+#        security:
+#            cas:
+#                appServerName: http://volunteer-dev.ala.org.au
+#        images:
+#            home: /data/volunteer-portal
+#            urlPrefix: data/volunteer-portal/
+#        ala:
+#            image:
+#                service:
+#                    url: http://images.ala.org.au
+#    production:
+#        grails:
+#            serverURL: http://volunteer.ala.org.au
+#            mail:
+#                host: localhost
+#                port: 25
+#        server:
+#            url: http://volunteer.ala.org.au
+#        security:
+#            cas:
+#                appServerName: http://volunteer.ala.org.au
 
 #Fix grails taglib <g:paginate/> to work with bootstrap css.
 grails:
@@ -288,13 +275,9 @@ environments:
     test:
         dataSource:
             dbCreate: update
-            url: jdbc:postgresql://localhost/volunteerstest
-            username: "postgres"
-            password: "password"
     production:
         dataSource:
             dbCreate: update
-            url: jdbc:postgresql://ala-biocachedb1.vm.csiro.au/volunteers
             properties:
                 jmxEnabled: true
                 initialSize: 5

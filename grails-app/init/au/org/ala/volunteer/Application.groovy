@@ -8,11 +8,13 @@ import org.grails.core.io.DefaultResourceLocator
 import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
 import org.springframework.context.EnvironmentAware
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.Environment
 import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.PropertiesPropertySource
 
+@ComponentScan(basePackageClasses = EnvironmentDumper)
 class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     static void main(String[] args) {
         GrailsApp.run(Application, args)
@@ -32,17 +34,17 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
                     if (configurationResource) {
                         String fileName = configurationResource.getFile().getName()
                         String ext = Files.getFileExtension(fileName)
-                        log.debug("Attempting to load external config: $fileName")
+                        log.info("Attempting to load external config: $fileName")
                         MapPropertySource source
                         switch (ext.toLowerCase()) {
                             case 'groovy':
-                                log.debug("Loading external config: $fileName as groovy")
+                                log.info("Loading external config: $fileName as groovy")
                                 def config = new ConfigSlurper(grails.util.Environment.current.name).parse(IOUtils.toString(configurationResource.getInputStream(), 'UTF-8'))
                                 source = new MapPropertySource(configLocation, config)
                                 break
                             case 'properties':
                             case 'config':
-                                log.debug("Loading external config: $fileName as properties")
+                                log.info("Loading external config: $fileName as properties")
                                 PropertiesFactoryBean pfb = new PropertiesFactoryBean()
                                 pfb.setFileEncoding('UTF-8')
                                 pfb.setLocation(configurationResource)
@@ -51,7 +53,7 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
                                 source = new PropertiesPropertySource(configLocation, properties)
                                 break
                             case 'yml':
-                                log.debug("Loading external config: $fileName as yaml")
+                                log.info("Loading external config: $fileName as yaml")
                                 YamlPropertiesFactoryBean ypfb = new YamlPropertiesFactoryBean()
                                 ypfb.setResources(configurationResource)
                                 ypfb.afterPropertiesSet()
@@ -59,12 +61,11 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
                                 source = new PropertiesPropertySource(configLocation, properties)
                                 break
                             default:
-                                log.debug("NOT Loading external config: $fileName")
+                                log.warn("NOT Loading external config: $fileName")
                                 continue
                         }
                         if (source) {
                             (environment as ConfigurableEnvironment).propertySources.addFirst(source)
-
                         }
                     }
                 }

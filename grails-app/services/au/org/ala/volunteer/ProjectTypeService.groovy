@@ -7,7 +7,7 @@ class ProjectTypeService {
 
     def grailsApplication
 
-    def saveImageForProjectType(ProjectType projectType, File imageFile) {
+    def saveImageForProjectType(ProjectType projectType, InputStream image) {
 
         if (!projectType || !projectType.name) {
             return
@@ -20,7 +20,7 @@ class ProjectTypeService {
             }
         }
 
-        FileUtils.copyFile(imageFile, file);
+        FileUtils.copyInputStreamToFile(image, file)
     }
 
     def saveImageForProjectType(ProjectType projectType, MultipartFile imageFile) {

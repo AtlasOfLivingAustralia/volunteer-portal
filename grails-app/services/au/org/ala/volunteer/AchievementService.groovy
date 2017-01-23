@@ -198,7 +198,7 @@ class AchievementService {
         if (hasBadgeImage(achievementDescription)) {
             return "${prefix}${achievementDescription.badge}"
         } else {
-            return grailsLinkGenerator.resource([dir: '/images/achievements', file: 'blank.png'])
+            return grailsLinkGenerator.resource([uri: '/images/achievements/blank.png'])
         }
     }
 

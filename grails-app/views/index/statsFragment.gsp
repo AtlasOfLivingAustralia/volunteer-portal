@@ -4,7 +4,7 @@
             <h3>Expedition stats</h3>
         </td>
         <td>
-            <img class="pull-right" src="${resource(dir: "images/vp", file: 'compassrose.png')}"/>
+            <img class="pull-right" src="${resource(file: "/images/vp/compassrose.png")}"/>
         </td>
     </tr>
 </table>

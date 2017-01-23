@@ -29,7 +29,6 @@ class User {
   }
 
   static constraints = {
-    created maxSize: 19
     transcribedCount nullable: true
     validatedCount nullable: true
     organisation nullable: true

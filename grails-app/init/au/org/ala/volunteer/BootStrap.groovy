@@ -4,18 +4,21 @@ import au.org.ala.volunteer.sanitizer.SanitizedHtml
 import au.org.ala.volunteer.sanitizer.ValueConverterListener
 import com.google.common.io.Resources
 import grails.converters.JSON
+import grails.core.GrailsApplication
 import groovy.sql.Sql
 import org.apache.commons.lang.StringUtils
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 import org.hibernate.FlushMode
+import org.springframework.core.io.Resource
+import org.springframework.web.context.support.ServletContextResource
 
 class BootStrap {
 
     def logService
     def projectTypeService
-    def grailsApplication
+    GrailsApplication grailsApplication
     def auditService
     def sessionFactory
     def authService
@@ -113,7 +116,7 @@ class BootStrap {
 
     private void prepareProjectTypes() {
         log.info("Checking project types...")
-        def builtIns = [[name:'specimens', label:'Specimens', icon:'/images/2.0/iconLabels.png'], [name:'fieldnotes', label: 'Field notes', icon:'/images/2.0/iconNotes.png'], [name: 'cameratraps', label: 'Camera Traps', icon: '/images/2.0/iconWild.png']]
+        def builtIns = [[name:'specimens', label:'Specimens', icon:'/public/images/2.0/iconLabels.png'], [name:'fieldnotes', label: 'Field notes', icon:'/public/images/2.0/iconNotes.png'], [name: 'cameratraps', label: 'Camera Traps', icon: '/public/images/2.0/iconWild.png']]
         builtIns.each {
             def projectType = ProjectType.findByName(it.name)
             if (!projectType) {
@@ -121,9 +124,13 @@ class BootStrap {
                 projectType = new ProjectType(name: it.name, label: it.label)
             }
 
-            File iconFile = grailsApplication.mainContext.getResource(it.icon)?.file
+//            InputStream inputStream = getClass().getResourceAsStream(it.icon)
+
+            def iconFile = grailsApplication.mainContext.getResource("classpath:${it.icon}")
             if (iconFile) {
-                projectTypeService.saveImageForProjectType(projectType, iconFile)
+                projectTypeService.saveImageForProjectType(projectType, iconFile.inputStream)
+            } else {
+                log.warn("Couldn't load ${it.icon}")
             }
             projectType.save(failOnError: true, flush: true)
 
