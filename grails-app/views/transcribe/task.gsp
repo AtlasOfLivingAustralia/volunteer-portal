@@ -11,13 +11,13 @@
     <meta name="layout" content="digivol-transcribe"/>
 
     <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
-    <script type="text/javascript">
-        var gmapsReady = false;
-        function onGmapsReady() {
-            gmapsReady = true;
-            $(window).trigger('digivol.gmapsReady');
-        }
-    </script>
+    %{--<script type="text/javascript">--}%
+        %{--var gmapsReady = false;--}%
+        %{--function onGmapsReady() {--}%
+            %{--gmapsReady = true;--}%
+            %{--$(window).trigger('digivol.gmapsReady');--}%
+        %{--}--}%
+    %{--</script>--}%
     <cl:googleMapsScript callback="onGmapsReady"/>
     %{--<script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>--}%
     <asset:stylesheet src="image-viewer"/>

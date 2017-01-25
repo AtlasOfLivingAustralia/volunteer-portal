@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
-    %{--<cl:addApplicationMetaTags/>--}%
+    <cl:addApplicationMetaTags/>
     %{--<meta name="description" content="Atlas of Living Australia"/>--}%
     %{--<meta name="author" content="Atlas of Living Australia"/>--}%
     %{--<r:external dir="images/" file="favicon.ico"/>--}%

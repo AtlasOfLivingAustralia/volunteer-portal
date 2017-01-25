@@ -1,5 +1,5 @@
 //= encoding UTF-8
-//= require jquery-2.2.0.min
+//= require jquery
 //= require bootstrap
 //= require qtip
 //= require bootbox

@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.12.10.ALA-SNAPSHOT"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.12.10"
         classpath "org.grails.plugins:hibernate5:6.0.4"
     }
 }
@@ -63,7 +63,7 @@ dependencies {
     compile "org.hibernate:hibernate-ehcache:5.1.2.Final"
     console "org.grails:grails-console"
     profile "org.grails.profiles:web"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.12.10.ALA-SNAPSHOT"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.12.10"
 //    runtime "com.h2database:h2"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
@@ -75,11 +75,11 @@ dependencies {
 
     // Additional Plugins
     compile 'org.grails.plugins:cache:3.0.3'
-    compile 'org.grails.plugins:cache-headers:2.0.0.ALA-SNAPSHOT'
+//    compile 'org.grails.plugins:cache-headers:2.0.0.ALA-SNAPSHOT'
     compile 'org.grails.plugins:csv:1.0'
-    compile 'org.grails.plugins:postgresql-extensions:4.6.6' // check if needed
+//    compile 'org.grails.plugins:postgresql-extensions:4.6.6' // check if needed
     compile 'org.grails.plugins:mail:2.0.0.RC6'
-    compile 'org.grails.plugins:grails-executor:0.4' // check if needed
+    compile 'org.grails.plugins:grails-executor:0.4' // used in TaskLoadService.backgroundProcessQueue
     compile 'org.grails.plugins:grails-markdown:3.0.0' // may need modifications?
     compile 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?
     compile 'org.grails.plugins:quartz:2.0.9'
@@ -103,7 +103,7 @@ dependencies {
     compile 'org.apache.commons:commons-pool2:2.4.2'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile 'org.elasticsearch:elasticsearch:1.3.5'
-    // optional for elastic search
+    // optional for elastic search, version should match elastic search optional dep
     compile group: 'org.apache.lucene', name: 'lucene-expressions', version: '4.9.1'
     compile 'net.sf.opencsv:opencsv:2.3'
     compile 'org.freemarker:freemarker:2.3.23'

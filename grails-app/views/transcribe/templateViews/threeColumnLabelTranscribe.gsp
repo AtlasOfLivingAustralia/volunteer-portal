@@ -119,7 +119,7 @@
 </div>
 
 
-<asset:script>
+<asset:script type="text/javascript">
 
     $(document).ready(function () {
         $(".tutorialLinks a").each(function (index, element) {

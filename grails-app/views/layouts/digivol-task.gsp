@@ -11,20 +11,20 @@
     <meta name="layout" content="digivol-transcribe"/>
 
     <g:layoutTitle default="${cl.pageTitle(title:"${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}" />
-    <script type="text/javascript">
-        var gmapsReady = false;
-        function onGmapsReady() {
-            notify();
-        }
-        function notify() {
-            if (typeof $ != 'undefined') {
-                gmapsReady = true;
-                $(window).trigger('digivol.gmapsReady');
-            } else {
-                window.setTimeout(notify);
-            }
-        }
-    </script>
+    %{--<script type="text/javascript">--}%
+        %{--var gmapsReady = false;--}%
+        %{--function onGmapsReady() {--}%
+            %{--gmapsReady = true;--}%
+            %{--notify();--}%
+        %{--}--}%
+        %{--function notify() {--}%
+            %{--if (typeof $ != 'undefined') {--}%
+                %{--$(window).trigger('digivol.gmapsReady');--}%
+            %{--} else {--}%
+                %{--window.setTimeout(notify);--}%
+            %{--}--}%
+        %{--}--}%
+    %{--</script>--}%
     <cl:googleMapsScript callback="onGmapsReady"/>
     %{--<script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>--}%
     <asset:stylesheet src="image-viewer"/>

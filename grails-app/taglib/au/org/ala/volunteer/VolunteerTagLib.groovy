@@ -948,7 +948,22 @@ class VolunteerTagLib {
         if (opts) {
             url += "?" + opts.collect { "$it.key=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
         }
-        out << "<script type=\"text/javascript\" src=\"$url\" async defer></script>"
+        asset.script(type: 'text/javascript', src: url, async: true, defer: true)//"<asset:javascript type=\"text/javascript\" src=\"$url\" asset-defer async defer ></script>"
+        asset.script(type: 'text/javascript') {'''
+var gmapsReady = false;
+function onGmapsReady() {
+    gmapsReady = true;
+    notify();
+}
+function notify() {
+    if (typeof $ != 'undefined') {
+        $(window).trigger('digivol.gmapsReady');
+    } else {
+        window.setTimeout(notify);
+    }
+}
+'''
+        }
     }
 
 }

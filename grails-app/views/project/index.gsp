@@ -185,19 +185,27 @@
 <asset:javascript src="dotdotdot" asset-defer=""/>
 <asset:javascript src="bootbox" asset-defer=""/>
 
-<asset:script>
+<asset:script type="text/javascript">
 
     var map, infowindow;
 
-    function onGmapsReady() {
-        jQuery(function($) {
-             loadMap();
-            //resizeMap();
+    // function onGmapsReady() {
+    //     jQuery(function($) {
+    //          loadMap();
+    //         //resizeMap();
+    //
+    //         $(window).resize(function(e) {
+    //             //resizeMap();
+    //         });
+    //     });
+    // }
 
-            $(window).resize(function(e) {
-                //resizeMap();
-            });
-        });
+    if (gmapsReady) {
+      loadMap();
+    } else {
+      $(window).on('digivol.gmapsReady', function() {
+        loadMap();
+      });
     }
 
     function loadMap() {
