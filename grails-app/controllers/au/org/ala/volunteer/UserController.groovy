@@ -308,7 +308,7 @@ class UserController {
         def projectInstance = Project.get(params.int("projectId"))
         def userInstance = User.get(params.id)
 
-        def results = taskService.getTaskViewList(selectedTab, userInstance, projectInstance, params.query ?: '', params.int('offset', 0), params.int('max', 10), params.sort, params.order)
+        def results = taskService.getTaskViewList(selectedTab, userInstance, projectInstance, params.q ?: '', params.int('offset', 0), params.int('max', 10), params.sort, params.order)
 //        def recentValidatedTaskCount = 0
 
 //        if (userInstance.userId == userService.currentUserId) {

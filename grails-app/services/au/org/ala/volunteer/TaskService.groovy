@@ -1192,7 +1192,7 @@ ORDER BY record_idx, name;
     }
 
     @NotTransactional // handle the read only transaction at the sql level
-    // TODO Upgrade to Grails 3.1 and use Gradle, Flyway, JOOQ instead of this GORM rubbish
+    // TODO Use Gradle, Flyway, JOOQ instead of plain SQL
     // Or upgrade Elastic Search, add additional fields to the index for user display names and the like
     // and use it to search.
     /**
@@ -1300,12 +1300,12 @@ ORDER BY record_idx, name;
         final querySnippet
         if (query) {
             querySnippet = """AND (
-p.name = :query
+p.name ilike '%' || :query || '%'
 OR t.id::VARCHAR = :query
-OR c.catalog_number @> ARRAY[ :query ]
-OR p.name = :query
-OR t.external_identifier = :query
-OR vu.display_name = :query
+OR c.catalog_number @> ARRAY[ :query ]::text[]
+OR p.name ilike '%' || :query || '%'
+OR t.external_identifier ilike '%' || :query || '%'
+OR vu.display_name ilike '%' || :query || '%'
 OR ($statusSnippet) = :query
 )
 """
@@ -1341,7 +1341,7 @@ ORDER BY $sortColumn $order;
 """
         def results = [:]
 
-        final params = [userId: user.userId, project: project?.id]
+        final params = [userId: user.userId, project: project?.id, query: query]
         final countQuery = """
 $withClause
 $countClause

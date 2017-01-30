@@ -217,7 +217,7 @@
                 <div class="input-group">
                     <input type="text" id="searchbox" ng-model="$ctrl.query" name="searchbox" class="form-control input-lg" placeholder="${message(code:"default.search.label")}" />
                     <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="button" ng-click="$ctrl.doSearch">
+                        <button class="btn btn-info btn-lg" type="button" ng-click="$ctrl.load()">
                             <i class="glyphicon glyphicon-search"></i>
                         </button>
                     </span>
