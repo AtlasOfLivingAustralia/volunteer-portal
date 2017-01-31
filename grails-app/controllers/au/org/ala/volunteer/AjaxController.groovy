@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
+import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
@@ -94,7 +95,7 @@ class AjaxController {
 
         if (!userService.isAdmin()) {
             render "Must be logged in as an administrator to use this service!"
-            return;
+            return
         }
 
 
@@ -115,6 +116,8 @@ class AjaxController {
                 'last_activity' { it[6] ?: nodata }
                 'projects_count' { it[7] }
                 'volunteer_since' { it[8] }
+                'is_admin' { it[9] }
+                'is_validator' { it[10] }
             })
             writer.writeHeadings()
             response.flushBuffer()
@@ -158,7 +161,7 @@ class AjaxController {
 
         def sw3 = new Stopwatch().start()
         def asyncUserDetails = User.async.task {
-            def users = User.list()
+            def users = User.list(fetch:[userRoles:"eager", "userRoles.role": "eager"])
             def serviceResults = [:]
             try {
                 serviceResults = authService.getUserDetailsById(users*.userId, true)
@@ -185,6 +188,10 @@ class AjaxController {
 
         def report = []
 
+        final realAdminRole = 'ROLE_ADMIN'
+        final adminRole = CASRoles.ROLE_ADMIN
+        final validatorRole = CASRoles.ROLE_VALIDATOR
+
         def sw5 = new Stopwatch().start()
         for (User user: users) {
             def id = user.userId
@@ -195,7 +202,14 @@ class AjaxController {
 
             def serviceResult = serviceResults?.users?.get(id)
             def location = (serviceResult?.city && serviceResult?.state) ? "${serviceResult?.city}, ${serviceResult?.state}" : (serviceResult?.city ?: (serviceResult?.state ?: ''))
-            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
+
+            def userRoles = user.userRoles
+            def roleObjs = userRoles*.role
+            def roles = (roleObjs*.name + serviceResult?.roles).toSet()
+            def isAdmin = !roles.intersect([realAdminRole, adminRole]).isEmpty()
+            def isValidator = !roles.intersect([validatorRole]).isEmpty()
+
+            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created, isAdmin, isValidator])
         }
         sw5.stop()
         log.debug("UserReport generate report took ${sw5}")
