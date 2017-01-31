@@ -17,6 +17,8 @@ grails:
     scaffolding:
         templates:
             domainSuffix: Instance # This causes all respond methods to add the default object as <type>Instance<container>, eg bookInstance or bookInstanceList but does not affect scaffolding in Grails 3... TODO remove Instance from all GSPs and remove this property
+    servlet:
+        version: 3.0
     spring:
         transactionManagement:
             proxies: false
