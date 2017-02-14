@@ -1,0 +1,64 @@
+<div ng-if="$ctrl.topics.length" ng-class="{inactive: $ctrl.loading}">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th class="button sortable"
+                ng-class="{asc: isAscending('title'), desc: isDescending('title'), sorted: isSortedOnField('title')}"><a
+                    ng-click="updateSort('title')"
+                    href="#"
+                    class="btn">Topic</a>
+            </th>
+            <th class="button sortable"
+                ng-class="{asc: isAscending('views'), desc: isDescending('views'), sorted: isSortedOnField('views')}"><a
+                    ng-click="updateSort('views')" href="#" class="btn">Views</a>
+            </th>
+            <th class="button sortable"
+                ng-class="{asc: isAscending('id'), desc: isDescending('id'), sorted: isSortedOnField('id')}"><a
+                    ng-click="updateSort('id')" href="#" class="btn">Replies</a>
+            </th>
+            <th class="button sortable"
+                ng-class="{asc: isAscending('lastReplyDate'), desc: isDescending('lastReplyDate'), sorted: isSortedOnField('lastReplyDate')}">
+                <a
+                        ng-click="updateSort('lastReplyDate')" href="#"
+                        class="btn">Last Reply</a></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="topic in $ctrl.topics">
+            <td>
+                <strong>
+                    <a href="" ng-click="util.goToTopic(topic.id)">{{topic.title}}</a>
+                </strong>
+                <br>
+
+                <div>
+                    <small>
+                        Posted by: {{topic.creator.displayName}}
+                        <br>
+                        On: {{topic.dateCreated | date:'dd MMM yyyy HH:mm:ss'}}
+                        <br>
+
+
+                        <span ng-if="topic.project">Project: <strong>{{topic.project}}</strong></span>
+                        <br>
+                        <span ng-if="topic.task">Task: <strong>{{topic.task}}</strong></span>
+
+
+                    </small>
+                </div>
+            </td>
+            <td>{{topic.views}}</td>
+            <td>{{topic.replies}}</td>
+            <td>{{topic.lastReplyDate | date:'dd MMM yyyy HH:mm:ss'}}</td>
+            <td>
+                <button class="btn btn-small btnViewTopic" ng-click="goToTopic()">View topic</button>
+                <button class="btn btn-small btnUnwatchTopic" ng-click="stopTopicWatch()">Stop watching topic</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="alert alert-info" ng-if="$ctrl.topics.length == 0">
+    You have no watched topics.
+</div>

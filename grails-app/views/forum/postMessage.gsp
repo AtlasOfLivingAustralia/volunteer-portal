@@ -6,19 +6,6 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="forum.css"/>
     <asset:stylesheet src="image-viewer"/>
-
-    <style type="text/css">
-
-    h2 {
-        padding-top: 10px;
-    }
-
-    textarea {
-        width: 100%;
-    }
-
-    </style>
-
 </head>
 
 <body class="forum">
@@ -111,7 +98,7 @@
                         </label>
                     </div>
 
-                    <h2>Your message:</h2>
+                    <h2 class="yourMessage">Your message:</h2>
                     <small>* Note: To see help on how to format your messages, including bold and italics, see <a
                             href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
                     <g:form id="messageForm" controller="forum">

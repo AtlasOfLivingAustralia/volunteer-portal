@@ -1,0 +1,41 @@
+<link rel="stylesheet" ng-href="{{context}}/assets/forum.css" />
+<heading title="heading"></heading>
+<div class="container margin-top-20">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        <strong>{{total}} matching messages found.</strong>
+                    </p>
+                    <section id="searchResults">
+                        <table class="forum-table table table-striped table-condensed table-bordered" style="width: 100%">
+                            <tbody ng-repeat="message in results">
+                            <tr style="background-color: #f0f0e8; color: black; height: 15px;">
+                                <th colspan="2">
+                                    <h4 style="padding-bottom: 10px">Topic:
+                                        <a ng-href="{{util.getTopicForumLink(message.topicId)}}">{{message.topicTitle}}</a>
+                                    </h4>
+                                </th>
+                            </tr>
+                            <tr class="author-is-moderator-row">
+                                <td class="forumNameColumn">
+                                    <a class="forumUsername" ng-href="{{context}}/user/show/{{message.creator.id}}">{{message.creator.displayName}}</a>
+                                    <br>
+                                    <span class="forumMessageDate">{{message.dateCreated | date:'dd MMM, yyyy HH:mm:ss'}}</span>
+                                    <br>
+                                    <span class="moderator-label" ng-if="message.authorIsModerator">Moderator</span>
+                                </td>
+                                <td style="vertical-align: middle" ng-bind-html="$sce.trustAsHtml(message.text)"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <ul uib-pagination total-items="total" ng-model="currentPage" ng-change="$ctrl.onPageUpdate()" boundary-link-numbers="true" items-per-page="max" max-size="10" rotate="false"></ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

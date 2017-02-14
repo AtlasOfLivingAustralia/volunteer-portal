@@ -143,3 +143,38 @@ tr.Critical td:nth-of-type(2) a {
     font-size: 1.2em;
 }
 
+/*
+copied from projectFourm.gsp
+ */
+.buttonBar {
+    margin-bottom: 10px;
+}
+
+.notifyMe {
+    margin: 10px;
+}
+
+#watchUpdateMessage {
+    display: block;
+    background-color: lightblue;
+    color: black;
+    padding: 5px;
+    font-weight: bold;
+}
+
+.btn.btn-danger {
+    color: white;
+}
+/*copy END*/
+
+/*From postMessage.gsp*/
+
+h2.yourMessage {
+    padding-top: 10px;
+}
+
+textarea#messageText {
+    width: 100%;
+}
+
+/*END*/

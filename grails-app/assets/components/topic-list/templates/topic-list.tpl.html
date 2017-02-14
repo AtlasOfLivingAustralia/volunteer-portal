@@ -1,0 +1,76 @@
+<div class="buttonBar" style="margin-bottom: 10px" ng-if="$ctrl.showCreateBtn">
+    <button id="btnNewSiteTopic" class="btn btn-primary" ng-click="createTopic()">Create a new topic</button>
+</div>
+<div ng-class="{inactive: $ctrl.loading}">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-condensed">
+            <thead>
+            <tr>
+                <th colspan="2" class="button sortable"
+                    ng-class="{asc: isAscending('title'), desc: isDescending('title'), sorted: isSortedOnField('title')}">
+                    <a class="btn"
+                            ng-click="updateSort('title')" ng-class="{active: isSortedOnField('title')}" href="">Topic</a></th>
+                <th class="button sortable"
+                    ng-class="{asc: isAscending('replies'), desc: isDescending('replies'), sorted: isSortedOnField('replies')}">
+                    <a class="btn" ng-click="updateSort('replies')" ng-class="{active: isSortedOnField('replies')}" href="">Replies</a></th>
+                <th class="button sortable"
+                    ng-class="{asc: isAscending('views'), desc: isDescending('views'), sorted: isSortedOnField('views')}">
+                    <a
+                             class="btn" ng-click="updateSort('views')" ng-class="{active: isSortedOnField('views')}" href="">Views</a>
+                </th>
+                <th class="button sortable"
+                    ng-class="{asc: isAscending('creator'), desc: isDescending('creator'), sorted: isSortedOnField('creator')}">
+                    <a
+                             class="btn" ng-click="updateSort('creator')" ng-class="{active: isSortedOnField('creator')}" href="">Posted&nbsp;by</a>
+                </th>
+                <th class="button sortable"
+                    ng-class="{asc: isAscending('dateCreated'), desc: isDescending('dateCreated'), sorted: isSortedOnField('dateCreated')}">
+                    <a
+                             class="btn" ng-click="updateSort('dateCreated')" ng-class="{active: isSortedOnField('dateCreated')}" href="">Posted</a>
+                </th>
+                <th class="button sortable"
+                    ng-class="{asc: isAscending('lastReplyDate'), desc: isDescending('lastReplyDate'), sorted: isSortedOnField('lastReplyDate')}">
+                    <a
+                             class="btn" ng-click="updateSort('lastReplyDate')" ng-class="{active: isSortedOnField('lastReplyDate')}" href="">Last
+                        reply</a></th>
+                <th class="text-center"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="topic in $ctrl.topics">
+                <td style="width: 100px;" class="text-center">
+                    <span style="color:green">
+                        <i class="fa fa-asterisk" title="This topic is sticky" ng-show="isSticky()">&nbsp;</i>
+                        <i class="fa fa-lock" title="This topic is locked" ng-show="isLocked()">&nbsp;</i>
+                    </span>
+                    <img width="40" ng-src="{{topic.image}}" ng-if="topic.image">
+                </td>
+                <td>
+                    <a href="#!/topic/{{topic.id}}">{{topic.title}}</a>
+                    <sup ng-show="isFeaturedTopic()">Featured Topic</sup>
+                </td>
+                <td class="text-center">{{topic.replies}}</td>
+                <td class="text-center">{{topic.views}}</td>
+                <td>
+                    <span>{{topic.creator.displayName}}</span>
+                </td>
+                <td>{{topic.dateCreated | date:'dd MMM yyyy HH:mm:ss'}}</td>
+                <td>{{getLastReplyDate() | date:'dd MMM yyyy HH:mm:ss'}}</td>
+                <td class="text-right" style="width:180px;">
+                    <a class="btn btn-sm btn-default" ng-disabled="topic.locked" ng-href="{{util.getTopicReplyLink(topic.id)}}">Reply</a>
+                    <a class="btn btn-sm btn-default" ng-show="topic.isModerator" ng-href="{{util.getTopicSettingsLink(topic.id)}}" >Edit</a>
+                    <a class="btn btn-sm btn-danger" ng-show="topic.isModerator" ng-click="deleteTopic()">Delete</a>
+                </td>
+            </tr>
+            <tr ng-show="isForumEmpty()">
+                <td colspan="8">
+                    There are no topics in this forum yet.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination">
+        <ul uib-pagination total-items="$ctrl.total" ng-model="$ctrl.currentPage" ng-change="onPageUpdate()" ng-if="!$ctrl.hidePagination" boundary-link-numbers="true" items-per-page="$ctrl.max" max-size="10" rotate="false"></ul>
+    </div>
+</div>

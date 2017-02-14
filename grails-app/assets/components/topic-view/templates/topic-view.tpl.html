@@ -1,0 +1,82 @@
+<link rel="stylesheet" ng-href="{{context}}/assets/forum.css" />
+<link rel="stylesheet" ng-href="{{context}}/assets/image-viewer.css" />
+<div class="a-feature simple-header">
+    <div class="container">
+
+
+
+        <div class="row">
+            <div class="col-sm-10">
+                <h1>{{title}}</h1>
+                <div class="buttonBar">
+                    <button class="btn btn-default" id="btnReturnToForum" ng-click="$ctrl.goBack()"><img ng-src="{{context}}/assets/left_arrow.png">&nbsp;Return to forum</button>
+
+                    <button id="btnViewTask" class="btn btn-success" ng-if="taskInstance" ng-click="$ctrl.goToTask()">View Task</button>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<div class="container" ng-if="error">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-info" style="margin-top:10px" ng-bind-html="$sce.trustAsHtml(error)"></div>
+        </div>
+    </div>
+</div>
+<div class="container forum">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <task-preview task-instance="taskInstance" image-meta-data="imageMetaData" fields="fields" sample-image="sampleImage" template-fields="templateFields"></task-preview>
+
+                    <div class="alert alert-success">
+                        <input type="hidden" name="_watchTopic"><input type="checkbox" name="watchTopic"
+                                                                       id="chkWatchTopic" ng-model="watch" ng-click="$ctrl.updateWatch()">&nbsp; Watch this topic?
+                    </div>
+                    <table class="forum-table">
+                        <thead>
+                        <tr>
+                            <th colspan="2">{{topic.title}}</th>
+                            <th style="text-align: right; vertical-align: middle; width: 150px">
+                                <a id="btnReply" class="btn btn-primary" ng-click="util.goToTopicReply(topic.id)">
+                                    <i class="fa fa-reply">&nbsp;</i>Post Reply
+                                </a>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                            </th>
+                            <th>{{topic.replies}} {{topic.replies == 1?'reply':'replies'}}</th>
+                            <th style="text-align: right">
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="message in messages" ng-class="{'author-is-moderator-row': message.authorIsModerator, 'striped': $index % 2 != 0}">
+                            <td class="forumNameColumn">
+                                <a class="forumUsername" href="{{context}}/user/show/{{message.creator.id}}"
+                                   >{{message.creator.displayName}}</a>
+                                <br>
+                                <span class="forumMessageDate">{{message.dateCreated | date:'dd MMM, yyyy HH:mm:ss'}}</span>
+                            </td>
+                            <td ng-bind-html="$sce.trustAsHtml(message.text)"></td>
+                            <td style="text-align: right" ng-if="message.canEdit">
+                                <small ng-if="message.timeLeft" style="color: orange">You have {{message.timeLeft}} minutes to change or delete this message</small>
+                                <br ng-if="message.timeLeft">
+                                <button class="btn btn-default editMessageButton" ng-click="util.goToEditMessage(topic.id, message.id)">Edit</button>
+                                <button class="btn btn-danger deleteMessageButton" ng-if="message.replyTo" ng-click="$ctrl.deleteMessage(message.id)">Delete</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

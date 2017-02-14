@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import org.apache.commons.httpclient.HttpStatus
 
 class ForumController {
 
@@ -9,17 +10,20 @@ class ForumController {
     def markdownService
     def projectService
     def fieldService
+    def taskService
 
     def index() {
+        redirect(controller: 'forum', action: 'app')
     }
 
     def ajaxRecentTopicsList() {
         def results = forumService.getFeaturedTopics(params)
-        [featuredTopics: results.topics, totalCount: results.totalCount]
+        Map resp = [featuredTopics: results.topics, totalCount: results.totalCount]
+        respond(resp, model: resp, view: 'ajaxRecentTopicsList')
     }
 
     def projectForum() {
-
+        def model = null
         def projectId = params.int("projectId")
 
         if (!params.max) {
@@ -37,15 +41,27 @@ class ForumController {
 
                 def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
                 if (projectWatchList) {
-                    isWatching = projectWatchList.users.find { it.id == userInstance.id }
+                    isWatching = !!projectWatchList.users.find { it.id == userInstance.id }
                 }
 
-                return [projectInstance: projectInstance, topics: topics, isWatching: isWatching]
+                model = [projectInstance: projectInstance, topics: topics, isWatching: isWatching]
             }
         }
 
-        flash.message = "Project with id ${params.projectId} could not be found!"
-        redirect(controller: 'forum', action:'index')
+        if(model){
+            respond(model, model: model, view: 'projectForum')
+        } else {
+            def message = "Project with id ${params.projectId} could not be found!"
+            withFormat {
+                html {
+                    flash.message = message;
+                    redirect(controller: 'forum', action:'index')
+                }
+                json {
+                    render(text: [message: message] as JSON, status: HttpStatus.SC_BAD_REQUEST)
+                }
+            }
+        }
     }
 
     def addForumTopic() {
@@ -65,7 +81,8 @@ class ForumController {
             catalogNumber = fieldService.getFieldForTask(taskInstance, "catalogNumber")?.value
         }
 
-        return [projectInstance: projectInstance, taskInstance: taskInstance, catalogNumber: catalogNumber]
+        def model = [projectInstance: projectInstance, taskInstance: taskInstance, catalogNumber: catalogNumber, isModerator:  userService?.isForumModerator()]
+        respond(model, model: model, view: 'addForumTopic');
     }
 
     def editTopic() {
@@ -96,7 +113,8 @@ class ForumController {
             return
         }
 
-        [topic:topic, taskInstance: taskInstance, projectInstance: projectInstance]
+        def model = [topic:topic, taskInstance: taskInstance, projectInstance: projectInstance];
+        respond model, model: model, view: 'editTopic'
     }
 
     public redirectTopicParent() {
@@ -203,7 +221,11 @@ class ForumController {
             forumService.watchTopic(topic.creator, topic)
         }
 
-        redirect(action: 'redirectTopicParent', id: topic.id)
+        withFormat{
+            html redirect(action: 'redirectTopicParent', id: topic.id)
+            json {render text: ['topicId': topic.id] as JSON}
+        }
+
     }
 
     private boolean checkModerator(ForumTopic topic = null) {
@@ -275,7 +297,50 @@ class ForumController {
         def userInstance = userService.currentUser
         def isWatching = forumService.isUserWatchingTopic(userInstance, topic)
 
-        [topic: topic, userInstance: userInstance, projectInstance: projectInstance, taskInstance: taskInstance, isWatched: isWatching]
+        Map model = [topic: topic, userInstance: userInstance, projectInstance: projectInstance, taskInstance: taskInstance, isWatched: isWatching]
+        withFormat {
+            html { render(view: 'viewForumTopic', model: model) }
+            json {
+                def title = '';
+                def messages = forumService.getTopicMessages(topic, params)
+                if (taskInstance) {
+                    title = "Task Topic - ${taskInstance.externalIdentifier}"
+                }
+                if (projectInstance) {
+                    title = "${projectInstance.featuredLabel} Forum Topic - ${topic.title}"
+                }
+                if (!projectInstance && !taskInstance) {
+                    title = "General Discussion Topic - ${topic.title}"
+                }
+
+                def fields = null
+                def templateFields = null
+                def imageMetaData = null
+                def sampleImage = false
+
+                if(taskInstance){
+                    fields = Field.findAllByTask(taskInstance)?.sort { it.name };
+                    templateFields = TemplateField.findAllByTemplate(taskInstance?.project?.template)?.collectEntries {
+                        [it.fieldType.toString(), it]
+                    }
+
+                    def multimedia = null
+                    multimedia = taskInstance.multimedia.first();
+                    imageMetaData = taskService.getImageMetaData(multimedia, 0)
+
+
+                    if(!imageMetaData){
+                        def sampleFile = grailsApplication.mainContext.getResource("images/sample-task.jpg").file
+                        def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
+                        imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
+                        sampleImage = true
+                    }
+                }
+
+                model.putAll([ messages: messages, title: title, fields: fields, templateFields: templateFields, imageMetaData: imageMetaData, sampleImage: sampleImage])
+                render(text: model as JSON)
+            }
+        }
     }
 
     def postMessage() {
@@ -297,19 +362,63 @@ class ForumController {
             }
 
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
+            def messages = ForumMessage.findAllByTopic(topic)?.sort { it.date }
 
-            [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched, taskInstance: taskInstance, projectInstance: projectInstance]
+            def fields = null
+            def templateFields = null
+            def imageMetaData = null
+            def sampleImage = false
+            def title
+            if (taskInstance) {
+                title = "Task Topic - ${taskInstance.externalIdentifier}"
+            }
+            if (projectInstance) {
+                title = "${projectInstance.featuredLabel} Forum Topic - ${topic.title}"
+            }
+            if (!projectInstance && !taskInstance) {
+                title = "General Discussion Topic - ${topic.title}"
+            }
+
+            if(taskInstance){
+                fields = Field.findAllByTask(taskInstance)?.sort { it.name };
+                templateFields = TemplateField.findAllByTemplate(taskInstance?.project?.template)?.collectEntries {
+                    [it.fieldType.toString(), it]
+                }
+
+                def multimedia = null
+                multimedia = taskInstance.multimedia.first();
+                imageMetaData = taskService.getImageMetaData(multimedia, 0)
+
+
+                if(!imageMetaData){
+                    def sampleFile = grailsApplication.mainContext.getResource("images/sample-task.jpg").file
+                    def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
+                    imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
+                    sampleImage = true
+                }
+            }
+
+            def model = [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched, taskInstance: taskInstance, projectInstance: projectInstance, messages: messages, title: title, fields: fields, templateFields: templateFields, imageMetaData: imageMetaData, sampleImage: sampleImage]
+            respond(model, model: model, view: 'postMessage')
         } else {
-            redirect(controller:'forum', action: 'index')
-        }
 
+            withFormat{
+                html {
+                    redirect(controller:'forum', action: 'index')
+                }
+                json {
+                    render(text: [message: "Could not find topic ${params.int("topicId")}"] as JSON, status: HttpStatus.SC_BAD_REQUEST)
+                }
+            }
+        }
     }
 
     def editMessage() {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
 
-        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText ?: message.text]
+        def model = [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText ?: message.text]
+        respond(model, model: model, view: 'editMessage');
     }
 
     def previewMessage() {
@@ -322,14 +431,16 @@ class ForumController {
                 replyTo = forumService.getFirstMessageForTopic(topic)
             }
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-            render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched], params: [messageText: params.messageText]
+            def model = [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched, messageText: params.messageText, markDownText: markdownService.markdown(params.messageText)]
+            respond(model, model: model, view: 'postMessage')
         }
     }
 
     def previewMessageEdit() {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
-        render view:'editMessage', model: [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText]
+        def model = [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText, markDownText: markdownService.markdown(params.messageText?:'')]
+        respond(model, model: model, view:'editMessage')
     }
 
     def updateTopicMessage() {
@@ -347,7 +458,13 @@ class ForumController {
                 forumService.unwatchTopic(currentUser, message.topic)
             }
         }
-        redirect(action:'viewForumTopic', id: message?.topic?.id)
+        withFormat{
+            html redirect(action:'viewForumTopic', id: message?.topic?.id)
+            json {
+                render(text: [topicId: message?.topic?.id ] as JSON)
+            }
+        }
+
     }
 
     def deleteTopicMessage() {
@@ -359,7 +476,13 @@ class ForumController {
             }
             forumService.deleteMessage(message)
         }
-        redirect(action:'viewForumTopic', id: message?.topic?.id)
+        withFormat{
+            html redirect(action:'viewForumTopic', id: message?.topic?.id)
+            json {
+                render(text: [topicId: message?.topic?.id] as JSON)
+            }
+        }
+
     }
 
     def saveNewTopicMessage() {
@@ -400,16 +523,33 @@ class ForumController {
                 }
 
                 forumService.scheduleTopicNotification(topic, message)
+                withFormat{
+                    html {
+                        redirect(action: 'viewForumTopic', id: topic?.id)
+                    }
+                    json {
+                        render(text: [topicId: topic?.id] as JSON)
+                    }
+                }
 
-                redirect(action: 'viewForumTopic', id: topic?.id)
                 return
             }
         } else {
             errors << "Message text must not be empty"
         }
 
-        flash.message = formatMessages(errors)
-        render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser], params: [messageText: params.messageText]
+        if(errors.size()){
+            def errorMessage = formatMessages(errors)
+            flash.message = errorMessage
+            withFormat{
+                html {
+                    render(view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser], params: [messageText: params.messageText])
+                }
+                json {
+                    render(text: [message: errorMessage] as JSON, status: HttpStatus.SC_BAD_REQUEST)
+                }
+            }
+        }
     }
 
     def deleteTopic() {
@@ -424,7 +564,8 @@ class ForumController {
 
     def ajaxGeneralTopicsList() {
         def results = forumService.getGeneralDiscussionTopics(false, params)
-        [topics:results.topics, totalCount: results.totalCount]
+        def topics = [topics:results.topics, totalCount: results.totalCount]
+        respond(topics, view: 'ajaxGeneralTopicsList', model: topics)
     }
 
     def taskTopic() {
@@ -448,7 +589,8 @@ class ForumController {
         def projectInstance = Project.get(params.int("projectId"))
         def topics = projectInstance ? forumService.getTaskTopicsForProject(projectInstance, params) : []
 
-        [projectInstance: projectInstance, topics: topics]
+        def model = [projectInstance: projectInstance, topics: topics, totalCount: topics.totalCount]
+        respond(model, model: model, view: 'ajaxProjectTaskTopicList')
     }
 
     def searchForums() {
@@ -463,7 +605,8 @@ class ForumController {
 
         def results = forumService.searchForums(query, false, searchParams)
 
-        [query: query, results: results]
+        def model = [query: query, results: results, totalCount: results.totalCount]
+        respond(model, model: model, view: 'searchForums')
     }
 
     def ajaxWatchTopic() {
@@ -499,7 +642,8 @@ class ForumController {
             forumStats[it.project] = stat
         }
 
-        [projectSummaryList: projectSummaryList, forumStats: forumStats]
+        def resp = [projectSummaryList: projectSummaryList, forumStats: forumStats]
+        respond(resp, model: resp, view:'ajaxProjectForumsList');
     }
 
     def ajaxWatchedTopicsList() {
@@ -534,7 +678,8 @@ class ForumController {
             }
         }
 
-        [topics: topics]
+        def watched = [topics: topics]
+        respond(watched, view: 'ajaxWatchedTopicsList', model: watched)
     }
 
     def userCommentsFragment() {
@@ -627,4 +772,7 @@ class ForumController {
         render(results as JSON)
     }
 
+    def app (){
+
+    }
 }

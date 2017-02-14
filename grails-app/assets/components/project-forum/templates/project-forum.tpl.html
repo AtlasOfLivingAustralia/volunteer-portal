@@ -1,0 +1,79 @@
+<link rel="stylesheet" ng-href="{{context}}/assets/forum.css" />
+
+<div class="a-feature simple-header">
+    <div class="container">
+
+
+
+        <div class="row">
+            <div class="col-sm-10">
+                <h1 class="bvp-heading">Expedition Forum</h1>
+
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<div class="container margin-top-20 forum">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row project-forum">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="thumbnail">
+                                <img ng-src="{{project.featuredImage}}" ng-attr-alt="project.name" ng-attr-title="project.name">
+
+                                <div class="caption" ng-if="project.featuredImageCopyright">
+                                    Image {{project.featuredImageCopyright}}
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <h2><a ng-href="{{$ctrl.getProjectLink()}}">{{project.featuredLabel}}</a></h2>
+                            <h3>{{project.featuredOwner}}</h3>
+                            <p ng-bind-html="$sce.trustAsHtml(project.description)"></p>
+                        </div>
+                    </div>
+                    <div class="alert alert-success">
+                        <div class="notifyMe">
+                            <input type="checkbox" name="watchProject"
+                                   id="watchProjectCheckbox" ng-model="isWatching" ng-click="$ctrl.setWatchingStatus()">&nbsp;Email me when messages are posted to this project
+                            <span id="watchUpdateMessage" ng-if="watchStatusMessage">
+                                {{watchStatusMessage}}
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a id="tabProject" data-target="#tabProjectTopics" class="forum-tab-title" data-toggle="tab" tabindex="0">Expedition Topics</a></li>
+                            <li class=""><a id="tabTasks" data-target="#tabTaskTopics" class="forum-tab-title" data-toggle="tab" tabindex="1" ng-click="$ctrl.initForTopics('task')">Task Topics</a></li>
+                        </ul>
+                    </div>
+                    <div class="tab-content-bg">
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div id="tabProjectTopics" class="tabContent tab-pane active">
+                                <div class="buttonBar">
+                                    <button id="btnNewProjectTopic" class="btn btn-default" ng-click="$ctrl.goToCreateTopic()">
+                                        Create a new topic&nbsp;<img src="{{context}}/assets/newTopic.png">
+                                    </button>
+                                </div>
+                                <topic-list topics="topics" total="totalCount" loading="loading" on-sort="$ctrl.getSortedTopics(sort, order)" on-page-update="$ctrl.getPageForExpedition(max,offset)"></topic-list>
+                            </div>
+
+                            <div id="tabTaskTopics" class="tab-pane ">
+                                <topic-list topics="taskTopics" total="taskTopicTotalCount" loading="taskTopicLoading" max="10" disable-sorting="true" on-page-update="$ctrl.getPageForTaskTopics(max,offset)"></topic-list>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

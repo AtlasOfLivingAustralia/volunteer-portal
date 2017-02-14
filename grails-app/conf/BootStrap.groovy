@@ -1,14 +1,22 @@
 import au.org.ala.volunteer.*
+import au.org.ala.volunteer.marshaller.FieldMarshaller
+import au.org.ala.volunteer.marshaller.ForumMessageMarshaller
+import au.org.ala.volunteer.marshaller.ForumTopicMarshaller
+import au.org.ala.volunteer.marshaller.ProjectForumTopicMarshaller
+import au.org.ala.volunteer.marshaller.ProjectMarshaller
+import au.org.ala.volunteer.marshaller.SiteForumTopicMarshaller
+import au.org.ala.volunteer.marshaller.TaskForumTopicMarshaller
+import au.org.ala.volunteer.sanitizer.SanitizedHtml
+import au.org.ala.volunteer.sanitizer.ValueConverterListener
 import com.google.common.io.Resources
+import com.naleid.grails.MarkdownService
 import grails.converters.JSON
-import groovy.sql.*
+import groovy.sql.Sql
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.grails.datastore.mapping.core.Datastore
 import org.hibernate.FlushMode
-import au.org.ala.volunteer.sanitizer.SanitizedHtml
-import au.org.ala.volunteer.sanitizer.ValueConverterListener
 
 class BootStrap {
 
@@ -52,6 +60,8 @@ class BootStrap {
         internalRoles.each { role ->
             ensureRoleExists(role)
         }
+
+        registerMarshallers()
 
         fullTextIndexService.ping()
 
@@ -269,4 +279,27 @@ class BootStrap {
         }
     }
 
+    private void registerMarshallers(){
+        List marshallers = [
+                new ForumTopicMarshaller(),
+                new SiteForumTopicMarshaller(),
+                new TaskForumTopicMarshaller(),
+                new ProjectForumTopicMarshaller()
+        ]
+
+        MultimediaService multimediaService = grailsApplication.mainContext.getBean('multimediaService')
+        UserService userService = grailsApplication.mainContext.getBean('userService')
+        MarkdownService markdownService = grailsApplication.mainContext.getBean('markdownService')
+        ForumService forumService  = grailsApplication.mainContext.getBean('forumService')
+
+        marshallers.each {
+            it.register()
+            it.multimediaService = multimediaService
+            it.userService = userService
+        }
+
+        new ProjectMarshaller().register()
+        new ForumMessageMarshaller(markdownService, userService, forumService).register()
+        new FieldMarshaller().register()
+    }
 }

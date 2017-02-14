@@ -1,0 +1,46 @@
+<link rel="stylesheet" ng-href="{{context}}/assets/forum.css" />
+<link rel="stylesheet" ng-href="{{context}}/assets/image-viewer.css" />
+<div class="container" ng-if="error">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-info" style="margin-top:10px" ng-bind-html="$sce.trustAsHtml(error)"></div>
+        </div>
+    </div>
+</div>
+<div class="container forum">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <task-preview task-instance="task" image-meta-data="imageMetaData" fields="fields" sample-image="sampleImage" template-fields="templateFields"></task-preview>
+                    <h3>Conversation history:</h3>
+
+                    <div style="height: 300px; overflow-y: scroll; border: 1px solid #a9a9a9">
+
+                        <div class="messageReply" author="{{message.creator.displayName}}" ng-repeat="message in messages" style="border: 1px solid #a9a9a9; margin: 3px; padding: 3px; background: white">
+                            <div style="background-color: #3a5c83; color: white">
+                                <img ng-src="{{util.getContext() + '/assets/reply.png'}}" style="vertical-align: bottom">
+                                On {{message.date | date:'dd MMM yyyy'}} at {{message.date | date:'HH:mm:ss' }} <strong>{{message.creator.displayName}}</strong> wrote:
+                            </div>
+                            <ng-bind-html ng-bind-html="$sce.trustAsHtml(message.text)"></ng-bind-html>
+                        </div>
+
+
+                    </div>
+
+                    <div class="originalMessageButtons">
+                        <button class="btn btn-default" id="btnInsertQuote" ng-click="insertQuote()">Insert quote</button>
+                        <label for="insertTagLine">
+                            <input type="checkbox" name="insertTagline" id="insertTagLine" ng-model="insertTagLine">
+                            Insert tag line
+                        </label>
+                    </div>
+
+                    <message topic-id="topicId" msg="message" preview="preview" watch="watch" get-message-preview="getMessagePreview()" save-new-message="saveNewMessage()"></message>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

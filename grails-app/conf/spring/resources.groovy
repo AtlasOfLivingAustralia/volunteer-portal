@@ -1,6 +1,5 @@
 import au.org.ala.volunteer.ApplicationContextHolder
 import au.org.ala.volunteer.collectory.CollectoryClientFactoryBean
-
 // Place your Spring DSL code here
 beans = {
 //    customPageRenderer(CustomPageRenderer, ref("groovyPagesTemplateEngine")) {

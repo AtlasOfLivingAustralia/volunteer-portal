@@ -67,7 +67,7 @@
                         <a href="${g.createLink(controller:"project", action:"list", params: [q: "tag:" + projectInstance.projectType?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} ">See similar expeditions</a>
                     </g:else>
                 </div>
-                <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
+                <a href="${createLink(controller: 'forum', action: 'app')}#!/expedition-forum/${projectInstance.id}" class="forum-link">Visit Project Forum »</a>
             </div>
             <div class="col-sm-4">
                 <g:if test="${!bgImage}">

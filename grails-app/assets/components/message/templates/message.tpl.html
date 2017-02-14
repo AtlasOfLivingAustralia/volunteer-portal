@@ -1,0 +1,23 @@
+<h2>Your message:</h2>
+<small>* Note: To see help on how to format your messages, including bold and italics, see <a href="{{context}}/forum/markdownHelp" target="popup">here</a></small>
+<form>
+    <textarea id="messageText" name="messageText" rows="12" cols="120" ng-model="$ctrl.msg"></textarea>
+
+    <label for="watchTopic">
+        <input type="checkbox" name="watchTopic" id="watchTopic" ng-model="$ctrl.watch">
+        Watch this topic
+    </label>
+
+    <div>
+        <button class="btn btn-success" ng-click="$ctrl.getMessagePreview()">Preview</button>
+        <button class="btn btn-primary" ng-click="$ctrl.saveNewMessage()">Post message</button>
+        <button class="btn btn-default" id="btnCancel" ng-click="util.goToTopic($ctrl.topicId)">Cancel</button>
+    </div>
+
+</form>
+
+
+<div class="messagePreview" ng-if="$ctrl.preview">
+    <h3>Message preview</h3>
+    <ng-bind-html ng-bind-html="$sce.trustAsHtml($ctrl.preview)"></ng-bind-html>
+</div>

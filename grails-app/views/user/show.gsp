@@ -363,7 +363,7 @@
                 <tr ng-repeat-start="mt in $ctrl.data.messages track by mt.topic.id" style="background-color: #f0f0e8; color: black; height: 15px;">
                     <th colspan="2">
                         <h4 style="padding-bottom: 10px">
-                            <g:message code="forumTopic.label" />: <a ng-href="${createLink(controller: 'forum', action: 'viewForumTopic')}/{{ mt.topic.id }}">{{ mt.topic.title }} </a>
+                            <g:message code="forumTopic.label" />: <a ng-href="${createLink(controller: 'forum', action: 'app')}#!/topic/{{ mt.topic.id }}">{{ mt.topic.title }} </a>
                             <span ng-show="mt.topicProject"><g:message code="project.label" />: <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ mt.topicProject.id }}">{{ mt.topicProject.id }}</a></span>
                             <span ng-show="mt.topicTask"><g:message code="task.label" />: <a ng-href="${createLink(controller: 'project', action: 'show')}/{{ mt.topicTask.id }}">{{ mt.topicTask.externalIdentifier }}</a></span>
                         </h4>

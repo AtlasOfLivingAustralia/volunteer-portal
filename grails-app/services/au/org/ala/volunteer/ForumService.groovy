@@ -31,7 +31,7 @@ class ForumService {
             def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
 
 
-            return [topics: topics, totalCount: ForumTopic.count() ]
+            return [topics: topics, totalCount: ProjectForumTopic.countByProject(project) ]
 
 
         }
@@ -167,8 +167,14 @@ class ForumService {
 
     public void unwatchTopic(User user, ForumTopic topic) {
         def userWatchList = UserForumWatchList.findByUser(user)
-        if (userWatchList && userWatchList.topics.contains(topic)) {
-            userWatchList.topics.remove(topic)
+        int index;
+        def contains =  userWatchList?.topics.find {
+            it.id == topic?.id
+        }
+
+        if (contains) {
+            userWatchList.topics.remove(contains)
+            userWatchList.save(flush: true)
         }
     }
 

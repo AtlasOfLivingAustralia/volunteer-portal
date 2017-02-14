@@ -1,0 +1,19 @@
+<section id="breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <ul class="breadcrumb-list">
+                    <li ng-repeat="bc in breadcrumbs">
+                        <span class="glyphicon glyphicon-menu-right" ng-if="$index != 0"> </span>
+                        <a ng-href="{{bc.href}}" ng-if="bc.href && !$ctrl.isLastItem($index)">{{bc.title}}</a>
+                        <ng-if ng-if="!bc.href || $ctrl.isLastItem($index)">
+                            {{bc.title}}
+                        </ng-if>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</section>

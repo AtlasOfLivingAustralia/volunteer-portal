@@ -1,5 +1,3 @@
-import grails.util.Environment
-
 //grails.project.class.dir = "target/classes"
 //grails.project.test.class.dir = "target/test-classes"
 //grails.project.test.reports.dir = "target/test-reports"
@@ -67,7 +65,7 @@ grails.project.dependency.resolution = {
 
         compile "org.grails.plugins:asset-pipeline:2.12.4.ALA-SNAPSHOT"
 //        compile "org.grails.plugins:angular-annotate-asset-pipeline:2.4.1"
-//        compile "org.grails.plugins:angular-template-asset-pipeline:2.2.7"
+        compile "org.grails.plugins:angular-template-asset-pipeline:2.3.0"
 //        compile "org.grails.plugins:i18n-asset-pipeline:1.0.6"
 //        compile "org.grails.plugins:sass-asset-pipeline:2.9.1"
 //        compile "org.grails.plugins:babel-asset-pipeline:1.4.5"

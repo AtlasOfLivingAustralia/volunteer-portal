@@ -1,0 +1,59 @@
+<div class="row" ng-if="$ctrl.taskInstance">
+
+    <div class="col-md-6">
+        <div class="well well-small">
+
+            <div class="alert alert-danger" ng-if="$ctrl.sampleImage">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <span>An error occurred getting the meta data for task image!</span>
+            </div>
+            <div id="image-parent-container">
+                <div id="image-container" preservewidthwhenpinned="true"
+                     style="position: relative;">
+                    <img ng-src="{{$ctrl.imageMetaData.url}}" alt="Task image"
+                         image-height="{{$ctrl.imageMetaData.height}}" image-width="{{$ctrl.imageMetaData.width}}"
+                         style="position: absolute; top: 34px; left: 0px; cursor: move; width: 499px; height: 333px;">
+                    <div class="imageviewer-controls">
+                        <a id="panleft"  class="left">
+                        </a><a id="panright"  class="right">
+                    </a><a id="panup"  class="up">
+                    </a><a id="pandown"  class="down">
+                    </a><a id="zoomin"  class="zoom">
+                    </a><a id="zoomout"  class="back">
+                    </a></div>
+                    <a id="zoomout"  class="back">
+                    </a>
+                    <div class="pin-image-control"><a id="zoomout"  class="back">
+                    </a><a id="pinImage"
+                           title="Fix the image in place in the browser window"
+                           data-container="body">Pin image in place</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+
+
+        <div class="task-summary thumbnail">
+            <table class="table table-condensed table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody>
+
+
+                <tr ng-repeat="field in $ctrl.fields" ng-if="!field.superceded && $ctrl.util.isValidValue(field.value)">
+                    <td>{{$ctrl.templateFields[field.name].label || field.name}}</td>
+                    <td>{{field.value}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,101 @@
+<div class="alert alert-info" style="margin-top:10px" ng-if="errorMessage">{{errorMessage}}</div>
+<div class="a-feature simple-header">
+    <div class="container">
+
+
+        <div class="row">
+            <div class="col-sm-10" ng-if="!$ctrl.create">
+                <h1>General Discussion Topic - {{topic.title}}</h1>
+            </div>
+            <div class="col-sm-10" ng-if="$ctrl.create">
+                <h1>New Topic</h1>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+<div class="panel panel-default container margin-top-20">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="title" class="col-md-3 control-label">New topic title</label>
+                        <div class="col-md-4">
+                            <input type="text" id="title" name="title" class="form-control" ng-model="topic.title">
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="$ctrl.create">
+                        <label for="text" class="col-md-3 control-label">New topic message</label>
+                        <div class="col-md-6">
+                            <textarea name="text" rows="6" class="form-control" id="text"  ng-model="topic.text"></textarea>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-group" ng-if="$ctrl.create">
+                        <div class="col-md-offset-3 col-md-9">
+                            <label for="watchTopic">
+                                <input type="hidden" name="_watchTopic"><input type="checkbox" name="watchTopic" id="watchTopic" ng-model="topic.watch">
+                                Watch this topic
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <div ng-if="topic.isModerator">
+                        <h3>Moderator Options:</h3>
+
+                        <div class="form-group">
+                            <label for="priority" class="col-md-3 control-label">Priority</label>
+                            <div class="col-md-4">
+                                <select class="form-control" name="priority" id="priority" ng-model="topic.priority">
+                                    <option value="Normal">Normal</option>
+                                    <option value="Important">Important</option>
+                                    <option value="Warning">Warning</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-9">
+                                <label for="sticky">
+                                    <input type="hidden" name="_sticky"><input type="checkbox" name="sticky" id="sticky"
+                                                                               ng-model="topic.sticky">
+                                    Sticky
+                                </label>
+                            </div>
+                            <div class="col-md-offset-3 col-md-9">
+                                <label for="locked">
+                                    <input type="hidden" name="_locked"><input type="checkbox" name="locked" id="locked"
+                                                                               ng-model="topic.locked">
+                                    Locked
+                                </label>
+                            </div>
+                            <div class="col-md-offset-3 col-md-9">
+                                <label for="featured">
+                                    <input type="hidden" name="_featured"><input type="checkbox" name="featured" id="featured"
+                                                                                 ng-model="topic.featured">
+                                    Featured topic (<span>will be displayed on the Forum entry page if ticked</span>)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-if="!$ctrl.create">
+                        <div class="col-md-offset-3 col-md-9">
+                            <button class="btn btn-primary" type="submit" ng-click="$ctrl.updateSettings()">Update</button>
+                        </div>
+                    </div>
+                    <div class="form-group"  ng-if="$ctrl.create">
+                        <div class="col-md-offset-3 col-md-9">
+                            <button class="btn btn-primary" type="submit" ng-click="$ctrl.createTopic()">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

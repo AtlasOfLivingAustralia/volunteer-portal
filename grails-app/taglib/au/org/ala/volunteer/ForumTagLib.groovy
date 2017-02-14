@@ -204,7 +204,7 @@ class ForumTagLib {
                                 rowClasses << "sticky"
                             }
                             if (authorIsModerator) {
-                                rowClasses << "author-is-moderator-row"
+                                    rowClasses << "author-is-moderator-row"
                             }
 
                             tr(class: rowClasses.join(" "), topicId: topic.id) {
@@ -374,7 +374,7 @@ class ForumTagLib {
                 def defaultLabel = topic ? 'View Forum Topic' : 'Create Forum Topic'
                 def label = attrs.label ?: defaultLabel
                 def mb = new MarkupBuilder(out)
-                mb.a(href: createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class: 'btn ' + attrs.class, style: attrs.style ?: '', target: 'forumWindow') {
+                mb.a(href: createLink(controller: 'forum', action: 'app') + "#!/topic/${topic.id}", class: 'btn ' + attrs.class, style: attrs.style ?: '', target: 'forumWindow') {
                     mkp.yield(label)
                 }
             }

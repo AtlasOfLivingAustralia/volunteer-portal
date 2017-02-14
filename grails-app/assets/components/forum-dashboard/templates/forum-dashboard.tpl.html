@@ -1,0 +1,82 @@
+<div class="a-feature simple-header">
+    <div class="container">
+
+
+
+        <div class='row'>
+            <div class='col-sm-10'>
+                <h1 class='bvp-heading'>DigiVol Forum</h1>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<section id="main-content">
+    <div class="container">
+        <div class="row" id="content">
+            <div class="col-sm-12">
+
+                <form>
+                    <div class="card-filter">
+                        <div class="custom-search-input body">
+                            <div class="input-group">
+                                <input type="text" id="search-input" class="form-control input-lg" placeholder="Search forums" name="query" value="" ng-model="searchText"/>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-info btn-lg" type="submit" ng-click="util.goToSearch(searchText)"><i class="glyphicon glyphicon-search"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <h2 class="heading">Find forum topics</h2>
+
+                <div id="tabControl" class="tabbable">
+                    <ul class="nav nav-tabs">
+                        <li ng-class="{active: activeTab == 'tabRecentTopics'}"><a
+                               href="#!/forum-dashboard/featured" class="forum-tab-title" data-toggle="tab"
+                                tabIndex="0">Featured and recent topics</a></li>
+                        <li class="" ng-class="{active: activeTab == 'tabGeneralTopics'}"><a href="#!/forum-dashboard/general"
+                                        class="forum-tab-title"
+                                        data-toggle="tab"
+                                        tabIndex="1">Browse General Discussion Topics</a>
+                        </li>
+                        <li class="" ng-class="{active: activeTab == 'tabProjectForums'}"><a href="#!/forum-dashboard/expedition"
+                                        class="forum-tab-title"
+                                        data-toggle="tab"
+                                        tabIndex="2">Expedition Forums</a>
+                        </li>
+                        <li class="" ng-class="{active: activeTab == 'tabWatchedTopics'}"><a href="#!/forum-dashboard/watched"
+                                        class="forum-tab-title"
+                                        data-toggle="tab"
+                                        tabIndex="3">Your watched topics</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="tab-content">
+                        <div id="tabRecentTopics" class="tab-pane" ng-class="{active: activeTab == 'tabRecentTopics'}">
+                            <topic-list topics="featuredTopics" total="featuredTopicsCount" loading="featuredForumsRequestSent" on-sort="updateFeaturedTopics(sort, order)" hide-pagination="true" on-page-update="featuredTopicsPageChange(max,offset)"></topic-list>
+                        </div>
+                        <div id="tabGeneralTopics" class="tab-pane " ng-class="{active: activeTab == 'tabGeneralTopics'}">
+                            <topic-list topics="generalTopics" total="generalTopicsCount" loading="generalForumsRequestSent" show-create-btn="true" on-sort="updateGeneralTopics(sort, order)" on-page-update="generalTopicsPageChange(max,offset)"></topic-list>
+                        </div>
+                        <div id="tabProjectForums" class="tab-pane " ng-class="{active: activeTab == 'tabProjectForums'}">
+                            <expedition-forums forums="expeditionForums" stats="expeditionForumsStats" total="expeditionForumsCount" loading="expeditionForumsRequestSent" on-sort="expeditionForumsOrderBy(sort, order)" on-search="expeditionForumsSearch(query)"  on-page-update="expeditionForumsPageChange(max,offset)"></expedition-forums>
+                        </div>
+                        <div id="tabWatchedTopics" class="tab-pane " ng-class="{active: activeTab == 'tabWatchedTopics'}">
+                            <watched-topics topics="watchedTopics" loading="watchedTopicsRequestSent" on-sort="getWatchedTopics(sort, order)"></watched-topics>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

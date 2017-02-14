@@ -1,0 +1,126 @@
+<div style="margin-bottom: 15px"  ng-class="{inactive: $ctrl.loading}">
+    <table class="table expedition-forum" style="margin-bottom: 5px">
+        <colgroup>
+            <col style="width:165px">
+        </colgroup>
+        <thead>
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-sm-8"></div>
+
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <div class="card-filter">
+                                <div class="custom-search-input body">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-lg" id="searchbox"
+                                               name="searchbox" placeholder="Search expeditions?" ng-model="$ctrl.queryString">
+                                        <span class="input-group-btn">
+                                            <button id="btnSearch" class="btn btn-info btn-lg" type="button" ng-click="searchQuery()">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="project-forums-btn-bar">
+                    <div class="col-sm-2">
+                    </div>
+
+                    <div class="col-sm-5">
+                        <a href="#" ng-click="updateSort('name')"
+                           class="btn ">Name</a>
+                    </div>
+
+                    <div class="col-sm-2 project-type">
+                        <a href="#"  ng-click="updateSort('type')"
+                           class="btn ">Type</a>
+                    </div>
+
+                    <div class="col-sm-3">
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr ng-class="{inactive: forum.project.inactive}" ng-repeat="forum in $ctrl.forums">
+            <td>
+                <div class="row expedition-details">
+
+                    <div class="col-sm-2">
+                        <a href="#">
+                            <img src="" width="147" height="81" style="padding-top: 5px" ng-src="{{forum.project.featuredImage}}">
+                        </a>
+                    </div>
+
+                    <div class="col-sm-5">
+                        <h3><a href="" ng-click="util.goToProjectForum(forum.project.id)">{{forum.project.name}}</a>
+                        </h3>
+
+                        <div class="expedition-progress">
+                            <div class="progress">
+
+                                <div class="progress-bar progress-bar-success"
+                                     ng-style="{width: {{getPercentageValidated()}}+'%'}">
+                                    <span class="sr-only">{{getPercentageValidated()}}% Complete (success)</span>
+                                </div>
+                                <div class="progress-bar progress-bar-transcribed"
+                                     ng-style="{width: {{getPercentageTranscribed() - getPercentageValidated()}} +'%'}">
+                                    <span class="sr-only">{{getPercentageTranscribed() - getPercentageValidated()}}% Transcribed</span>
+                                </div>
+                            </div>
+
+                            <div class="progress-legend">
+                                <div class="row">
+                                    <div class="col-xs-4 col-sm-4">
+                                        <b>{{getPercentageValidated()}}%</b> Validated
+                                    </div>
+                                    <div class="col-xs-4 col-sm-4">
+                                        <b>{{getPercentageTranscribed()}}%</b> Transcribed
+                                    </div>
+                                    <div class="col-xs-4 col-sm-4">
+                                        <b>{{forum.taskCount}}</b> Tasks
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-2 project-type">
+                        <img width="40"
+                             height="36" alt="" ng-src="{{forum.iconImage}}">
+                        <br>
+                        <span>{{forum.iconLabel}}</span>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <a href="" ng-click="util.goToProjectForum(forum.project.id)"><b>{{getNumberOfExpeditionTopics()}}</b>
+                            Expedition Topics and <b>{{getNumberOfTaskTopics()}}</b> Task Topics
+                        </a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div ng-show="! $ctrl.forums.length && !$ctrl.loading">There are no expedition forums</div>
+                <div ng-show="$ctrl.loading">Retrieving expedition forums...</div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <ul uib-pagination total-items="$ctrl.total" ng-model="$ctrl.currentPage" ng-change="onPageUpdate()" boundary-link-numbers="true" max-size="10" rotate="false"></ul>
+    </div>
+</div>
