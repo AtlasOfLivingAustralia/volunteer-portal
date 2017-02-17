@@ -9,7 +9,7 @@ buildscript {
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
-        classpath "org.grails.plugins:hibernate5:6.0.4"
+        classpath "org.grails.plugins:hibernate5:6.0.7"
     }
 }
 
@@ -29,9 +29,9 @@ apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
 apply plugin:"maven-publish"
 
-ext {
-    set "tomcat.version", "8.5.11" // force this version due to a conflict between hibernate and tomcat 8.5.9, remove when upgrading grails version to 3.2.5+
-}
+//ext {
+//    set "tomcat.version", "8.5.11" // force this version due to a conflict between hibernate and tomcat 8.5.9, remove when upgrading grails version to 3.2.5+
+//}
 
 repositories {
     mavenLocal()
@@ -71,6 +71,7 @@ dependencies {
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
     compile "org.grails.plugins:grails-java8"
+    compile "org.grails.plugins:rxjava:2.0.0.ALA-SNAPSHOT"
     compile "org.hibernate:hibernate-java8:5.1.2.Final"
 
     // Additional Plugins

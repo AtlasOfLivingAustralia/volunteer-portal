@@ -1,5 +1,17 @@
 package au.org.ala.volunteer
 
+import au.org.ala.web.UserDetails
+import grails.converters.JSON
+import grails.rx.web.Rx
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
+import io.reactivex.subjects.UnicastSubject
+import org.codehaus.groovy.runtime.GStringImpl
+import org.grails.web.converters.Converter
+import reactor.spring.context.annotation.Consumer
+import reactor.spring.context.annotation.Selector
+
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.servlet.AsyncContext
@@ -14,106 +26,98 @@ import java.util.concurrent.TimeUnit
 
 import static grails.async.Promises.*
 
+@Consumer
 class EventSourceService {
 
-    static final int QUEUE_CAPACITY = 16 // browsers will allow ~6 connections, so this is plenty.
+    static final String NEW_MESSAGE = 'event.source.new.message'
+
+    static final int QUEUE_CAPACITY = 3 // browsers will allow ~6 connections, so this is plenty.
 
     def userService
 
     static transactional = false
     static readOnly = true
 
-    private final ConcurrentMap<String, ConcurrentLinkedQueue<AsyncContext>> ongoingRequests = new ConcurrentHashMap<>()
-    private final ScheduledExecutorService keepalive = Executors.newScheduledThreadPool(1)
+    private final ConcurrentMap<String, ConcurrentLinkedQueue<Subject>> ongoingRequests = new ConcurrentHashMap<>()
 
-    private final keepAliveMsg = new EventSourceMessage(comment: 'ka')
+    private final keepAliveMsg = new Message.EventSourceMessage(comment: 'ka')
+    private final keepAlive = Observable.interval(15, 15, TimeUnit.SECONDS).map({ i -> keepAliveMsg }).publish().autoConnect()
 
     @PostConstruct
     void init() {
         log.trace("Post Construct")
-        keepalive.scheduleAtFixedRate({
-            log.trace("Sending keep alive message")
-            sendToEveryone(keepAliveMsg)
-        } as Runnable, 15, 15, TimeUnit.SECONDS)
     }
 
     @PreDestroy
     void close() {
         log.trace("Pre Destroy")
-        keepalive.shutdownNow()
-        ongoingRequests.each { k, v ->
-            final i = v.iterator()
-            while (i.hasNext()) {
-                final ac = i.next()
-                i.remove()
-                try {
-                    ac.complete()
-                } catch (e) {
-                    log.debug("Caught exception closing async context while shutting down", e)
-                }
+        for (def kv : ongoingRequests) {
+            for (def subject : kv.value) {
+                subject.onNext(Message.ShutdownMessage.INSTANCE)
+                subject.onComplete()
             }
         }
         log.trace("Pre Destroy End")
     }
 
-    private final ConcurrentLinkedQueue<Closure<List<EventSourceMessage>>> startMessages = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Closure<List<Message.EventSourceMessage>>> startMessages = new ConcurrentLinkedQueue<>();
 
-    def addEventSourceStartMessage(Closure<List<EventSourceMessage>> c) {
+    def addEventSourceStartMessage(Closure<List<Message.EventSourceMessage>> c) {
         startMessages.add(c)
         c
     }
 
-    def removeEventSourceStartMessage(Closure<List<EventSourceMessage>> c) {
+    def removeEventSourceStartMessage(Closure<List<Message.EventSourceMessage>> c) {
         startMessages.remove(c)
     }
 
-    public void addAsyncContext(AsyncContext ac, String userId) {
-        ac.addListener(new AsyncListener() {
-            @Override public void onComplete(AsyncEvent event) throws IOException { log.debug('Async onComplete'); removeRequest(userId, ac) }
-            @Override public void onTimeout(AsyncEvent event) throws IOException { log.debug('Async onTimeout'); removeRequest(userId, ac) }
-            @Override public void onError(AsyncEvent event) throws IOException { log.warn('Async onError'); removeRequest(userId, ac) }
-            @Override public void onStartAsync(AsyncEvent event) throws IOException { log.debug("On Start Async") }
-        })
-        ongoingRequests.putIfAbsent(userId, new ConcurrentLinkedQueue<AsyncContext>())
+    List<Message> currentStartMessages(UserDetails userDetails) {
+        def userId = userDetails?.userId
+        try {
+            def result = []
+            log.trace("Getting startup messages for $userId")
+            def i = startMessages.iterator()
+            while (i.hasNext()) {
+                def c = i.next()
+                log.debug("Calling startup closure for $userId")
+                final messages
+                try {
+                    messages = c.call(userId)
+                } catch (e) {
+                    log.error("Caught exception getting startup messages for $userId", e)
+                    messages = []
+                }
+                log.debug("Got $messages for $userId")
+
+                result.addAll(messages)
+            }
+            log.trace("Completed sending startup messages for $userId")
+            return result
+        } catch (e) {
+            log.error("Exception sending startup messages for $userId", e)
+            throw e
+        }
+    }
+
+    void addSubject(String userId, Subject subject) {
+        ongoingRequests.computeIfAbsent(userId, { new ConcurrentLinkedQueue<Subject>() })
         def q = ongoingRequests.get(userId)
-        q.add(ac)
+        q.add(subject)
 
         // kill oldest connections above threshold
         while (q.size() > QUEUE_CAPACITY) {
-            def oldAc = q.poll()
-            if (oldAc) removeRequest(userId, oldAc)
-        }
-
-        log.debug("Start event source for $userId")
-
-        // Could be any domain class AFAIK
-        FrontPage.async.task {
+            def oldSubject = q.poll()
             try {
-                log.trace("Getting startup messages for $userId")
-                def i = startMessages.iterator()
-                while (i.hasNext()) {
-                    def c = i.next()
-                    log.debug("Calling startup closure for $userId")
-                    final messages
-                    try {
-                        messages = c.call(userId)
-                    } catch (e) {
-                        log.error("Caught exception getting startup messages for $userId", e)
-                        messages = []
-                    }
-                    log.debug("Got $messages for $userId")
-
-                    messages.each {
-                        log.trace("Sending start up message ${it.toString()}")
-                        sendMessage(ac, it, { removeRequest(userId, ac); } )
-                        log.trace("Send start up message done")
-                    }
-                }
-                log.trace("Completed sending startup messages for $userId")
+                oldSubject?.onComplete()
             } catch (e) {
-                log.error("Exception sending startup messages for $userId", e)
+                log.error("Exception Completing a Subject", e)
             }
         }
+    }
+
+    def removeSubject(String userId, Subject subject) {
+        def q = ongoingRequests.get(userId)
+        q?.remove(subject)
     }
 
 
@@ -121,59 +125,42 @@ class EventSourceService {
         ongoingRequests[userId]?.size() ?: 0
     }
 
-    private def removeRequest(String userId, AsyncContext ac) {
-        log.debug("Removing async context for $userId")
-        ongoingRequests[userId]?.remove(ac)
-        try {
-            ac.complete()
-        } catch (e) {
-            log.debug("Caught exception closing async context while removing request", e)
-        }
-    }
-
-    def sendToUser(String userId, EventSourceMessage msg) {
-        def requests = ongoingRequests[userId]
-        if (requests) {
-            sendMessages(requests, msg)
-        }
-    }
-
-    def sendToEveryone(EventSourceMessage msg) {
-        ongoingRequests.each { k, v ->
-            sendMessages(v, msg)
-        }
-    }
-
-    private sendMessages(ConcurrentLinkedQueue<AsyncContext> v, EventSourceMessage msg) {
-        final i = v.iterator()
-        while (i.hasNext()) {
-            def ac = i.next()
-            sendMessage(ac, msg, {
-                i.remove()
-                try {
-                    ac.complete()
-                } catch (e) {
-                    log.debug("Caught exception closing async context while removing connection", e)
+    Observable<Message.EventSourceMessage> addConnection(UserDetails user) {
+        final String userId = user.userId
+        final startMessageList = currentStartMessages(user)
+        UnicastSubject<Message> subject = UnicastSubject.create()
+        subject
+                .doOnComplete { removeSubject(userId, subject) }
+                .doOnError { t ->
+                    log.error("Exception in UnicastSubject for $userId", t)
+                    removeSubject(userId, subject)
                 }
-            } )
-        }
+
+        addSubject(userId, subject)
+
+        Observable
+                .fromIterable(startMessageList)
+                .concatWith(subject)
+                .mergeWith(keepAlive)
+                .doOnComplete {
+                    log.info("Observable complete for $userId")
+                    removeSubject(userId, subject)
+                }
+                .doOnError { t ->
+                    log.error("Exception in Observable for $userId", t)
+                    removeSubject(userId, subject)
+                }
+                .takeWhile { !(it instanceof Message.ShutdownMessage) }
+                .map { (Message.EventSourceMessage) it }
+                .filter { !it.to || it.to == userId }
     }
 
-    private sendMessage(AsyncContext ac, EventSourceMessage msg, Closure<Void> onError) {
-        try {
-            final w = ac.response.writer
-            msg.writeTo(w)
-            if (w.checkError()) {
-                log.debug("Async Response Writer indicated an error")
-                onError.call()
-            } else {
-//                w.flush()
-                ac.response.flushBuffer()
+    @Selector(EventSourceService.NEW_MESSAGE)
+    void newMessage(Message.EventSourceMessage message) {
+        for (def kv : ongoingRequests) {
+            for (def subject : kv.value) {
+                subject.onNext(message)
             }
-        } catch (IOException e) {
-            log.warn("Exception in events controller async task handling", e)
-            onError.call()
         }
     }
-
 }

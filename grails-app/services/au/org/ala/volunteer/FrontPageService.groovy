@@ -30,15 +30,15 @@ class FrontPageService {
         eventSourceService.removeEventSourceStartMessage(eventSourceStartMessage)
     }
 
-    private static EventSourceMessage createMessage(String message) {
-        new EventSourceMessage(event: ALERT_MESSAGE, data: message)
+    private static Message.EventSourceMessage createMessage(String message) {
+        new Message.EventSourceMessage(event: ALERT_MESSAGE, data: message)
     }
 
     @Selector(FrontPageService.ALERT_MESSAGE)
     void alertMessage(String alert) {
         try {
             log.debug("On Alert Message")
-            eventSourceService.sendToEveryone(createMessage(alert))
+            notify(EventSourceService.NEW_MESSAGE, createMessage(alert))
         } catch (e) {
             log.error("Exception caught while handling system message change", e)
         }

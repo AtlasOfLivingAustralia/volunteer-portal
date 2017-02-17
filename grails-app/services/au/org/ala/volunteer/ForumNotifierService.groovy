@@ -40,7 +40,7 @@ class ForumNotifierService {
         return results
     }
 
-    public List<User> getUsersInterestedInProject(Project projectInstance) {
+    List<User> getUsersInterestedInProject(Project projectInstance) {
         def list = new ArrayList<User>()
         ProjectForumWatchList watchList = ProjectForumWatchList.findByProject(projectInstance)
         if (watchList) {
@@ -51,7 +51,7 @@ class ForumNotifierService {
         return list
     }
 
-    public getUsersInterestedInTopic(ForumTopic topic) {
+    def getUsersInterestedInTopic(ForumTopic topic) {
         def c = UserForumWatchList.createCriteria()
 
         def watchLists = c {
@@ -77,7 +77,7 @@ class ForumNotifierService {
 
         if (topic.instanceOf(ProjectForumTopic)) {
             ProjectForumTopic projectTopic = topic as ProjectForumTopic
-            def list = getUsersInterestedInProject(topic.project)
+            def list = getUsersInterestedInProject(projectTopic.project)
 
             if (list) {
                 list.each { user ->
@@ -104,7 +104,7 @@ class ForumNotifierService {
                 }
             }
         } catch (Throwable ex) {
-            log.error("Exception occurred sending notifications: ", e)
+            log.error("Exception occurred sending notifications: ", ex)
         }
     }
 
@@ -120,7 +120,7 @@ class ForumNotifierService {
                 }
             }
         } catch (Throwable ex) {
-            log.error("Exception occurred sending notifications: ", e)
+            log.error("Exception occurred sending notifications: ", ex)
         }
     }
 
@@ -143,7 +143,7 @@ class ForumNotifierService {
                         emailService.sendMail(email, "${appName} Forum notification", message)
                     } catch (Exception ex) {
                         // TODO Get email from userdetails service
-                        log.error("Failed to send email to ${user.userId} (${email}): ", e)
+                        log.error("Failed to send email to ${user.userId} (${email}): ", ex)
                     }
                 }
 

@@ -28,8 +28,8 @@ import static org.hibernate.FetchMode.*
 @Transactional
 class AchievementService {
 
-    public static final String ACHIEVEMENT_AWARDED = 'achievementAwarded'
-    public static final String ACHIEVEMENT_VIEWED = 'achievementViewed'
+    public static final String ACHIEVEMENT_AWARDED = 'achievement.awarded'
+    public static final String ACHIEVEMENT_VIEWED = 'achievement.viewed'
 
     def taskService
     def grailsApplication
@@ -198,7 +198,7 @@ class AchievementService {
         if (hasBadgeImage(achievementDescription)) {
             return "${prefix}${achievementDescription.badge}"
         } else {
-            return grailsLinkGenerator.resource([uri: '/images/achievements/blank.png'])
+            return grailsLinkGenerator.resource([file: '/images/achievements/blank.png'])
         }
     }
 
@@ -237,21 +237,21 @@ class AchievementService {
     }
 
 
-    @Selector(AchievementService.ACHIEVEMENT_AWARDED)
+    @Selector('achievement.awarded')
     void achievementAwarded(AchievementAward award) {
         try {
             log.debug("On Achievement Awarded")
-            eventSourceService.sendToUser(award.user.userId, createAwardMessage(award))
+            notify(EventSourceService.NEW_MESSAGE, createAwardMessage(award))
         } catch (e) {
             log.error("Caught exception in $ACHIEVEMENT_AWARDED event listener", e)
         }
     }
 
-    @Selector(AchievementService.ACHIEVEMENT_VIEWED)
+    @Selector('achievement.viewed')
     void achievementViewed(Map args) {
         try {
             log.debug("On Achievement Viewed")
-            eventSourceService.sendToUser(args.userId, new EventSourceMessage(event: ACHIEVEMENT_VIEWED, data: [id: args.id]))
+            notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: args.userId, event: ACHIEVEMENT_VIEWED, data: [id: args.id]))
         } catch (e) {
             log.error("Caught exception in $ACHIEVEMENT_VIEWED event listener", e)
         }
@@ -271,7 +271,7 @@ class AchievementService {
                    title: 'Congratulations!', id: award.id,
                    message   : message.toString(),
                    profileUrl: grailsLinkGenerator.link(controller: 'user', action: 'notebook')]
-        def msg = new EventSourceMessage(event: ACHIEVEMENT_AWARDED, data: data)
+        def msg = new Message.EventSourceMessage(to: award.user.userId, event: ACHIEVEMENT_AWARDED, data: data)
         return msg
     }
 

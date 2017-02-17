@@ -110,7 +110,7 @@ class InstitutionService {
         if (hasImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/image.jpg"
         } else {
-            return grailsLinkGenerator.resource([uri: '/images/banners/default-institution-image.jpg'])
+            return grailsLinkGenerator.resource([file: '/images/banners/default-institution-banner.jpg'])
         }
     }
 
@@ -124,7 +124,7 @@ class InstitutionService {
         if (institution && hasLogoImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/logo-image.jpg"
         } else {
-            return grailsLinkGenerator.resource([uri: '/images/banners/default-institution-logo.png'])
+            return grailsLinkGenerator.resource([file: '/images/banners/default-institution-logo.png'])
         }
     }
 
