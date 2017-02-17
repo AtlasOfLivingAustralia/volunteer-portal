@@ -2,12 +2,11 @@ package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
 import grails.converters.JSON
-import java.text.SimpleDateFormat
 
 class StatsController {
 
     static int defaultDayDiff = 7;
-    static dateFormats = ["yyyy-MM-dd'T'hh:mm:ss.SSSXXX", "dd/MM/yyyy"]
+    static dateFormats = ['yyyy-MM-dd', "yyyy-MM-dd'T'hh:mm:ss.SSSXXX", "dd/MM/yyyy"]
 
     def statsService
     def settingsService
@@ -65,13 +64,19 @@ class StatsController {
         render result as JSON
     }
 
+    def transcriptionsByInstitutionByMonth() {
+        def reportType = StatsType.transcriptionsByInstitutionByMonth
+        def result = prepareJsonData(reportType)
+        render result as JSON
+    }
+
     def validationsByInstitution() {
         def reportType =  StatsType.validationsByInstitution
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
-    def prepareJsonData (def reportType) {
+    private def prepareJsonData (StatsType reportType) {
         def statResult = getStatData(reportType)
         def header = statResult.get('header')
         def array = statResult.get('statsData')
@@ -80,7 +85,7 @@ class StatsController {
         return result
     }
 
-    def getStatData (def reportType) {
+    private def getStatData (StatsType reportType) {
         def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
         def toDate = (params?.date('endDate', dateFormats) ?: new Date()) + 1
 
@@ -159,7 +164,8 @@ class StatsController {
                                [ id: "tasks_count",   label: "Number of Validations", type: "number" ]]
 
                 return [header: header, statsData: statsData];
-
+            case StatsType.transcriptionsByInstitutionByMonth.name():
+                return statsService.getTranscriptionsByInstitutionByMonth()
             default: return [header: [], statsData: []];
         }
 

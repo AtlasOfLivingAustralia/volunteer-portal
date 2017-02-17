@@ -90,12 +90,11 @@ class StatsService {
 
     def getNewUser(Date startDate, Date endDate) {
         String select ="""
-            SELECT  count (*) as newVolunteers,
-                    (SELECT count (*) FROM   vp_user) as totalVolunteers
-            FROM    vp_user
-            WHERE   created >= :startDate AND
-                    created <= :endDate
-        """
+            SELECT  SUM( CASE WHEN v.created >= :startDate AND v.created <= :endDate THEN 1 ELSE 0 END ) as newVolunteers,
+                    COUNT(v.id) as totalVolunteers
+            FROM    vp_user v
+            WHERE   EXISTS ( SELECT 1 FROM task t WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id LIMIT 1)
+        """.stripIndent()
 
         def results = []
 
@@ -219,10 +218,9 @@ class StatsService {
     def getTranscriptionsByInstitution() {
 
         String select ="""
-            SELECT project.featured_owner featured_owner, count(project.name) as task_count
-            FROM task, project
-            WHERE task.project_id = project.id
-            AND task.fully_transcribed_by is NOT null
+            SELECT project.featured_owner featured_owner, count(task.id) as task_count
+            FROM task JOIN project ON task.project_id = project.id
+            WHERE task.fully_transcribed_by is NOT null
             GROUP BY project.featured_owner
             ORDER BY task_count DESC;
         """
@@ -238,13 +236,43 @@ class StatsService {
         return results
     }
 
+    def getTranscriptionsByInstitutionByMonth() {
+        String select = """
+            SELECT
+                p.featured_owner featured_owner,
+                extract(year from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') || '-' || extract(month from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') as month,
+                count(t.id) as task_count
+            FROM task t JOIN project p on t.project_id = p.id
+            WHERE t.fully_transcribed_by is NOT NULL
+            GROUP BY month, p.featured_owner
+            ORDER BY 1, 2
+""".stripIndent()
+
+        Set<String> columnSet = new HashSet<String>()
+
+        def sql = new Sql(dataSource)
+        def rows = sql.rows(select)
+        rows.forEach { row ->
+            columnSet.add(row.month)
+        }
+        def columns = columnSet.sort().reverse()
+        def data = rows
+                .groupBy { it.featured_owner }
+                .collectEntries { [ (it.key) : it.value.collectEntries { [ (it.month): it.task_count ] } ] }
+                .collect { row ->
+                    [row.key] + columns.collect { row.value[it] ?: 0 }
+                }
+
+        def header = [[ id: 'institution', label: 'Institution', type: 'string' ]] + columns.collect { [ id: it, label: it, type: 'number']}
+        return [header: header, statsData: data]
+    }
+
     def getValidationsByInstitution() {
 
         String select ="""
-            SELECT project.featured_owner featured_owner, count(project.name) as task_count
-            FROM task, project
-            WHERE task.project_id = project.id
-            AND task.fully_validated_by is NOT null
+            SELECT project.featured_owner featured_owner, count(task.id) as task_count
+            FROM task JOIN project ON task.project_id = project.id
+            WHERE task.fully_validated_by is NOT null
             GROUP BY project.featured_owner
             ORDER BY task_count DESC;
         """

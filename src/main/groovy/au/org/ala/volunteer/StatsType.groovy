@@ -10,5 +10,6 @@ enum StatsType {
     transcriptionsByDay,
     validationsByDay,
     transcriptionsByInstitution,
-    validationsByInstitution
+    validationsByInstitution,
+    transcriptionsByInstitutionByMonth
 }

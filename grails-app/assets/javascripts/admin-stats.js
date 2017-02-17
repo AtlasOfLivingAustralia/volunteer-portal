@@ -15,9 +15,15 @@ function adminStats(config) {
   }]);
 
   app.service('StatsService', ['$http', '$q', function($http, $q) {
+    function toLocalDateString(value) {
+      var date = new Date(value.getTime());
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      return date.toISOString().substring(0, 10);
+    }
+
     return {
       getVolunteer: function (startDate, endDate) {
-        return $http.get(config.volunteerStatsURL, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+        return $http.get(config.volunteerStatsURL, {params:{"startDate": toLocalDateString(startDate), "endDate": toLocalDateString(endDate)}}).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -25,7 +31,7 @@ function adminStats(config) {
       },
 
       getActiveTranscribers: function (startDate, endDate) {
-        return $http.get(config.activeTranscribersURL, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+        return $http.get(config.activeTranscribersURL, {params:{"startDate": toLocalDateString(startDate), "endDate": toLocalDateString(endDate)}}).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -33,7 +39,7 @@ function adminStats(config) {
       },
 
       getTranscriptionsByVolunteerAndProject: function (startDate, endDate) {
-        return $http.get(config.transcriptionsByVolunteerProject, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+        return $http.get(config.transcriptionsByVolunteerProject, {params:{"startDate": toLocalDateString(startDate), "endDate": toLocalDateString(endDate)}}).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -41,7 +47,7 @@ function adminStats(config) {
       },
 
       getTranscriptionsByDay: function (startDate, endDate) {
-        return $http.get(config.transcriptionsByDay, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+        return $http.get(config.transcriptionsByDay, {params:{"startDate": toLocalDateString(startDate), "endDate": toLocalDateString(endDate)}}).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -49,7 +55,7 @@ function adminStats(config) {
       },
 
       getValidationsByDay: function (startDate, endDate) {
-        return $http.get(config.validationsByDay, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+        return $http.get(config.validationsByDay, {params:{"startDate": toLocalDateString(startDate), "endDate": toLocalDateString(endDate)}}).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -58,6 +64,14 @@ function adminStats(config) {
 
       getTranscriptionsByInstitution: function () {
         return $http.get(config.transcriptionsByInstitution).then(function (response) {
+          return response.data;
+        }, function (response) {
+          $q.reject(response);
+        });
+      },
+
+      getTranscriptionsByInstitutionByMonth: function () {
+        return $http.get(config.transcriptionsByInstitutionByMonth).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -73,7 +87,7 @@ function adminStats(config) {
       },
 
       getHourlyContributions: function (startDate, endDate) {
-        return $http.get(config.hourlyContributions, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+        return $http.get(config.hourlyContributions, {params:{"startDate": toLocalDateString(startDate), "endDate": toLocalDateString(endDate)}}).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -81,7 +95,7 @@ function adminStats(config) {
       },
 
       getHistoricalHonourBoard: function (startDate, endDate) {
-        return $http.get(config.historicalHonourBoard, {params:{"startDate": startDate, "endDate": endDate}}).then(function (response) {
+        return $http.get(config.historicalHonourBoard, {params:{"startDate": toLocalDateString(startDate), "endDate": toLocalDateString(endDate)}}).then(function (response) {
           return response.data;
         }, function (response) {
           $q.reject(response);
@@ -103,6 +117,11 @@ function adminStats(config) {
 
     var self = this;
 
+    self.endDate = new Date();
+    self.endDate.setHours(0,0,0,0);
+    self.startDate = new Date(self.endDate.getTime());
+    self.startDate.setDate(self.startDate.getDate() - 7);
+
     self.searchDate = [self.startDate, self.endDate];
 
     self.active = 0;
@@ -116,8 +135,6 @@ function adminStats(config) {
     self.validationsByInstitution = "";
     self.hourlyContributions = "";
     self.historicalHonourBoard = "";
-    self.formats = ['yyyy/MM/dd', 'dd/MM/yyyy'];
-    self.format = self.formats[0];
 
     var getNewVolunteerData = function () {
       var stats = StatsService.getVolunteer(self.startDate, self.endDate);
@@ -178,6 +195,17 @@ function adminStats(config) {
       var stat = StatsService.getTranscriptionsByInstitution();
       return stat.then(function(data) {
         self.transcriptionsByInstitution = data;
+        return data;
+      }, function (resp) {
+        $log.error("Error from getting data in getTranscriptionsByInstitution", resp);
+        return resp;
+      });
+    };
+
+    self.getTranscriptionsByInstitutionByMonth = function () {
+      var stat = StatsService.getTranscriptionsByInstitutionByMonth();
+      return stat.then(function(data) {
+        self.transcriptionsByInstitutionByMonth = data;
         return data;
       }, function (resp) {
         $log.error("Error from getting data in getTranscriptionsByInstitution", resp);
@@ -406,6 +434,27 @@ function adminStats(config) {
 
     return csv_out;
   };
+
+  function DateRangeController() {
+    var ctrl = this;
+
+    ctrl.formats = ['dd/MM/yyyy', 'yyyy/MM/dd'];
+    ctrl.format = ctrl.formats[0];
+
+    ctrl.confirm = function() {
+      ctrl.onDatesConfirmed();
+    }
+  }
+
+  app.component('dateRange', {
+    templateUrl: 'dateRange.html',
+    controller: DateRangeController,
+    bindings: {
+      startDate: '=',
+      endDate: '=',
+      onDatesConfirmed: '&'
+    }
+  });
 
   app.directive('tablechart', ['$timeout', function ($timeout) {
     return {

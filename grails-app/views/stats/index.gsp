@@ -25,23 +25,7 @@
             <uib-tab heading="Reports By Date">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-inline">
-                            <div class="form-group">
-                                <label for="fromDate">From</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" uib-datepicker-popup="{{statsCtrl.format}}" id="fromDate" name="fromDate" ng-model="statsCtrl.startDate" is-open="statsCtrl.fromDatePopupOpened" />
-                                    <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="statsCtrl.fromDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="toDate">to</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" uib-datepicker-popup="{{statsCtrl.format}}" id="toDate" name="toDate" ng-model="statsCtrl.endDate" is-open="statsCtrl.toDatePopupOpened" />
-                                    <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="statsCtrl.toDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>
-                                </div>
-                            </div>
-                            <button class="search btn btn-primary" ng-click="statsCtrl.setDateRange()">Search</button>
-                        </div>
+                        <date-range start-date="statsCtrl.startDate" end-date="statsCtrl.endDate" on-dates-confirmed="statsCtrl.setDateRange()"></date-range>
                     </div>
                 </div>
 
@@ -82,8 +66,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4>Transcriptions By Day</h4></div>
@@ -96,8 +78,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4>Validations By Day</h4></div>
@@ -110,8 +90,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4>Transcriptions By Volunteer And Project</h4></div>
@@ -123,8 +101,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4>Hourly Contributions</h4></div>
@@ -152,8 +128,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4>Validations By Month</h4></div>
@@ -181,8 +155,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4>Validations By Institution</h4></div>
@@ -195,17 +167,47 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4>Transcriptions By Institution By Month</h4></div>
+                            <div class="panel-body">
+                                <div tablechart data="statsCtrl.getTranscriptionsByInstitutionByMonth()" title="" width="100%" height="100%" xaxis="Institution"
+                                     yaxis="Month"></div>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByInstitutionByMonth, 'transcriptionsByInstitutionByMonth')">
+                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </uib-tab>
         </uib-tabset>
     </div>
 </section>
+<script type="text/ng-template" id="dateRange.html">
+<div class="form-inline">
+    <div class="form-group">
+        <label>From
+            <div class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="fromDate" ng-model="$ctrl.startDate" is-open="$ctrl.fromDatePopupOpened" />
+                <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="$ctrl.fromDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>
+            </div>
+        </label>
+    </div>
+    <div class="form-group">
+        <label>to
+            <div class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="toDate" ng-model="$ctrl.endDate" is-open="$ctrl.toDatePopupOpened" />
+                <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="$ctrl.toDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>
+            </div>
+        </label>
+    </div>
+    <button class="search btn btn-primary" ng-click="$ctrl.confirm()">Search</button>
+</div>
+</script>
 <g:render template="/common/angularBootstrapTabSet" />
 <asset:javascript src="livestamp" asset-defer=""/>
-%{-- language="javascript" --}%
 <asset:script type="text/javascript">
-    // language="javascript"
-%{-- language="javascript" --}%
     // Load the Visualization API and the piechart package.
     google.load('visualization', '1.0', {'packages': ['corechart']});
     google.load('visualization', '1.0', {'packages': ['table']});
@@ -220,6 +222,7 @@
         transcriptionsByDay: "${createLink(controller: 'stats', action: 'transcriptionsByDay')}",
         validationsByDay: "${createLink(controller: 'stats', action: 'validationsByDay')}",
         transcriptionsByInstitution: "${createLink(controller: 'stats', action: 'transcriptionsByInstitution')}",
+        transcriptionsByInstitutionByMonth: "${createLink(controller: 'stats', action: 'transcriptionsByInstitutionByMonth')}",
         validationsByInstitution: "${createLink(controller: 'stats', action: 'validationsByInstitution')}",
         hourlyContributions: "${createLink(controller: 'stats', action: 'hourlyContributions')}",
         historicalHonourBoard: "${createLink(controller: 'stats', action: 'historicalHonourBoard')}",
