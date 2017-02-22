@@ -1,4 +1,5 @@
 //= encoding UTF-8
+//= require jquery-ui
 //= require pan-zoom
 //= require_self
 function setupPanZoom(target) {

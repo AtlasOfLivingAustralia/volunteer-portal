@@ -20,13 +20,12 @@ class BVPServletFilter implements Filter  {
 
     void init(FilterConfig filterConfig) {
         _filterPatterns = new ArrayList<Pattern>();
-        addPattern(".*/plugins/.*")
-        addPattern(".*/js/.*")
-        addPattern(".*/css/.*")
-        addPattern(".*/images/.*")
-        addPattern(".*/monitoring")
-        addPattern(".*/assets/.*")
-        addPattern(".*/es")
+        addPattern("/plugins/.*")
+        addPattern("/monitoring")
+        addPattern("/assets/.*")
+        addPattern("/static/.*")
+        addPattern("/es")
+        addPattern("/admin/userActivityInfo")
     }
 
     private void addPattern(String pattern) {
@@ -37,9 +36,9 @@ class BVPServletFilter implements Filter  {
         try {
             def request = servletRequest as HttpServletRequest
             if (request) {
-                request.getSession().getServletContext()
+                def contextPath = request.servletContext.contextPath
                 boolean doLog = true;
-                String requestUri = request.getRequestURI()
+                String requestUri = request.requestURI - contextPath
                 for (Pattern p : _filterPatterns) {
                     Matcher m = p.matcher(requestUri)
                     if (m.find()) {
@@ -51,7 +50,7 @@ class BVPServletFilter implements Filter  {
                 if (doLog) {
                     def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
                     def userAgent = request.getHeader("user-agent")
-                    logger.info "Session: ${request.session.id} User: ${username} IP: ${request.remoteAddr} UA: ${userAgent} URI: ${requestUri}"
+                    logger.info "Session: ${request.session.id} User: ${username} IP: ${request.remoteAddr} UA: ${userAgent} URI: ${request.requestURI}"
                 }
 //                request.getHeaderNames().each {
 //                    println it + " = " + request.getHeader(it)

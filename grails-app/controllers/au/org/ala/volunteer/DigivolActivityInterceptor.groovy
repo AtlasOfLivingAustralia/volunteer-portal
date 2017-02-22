@@ -11,8 +11,9 @@ class DigivolActivityInterceptor {
 
     DigivolActivityInterceptor() {
         matchAll()
-            .excludes(controllerClass: AjaxController)
-            .excludes(actionName: 'unreadValidatedTasks')
+            .excludes(controller: 'ajax')
+            .excludes(controller: 'eventSource')
+            .excludes(action: 'unreadValidatedTasks')
     }
 
     boolean before() {
@@ -36,6 +37,5 @@ class DigivolActivityInterceptor {
 
     void afterView() {
         // no-op
-        log.debug("After view")
     }
 }

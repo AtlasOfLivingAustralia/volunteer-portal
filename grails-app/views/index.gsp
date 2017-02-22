@@ -7,7 +7,6 @@
     <content tag="disableBreadcrumbs">true</content>
     <content tag="selectedNavItem">bvp</content>
     <asset:stylesheet src="digivol-image-resize.css" />
-    <asset:stylesheet src="digivol-stats.css" />
 </head>
 <body>
 <div class="a-feature home">

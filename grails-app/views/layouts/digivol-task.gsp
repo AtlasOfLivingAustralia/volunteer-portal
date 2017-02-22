@@ -307,11 +307,7 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootbox" asset-defer=""/>
-<asset:javascript src="jquery-ui" asset-defer=""/>
-<asset:javascript src="image-viewer" asset-defer=""/>
-<asset:javascript src="transcribe/transcribe-widgets" asset-defer=""/>
-<asset:javascript src="amplify" asset-defer=""/>
+<asset:javascript src="digivol-transcribe" asset-defer="" />
 <asset:script type="text/javascript">
 
     // global Object
@@ -791,7 +787,7 @@
                     }
                 }
 
-                if (numRows && addEntry) {
+                if (numRows && typeof addEntry === 'function') {
                     for (var i = 0; i < numRows; ++i) {
                         addEntry();
                     }

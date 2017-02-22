@@ -204,7 +204,8 @@ class AchievementDescriptionController {
                         .findAll { achievementService.evaluateAchievement(achievementDescriptionInstance, it) }
                         .collect { new AchievementAward(user: User.findByUserId(it), achievement: achievementDescriptionInstance, awarded: new Date()) }
 
-        AchievementAward.saveAll(awards)
+//        AchievementAward.saveAll(awards)
+        awards*.save()
 
         awards.each { notify(AchievementService.ACHIEVEMENT_AWARDED, it) }
 

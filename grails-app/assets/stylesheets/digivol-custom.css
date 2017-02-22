@@ -357,6 +357,15 @@ table .btn-default:hover {
     height: 40px;
 }
 
+/** Reset spans used for angular placeholders */
+#digivol-stats .leaderboard span[ng-if],
+#digivol-stats .leaderboard span[data-ng-if],
+#digivol-stats .volunteer-stats span[ng-if],
+#digivol-stats .volunteer-stats span[data-ng-if] {
+    display: inline;
+    font-size: inherit;
+}
+
 /*** End - LeaderBoard ***/
 
 .expedition #projectDescriptionX {

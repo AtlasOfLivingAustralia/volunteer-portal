@@ -379,7 +379,7 @@ class ForumController {
         if (topic && params.messageText && user) {
 
             def text = params.messageText as String
-            def maxSize = ForumMessage.constraints.text.getAppliedConstraint( 'maxSize' ).maxSize
+            def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
 
             text = markdownService.sanitize(text)
 

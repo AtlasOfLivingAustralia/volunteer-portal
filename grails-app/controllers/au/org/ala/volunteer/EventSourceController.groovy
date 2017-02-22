@@ -12,9 +12,9 @@ class EventSourceController implements RxController {
     def eventSourceService
 
     def index() {
-        final user = authService.userDetails()
+        final user = authService.userId
         if (!user) {
-            log.info("Attempt to get EventSource connection without UserDetails")
+            log.info("Attempt to get EventSource connection without a user id")
             response.sendError(400)
             return
         }
@@ -25,14 +25,16 @@ class EventSourceController implements RxController {
                             def data
                             switch (esm.data) {
                                 case Writable:
-                                case Converter:
                                 case GString:
                                 case GStringImpl:
                                 case CharSequence:
                                     data = esm.data
                                     break
+                                case Converter:
+                                    data = { Writer out -> esm.data.render(out) }
+                                    break
                                 default:
-                                    data = esm.data as JSON
+                                    data = { Writer out -> (esm.data as JSON).render(out) }
                             }
                             data == null ? rx.event((Writable) null, comment: esm.comment, id: esm.id, event: esm.event) : rx.event(data, comment: esm.comment, id: esm.id, event: esm.event)
                         }

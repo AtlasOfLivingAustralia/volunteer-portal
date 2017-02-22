@@ -98,7 +98,7 @@ class PicklistController {
             headers.put(entry.toLowerCase(), i)
         }
         int i = 0
-        def pis = []
+        List<PicklistItem> pis = []
         def warnings = []
         while (line = reader.readNext()) {
             def species = getValueFromLine(line, headers, 'species')
@@ -126,7 +126,8 @@ class PicklistController {
 
         log.debug("Deleted $n picklist items for $picklistInstance ($instCode)")
 
-        PicklistItem.saveAll(pis)
+//        PicklistItem.saveAll(pis)
+        pis*.save()
 
         if (warnings) flash.message = "Couldn't find images for ${warnings.join(', ')}"
 

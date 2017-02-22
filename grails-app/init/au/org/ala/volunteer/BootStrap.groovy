@@ -30,6 +30,8 @@ class BootStrap {
 
         ensureFuzzyStrMatchExtension()
 
+        dbMigrate()
+
         addSanitizer()
 
         defineMetaMethods()
@@ -71,6 +73,15 @@ class BootStrap {
             throw e
         }
 
+    }
+
+    private void dbMigrate() {
+        def sql = new Sql(dataSource)
+        try {
+            sql.execute("ALTER TABLE vp_user ALTER COLUMN display_name DROP NOT NULL")
+        } catch (e) {
+            log.warn("Could not remove not null constraint from display_name")
+        }
     }
 
     private void fixTaskLastViews() {
@@ -273,7 +284,8 @@ class BootStrap {
             if (newLabels) {
                 log.debug("Adding ${newLabels.join('\n')}")
             }
-            if (newLabels) Label.saveAll(newLabels)
+//            if (newLabels) Label.saveAll(newLabels)
+            if (newLabels) newLabels*.save()
         } else {
             log.debug("Skipping default labels")
         }

@@ -33,6 +33,5 @@ class AchievementsInterceptor {
 
     void afterView() {
         // no-op
-        log.debug("After view")
     }
 }

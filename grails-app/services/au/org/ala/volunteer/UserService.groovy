@@ -281,9 +281,9 @@ class UserService {
 
     def recordUserActivity(String userId, HttpServletRequest request, GrailsParameterMap params) {
 
-        if (!grailsApplication.config.bvp.user.activity.monitor.enabled) {
-            return
-        }
+//        if (!grailsApplication.config.bvp.user.activity.monitor.enabled) {
+//            return
+//        }
 
         def action = new StringBuilder(request.requestURI)
         def valuePairs = []
@@ -461,7 +461,7 @@ class UserService {
     }
 
     void updateAllUsers() {
-        def updates = []
+        List<User> updates = []
         def users = User.all
 
         def ids = users*.userId
@@ -487,7 +487,9 @@ class UserService {
         }
 
         if (updates) {
-            def dbIds = User.saveAll(updates)
+//            def dbIds = User.saveAll(updates)
+            updates*.save()
+            def dbIds = updates*.id
             log.debug("Updated ids ${dbIds}")
         }
     }

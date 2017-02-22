@@ -1,6 +1,6 @@
 //= encoding UTF-8
 //  assume jquery
-//= require jquery-ui
+//  assume jquery-ui
 //= require slickgrid/jquery.event.drag-2.2.js
 //= require slickgrid/slick.core.js
 //= require slickgrid/slick.grid.js

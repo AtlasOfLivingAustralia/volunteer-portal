@@ -1,30 +1,18 @@
 package au.org.ala.volunteer
 
 import au.org.ala.web.UserDetails
-import grails.converters.JSON
-import grails.rx.web.Rx
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import io.reactivex.subjects.UnicastSubject
-import org.codehaus.groovy.runtime.GStringImpl
-import org.grails.web.converters.Converter
 import reactor.spring.context.annotation.Consumer
 import reactor.spring.context.annotation.Selector
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
-import javax.servlet.AsyncContext
-import javax.servlet.AsyncEvent
-import javax.servlet.AsyncListener
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentMap
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-
-import static grails.async.Promises.*
 
 @Consumer
 class EventSourceService {
@@ -71,8 +59,7 @@ class EventSourceService {
         startMessages.remove(c)
     }
 
-    List<Message> currentStartMessages(UserDetails userDetails) {
-        def userId = userDetails?.userId
+    List<Message> currentStartMessages(String userId) {
         try {
             def result = []
             log.trace("Getting startup messages for $userId")
@@ -125,9 +112,8 @@ class EventSourceService {
         ongoingRequests[userId]?.size() ?: 0
     }
 
-    Observable<Message.EventSourceMessage> addConnection(UserDetails user) {
-        final String userId = user.userId
-        final startMessageList = currentStartMessages(user)
+    Observable<Message.EventSourceMessage> addConnection(String userId) {
+        final startMessageList = currentStartMessages(userId)
         UnicastSubject<Message> subject = UnicastSubject.create()
         subject
                 .doOnComplete { removeSubject(userId, subject) }

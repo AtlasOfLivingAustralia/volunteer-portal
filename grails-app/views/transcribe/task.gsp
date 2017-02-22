@@ -305,10 +305,7 @@
     </div>
 </div>
 </body>
-<asset:javascript src="bootbox" asset-defer=""/>
-<asset:javascript src="image-viewer" asset-defer=""/>
-<asset:javascript src="transcribe-widgets" asset-defer=""/>
-<asset:javascript src="amplify" asset-defer=""/>
+<asset:javascript src="digivol-transcribe" asset-defer="" />
 <asset:script>
 
     // global Object

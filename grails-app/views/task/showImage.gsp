@@ -83,7 +83,7 @@
     </div>
 </div>
 <asset:javascript src="digivol" />
-<asset:javascript src="image-viewer" />
+<asset:javascript src="image-viewer" asset-defer=""/>
 
 <asset:script type="text/javascript">
 

@@ -225,13 +225,19 @@ class AdminController {
 
     def userActivityInfo() {
         def activities = UserActivity.list([sort:'timeLastActivity', order:'desc'])
-        def emailToIdMap = User.withCriteria {
-            inList('email', activities*.userId)
-            projections {
-                property('email')
-                property('userId')
-            }
-        }.toMap()
+        def emailToIdMap
+        if (activities) {
+            emailToIdMap = User.withCriteria {
+                inList('email', activities*.userId)
+                projections {
+                    property('email')
+                    property('userId')
+                }
+            }.toMap()
+        } else {
+            emailToIdMap = [:]
+        }
+
         def actWithOpenEventSources = activities*.properties.collect { it + [ openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '') ] }
         respond([activities: actWithOpenEventSources])
     }

@@ -30,7 +30,7 @@ apply plugin:"asset-pipeline"
 apply plugin:"maven-publish"
 
 //ext {
-//    set "tomcat.version", "8.5.11" // force this version due to a conflict between hibernate and tomcat 8.5.9, remove when upgrading grails version to 3.2.5+
+//    set "tomcat.version", "8.5.11" // use this to force a tomcat version
 //}
 
 repositories {
@@ -58,7 +58,7 @@ dependencies {
     compile "org.grails:grails-web-boot"
     compile "org.grails.plugins:cache"
     compile "org.grails.plugins:scaffolding"
-    compile "org.grails.plugins:hibernate5"
+    compile "org.grails.plugins:hibernate5:6.0.7"
     compile "org.hibernate:hibernate-core:5.1.2.Final"
     compile "org.hibernate:hibernate-ehcache:5.1.2.Final"
     console "org.grails:grails-console"
