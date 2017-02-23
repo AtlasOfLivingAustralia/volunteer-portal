@@ -78,9 +78,9 @@ class BootStrap {
     private void dbMigrate() {
         def sql = new Sql(dataSource)
         try {
-            sql.execute("ALTER TABLE vp_user ALTER COLUMN display_name DROP NOT NULL")
+            sql.execute("ALTER TABLE vp_user DROP COLUMN IF EXISTS display_name")
         } catch (e) {
-            log.warn("Could not remove not null constraint from display_name")
+            log.warn("Could not remove vp_user.display_name", e)
         }
     }
 

@@ -26,7 +26,7 @@
                     <ul class="profile-links">
                         <li><a href="http://www.ala.org.au/my-profile" class="" target="_blank"><g:message code="action.viewProfile" /></a></li>
                         <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span class="hidden unread-count label label-danger label-as-badge"></span></a></li>
-                        <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.casServerName}/cas/logout", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class="">Logout</a></li>
+                        <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.security.cas.logoutUrl}", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class="">Logout</a></li>
                     </ul>
                 </div>
             </div>

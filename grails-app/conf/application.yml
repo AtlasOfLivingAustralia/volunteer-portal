@@ -44,9 +44,17 @@ spring:
     groovy:
         template:
             check-template-location: false
+    http:
+        multipart:
+          max-file-size: 50MB
+          max-request-size: 50MB
 server:
     session:
         timeout: 7200 # seconds, 2 hours
+    tomcat:
+        port-header: 'X-Forwarded-Port'
+        protocol-header: 'X-Forwarded-Proto'
+        remote-ip-header: 'X-Forwarded-For'
 # Spring Actuator Endpoints are Disabled by Default
 endpoints:
     enabled: false
@@ -94,6 +102,9 @@ grails:
             maxsize: 1000
     controllers:
         defaultScope: singleton
+        upload:
+          maxFileSize: 52428800
+          maxRequestSize: 52428800
     converters:
         encoding: UTF-8
     views:
