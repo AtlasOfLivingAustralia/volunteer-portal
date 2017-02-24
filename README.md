@@ -1,4 +1,4 @@
-# DigiVol   [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/volunteer-portal.svg?branch=master)](https://travis-ci.org/AtlasOfLivingAustralia/volunteer-portal)
+# DigiVol   [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/volunteer-portal.svg?branch=develop)](https://travis-ci.org/AtlasOfLivingAustralia/volunteer-portal)
 
 The [Atlas of Living Australia], in collaboration with the [Australian Museum], developed [DigiVol]
 to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked up
