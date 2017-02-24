@@ -111,13 +111,15 @@ class StatsService {
     def getActiveTasks(Date startDate, Date endDate) {
 
         String select ="""
-            SELECT vp_user.display_name, count (*)
-            FROM   task, vp_user
-            WHERE  task.fully_transcribed_by = vp_user.user_id AND
-                   task.date_fully_transcribed IS NOT NULL AND
-                   task.date_fully_transcribed >= :startDate AND
-                   task.date_fully_transcribed <= :endDate
-            GROUP BY vp_user.display_name
+            WITH task_count AS (
+              SELECT fully_transcribed_by as userId, count(*) as count
+              FROM task
+              WHERE
+                date_fully_transcribed BETWEEN :startDate AND :endDate
+               GROUP BY fully_transcribed_by
+               )
+            SELECT u.userId, u.first_name || ' ' || u.last_name AS display_name, t.count
+            FROM   vp_user u JOIN task_count t ON u.userId = t.userId,
             ORDER BY count DESC;
         """
 
@@ -135,14 +137,15 @@ class StatsService {
     def getTasksGroupByVolunteerAndProject (Date startDate, Date endDate) {
 
         String select ="""
-            SELECT vp_user.display_name, project.name, count (*)
-            FROM   task, vp_user, project
-            WHERE  task.fully_transcribed_by = vp_user.user_id AND
-                   task.project_id = project.id AND
-                   task.date_fully_transcribed IS NOT NULL AND
-                   task.date_fully_transcribed >= :startDate AND
-                   task.date_fully_transcribed <= :endDate
-            GROUP BY vp_user.display_name, project.name
+            WITH task_count AS (
+              SELECT t.fully_transcribed_by as userId, p.id as project_id, count(*) as count
+              FROM task t JOIN project p on t.project_id = p.id
+              WHERE
+                t.date_fully_transcribed BETWEEN :startDate AND :endDate
+               GROUP BY t.fully_transcribed_by, p.id
+               )
+            SELECT u.userId, u.first_name || ' ' || u.last_name AS display_name, p.name as name, t.count
+            FROM   vp_user u JOIN task_count t ON u.userId = t.userId JOIN project ON t.project_id = p.id,
             ORDER BY count DESC;
         """
 

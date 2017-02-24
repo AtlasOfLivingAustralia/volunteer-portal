@@ -930,8 +930,6 @@ class VolunteerTagLib {
      * @attr callback The callback function to use
      */
     def googleMapsScript = { attrs, body ->
-//        %{--<script src='https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}' async defer ></script>--}%
-//        def url = "http://maps.google.com/maps/api/js?v=3"
         if ( attrs.containsKey('if') && !attrs.remove('if') ) return
         def url = "https://maps.googleapis.com/maps/api/js"
         def opts = [:]
@@ -948,7 +946,7 @@ class VolunteerTagLib {
         if (opts) {
             url += "?" + opts.collect { "$it.key=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
         }
-        asset.script(type: 'text/javascript', src: url, async: true, defer: true)//"<asset:javascript type=\"text/javascript\" src=\"$url\" asset-defer async defer ></script>"
+        asset.script(type: 'text/javascript', src: url, async: true, defer: true)
         asset.script(type: 'text/javascript') {'''
 var gmapsReady = false;
 function onGmapsReady() {
@@ -964,6 +962,10 @@ function notify() {
 }
 '''
         }
+    }
+
+    def googleChartsScript = { attrs, body ->
+        out << '<script type="text/javascript" src="https://www.google.com/jsapi"></script>'
     }
 
 }

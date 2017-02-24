@@ -1305,7 +1305,8 @@ OR t.id::VARCHAR = :query
 OR c.catalog_number @> ARRAY[ :query ]::text[]
 OR p.name ilike '%' || :query || '%'
 OR t.external_identifier ilike '%' || :query || '%'
-OR vu.display_name ilike '%' || :query || '%'
+OR (tu.first_name || ' ' || tu.last_name) ilike '%' || :query || '%'
+OR (vu.first_name || ' ' || vu.last_name) ilike '%' || :query || '%'
 OR ($statusSnippet) = :query
 )
 """
@@ -1317,8 +1318,8 @@ OR ($statusSnippet) = :query
         def selectClause = """
 SELECT
 t.*,
-    tu.display_name AS "transcriber_display_name",
-    vu.display_name AS "validator_display_name",
+    (tu.first_name || ' ' || tu.last_name) AS "transcriber_display_name",
+    (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
     c.catalog_number[1] AS "catalog_number",
     p.name AS "project_name",
     $statusSnippet AS "status",

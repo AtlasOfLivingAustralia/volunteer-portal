@@ -83,7 +83,13 @@ var notebook = {
 };
 
 $(function() {
-  notebook.initMap();
+  if (gmapsReady) {
+    notebook.initMap();
+  } else {
+    $(window).on('digivol.gmapsReady', function() {
+      notebook.initMap();
+    });
+  }
 });
 
 
