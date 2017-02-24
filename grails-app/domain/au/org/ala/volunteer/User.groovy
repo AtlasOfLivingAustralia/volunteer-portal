@@ -27,6 +27,7 @@ class User {
         organisation nullable: true
         firstName nullable: true
         lastName nullable: true
+        displayName nullable: true // nullable for unit tests
         userId maxSize: 200
         email maxSize: 200
     }

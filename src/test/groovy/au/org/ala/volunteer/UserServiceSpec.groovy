@@ -8,17 +8,17 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 @TestFor(UserService)
-@Mock([User])
+@Mock(User)
 class UserServiceSpec extends Specification {
 
     //def mockAuthService
 
     def setup() {
-        User potato = new User(userId: '1234', email: 'email@example.com', firstName: 'Mr Potato', lastName: 'Head', created: new Date())
-        User smitty = new User(userId: '1235', email: 'smitty@smitty.com', firstName: 'Smitty', lastName: 'Smitty', created: new Date())
+        User potato = new User(userId: '1234', email: 'email@example.com', firstName: 'Mr Potato', lastName: 'Head', displayName: 'Mr Potato Head', created: new Date())
+        User smitty = new User(userId: '1235', email: 'smitty@smitty.com', firstName: 'Smitty', lastName: 'Smitty', displayName: 'Smitty Smitty', created: new Date())
 
-        def zjxs = new User(userId: '545', email: 'zjxs@zjxs.org', firstName: 'ZJXS', created: new Date())
-        def clvf = new User(userId: '546', email: 'clvf@clvf.net', firstName: 'CLVF', created: new Date())
+        def zjxs = new User(userId: '545', email: 'zjxs@zjxs.org', firstName: 'ZJXS', displayName: 'ZJXS ', created: new Date())
+        def clvf = new User(userId: '546', email: 'clvf@clvf.net', firstName: 'CLVF', displayName: 'CLVF ', created: new Date())
 
         potato.save()
         smitty.save()
@@ -71,14 +71,14 @@ class UserServiceSpec extends Specification {
 
         then:
         x.email == 'email@example.com'
-        x.displayName == 'Mr Potato Head'
+        x.displayName == 'Mr Potato Head' // display name is computed in database
         //mockAuthService.verify()
     }
 
     def "test updateAllUsers"() {
         setup:
         def mockAuthService = Stub(AuthService)
-        mockAuthService.getUserDetailsById(_, _) >> { List<String> ids -> usersForUserIds(ids) }
+        mockAuthService.getUserDetailsById(_, _) >> { List<String> ids, boolean includeProps -> usersForUserIds(ids) }
         service.authService = mockAuthService
 
         when:
@@ -88,9 +88,9 @@ class UserServiceSpec extends Specification {
 
         then:
         p.email == 'potato@potato.org'
-        p.displayName == 'Señor Potato'
+//        p.displayName == 'Señor Potato' // displayName is computed in database.
         s.email == 'smitty@smitty.com'
-        s.displayName == 'Smitty Smitty'
+//        s.displayName == 'Smitty Smitty' // displayName is computed in database.
     }
 
     def "test propsForUserIds"() {
