@@ -5,6 +5,8 @@ import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
 import org.imgscalr.Scalr
+import org.springframework.core.io.FileSystemResource
+import org.springframework.core.io.Resource
 
 import javax.imageio.ImageIO
 import javax.sql.DataSource
@@ -989,18 +991,18 @@ ORDER BY record_idx, name;
             String imagesHome = grailsApplication.config.images.home
             path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
 
-            return getImageMetaDataFromFile(new File(path), imageUrl, rotate)
+            return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
         return null
     }
 
-    def getImageMetaDataFromFile(File file, String imageUrl, int rotate) {
+    def getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
         try {
-            image = ImageIO.read(file)
+            image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
-            log.error("Exception trying to read image path: ${file.getAbsolutePath()}", ex)
+            log.error("Exception trying to read image path: $resource", ex)
         }
 
         if (image) {
@@ -1012,7 +1014,7 @@ ORDER BY record_idx, name;
             }
             return new ImageMetaData(width: width, height: height, url: imageUrl)
         } else {
-            log.info("Could not read image file: ${file?.getAbsolutePath()} - could not get image metadata")
+            log.info("Could not read image file: $resource - could not get image metadata")
         }
 
     }

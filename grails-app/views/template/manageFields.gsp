@@ -125,7 +125,7 @@
             e.preventDefault();
             var fieldId = $(this).parents("[fieldId]").attr('fieldId');
             if (fieldId) {
-                window.location = "${createLink(controller: 'template', action: 'moveFieldUp')}?fieldId=" + fieldId;
+                window.location.href = "${createLink(controller: 'template', action: 'moveFieldUp')}?fieldId=" + fieldId;
                     }
                 });
 
@@ -133,7 +133,7 @@
                     e.preventDefault();
                     var fieldId = $(this).parents("[fieldId]").attr('fieldId');
                     if (fieldId) {
-                        window.location = "${createLink(controller: 'template', action: 'moveFieldDown')}?fieldId=" + fieldId;
+                        window.location.href = "${createLink(controller: 'template', action: 'moveFieldDown')}?fieldId=" + fieldId;
                     }
                 });
 
@@ -156,7 +156,7 @@
                     e.preventDefault();
                     var fieldId = $("#dialogFieldId").val();
                     var newPosition = $("#newPosition").val();
-                    window.location = "${createLink(controller: 'template', action: 'moveFieldToPosition', id: templateInstance.id)}?fieldId=" + fieldId + "&newOrder=" + newPosition
+                    window.location.href = "${createLink(controller: 'template', action: 'moveFieldToPosition', id: templateInstance.id)}?fieldId=" + fieldId + "&newOrder=" + newPosition
                 });
 
                 $( "#dialog" ).dialog({
@@ -168,7 +168,7 @@
 
                 $("#btnCleanUpOrdering").click(function(e) {
                     e.preventDefault();
-                    window.location = "${createLink(controller: 'template', action: 'cleanUpOrdering', id: templateInstance.id)}";
+                    window.location.href = "${createLink(controller: 'template', action: 'cleanUpOrdering', id: templateInstance.id)}";
                 });
 
                 $("#btnAddField").click(function(e) {
@@ -187,7 +187,7 @@
                     var fieldId = $(this).parents("[fieldId]").attr("fieldId");
                     if (fieldId) {
                         if (confirm("Are you sure you wish to delete this field from the template?")) {
-                            window.location = "${createLink(controller: 'template', action: 'deleteField', id: templateInstance.id)}?fieldId=" + fieldId;
+                            window.location.href = "${createLink(controller: 'template', action: 'deleteField', id: templateInstance.id)}?fieldId=" + fieldId;
                         }
                     }
                 });
@@ -196,7 +196,7 @@
                     e.preventDefault();
                     var fieldId = $(this).parents("[fieldId]").attr("fieldId");
                     if (fieldId) {
-                        window.location = "${createLink(controller: 'templateField', action: 'edit')}/" + fieldId;
+                        window.location.href = "${createLink(controller: 'templateField', action: 'edit')}/" + fieldId;
                     }
                 });
 

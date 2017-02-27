@@ -356,7 +356,7 @@ class TranscribeTagLib {
 
             if (!imageMetaData) {
 
-                def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg").file
+                def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg")
 
 
                 def sampleUrl = resource(file:'/sample-task.jpg')
