@@ -34,8 +34,8 @@
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4>DigiVol Volunteers</h4></div>
                             <div class="panel-body">
-                                <h4>New Volunteers: {{statsCtrl.newVolunteers}}</h4>
-                                <h4>Total Volunteers: {{statsCtrl.totalVolunteers}}</h4>
+                                <h4>New Volunteers: {{ statsCtrl.newVolunteers }}</h4>
+                                <h4>Total Volunteers: {{ statsCtrl.totalVolunteers }}</h4>
                             </div>
                         </div>
                     </div>
