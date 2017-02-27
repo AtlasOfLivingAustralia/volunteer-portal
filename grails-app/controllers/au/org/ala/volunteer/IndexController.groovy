@@ -118,9 +118,14 @@ class IndexController {
             if (institution) {
                 project {
                     eq('institution', institution)
+                    ne('inactive', true)
                 }
             } else if (projectInstance) {
                 eq('project', projectInstance)
+            } else {
+                project {
+                    ne('inactive', true)
+                }
             }
             isNotNull('fullyTranscribedBy')
             projections {
