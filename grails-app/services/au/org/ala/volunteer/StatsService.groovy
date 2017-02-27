@@ -112,14 +112,14 @@ class StatsService {
 
         String select ="""
             WITH task_count AS (
-              SELECT fully_transcribed_by as userId, count(*) as count
+              SELECT fully_transcribed_by as user_id, count(*) as count
               FROM task
               WHERE
                 date_fully_transcribed BETWEEN :startDate AND :endDate
                GROUP BY fully_transcribed_by
                )
-            SELECT u.userId, u.first_name || ' ' || u.last_name AS display_name, t.count
-            FROM   vp_user u JOIN task_count t ON u.userId = t.userId,
+            SELECT u.user_id, u.first_name || ' ' || u.last_name AS display_name, t.count
+            FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id,
             ORDER BY count DESC;
         """
 
@@ -138,14 +138,14 @@ class StatsService {
 
         String select ="""
             WITH task_count AS (
-              SELECT t.fully_transcribed_by as userId, p.id as project_id, count(*) as count
+              SELECT t.fully_transcribed_by as user_id, p.id as project_id, count(*) as count
               FROM task t JOIN project p on t.project_id = p.id
               WHERE
                 t.date_fully_transcribed BETWEEN :startDate AND :endDate
                GROUP BY t.fully_transcribed_by, p.id
                )
-            SELECT u.userId, u.first_name || ' ' || u.last_name AS display_name, p.name as name, t.count
-            FROM   vp_user u JOIN task_count t ON u.userId = t.userId JOIN project ON t.project_id = p.id,
+            SELECT u.user_id, u.first_name || ' ' || u.last_name AS display_name, p.name as name, t.count
+            FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id JOIN project ON t.project_id = p.id,
             ORDER BY count DESC;
         """
 
@@ -157,7 +157,7 @@ class StatsService {
             results.add(transcriberTask)
         }
 
-        return results;
+        return results
     }
 
     def getTranscriptionsByDay(Date startDate, Date endDate) {
