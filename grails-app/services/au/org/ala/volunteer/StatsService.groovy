@@ -145,7 +145,7 @@ class StatsService {
                GROUP BY t.fully_transcribed_by, p.id
                )
             SELECT u.user_id, u.first_name || ' ' || u.last_name AS display_name, p.name as name, t.count
-            FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id JOIN project ON t.project_id = p.id
+            FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id JOIN project p ON t.project_id = p.id
             ORDER BY count DESC;
         """
 
