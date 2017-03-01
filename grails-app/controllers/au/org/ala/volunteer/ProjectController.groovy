@@ -8,10 +8,14 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
+import javax.servlet.http.HttpServletResponse
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+import static javax.servlet.http.HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE
+import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE
 
 class ProjectController {
 
@@ -911,6 +915,7 @@ class ProjectController {
         def project = new NewProjectDescriptor(stagingId: id)
 
         def errors = []
+        def errorStatus = SC_BAD_REQUEST
         def result
 
         if (request instanceof MultipartHttpServletRequest) {
@@ -919,10 +924,12 @@ class ProjectController {
                 final allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     errors << "Image must be one of: ${allowedMimeTypes}"
+                    errorStatus = SC_UNSUPPORTED_MEDIA_TYPE
                 } else {
                     if (params.type == 'backgroundImageUrl') {
                         if (f.size > MAX_BACKGROUND_SIZE) {
                             errors << "Background image must be less than 512KB"
+                            errorStatus = SC_REQUEST_ENTITY_TOO_LARGE
                         } else {
                             projectStagingService.uploadProjectBackgroundImage(project, f)
                             result = projectStagingService.getProjectBackgroundImageUrl(project)
@@ -938,10 +945,10 @@ class ProjectController {
         }
 
         if (errors) {
-            render(errors as JSON, status: 401)
+            response.status = errorStatus
+            render(errors as JSON)
         } else {
             render([imageUrl: result] as JSON)
-
         }
     }
 

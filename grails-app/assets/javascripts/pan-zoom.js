@@ -1,5 +1,5 @@
 //= encoding UTF-8
 //  assume jquery
 //  assume jquery-ui
-//= require jquery.mousewheel.min.js
-//= require jquery-panZoom.js
+//= require compile/jquery.mousewheel.min.js
+//= require compile/jquery-panZoom.js

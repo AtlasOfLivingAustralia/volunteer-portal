@@ -1,6 +1,6 @@
 //= encoding UTF-8
 //  assume jquery
-//= require mustache/2.0.0/mustache.js
+//= require compile/mustache/2.0.0/mustache.js
 //= require_self
 var mu = {};
 (function(mlib) {

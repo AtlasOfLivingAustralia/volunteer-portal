@@ -1,6 +1,6 @@
 //= encoding UTF-8
 //= require digivol-module
-//= require markerclusterer.js
+//= require compile/markerclusterer.js
 //= require angular/angular-ui-bootstrap
 //= require angular/angular-marked
 //= require angular/angular-sanitize

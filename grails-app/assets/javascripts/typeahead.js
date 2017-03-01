@@ -1,2 +1,2 @@
 //= encoding UTF-8
-//= require typeahead/0.11.1/typeahead.bundle.js
+//= require compile/typeahead/0.11.1/typeahead.bundle.js

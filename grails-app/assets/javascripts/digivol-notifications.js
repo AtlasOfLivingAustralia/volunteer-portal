@@ -1,6 +1,6 @@
 //= encoding UTF-8
-//= require eventsource/polyfill.js
-//= require bootstrap-notify/3.1.3/bootstrap-notify.js
+//= require compile/eventsource/polyfill.js
+//= require compile/bootstrap-notify/3.1.3/bootstrap-notify.js
 //= require_self
 function digivolNotify(config) {
   "use strict";

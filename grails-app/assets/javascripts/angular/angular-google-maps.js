@@ -2,4 +2,4 @@
 //  assume angular-assets
 //= require underscore
 //= require angular-simple-logger
-//= require angular-google-maps/2.2.1/angular-google-maps.min.js
+//= require compile/angular-google-maps/2.2.1/angular-google-maps.min.js

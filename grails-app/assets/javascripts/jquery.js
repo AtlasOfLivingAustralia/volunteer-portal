@@ -1,1 +1,1 @@
-//= require jquery-2.2.4
+//= require compile/jquery-2.2.4

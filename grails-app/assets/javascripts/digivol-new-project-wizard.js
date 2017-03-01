@@ -98,16 +98,6 @@ function createProjectModule(config) {
 
   var wizard = angular.module('projectWizard', ['digivol', 'ngSanitize', 'ui.router', 'qtip2', 'uiGmapgoogle-maps', 'ngFileUpload', 'ui.bootstrap.showErrors', 'ui.tinymce']);
   wizard.constant('stagingId', config.stagingId);
-  wizard.value('uiTinymceConfig', {
-    convert_urls: false,
-    plugins: 'link anchor hr charmap',
-    menubar: false,
-    toolbar: [
-      'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | fontsizeselect ',
-      'styleselect | undo redo | link unlink anchor hr charmap'
-    ],
-    statusbar: false
-  });
 
   wizard.config([
     '$stateProvider', '$urlRouterProvider', 'uiGmapGoogleMapApiProvider', 'showErrorsConfigProvider',
@@ -219,6 +209,17 @@ function createProjectModule(config) {
 
       $rootScope.project = project;
       $rootScope.$state = $state;
+
+      $rootScope.wizardTinyMceOptions = {
+        convert_urls: false,
+        plugins: 'link anchor hr charmap',
+        menubar: false,
+        toolbar: [
+          'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | fontsizeselect ',
+          'styleselect | undo redo | link unlink anchor hr charmap'
+        ],
+        statusbar: false
+      };
 
       // Scroll to top of page when state changes
       $rootScope.$on('$viewContentLoaded', function () {
@@ -359,13 +360,13 @@ function createProjectModule(config) {
             $scope.progress = 0;
           }
         }, function (resp) {
-          console.log('Error status: ' + resp.status, resp.data.errors);
+          console.log('Error status: ' + resp.status, resp.data);
           if (type == 'backgroundImageUrl') {
             $scope.backgroundProgress = 0;
           } else {
             $scope.progress = 0;
           }
-          $window.alert("An error occured while uploading your image:\n\n" + resp.data.errors[0] + "  Please try again.");
+          $window.alert("An error occured while uploading your image:\n\n" + resp.data[0] + "  Please try again.");
         }, function (evt) {
           var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
           var filename = (evt.config.data.image || {}).name || '';

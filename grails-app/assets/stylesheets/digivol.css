@@ -1,7 +1,7 @@
 /*
 *= encoding UTF-8
-*= require bootstrap-3.3.7/css/bootstrap.css
-*= require font-awesome-4.7.0/css/font-awesome.css
+*= require compile/bootstrap-3.3.7/css/bootstrap.css
+*= require compile/font-awesome-4.7.0/css/font-awesome.css
 *= require qtip
 *= require digivol-notifications
 *= require main

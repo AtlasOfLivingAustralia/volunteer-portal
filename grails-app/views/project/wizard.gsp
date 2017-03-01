@@ -104,7 +104,7 @@
                 <label class="col-sm-3 control-label" id="long-description-label">Long description</label>
         
                 <div class="col-sm-6">
-                    <textarea ui-tinymce aria-labelledby="long-description-label" aria-label="Long description" rows="8" class="form-control" name="longDescription"
+                    <textarea ui-tinymce="wizardTinyMceOptions" aria-labelledby="long-description-label" aria-label="Long description" rows="8" class="form-control" name="longDescription"
                                 data-ng-model="project.longDescription" required="required" data-ng-required="true"></textarea>
                 </div>
 
@@ -342,7 +342,7 @@
         <div class="form-group">
         <label class="col-sm-3 control-label" id="tutorial-links-label">Tutorial Links</label>
         <div class="col-sm-9">
-            <textarea ui-tinymce aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
+            <textarea ui-tinymce="wizardTinyMceOptions" aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
         </div>
     </div>
 

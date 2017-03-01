@@ -1,2 +1,2 @@
 //= encoding UTF-8
-//= require moment/2.10.6/moment.min.js
+//= require compile/moment/2.17.1/moment.js

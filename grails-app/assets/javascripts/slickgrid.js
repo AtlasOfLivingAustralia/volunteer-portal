@@ -1,12 +1,12 @@
 //= encoding UTF-8
 //  assume jquery
 //  assume jquery-ui
-//= require slickgrid/jquery.event.drag-2.2.js
-//= require slickgrid/slick.core.js
-//= require slickgrid/slick.grid.js
-//= require slickgrid/slick.dataview.js
-//= require slickgrid/slick.formatters.js
-//= require slickgrid/slick.editors.js
+//= require compile/slickgrid/jquery.event.drag-2.2.js
+//= require compile/slickgrid/slick.core.js
+//= require compile/slickgrid/slick.grid.js
+//= require compile/slickgrid/slick.dataview.js
+//= require compile/slickgrid/slick.formatters.js
+//= require compile/slickgrid/slick.editors.js
 //= require_self
 (function ($) {
   // register namespace

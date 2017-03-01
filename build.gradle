@@ -133,7 +133,9 @@ bootRepackage {
 assets {
     minifyJs = true
     minifyCss = true
-    excludes = ['codemirror/**/*.html', "**/*.min.js", "**/*.min.css", "angular/*/i18n/**", "**/*.map"]
+    includes = ['tinymce/**/*', 'compile/**/*.ttf', 'compile/**/*.otf', 'compile/**/*.eot', 'compile/**/*.svg', 'compile/**/*.woff', 'compile/**/*.woff2']
+    excludes = ['compile/*', 'compile/**/*']
+//    excludes = ['codemirror/**/*.html', "**/*.min.js", "**/*.min.css", "angular/*/i18n/**", "**/*.map"]
 //    includes = ["fonts/*", "node_modules/*", "lib/*"]
 //    excludes = ["**/*.min.js", "**/*"]
 }
