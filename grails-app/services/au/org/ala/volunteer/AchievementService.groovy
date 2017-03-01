@@ -97,7 +97,7 @@ class AchievementService {
         if (newAchievements) {
             final user = User.findByUserId(userId)
             newAchievements.collect {
-                log.info("${user.id} (${user.displayName} ${user.email}) achieved ${it.name}")
+                log.info("${user?.id} (${user?.displayName} ${user?.email}) achieved ${it.name}")
                 new AchievementAward(achievement: it, user: user, awarded: new Date())
             }*.save(true).each {
                 notify(AchievementService.ACHIEVEMENT_AWARDED, it)

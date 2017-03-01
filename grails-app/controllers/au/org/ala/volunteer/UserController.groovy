@@ -221,7 +221,7 @@ class UserController {
         def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
 
         for (Task t : tasks) {
-            String validator = User.findByUserId(t.fullyValidatedBy).displayName
+            String validator = User.findByUserId(t.fullyValidatedBy)?.displayName
 
             def taskRow = [id: t.id,
                            externalIdentifier:t.externalIdentifier,

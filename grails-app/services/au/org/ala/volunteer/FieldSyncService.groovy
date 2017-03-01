@@ -187,8 +187,8 @@ class FieldSyncService {
                 task.fullyTranscribedBy = transcriberUserId
                 task.fullyTranscribedIpAddress = userIp
                 def user = User.findByUserId(transcriberUserId)
-                user.transcribedCount++
-                user.save(flush: true)
+                user?.transcribedCount++
+                user?.save(flush: true)
             }
             if (!task.dateFullyTranscribed) {
                 task.dateFullyTranscribed = now
@@ -203,8 +203,8 @@ class FieldSyncService {
             if (!task.fullyValidatedBy) {
                 task.fullyValidatedBy = transcriberUserId
                 def user = User.findByUserId(transcriberUserId)
-                user.validatedCount++
-                user.save(flush: true)
+                user?.validatedCount++
+                user?.save(flush: true)
             }
             if (!task.dateFullyValidated) {
                 task.dateFullyValidated = now

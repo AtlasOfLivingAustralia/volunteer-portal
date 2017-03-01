@@ -147,7 +147,7 @@ class LeaderBoardService {
         scoreMap.each { kvp ->
             if (kvp.key) {
                 def user = User.findByUserId(kvp.key)
-                def details = userService.detailsForUserId(user?.userId)
+                def details = userService.detailsForUserId(kvp.key)
                 if (user) {
                     list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
                 } else {
@@ -184,7 +184,7 @@ class LeaderBoardService {
         def list = []
         scoreMap.each { kvp ->
             def user = User.findByUserId(kvp.key)
-            def details = userService.detailsForUserId(user?.userId)
+            def details = userService.detailsForUserId(kvp.key)
             if (user) {
                 list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
             } else {
