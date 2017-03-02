@@ -10,6 +10,7 @@ class EmailService {
 
     def mailService
     def logService
+    def grailsApplication
 
     /**
      * Sends a message immediately to the configured SMTP server (typically localhost on port 25)
@@ -22,7 +23,7 @@ class EmailService {
         log.info("Sending email to ${emailAddress} - ${subj}")
         mailService.sendMail {
             to emailAddress
-            from "noreply@volunteer.ala.org.au"
+            from grailsApplication.mail.fromAddress ?: "noreply@volunteer.ala.org.au"
             subject subj
             body message
         }
