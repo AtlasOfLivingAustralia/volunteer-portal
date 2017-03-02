@@ -95,12 +95,15 @@ $(function() {
 
 function digivolNotebooksTabs(config) {
 
+  var projectId = config.project ? config.project.id : null;
+
   var nb = angular.module('notebook', ['digivol', 'ui.bootstrap', 'ngSanitize', 'hc.marked']);
 
   nb.value('taskListUrl', config.taskListUrl);
   nb.value('forumPostsUrl', config.forumPostsUrl);
   nb.value('changedFieldsUrl', config.changedFieldsUrl);
   nb.value('auditViewUrl', config.auditViewUrl);
+  nb.value('projectId', projectId);
 
   var notebookTabsController =
     ['$log', '$scope',
@@ -135,8 +138,8 @@ function digivolNotebooksTabs(config) {
       }];
 
   var taskListController = [
-    '$anchorScroll', '$http', '$log', '$q', '$scope', '$uibModal', '$window', 'taskListUrl',
-    function TaskListController($anchorScroll, $http, $log, $q, $scope, $uibModal, $window, taskListUrl) {
+    '$anchorScroll', '$http', '$log', '$q', '$scope', '$uibModal', '$window', 'projectId', 'taskListUrl',
+    function TaskListController($anchorScroll, $http, $log, $q, $scope, $uibModal, $window, projectId, taskListUrl) {
       var $ctrl = this;
 
       $ctrl.data = null;
@@ -168,8 +171,8 @@ function digivolNotebooksTabs(config) {
           order: $ctrl.order,
           q: $ctrl.query
         };
-        if ($ctrl.project) {
-          params['projId'] = $ctrl.project.id;
+        if (projectId) {
+          params['projectId'] = projectId;
         }
         if ($ctrl.cancelPromise != null) {
           $ctrl.cancelPromise.resolve();
@@ -238,8 +241,8 @@ function digivolNotebooksTabs(config) {
     }];
 
   var forumPostsController = [
-    '$anchorScroll', '$http', '$log', '$q', '$scope', '$window', 'forumPostsUrl',
-    function ForumPostsController($anchorScroll, $http, $log, $q, $scope, $window, forumCommentsUrl) {
+    '$anchorScroll', '$http', '$log', '$q', '$scope', '$window', 'projectId', 'forumPostsUrl',
+    function ForumPostsController($anchorScroll, $http, $log, $q, $scope, $window, projectId, forumPostsUrl) {
       var $ctrl = this;
 
       $ctrl.data = null;
@@ -256,14 +259,14 @@ function digivolNotebooksTabs(config) {
           offset: $ctrl.offset,
           order: $ctrl.order
         };
-        if ($ctrl.project) {
-          params['projId'] = $ctrl.project.id;
+        if (projectId) {
+          params['projectId'] = projectId;
         }
         if ($ctrl.cancelPromise != null) {
           $ctrl.cancelPromise.resolve();
         }
         $ctrl.cancelPromise = $q.defer();
-        return $http.get(forumCommentsUrl, {
+        return $http.get(forumPostsUrl, {
           params: params,
           timeout: $ctrl.cancelPromise.promise
         }).then(function (response) {

@@ -7,7 +7,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <g:if test="${project}">
+        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.name ?: 'Unknown project'])}"/></title>
+    </g:if>
+    <g:else>
+        <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
+    </g:else>
     %{--<script src='https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}' async defer ></script>--}%
     <cl:googleChartsScript />
     <cl:googleMapsScript callback="onGmapsReady"/>
@@ -40,6 +45,7 @@
             <div class="col-sm-6">
                 <span class="pre-header">Volunteer Profile</span>
                 <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? " (that's you!)" : ''}</h1>
+                <g:if test="${project}"><h2>${project.name}</h2></g:if>
                 <div class="row">
                     <div class="col-xs-4">
                         <h2><strong>${score}</strong></h2>
@@ -450,7 +456,7 @@
     var json = <cl:json value="${[
         selectedTab: selectedTab,
         userInstance: userInstance,
-        projectInstance: projectInstance,
+        project: project,
         isValidator: isValidator,
         isAdmin: isAdmin,
         isCurrentUser: userInstance?.userId == currentUser,

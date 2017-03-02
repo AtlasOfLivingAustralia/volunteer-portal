@@ -232,8 +232,20 @@ class ForumService {
     }
 
     PagedResultList getMessagesForUser(User user, Map params = null) {
+        def topics = []
+        if (params.projectId) {
+            topics = ProjectForumTopic.where {
+                project.id == params.projectId
+            }.list()*.id
+        }
+        if (params.projectId && !topics) return null
         def c = ForumMessage.createCriteria()
         def results = c.list(max:params?.max, offset: params?.offset) {
+            if (topics) {
+                topic {
+                    'in'('id', topics)
+                }
+            }
             eq("user", user)
             order('date', 'desc')
             order("topic")

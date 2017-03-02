@@ -550,8 +550,8 @@ class ForumController {
         def id = params.int("id")
         def userInstance = User.get(id)
         def messages = forumService.getMessagesForUser(userInstance, params)
-        def totalCount = messages.totalCount
-        def xformMessages = messages.groupBy { it.topic }.collect {
+        def totalCount = messages?.totalCount ?: 0
+        def xformMessages = messages?.groupBy { it.topic }?.collect {
             def topic = it.key
             def tms = it.value
             [ topicTask: (topic instanceof TaskForumTopic) ? topic.task : null, // the default json renderer doesn't put the task or project fields in the output but I don't really care about fixing this properly right now.
@@ -563,7 +563,7 @@ class ForumController {
                       isUserForumModerator: userService.isUserForumModerator(it.user, it.topic instanceof ProjectForumTopic ? it.topic.project : null ) as Boolean
                   ]}
             ]
-        }
+        } ?: []
         render([totalCount: totalCount, messages: xformMessages] as JSON)
     }
 
