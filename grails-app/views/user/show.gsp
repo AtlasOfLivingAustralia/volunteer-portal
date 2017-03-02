@@ -13,7 +13,6 @@
     <g:else>
         <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
     </g:else>
-    %{--<script src='https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}' async defer ></script>--}%
     <cl:googleChartsScript />
     <cl:googleMapsScript callback="onGmapsReady"/>
 </head>
