@@ -117,11 +117,9 @@
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
+                <g:hiddenField name="timeTaken" value="0" />
 
                 <g:pageProperty name="page.templateView"/>
-
-                %{--<g:render template="/transcribe/${template.viewName}"--}%
-                          %{--model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}"/>--}%
 
                 <div class="row">
                     <div class="col-sm-12">
@@ -339,6 +337,11 @@
                 });
             }
         });
+
+        setInterval(function() {
+          var $tt = $('#timeTaken');
+          $tt.val(parseInt($tt.val()) + 1);
+        }, 1000);
 
         $(".transcribeForm").submit(function(eventObj) {
             if (!transcribeWidgets.evaluateBeforeSubmitHooks(eventObj)) {

@@ -189,7 +189,7 @@ $(window).keydown(function(event) {
     }
 });
 
-$('#observationFields').change('.form-control.latlon', function(e) {
+$('#observationFields').on('change', '.form-control.latlon', function(e) {
   var $this = $(e.target);
   var field = bvp.escapeIdPart($this.data('field'));
   var $field = $('#' + field);

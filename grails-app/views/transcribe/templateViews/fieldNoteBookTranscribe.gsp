@@ -27,20 +27,20 @@
                         title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
                         style="vertical-align: middle; margin: 0 !important;"
                         src="rotate.png" /></button>
-            </div>
+                </div>
 
-            <div class="btn-group btn-group-sm pull-right">
-                <button type="button" class="btn btn-default fontSizeButton" title="Small sized fonts"
-                        style="font-size: 12px">A</button>
-                <button type="button" class="btn btn-default fontSizeButton" title="Medium sized fonts"
-                        style="font-size: 15px">A</button>
-                <button type="button" class="btn btn-default fontSizeButton" title="Large sized fonts"
-                        style="font-size: 18px">A</button>
+                <div class="btn-group btn-group-sm pull-right">
+                    <button type="button" class="btn btn-default fontSizeButton" title="Small sized fonts"
+                            style="font-size: 12px">A</button>
+                    <button type="button" class="btn btn-default fontSizeButton" title="Medium sized fonts"
+                            style="font-size: 15px">A</button>
+                    <button type="button" class="btn btn-default fontSizeButton" title="Large sized fonts"
+                            style="font-size: 18px">A</button>
 
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <div class="row">
     <div class="col-md-12">

@@ -151,6 +151,10 @@ class TranscribeController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
+            def seconds = params.getInt('timeTaken', null)
+            if (seconds) {
+                taskInstance.timeToTranscribe = (taskInstance.timeToTranscribe ?: 0) + seconds
+            }
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
