@@ -10,7 +10,13 @@
 <head>
     <meta name="layout" content="digivol-transcribe"/>
 
-    <g:layoutTitle default="${cl.pageTitle(title:"${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}" />
+    <title><g:layoutTitle default="${cl.pageTitle(title:"${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}" /></title>
+    <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>
+    <meta property="og:url"           content="${shareUrl}" />
+    <meta property="og:type"          content="website" />
+    <meta property="og:title"         content="${taskInstance.project.name }Task Details - ${taskInstance.externalIdentifier}" />
+    %{--<meta property="og:description"   content="Your description" />--}%
+    <meta property="og:image"         content="${thumbnail}" />
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
     <asset:stylesheet src="transcribe-widgets" />
@@ -84,7 +90,17 @@
             <div class="transcription-branding">
                 <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
                 <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
-                <h2><g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
+                <h2>
+                    <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/>
+                    <g:if test="${taskInstance}"><ul class="list-inline" style="display: inline-block;">
+                        <li style="vertical-align: top;">
+                            <div class="fb-share-button" data-href="${shareUrl}" data-layout="button" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse">Share</a></div>
+                        </li>
+                        <li style="vertical-align: top;">
+                            <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                        </li>
+                    </ul></g:if>
+                </h2>
             </div>
 
         </div>
@@ -290,6 +306,14 @@
         </div>
     </div>
 </div>
+<div id="fb-root"></div>
+<asset:script type="text/javascript">(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.6";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</asset:script>
 <asset:javascript src="digivol-transcribe" asset-defer="" />
 <asset:script type="text/javascript">
 

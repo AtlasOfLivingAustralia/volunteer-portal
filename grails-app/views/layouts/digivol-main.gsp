@@ -240,9 +240,7 @@
 <g:render template="/layouts/ga" />
 
 <asset:javascript src="digivol.js" />
-%{--<asset:javascript src="bootbox.js" />--}%
 <!-- JS resources-->
-%{--<r:layoutResources/>--}%
 <asset:deferredScripts/>
 </body>
 </html>

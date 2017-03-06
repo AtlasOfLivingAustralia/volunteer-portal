@@ -184,41 +184,30 @@
 <asset:javascript src="markerclusterer.js" asset-defer=""/>
 <asset:javascript src="dotdotdot" asset-defer=""/>
 <asset:javascript src="bootbox" asset-defer=""/>
+<g:if test="${projectInstance.showMap}">
+    <asset:script type="text/javascript">
 
-<asset:script type="text/javascript">
+        var map, infowindow;
 
-    var map, infowindow;
-
-    // function onGmapsReady() {
-    //     jQuery(function($) {
-    //          loadMap();
-    //         //resizeMap();
-    //
-    //         $(window).resize(function(e) {
-    //             //resizeMap();
-    //         });
-    //     });
-    // }
-
-    if (gmapsReady) {
-      loadMap();
-    } else {
-      $(window).on('digivol.gmapsReady', function() {
-        loadMap();
-      });
-    }
-
-    function loadMap() {
-
-        var mapElement = $("#recordsMap");
-
-        if (!mapElement) {
-            return;
+        if (gmapsReady) {
+          loadMap();
+        } else {
+          $(window).on('digivol.gmapsReady', function() {
+            loadMap();
+          });
         }
 
-        var myOptions = {
-            scaleControl: true,
-            center: new google.maps.LatLng(${projectInstance.mapInitLatitude ?: -24.766785},${projectInstance.mapInitLongitude ?: 134.824219}), // defaults to centre of Australia
+        function loadMap() {
+
+            var mapElement = $("#recordsMap");
+
+            if (!mapElement) {
+                return;
+            }
+
+            var myOptions = {
+                scaleControl: true,
+                center: new google.maps.LatLng(${projectInstance.mapInitLatitude ?: -24.766785},${projectInstance.mapInitLongitude ?: 134.824219}), // defaults to centre of Australia
                 zoom: ${projectInstance.mapInitZoomLevel ?: 3},
                 minZoom: 1,
                 streetViewControl: false,
@@ -291,8 +280,10 @@
                 mapDiv.css("height", "" + newSize + "px")
             }
         }
-
-        $(document).ready(function () {
+    </asset:script>
+</g:if>
+<asset:script type="text/javascript">
+$(document).ready(function () {
 
     $("#btnShowIconSelector").click(function(e) {
         e.preventDefault();
@@ -340,8 +331,8 @@ function showIconSelector() {
                     width:800,
                     height:500,
                     title: 'Select Expedition Leader Icon'
-            });
-        }
+    });
+}
 
 </asset:script>
 </body>

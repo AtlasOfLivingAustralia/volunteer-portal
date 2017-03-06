@@ -11,7 +11,7 @@
     <meta property="og:type"          content="website" />
     <meta property="og:title"         content="${taskInstance.project.name }Task Details - ${taskInstance.externalIdentifier}" />
     %{--<meta property="og:description"   content="Your description" />--}%
-    <meta property="og:image"         content="${stringInstanceMap.thumbnail}" />
+    <meta property="og:image"         content="${stringInstanceMap?.thumbnail}" />
     <asset:stylesheet src="image-viewer"/>
     <style type="text/css">
 

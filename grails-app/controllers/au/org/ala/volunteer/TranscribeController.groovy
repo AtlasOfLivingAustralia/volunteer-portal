@@ -13,6 +13,7 @@ class TranscribeController {
     def taskService
     def userService
     def logService
+    def multimediaService
 
     static allowedMethods = [saveTranscription: "POST"]
 
@@ -78,7 +79,7 @@ class TranscribeController {
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
-            render(view: 'templateViews/' + project.template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
+            render(view: 'templateViews/' + project.template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }

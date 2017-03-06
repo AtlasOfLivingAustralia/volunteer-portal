@@ -1,6 +1,6 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title>Edit Project ${projectInstance?.name}</title>
+    <title><cl:pageTitle title="Edit Project ${projectInstance?.name}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>

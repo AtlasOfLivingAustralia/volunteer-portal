@@ -1,7 +1,7 @@
 
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title>Edit Institution ${institutionInstance?.name}</title>
+    <title><cl:pageTitle title="Edit Institution ${institutionInstance?.name}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
 </head>

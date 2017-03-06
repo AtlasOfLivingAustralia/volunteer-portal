@@ -7,6 +7,7 @@ class ValidateController {
     def taskService
     def userService
     def logService
+    def multimediaService
 
     def task() {
         def taskInstance = Task.get(params.id)
@@ -54,7 +55,7 @@ class ValidateController {
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
-            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData])
+            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
