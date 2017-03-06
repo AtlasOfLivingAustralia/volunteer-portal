@@ -11,5 +11,6 @@ enum StatsType {
     validationsByDay,
     transcriptionsByInstitution,
     validationsByInstitution,
-    transcriptionsByInstitutionByMonth
+    transcriptionsByInstitutionByMonth,
+    transcriptionTimeByProjectType
 }

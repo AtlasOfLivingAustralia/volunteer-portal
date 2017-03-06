@@ -113,6 +113,18 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4>Average Transcription Time by Project Type</h4></div>
+                            <div class="panel-body">
+                                <div barchart data="statsCtrl.getTranscriptionTimeByProjectType()" title="" width="100%" height="350" xaxis="Project Type"
+                                     yaxis="Transcription Time" searchdate="{{statsCtrl.searchDate}}"></div>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionTimeByProjectType, 'transcriptionTimeByProjectType')">
+                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </uib-tab>
             <uib-tab heading="Reports by Month" select="statsCtrl.loadMonthlyStats()">
@@ -214,13 +226,14 @@
     google.load('visualization', '1.0', {'packages':['bar']});
 </asset:script>
 <asset:javascript src="admin-stats" asset-defer=""/>
-<asset:script>
+<asset:script type="text/javascript">
     adminStats({
         volunteerStatsURL: "${createLink(controller: 'stats', action: 'volunteerStats')}",
         activeTranscribersURL: "${createLink(controller: 'stats', action: 'activeTranscribers')}",
         transcriptionsByVolunteerProject: "${createLink(controller: 'stats', action: 'transcriptionsByVolunteerAndProject')}",
         transcriptionsByDay: "${createLink(controller: 'stats', action: 'transcriptionsByDay')}",
         validationsByDay: "${createLink(controller: 'stats', action: 'validationsByDay')}",
+        transcriptionTimeByProjectType: "${createLink(controller: 'stats', action: 'transcriptionTimeByProjectType')}",
         transcriptionsByInstitution: "${createLink(controller: 'stats', action: 'transcriptionsByInstitution')}",
         transcriptionsByInstitutionByMonth: "${createLink(controller: 'stats', action: 'transcriptionsByInstitutionByMonth')}",
         validationsByInstitution: "${createLink(controller: 'stats', action: 'validationsByInstitution')}",

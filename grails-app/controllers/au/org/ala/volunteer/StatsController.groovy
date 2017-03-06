@@ -76,6 +76,12 @@ class StatsController {
         render result as JSON
     }
 
+    def transcriptionTimeByProjectType() {
+        def reportType = StatsType.transcriptionTimeByProjectType
+        def result = prepareJsonData(reportType)
+        render result as JSON
+    }
+
     private def prepareJsonData (StatsType reportType) {
         def statResult = getStatData(reportType)
         def header = statResult.get('header')
@@ -166,7 +172,16 @@ class StatsController {
                 return [header: header, statsData: statsData];
             case StatsType.transcriptionsByInstitutionByMonth.name():
                 return statsService.getTranscriptionsByInstitutionByMonth()
-            default: return [header: [], statsData: []];
+            case StatsType.transcriptionTimeByProjectType:
+                statsData = statsService.getTranscriptionTimeByProjectType(fromDate, toDate)
+                header =  [
+                        [ id: 'label', label: 'Project Type', type: 'string'],
+                        [ id: 'avg', label: 'Average Transcription Time', type: 'number' ]
+                ]
+                return [header: header, statsData: statsData]
+            default:
+                log.warn("Unknown report type: $reportType")
+                return [header: [], statsData: []];
         }
 
     }

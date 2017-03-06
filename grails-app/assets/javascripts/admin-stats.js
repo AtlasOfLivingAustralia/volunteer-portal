@@ -62,6 +62,15 @@ function adminStats(config) {
         });
       },
 
+      getTranscriptionTimeByProjectType: function(startDate, endDate) {
+        return $http.get(config.transcriptionTimeByProjectType, {params: {'startDate': toLocalDateString(startDate), 'endDate': toLocalDateString(endDate)}})
+          .then(function(response) {
+            return response.data;
+          }, function(response) {
+            $q.reject(response);
+          })
+      },
+
       getTranscriptionsByInstitution: function () {
         return $http.get(config.transcriptionsByInstitution).then(function (response) {
           return response.data;
@@ -186,6 +195,17 @@ function adminStats(config) {
         self.validationsByDay = data;
         return data;
       }, function (resp) {
+        $log.error("Error from getting data in getValidationsByDay", resp);
+        return resp;
+      });
+    };
+
+    self.getTranscriptionTimeByProjectType = function() {
+      var stat = StatsService.getTranscriptionTimeByProjectType(self.startDate, self.endDate);
+      return stat.then(function(data) {
+        self.transcriptionTimeByProjectType = data;
+        return data;
+      }, function(resp) {
         $log.error("Error from getting data in getValidationsByDay", resp);
         return resp;
       });

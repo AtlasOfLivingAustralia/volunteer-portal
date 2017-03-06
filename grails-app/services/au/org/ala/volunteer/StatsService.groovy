@@ -318,4 +318,30 @@ class StatsService {
         return results
     }
 
+    def getTranscriptionTimeByProjectType(Date startDate, Date endDate) {
+        String select = """
+SELECT
+    CASE
+        WHEN p.project_type_id is null THEN 'Total'
+        ELSE (SELECT pt.label FROM project_type pt WHERE pt.id = p.project_type_id)
+    END AS label,
+    p.project_type_id,
+    AVG(t.time_to_transcribe)
+FROM
+    task t
+    JOIN project p on t.project_id = p.id
+WHERE
+  t.time_to_transcribe IS NOT null
+  AND t.date_fully_transcribed BETWEEN :startDate AND :endDate
+GROUP BY ROLLUP (p.project_type_id);
+"""
+        def results = []
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
+            def transcriptionTimesByProjectType = [row.label, row.avg]
+            results.add(transcriptionTimesByProjectType)
+        }
+
+        return results
+    }
 }
