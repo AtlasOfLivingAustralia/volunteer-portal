@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.FrontPage" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,9 +8,10 @@
     <content tag="disableBreadcrumbs">true</content>
     <content tag="selectedNavItem">bvp</content>
     <asset:stylesheet src="digivol-image-resize.css" />
+    <g:set var="frontPage" value="${FrontPage.instance()}" />
 </head>
 <body>
-<div class="a-feature home">
+<div class="a-feature home" style="${frontPage.heroImage ? "background-image: url('${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/hero/${frontPage.heroImage}');" : ''}">
     <div class="container">
         <h1><g:message code="index.heading.line1" /><br/><g:message code="index.heading.line2"/><br/><g:message code="index.heading.line3"/></h1>
 
@@ -23,7 +25,7 @@
 
         <div class="row">
             <div class="col-sm-12 image-origin">
-                <p><g:message code="image.attribution.prefix" /> <g:message code="index.hero.attribution" /></p>
+                <p><g:message code="image.attribution.prefix" /> <g:if test="${frontPage.heroImageAttribution}">${frontPage.heroImageAttribution}</g:if><g:else><g:message code="index.hero.attribution" /></g:else></p>
             </div>
         </div>
     </div>

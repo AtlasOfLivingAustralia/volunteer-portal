@@ -845,7 +845,11 @@ class VolunteerTagLib {
         log.debug("Build Date type is ${bd?.class?.name}")
         def df = new SimpleDateFormat('MMM d, yyyy')
         if (bd) {
-            df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
+            try {
+                df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
+            } catch (e) {
+                df.format(new Date())
+            }
         } else {
             df.format(new Date())
         }
@@ -918,6 +922,13 @@ class VolunteerTagLib {
         if(user){
             String date = g.formatDate(date:project.dateCreated, format: "dd MMMM, yyyy")
             out << "<small>Created by <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> on ${date}.</small>"
+        }
+    }
+
+    def insitutionLogos = { attrs, body ->
+        def logos = settingsService.getSetting(SettingDefinition.FrontPageLogos)
+        logos.each {
+            out << "<img src=\"${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/logos/$it\">"
         }
     }
 

@@ -160,9 +160,10 @@
             <div class="col-sm-12">
                 <asset:image src="institutions/logoAustMus@2x.png"/>
                 <asset:image src="institutions/logoCSIRO.svg"/>
-                <asset:image src="institutions/logoMelbourneVictoria@2x.png"/>
-                <asset:image src="institutions/logoVermont@2x.png"/>
-                <asset:image src="institutions/logoSmithsonian@2x.png"/>
+                <cl:insitutionLogos />
+                %{--<asset:image src="institutions/logoMelbourneVictoria@2x.png"/>--}%
+                %{--<asset:image src="institutions/logoVermont@2x.png"/>--}%
+                %{--<asset:image src="institutions/logoSmithsonian@2x.png"/>--}%
             </div>
 
         </div>
