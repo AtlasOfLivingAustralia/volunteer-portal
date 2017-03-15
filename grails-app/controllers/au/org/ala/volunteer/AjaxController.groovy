@@ -395,20 +395,39 @@ class AjaxController {
         harvesting()
     }
 
+    def i18nService
+
     def harvesting() {
-        final harvestables = Project.findAllByHarvestableByAla(true)
-        def results = harvestables.collect({
-            final link = createLink(absolute: true, controller: 'project', action: 'index', id: it.id)
-            final fullyTranscribedCount = it.tasks.count { t -> t.dateFullyTranscribed as boolean }
-            final fullyValidatedCount = it.tasks.count { t -> t.dateFullyValidated as boolean }
-            final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: it.id)
-            final topics = ProjectForumTopic.findAllByProject(it)
+//        final harvestables = Project.findAllByHarvestableByAla(true)
+        final c = Project.createCriteria()
+        final projects = c.scroll {
+            eq('harvestableByAla', true)
+        }
+
+        def results = []
+        while (projects.next()) {
+            Project project = (Project) projects.get()[0]
+            final link = createLink(absolute: true, controller: 'project', action: 'index', id: project.id)
+            final fullyTranscribedCount = project.tasks.count { t -> t.dateFullyTranscribed as boolean }
+            final fullyValidatedCount = project.tasks.count { t -> t.dateFullyValidated as boolean }
+            final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: project.id)
+
+            def citation = i18nService.message("harvest.citation", '{0} digitised at {1} ({2})', [project.name, i18nService.message('default.application.name'), createLink(uri: '/', absolute: true)])
+            def licenseType = i18nService.message('harvest.license.type', 'Creative Commons Attribution Australia', [])
+            def licenseVersion = i18nService.message('harvest.license.version', '3.0', [])
+            results << [id: project.id, name: project.name, description: project.description, newsItemsCount: project.newsItems.size(), tasksCount: project.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl, citation: citation, licenseType: licenseType, licenseVersion: licenseVersion]
+        }
+
+        results.collect { result ->
+            final topics = ProjectForumTopic.withCriteria {
+                eq 'project.id', result.id
+            }
             def forumMessagesCount = 0
             if (topics) {
-                topics.each { topic -> forumMessagesCount += (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }
+                forumMessagesCount = topics.collect { topic -> (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }.sum()
             }
-            [id: it.id, name: it.name, description: it.description, forumMessagesCount: forumMessagesCount, newsItemsCount: it.newsItems.size(), tasksCount: it.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl]
-        })
+            result + [ forumMessagesCount: forumMessagesCount ]
+        }
 
         respond results
     }
