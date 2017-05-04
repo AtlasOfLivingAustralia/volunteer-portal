@@ -24,7 +24,7 @@
                                     <div class="controls" style="margin-left: initial; display: inline-block;">
                                         <label class="checkbox" for="recordValues.0.interesting">
                                             <g:checkBox name="recordValues.0.interesting"
-                                                        checked="${recordValues[0]?.interesting == 'true'}"/> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
+                                                        checked="${recordValues[0]?.interesting == 'true'}"/> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting')}
                                         </label>
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@
 
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <p><strong>Are there any animals visible in the image?</strong></p>
+                                        <p><strong><g:message code="cameratrap.step1.description" default="Are there any animals visible in the highlighted image?" /></strong></p>
                                     </div>
 
                                     <div class="col-sm-12">
@@ -93,10 +93,12 @@
                                                 <input type="radio" name="recordValues.0.animalsVisible"
                                                        value="no" ${'no' == step1 ? 'checked' : ''}>No
                                             </label>
-                                            <label class="radio-inline">
-                                                <input type="radio" name="recordValues.0.animalsVisible"
-                                                       value="unsure" ${'unsure' == step1 ? 'checked' : ''}>Unsure
-                                            </label>
+                                            <g:if test="${'unsure' == step1}">
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="recordValues.0.animalsVisible" readonly
+                                                           value="unsure" ${'unsure' == step1 ? 'checked' : ''}>Unsure
+                                                </label>
+                                            </g:if>
                                         </div>
                                     </div>
                                 </div>
@@ -107,7 +109,7 @@
 
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <p><strong>Select animals that are present in the image</strong></p>
+                                        <p><strong><g:message code="cameratrap.step2.description" default="Select animals that are present in the highlighted image" /></strong></p>
                                     </div>
                                 </div>
 
