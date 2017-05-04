@@ -143,7 +143,7 @@
 </div>
 <asset:javascript src="underscore" asset-defer="" />
 <asset:javascript src="bootstrap-file-input" asset-defer=""/>
-<asset:script>
+<asset:script type="text/javascript">
 
             $(document).ready(function() {
 
