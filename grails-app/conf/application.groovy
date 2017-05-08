@@ -104,7 +104,18 @@ grails {
                 eternal false
                 timeToLiveSeconds 1800
                 timeToIdleSeconds 300
-                maxElementsInMemory 200000 // TODO Derive from a property?
+                maxElementsInMemory 10000 // TODO Derive from a property?
+                memoryStoreEvictionPolicy 'LRU'
+                overflowToDisk true
+                diskPersistent false
+                diskExpiryThreadIntervalSeconds 120
+            }
+            cache {
+                name 'userDetailsByIdCache'
+                eternal false
+                timeToLiveSeconds 1800
+                timeToIdleSeconds 300
+                maxElementsInMemory 100
                 memoryStoreEvictionPolicy 'LRU'
                 overflowToDisk true
                 diskPersistent false
