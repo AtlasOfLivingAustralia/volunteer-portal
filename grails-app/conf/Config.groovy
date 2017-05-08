@@ -27,8 +27,6 @@ ala.baseURL = "http://www.ala.org.au"
 bie.baseURL = "http://bie.ala.org.au"
 bie.searchPath = "/search"
 grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination
-security.cas.adminRole = "ROLE_VP_ADMIN"
-security.cas.validatorRole = "ROLE_VP_VALIDATOR"
 
 bvp.user.activity.monitor.enabled = true // can turn off activity monitoring
 bvp.user.activity.monitor.timeout = 3600 // seconds
@@ -150,10 +148,6 @@ expedition = [
 
 ]
 
-// TODO Remove this after ala-auth plugin is updated
-userDetails.url = "https://auth.ala.org.au/userdetails/userDetails/"
-userDetailsById.bulkPath = 'getUserDetailsFromIdList'
-
 volunteer.defaultProjectId = 6306
 viewedTask.timeout = 2 * 60 * 60 * 1000
 
@@ -251,13 +245,23 @@ grails.resources.mappers.yuijsminify.excludes = ['/js/tinymce/**/*']
 
 bvp.tmpdir="/data/${appName}/config/"
 
+security {
+    cas {
+        //appServerName = 'http://devt.ala.org.au:8080'
+        uriFilterPattern = '/validate/save.*,/validate/.*,/user/.*,/project/((?!index|summary).)*,/task/.*,/newsItem/.*,/picklist/.*,/admin/.*,/frontPage/.*,/ws/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*,/locality/.*,/collectionEvent/.*,/ws/keepSessionAlive.*,/forum/.*,/template/.*,/setting/.*,/validationRule/.*,/stats/.*,/ws/acceptAchievements,/ajax/acceptAchievements,/templateField/.*'
+        uriExclusionFilterPattern = '/images/.*,/css/.*,/js/.*,/less/.*,/static/.*,/assets/.*'
+        authenticateOnlyIfLoggedInPattern =  '/,/project/index/.*,/tutorials/.*,/institution/.*,/getInvolved/.*,/about/.*,/contact/.*,/project/summary/.*'
+        adminRole = "ROLE_VP_ADMIN"
+        validatorRole = "ROLE_VP_VALIDATOR"
+    }
+}
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     development {
         grails.serverURL = "http://devt.ala.org.au:8080/${appName}"
         server.url = "http://devt.ala.org.au"
         security.cas.appServerName = "http://devt.ala.org.au:8080"
-        security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer-portal'
         ala.image.service.url = "http://images.ala.org.au/"
         images.urlPrefix = "/data/volunteer-portal/"
@@ -266,14 +270,12 @@ environments {
         grails.serverURL = "http://volunteer-dev.ala.org.au"
         server.url = "http://volunteer-dev.ala.org.au"
         security.cas.appServerName = "http://volunteer-dev.ala.org.au"
-        security.cas.contextPath = ""
         images.home = '/data/volunteer/data/volunteer'
     }
     production {
         grails.serverURL = "http://volunteer.ala.org.au"
         server.url = "http://volunteer.ala.org.au"
         security.cas.appServerName = server.url
-        security.cas.contextPath = ""
         images.home = '/data/volunteer'
         ala.image.service.url = "http://images.ala.org.au/"
     }
@@ -281,7 +283,6 @@ environments {
         grails.serverURL = "http://volunteer-uat.ala.org.au/${appName}"
         server.url = "http://volunteer-uat.ala.org.au"
         security.cas.appServerName = server.url
-        security.cas.contextPath = "/${appName}"
         images.home = '/data/volunteer'
     }
 
@@ -327,7 +328,18 @@ grails {
                 eternal false
                 timeToLiveSeconds 1800
                 timeToIdleSeconds 300
-                maxElementsInMemory 200000 // TODO Derive from a property?
+                maxElementsInMemory 10000 // TODO Derive from a property?
+                memoryStoreEvictionPolicy 'LRU'
+                overflowToDisk true
+                diskPersistent false
+                diskExpiryThreadIntervalSeconds 120
+            }
+            cache {
+                name 'userDetailsByIdCache'
+                eternal false
+                timeToLiveSeconds 1800
+                timeToIdleSeconds 300
+                maxElementsInMemory 100
                 memoryStoreEvictionPolicy 'LRU'
                 overflowToDisk true
                 diskPersistent false

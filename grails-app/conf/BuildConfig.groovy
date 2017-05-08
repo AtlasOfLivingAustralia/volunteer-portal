@@ -38,10 +38,10 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        runtime 'org.postgresql:postgresql:9.4.1208.jre7'
+        runtime 'org.postgresql:postgresql:9.4.1212.jre7'
         compile 'org.imgscalr:imgscalr-lib:4.2'
-        compile 'com.squareup.retrofit2:retrofit:2.1.0'
-        compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+        compile 'com.squareup.retrofit2:retrofit:2.2.0'
+        compile 'com.squareup.retrofit2:converter-gson:2.2.0'
         compile 'com.google.guava:guava:17.0'
         compile 'org.apache.commons:commons-compress:1.11'
         compile 'org.apache.commons:commons-pool2:2.4.2'
@@ -59,7 +59,7 @@ grails.project.dependency.resolution = {
         compile ":cache-headers:1.1.7"
         build ':tomcat:7.0.55.3'
         compile ':hibernate4:4.3.10'
-        compile ":postgresql-extensions:4.6.1"
+        //compile ":postgresql-extensions:4.6.1"
         compile ':platform-core:1.0.0'
 
         runtime ":jquery:1.11.1"
@@ -82,7 +82,7 @@ grails.project.dependency.resolution = {
 
         runtime ':twitter-bootstrap:3.3.5'
         runtime ':font-awesome-resources:4.4.0'
-        runtime ':ala-auth:1.3.1'
+        runtime ':ala-auth:2.0.1'
 
         compile ':scaffolding:2.1.2'
         runtime ':database-migration:1.4.1'
