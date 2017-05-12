@@ -939,7 +939,8 @@ class ProjectController {
         }
 
         if (errors) {
-            render(errors as JSON, status: 401)
+            response.status = 400
+            render errors as JSON
         } else {
             render([imageUrl: result] as JSON)
 
@@ -978,7 +979,7 @@ class ProjectController {
 
             def projectInstance = projectStagingService.createProject(descriptor)
             if (!projectInstance) {
-                render status: 401
+                render status: 400
             } else {
                 response.status = 201
                 def obj = [id: projectInstance.id] as JSON
