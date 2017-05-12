@@ -82,7 +82,7 @@ grails.project.dependency.resolution = {
 
         runtime ':twitter-bootstrap:3.3.5'
         runtime ':font-awesome-resources:4.4.0'
-        runtime ':ala-auth:2.0.3'
+        runtime ':ala-auth:2.1.0-SNAPSHOT'
 
         compile ':scaffolding:2.1.2'
         runtime ':database-migration:1.4.1'
