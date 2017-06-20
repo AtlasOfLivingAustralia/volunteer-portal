@@ -6,7 +6,7 @@ branches:
   only:
   - master
   - develop
-  - feature/grails3
+  - grails2
 addons:
   apt:
     packages:
