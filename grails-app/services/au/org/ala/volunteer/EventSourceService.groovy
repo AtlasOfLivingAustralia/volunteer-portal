@@ -16,7 +16,7 @@ import static grails.async.Promises.*
 
 class EventSourceService {
 
-    static final int QUEUE_CAPACITY = 16 // browsers will allow ~6 connections, so this is plenty.
+    static final int QUEUE_CAPACITY = 3 // don't exhaust the 6 possible connections from a browser...
 
     def userService
 
