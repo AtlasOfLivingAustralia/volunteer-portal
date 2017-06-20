@@ -16,7 +16,7 @@
                         <!-- Logged In Starts -->
                             <cl:isNotLoggedIn>
                                 <li>
-                                    <a href="${grailsApplication.config.casServerName}/cas/login?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> <g:message code="action.login" /></a>
+                                    <a href="${grailsApplication.config.security.cas.loginUrl}/cas/login?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> <g:message code="action.login" /></a>
                                 </li>
 
                                 <li><a href="#"><g:message code="action.register" /></a></li>
