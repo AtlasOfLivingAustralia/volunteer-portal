@@ -404,6 +404,27 @@ log4j = {
                     'org.jasig.cas'
             ]
 
+    // Add these explicitly to the debug log, so that they can be adjusted inside
+    // probe
+    off     additivity: false,
+            debugLog: [
+                    'au.org.ala',
+                    'au.org.ala.volunteer',
+                    'grails.app.conf',
+                    'grails.app.conf.au.org.ala.volunteer',
+                    'grails.app.controllers',
+                    'grails.app.controllers.au.org.ala.volunteer',
+                    'grails.app.domain',
+                    'grails.app.domain.au.org.ala.volunteer',
+                    'grails.app.filters',
+                    'grails.app.filters.au.org.ala.volunteer',
+                    'grails.app.services',
+                    'grails.app.services.au.org.ala.volunteer',
+                    'grails.app.taglib',
+                    'grails.app.taglib.au.org.ala.volunteer',
+                    'grails.app.controllers.au.org.ala.volunteer.TranscribeController'
+            ]
+
     debug   additivity: false,
             debugLog: [
                     'grails.app.services.au.org.ala.volunteer.TaskService'

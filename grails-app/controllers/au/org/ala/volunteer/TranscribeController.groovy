@@ -1,12 +1,13 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
 
-    private static final String HEADER_PRAGMA = "Pragma";
-    private static final String HEADER_EXPIRES = "Expires";
-    private static final String HEADER_CACHE_CONTROL = "Cache-Control";
+    private static final String HEADER_PRAGMA = "Pragma"
+    private static final String HEADER_EXPIRES = "Expires"
+    private static final String HEADER_CACHE_CONTROL = "Cache-Control"
 
     def grailsApplication
     def fieldSyncService
@@ -132,14 +133,22 @@ class TranscribeController {
      * done in the form.
      */
     def save() {
+        Stopwatch sw = Stopwatch.createStarted()
         commonSave(params, true)
+        if (log.isTraceEnabled()) {
+            log.trace("Save took $sw for ${params.id}")
+        }
     }
 
     /**
      * Sync fields.
      */
     def savePartial() {
+        Stopwatch sw = Stopwatch.createStarted()
         commonSave(params, false)
+        if (log.isTraceEnabled()) {
+            log.trace("Save Partial took $sw for ${params.id}")
+        }
     }
 
     private def commonSave(params, markTranscribed) {
@@ -150,13 +159,32 @@ class TranscribeController {
             return
         }
 
+        def id = params.id
+
         if (currentUser != null) {
-            def taskInstance = Task.get(params.id)
+            Stopwatch sw = Stopwatch.createStarted()
+            def taskInstance = Task.get(id)
+            if (log.isTraceEnabled()) {
+                log.trace("Get Task took $sw for $id")
+            }
+            sw.reset().start()
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
+            if (log.isTraceEnabled()) {
+                log.trace("Clean records took $sw for $id")
+            }
+            sw.reset().start()
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
+            if (log.isTraceEnabled()) {
+                log.trace("Sync fields took $sw for $id")
+            }
+            sw.reset().start()
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
+                if (log.isTraceEnabled()) {
+                    log.trace("Update picklists took $sw for $id")
+                }
+                sw.reset().start()
                 if (skipNextAction) redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])
                 else redirect(action: 'showNextAction', id: params.id)
             }
