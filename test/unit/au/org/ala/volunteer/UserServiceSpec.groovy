@@ -29,7 +29,7 @@ class UserServiceSpec extends Specification {
     def "test propsForUserId with authService success"() {
         setup:
         def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserForUserId(1) { String id -> sleep(100); new UserDetails(userId: id, userName: 'potato@potato.com', displayName: 'Potato Head, Esq.')}
+        mockAuthService.demand.getUserForUserId(1) { String id -> new UserDetails(userId: id, userName: 'potato@potato.com', firstName: 'Potato', lastName: 'Head, Esq.')}
         service.authService = mockAuthService.createMock()
 
         when:
@@ -44,7 +44,7 @@ class UserServiceSpec extends Specification {
     def "test propsForUserId with authService null"() {
         setup:
         def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserForUserId(1) { String id -> sleep(100); null}
+        mockAuthService.demand.getUserForUserId(1) { String id -> null }
         service.authService = mockAuthService.createMock()
 
         when:
@@ -92,7 +92,7 @@ class UserServiceSpec extends Specification {
     def "test propsForUserIds"() {
         setup:
         def mockAuthService = mockFor(AuthService)
-        mockAuthService.demand.getUserDetailsById(1) { List<String> ids -> [ users: [ '545': new UserDetails(userId: '545', userName: 'test.email@potato.org', displayName: 'Display Name') ], success: true, missingIds: [] ] }
+        mockAuthService.demand.getUserDetailsById(1) { List<String> ids -> [ users: [ '545': new UserDetails(userId: '545', userName: 'test.email@potato.org', firstName: 'Display', lastName: 'Name') ], success: true, missingIds: [] ] }
         service.authService = mockAuthService.createMock()
 
         when:
