@@ -29,7 +29,7 @@
                                 <div class="custom-search-input body">
                                     <div class="input-group">
                                         <g:textField class="form-control input-lg" id="searchbox"
-                                                     value="${params.q}" name="searchbox" placeholder="Search expeditions…"/>
+                                                     value="${params.q}" name="searchbox" placeholder="${message(code: 'forum.ajaxProjectForumsList.search_placeholder')}"/>
                                         <span class="input-group-btn">
                                             <button id="btnSearch" class="btn btn-info btn-lg" type="button">
                                                 <i class="glyphicon glyphicon-search"></i>
@@ -50,12 +50,12 @@
 
                     <div class="col-sm-5">
                         <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}"
-                           class="btn ${params.sort == 'name' ? 'current' : ''}">Name</a>
+                           class="btn ${params.sort == 'name' ? 'current' : ''}"><g:message code="forum.ajaxProjectForumsList.name"/></a>
                     </div>
 
                     <div class="col-sm-2 project-type">
                         <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}"
-                           class="btn ${params.sort == 'type' ? 'current' : ''}">Type</a>
+                           class="btn ${params.sort == 'type' ? 'current' : ''}"><g:message code="forum.ajaxProjectForumsList.type"/></a>
                     </div>
 
                     <div class="col-sm-3">
@@ -91,7 +91,7 @@
                         </div>
 
                         <div class="col-sm-3">
-                            <a href="${createLink(controller: "forum", action: "projectForum", params: [projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> Expedition Topics and <b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> Task Topics
+                            <a href="${createLink(controller: "forum", action: "projectForum", params: [projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> <g:message code="forum.ajaxProjectForumsList.expedition_topics"/><b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> <g:message code="forum.ajaxProjectForumsList.task_topics"/>
                             </a>
                         </div>
                     </div>

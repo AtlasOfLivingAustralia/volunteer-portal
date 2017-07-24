@@ -22,13 +22,13 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="well well-sm">
-                        <h3>General</h3>
+                        <h3><g:message code="admin.tools.general"/></h3>
                         <hr/>
-                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-default">Mapping tool</a>
+                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-default"><g:message code="admin.tools.mapping_tool"/></a>
                         <a href="${createLink(action: 'migrateProjectsToInstitutions')}"
-                           class="btn btn-default">Expedition-Institution migration tool</a>
-                        <a href="${createLink(action: 'stagingTasks')}" class="btn btn-default">Manage staging queue</a>
-                        <g:link controller="project" action="archiveList" class="btn btn-warning">Archive Expeditions</g:link>
+                           class="btn btn-default"><g:message code="admin.tools.expedition_institution_migration"/></a>
+                        <a href="${createLink(action: 'stagingTasks')}" class="btn btn-default"><g:message code="admin.tools.manage_staging_queue"/></a>
+                        <g:link controller="project" action="archiveList" class="btn btn-warning"><g:message code="admin.tools.archive_expeditions"/></g:link>
                     </div>
                 </div>
             </div>
@@ -36,10 +36,10 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="well well-sm">
-                        <h3>Caches</h3>
+                        <h3><g:message code="admin.tools.caches"/></h3>
                         <hr/>
-                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-default">Clear page caches</a>
-                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-default">Clear entity caches</a>
+                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-default"><g:message code="admin.tools.clear_page_caches"/></a>
+                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-default"><g:message code="admin.tools.clear_entity_caches"/></a>
                     </div>
                 </div>
             </div>
@@ -47,32 +47,32 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="well" style="margin-top: 10px">
-                        <h3>Full Text Index</h3>
+                        <h3><g:message code="admin.tools.full_text_index"/></h3>
                         <hr/>
                         <button class="confirmation-required btn btn-warning" data-href="${createLink(action: 'reindexAllTasks')}"
-                                data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
+                                data-message="${message(code: 'admin.tools.reindex.confirmation')}"><g:message code="admin.tools.reindex"/></button>
                         <button class="confirmation-required btn btn-danger" data-href="${createLink(action: 'rebuildIndex')}"
-                                data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
+                                data-message="${message(code: 'admin.tools.recreate.confirmation')}"><g:message code="admin.tools.recreate_index"/></button>
 
                         <div>
-                            Background queue length: <span id="queueLength"><cl:spinner/></span>
+                            <g:message code="admin.tools.queue_length"/>: <span id="queueLength"><cl:spinner/></span>
                         </div>
                         <g:form method="GET" action="testQuery" class="form-horizontal">
                             <fieldset>
-                                <legend>Raw Search Query</legend>
+                                <legend><g:message code="admin.tools.raw_search_query"/></legend>
 
                                 <div class="form-group">
                                     <div id="set-query" class="col-sm-10">
-                                        <button id="match_all" class="btn btn-default btn-sm" data-query="matchAll">Match All</button>
+                                        <button id="match_all" class="btn btn-default btn-sm" data-query="matchAll"><g:message code="admin.tools.match_all"/></button>
                                         <button id="project_name" class="btn btn-default btn-sm"
-                                                data-query="projectName">Project Name</button>
-                                        <button id="project_id" class="btn btn-default btn-sm" data-query="projectId">Project Id</button>
-                                        <button id="task_id" class="btn btn-default btn-sm" data-query="taskId">Task Id</button>
+                                                data-query="projectName"><g:message code="admin.tools.project_name"/></button>
+                                        <button id="project_id" class="btn btn-default btn-sm" data-query="projectId"><g:message code="admin.tools.project_id"/></button>
+                                        <button id="task_id" class="btn btn-default btn-sm" data-query="taskId"><g:message code="admin.tools.task_id"/></button>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="query">Query text</label>
+                                    <label class="control-label col-sm-2" for="query"><g:message code="admin.tools.query_text"/></label>
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="query" name="query" rows="10">{
@@ -84,22 +84,22 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="searchType">Search Type</label>
+                                    <label class="control-label col-sm-2" for="searchType"><g:message code="admin.tools.search_type"/></label>
 
                                     <div class="col-sm-10">
                                         <select id="searchType" class="form-control" name="searchType">
-                                            <option value="dfs_query_then_fetch">DFS Query then Fetch</option>
-                                            <option value="dfs_query_and_fetch">DFS Query and Fetch</option>
-                                            <option value="query_then_fetch" selected>Query then Fetch</option>
-                                            <option value="query_and_fetch">Query and Fetch</option>
-                                            <option value="scan">Scan</option>
-                                            <option value="count">Count</option>
+                                            <option value="dfs_query_then_fetch"><g:message code="admin.tools.dfs_query_then"/></option>
+                                            <option value="dfs_query_and_fetch"><g:message code="admin.tools.dfs_query_and_fetch"/></option>
+                                            <option value="query_then_fetch" selected><g:message code="admin.tools.dfs_query_then_fetch"/></option>
+                                            <option value="query_and_fetch"><g:message code="admin.tools.query_and_fetch"/></option>
+                                            <option value="scan"><g:message code="admin.tools.scan"/></option>
+                                            <option value="count"><g:message code="admin.tools.count"/></option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="aggregation">Aggregation</label>
+                                    <label class="control-label col-sm-2" for="aggregation"><g:message code="admin.tools.aggregation"/></label>
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="aggregation" name="aggregation" rows="10">{

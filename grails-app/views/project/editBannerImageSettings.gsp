@@ -6,13 +6,13 @@
 
 <body>
 
-<content tag="pageTitle">Expedition image</content>
+<content tag="pageTitle"><g:message code="project.expedition_image"/></content>
 
 <content tag="adminButtonBar">
 </content>
 
 <div class="alert alert-warning">
-    For best results and to preserve quality, it is recommend that the expedition image aspect ratio sits anywhere between <strong>3:2</strong> and <strong>4:3</strong> with a minimum of <strong>600px width</strong>.
+    <g:message code="project.expedition_image.description"/>
 </div>
 
 <div class="text-center">
@@ -31,7 +31,7 @@
 
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="featuredImage">Expedition Image</label>
+        <label class="control-label col-md-3" for="featuredImage"><g:message code="project.expedition_image"/></label>
 
         <div class="col-md-9">
             <input type="file" data-filename-placement="inside" name="featuredImage" id="featuredImage"/>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="featuredImageCopyright">Image copyright text</label>
+        <label class="control-label col-md-3" for="featuredImageCopyright"><g:message code="project.expedition_image.copyright.label"/></label>
 
         <div class="col-md-6">
             <g:textField name="featuredImageCopyright" class="form-control"
@@ -49,7 +49,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-3 col-md-9">
-            <g:submitButton class="btn btn-primary" name="Update"/>
+            <g:submitButton class="btn btn-primary" name="${message(code: 'default.button.update.label')}"/>
         </div>
     </div>
 

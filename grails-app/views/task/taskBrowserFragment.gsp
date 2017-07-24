@@ -41,7 +41,7 @@
 <div>
     <g:if test="${taskInstance}">
         <div id="current_task_header">
-            <h3>Image from current task</h3>
+            <h3><g:message code="task.taskBrowserFragment.image_from_current_task"/></h3>
         </div>
 
         <div class="dialog" id="imagePane">
@@ -54,7 +54,7 @@
     </g:if>
 
     <div id="task_browser_controls">
-        <h3>Your previously transcribed tasks in ${projectInstance?.featuredLabel ?: "<project>"}</h3>
+        <h3><g:message code="task.taskBrowserFragment.your_previously_transcribed_tasks" args="${[projectInstance?.featuredLabel ?: "<project>"]}"/></h3>
 
         <div id="tasklist_container" style="color: white">
 
@@ -64,17 +64,17 @@
         <div>
             <span style="padding: 5px; float: left">
                 <button class="btn btn-default btn-sm" id="show_prev_task"><asset:image
-                        src="left_arrow.png"/>&nbsp;Previous</button>
-                <button class="btn btn-default btn-sm" id="show_next_task">Next&nbsp;<asset:image
+                        src="left_arrow.png"/>&nbsp;<g:message code="default.previous"/></button>
+                <button class="btn btn-default btn-sm" id="show_next_task"><g:message code="default.next"/>&nbsp;<asset:image
                         src="right_arrow.png"/></button>
                 <span id="task_location"></span>
             </span>
             <span style="padding: 5px;float:right">
-                <span style="color: white;">Label text:</span>
+                <span style="color: white;"><g:message code="task.taskBrowserFragment.label_text"/></span>
                 <span><g:textField style="width:120px;margin-bottom: 0" name="search_text" id="search_text"/></span>
-                <button class="btn btn-default btn-sm" style="margin-right: 10px" id="search_button">Search</button>
-                <button class="btn btn-default btn-sm" id="copy_task_data">Copy</button>
-                <button class="btn btn-default btn-sm" id="cancel_button">Cancel</button>
+                <button class="btn btn-default btn-sm" style="margin-right: 10px" id="search_button"><g:message code="default.search"/></button>
+                <button class="btn btn-default btn-sm" id="copy_task_data"><g:message code="default.copy"/></button>
+                <button class="btn btn-default btn-sm" id="cancel_button"><g:message code="default.cancel"/></button>
             </span>
         </div>
         <hr/>
@@ -105,7 +105,7 @@
         }
 
         if (taskListSize == 0) {
-            $('#task_content').html("You have no matching previously transcribed tasks");
+            $('#task_content').html("${message(code: 'task.taskBrowserFragment.you_have_no_matching_tasks')}");
         }
     }
 
@@ -190,7 +190,7 @@
     function findTasks() {
 
         $('#tasklist_container').html("");
-        $('#task_content').html("Searching for tasks...");
+        $('#task_content').html("${message(code: 'task.taskBrowserFragment.searching_for_tasks')}");
 
         var taskFindUrl = "${createLink(controller: 'task', action:'taskBrowserTaskList', params: [taskId: taskInstance?.id])}";
         var searchText = $("#search_text").val();

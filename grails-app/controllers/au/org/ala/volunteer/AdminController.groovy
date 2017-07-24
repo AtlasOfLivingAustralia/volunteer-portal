@@ -46,7 +46,7 @@ class AdminController {
             return true;
         }
 
-        flash.message = "You do not have permission to view this page"
+        flash.message = message(code: "admin.you_do_not_have_permission")
         redirect(uri:"/")
     }
 
@@ -62,16 +62,16 @@ class AdminController {
             if (f != null) {
                 def allowedMimeTypes = ['application/pdf']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
-                    flash.message = "The file must be one of: ${allowedMimeTypes}"
+                    flash.message = message(code: "admin.file_must_be_one_of", args: [allowedMimeTypes])
                     redirect(action:'tutorialManagement')
                     return;
                 }
 
                 try {
                     tutorialService.uploadTutorialFile(f)
-                    flash.message = "Tutorial uploaded successfully";
+                    flash.message = message(code: "admin.tutorial_uploaded_successfully");
                 } catch (Exception ex) {
-                    flash.message = "Failed to upload tutorial file: " + ex.message;
+                    flash.message = message(code: "admin.failed_to_upload_tutorial") + ex.message;
                 }
 
             }
@@ -85,9 +85,9 @@ class AdminController {
         if (filename) {
             try {
                 tutorialService.deleteTutorial(filename)
-                flash.message = "Tutorial deleted successfully"
+                flash.message = message(code: "admin.tutorial_deleted_successfully")
             } catch (Exception ex) {
-               flash.message ="Failed to delete tutorial file: " + ex.message
+               flash.message =message(code: "admin.failed_to_delete_tutorial") + ex.message
             }
         }
         redirect(action:'tutorialManagement')
@@ -101,7 +101,7 @@ class AdminController {
             try {
                 tutorialService.renameTutorial(filename, newName)
             } catch (Exception ex) {
-               flash.message ="Failed to rename tutorial file: " + ex.message
+               flash.message =message(code: "admin.failed_to_rename_tutorial") + ex.message
             }
         }
 
@@ -181,7 +181,7 @@ class AdminController {
             sessionFactory.currentSession.flushMode = FlushMode.AUTO
         }
 
-        def message = "${count} fields updated, $collectorsFound of which were set to a collector number."
+        def message = message(code: "admin.fields_updated_message", args: [count,collectorsFound])
         flash.message = message
         println message
 
@@ -215,7 +215,7 @@ class AdminController {
             count++
         }
 
-        flash.message ="${count} users checked."
+        flash.message = message(code: "admin.users_checked")
 
         redirect(action:'index')
     }
@@ -388,7 +388,7 @@ class AdminController {
         }
         grailsCacheAdminService.clearTemplatesCache()
         grailsCacheAdminService.clearBlocksCache()
-        flash.message = "Template and blocks caches cleared"
+        flash.message = message(code: "admin.template_and_blocks_caches_cleared")
         redirect action: 'tools'
     }
 
@@ -398,7 +398,7 @@ class AdminController {
             return
         }
         grailsCacheAdminService.clearAllCaches()
-        flash.message = "All caches cleared"
+        flash.message = message(code: "admin.all_caches_cleared")
         redirect action: 'tools'
     }
 
@@ -421,7 +421,7 @@ class AdminController {
         }
 
         taskLoadService.cancelLoad()
-        flash.message = "Task Load Cancel message sent"
+        flash.message = message(code: "admin.task_load_cancel_message_sent")
 
         redirect action: 'stagingTasks'
     }
@@ -433,7 +433,7 @@ class AdminController {
         }
 
         def items = taskLoadService.clearQueue()
-        flash.message = "Task Load queue cleared, remaining items: ${items.join(', ')}"
+        flash.message = message(code: "admin.task_load_queue_cleared", args: [items.join(', ')])
 
 
         redirect action: 'stagingTasks'

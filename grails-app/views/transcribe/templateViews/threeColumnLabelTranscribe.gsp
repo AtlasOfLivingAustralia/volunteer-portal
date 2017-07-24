@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
 <content tag="templateView">
 <div class="form-condensed">
@@ -21,19 +21,19 @@
             <table style="width:100%">
                 <tr>
                     <td>
-                        <strong>Institution:</strong>
+                        <strong><g:message code="transcribe.templateViews.all.institution"/></strong>
                         <span class="institutionName">${taskInstance?.project?.featuredOwner}</span>
                     </td>
                     <td>
-                        <strong>Project:</strong>
+                        <strong><g:message code="transcribe.templateViews.all.project"/></strong>
                         <span class="institutionName">${taskInstance?.project?.name}</span>
                     </td>
                     <td>
-                        <strong>Catalog Number:</strong>
+                        <strong><g:message code="transcribe.templateViews.all.catalogue_no"/></strong>
                         <span class="institutionName">${recordValues?.get(0)?.catalogNumber}</span>
                     </td>
                     <td>
-                        <strong>Taxa:</strong>
+                        <strong><g:message code="transcribe.templateViews.all.taxa"/></strong>
                         <span class="institutionName">${recordValues?.get(0)?.scientificName}</span>
                     </td>
                 </tr>
@@ -62,22 +62,22 @@
                             <span class="pull-right">
                                 <g:fieldHelp field="${allTextField}" tooltipPosition="bottomLeft"/>
                             </span>
-                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: message(code: 'transcribe.templateViews.all.transcribe_all_text_as_it_appears')}</span>
                             <g:textArea class="form-control" validationRule="${allTextField?.validationRule}"
                                         name="recordValues.0.occurrenceRemarks"
                                         value="${recordValues?.get(0)?.occurrenceRemarks}"
                                         id="recordValues.0.occurrenceRemarks" rows="12" cols="42"/>
-                            <div>
-                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&deg;"
-                                        title="Insert a degree symbol"></button>
-                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&#39;"
-                                        title="Insert an apostrophe (minutes) symbol"></button>
-                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&quot;"
-                                        title="Insert a quote (minutes) symbol"></button>
-                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&#x2642;"
-                                        title="Insert the male gender symbol"></button>
-                                <button type="button" class="insert-symbol-button btn btn-primary btn-sm" symbol="&#x2640;"
-                                        title="Insert the female gender symbol"></button>
+                            <div class="col-md-12">
+                                <button type="button" class="insert-symbol-button" symbol="&deg;"
+                                        title="${message(code: 'transcribe.templateViews.all.insert_degree')}"></button>
+                                <button type="button" class="insert-symbol-button" symbol="&#39;"
+                                        title="${message(code: 'transcribe.templateViews.all.insert_apostophe')}"></button>
+                                <button type="button" class="insert-symbol-button" symbol="&quot;"
+                                        title="${message(code: 'transcribe.templateViews.all.insert_quote')}"></button>
+                                <button type="button" class="insert-symbol-button" symbol="&#x2642;"
+                                        title="${message(code: 'transcribe.templateViews.all.insert_male_gender_symbol')}"></button>
+                                <button type="button" class="insert-symbol-button" symbol="&#x2640;"
+                                        title="${message(code: 'transcribe.templateViews.all.insert_frmale_gender_symbol')}"></button>
                             </div>
                         </div>
                     </div>
@@ -86,12 +86,12 @@
                 <div class="row">
                     <div class="col-md-10">
                         <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
-                                style="">Copy values from a previous task</button>
+                                style=""><g:message code="transcribe.templateViews.all.copy_values_from_a_previous_task"/></button>
                     </div>
 
                     <div class="col-md-2">
                         <a href="#" class="btn btn-default btn-xs fieldHelp" tooltipPosition="bottomLeft"
-                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
+                           title="${message(code: 'transcribe.templateViews.all.clicking_this_button.description')}"><i
                                 class="fa fa-question help-container"></i></a>
                     </div>
                 </div>
@@ -100,15 +100,15 @@
             <div class="col-md-9">
                 <div class="row">
                     <div class="col-md-6">
-                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection Location</span>
+                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.threeColumnLabel.collection_location"/></span>
                         <g:renderCategoryFieldsColumn category="${FieldCategory.location}" task="${taskInstance}"
-                                                      recordValues="${recordValues}" title="Collection Location"/>
+                                                      recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.threeColumnLabel.collection_location')}"/>
                     </div>
 
                     <div class="col-md-6">
-                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Miscellaneous</span>
+                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.miscellaneous"/></span>
                         <g:renderCategoryFieldsColumn category="${FieldCategory.miscellaneous}" task="${taskInstance}"
-                                                      recordValues="${recordValues}" title="Miscellaneous Event"/>
+                                                      recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.miscellaneous_event')}"/>
                     </div>
                 </div>
             </div>

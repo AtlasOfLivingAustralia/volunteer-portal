@@ -30,8 +30,11 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     static load(GrailsAutoConfiguration application, Environment environment) {
         if (application && environment) {
             DefaultResourceLocator resourceLocator = new DefaultResourceLocator()
-            if (environment.containsProperty('grails.config.locations')) {
-                for (String configLocation : environment.getProperty('grails.config.locations', List.class)) {
+
+            List configLocations = environment.getProperty('grails.config.locations', List.class);
+            if (configLocations) {
+                log.info("Attempting to load external config from locations: \n${configLocations.collect { String it -> return "$it --> ${resourceLocator.findResourceForURI(it)!=null}"}.join('\n')}")
+                for (String configLocation : configLocations) {
                     def configurationResource = resourceLocator.findResourceForURI(configLocation)
                     if (configurationResource) {
                         String fileName = configurationResource.getFile().getName()

@@ -18,7 +18,7 @@
             ]
         %>
 
-        <a href="${createLink(controller: 'picklist', action: 'create')}" class="btn btn-success">Create a new Picklist</a>
+        <a href="${createLink(controller: 'picklist', action: 'create')}" class="btn btn-success"><g:message code="picklist.list.create"/></a>
     </cl:headerContent>
 
     <div class="panel panel-default">

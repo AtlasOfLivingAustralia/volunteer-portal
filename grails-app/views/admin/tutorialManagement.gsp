@@ -23,29 +23,26 @@
 
                     <div id="buttonBar">
                         <g:form action="uploadTutorial" controller="admin" method="post" enctype="multipart/form-data">
-                            <label for="tutorialFile"><strong>Upload new tutorial:</strong></label>
+                            <label for="tutorialFile"><strong><g:message code="admin.tutorial_management.upload_new"/>:</strong></label>
                             <input type="file" data-filename-placement="inside" name="tutorialFile" id="tutorialFile"/>
                             <g:submitButton class="btn btn-success" name="Upload"/>
                         </g:form>
                         <div>
                             <br/>
-                            <strong>Note:</strong>The filename of the tutorial file will be used in the top level 'Tutorials' page. If the name contains an underscore '_', the portion of the
-                        name to the left of the underscore will be used to categorize the tutorial, and the portion to the right (less the file extension) will be used as its name.
+                            <g:message code="admin.tutorial_management.upload_new.description1"/>
                             <br>
-                            For example:
-                            <code>Expedition Tutorials_The Tutorial Name.pdf</code>
-                            will be displayed on the Tutorials page as 'The Tutorial Name' under the heading 'Expedition Tutorials'
+                            <g:message code="admin.tutorial_management.upload_new.description2"/>
                         </div>
                     </div>
 
-                    <h3>Tutorial Files</h3>
+                    <h3><g:message code="admin.tutorial_management.tutorial_files"/></h3>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped">
                             <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Link</th>
-                                <th class="col-md-2 text-center">Actions</th>
+                                <th><g:message code="admin.tutorial_management.name"/></th>
+                                <th><g:message code="admin.tutorial_management.link"/></th>
+                                <th class="col-md-2 text-center"><g:message code="admin.tutorial_management.actions"/></th>
                             </tr>
                             </thead>
                             <g:each in="${tutorials}" var="tute">
@@ -53,9 +50,9 @@
                                     <td>${tute.name}</td>
                                     <td><a href="${tute.url}">${tute.url}</a></td>
                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-default btnRenameTutorial" tutorial="${tute.name}">Rename</button>
+                                        <button class="btn btn-sm btn-default btnRenameTutorial" tutorial="${tute.name}"><g:message code="admin.tutorial_management.rename"/></button>
                                         <button class="btn btn-sm btn-danger btnDeleteTutorial"
-                                                tutorial="${tute.name}">Delete</button>
+                                                tutorial="${tute.name}"><g:message code="admin.tutorial_management.delete"/></button>
                                     </td>
                                 </tr>
                             </g:each>
@@ -63,7 +60,7 @@
                     </div>
 
                     <div>
-                        <strong>Warning!</strong> Renaming tutorial files will break existing links to those files. Make sure you update project links after renaming!
+                        <g:message code="admin.tutorial_management.warning"/>
                     </div>
                 </div>
             </div>
@@ -75,19 +72,19 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>Rename Tutorial</h4>
+                <h4><g:message code="admin.tutorial_management.rename_tutorial"/></h4>
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label class="control-label col-md-2" for="oldName">Old Name</label>
+                        <label class="control-label col-md-2" for="oldName"><g:message code="admin.tutorial_management.old_name"/></label>
                         <div class="col-md-10">
                             <g:textField name="oldName" disabled="true" class="form-control"/>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label col-md-2" for="oldName">New Name</label>
+                        <label class="control-label col-md-2" for="oldName"><g:message code="admin.tutorial_management.new_name"/></label>
                         <div class="col-md-10">
                             <g:textField name="newName" class="form-control"/>
                         </div>
@@ -95,8 +92,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" id="btnCancelRename">Cancel</button>
-                <button class="btn btn-primary" id="btnApplyRename">Rename</button>
+                <button class="btn btn-default" id="btnCancelRename"><g:message code="admin.tutorial_management.cancel"/></button>
+                <button class="btn btn-primary" id="btnApplyRename"><g:message code="admin.tutorial_management.rename"/>Rename</button>
             </div>
         </div>
     </div>

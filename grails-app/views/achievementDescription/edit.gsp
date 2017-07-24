@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<content tag="pageTitle">General Settings</content>
+<content tag="pageTitle"><g:message code="achievementDescription.edit.general_settings"/></content>
 
 <content tag="adminButtonBar">
     <g:form class="form-inline" style="display: inline-block; padding-right:10px;" action="delete"
@@ -75,7 +75,7 @@
             });
 
             p.fail(function ( jqXHR, textStatus, errorThrown ) {
-                alert("Could not enable badge :(  Please refresh and try again.");
+                alert("${message(code: 'achievementDescription.edit.error.could_not_save')}");
                 $(event.target).bootstrapSwitch('state', !state, true);
                 console.log(errorThrown);
             });

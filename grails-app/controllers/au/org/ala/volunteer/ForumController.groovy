@@ -44,7 +44,7 @@ class ForumController {
             }
         }
 
-        flash.message = "Project with id ${params.projectId} could not be found!"
+        flash.message = message(code: "forum.project_with_id_x_cannot_be_found", args: [params.projectId])
         redirect(controller: 'forum', action:'index')
     }
 
@@ -72,7 +72,7 @@ class ForumController {
         def topic = ForumTopic.get(params.int("topicId"))
 
         if (topic == null) {
-            flash.message = "Topic id missing or topic not found!"
+            flash.message = message(code: "forum.topic_id_missing_or_not_found")
             redirect(action:'index')
             return
         }
@@ -91,7 +91,7 @@ class ForumController {
         }
 
         if (!allowed) {
-            flash.message = "You do not have sufficient privileges to edit this topic"
+            flash.message = message(code: "forum.you_do_not_have_sufficient_privilleges")
             redirect(action: 'redirectTopicParent', id: topic.id)
             return
         }
@@ -121,7 +121,7 @@ class ForumController {
     def editProjectTopic() {
         def topic = ProjectForumTopic.get(params.int("topicId"))
         if (!topic || !userService.isForumModerator(topic.project)) {
-            flash.message = "You do not have sufficient privileges to edit this topic"
+            flash.message = message(code: "forum.you_do_not_have_sufficient_privilleges")
             redirect controller:'forum', action: 'projectForum', params:[projectId: topic?.project?.id]
             return
         }
@@ -136,11 +136,11 @@ class ForumController {
         def messages = []
 
         if (!title) {
-            messages << "You must enter a title for your forum topic"
+            messages << message(code: "forum.you_must_enter_a_title")
         }
 
         if (!text) {
-            messages << "You must enter a message for your forum topic"
+            messages << message(code: "forum.you_must_enter_a_message")
         }
 
         if (messages) {
@@ -216,7 +216,7 @@ class ForumController {
         }
 
         if (!userService.isForumModerator(project)) {
-            flash.message = "You do not have sufficient privileges to edit this topic"
+            flash.message = message(code: "forum.you_do_not_have_sufficient_privilleges")
             redirect controller:'forum', action: 'projectForum', params:[projectId: project?.id]
             return false
         }
@@ -247,7 +247,7 @@ class ForumController {
         redirect(action: 'redirectTopicParent', id: topic?.id)
     }
 
-    private String formatMessages(List messages, String title = "The following errors have occurred:") {
+    private String formatMessages(List messages, String title = message(code: "forum.the_following_errors_have_occured")) {
         def sb = new StringBuilder("${title}<ul>")
         messages.each {
             sb << "<li>" + it + "</li>"
@@ -384,7 +384,7 @@ class ForumController {
             text = markdownService.sanitize(text)
 
             if (text.length() > maxSize) {
-                errors << "The message text is too long. It needs to be less than ${maxSize} characters"
+                errors << message(code: "forum.the_text_is_too_long", args: [maxSize] )
             }
 
             if (!errors) {
@@ -405,7 +405,7 @@ class ForumController {
                 return
             }
         } else {
-            errors << "Message text must not be empty"
+            errors << message(code: "forum.message_text_must_not_be_empty")
         }
 
         flash.message = formatMessages(errors)
@@ -431,7 +431,7 @@ class ForumController {
         def task = Task.get(params.int("taskId"))
 
         if (!task) {
-            flash.message = "No task found with matching id, or task id missing from request!"
+            flash.message = message(code: "forum.no_task_found_with_matching_id")
             redirect(controller: 'forum', action:'index')
         }
 
@@ -454,7 +454,7 @@ class ForumController {
     def searchForums() {
         def query = params.query as String
         if (!query) {
-            flash.message ="You must supply a search criteria"
+            flash.message =message(code: "forum.you_must_supply_search_criteria")
             redirect(controller: 'forum', action: 'index')
             return
         }
@@ -570,25 +570,25 @@ class ForumController {
     def markdownHelp() {
 
         def items = []
-        items << [effect: 'Italics/Emphasis', description:'Surround text with either _ or *', code:'_text to italicise__ or *text to italicise*']
-        items << [effect: 'Bold/Heavy Emphasis', description:'Surround text with either __ or **', code:'__text to embolden__ or **text to embolden**']
-        items << [effect: 'Headings', description:'HTML heading levels can be produced by prepending a number of "#" characters', code:'### Heading 3\n#### Heading 4']
-        items << [effect: 'Headings (alternate)', description:'H1 and H2 headings can also by produced by underlining text with either "=" or "-" characters', code:'Heading 1\n=========\nHeading 2\n---------']
-        items << [effect: 'Line break or empty line', description:'End a line with two spaces', code:'line1\n  \nline2']
-        items << [effect: 'Links/External URLS', description:'Links to other documents can be included using the following syntax<br/>[link text here](link address here)', code:'[Google!](http://google.com)']
-        items << [effect: 'Horizontal rules', description:'Horizontal rules are created by placing three or more hyphens, asterisks, or underscores on a line by themselves', code:'***']
+        items << [effect: message(code: "forum.markdown.italics"), description:message(code: "forum.markdown.italics.description"), code:'_text to italicise__ or *text to italicise*']
+        items << [effect: message(code: "forum.markdown.bold"), description:message(code: "forum.markdown.bold.description"), code:'__text to embolden__ or **text to embolden**']
+        items << [effect: message(code: "forum.markdown.headings"), description:message(code: "forum.markdown.headings.description"), code:'### Heading 3\n#### Heading 4']
+        items << [effect: message(code: "forum.markdown.headings_alternate"), description:message(code: "forum.markdown.headings_alternate.description"), code:'Heading 1\n=========\nHeading 2\n---------']
+        items << [effect: message(code: "forum.markdown.line_break"), description:message(code: "forum.markdown.line_break.description"), code:'line1\n  \nline2']
+        items << [effect: message(code: "forum.markdown.links"), description:message(code: "forum.markdown.links.description"), code:'[Google!](http://google.com)']
+        items << [effect: message(code: "forum.markdown.horizontal_rules"), description:message(code: "forum.markdown.horizontal_rules.description"), code:'***']
         def listDemo = """
 &nbsp;&nbsp;* Item 1
 &nbsp;&nbsp;* Item 2
 &nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.1
 &nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.2
         """
-        items << [effect: 'Lists', description:'Lists can be formed with two leading spaces and an "*". Subitems are indented from the parents by an additional two spaces.', code:listDemo]
+        items << [effect: message(code: "forum.markdown.lists"), description:message(code: "forum.markdown.lists.description"), code:listDemo]
         def blockQuoteDemo = """
-> this is some quoted text
-> > this has been quoted twice
+> ${message(code: "forum.markdown.this_is_some_quoted_text")}
+> > ${message(code: "forum.markdown.this_has_been_quoted_twice")}
 """
-        items << [effect: 'Block quotes', description:'Block quotes are produced when lines and paragraphs are preceded by "&gt;"', code:blockQuoteDemo]
+        items << [effect: message(code: "forum.markdown.block_quotes"), description:message(code: "forum.markdown.block_quotes.description"), code:blockQuoteDemo]
 
         [items: items]
     }
@@ -612,12 +612,12 @@ class ForumController {
                 if (!watchList.containsUser(user)) {
                     watchList.addToUsers(user)
                 }
-                results.message = "You will be sent a notification email when messages are posted to this project"
+                results.message = message(code: "forum.you_will_be_sent_a_notification_email")
             } else {
                 if (watchList.containsUser(user)) {
                     watchList.removeFromUsers(user)
                 }
-                results.message = "You will no longer be sent notification emails when messages are posted to this project"
+                results.message = message(code: "forum.you_will_no_longer_be_sent_notifications")
             }
 
             watchList.save()

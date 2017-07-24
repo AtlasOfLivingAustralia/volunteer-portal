@@ -8,7 +8,7 @@
 
 <body>
 
-<content tag="pageTitle">General Settings</content>
+<content tag="pageTitle"><g:message code="project.general_settings"/></content>
 
 <content tag="adminButtonBar">
 </content>
@@ -18,7 +18,7 @@
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="featuredOwner">Expedition institution</label>
+        <label class="control-label col-md-3" for="featuredOwner"><g:message code="project.expedition_institution"/></label>
 
         <div class="col-md-6">
             <g:textField class="form-control"  name="featuredOwner" value="${projectInstance.featuredOwner}"/>
@@ -26,12 +26,12 @@
         </div>
 
         <div class="col-md-3 control-label text-left">
-            <i class="fa fa-check"></i> Linked to <a id="institution-link" href="">institution</a>!
+            <i class="fa fa-check"></i> <g:message code="project.general_settings.linked_to_institution"/>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="name">Expedition name</label>
+        <label class="control-label col-md-3" for="name"><g:message code="project.general_settings.expedition_name"/></label>
 
         <div class="col-md-6">
             <g:textField class="form-control" name="name" value="${projectInstance.name}"/>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="shortDescription">Short description</label>
+        <label class="control-label col-md-3" for="shortDescription"><g:message code="project.general_settings.short_description"/></label>
 
         <div class="col-md-6">
             <g:textField class="form-control" name="shortDescription" value="${projectInstance.shortDescription}"/>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="description">Long description</label>
+        <label class="control-label col-md-3" for="description"><g:message code="project.general_settings.long_description"/></label>
 
         <div class="col-md-9">
             <g:textArea name="description" class="mce form-control" rows="10" value="${projectInstance?.description}" />
@@ -55,7 +55,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="template">Template</label>
+        <label class="control-label col-md-3" for="template"><g:message code="project.template.label"/></label>
 
         <div class="col-md-6">
             <g:select name="template" class="form-control" from="${templates}" value="${projectInstance.template?.id}" optionKey="id"/>
@@ -63,12 +63,12 @@
 
         <div class="col-md-3">
             <a class="btn btn-default"
-               href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">Edit template</a>
+               href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}"><g:message code="project.edit_template.label"/></a>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="projectType">Expedition type</label>
+        <label class="control-label col-md-3" for="projectType"><g:message code="project.projectType.label"/></label>
 
         <div class="col-md-6">
             <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
@@ -77,7 +77,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="label">Tags</label>
+        <label class="control-label col-md-3" for="label"><g:message code="project.general_settings.tags"/></label>
 
         <div class="col-md-6">
             <input autocomplete="off" type="text" id="label" class="form-control typeahead"/>
@@ -101,7 +101,7 @@
         <div class="col-md-9 col-md-offset-3">
             <label for="harvestableByAla" class="checkbox">
                 <g:checkBox name="harvestableByAla"
-                            checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia
+                            checked="${projectInstance.harvestableByAla}"/>&nbsp;<g:message code="project.general_settings.data_should_be_harvested_by"/>
             </label>
         </div>
     </div>
@@ -146,7 +146,7 @@
                                 $( "#labels" )
                             );
                     })
-                    .fail(function() { alert("Couldn't add label")});
+                    .fail(function() { alert(${message(code: 'project.general_settings.error1')})});
                     //.always(hideSpinner);
                 return null;
             });
@@ -160,7 +160,7 @@
                         var p = t.parent("span");
                         p.remove();
                     })
-                    .fail(function() { alert("Couldn't remove label")});
+                    .fail(function() { alert(${message(code: 'project.general_settings.error2')})});
                     //.always(hideSpinner);
             }
 

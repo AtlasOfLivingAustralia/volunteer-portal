@@ -19,7 +19,7 @@
     %>
 
     <a class="btn btn-success" href="${createLink(action: "create")}"><i
-            class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
+            class="icon-plus icon-white"></i>&nbsp;<g:message code="institutionAdmin.add_institution"/></a>
     <a id="quick-create" role="button" class="create btn btn-default" href="javascript:void(0)" data-target="#quick-create-modal"
        data-toggle="modal"><g:message code="quick.new.label" default="Create from Atlas Collectory"
                                       args="[entityName]"/></a>
@@ -88,7 +88,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
-                <h3>Quick Create Institution</h3>
+                <h3><g:message code="institutionAdmin.quick_create_institution"/></h3>
             </div>
 
             <div class="modal-body">
@@ -100,8 +100,8 @@
             </div>
 
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
+                <a href="#" class="btn btn-default" data-dismiss="modal"><g:message code="institutionAdmin.close"/></a>
+                <a href="#" class="btn btn-primary" id="quick-create-button"><g:message code="institutionAdmin.create_institution"/></a>
             </div>
         </div>
     </div>

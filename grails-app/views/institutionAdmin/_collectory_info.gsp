@@ -30,13 +30,13 @@
     </style>
 </head>
 <dl>
-    <dt>Name</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.name"/></dt>
     <dd id="collec-dt-name" class="collec-dt"></dd>
-    <dt>Description</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.description"/></dt>
     <dd id="collec-dt-desc" class="collec-dt"></dd>
-    <dt>Contact Email</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.email"/></dt>
     <dd id="collec-dt-email" class="collec-dt"></dd>
-    <dt>Contact Phone</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.phone"/></dt>
     <dd id="collec-dt-phone" class="collec-dt"></dd>
 </dl>
 <asset:script>

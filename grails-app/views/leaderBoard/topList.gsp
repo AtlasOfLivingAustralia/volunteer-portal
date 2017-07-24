@@ -20,8 +20,8 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                            <th>Volunteer</th>
-                            <th>Tasks completed</th>
+                            <th><g:message code="leaderBoard.toplist.volunteer"/></th>
+                            <th><g:message code="leaderBoard.toplist.tasks_completed"/></th>
                         </tr>
                         </thead>
                         <g:each in="${results}" var="row" status="i">

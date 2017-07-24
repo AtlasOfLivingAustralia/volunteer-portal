@@ -34,7 +34,7 @@ class TutorialService {
     def uploadTutorialFile(MultipartFile file) {
         def filePath = createFilePath(file.originalFilename)
         def newFile = new File(filePath);
-        file.transferTo(newFile);
+        file.transferTo(newFile.absoluteFile);
     }
 
     def deleteTutorial(String name) {

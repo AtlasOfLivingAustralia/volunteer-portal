@@ -2,8 +2,8 @@
 
     <div class="control-group">
         <g:textField name="search" class="form-control" value="" placeholder="Search"/>
-        <button id="btnSearchProjects" class="btn btn-primary"><i class="icon-search"></i> Search</button>
-        <button class="btn btn-default" id="btnCancelProjectSearch">Cancel</button>
+        <button id="btnSearchProjects" class="btn btn-primary"><i class="icon-search"></i> <g:message code="default.search"/></button>
+        <button class="btn btn-default" id="btnCancelProjectSearch"><g:message code="default.cancel"/></button>
     </div>
 
     <div id="searchResults" style="height: 300px; overflow-y: auto">
@@ -26,7 +26,7 @@
     });
 
     function doProjectSearch() {
-        $("#searchResults").html("Searching...");
+        $("#searchResults").html("${message(code:'default.searching')}");
         $.ajax("${createLink(action:"findProjectResultsFragment")}?q=" + $("#search").val()).done(function (content) {
             $("#searchResults").html(content);
         });

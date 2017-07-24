@@ -44,9 +44,9 @@ class ValidateController {
                 // check that the validator is not the transcriber...Admins can, though!
                 if ((currentUser == taskInstance.fullyTranscribedBy)) {
                     if (userService.isAdmin()) {
-                        flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
+                        flash.message = message(code: 'validate.normally_you_cannot_validate_your_own_tasks')
                     } else {
-                        flash.message = "This task is read-only. You cannot validate your own tasks!"
+                        flash.message = message(code: 'validate.this_task_is_read_only')
                         isReadonly = "readonly"
                     }
                 }
@@ -116,7 +116,7 @@ class ValidateController {
         if (taskInstance != null) {
             redirect(action: 'showNextFromProject', id:taskInstance.project.id)
         } else {
-            flash.message = "No task id supplied!"
+            flash.message = message(code: 'validate.no_task_id_supplied')
             redirect(uri:"/")
         }
     }

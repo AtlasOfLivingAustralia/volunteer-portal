@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
         <style>
             .fontSizeButton {
                 line-height: 18px !important;
@@ -18,25 +18,24 @@
             <div class="btn-toolbar" id="journalPageButtons">
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-default" id="showPreviousJournalPage"
-                            title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
-                        src="left_arrow.png" /> show previous journal page</button>
+                            title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${prevTask ? '' : 'disabled="true"'}><asset:image
+                        src="left_arrow.png" /> <g:message code="transcribe.templateViews.all.show_previous_journal"/></button>
                 <button type="button" class="btn btn-default" id="showNextJournalPage"
-                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page
+                        title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${nextTask ? '' : 'disabled="true"'}><g:message code="transcribe.templateViews.all.show_next_journal_page"/>
                         <asset:image src="right_arrow.png" /></button>
                 <button type="button" class="btn btn-default" id="rotateImage"
-                        title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
+                        title="${message(code: 'transcribe.templateViews.all.rotate_image')}"><g:message code="transcribe.templateViews.all.rotate"/>&nbsp;<asset:image
                         style="vertical-align: middle; margin: 0 !important;"
                         src="rotate.png" /></button>
                 </div>
 
                 <div class="btn-group btn-group-sm pull-right">
-                    <button type="button" class="btn btn-default fontSizeButton" title="Small sized fonts"
+                    <button type="button" class="btn btn-default fontSizeButton" title="${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.small_fonts')}"
                             style="font-size: 12px">A</button>
-                    <button type="button" class="btn btn-default fontSizeButton" title="Medium sized fonts"
+                    <button type="button" class="btn btn-default fontSizeButton" title="${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.medium_fonts')}"
                             style="font-size: 15px">A</button>
-                    <button type="button" class="btn btn-default fontSizeButton" title="Large sized fonts"
+                    <button type="button" class="btn btn-default fontSizeButton" title="${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.large_fonts')}"
                             style="font-size: 18px">A</button>
-
                 </div>
             </div>
         </div>
@@ -67,9 +66,9 @@
                         <div class="col-md-12">
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe all text from the left hand page into this box as it appears</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text_description"/></span>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
+                               title='${allTextField?.helpText ?: "${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text_as_it_appears')}"}'
                                tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
                             </a>
                             <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
@@ -92,9 +91,9 @@
                         <div class="col-md-12">
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe all text from the right hand page into this box as it appears</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text_right_description"/></span>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
+                               title='${allTextField?.helpText ?: "${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text_as_it_appears')}"}'><i
                                     class="fa fa-question help-container"></i></a>
                             <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
                                     class="glyphicon glyphicon-resize-full"></i></button>
@@ -120,9 +119,9 @@
                         <g:set var="allTextField"
                                value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                         <div class="col-md-12">
-                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. {allTextField?.label ?: "${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text')}"}</span>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
+                               title='${allTextField?.helpText ?: message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text_as_it_appears')}'
                                tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
                             </a>
                         </div>
@@ -146,7 +145,7 @@
                     <div class="row transcribeSectionHeader">
                         <div class="col-md-12">
                             <span class="transcribeSectionHeaderLabel"><g:sectionNumber />.  ${taskInstance.project.template?.viewParams?.transcribeSectionHeader ?: g.message(code: 'fieldNoteBookTranscribe.transcribeSectionHeader.default', default:  'Where a species or common name appears in the text please enter any relevant information into the fields below')}</span>
-                            <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                            <a style="float:right" class="closeSectionLink" href="#"><g:message code="transcribe.templateViews.all.shrink"/></a>
                         </div>
                     </div>
 
@@ -155,7 +154,7 @@
                                value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
                         <g:if test="${isPreview && !entriesField}">
                             <div class="alert alert-danger">
-                                This template view (fieldNoteBookTranscribe) requires the <strong>individualCount</strong> field to be configured.
+                                <g:message code="transcribe.templateViews.fieldNoteBookTranscribe.requirements"/>
                             </div>
                         </g:if>
                         <g:set var="fieldList"

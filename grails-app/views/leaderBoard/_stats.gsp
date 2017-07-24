@@ -5,23 +5,23 @@
     <g:if test="${!disableStats}">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
-        <h2 class="heading">${instName} Stats<g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></h2>
+        <h2 class="heading"><g:message code="leaderBoard.stats.title" args="${[instName]}"/><g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></h2>
 
         <h3>
             <g:link controller="user" action="list">
                 <span data-ng-if="loading"><cl:spinner/></span>
                 <span data-ng-if="!loading">{{transcriberCount}}</span>
-                Volunteers
+                <g:message code="leaderboard.stats.volunteers" />
             </g:link>
         </h3>
 
         <p>
             <span data-ng-if="loading"><cl:spinner/></span>
             <span data-ng-if="!loading">{{completedTasks}}</span>
-            tasks of
+            <g:message code="leaderboard.stats.task_of" />
             <span data-ng-if="loading"><cl:spinner/></span>
             <span data-ng-if="!loading">{{totalTasks}}</span>
-            completed
+            <g:message code="leaderboard.stats.completed" />
         </p>
 
     </div><!-- Volunteer Stats Ends Here -->
@@ -169,7 +169,7 @@
             <div class="media-body">
                 <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
                 <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
-                <p>Has posted in the forum: <a data-ng-href="{{contributor.forumUrl}}">{{contributor.forumName}}</a></p>
+                <p><g:message code="leaderboard.stats.has_posted_in_the_forum" />: <a data-ng-href="{{contributor.forumUrl}}">{{contributor.forumName}}</a></p>
                 <div class="transcribed-thumbs">
                     <img data-ng-src="{{contributor.thumbnailUrl}}">
                 </div>

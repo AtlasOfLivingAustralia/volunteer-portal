@@ -11,7 +11,7 @@
 
             <td>${project.shortDescription}</td>
             <td width="80px">
-                <button class="btnSelectProject btn pull-right">Select</button>
+                <button class="btnSelectProject btn pull-right"><g:message code="default.select.label"/></button>
             </td>
         </tr>
     </g:each>

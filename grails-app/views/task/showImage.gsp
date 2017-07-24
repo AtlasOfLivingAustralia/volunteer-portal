@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="Image Viewer"/></title>
+    <title><cl:pageTitle title="${message(code: 'task.showImage.image_viewer')}"/></title>
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
     <asset:stylesheet src="digivol" />
@@ -43,24 +43,24 @@
 
             <div class="col-sm-9" id="journalPageButtons">
                 <button class="btn btn-default btn-small" id="showPreviousJournalPage"
-                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
-                    <asset:image src="left_arrow.png"/> show previous
+                        title="${message(code: 'task.showImage.previous.description')}" ${prevTask ? '' : 'disabled="true"'}>
+                    <asset:image src="left_arrow.png"/> <g:message code="task.showImage.previous"/>
                 </button>
                 <button class="btn btn-default btn-small" id="showNextJournalPage"
-                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
-                    show next <asset:image src="right_arrow.png"/>
+                        title="${message(code: 'task.showImage.next.description')}" ${nextTask ? '' : 'disabled="true"'}>
+                    <g:message code="task.showImage.next"/> <asset:image src="right_arrow.png"/>
                 </button>
-                <button class="btn btn-default btn-small" id="rotateImage" title="Rotate the page 180 degrees">
-                    Rotate&nbsp;<asset:image src="rotate.png"/>
+                <button class="btn btn-default btn-small" id="rotateImage" title="${message(code: 'task.showImage.rotate.description')}">
+                    <g:message code="task.showImage.rotate"/>&nbsp;<asset:image src="rotate.png"/>
                 </button>
-                <button class="btn btn-default btn-small" id="closeWindow" title="Close this window">
-                    Close
+                <button class="btn btn-default btn-small" id="closeWindow" title="${message(code: 'task.showImage.close.description')}">
+                    <g:message code="task.showImage.close"/>
                 </button>
             </div>
 
             <div class="col-sm-3">
                 <g:if test="${sequenceNumber >= 0}">
-                    <span class="pull-right label label-info">Sequence number: ${sequenceNumber}</span>
+                    <span class="pull-right label label-info"><g:message code="task.showImage.sequence_number"/> ${sequenceNumber}</span>
                 </g:if>
             </div>
 

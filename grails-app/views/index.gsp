@@ -56,7 +56,7 @@
                 <h3><g:message code="index.whatyoudo.fieldjournals.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.fieldjournals.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Field notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Field Notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
             </div>
 
             <div class="col-sm-1 col-xs-4">

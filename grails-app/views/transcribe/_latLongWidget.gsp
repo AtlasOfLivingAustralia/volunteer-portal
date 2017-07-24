@@ -3,7 +3,7 @@
         <div class="col-md-12">
             <g:select tabindex="${tabindex}" class="form-control latLongFormatSelector" optionKey="value"
                       optionValue="label" name="${field.fieldType}.format" value=""
-                      from="${[[label: "D°M'S\"", value: "DMS"], [label: "Decimal", value: "DD"]]}"/>
+                      from="${[[label: "D°M'S\"", value: "DMS"], [label: "${message(code: 'transcribe.latLong.decimal')}", value: "DD"]]}"/>
         </div>
     </div>
 

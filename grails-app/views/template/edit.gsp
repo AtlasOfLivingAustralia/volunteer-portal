@@ -17,7 +17,7 @@
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-default"><g:message code="template.edit.new_template" /></a>
         </div>
     </cl:headerContent>
 
@@ -40,8 +40,8 @@
                                 <g:textField name="name" class="form-control" maxlength="200" value="${templateInstance?.name}"/>
                             </div>
                             <div class="col-md-3">
-                                <button class="btn btn-default" id="btnEditFields">Edit Fields</button>
-                                <button class="btn btn-default" id="btnPreview">Preview Template</button>
+                                <button class="btn btn-default" id="btnEditFields"><g:message code="template.edit.edit_fields" /></button>
+                                <button class="btn btn-default" id="btnPreview"><g:message code="template.edit.preview_template" /></button>
                             </div>
                         </div>
 

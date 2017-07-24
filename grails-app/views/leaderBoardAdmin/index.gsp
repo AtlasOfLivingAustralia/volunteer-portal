@@ -30,7 +30,7 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Ineligible Honour Board users <asset:image src="spinner.gif" height="16px" width="16px"
+                            <h4><g:message code="leaderBoard.admin.ineligible_users"/> <asset:image src="spinner.gif" height="16px" width="16px"
                                                             id="ajax-spinner" class="hidden"/></h4>
                             <hr/>
                         </div>
@@ -48,7 +48,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-2 text-right">
-                            <label for="add-user">Add User:</label>
+                            <label for="add-user"><g:message code="leaderBoard.admin.add_users"/></label>
                         </div>
                         <div class="col-md-4">
                             <input id="add-user" type="text" autocomplete="off" class="form-control typeahead"
@@ -89,7 +89,7 @@
 
                         $("#add-user").val('');
                     })
-                    .fail(function() { alert("Couldn't add user")});
+                    .fail(function() { alert("${message(code:'leaderBoard.admin.could_not_add_user')}")});
                 return null;
         }, 'displayName');
 
@@ -111,7 +111,7 @@
                 p.remove();
                 $("#add-user").val('');
             })
-            .fail(alert("Couldn't remove user"))
+            .fail(alert("${message(code:'leaderBoard.admin.could_not_remove_user')}"))
             .always(hideSpinner);
         }
 

@@ -34,7 +34,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <p>
-                        <strong>${results.totalCount} matching message${results.totalCount == 1 ? '' : 's'} found.</strong>
+                        <strong>${results.totalCount == 1 ? message(code: 'forum.search.matching_message_found', args: [results.totalCount]) : message(code: 'forum.search.matching_messages_found', args: [results.totalCount])}</strong>
                     </p>
                     <section id="searchResults">
                         <vpf:messagesTable messages="${results}"/>

@@ -7,14 +7,13 @@
 
 <body>
 
-<content tag="pageTitle">Expedition background image</content>
+<content tag="pageTitle"><g:message code="project.expedition_background_image"/></content>
 
 <content tag="adminButtonBar">
 </content>
 
 <div class="alert alert-warning">
-    For best results and to preserve quality, it is recommend that the background image has a <strong>resolution</strong> of at least <strong>2 megapixels</strong> (eg: 1920 x 1080). The system won't accept images bigger than 512KB though.<br/>
-    <strong>The darker the image the better!</strong>
+    <g:message code="project.expedition_background_image.description"/>
 </div>
 
 <g:if test="${projectInstance?.backgroundImage}">
@@ -26,7 +25,7 @@
 </g:if>
 <g:else>
     <div class="alert alert-info">
-        No background image uploaded yet.
+        <g:message code="project.expedition_background_image.no_image"/>
     </div>
 </g:else>
 
@@ -38,7 +37,7 @@
 
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="backgroundImage">Background Image</label>
+        <label class="control-label col-md-3" for="backgroundImage"><g:message code="project.background_image"/></label>
 
         <div class="col-md-9">
             <input type="file" data-filename-placement="inside" name="backgroundImage" id="backgroundImage"/>
@@ -46,7 +45,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="backgroundImageAttribution">Image attribution text</label>
+        <label class="control-label col-md-3" for="backgroundImageAttribution"><g:message code="project.expedition_background_image.attribution"/></label>
 
         <div class="col-md-6">
             <g:textField name="backgroundImageAttribution" class="form-control"
@@ -65,15 +64,17 @@
             </div>
         </div>
         <div class="col-md-3">
-            <cl:helpText>This will be applied over the background image.  Use this if the background image makes the text that overlays it unreadable.  A good starting point is black at half opacity (i.e. `rgba(0,0,0,0.5)`).</cl:helpText>
-            <button role="button" type="button" id="setDefaultOverlay" class="btn btn-default btn-xs">Set to default</button>
+            <cl:helpText>
+                <g:message code="project.backgroundImageOverlayColour.help"/>
+            </cl:helpText>
+            <button role="button" type="button" id="setDefaultOverlay" class="btn btn-default btn-xs"><g:message code="project.backgroundImageOverlayColour.default"/></button>
         </div>
     </div>
 
     <div class="form-group">
         <div class="col-md-offset-3 col-md-9">
             <g:submitButton class="btn btn-success" name="Update"/>
-            <a class="btn btn-danger" id="clearImageSettings" href="${createLink(action: 'clearBackgroundImageSettings', id: projectInstance.id)}">Clear</a>
+            <a class="btn btn-danger" id="clearImageSettings" href="${createLink(action: 'clearBackgroundImageSettings', id: projectInstance.id)}"><g:message code="default.clear"/></a>
         </div>
     </div>
 
@@ -89,7 +90,7 @@
         $('#clearImageSettings').on('click', function(e) {
             e.preventDefault();
             var self = this;
-            bootbox.confirm('The background image and attribution text will be deleted. Are you sure?', function(result) {
+            bootbox.confirm('${message(code: 'project.backgroundImageOverlayColour.delete.confirmation')}', function(result) {
                 if (result) {
                     window.location.href = $(self).attr('href');
                 }

@@ -10,7 +10,8 @@
 <head>
     <meta name="layout" content="digivol-transcribe"/>
 
-    <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+    <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
+
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
     <asset:stylesheet src="transcribe-widgets"/>
@@ -92,9 +93,9 @@
 
             <div class="btn-group" role="group" aria-label="Transcription controls">
                 <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
-                        title="Skip the to next image">Skip</button>
+                        title="Skip the to next image"><g:message code="default.skip"/></button>
                 <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
-                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
+                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank"><g:message code="transcribe.task.view_tutorial"/></g:link>
             </div>
 
         </div>
@@ -104,7 +105,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="errors">
-                    There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list"/>
+                    <g:message code="transcribe.task.problem_saving_your_edit"/> <g:renderErrors bean="${taskInstance}" as="list"/>
                 </div>
             </div>
         </div>
@@ -133,8 +134,8 @@
                                     <div class="row transcribeSectionHeader">
                                         <div class="col-sm-12">
                                             <span class="transcribeSectionHeaderLabel"><g:if
-                                                    test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
-                                            <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                                                    test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if><g:message code="transcribe.task.notes"/>
+                                            <a style="float:right" class="closeSectionLink" href="#"><g:message code="task.shrink"/>Shrink</a>
                                         </div>
                                     </div>
 
@@ -144,7 +145,7 @@
                                             <div class="col-sm-6">
                                                 <div class="row">
                                                     <div class="col-sm-4">
-                                                        ${(validator) ? 'Transcriber' : 'Your'} Notes
+                                                        ${(validator) ? message(code: "transcribe.task.transcriber_notes") : message(code: "transcribe.task.your_notes")}
                                                     </div>
 
                                                     <div class="col-sm-8">
@@ -158,7 +159,7 @@
                                             <div class="col-sm-6">
                                                 <g:if test="${validator}">
                                                     <div class="row">
-                                                        <div class="col-sm-4">Validator Notes</div>
+                                                        <div class="col-sm-4">${message(code: "transcribe.task.validator_notes")}</div>
 
                                                         <div class="col-sm-8">
                                                             <g:textArea name="recordValues.0.validatorNotes"
@@ -178,19 +179,19 @@
                 </g:if>
 
                 <g:if test="${!isReadonly}">
-                    <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
-                    <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields"/>
+                    <g:set var="okCaption" value="${message(code: 'transcribe.task.submit_for_validation_anyway')}"/>
+                    <g:set var="cancelCaption" value="${message(code: 'transcribe.task.cancel_submission')}"/>
                     <g:if test="${validator}">
-                        <g:set var="okCaption" value="It's ok, mark as valid anyway"/>
-                        <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields"/>
+                        <g:set var="okCaption" value="${message(code: 'transcribe.task.mark_valid_anyway')}"/>
+                        <g:set var="cancelCaption" value="${message(code: 'transcribe.task.cancel_validation')}"/>
                     </g:if>
                     <div class="row" id="errorMessagesContainer" style="display: none">
                         <div class="col-sm-12">
                             <div class="alert alert-danger">
                                 <p class="lead">
-                                    <strong>Warning!</strong>
-                                    There are problems with the field(s) indicated.
-                                    Please correct the fields marked in red before proceeding.
+                                    <strong><g:message code="transcribe.task.warning"/></strong>
+                                    <g:message code="transcribe.task.warning.problems_with_the_fields_indicated"/>
+
                                     <br/>
                                     <button id="btnErrorCancelSubmission" class="btn btn-primary">${cancelCaption}</button>
                                 </p>
@@ -202,8 +203,9 @@
                         <div class="col-sm-12">
                             <div class="alert alert-warning">
                                 <p class="lead">
-                                    <strong>Warning!</strong> There may be some problems with the fields indicated.
-                                If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
+                                    <strong><g:message code="transcribe.task.warning"/></strong>
+                                    <g:message code="transcribe.task.warning.there_may_be_problems_with_the_fields_indicated"/>
+
                                 </p>
 
                                 <div>
@@ -225,7 +227,7 @@
                                             class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
                                     </button>
                                     <button type="button" class="btn btn-default bvp-submit-button"
-                                            id="showNextFromProject">Skip</button>
+                                            id="showNextFromProject"><g:message code="default.skip"/></button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
                                         <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
@@ -237,7 +239,7 @@
                                     <button type="button" id="btnSavePartial"
                                             class="btn btn-default bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
                                     <button type="button" class="btn btn-default bvp-submit-button"
-                                            id="showNextFromProject">Skip</button>
+                                            id="showNextFromProject"><g:message code="default.skip"/></button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
                             </div>
@@ -258,7 +260,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="alert alert-warning">
-                        No tasks loaded for this project !
+                        <g:message code="transcribe.task.no_tasks_loaded"/>
                     </div>
                 </div>
             </div>
@@ -280,7 +282,7 @@
                         <div class="col-sm-offset-1 col-sm-11">
                             <div class="checkbox">
                                 <label>
-                                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
+                                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> <g:message code="transcribe.task.warning.dont_ask_me_again"/>
                                 </label>
                             </div>
                         </div>
@@ -290,8 +292,8 @@
 
             <div class="modal-footer">
                 <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal">Cancel</button>
-                <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
+                        data-dismiss="modal"><g:message code="default.cancel"/></button>
+                <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary"><g:message code="default.submit"/></button>
             </div>
         </div>
     </div>
@@ -436,7 +438,7 @@
 
             function applyReadOnlyIfRequired() {
     <g:if test="${isReadonly}">
-        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('${message(code: 'transcribe.task.no_permission')}')}).attr('disabled','disabled').attr('readonly','readonly');
     </g:if>
     }
 
@@ -649,7 +651,7 @@
             return true;
         </g:if>
         },
-        message: "${rule.message}",
+        message: "${message(code: rule.message)}",
             type: "${rule.validationType ?: ValidationType.Warning}"
         };
     </g:each>
@@ -667,7 +669,7 @@
         function showTaskTimeoutMessage() {
             var options = {
                 url: "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}",
-                        title: 'Task lock will expire soon!',
+                        title: '${message(code: 'transcribe.task.task_lock_will_expire_soon')}',
                         backdrop: 'static',
                         keyboard: false
                     };
@@ -764,7 +766,7 @@
     function checkAndRecoverFromFailedSubmit() {
         var lastState = amplify.store("bvp_task_${taskInstance.id ?: 0}");
         if (lastState && lastState.fields) {
-            alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
+            alert("${message(code: 'transcribe.task.session_timed_out')}");
 
             // If the form uses the dynamicDataSet template (observation diaries etc), we need to render them correctly first.
 

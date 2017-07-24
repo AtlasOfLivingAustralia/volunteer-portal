@@ -23,18 +23,18 @@
 
                         <div>
                             <small>
-                                Posted by: ${topic.creator.displayName}
+                                <g:message code="forum.watched_topics.posted_by"/> ${topic.creator.displayName}
                                 <br/>
-                                On: <g:formatDate date="${topic.dateCreated}"
+                                <g:message code="forum.watched_topics.on"/> <g:formatDate date="${topic.dateCreated}"
                                                   format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/>
                                 <br/>
                                 <g:if test="${topic.instanceOf(au.org.ala.volunteer.ProjectForumTopic)}">
-                                    Project: <strong>${topic.project?.featuredLabel}</strong>
+                                    <g:message code="forum.watched_topics.project"/> <strong>${topic.project?.featuredLabel}</strong>
                                 </g:if>
                                 <g:if test="${topic.instanceOf(au.org.ala.volunteer.TaskForumTopic)}">
-                                    Project: <strong>${topic.task?.project?.featuredLabel}</strong>
+                                    <g:message code="forum.watched_topics.project"/> <strong>${topic.task?.project?.featuredLabel}</strong>
                                     <br/>
-                                    Task: <strong>${topic.task?.externalIdentifier}</strong>
+                                    <g:message code="forum.watched_topics.task"/> <strong>${topic.task?.externalIdentifier}</strong>
                                 </g:if>
 
                             </small>
@@ -45,8 +45,8 @@
                     <td><g:formatDate date="${topic.lastReplyDate}"
                                       format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/></td>
                     <td>
-                        <button class="btn btn-small btnViewTopic">View topic</button>
-                        <button class="btn btn-small btnUnwatchTopic">Stop watching topic</button>
+                        <button class="btn btn-small btnViewTopic"><g:message code="forum.watched_topics.view_topic"/></button>
+                        <button class="btn btn-small btnUnwatchTopic"><g:message code="forum.watched_topics.stop_watching"/></button>
                     </td>
                 </tr>
             </g:each>
@@ -55,7 +55,7 @@
     </g:if>
     <g:else>
         <div class="alert alert-info">
-            You have no watched topics.
+            <g:message code="forum.watched_topics.you_have_no_watched_topics"/>
         </div>
     </g:else>
 </div>

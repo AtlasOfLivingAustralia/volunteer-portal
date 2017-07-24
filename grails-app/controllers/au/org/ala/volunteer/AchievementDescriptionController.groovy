@@ -146,7 +146,7 @@ class AchievementDescriptionController {
             if (f != null && f.size > 0) {
                 def allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
-                    json.put("error", "Image must be one of: ${allowedMimeTypes}")
+                    json.put("error", message(code: "achievementDescription.image_must_be_one_of", args: [allowedMimeTypes]))
                     status = BAD_REQUEST
                 } else {
                     boolean result
@@ -160,16 +160,16 @@ class AchievementDescriptionController {
                             achievement.save(flush: true)
                         }
                     } else {
-                        json.put('error', "Failed to upload image. Unknown error!")
+                        json.put('error', message(code: "achievementDescription.failed_to_upload_image"))
                         status = INTERNAL_SERVER_ERROR
                     }
                 }
             } else {
-                json.put('error', "Please select a file!")
+                json.put('error', message(code: "achievementDescription.please_select_a_file"))
                 status = BAD_REQUEST
             }
         } else {
-            json.put('error', "Form must be multipart file!")
+            json.put('error', message(code: "achievementDescription.form_must_be_multipart_file"))
             status = BAD_REQUEST
         }
 
@@ -335,7 +335,7 @@ class AchievementDescriptionController {
             if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
                 throw new RuntimeException("Failed to create institution directories: ${file.getParentFile().getAbsolutePath()}")
             }
-            mpfile.transferTo(file);
+            mpfile.transferTo(file.absoluteFile);
             return true
         } catch (Exception ex) {
             log.error("Failed to upload achievement badge", ex)

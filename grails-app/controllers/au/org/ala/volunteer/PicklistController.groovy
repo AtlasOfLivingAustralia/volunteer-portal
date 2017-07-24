@@ -129,7 +129,7 @@ class PicklistController {
 //        PicklistItem.saveAll(pis)
         pis*.save()
 
-        if (warnings) flash.message = "Couldn't find images for ${warnings.join(', ')}"
+        if (warnings) flash.message = message(code: 'picklist.could_not_find_images_for') + warnings.join(', ')
 
         redirect action: 'wildcount', id: picklistInstance.id, params: [institutionCode: instCode]
     }
@@ -214,7 +214,7 @@ class PicklistController {
         }
 
         if (existing) {
-            flash.message = "A picklist already exists with the name ${params.name}"
+            flash.message = message(code: 'picklist.a_picklist_already_exists', args: [params.name])
             if (params.clazz) flash.message += " and class ${params.clazz}"
             render(view: "create", model: [picklistInstance: picklistInstance])
             return

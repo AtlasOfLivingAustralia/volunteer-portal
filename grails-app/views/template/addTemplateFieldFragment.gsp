@@ -2,7 +2,7 @@
 
 <form>
     <div class="form-group">
-        <label class="control-label" for="fieldName">Field:</label>
+        <label class="control-label" for="fieldName"><g:message code="template.addTemplateFieldFragment.field"/></label>
         <g:select name="fieldName" class="form-control" from="${DarwinCoreField.values().sort({ it.name() })}"/>
     </div>
 
@@ -12,24 +12,24 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="label">Label (blank for default):</label>
+        <label class="control-label" for="label"><g:message code="template.addTemplateFieldFragment.label"/></label>
         <g:textField class="form-control" name="label" value=""/>
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="category">Category:</label>
+        <label class="control-label" for="category"><g:message code="template.addTemplateFieldFragment.category"/></label>
         <g:select class="form-control" name="category" from="${FieldCategory?.values()}" value="${FieldCategory.none}"/>
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="type">Type:</label>
+        <label class="control-label" for="type"><g:message code="template.addTemplateFieldFragment.type"/></label>
         <g:select class="form-control" name="type" from="${FieldType?.values()}" keys="${FieldType?.values()*.name()}"
                   value="${FieldType.text}"/>
     </div>
 
     <div class="modal-footer">
-        <button id="btnCancelAddField" class="btn btn-default">Cancel</button>
-        <button id="btnSaveField" class="btn btn-primary">Add field</button>
+        <button id="btnCancelAddField" class="btn btn-default"><g:message code="default.cancel"/></button>
+        <button id="btnSaveField" class="btn btn-primary"><g:message code="template.addTemplateFieldFragment.add_field"/></button>
     </div>
 
 </form>
@@ -58,6 +58,7 @@
             if (type) {
                 url += "&type=" + encodeURIComponent(type);
             }
+            console.log("Forwarding to ... "+url);
             window.location = url;
         }
 

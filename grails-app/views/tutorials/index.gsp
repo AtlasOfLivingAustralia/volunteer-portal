@@ -12,7 +12,7 @@
     <cl:ifAdmin>
         </div>
         <div class="col-sm-2">
-            <a class="btn btn-primary" href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Manage</a>
+            <a class="btn btn-primary" href="${createLink(controller: 'admin', action: 'tutorialManagement')}"><g:message code="templates.index.manage"/></a>
     </cl:ifAdmin>
 </cl:headerContent>
 

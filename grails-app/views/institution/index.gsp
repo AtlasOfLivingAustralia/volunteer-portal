@@ -46,15 +46,15 @@
             <table class="table table-striped contact">
                 <tbody>
                 <tr>
-                    <th scope="row">Email</th>
-                    <td><a href="mailto:${institutionInstance.contactEmail}">${institutionInstance.contactName}</td>
+                    <th scope="row"><g:message code="institution.email" /></th>
+                    <td><a href="mailto:${institutionInstance.contactEmail}">${institutionInstance.contactName}</a></td>
                 </tr>
                 <tr>
-                    <th scope="row">Phone</th>
+                    <th scope="row"><g:message code="institution.phone" /></th>
                     <td>${institutionInstance.contactPhone}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Website</th>
+                    <th scope="row"><g:message code="institution.website" /></th>
                     <td><a href="${(institutionInstance.websiteUrl?.startsWith("http")) ? "" : "http://"}${institutionInstance.websiteUrl}" target="_blank">${(institutionInstance.websiteUrl?.startsWith("http")) ? institutionInstance.websiteUrl?.substring(7) : institutionInstance.websiteUrl}</a></td>
                 </tr>
                 </tbody>
@@ -64,13 +64,13 @@
             <h1 class="">${institutionInstance.name}</h1>
             <p style="margin-top: 20px;">${institutionInstance.shortDescription}</p>
             <div class="cta-primary ">
-                <a class="btn btn-primary btn-lg" href="#expeditionList" role="button">See our expeditions
+                <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="institution.see_our_expeditions" />
                     <span class="glyphicon glyphicon-arrow-down"></span></a>
-                <a class="btn btn-lg btn-hollow grey hidden">Learn more</a>
+                <a class="btn btn-lg btn-hollow grey hidden"><g:message code="institution.learn_more" /></a>
                 <cl:ifAdmin>
                     <g:link style="margin-right: 5px; color: white" class="btn btn-lg btn-warning pull-rightZ"
                             controller="institutionAdmin" action="edit" id="${institutionInstance.id}"><i
-                            class="glyphicon glyphicon-cog icon-white"></i>&nbsp;Settings</g:link>&nbsp;
+                            class="glyphicon glyphicon-cog icon-white"></i>&nbsp;<g:message code="institution.settings" /></g:link>&nbsp;
                 </cl:ifAdmin>
             </div>
         </div>
@@ -83,37 +83,40 @@
                         <g:set var="tv" value="${(taskCounts?.percentTranscribed as Integer) - (taskCounts?.percentValidated as Integer)}"/>
                         <div class="progress">
                             <div class="progress-bar progress-bar-success" style="width: ${taskCounts?.percentValidated}%">
-                                <span class="sr-only">${taskCounts?.percentValidated}% Complete</span>
+                                <span class="sr-only">${taskCounts?.percentValidated}% <g:message code="institution.percent_complete" /></span>
                             </div>
                             <div class="progress-bar progress-bar-transcribed" style="width: ${tv}%">
-                                <span class="sr-only">${tv}% Complete</span>
+                                <span class="sr-only">${tv}% <g:message code="institution.percent_complete" /></span>
                             </div>
                         </div>
                         <div class="progress-legend">
                             <div class="row">
                                 <div class="col-xs-4">
-                                    <b>${taskCounts?.percentValidated}%</b> Validated
+                                    <b>${taskCounts?.percentValidated}%</b> <g:message code="institution.percent_validated" />
                                 </div>
                                 <div class="col-xs-4">
-                                    <b>${taskCounts?.percentTranscribed}%</b> Transcribed
+                                    <b>${taskCounts?.percentTranscribed}%</b> <g:message code="institution.percent_transcribed" />
                                 </div>
                                 <div class="col-xs-4">
-                                    <b>${taskCounts?.taskCount}</b> Tasks
+                                    <b>${taskCounts?.taskCount}</b> <g:message code="institution.tasks" />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-3 col-xs-6">
-                    <h3><b>${underwayProjects} Expeditions</b>Underway</h3>
+                    <h3><b>${underwayProjects} <g:message code="institution.expeditions" /></b><g:message code="institution.expeditions_underway" /></h3>
                 </div>
                 <div class="col-sm-3 col-xs-6">
-                    <h3><b>${completedProjects} Expeditions</b>Completed</h3>
+                    <h3><b>${completedProjects} <g:message code="institution.expeditions" /></b><g:message code="institution.expeditions_completed" /></h3>
                 </div>
                 <a name="expeditionList"></a>
             </div>
         </div>
     </div>
+
+
+
 
 </cl:headerContent>
 
@@ -125,16 +128,16 @@
                     <div class="col-sm-6">
                         <h2 class="heading">
                             <g:if test="${params.q}">
-                                Expeditions matching:
+                                <g:message code="institution.expeditions_matching" />:
                                 <span class="tag currentFilter">
                                     <span>${params.q.replaceAll('tag:','')}</span>
                                     <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
                                 </span>
                             </g:if>
                             <g:else>
-                                All Expeditions
+                                <g:message code="institution.all_expeditions" />
                             </g:else>
-                            <div class="subheading">Showing <g:formatNumber number="${filteredProjectsCount}" type="number"/> expeditions</div>
+                            <div class="subheading"><g:message code="institution.showing" /> <g:formatNumber number="${filteredProjectsCount}" type="number"/> <g:message code="institution.showing_expeditions" /></div>
                         </h2>
                     </div>
 
@@ -147,7 +150,7 @@
 
                             <div class="custom-search-input body">
                                 <div class="input-group">
-                                    <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
+                                    <input type="text" id="searchbox" class="form-control input-lg" placeholder="${message(code: "main.navigation.search.placeholder")}"/>
                                     <span class="input-group-btn">
                                         <button id="btnSearch" class="btn btn-info btn-lg" type="button">
                                             <i class="glyphicon glyphicon-search"></i>
@@ -169,7 +172,7 @@
                         <div class="btn-group pull-right hide" style="padding-right: 10px">
                             <g:each in="${ProjectStatusFilterType.values()}" var="mode">
                                 <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
-                                <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                                <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${message(code: mode.i18nLabel)}</a>
                             </g:each>
                         </div>
 
@@ -177,7 +180,7 @@
                             <div class="btn-group pull-right" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
                                 <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                     <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
-                                    <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                                    <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${message(code: mode.i18nLabel)}</a>
                                 </g:each>
                             </div>
                         </cl:ifAdmin>

@@ -22,7 +22,7 @@ class TranscribeController {
             log.debug("index redirect to showNextFromProject: " + params.id)
             redirect(action: "showNextFromProject", id: params.id)
         } else {
-            flash.message = "Something unexpected happened. Try pressing the back button to return to the previous task and trying again."
+            flash.message = message(code: 'transcribe.something_unexpected_happened')
             redirect(uri:"/")
         }
 
@@ -43,13 +43,13 @@ class TranscribeController {
                 def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
                 log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Another task will be allocated")
-                flash.message  = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. You have been allocated a new task"
+                flash.message  = message(code: 'transcribe.the_requested_task_is_being_edited',args: [taskInstance.id])
                 // redirect to another task
                 redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId])
                 return
             } else {
                 if (isLockedByOtherUser) {
-                    flash.message = "This task is currently locked by another user. Because you are an admin you are able to work on this task, but only do so if you are confident that no-one else is working on this task as well, as data will be lost if two people save the same task!"
+                    flash.message = message(code: 'transcribe.this_task_is_locked_by_another_user')
                 }
                 // go ahead with this task
                 auditService.auditTaskViewing(taskInstance, currentUserId)
@@ -165,7 +165,7 @@ class TranscribeController {
                 else redirect(action: 'showNextAction', id: params.id)
             }
             else {
-                def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: " + taskInstance.hasErrors()
+                def msg = (markTranscribed ? message(code: 'transcribe.task_save_failed') : message(code: 'transcribe.task_save_partial_failed')) + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
                 redirect(action:'task', id: params.id)

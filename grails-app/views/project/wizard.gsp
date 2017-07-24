@@ -2,18 +2,18 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title><cl:pageTitle title="Create a new Expedition"/></title>
+    <title><cl:pageTitle title="${message(code: 'project.wizard.title')}"/></title>
 
     <asset:stylesheet src="digivol-new-project-wizard" />
 </head>
 
 <body class="admin" data-ng-app="projectWizard">
 <div class="container" >
-    <cl:headerContent title="Create a new Expedition" selectedNavItem="bvpadmin">
+    <cl:headerContent title="${message(code: 'project.wizard.title')}" selectedNavItem="bvpadmin">
         <h2 class="ng-cloak">{{$state.current.data.title}}</h2>
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'project.wizard.administration')]
             ]
         %>
     </cl:headerContent>
@@ -23,47 +23,46 @@
         </div>
     </div>
     <script type="text/ng-template" id="start.html">
-        <h3>Welcome to the New Expedition wizard</h3>
-
+        <h3><g:message code="project.wizard.welcome" /></h3>
         <div>
-            Before you start you will need the following:
+            <g:message code="project.wizard.welcome.before_you_start" />
             <ul>
-                <li>A name for your expedition, and a description</li>
-                <li>An image that represents your expedition (JPEG sized 600px wide, with aspect ration between 4:3 and 16:9)</li>
-                <li>A collection of images, each representing a task to be transcribed</li>
-                <li>A template for transcribing each task. These are created from the Admin page</li>
-                <li>(Optional) Picklists for fields on your template. These can be uploaded through the Admin page</li>
-                <li>(Optional) Tutorials or helpful web links. Tutorial files can be uploaded from the Admin page</li>
-                <li>(Optional) A csv data file containing additional data for each task</li>
+                <li><g:message code="project.wizard.welcome.requirement1" /></li>
+                <li><g:message code="project.wizard.welcome.requirement2" /></li>
+                <li><g:message code="project.wizard.welcome.requirement3" /></li>
+                <li><g:message code="project.wizard.welcome.requirement4" /></li>
+                <li><g:message code="project.wizard.welcome.requirement5" /></li>
+                <li><g:message code="project.wizard.welcome.requirement6" /></li>
+                <li><g:message code="project.wizard.welcome.requirement7" /></li>
             </ul>
         </div>
 
-        <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
-        <button role="button" type="button" class="btn btn-primary" data-ng-click="continue()">Start&nbsp;<i class="glyphicon glyphicon-chevron-right glyphicon-white"></i></button>
+        <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()"><g:message code="default.cancel"/></button>
+        <button role="button" type="button" class="btn btn-primary" data-ng-click="continue()"><g:message code="project.wizard.start" />&nbsp;<i class="glyphicon glyphicon-chevron-right glyphicon-white"></i></button>
     </script>
 
     <script type="text/ng-template" id="institution-details.html">
         <form class="form-horizontal" name="form">
             <div class="form-group">
-                <label class="col-sm-3 control-label" for="featuredOwner">Expedition institution</label>
+                <label class="col-sm-3 control-label" for="featuredOwner"><g:message code="project.expedition_institution" /></label>
 
                 <div class="col-sm-6">
                     <input type="text" class="form-control" id="featuredOwner" name="featuredOwner" ng-model="project.featuredOwner.name" dv-typeahead ta-options="options" ta-datasets="data" ta-change="institutionSelect(type, suggestion)" ta-select="institutionSelect(type, suggestion)" ta-autocomplete="institutionSelect(type, suggestion)" />
                 </div>
 
                 <div class="col-sm-3">
-                    <cl:ngHelpText>This may be the name of an institution, or a specific department or collection within an institution</cl:ngHelpText>
+                    <cl:ngHelpText><g:message code="project.wizard.expedition_institution.help" /></cl:ngHelpText>
                     <input type="hidden" name="featuredOwnerId" data-ng-model="project.featuredOwner.id"/>
-                    <span id="institution-link-icon" class="ng-cloak muted" data-ng-show="project.featuredOwner.id"><small><i class="icon-ok"></i> Linked to <a
-                            id="institution-link" ng-href="${createLink(controller: 'institution', action: 'index')}/{{project.featuredOwner.id}}" target="_blank">institution!</a></small></span>
+                    <span id="institution-link-icon" class="ng-cloak muted" data-ng-show="project.featuredOwner.id"><small><i class="icon-ok"></i> <g:message code="project.wizard.expedition_institution.linked_to" /> <a
+                            id="institution-link" ng-href="${createLink(controller: 'institution', action: 'index')}/{{project.featuredOwner.id}}" target="_blank"><g:message code="project.wizard.expedition_institution.institution" />!</a></small></span>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
-                    <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
-                    <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Back</button>
-                    <button role="button" type="button" class="btn btn-primary" data-ng-click="continue()" >Next&nbsp;<i
+                    <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()"><g:message code="default.cancel" /></button>
+                    <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;<g:message code="default.back" /></button>
+                    <button role="button" type="button" class="btn btn-primary" data-ng-click="continue()" ><g:message code="default.next" />&nbsp;<i
                             class="glyphicon glyphicon-chevron-right glyphicon-white"></i></button>
                 </div>
             </div>
@@ -75,33 +74,33 @@
         <form class="form-horizontal" name="form">
         
             <div class="form-group required" show-errors>
-                <label class="col-sm-3 control-label" for="projectName">Expedition name</label>
+                <label class="col-sm-3 control-label" for="projectName"><g:message code="project.wizard.expedition_name" /></label>
         
                 <div class="col-sm-6">
                     <input type="text" class="form-control" name="projectName" id="projectName" data-ng-model="project.name" data-ng-model-options="{ debounce: 500 }" data-ng-required="true" dv-projectname />
                 </div>
 
                 <div class="col-sm-3">
-                    <cl:ngHelpText>Will be displayed on the front page and in the expeditions list</cl:ngHelpText>
-                    <span ng-show="form.projectName.$pending.projectname">Checking if this name is available...</span>
-                    <span style="color: red; font-weight: bold" ng-show="form.projectName.$error.projectname">This project name is already taken!</span>
+                    <cl:ngHelpText><g:message code="project.wizard.expedition_name.help" /></cl:ngHelpText>
+                    <span ng-show="form.projectName.$pending.projectname"><g:message code="project.wizard.expedition_name.checking" /></span>
+                    <span style="color: red; font-weight: bold" ng-show="form.projectName.$error.projectname"><g:message code="project.wizard.expedition_name.taken" /></span>
                 </div>
             </div>
         
             <div class="form-group required" show-errors>
-                <label class="col-sm-3 control-label" for="shortDescription">Short description</label>
+                <label class="col-sm-3 control-label" for="shortDescription"><g:message code="project.shortDescription.label" /></label>
         
                 <div class="col-sm-6">
                     <input type="text" class="form-control" name="shortDescription" id="shortDescription" data-ng-model="project.shortDescription" data-ng-required="true"  />
                 </div>
 
                 <div class="col-sm-3">
-                    <cl:ngHelpText>Used on the front page if your expedition is Expedition Of The Day</cl:ngHelpText>
+                    <cl:ngHelpText><g:message code="project.wizard.shortDescription.help" /></cl:ngHelpText>
                 </div>
             </div>
         
             <div class="form-group required" show-errors>
-                <label class="col-sm-3 control-label" id="long-description-label">Long description</label>
+                <label class="col-sm-3 control-label" id="long-description-label"><g:message code="project.general_settings.long_description" /></label>
         
                 <div class="col-sm-6">
                     <textarea ui-tinymce="wizardTinyMceOptions" aria-labelledby="long-description-label" aria-label="Long description" rows="8" class="form-control" name="longDescription"
@@ -109,24 +108,24 @@
                 </div>
 
                 <div class="col-sm-3">
-                    <cl:ngHelpText>Displayed on the expedition front page</cl:ngHelpText>
+                    <cl:ngHelpText><g:message code="project.wizard.longDescription.help" /></cl:ngHelpText>
                 </div>
             </div>
         
             <div class="form-group required" show-errors>
-                <label class="col-sm-3 control-label" for="templateId">Template</label>
+                <label class="col-sm-3 control-label" for="templateId"><g:message code="project.template.label" /></label>
         
                 <div class="col-sm-6">
                     <g:select class="form-control" name="templateId" from="${templates}" optionKey="id" data-ng-model="project.templateId" data-dv-convert-to-number="" data-ng-required="true" />
                 </div>
 
                 <div class="col-sm-3">
-                    <cl:ngHelpText>The template determines what fields are transcribed</cl:ngHelpText>
+                    <cl:ngHelpText><g:message code="project.wizard.template.help" /></cl:ngHelpText>
                 </div>
             </div>
         
             <div class="form-group required" show-errors>
-                <label class="col-sm-3 control-label" for="projectTypeId">Expedition type</label>
+                <label class="col-sm-3 control-label" for="projectTypeId"><g:message code="project.projectType.label" /></label>
         
                 <div class="col-sm-6">
                     <g:select class="form-control" name="projectTypeId" from="${projectTypes}" optionKey="id" optionValue="label"
@@ -140,9 +139,9 @@
         
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-6">
-                    <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
-                    <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Back</button>
-                    <button role="button" type="button"  class="btn btn-primary" data-ng-disabled="form.$invalid" data-ng-click="continue()">Next&nbsp;<i
+                    <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()"><g:message code="default.cancel" /></button>
+                    <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;<g:message code="default.back" /></button>
+                    <button role="button" type="button"  class="btn btn-primary" data-ng-disabled="form.$invalid" data-ng-click="continue()"><g:message code="default.next" />&nbsp;<i
                             class="glyphicon glyphicon-chevron-right glyphicon-white"></i></button>
                 </div>
             </div>

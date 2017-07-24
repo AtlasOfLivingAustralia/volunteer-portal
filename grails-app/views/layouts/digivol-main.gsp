@@ -8,7 +8,7 @@
     <cl:addApplicationMetaTags/>
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
-    <title><g:layoutTitle default="DIGIVOL | Home"/></title>
+    <title><g:message code="main.title" /></title>
 
     <asset:stylesheet href="digivol.css"/>
     <g:render template="/layouts/jsUrls" />
@@ -28,7 +28,7 @@
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only"><g:message code="main.navigation.toggle" /></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -41,7 +41,7 @@
             <div class="custom-search-input">
                 <g:form controller="project" action="list" method="GET" >
                 <div class="input-group">
-                    <g:textField name="q" class="form-control input-lg" placeholder="Search e.g. Bivalve" />
+                    <g:textField name="q" class="form-control input-lg" placeholder="${message(code: "main.navigation.search.placeholder")}" />
                     <span class="input-group-btn">
                         <button class="btn btn-info btn-lg" type="button">
                             <i class="glyphicon glyphicon-search"></i>
@@ -51,24 +51,26 @@
                 </g:form>
             </div>
 
+
+
             <ul class="nav navbar-nav navbar-right">
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><g:link
-                        uri="/">Home</g:link>
+                        uri="/"><g:message code="main.navigation.home" /></g:link>
                 </li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'institutions' ? 'active' : ''}"><g:link
-                        controller="institution" action="list">Institutions</g:link></li>
+                        controller="institution" action="list"><g:message code="main.navigation.institutions" /></g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
-                        controller="project" action="list">Expeditions</g:link></li>
+                        controller="project" action="list"><g:message code="main.navigation.expeditions" /></g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
-                        controller="tutorials" action="index">Tutorials</g:link></li>
+                        controller="tutorials" action="index"><g:message code="main.navigation.tutorials" /></g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
-                        controller="forum" action="index">Forum</g:link></li>
+                        controller="forum" action="index"><g:message code="main.navigation.forum" /></g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link
-                        controller="contact" action="index">Contact Us</g:link></li>
+                        controller="contact" action="index"><g:message code="main.navigation.contact_us" /></g:link></li>
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
                     <li>
-                        <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> Log in</a>
+                        <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}/"><i class="glyphicon glyphicon-user"></i> <g:message code="main.navigation.log_in" /></a>
                     </li>
                 </cl:isNotLoggedIn>
                 <cl:isLoggedIn>
@@ -84,7 +86,7 @@
                     </li>
                     <cl:ifAdmin>
                         <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
-                            <a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> Admin</a>
+                            <a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> <g:message code="main.navigation.admin" /></a>
                         </li>
                     </cl:ifAdmin>
                 </cl:isLoggedIn>
@@ -150,7 +152,7 @@
 
 <section id="logos-institutions">
     <div class="container">
-        <h2 class="heading">Institutions using DigiVol</h2>
+        <h2 class="heading"><g:message code="main.institutions_using_digivol" /></h2>
 
         <div class="row">
 
@@ -187,42 +189,45 @@
 
             <div class="row">
                 <div class="col-sm-3">
-                    <h3>Expeditions</h3>
+                    <h3><g:message code="main.navigation.expeditions" /></h3>
                     <ul>
-                        <li><g:link controller="project" action="list">View all expeditions</g:link></li>
+                        <li><g:link controller="project" action="list"><g:message code="main.view_expeditions" /></g:link></li>
                     </ul>
                 </div>
 
                 <div class="col-sm-3">
-                    <h3>About DigiVol</h3>
+                    <h3><g:message code="main.about_digivol" /></h3>
                     <ul>
-                        <li><g:link controller="about" fragment="what-is-digivol">What is DigiVol</g:link></li>
-                        <li><g:link controller="about" fragment="why-capture-this-data">Why capture this data</g:link></li>
-                        <li><g:link controller="about" fragment="submit-an-expedition">Submit an expedition</g:link></li>
-                        <li><g:link controller="about" fragment="useful-references">Useful references</g:link></li>
+                        <li><g:link controller="about" fragment="what-is-digivol"><g:message code="main.about_digivol.what" /></g:link></li>
+                        <li><g:link controller="about" fragment="why-capture-this-data"><g:message code="main.about_digivol.why" /></g:link></li>
+                        <li><g:link controller="about" fragment="submit-an-expedition"><g:message code="main.about_digivol.submit" /></g:link></li>
+                        <li><g:link controller="about" fragment="useful-references"><g:message code="main.about_digivol.references" /></g:link></li>
                     </ul>
                 </div>
 
                 <div class="col-sm-3">
-                    <h3>How can I volunteer</h3>
+                    <h3><g:message code="main.about_digivol.how_can_i_volunteer" /></h3>
                     <ul>
-                        <li><g:link controller="about" fragment="registering">Become an Online Volunteer</g:link></li>
-                        <li><g:link controller="about" fragment="transcribing">How to get started</g:link></li>
-                        <li><g:link controller="about" fragment="what-happens-next">What happens next</g:link></li>
-                        <li><g:link controller="about" fragment="examples">Examples</g:link></li>
+                        <li><g:link controller="about" fragment="registering"><g:message code="main.about_digivol.how_can_i_volunteer.become" /></g:link></li>
+                        <li><g:link controller="about" fragment="transcribing"><g:message code="main.about_digivol.how_can_i_volunteer.how" /></g:link></li>
+                        <li><g:link controller="about" fragment="what-happens-next"><g:message code="main.about_digivol.how_can_i_volunteer.what" /></g:link></li>
+                        <li><g:link controller="about" fragment="examples"><g:message code="main.about_digivol.how_can_i_volunteer.examples" /></g:link></li>
                     </ul>
                 </div>
 
                 <div class="col-sm-3">
-                    <h3>Contact us</h3>
+                    <h3><g:message code="main.about_digivol.contact_us" /></h3>
 
-                    <p>Get help in using DIGIVOL and reporting issues</p>
+                    <p><g:message code="main.about_digivol.contact_us.description" /></p>
 
                     <p class="address">
-                        <a href="mailto:DigiVol@austmus.gov.au">DigiVol@austmus.gov.au</a><br/>
-                        (02) 9320 6429<br/>
-                        Australian Museum<br/>
-                        Sydney NSW 2010
+                        <a href="mailto:${message(code: "main.about_digivol.contact_us.email")}"><g:message code="main.about_digivol.contact_us.email" /></a>
+                        <br/>
+                        <g:message code="main.about_digivol.contact_us.address1" />
+                        <br/>
+                        <g:message code="main.about_digivol.contact_us.address2" />
+                        <br/>
+                        <g:message code="main.about_digivol.contact_us.address3" />
                     </p>
                 </div>
             </div>

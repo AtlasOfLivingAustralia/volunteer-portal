@@ -45,9 +45,9 @@
 
         <div class="buttons">
             <span class="button"><g:actionSubmit class="submit" action="upload"
-                                                 value="${message(code: 'default.button.submit.label', default: 'Submit')}"/></span>
+                                                 value="${message(code: 'default.submit', default: 'Submit')}"/></span>
             <span class="button"><g:actionSubmit class="cancel" action="list"
-                                                 value="${message(code: 'default.button.cancel.label', default: 'Cancel')}"/></span>
+                                                 value="${message(code: 'default.cancel', default: 'Cancel')}"/></span>
         </div>
     </g:form>
 </div>

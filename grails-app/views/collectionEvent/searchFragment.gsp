@@ -28,7 +28,7 @@
 <div id="toolContentHeader">
     <div class="row-fluid">
         <div class="span2">
-            Collector(s)
+            <g:message code="collectionEvent.search.collectors"/>
         </div>
 
         <g:each in="${collectors}" var="collector" status="i">
@@ -38,13 +38,13 @@
         </g:each>
 
         <div class="span2">
-            <button class="btn btn-small btn-primary span12" id="event_search_button">Search</button>
+            <button class="btn btn-small btn-primary span12" id="event_search_button"><g:message code="collectionEvent.search.label"/></button>
         </div>
     </div>
 
     <div class="row-fluid">
         <div class="span2">
-            Event date
+            <g:message code="collectionEvent.search.event_date"/>
         </div>
 
         <div class="span2">
@@ -52,7 +52,7 @@
         </div>
 
         <div class="span2">
-            Locality
+            <g:message code="collectionEvent.search.locality"/>
         </div>
 
         <div class="span3">
@@ -62,7 +62,7 @@
         <div class="span3">
             <label class="checkbox" for="expandedSearch">
                 <g:checkBox name="expandedSearch" checked="true" value="checked" id="expandedSearch"/>
-                Use expanded search
+                <g:message code="collectionEvent.search.use_expanded"/>
             </label>
 
             <div style="text-align: center">

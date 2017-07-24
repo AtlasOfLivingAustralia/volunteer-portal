@@ -23,8 +23,6 @@ class ProjectController {
                              archive: "POST",
                              wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
-    static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
-
     static final LABEL_COLOURS = ["label-success", "label-warning", "label-danger", "label-info", "label-primary", "label-default"]
     public static final int MAX_BACKGROUND_SIZE = 512 * 1024
 
@@ -166,7 +164,7 @@ class ProjectController {
             render taskListFields as JSON
         } else {
             // no project found
-            render("No project found for id: " + params.id) as JSON
+            render(message(code: 'project.no_project_found') + params.id) as JSON
         }
     }
 
@@ -302,7 +300,7 @@ class ProjectController {
 
         def projectSummaryList = projectService.getProjectSummaryList(params)
 
-        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < 20 ? message(code: "project.numbers."+projectSummaryList.numberOfIncompleteProjects) : "" + projectSummaryList.numberOfIncompleteProjects;
 
         session.expeditionSort = params.sort;
 
@@ -586,7 +584,7 @@ class ProjectController {
             projectInstance.properties = params
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
-                flash.message = "Expedition updated"
+                flash.message = message(code: "project.backend.expedition_updated")
                 return true
             }
         }
@@ -762,7 +760,7 @@ class ProjectController {
                 projectInstance.mapInitLatitude = latitude
                 projectInstance.mapInitLongitude = longitude
             }
-            flash.message = "Map settings updated"
+            flash.message = message(code:"project.backend.map_settings_updated")
         }
         redirect(action:'editMapSettings', id:projectInstance?.id)
     }
@@ -928,7 +926,7 @@ class ProjectController {
                 } else {
                     if (params.type == 'backgroundImageUrl') {
                         if (f.size > MAX_BACKGROUND_SIZE) {
-                            errors << "Background image must be less than 512KB"
+                            errors << message(code: 'project.backend.background_image.size', args: [MAX_BACKGROUND_SIZE/1024])
                             errorStatus = SC_REQUEST_ENTITY_TOO_LARGE
                         } else {
                             projectStagingService.uploadProjectBackgroundImage(project, f)
@@ -940,7 +938,7 @@ class ProjectController {
                     }
                 }
             } else {
-                errors << "No file provided?!"
+                errors << message(code: 'project.backend.background_image.missing')
             }
         }
 
@@ -974,7 +972,7 @@ class ProjectController {
 
     def wizardCreate(String id) {
         if (!userService.isAdmin()) {
-            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            response.sendError(SC_FORBIDDEN, message(code: 'project.backend.permssion'))
         }
         try {
             def body = request.getJSON()
@@ -999,7 +997,7 @@ class ProjectController {
     def archiveList() {
         final sw = Stopwatch.createStarted()
         if (!userService.isAdmin()) {
-            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            response.sendError(SC_FORBIDDEN, message(code: 'project.backend.permssion'))
             return
         }
 
@@ -1052,7 +1050,7 @@ class ProjectController {
 
     def archive(Project project) {
         if (!userService.isAdmin()) {
-            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            response.sendError(SC_FORBIDDEN, message(code: 'project.backend.permssion'))
             return
         }
 
@@ -1069,7 +1067,7 @@ class ProjectController {
 
     def downloadImageArchive(Project project) {
         if (!userService.isAdmin()) {
-            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            response.sendError(SC_FORBIDDEN, message(code: 'project.backend.permssion'))
             return
         }
         response.contentType = 'application/zip'
@@ -1103,7 +1101,7 @@ class ProjectController {
         }
 
         if (!project) {
-            response.sendError(404, "project not found")
+            response.sendError(404, message(code: 'project.backend.project_not_found'))
             return
         }
 

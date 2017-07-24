@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
         <asset:stylesheet src="cameratrap"/>
     </head>
     <content tag="templateView">
@@ -24,7 +24,7 @@
                                     <div class="controls" style="margin-left: initial; display: inline-block;">
                                         <label class="checkbox" for="recordValues.0.interesting">
                                             <g:checkBox name="recordValues.0.interesting"
-                                                        checked="${recordValues[0]?.interesting == 'true'}"/> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting')}
+                                                        checked="${recordValues[0]?.interesting == 'true'}"/> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
                                         </label>
                                     </div>
                                 </div>
@@ -80,25 +80,23 @@
 
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <p><strong><g:message code="cameratrap.step1.description" default="Are there any animals visible in the highlighted image?" /></strong></p>
+                                        <p><strong><g:message code="transcribe.templateViews.cameratrapTranscribe.are_there_animals_visible"/></strong></p>
                                     </div>
 
                                     <div class="col-sm-12">
                                         <div id="ct-animals-question">
                                             <label class="radio-inline">
                                                 <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible"
-                                                       value="yes" ${'yes' == step1 ? 'checked' : ''}>Yes
+                                                       value="yes" ${'yes' == step1 ? 'checked' : ''}><g:message code="default.yes"/>
                                             </label>
                                             <label class="radio-inline">
                                                 <input type="radio" name="recordValues.0.animalsVisible"
-                                                       value="no" ${'no' == step1 ? 'checked' : ''}>No
+                                                       value="no" ${'no' == step1 ? 'checked' : ''}><g:message code="default.no"/>
                                             </label>
-                                            <g:if test="${'unsure' == step1}">
-                                                <label class="radio-inline">
-                                                    <input type="radio" name="recordValues.0.animalsVisible" readonly
-                                                           value="unsure" ${'unsure' == step1 ? 'checked' : ''}>Unsure
-                                                </label>
-                                            </g:if>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="recordValues.0.animalsVisible"
+                                                       value="unsure" ${'unsure' == step1 ? 'checked' : ''}><g:message code="transcribe.templateViews.cameratrapTranscribe.unsure"/>
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -109,7 +107,7 @@
 
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <p><strong><g:message code="cameratrap.step2.description" default="Select animals that are present in the highlighted image" /></strong></p>
+                                        <p><strong><g:message code="transcribe.templateViews.cameratrapTranscribe.select_animals_that_are_present"/></strong></p>
                                     </div>
                                 </div>
 
@@ -118,28 +116,28 @@
                                         <div class="btn-toolbar">
                                             <div id="ct-animals-btn-group" class="btn-group btn-group-sm" data-toggle="buttons">
                                                 <label class="btn btn-default active">
-                                                    <input type="radio" name="options" id="ct-btn-all" class="btn-animal-filter" autocomplete="off" data-filter-tag="" checked>All
+                                                    <input type="radio" name="options" id="ct-btn-all" class="btn-animal-filter" autocomplete="off" data-filter-tag="" checked><g:message code="transcribe.templateViews.cameratrapTranscribe.all"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-sm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="small mammals (<500g)">Small Mammals
+                                                    <input type="radio" name="options" id="ct-sm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="small mammals (<500g)"><g:message code="transcribe.templateViews.cameratrapTranscribe.small_mammals"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-mm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="medium mammals (0.5-5kg)">Medium Mammals
+                                                    <input type="radio" name="options" id="ct-mm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="medium mammals (0.5-5kg)"><g:message code="transcribe.templateViews.cameratrapTranscribe.medium_mammals"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-lm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="large mammals (>5kg)">Large Mammals
+                                                    <input type="radio" name="options" id="ct-lm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="large mammals (>5kg)"><g:message code="transcribe.templateViews.cameratrapTranscribe.large_mammals"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-reptiles-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="reptiles">Reptiles
+                                                    <input type="radio" name="options" id="ct-reptiles-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="reptiles"><g:message code="transcribe.templateViews.cameratrapTranscribe.reptiles"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-birds-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="birds">Birds
+                                                    <input type="radio" name="options" id="ct-birds-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="birds"><g:message code="transcribe.templateViews.cameratrapTranscribe.birds"/>
                                                 </label>
                                             </div>
 
                                             <div class="btn-group btn-group-sm">
                                                 <button type="button" id="ct-other-btn" class="btn btn-default btn-sm"
-                                                        data-toggle="button">Other</button>
+                                                        data-toggle="button"><g:message code="transcribe.templateViews.cameratrapTranscribe.other"/></button>
                                             </div>
 
                                             <div class="btn-group btn-group-sm" style="height: 28px">
@@ -196,7 +194,13 @@
                                                 </div>
 
                                                 <g:set var="placeholders"
-                                                       value="${['Quokka (Setonix brachyurus)', 'Short-beaked Echidna (Tachyglossus aculeatus)', 'Western Quoll (Dasyurus geoffroii)', 'Platypus (Ornithorhynchus anatinus)', 'Forest kingfisher (Todiramphus macleayii)', 'Sand goanna (Varanus gouldii )', 'Central bearded dragon (Pogona vitticeps)']}"/>
+                                                       value="${[message(code: 'transcribe.templateViews.cameratrapTranscribe.placeholders.1'),
+                                                                 message(code: 'transcribe.templateViews.cameratrapTranscribe.placeholders.2'),
+                                                                 message(code: 'transcribe.templateViews.cameratrapTranscribe.placeholders.3'),
+                                                                 message(code: 'transcribe.templateViews.cameratrapTranscribe.placeholders.4'),
+                                                                 message(code: 'transcribe.templateViews.cameratrapTranscribe.placeholders.5'),
+                                                                 message(code: 'transcribe.templateViews.cameratrapTranscribe.placeholders.6'),
+                                                                 message(code: 'transcribe.templateViews.cameratrapTranscribe.placeholders.7')]}"/>
                                                 ${Collections.shuffle(placeholders)}
                                                 <g:set var="unlisteds"
                                                        value="${recordValues.findAll { it.value?.unlisted != null }.findAll {
@@ -206,7 +210,7 @@
                                                        }}"/>
                                                 <g:each in="${unlisteds}" var="u" status="s">
                                                     <div class="form-group">
-                                                        <label class="col-sm-2 control-label" for="recordValues.${s}.unlisted">Species name</label>
+                                                        <label class="col-sm-2 control-label" for="recordValues.${s}.unlisted"><g:message code="transcribe.templateViews.cameratrapTranscribe.species_name"/></label>
 
                                                         <div class="col-sm-10">
                                                             <g:textField class="speciesName form-control autocomplete"
@@ -218,7 +222,7 @@
                                                     </div>
                                                 </g:each>
                                                 <div class="form-group">
-                                                    <label class="col-sm-2 control-label" for="recordValues.${unlisteds.size()}.unlisted">Species name</label>
+                                                    <label class="col-sm-2 control-label" for="recordValues.${unlisteds.size()}.unlisted"><g:message code="transcribe.templateViews.cameratrapTranscribe.species_name"/></label>
 
                                                     <div class="col-sm-10">
                                                         <g:textField class="speciesName form-control autocomplete"
@@ -237,8 +241,8 @@
                             <div id="ct-animals-summary" class="ct-item ${validator ? 'active' : ''}">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.
-                                        <p><strong>Selected animals</strong></p>
+                                        <p><strong><g:message code="transcribe.templateViews.cameratrapTranscribe.animals_visible"/></strong> <span id="ct-animals-question-summary">${step1}</span>.
+                                        <p><strong><g:message code="transcribe.templateViews.cameratrapTranscribe.selected_animals"/></strong></p>
                                     </div>
 
                                     <div class="col-sm-12">
@@ -305,7 +309,7 @@
 
         <script id="new-unlisted-template" type="x-tmpl-mustache">
             <div class="form-group">
-                <label class="col-sm-2 control-label" for="recordValues.{{index}}.unlisted">Species name</label>
+                <label class="col-sm-2 control-label" for="recordValues.{{index}}.unlisted"><g:message code="transcribe.templateViews.cameratrapTranscribe.species_name"/></label>
                 <div class="col-sm-10">
                     <input type="text" class="speciesName form-control autocomplete" data-picklist-id="${template.viewParams.animalsPicklistId}" id="recordValues.{{index}}.unlisted" name="recordValues.{{index}}.unlisted" placeholder="{{placeholder}}" />
                 </div>

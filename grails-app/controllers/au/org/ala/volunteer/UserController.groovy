@@ -241,13 +241,13 @@ class UserController {
 
             def status = ""
             if (t.isValid == true) {
-                status = "Validated"
+                status = message(code: 'user.validated')
             } else if (t.isValid == false) {
-                status = "Invalidated"
+                status = message(code: 'user.invalidated')
             } else if (t.fullyTranscribedBy?.length() > 0) {
-                status = "Transcribed"
+                status = message(code: 'user.transcribed')
             } else {
-                status = "Saved"
+                status = message(code: 'user.saved')
             }
 
             taskRow.status = status
@@ -347,7 +347,7 @@ class UserController {
         def currentUser = userService.currentUserId
 
         if (!userInstance) {
-            flash.message = "Missing user id, or user not found!"
+            flash.message = message(code: 'user.missing_user_id')
             redirect(action: 'list')
             return
         }
@@ -404,7 +404,7 @@ class UserController {
 
 
         if (!userService.isAdmin()) {
-            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
+            flash.message = message(code: 'user.no_permission_to_edit_user_page')
             redirect(action: "show", id: userInstance.id)
 
         }
@@ -473,7 +473,7 @@ class UserController {
         }
 
         if (!userService.isAdmin()) {
-            flash.message = "You have insufficient priviliges to manage the roles for this user!"
+            flash.message = message(code: 'user.insufficient_privilleges_to_manage_roles')
             redirect(action: "show")
         }
 
@@ -484,13 +484,13 @@ class UserController {
         def userInstance = User.get(params.id)
 
         if (!userInstance) {
-            flash.message = "User not found!"
+            flash.message = message(code: 'user.user_not_found')
             redirect(action: "list")
             return
         }
 
         if (!userService.isAdmin()) {
-            flash.message = "You have insufficient priviliges to manage the roles for this user!"
+            flash.message = message(code: 'user.insufficient_privilleges_to_manage_roles')
             redirect(action: "show")
             return
         }

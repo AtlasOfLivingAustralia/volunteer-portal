@@ -6,7 +6,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
 <head>
-    <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+    <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     <asset:stylesheet src="slickgrid"/>
     <style>
     #dataGrid, #dataGrid div {
@@ -61,7 +61,7 @@
 
 <g:if test="${!entriesField}">
     <div class="alert alert-danger">
-        You need to define the sightingCount field in this template to hold the number rows in the grid
+        <g:message code="transcribe.templateViews.speadSheet.you_need_to_define_sightingCount"/>
     </div>
 </g:if>
 

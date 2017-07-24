@@ -7,7 +7,7 @@
 <body class="continer">
 
 
-<content tag="pageTitle">Map</content>
+<content tag="pageTitle"><g:message code="project.map_settings.map"/></content>
 
 <content tag="adminButtonBar">
 </content>
@@ -23,7 +23,7 @@
 
     <div class="form-group">
         <label for="showMap" class="checkbox col-md-6">
-            Show the map on the expedition landing page
+            <g:message code="project.map_settings.map.show_on_landing_page"/>
         </label>
         <div class="col-md-6">
             <g:checkBox name="showMap"
@@ -32,7 +32,7 @@
     </div>
 
     <div class="alert alert-warning">
-        Position the map to how you would like it to appear on the project start page
+        <g:message code="project.map_settings.map.position_the_map"/>
     </div>
 
     <div class="row">
@@ -44,21 +44,21 @@
         <div class="col-md-6">
             <div class="row">
                 <div class="form-group">
-                    <label class="control-label col-md-4" for="mapZoomLevel">Zoom</label>
+                    <label class="control-label col-md-4" for="mapZoomLevel"><g:message code="default.zoom.label"/></label>
                     <div class="col-md-6">
                         <g:textField name="mapZoomLevel" class="form-control" value="${initZoom}"/>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label col-md-4" for="mapLatitude">Center Latitude:</label>
+                    <label class="control-label col-md-4" for="mapLatitude"><g:message code="project.map_settings.map.center_latitude"/>:</label>
                     <div class="col-md-6">
                         <g:textField name="mapLatitude" class="form-control" value="${initLatitude}"/>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label col-md-4" for="mapLongitude">Center Longitude:</label>
+                    <label class="control-label col-md-4" for="mapLongitude"><g:message code="project.map_settings.map.center_longitude"/>:</label>
                     <div class="col-md-6">
                         <g:textField name="mapLongitude" class="form-control" value="${initLongitude}"/>
                     </div>
@@ -88,8 +88,8 @@
 
         $('#showMap').bootstrapSwitch({
             size: "small",
-            onText: "yes",
-            offText: "no"
+            onText: "${message(code:'default.yes')}",
+            offText: "${message(code:'default.no')}"
         });
 
         bvp.bindTooltips();

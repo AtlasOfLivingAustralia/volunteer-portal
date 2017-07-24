@@ -13,7 +13,7 @@
 <body class="digivol">
 
     <cl:headerContent title="${message(code:'default.projectlist.label', default: "Volunteer for a virtual expedition")}" selectedNavItem="expeditions">
-        ${numberOfUncompletedProjects} expeditions need your help. Join now!
+        <g:message code="project.projectlist.description" args="${ [numberOfUncompletedProjects] }" />
     </cl:headerContent>
 
     <section id="main-content">
@@ -24,16 +24,16 @@
                         <div class="col-sm-6">
                             <h2 class="heading">
                                 <g:if test="${params.q}">
-                                    Expeditions matching:
+                                    <g:message code="project.projectlist.expeditions_matching"/>:
                                     <span class="tag currentFilter">
                                         <span>${params.q.replaceAll('tag:','')}</span>
                                         <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    All Expeditions
+                                    <g:message code="project.projectlist.all_expeditions"/>
                                 </g:else>
-                                <div class="subheading">Showing <g:formatNumber number="${filteredProjectsCount}" type="number"/> expeditions</div>
+                                <div class="subheading"><g:message code="project.projectlist.showing_expeditions" args="${ [filteredProjectsCount] }" /></div>
                             </h2>
                         </div>
 
@@ -46,7 +46,7 @@
 
                                 <div class="custom-search-input body">
                                     <div class="input-group">
-                                        <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
+                                        <input type="text" id="searchbox" class="form-control input-lg" placeholder="${message(code: 'main.navigation.search.placeholder')}"/>
                                         <span class="input-group-btn">
                                             <button id="btnSearch" class="btn btn-info btn-lg" type="button">
                                                 <i class="glyphicon glyphicon-search"></i>
@@ -68,7 +68,7 @@
                             <div class="btn-group pull-right hide" style="padding-right: 10px">
                                 <g:each in="${ProjectStatusFilterType.values()}" var="mode">
                                     <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
-                                    <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                                    <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${message(code: mode.i18nLabel)}</a>
                                 </g:each>
                             </div>
 
@@ -76,7 +76,7 @@
                                 <div class="btn-group pull-right" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
                                     <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                         <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
-                                        <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                                        <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${message(code: mode.i18nLabel)}</a>
                                     </g:each>
                                 </div>
                             </cl:ifAdmin>

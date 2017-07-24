@@ -2,20 +2,20 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
     <content tag="templateView">
 <div class="row">
     <div class="col-md-12">
         <span id="journalPageButtons">
             <button type="button" class="btn btn-small" id="showPreviousJournalPage"
-                    title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
-                    src="left_arrow.png" /> show previous journal page</button>
+                    title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${prevTask ? '' : 'disabled="true"'}><asset:image
+                    src="left_arrow.png" /> </button>
             <button type="button" class="btn btn-small" id="showNextJournalPage"
-                    title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page
+                    title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${nextTask ? '' : 'disabled="true"'}><g:message code="transcribe.templateViews.all.show_next_journal_page"/>
                     <asset:image src="right_arrow.png" /></button>
             <button type="button" class="btn btn-small" id="rotateImage"
-                    title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
+                    title="${message(code: 'transcribe.templateViews.all.rotate_image')}"><g:message code="transcribe.templateViews.all.rotate"/>&nbsp;<asset:image
                     style="vertical-align: middle; margin: 0 !important;"
                     src="rotate.png" /></button>
         </span>
@@ -38,7 +38,7 @@
        value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
 <g:if test="${isPreview && !entriesField}">
     <div class="alert alert-danger">
-        observationDiaryTranscribe view requires that you configure 'sightingCount' as a defined field for this template - it can be hidden.
+        <g:message code="transcribe.templateViews.observationDiaryTranscribe.requirements"/>
     </div>
 </g:if>
 <g:set var="fieldList"
@@ -47,7 +47,7 @@
 
 <g:if test="${isPreview && !fieldList}">
     <div class="alert alert-danger">
-        This template view requires at least one field configured in the <strong>dataset</strong> category!
+        <g:message code="transcribe.templateViews.observationDiaryTranscribe.this_template_requires_at_least"/>
     </div>
 </g:if>
 
@@ -55,8 +55,8 @@
     <div class="well well-small transcribeSection">
         <div class="row transcribeSectionHeader">
             <div class="col-md-12">
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Enter the month from the top of the page</span>
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.observationDiaryTranscribe.enter_the_month"/></span>
+                <a style="float:right" class="closeSectionLink" href="#"><g:message code="transcribe.templateViews.all.shrink"/></a>
             </div>
         </div>
 
@@ -79,8 +79,8 @@
 <div class="well well-small transcribeSection">
     <div class="row transcribeSectionHeader">
         <div class="col-md-12">
-            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.observationDiaryTranscribe.transcribe_each_record_as_follows"/>
+                <a style="float:right" class="closeSectionLink" href="#"><g:message code="transcribe.templateViews.all.shrink"/></a>
         </div>
     </div>
 

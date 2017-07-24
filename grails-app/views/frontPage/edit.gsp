@@ -33,9 +33,9 @@
 
                             </div>
                             <div class="col-md-3">
-                                <button class="btn btn-default" id="btnFindProject">Find an expedition</button>
+                                <button class="btn btn-default" id="btnFindProject"><g:message code="front_page.find_an_expedition"/></button>
                                 <g:link class="btn btn-success" action="edit" controller="project"
-                                        id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
+                                        id="${frontPage.projectOfTheDay?.id}"><g:message code="front_page.edit_project"/></g:link>
                             </div>
                         </div>
 
@@ -79,7 +79,7 @@
                             <div class="col-md-6">
                                 <g:textArea class="form-control" rows="4" name="systemMessage"
                                                 value="${frontPage?.systemMessage}"/>
-                                <span class="help-block">(Displayed on every page)</span>
+                                <span class="help-block"><g:message code="front_page.displayed_on_every_page"/></span>
                             </div>
                         </div>
 
@@ -138,7 +138,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Hero Image</h3>
+            <h3 class="panel-title"><g:message code="frontPage.heroImage.label"/></h3>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -173,7 +173,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Institution using Digivol Logos</h3>
+            <h3 class="panel-title"><g:message code="front_page.institutions_using_digivol_logos"/></h3>
         </div>
         <div class="panel-body">
             <div class="row" id="logos">

@@ -26,9 +26,9 @@
     <vpf:forumNavItems topic="${topic}"/>
     <div class="buttonBar">
         <button class="btn btn-default" id="btnReturnToForum" class="button"><asset:image
-                src="left_arrow.png"/>&nbsp;Return to forum</button>
+                src="left_arrow.png"/>&nbsp;<g:message code="forum.return"/></button>
         <g:if test="${taskInstance}">
-            <button id="btnViewTask" class="btn btn-success">View Task</button>
+            <button id="btnViewTask" class="btn btn-success"><g:message code="forum.view_task"/></button>
         </g:if>
     </div>
 </cl:headerContent>
@@ -42,7 +42,7 @@
                         <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
                     </g:if>
                     <div class="alert alert-success">
-                        <g:checkBox id="chkWatchTopic" name="watchTopic" checked="${isWatched}"/>&nbsp; Watch this topic?
+                        <g:checkBox id="chkWatchTopic" name="watchTopic" checked="${isWatched}"/>&nbsp; <g:message code="forum.watch_this_topic"/>?
                     </div>
                     <vpf:topicMessagesTable topic="${topic}"/>
                 </div>
@@ -82,7 +82,7 @@
         $(".deleteMessageButton").click(function(e) {
             var messageId = $(this).parents("tr[messageId]").attr("messageId");
             if (messageId) {
-                if (confirm("Are you sure you wish to permanently delete this message?")) {
+                if (confirm("${message(code: 'forum.delete.confirmation')}")) {
                     window.location = "${createLink(action: 'deleteTopicMessage')}?messageId=" + messageId;
                 }
             }

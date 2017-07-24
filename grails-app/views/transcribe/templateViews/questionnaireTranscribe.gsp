@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
     <content tag="templateView">
         <div class="col-sm-6">
@@ -65,16 +65,16 @@
                     %{-- summary page last --}%
                         <div id="item-summary" class="item ${validator ? 'active' : ''}"
                              data-item-index="${fieldList.size()}">
-                            <legend>Data summary</legend>
+                            <legend><g:message code="transcribe.templateViews.questionnaireTranscribe.data_summary"/></legend>
                             <div class="col-xs-12"><p>
-                                Please confirm the following info
+                                <g:message code="transcribe.templateViews.questionnaireTranscribe.please_confirm_info"/>
                             </p></div>
                             <div class="col-xs-12">
                                 <table class="table table-striped confirmation-table">
                                     <thead>
                                     <tr>
-                                        <th class="col-xs-5">Category</th>
-                                        <th class="col-xs-7">Your choices</th>
+                                        <th class="col-xs-5"><g:message code="transcribe.templateViews.questionnaireTranscribe.category"/></th>
+                                        <th class="col-xs-7"><g:message code="transcribe.templateViews.questionnaireTranscribe.your_choice"/></th>
                                     </tr>
                                     </thead>
                                     <tbody id="tbody-answer-summary">
@@ -96,7 +96,7 @@
                 <div class="col-xs-12">
 
                     <div class="transcription-actions">
-                        <button id="carousel-control-right" type="button" class="btn btn-default pull-right btn-next qt-next">Next <i class="fa fa-chevron-right fa-sm"></i></button>
+                        <button id="carousel-control-right" type="button" class="btn btn-default pull-right btn-next qt-next"><g:message code="default.next"/> <i class="fa fa-chevron-right fa-sm"></i></button>
                         <g:if test="${validator}">
                             <div class="btn-group pull-right">
                                 <button type="button" id="btnValidate" class="btn btn-default btn-next bvp-submit-button"><i
@@ -108,10 +108,10 @@
                             </div>
                         </g:if>
                         <g:else>
-                            <button id="btnSave" type="button" class="btn btn-default pull-right btn-next bvp-submit-button" style="display: none">Submit <i class="fa fa-chevron-right fa-sm"></i></button>
+                            <button id="btnSave" type="button" class="btn btn-default pull-right btn-next bvp-submit-button" style="display: none"><g:message code="default.submit"/> <i class="fa fa-chevron-right fa-sm"></i></button>
                         </g:else>
-                        <button id="btnSavePartial" type="button" class="btn btn-default pull-right">Save <i class="fa fa-check fa-sm"></i></button>
-                        <button type="button" class="btn btn-default pull-left qt-previous"><i class="fa fa-chevron-left fa-sm"></i> Back</button>
+                        <button id="btnSavePartial" type="button" class="btn btn-default pull-right"> <i class="fa fa-check fa-sm"></i></button>
+                        <button type="button" class="btn btn-default pull-left qt-previous"><i class="fa fa-chevron-left fa-sm"></i> <g:message code="default.back"/></button>
                     </div>
                 </div>
             </div>

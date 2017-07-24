@@ -73,7 +73,7 @@
     <cl:ifAdmin>
         </div>
         <div class="col-sm-2">
-            <a class="btn btn-primary" href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage</a>
+            <a class="btn btn-primary" href="${createLink(controller: 'institutionAdmin', action: 'index')}"><g:message code="institutionlist.manage" /></a>
     </cl:ifAdmin>
 </cl:headerContent>
 
@@ -85,16 +85,16 @@
                     <div class="col-sm-6">
                         <h2 class="heading">
                             <g:if test="${params.q}">
-                                Expeditions matching:
+                                <g:message code="institutionlist.institutions_matching" />:
                                 <span class="tag currentFilter">
                                     <span>${params.q.replaceAll('tag:','')}</span>
                                     <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
                                 </span>
                             </g:if>
                             <g:else>
-                                All institutions
+                                <g:message code="institutionlist.all_institutions" />
                             </g:else>
-                            <div class="subheading">Showing <g:formatNumber number="${totalInstitutions}" type="number"/> institutions</div>
+                            <div class="subheading"><g:message code="institutionlist.showing" /> <g:formatNumber number="${totalInstitutions}" type="number"/> <g:message code="institutionlist.institutions" /></div>
                         </h2>
                     </div>
 
@@ -102,7 +102,7 @@
                         <div class="card-filter">
                             <div class="custom-search-input body">
                                 <div class="input-group">
-                                    <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
+                                    <input type="text" id="searchbox" class="form-control input-lg" placeholder="${message(code: "main.navigation.search.placeholder")}"/>
                                     <span class="input-group-btn">
                                         <button id="btnSearch" class="btn btn-info btn-lg" type="button">
                                             <i class="glyphicon glyphicon-search"></i>
@@ -137,15 +137,15 @@
                                         <div class="row">
                                             <div class="col-xs-4">
                                                 <g:set var="projectCount" value="${projectCounts[inst] ?: 0}"/>
-                                                <strong>${projectCount}</strong> Expedition${projectCount == 1 ? '' : 's'}
+                                                <strong>${projectCount}</strong> ${projectCount == 1 ? message(code: "institutionlist.institution") : message(code: "institutionlist.institution_plural")}
                                             </div>
                                             <div class="col-xs-4">
                                                 <g:set var="volunteerCount" value="${projectVolunteers[inst.id] ?: 0}"/>
-                                                <strong>${volunteerCount}</strong> Volunteers
+                                                <strong>${volunteerCount}</strong> <g:message code="institutionlist.volunteers" />
                                             </div>
                                             <div class="col-xs-4">
                                                 <g:set var="taskCount" value="${taskCounts[inst.id] ?: 0}"/>
-                                                <strong>${taskCount}</strong> Tasks
+                                                <strong>${taskCount}</strong> <g:message code="institutionlist.tasks" />
                                             </div>
                                         </div>
                                     </div>

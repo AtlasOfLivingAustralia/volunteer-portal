@@ -29,6 +29,11 @@ apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
 apply plugin:"maven-publish"
 
+ext{
+    grails {
+        pathingJar = true
+    }
+}
 //ext {
 //    set "tomcat.version", "8.5.11" // use this to force a tomcat version
 //}
@@ -68,6 +73,7 @@ dependencies {
 //    runtime "com.h2database:h2"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
+    testCompile "junit:junit-dep:4.10"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
@@ -136,7 +142,8 @@ assets {
     minifyJs = true
     minifyCss = true
     includes = ['tinymce/**/*', 'compile/**/*.ttf', 'compile/**/*.otf', 'compile/**/*.eot', 'compile/**/*.svg', 'compile/**/*.woff', 'compile/**/*.woff2']
-    excludes = ['compile/*', 'compile/**/*']
+    excludes = ['compile/*', 'compile/**/*', 'volunteer-portal/**']
+	
 //    excludes = ['codemirror/**/*.html', "**/*.min.js", "**/*.min.css", "angular/*/i18n/**", "**/*.map"]
 //    includes = ["fonts/*", "node_modules/*", "lib/*"]
 //    excludes = ["**/*.min.js", "**/*"]

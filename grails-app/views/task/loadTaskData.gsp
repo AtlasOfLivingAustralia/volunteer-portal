@@ -24,19 +24,19 @@
                 <div class="col-md-12">
 
                     <div id="fieldDataSection" class="section">
-                        <h4>Upload a csv data file for field values</h4>
+                        <h4><g:message code="task.loadTaskData.upload_csv"/></h4>
                         <g:if test="${hasDataFile}">
-                            A data file has been uploaded for this project.
+                            <g:message code="task.loadTaskData.data_file_has_been_uploaded"/>
                             <a class="button"
-                               href="${createLink(action: 'clearTaskDataFile', params: [projectId: projectInstance.id])}">Clear data file</a>
+                               href="${createLink(action: 'clearTaskDataFile', params: [projectId: projectInstance.id])}"><g:message code="task.loadTaskData.clear_file"/></a>
                             &nbsp;
-                            <a href="${dataFileUrl}">View data file</a>
+                            <a href="${dataFileUrl}"><g:message code="task.loadTaskData.view_file"/></a>
                         </g:if>
                         <g:else>
                             <g:form controller="task" action="uploadTaskDataFile" method="post" enctype="multipart/form-data">
                                 <input type="file" name="dataFile" id="dataFile"  data-filename-placement="inside"/>
                                 <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-                                <g:submitButton class="btn btn-success" name="Upload Data File"/>
+                                <g:submitButton class="btn btn-success" name="${message(code:'task.loadTaskData.upload')}"/>
                             </g:form>
                         </g:else>
                     </div>
@@ -46,14 +46,14 @@
                     <div id="fieldValuesSection" class="section">
 
                         <h4>
-                            Task Data to load preview <a class="btn btn-primary"
-                                                         href="${createLink(action: 'processTaskDataLoad', params: [projectId: projectInstance.id])}">Load Task Data</a>
+                            <g:message code="task.loadTaskData.task_data_to_load"/> <a class="btn btn-primary"
+                                                         href="${createLink(action: 'processTaskDataLoad', params: [projectId: projectInstance.id])}"><g:message code="task.loadTaskData.load_task_data"/></a>
                         </h4>
                         <table class="table table-striped table-hover">
                             <thead>
                             <tr>
-                                <th style="text-align: left">Task Id</th>
-                                <th style="text-align: left">External Id</th>
+                                <th style="text-align: left"><g:message code="task.loadTaskData.task_id"/></th>
+                                <th style="text-align: left"><g:message code="task.loadTaskData.external_id"/></th>
                                 <g:each in="${columnNames}" var="columnName">
                                     <th style="text-align: left">${columnName}</th>
                                 </g:each>
@@ -72,7 +72,7 @@
                                             <a href="${createLink(controller: 'task', action: 'show', id: taskInstance.id)}">${taskInstance.id}</a>
                                         </g:if>
                                         <g:else>
-                                            No task found!
+                                            <g:message code="task.loadTaskData.no_task_found"/>
                                         </g:else>
                                     </td>
                                     <td>${externalId}</td>

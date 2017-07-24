@@ -91,7 +91,7 @@ class InstitutionAdminController {
 
         def projects = Project.findAllByInstitution(institutionInstance)
         if (projects) {
-            flash.message = "This institution has projects associated with it, and cannot be deleted at this time."
+            flash.message = message(code: "institutionAdmin.this_institution_has_associated_projects")
             redirect action: "index", method: "GET"
             return
         }
@@ -221,7 +221,7 @@ class InstitutionAdminController {
         def imageType = params.imageType ?: 'banner'
 
         if (!["banner", "logo", "main"].contains(imageType)) {
-            flash.message = "Missing or invalid imageType parameter: " + imageType
+            flash.message = message(code: "institutionAdmin.missing_or_invalid_imagetype_parameter") + imageType
             redirect(action: 'edit', id: institution.id)
             return
         }
@@ -233,7 +233,7 @@ class InstitutionAdminController {
                 if (f != null && f.size > 0) {
                     def allowedMimeTypes = ['image/jpeg', 'image/png']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = "Image must be one of: ${allowedMimeTypes}"
+                        flash.message = message(code: "institutionAdmin.image_must_be_one_of")+ allowedMimeTypes
                     } else {
                         boolean result
                         switch (imageType) {
@@ -251,16 +251,16 @@ class InstitutionAdminController {
                         }
 
                         if (result) {
-                            flash.message = "Image uploaded"
+                            flash.message = message(code: "institutionAdmin.image_uploaded")
                         } else {
-                            flash.message = "Failed to upload image. Unknown error!"
+                            flash.message = message(code: "institutionAdmin.failed_to_upload_image")
                         }
                     }
                 } else {
-                    flash.message = "Please select a file!"
+                    flash.message = message(code: "institutionAdmin.select_a_file")
                 }
             } else {
-                flash.message = "Form must be multipart file!"
+                flash.message = message(code: "institutionAdmin.form_must_be_multipart")
             }
         }
         redirect(action: 'edit', id: institution.id)

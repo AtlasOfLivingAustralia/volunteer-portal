@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title><g:message code="admin.label" default="Administration - Current users"/></title>
+    <title><g:message code="admin.title" default="Administration - Current users"/></title>
 </head>
 
 <body class="admin" data-ng-app="currentUsers">
@@ -21,21 +21,21 @@
         <div class="col-sm-12">
 
             <div data-ng-controller="CurrentUsersCtrl" class="panel panel-default ng-cloak" style="margin-top:1em">
-                <div class="panel-heading">Current User Activity</div>
+                <div class="panel-heading"><g:message code="default.currentUsers.label"/>Current User Activity</div>
 
                 <div class="panel-body">
-                    {{activities.length}} Users currently online
-                    <small>(Last refreshed {{ lastRefreshed | date:'medium' }})</small>
+                    {{activities.length}} <g:message code="admin.currentUsers" />
+                    <small>(<g:message code="admin.last_refreshed" /> {{ lastRefreshed | date:'medium' }})</small>
                 </div>
                 <table class="table table-condensed table-striped table-bordered table-hover">
                     <thead>
                     <tr>
-                        <th>User</th>
-                        <th>IP</th>
-                        <th>Open ES</th>
-                        <th>Started</th>
-                        <th>Last Activity</th>
-                        <th>Last Request</th>
+                        <th><g:message code="admin.user" /></th>
+                        <th><g:message code="admin.ip" /></th>
+                        <th><g:message code="admin.open_es" /></th>
+                        <th><g:message code="admin.started" /></th>
+                        <th><g:message code="admin.last_activity" /></th>
+                        <th><g:message code="admin.last_request" /></th>
                     </tr>
                     </thead>
                     <tbody>

@@ -74,12 +74,12 @@ class ProjectStagingService {
 
     def uploadProjectImage(NewProjectDescriptor project, MultipartFile file) {
         def destFile = new File(getProjectImagePath(project))
-        file.transferTo(destFile)
+        file.transferTo(destFile.absoluteFile)
     }
 
     def uploadProjectBackgroundImage(NewProjectDescriptor project, MultipartFile file) {
         def destFile = new File(getProjectBackgroundImagePath(project, file.contentType))
-        file.transferTo(destFile)
+        file.transferTo(destFile.absoluteFile)
     }
 
     def clearProjectImage(NewProjectDescriptor project) {

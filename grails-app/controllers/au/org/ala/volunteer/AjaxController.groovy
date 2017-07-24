@@ -94,7 +94,7 @@ class AjaxController {
         setNoCache()
 
         if (!userService.isAdmin()) {
-            render "Must be logged in as an administrator to use this service!"
+            render message(code: "ajax.must_be_logged_in_as_administrator")
             return
         }
 
@@ -326,7 +326,7 @@ class AjaxController {
                 response.writer.flush()
             }
         } else {
-            render([success: false, message:"Unable to retrieve project with id '${params.id}'"] as JSON)
+            render([success: false, message: message(code: "ajax.unable_to_retrieve_project_with_id", args: [params.id])] as JSON)
         }
     }
 
@@ -536,7 +536,7 @@ class AjaxController {
                     ipAddress: ipAddress
                 ],
                 transcriptionContent: [:],
-                discretionaryState: "Transcribed"
+                discretionaryState: message(code: "ajax.transcribed", args: [params.id])
             ]
         }
 
@@ -561,8 +561,8 @@ class AjaxController {
             mm = [:]
         }
 
-        final invalidState = 'N/A'
-        final defaultCountry = 'Australia' // we don't record country, so use this if we have a state, todo externalise
+        final invalidState = message(code: "ajax.invalid_state", args: [params.id])
+        final defaultCountry = message(code: "ajax.default_country", args: [params.id]) // we don't record country, so use this if we have a state, todo externalise
 
         items.each {
             def id = it.id

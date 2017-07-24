@@ -15,7 +15,7 @@ class LabelController {
             return true;
         }
 
-        flash.message = "You do not have permission to view this page"
+        flash.message = message(code: 'admin.you_do_not_have_permission')
         redirect(uri:"/")
     }
 
@@ -87,7 +87,7 @@ class LabelController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.value])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'label.label', default: 'Label'), labelInstance.value])
                 redirect action: 'index'
             }
             '*' { respond labelInstance, [status: OK] }
@@ -105,7 +105,7 @@ class LabelController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'label.label', default: 'Label'), labelInstance.id])
                 redirect action: "index", method: "GET"
             }
             '*' { render status: NO_CONTENT }

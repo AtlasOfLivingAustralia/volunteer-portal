@@ -47,7 +47,7 @@
 
     <div>
         <g:if test="${sequenceNumber >= 0}">
-            <span>Image sequence number: ${sequenceNumber}</span>
+            <span><g:message code="task.showDetails.image_sequence_number"/> ${sequenceNumber}</span>
         </g:if>
     </div>
 </cl:headerContent>
@@ -55,7 +55,7 @@
 <section id="main-content">
 <g:if test="${!taskInstance}">
     <div class="alert alert-danger">
-        Task is null!
+        <g:message code="task.showDetails.task_is_null"/>
     </div>
 </g:if>
 <g:else>
@@ -70,12 +70,12 @@
                         </div>
 
                         <a class="btn btn-default btn-small"
-                           href="${createLink(action: 'show', id: taskInstance?.id)}">Transcribe/Validate Task</a>
+                           href="${createLink(action: 'show', id: taskInstance?.id)}"><g:message code="task.showDetails.transcribe_validate"/></a>
                         <cl:ifAdmin>
                             <a class="btn btn-small btn-warning"
-                               href="${createLink(action: 'resetTranscribedStatus', id: taskInstance?.id)}">Reset transcribed status</a>
+                               href="${createLink(action: 'resetTranscribedStatus', id: taskInstance?.id)}"><g:message code="task.showDetails.reset_transcribed_status"/></a>
                             <a class="btn btn-small btn-warning"
-                               href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}">Reset validated status</a>
+                               href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}"><g:message code="task.showDetails.reset_validated_status"/></a>
                         </cl:ifAdmin>
                     </div>
                 </div>
@@ -85,86 +85,86 @@
                 <div class="panel panel-default">
                     <table class="table">
                         <tr>
-                            <td>ID</td>
+                            <td><g:message code="task.showDetails.ID"/></td>
                             <td>${taskInstance.id}</td>
                         </tr>
                         <tr>
-                            <td>External Id</td>
+                            <td><g:message code="task.showDetails.external_id"/></td>
                             <td>${taskInstance.externalIdentifier}</td>
                         </tr>
                         <tr>
-                            <td>Project</td>
+                            <td><g:message code="task.showDetails.project"/></td>
                             <td>${taskInstance.project?.name}</td>
                         </tr>
                         <tr>
-                            <td>Created Date</td>
+                            <td><g:message code="task.showDetails.created_date"/></td>
                             <td>${taskInstance.created?.format("yyyy-MM-dd HH:mm:ss")}</td>
                         </tr>
                         <tr>
-                            <td>Transcribed</td>
+                            <td><g:message code="task.showDetails.transcribed"/></td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyTranscribed}">
                                     ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyTranscribedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>
                                     <span class="muted">
-                                        Not transcribed
+                                        <g:message code="task.showDetails.not_transcribed"/>
                                     </span>
                                 </g:else>
                             </td>
                         </tr>
                         <tr>
 
-                            <td>Validated</td>
+                            <td><g:message code="task.showDetails.validated"/></td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyValidated}">
                                     ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>
                                     <span class="muted">
-                                        Not validated
+                                        <g:message code="task.showDetails.not_validated"/>
                                     </span>
                                 </g:else>
 
                             </td>
                         </tr>
                         <tr>
-                            <td>Date last updated</td>
+                            <td><g:message code="task.showDetails.date_last_updated"/></td>
                             <td>${taskInstance.dateLastUpdated?.format("yyyy-MM-dd HH:mm:ss")}</td>
                         </tr>
 
                         <tr>
-                            <td>External URL</td>
+                            <td><g:message code="task.showDetails.external_url"/></td>
                             <td>${taskInstance.externalUrl}</td>
                         </tr>
 
                         <tr>
-                            <td>Is Valid</td>
+                            <td><g:message code="task.showDetails.is_valid"/></td>
                             <td>
                                 <g:if test="${taskInstance.isValid != null}">
                                     ${taskInstance.isValid}
                                 </g:if>
                                 <g:else>
                                     <span class="muted">
-                                        Not set
+                                        <g:message code="task.showDetails.not_set"/>
                                     </span>
                                 </g:else>
 
                             </td>
                         </tr>
                         <tr>
-                            <td>Views</td>
+                            <td><g:message code="task.showDetails.views"/></td>
                             <td>
                                 <ul>
                                     <g:each in="${taskInstance.viewedTasks?.sort({ it.lastView })}" var="view">
-                                        <li>Viewed by <cl:userDisplayString
-                                                id="${view.userId}"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " times) " : ""} on ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
+                                        <li><g:message code="task.showDetails.viewed_by"/> <cl:userDisplayString
+                                                id="${view.userId}"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " "+message(code:'task.showDetails.times')+")" : ""} <g:message code="task.showDetails.on"/> ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
                                     </g:each>
                                 </ul>
                             </td>
                         </tr>
                         <tr>
-                            <td>Comments</td>
+                            <td><g:message code="task.showDetails.comments"/></td>
                             <td>
                                 <ul>
                                     <g:each in="${taskInstance.comments}" var="comment">
@@ -188,19 +188,19 @@
             <div class="col-sm-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3>Fields</h3>
+                        <h3><g:message code="task.showDetails.fields"/></h3>
                     </div>
                     <table class="table table-bordered table-condensed">
                     <thead>
-                    <g:sortableColumn property="id" title="Id"/>
-                    <g:sortableColumn property="name" title="Field"/>
-                    <g:sortableColumn property="recordIdx" title="Index"/>
-                    <g:sortableColumn property="superceded" title="Superceded"/>
-                    <g:sortableColumn property="value" title="Value"/>
-                    <g:sortableColumn property="created" title="Date created"/>
-                    <g:sortableColumn property="updated" title="Date updated"/>
-                    <g:sortableColumn property="transcribedByUserId" title="Transcriber"/>
-                    <g:sortableColumn property="validatedByUserId" title="Validator"/>
+                    <g:sortableColumn property="id" title="${message(code:'task.showDetails.id')}"/>
+                    <g:sortableColumn property="name" title="${message(code:'task.showDetails.field')}"/>
+                    <g:sortableColumn property="recordIdx" title="${message(code:'task.showDetails.index')}"/>
+                    <g:sortableColumn property="superceded" title="${message(code:'task.showDetails.superceded')}"/>
+                    <g:sortableColumn property="value" title="${message(code:'task.showDetails.value')}"/>
+                    <g:sortableColumn property="created" title="${message(code:'task.showDetails.date_created')}"/>
+                    <g:sortableColumn property="updated" title="${message(code:'task.showDetails.date_updated')}"/>
+                    <g:sortableColumn property="transcribedByUserId" title="${message(code:'task.showDetails.transcriber')}"/>
+                    <g:sortableColumn property="validatedByUserId" title="${message(code:'task.showDetails.validator')}"/>
                     </thead>
                     <tbody>
                     <g:each in="${fields}" var="field">

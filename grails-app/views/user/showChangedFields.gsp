@@ -6,9 +6,9 @@
     <table class="table table-striped table-hover">
         <thead>
             <tr>
-                <td style="color:#307991"><g:message code='What has changed?' /></td>
-                <td style="color:#307991"><g:message code="Previous Values"/></td>
-                <td style="color:#307991"><g:message code="Recent changes"/></td>
+                <td style="color:#307991"><g:message code='user.showChangedFields.whats_changed' /></td>
+                <td style="color:#307991"><g:message code="user.showChangedFields.previous_values"/></td>
+                <td style="color:#307991"><g:message code="user.showChangedFields.recent_changed"/></td>
             </tr>
             </thead>
         <tbody>

@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
 <content tag="templateView">
 <div class="container-fluid">
@@ -11,13 +11,13 @@
         <div class="span12">
             <span id="journalPageButtons">
                 <button type="button" class="btn btn-small" id="showPreviousJournalPage"
-                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
-                        src="left_arrow.png" /> show previous journal page</button>
+                        title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${prevTask ? '' : 'disabled="true"'}><asset:image
+                        src="left_arrow.png" /> <g:message code="transcribe.templateViews.all.show_previous_journal"/></button>
                 <button type="button" class="btn btn-small" id="showNextJournalPage"
-                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page <asset:image
+                        title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${nextTask ? '' : 'disabled="true"'}><g:message code="transcribe.templateViews.all.show_next_journal_page"/> <asset:image
                         src="right_arrow.png" /></button>
                 <button type="button" class="btn btn-small" id="rotateImage"
-                        title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
+                        title="${message(code: 'transcribe.templateViews.all.rotate_image')}"><g:message code="transcribe.templateViews.all.rotate"/>&nbsp;<asset:image
                         style="vertical-align: middle; margin: 0 !important;"
                         src="rotate.png" /></button>
             </span>
@@ -40,7 +40,7 @@
            value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.individualCount, template)}"/>
     <g:if test="${isPreview && !entriesField}">
         <div class="alert alert-danger">
-            This template view (journalTranscribe) requires the <strong>individualCount</strong> field to be configured.
+            <g:message code="transcribe.templateViews.journalTranscribe.requirements_description"/>
         </div>
     </g:if>
 
@@ -58,9 +58,9 @@
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                 <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
                 <a href="#" class="btn btn-default btn-xs fieldHelp" tooltipPosition="bottomLeft"
-                   title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
+                   title='${allTextField?.helpText ?: "${message(code: 'transcribe.templateViews.journalTranscribe.translate_all_text_as_it_appears')}"}'><i
                         class="fa fa-question help-container"></i></a>
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                <a style="float:right" class="closeSectionLink" href="#"><g:message code="transcribe.templateViews.journalTranscribe.shrink"/></a>
             </div>
         </div>
 
@@ -76,8 +76,8 @@
     <div class="well well-small transcribeSection">
         <div class="row-fluid transcribeSectionHeader">
             <div class="span12">
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />.  For each entry on the field note, please transcribe information into the following fields.</span>
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />.  <g:message code="transcribe.templateViews.journalTranscribe.for_each_entry_please_transcribe_information"/></span>
+                <a style="float:right" class="closeSectionLink" href="#"><g:message code="transcribe.templateViews.journalTranscribe.shrink"/></a>
             </div>
         </div>
 

@@ -12,7 +12,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-expedition"/>
-    <title><cl:pageTitle title="${(projectInstance.name ?: 'Atlas of Living Australia') + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>
+    <title><cl:pageTitle title="${(projectInstance.name ?: message(code: "project.default.title")) + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
     <cl:googleMapsScript callback="onGmapsReady" if="${projectInstance.showMap}"/>
 
@@ -46,28 +46,28 @@
         </div>
         <div class="row">
             <div class="col-sm-8">
-                <h1>${projectInstance.name}<g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if><g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="project.inactive" /></span></small></g:if></h1>
+                <h1>${projectInstance.name}<g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="project.status.archived" /></span></small></g:if><g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="project.inactive" /></span></small></g:if></h1>
                 <div id="projectDescription" class="hidden">
                     <p>${raw(projectInstance.description)}</p><!-- end description -->
-                    <a href="#" title="read more" class="readmore">Read more »</a>
+                    <a href="#" title="read more" class="readmore"><g:message code="project.read_more" /> »</a>
                 </div>
                 <div class="cta-primary">
                     <g:if test="${percentComplete < 100}">
-                        <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="glyphicon glyphicon-arrow-right"></span></a>
+                        <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button"><g:message code="project.get_started" /> <span class="glyphicon glyphicon-arrow-right"></span></a>
                         <g:if test="${projectInstance.tutorialLinks}">
-                            <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow ${oldClass} tutorial">View tutorial</a>
+                            <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow ${oldClass} tutorial"><g:message code="project.view_tutorial" /></a>
                             <div id="tutorialContent" class="hidden">${raw(projectInstance.tutorialLinks)}</div>
                         </g:if>
                         <g:else>
-                            <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-lg btn-hollow ${oldClass}  tutorial">View tutorial</a>
+                            <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-lg btn-hollow ${oldClass}  tutorial"><g:message code="project.view_tutorial" /></a>
                         </g:else>
                     </g:if>
                     <g:else>
-                        <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>
-                        <a href="${g.createLink(controller:"project", action:"list", params: [q: "tag:" + projectInstance.projectType?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} ">See similar expeditions</a>
+                        <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button"><g:message code="project.expedition_complete" /> <span class="glyphicon glyphicon-ok"></span></a>
+                        <a href="${g.createLink(controller:"project", action:"list", params: [q: "tag:" + projectInstance.projectType?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} "><g:message code="project.see_similar_expeditions" /></a>
                     </g:else>
                 </div>
-                <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
+                <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link"><g:message code="project.visit_project_forum" /> »</a>
             </div>
             <div class="col-sm-4">
                 <g:if test="${!bgImage}">
@@ -77,15 +77,15 @@
                     <cl:isLoggedIn>
                         <cl:ifAdmin>
                             <g:link class="btn btn-warning " controller="task"
-                                    action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
+                                    action="projectAdmin" id="${projectInstance.id}"><g:message code="project.admin" /></g:link>&nbsp;
                             <g:link class="btn btn-warning " controller="project"
                                     action="edit" id="${projectInstance.id}"><i
-                                    class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
+                                    class="icon-cog icon-white"></i> <g:message code="project.settings" /></g:link>&nbsp;
                         </cl:ifAdmin>
                     </cl:isLoggedIn>
                     <cl:ifValidator project="${projectInstance}">
                         <g:link class="btn btn-default btn-hollow grey" controller="task" action="projectAdmin"
-                                id="${projectInstance.id}">Validate tasks</g:link>
+                                id="${projectInstance.id}"><g:message code="project.validate_tasks" /></g:link>
                     </cl:ifValidator>
                 </div>
             </div>
@@ -108,11 +108,11 @@
                 </div>
 
                 <div class="col-sm-3 col-xs-6">
-                    <h3><b>${transcriberCount}</b>Volunteers</h3>
+                    <h3><b>${transcriberCount}</b><g:message code="project.volunteers" /></h3>
                 </div>
 
                 <div class="col-sm-3 col-xs-6">
-                    <h3><b>${projectInstance.tasks?.size()}</b>Tasks</h3>
+                    <h3><b>${projectInstance.tasks?.size()}</b><g:message code="project.tasks" /></h3>
                 </div>
             </div>
         </div>
@@ -125,8 +125,8 @@
             <div class="row">
                 <div class="col-sm-4">
                     <div class="map-header">
-                        <h2 class="heading">Record Locations</h2>
-                        <p>On this map you'll find all the location of transcribed records of the ${projectInstance.name} expedition</p>
+                        <h2 class="heading"><g:message code="project.record_locations" /></h2>
+                        <p><g:message code="project.record_locations.description" args="${ [projectInstance.name] }" /></p>
                     </div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <h2 class="heading">
-                            Expedition Volunteers
+                            <g:message code="project.expedition_volunteers" />
                         </h2>
                     </div>
                 </div>
@@ -170,7 +170,7 @@
                     </div>
                 </g:if>
                 <g:else>
-                    [ No transcriptions recorded ]
+                    <g:message code="project.no_transcriptions_recorded" />
                 </g:else>
             </div>
 
