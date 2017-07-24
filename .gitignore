@@ -32,3 +32,4 @@ node_modules
 .sass-cache
 .slcache
 /logs/
+/grails-app/assets/data
