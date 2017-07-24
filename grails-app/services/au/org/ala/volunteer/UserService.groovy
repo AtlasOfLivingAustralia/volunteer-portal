@@ -392,7 +392,20 @@ class UserService {
                 property 'displayName'
                 property 'email'
             }
-        }.collect { new UserDetails( displayName: it[1], userId: it[0], userName: it[2] ) }
+        }.collect {
+            String displayName = it[1]
+            def idx = displayName.indexOf(' ')
+            String firstName, lastName
+            if (i >= 0) {
+                firstName = displayName.substring(0, idx)
+                lastName = displayName.substring(idx + 1)
+            } else {
+                firstName = displayName
+                lastName = ''
+            }
+
+            new UserDetails( firstName: firstName, lastName: lastName, userId: it[0], userName: it[2] )
+        }
     }
 
     List<String> getEmailAddressesForIds(List<String> userIds) {
