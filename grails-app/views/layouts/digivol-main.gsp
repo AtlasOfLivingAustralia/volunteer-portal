@@ -11,6 +11,7 @@
     <title><g:message code="main.title" /></title>
 
     <asset:stylesheet href="digivol.css"/>
+    <asset:stylesheet href="doedat-custom.css"/>
     <g:render template="/layouts/jsUrls" />
     <g:layoutHead />
 
