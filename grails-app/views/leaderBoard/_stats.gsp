@@ -1,4 +1,3 @@
-%{--<r:require modules="digivol, digivol-stats, livestamp"/>--}%
 %{-- include CSS and JS assets in calling page --}%
 <g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>

@@ -131,9 +131,6 @@ grails:
                 - '**/*.min.js'
 
 ---
-headerAndFooter:
-    baseURL: 'http://www2.ala.org.au/commonui'
-
 ala:
     baseURL: "http://www.ala.org.au"
     skin: "digivol-main"

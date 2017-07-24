@@ -8,15 +8,12 @@
     <cl:addApplicationMetaTags/>
     <meta name="description" content="Atlas of Living Australia"/>
     <meta name="author" content="Atlas of Living Australia"/>
-    %{--<r:external dir="images/" file="favicon.ico"/>--}%
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
-    %{--<r:require module="digivol"/>--}%
     <asset:stylesheet href="digivol.css"/>
     <g:layoutHead/>
-    %{--<r:layoutResources/>--}%
 
     <g:render template="/layouts/commonCss" />
     <g:render template="/layouts/jsUrls" />

@@ -6,17 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
     <cl:addApplicationMetaTags/>
-    <meta name="description" content="Atlas of Living Australia"/>
-    <meta name="author" content="Atlas of Living Australia"/>
-    %{--<r:external dir="images/" file="favicon.ico"/>--}%
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
     <asset:stylesheet href="digivol.css"/>
-    %{--<r:require module="digivol"/>--}%
     <g:layoutHead/>
-    %{--<r:layoutResources/>--}%
 
     <g:render template="/layouts/commonCss" />
     <g:render template="/layouts/jsUrls" />
