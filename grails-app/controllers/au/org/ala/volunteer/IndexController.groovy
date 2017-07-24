@@ -69,7 +69,7 @@ class IndexController {
             transcriberCount = 0
         } else if (institution) {
             totalTasks = institutionService.countTasksForInstitution(institution)
-            completedTasks = institutionService.countValidatedTasksForInstitution(institution)
+            completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
             transcriberCount = institutionService.getTranscriberCount(institution)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
