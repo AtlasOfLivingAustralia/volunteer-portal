@@ -79,7 +79,7 @@
 
 <asset:script type='text/javascript'>
 
-    google.load("maps", "3.23", {other_params: ""});
+    google.load("maps", "3.23", {other_params: "key=${grailsApplication.config.google.maps.key}"});
 
     var map, infowindow;
     var mapListenerActive = true;

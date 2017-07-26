@@ -25,6 +25,7 @@
 </head>
 <body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app')}">
 <nav class="navbar navbar-default navbar-fixed-top">
+
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
@@ -39,22 +40,21 @@
 
         <div id="navbar" class="navbar-collapse collapse">
 
-            <div class="custom-search-input">
-                <g:form controller="project" action="list" method="GET" >
-                <div class="input-group">
-                    <g:textField name="q" class="form-control input-lg" placeholder="${message(code: "main.navigation.search.placeholder")}" />
-                    <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="button">
-                            <i class="glyphicon glyphicon-search"></i>
-                        </button>
-                    </span>
+            <div style="" class="navbar-wrapper">
+                <div class="custom-search-input" style="">
+                    <g:form controller="project" action="list" method="GET" >
+                    <div class="input-group">
+                        <g:textField name="q" class="form-control input-lg" placeholder="${message(code: "main.navigation.search.placeholder")}" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-lg" type="button">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                    </g:form>
                 </div>
-                </g:form>
-            </div>
 
-
-
-            <ul class="nav navbar-nav navbar-right">
+                <ul class="nav navbar-nav ">
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><g:link
                         uri="/"><g:message code="main.navigation.home" /></g:link>
                 </li>
@@ -68,6 +68,8 @@
                         controller="forum" action="index"><g:message code="main.navigation.forum" /></g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link
                         controller="contact" action="index"><g:message code="main.navigation.contact_us" /></g:link></li>
+
+
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
                     <li>
@@ -94,10 +96,24 @@
 
             <!-- Logged In Ends -->
 
+            <!-- Language selection starts -->
+                <!--<ul class="nav navbar-nav navbar-right" style="">-->
+                    <li class="dropdown language-selection ">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <span class="locale">${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}</span>
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </a>
+                    <g:render template="/layouts/languageDropdown"/>
+                    </li>
+                    <!--</ul>-->
+
+
             </ul>
+            </div>
         </div>
     </div>
 </nav>
+
 
 <g:if test="${!pageProperty(name: 'page.disableBreadcrumbs', default: false)}">
     <section id="breadcrumb">

@@ -26,11 +26,10 @@
                     <ul class="profile-links">
                         <li><a href="${grailsApplication.config.userDetails.url}/myprofile" class="" target="_blank"><g:message code="action.viewProfile" /></a></li>
                         <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span class="hidden unread-count label label-danger label-as-badge"></span></a></li>
-                        <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.security.cas.logoutUrl}", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class=""><message code="action.logout"/></message></a></li>
+                        <li><a href="${g.createLink(controller: 'logout', action: 'logout', params: [casUrl: "${grailsApplication.config.security.cas.logoutUrl}", appUrl: "${grailsApplication.config.grails.serverURL}"])}" class=""><g:message code="action.logout" /></a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </li>
 </ul>
-

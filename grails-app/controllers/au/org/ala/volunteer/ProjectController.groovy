@@ -760,6 +760,8 @@ class ProjectController {
                 projectInstance.mapInitLatitude = latitude
                 projectInstance.mapInitLongitude = longitude
             }
+            projectInstance.save(flush: true)
+
             flash.message = message(code:"project.backend.map_settings_updated")
         }
         redirect(action:'editMapSettings', id:projectInstance?.id)

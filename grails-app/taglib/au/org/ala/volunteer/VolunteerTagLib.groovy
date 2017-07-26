@@ -953,6 +953,9 @@ class VolunteerTagLib {
         } else {
             log.warn("No google.maps.key config settings was found.")
         }
+        if(org.springframework.context.i18n.LocaleContextHolder.getLocale()) {
+            opts['language'] = org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage();
+        }
 
         if (opts) {
             url += "?" + opts.collect { "$it.key=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")

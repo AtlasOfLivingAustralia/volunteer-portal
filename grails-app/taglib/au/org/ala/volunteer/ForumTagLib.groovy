@@ -102,8 +102,8 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            def message = markdownService.sanitize(reply.text ?: "")
-                            td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
+                            def markdownMessage= markdownService.sanitize(reply.text ?: "")
+                            td() { mkp.yieldUnescaped(markdownService.markdown(markdownMessage)) }
                             td(style:'text-align: right') {
                                 if (canEdit) {
 
@@ -116,14 +116,14 @@ class ForumTagLib {
                                     }
 
                                     button(class:'btn btn-default editMessageButton') {
-                                        mkp.yield(message(code: "default.edit"))
+                                        mkp.yield(message(code: "default.button.edit.label"))
                                     }
 
                                     // if this is the first message in the topic, you can't delete it
                                     // Only the first message as a null replyTo
                                     if (reply.replyTo != null) {
                                         button(class:'btn btn-danger deleteMessageButton') {
-                                            mkp.yield(message(code: "default.delete"))
+                                            mkp.yield(message(code: "default.button.delete.label"))
                                         }
                                     }
                                 }
@@ -267,7 +267,7 @@ class ForumTagLib {
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
                                         a(class: 'btn btn-sm btn-default', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
-                                            mkp.yield(message(code: "default.edit.label"))
+                                            mkp.yield(message(code: "default.button.edit.label"))
                                         }
                                         a(class: 'btn btn-sm btn-danger', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
                                             mkp.yield(message(code: "default.button.delete.label"))

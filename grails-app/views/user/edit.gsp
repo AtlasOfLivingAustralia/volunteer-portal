@@ -10,10 +10,10 @@
 <body class="admin">
 
 <cl:headerContent crumbLabel="${message(code: 'user.edit.edit_user')}"
-                  title="${message(code: 'user.edit.edit_user')} ${userInstance.userId} - ${userDetails.displayName} (${userDetails.userName})" selectedNavItem="bvpadmin">
+                  title="${message(code: 'user.edit.edit_user')} ${userInstance?.userId} - ${userDetails?.displayName} (${userDetails?.userName})" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = []
-        pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: userDetails.displayName]
+        pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance?.id), label: userDetails?.displayName?:"user"]
     %>
 </cl:headerContent>
 

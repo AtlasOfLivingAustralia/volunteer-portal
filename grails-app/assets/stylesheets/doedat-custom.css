@@ -6,3 +6,65 @@
     background-position-y: 28px;
     background-position-x: 67px;
 }
+/*.expedition-landing .dropdown-menu {
+    left: inherit;
+}*/
+.locale {
+    text-transform: uppercase;
+}
+@media (min-width: 1200px) {
+    .navbar-nav {
+        float: initial;
+        margin-left: auto;
+        width: initial;
+        margin-right: auto;
+    }
+/*    .navbar > .container .navbar-brand {
+        margin-left: 30px !important;
+    }*/
+    .nav > li {
+        display: inline-block;
+    }
+
+    .navbar-wrapper {
+        text-align: center;
+        height: 70px;
+    }
+    .navbar-wrapper > ul {
+        display: inline-block;
+    }
+    .navbar-wrapper > li {
+        float: left;
+    }
+    .language-selection .dropdown-menu {
+        right: 0;
+        left: auto;
+    }
+    .language-selection {
+        position: absolute !important;
+        right: 15px;
+        float: right;
+    }
+
+    .container {
+        /*width: 1200px;*/
+        width: 100%;
+    }
+    .navbar-brand {
+        margin-left: initial !important;
+    }
+    .custom-search-input {
+        position: absolute;
+        right: 33px;
+    }
+}
+
+.navbar-fixed-top .navbar-collapse {
+    padding-left: 100px;
+    padding-right: 100px;
+}
+.container {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -119,7 +119,7 @@
                         <div class="thumbnail institution">
                             <div class="institution-settings-btn">
                                 <cl:ifInstitutionAdmin institution="${inst}">
-                                    <a class="btn btn-warning btn-sm pull-right" title="Settings" data-toggle="tooltip"
+                                    <a class="btn btn-warning btn-sm pull-right" title="${message(code: "institution.settings")}" data-toggle="tooltip"
                                             href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}"><i
                                             class="fa fa-cog"></i></a>
                                 </cl:ifInstitutionAdmin>
