@@ -35,7 +35,7 @@
 
 <p>
     Anyone can register, by providing their email address and a few details <a
-        href="http://auth.ala.org.au/userdetails/registration/createAccount">here</a>. This will give you access to <g:message
+        href="https://auth.ala.org.au/userdetails/registration/createAccount">here</a>. This will give you access to <g:message
         code="default.application.name"/> and associated forums, and you’ll receive occasional updates from the Atlas of Living Australia by email.
 </p>
 

@@ -18,7 +18,7 @@
             $(window).trigger('digivol.gmapsReady');
         }
     </script>
-    <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
+    <script type="text/javascript" async defer src="https://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
     <r:require module="digivol-transcribe" />
     <r:require module="bvp-js" />
     <r:require module="panZoom"/>
