@@ -40,6 +40,9 @@
         right: 0;
         left: auto;
     }
+    .language-dropdown-menu {
+        min-width: 68px;
+    }
     .language-selection {
         position: absolute !important;
         right: 15px;
@@ -56,6 +59,9 @@
     .custom-search-input {
         position: absolute;
         right: 33px;
+    }
+    .expedition-landing .dropdown-menu {
+        left: initial;
     }
 }
 
