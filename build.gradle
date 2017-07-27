@@ -86,6 +86,7 @@ dependencies {
     compile 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?
     compile 'org.grails.plugins:quartz:2.0.9'
     compile 'org.grails.plugins:grails-google-visualization:2.2'
+    compile 'org.grails.plugins:external-config:1.1.1'
     // TODO ALA Plugins: image service (is it used anywhere?)
     compile 'org.grails.plugins:ala-auth:3.0.0'
     // TODO Collection Event Controller?

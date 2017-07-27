@@ -15,6 +15,6 @@ class PublicController {
     def logout() {
         log.info "Invalidating Session (PublicController.logout): ${session.id}"
         session.invalidate()
-        redirect(url: "${params.casUrl}?url=${params.appUrl}")
+        redirect(url: "${params.casUrl}?service=${params.appUrl}")
     }
 }

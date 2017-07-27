@@ -1,15 +1,29 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import io.reactivex.plugins.RxJavaPlugins
 import org.codehaus.groovy.runtime.GStringImpl
 import org.grails.web.converters.Converter
 import grails.rx.web.*
+
+import javax.annotation.PostConstruct
 import java.util.concurrent.TimeUnit
 
 class EventSourceController implements RxController {
 
     def authService
     def eventSourceService
+
+    @PostConstruct
+    def init() {
+        RxJavaPlugins.setErrorHandler() { throwable ->
+            if (throwable?.cause instanceof org.apache.catalina.connector.ClientAbortException) {
+                log.debug("Client Abort Exception")
+            } else {
+                log.error("Unhandled exception in RxJava (ESController)", throwable)
+            }
+        }
+    }
 
     def index() {
         final user = authService.userId
@@ -32,6 +46,9 @@ class EventSourceController implements RxController {
                                     break
                                 case Converter:
                                     data = { Writer out -> esm.data.render(out) }
+                                    break
+                                case null:
+                                    data = null
                                     break
                                 default:
                                     data = { Writer out -> (esm.data as JSON).render(out) }

@@ -104,7 +104,7 @@
                 </p>
                 <p>
                     To become a volunteer you must register on DigiVol before you can join an expedition. To do so you need to provide your email address and a few details
-                    <a href="https://auth.ala.org.au/cas/login?service=http://volunteer.ala.org.au/">here</a>. By registering you will be given access to DigiVol and associated forums. You
+                    <a href="${grailsApplication.config.security.cas.loginUrl}?service=${g.createLink(uri:'/')}">here</a>. By registering you will be given access to DigiVol and associated forums. You
                     will also receive occasional updates and newsletters.
                 </p>
                 <h2 class="body-heading"><a name="transcribing">How to get started.</a></h2>

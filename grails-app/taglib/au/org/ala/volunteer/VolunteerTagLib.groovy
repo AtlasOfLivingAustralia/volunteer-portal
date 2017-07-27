@@ -46,6 +46,12 @@ class VolunteerTagLib {
         out << userService.authService.email
     }
 
+    def urlAppend = {attrs, body ->
+        def base = attrs.remove('base')?.toString() ?: ''
+        def path = attrs.remove('path')?.toString() ?: ''
+        out << (base?.endsWith('/') ? base + path : base + '/' + path)
+    }
+
     def isLoggedIn = { attrs, body ->
 
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
@@ -955,7 +961,7 @@ class VolunteerTagLib {
         }
 
         if (opts) {
-            url += "?" + opts.collect { "$it.key=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
+            url += "?" + opts.collect { "${URLEncoder.encode(it.key, 'UTF-8')}=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
         }
         asset.script(type: 'text/javascript', src: url, async: true, defer: true)
         asset.script(type: 'text/javascript') {'''
