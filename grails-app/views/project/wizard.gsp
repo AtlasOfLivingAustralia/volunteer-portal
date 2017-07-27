@@ -19,7 +19,7 @@
     </cl:headerContent>
     <div class="panel panel-default">
         <div class="panel-body ng-cloak">
-            <ui-view autoscroll="false"></div>
+            <ui-view autoscroll="false"></ui-view>
         </div>
     </div>
     <script type="text/ng-template" id="start.html">
@@ -154,19 +154,19 @@
 
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-6">
-                The Expedition image appears on the expedition front page, and in the expeditions list.
+                <g:message code="project.wizard.the_expedition_image_appears_on_the_front_page"/>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="featuredImage">Expedition image</label>
+            <label class="col-sm-3 control-label" for="featuredImage"><g:message code="project.wizard.expedition_image"/></label>
 
             <div class="col-sm-6">
                 <input type="file" name="featuredImage" id="featuredImage" ngf-select="upload($file, 'imageUrl')"/>
             </div>
 
             <div class="col-sm-3">
-                <cl:ngHelpText>Expedition image should be at least <strong>600 pixels wide</strong> and have an aspect ratio between 4:3 and 16:9. Images that have different dimensions will be scaled to this size when uploaded. To preserve image quality, crop and scale them to this size before uploading.</cl:ngHelpText>
+                <cl:ngHelpText><g:message code="project.wizard.expedition_image.help"/></cl:ngHelpText>
             </div>
             <div class="col-sm-offset-3 col-sm-9" data-ng-if="progress > 0">
                 <div class="progress">
@@ -181,12 +181,12 @@
             <div class="col-sm-offset-3 col-sm-9">
                 <img ng-src="{{project.imageUrl}}" class="img-responsive img-thumbnail"/>
                 <button role="button" type="button" class="btn btn-warning" data-ng-click="clearImage()"><i
-                        class="icon-trash icon-white"></i>&nbsp;Remove image</button>
+                        class="icon-trash icon-white"></i>&nbsp;<g:message code="project.wizard.expedition_image.remove_image"/></button>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="imageCopyright">Image copyright</label>
+            <label class="col-sm-3 control-label" for="imageCopyright"><g:message code="project.wizard.expedition_image.copyright"/></label>
 
             <div class="col-sm-6">
                 <input type="text" id="imageCopyright" name="imageCopyright" class="form-control" data-ng-model="project.imageCopyright"/>
@@ -194,14 +194,14 @@
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="backgroundImage">Expedition background image</label>
+            <label class="col-sm-3 control-label" for="backgroundImage"><g:message code="project.wizard.background_image.title"/></label>
 
             <div class="col-sm-6">
                 <input type="file" name="backgroundImage" id="backgroundImage" ngf-select="upload($file, 'backgroundImageUrl')"/>
             </div>
 
             <div class="col-sm-3">
-                <cl:ngHelpText>For best results and to preserve quality, it is recommend that the background image has a <strong>resolution</strong> of at least <strong>2 megapixels</strong> (eg: 1920 x 1080). The system won't accept images bigger than 512KB.<br><strong>The darker the image the better!</strong></cl:ngHelpText>
+                <cl:ngHelpText><g:message code="project.wizard.background_image.help"/></cl:ngHelpText>
             </div>
             <div class="col-sm-offset-3 col-sm-9" data-ng-if="backgroundProgress > 0">
                 <div class="progress">
@@ -216,12 +216,12 @@
             <div class="col-sm-offset-3 col-sm-9">
                 <img ng-src="{{project.backgroundImageUrl}}" class="img-responsive img-thumbnail"/>
                 <button role="button" type="button" class="btn btn-warning" data-ng-click="clearBackgroundImage()"><i
-                        class="icon-trash icon-white"></i>&nbsp;Remove image</button>
+                        class="icon-trash icon-white"></i>&nbsp;<g:message code="project.wizard.background_image.remove_image"/></button>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="backgroundImageCopyright">Background Image copyright</label>
+            <label class="col-sm-3 control-label" for="backgroundImageCopyright"><g:message code="project.wizard.background_image.copyright"/></label>
 
             <div class="col-sm-6">
                 <input type="text" id="backgroundImageCopyright" name="backgroundImageCopyright" class="form-control" data-ng-model="project.backgroundImageCopyright"/>
@@ -230,9 +230,9 @@
 
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-6">
-                <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()" data-ng-disabled="progress > 0">Cancel</button>
-                <button role="button" type="button" class="btn btn-default" data-ng-click="back()" data-ng-disabled="progress > 0"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Back</button>
-                <button role="button" type="button"  class="btn btn-primary" data-ng-click="continue()" data-ng-disabled="progress > 0">Next&nbsp;<i
+                <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()" data-ng-disabled="progress > 0"><g:message code="default.cancel"/></button>
+                <button role="button" type="button" class="btn btn-default" data-ng-click="back()" data-ng-disabled="progress > 0"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;<g:message code="default.back"/></button>
+                <button role="button" type="button"  class="btn btn-primary" data-ng-click="continue()" data-ng-disabled="progress > 0"><g:message code="default.next"/>&nbsp;<i
                         class="glyphicon glyphicon-chevron-right glyphicon-white"></i></button>
             </div>
         </div>
@@ -247,7 +247,7 @@
             <div class="col-sm-offset-3 col-sm-9">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" name="showMap" data-ng-model="project.showMap"/>&nbsp;Show the map on the expedition front page
+                        <input type="checkbox" name="showMap" data-ng-model="project.showMap"/>&nbsp;<g:message code="project.wizard.map.show_the_map"/>
                     </label>
                 </div>
             </div>
@@ -255,7 +255,7 @@
 
         <div class="col-sm-offset-3 col-sm-9">
             <div class="alert alert-warning">
-                Position the map to how you would like it to appear on the expedition front page
+                <g:message code="project.wizard.map.position_the_map_how_you_would_like_it"/>
             </div>
         </div>
 
@@ -268,19 +268,19 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <label for="mapZoomLevel">Zoom</label>
+                        <label for="mapZoomLevel"><g:message code="project.wizard.zoom"/></label>
 
                         <input type="number" class="form-control" id="mapZoomLevel" name="mapZoomLevel" data-ng-model="project.map.zoom" data-ng-disabled="!project.showMap"/>
                     </div>
 
                     <div class="form-group">
-                        <label for="mapLatitude">Center Latitude:</label>
+                        <label for="mapLatitude"><g:message code="project.wizard.map.center_latitude"/>:</label>
 
                         <input type="number" step="any" min="-90" max="90" class="form-control" id="mapLatitude" name="mapLatitude" data-ng-model="project.map.centre.latitude" data-ng-disabled="!project.showMap"/>
                     </div>
 
                     <div class="form-group">
-                        <label for="mapLongitude">Center Longitude:</label>
+                        <label for="mapLongitude"><g:message code="project.wizard.map.center_longitude"/>:</label>
 
                         <input type="number" step="any" min="-180" max="180" class="form-control" id="mapLongitude" name="mapLongitude" data-ng-model="project.map.centre.longitude" data-ng-disabled="!project.showMap"/>
                     </div>
@@ -290,9 +290,9 @@
 
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-                <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
-                <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Back</button>
-                <button role="button" type="button"  class="btn btn-primary" data-ng-click="continue()">Next&nbsp;<i
+                <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()"><g:message code="default.cancel"/></button>
+                <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;<g:message code="default.back"/></button>
+                <button role="button" type="button"  class="btn btn-primary" data-ng-click="continue()"><g:message code="default.next"/>&nbsp;<i
                         class="glyphicon glyphicon-chevron-right glyphicon-white"></i></button>
             </div>
         </div>
@@ -312,14 +312,14 @@
             </div>
 
             <div class="col-sm-3">
-                <cl:ngHelpText>Select the picklist to use for this expedition.  A picklist with a specific 'Collection Code' must be loaded first</cl:ngHelpText>
+                <cl:ngHelpText><g:message code="project.wizard.picklist.help"/></cl:ngHelpText>
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-sm-12">
                 <div class="row">
-                    <label class="col-sm-3 control-label" for="label">Tags</label>
+                    <label class="col-sm-3 control-label" for="label"><g:message code="project.wizard.tags"/></label>
                     <div class="col-sm-9">
                         <div id="labels">
                             <dv-label data-ng-repeat="label in labels" label="label" on-remove="removeLabel(label)"></dv-label>
@@ -334,12 +334,12 @@
             </div>
 
             <div class="col-sm-3">
-                <cl:ngHelpText>Select all appropriate tags for the expedition.</cl:ngHelpText>
+                <cl:ngHelpText><g:message code="project.wizard.tags.help"/></cl:ngHelpText>
             </div>
         </div>
 
         <div class="form-group">
-        <label class="col-sm-3 control-label" id="tutorial-links-label">Tutorial Links</label>
+        <label class="col-sm-3 control-label" id="tutorial-links-label"><g:message code="project.wizard.tutorial_links"/></label>
         <div class="col-sm-9">
             <textarea ui-tinymce="wizardTinyMceOptions" aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
         </div>
@@ -347,9 +347,9 @@
 
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-6">
-                <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
-                <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Back</button>
-                <button role="button" type="button"  class="btn btn-primary" data-ng-click="continue()">Next&nbsp;<i
+                <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()"><g:message code="default.cancel"/></button>
+                <button role="button" type="button" class="btn btn-default" data-ng-click="back()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;<g:message code="default.back"/></button>
+                <button role="button" type="button"  class="btn btn-primary" data-ng-click="continue()"><g:message code="default.next"/>&nbsp;<i
                         class="glyphicon glyphicon-chevron-right glyphicon-white"></i></button>
             </div>
         </div>
@@ -362,36 +362,36 @@
     <div class="">
 
         <p>
-            Your expedition is almost ready! Please review the following, and if everything is correct, click on the 'Create Expedition' button.
+            <g:message code="project.wizard.final.your_expedition_is_almost_ready.1"/>
         </p>
 
         <p>
-            If you find a mistake, or you wish to change something you can click the 'Back' button until you find the item you wish to change.
+            <g:message code="project.wizard.final.your_expedition_is_almost_ready.2"/>
         </p>
 
         <table class="table table-bordered table-striped">
             <tr>
-                <td class="prop-name">Expedition institution</td>
+                <td class="prop-name"><g:message code="project.expedition_institution"/></td>
                 <td class="prop-value">{{::project.featuredOwner.name}}<a ng-if="project.featuredOwner.id" ng-href="${createLink(controller: 'institution', action: 'index')}/{{::project.featuredOwner.id}}" target="_blank"><i class="fa fa-checkmark"></i></a></td>
             </tr>
             <tr>
-                <td class="prop-name">Expedition name</td>
+                <td class="prop-name"><g:message code="project.general_settings.expedition_name"/></td>
                 <td class="prop-value">{{::project.name}}</td>
             </tr>
             <tr>
-                <td class="prop-name">Short description</td>
+                <td class="prop-name"><g:message code="project.general_settings.short_description"/></td>
                 <td class="prop-value">{{::project.shortDescription}}</td>
             </tr>
             <tr>
-                <td class="prop-name">Long description</td>
+                <td class="prop-name"><g:message code="project.general_settings.long_description"/></td>
                 <td class="prop-value" ng-bind-html="project.longDescription"></td>
             </tr>
             <tr>
-                <td class="prop-name">Template</td>
+                <td class="prop-name"><g:message code="project.template.label"/></td>
                 <td class="prop-value">{{::projectTemplate.name}}</td>
             </tr>
             <tr>
-                <td class="prop-name">Expedition type</td>
+                <td class="prop-name"><g:message code="project.projectType.label"/></td>
                 <td class="prop-value">
 
                     <span style="vertical-align: middle">
@@ -402,49 +402,49 @@
             </tr>
 
             <tr>
-                <td class="prop-name">Expedition image</td>
+                <td class="prop-name"><g:message code="project.expedition_image"/></td>
                 <td class="prop-value">
 
                     <img class="img-thumbnail img-responsive" data-ng-if="::project.imageUrl" data-ng-src="{{::project.imageUrl}}"/>
 
-                    <em data-ng-hide="project.imageUrl">No image uploaded</em>
+                    <em data-ng-hide="project.imageUrl"><g:message code="project.wizard.no_image_uploaded"/></em>
 
                 </td>
             </tr>
             <tr>
-                <td class="prop-name">Image copyright text</td>
+                <td class="prop-name"><g:message code="project.expedition_image.copyright.label"/></td>
                 <td class="prop-value">{{::project.imageCopyright}}</td>
             </tr>
 
             <tr>
-                <td class="prop-name">Background image</td>
+                <td class="prop-name"><g:message code="project.background_image"/></td>
                 <td class="prop-value">
 
                     <img class="img-thumbnail img-responsive" data-ng-if="::project.backgroundImageUrl" data-ng-src="{{::project.backgroundImageUrl}}"/>
 
-                    <em data-ng-hide="project.backgroundImageUrl">No image uploaded</em>
+                    <em data-ng-hide="project.backgroundImageUrl"><g:message code="project.wizard.no_image_uploaded"/></em>
 
                 </td>
             </tr>
             <tr>
-                <td class="prop-name">Background image copyright text</td>
+                <td class="prop-name"><g:message code="project.wizard.backgound_image_copyright"/></td>
                 <td class="prop-value">{{::project.backgroundImageCopyright}}</td>
             </tr>
 
             <tr>
-                <td class="prop-name">Show map on expedition page</td>
-                <td class="prop-value">{{::project.showMap ? "Yes" : "No"}}</td>
+                <td class="prop-name"><g:message code="project.wizard.show_map_on_expedition_page"/></td>
+                <td class="prop-value">{{::project.showMap ? "${message(code: "default.yes")}" : "${message(code: "default.no")}"}}</td>
             </tr>
 
             <tr data-ng-if="project.showMap">
                 <td class="prop-name">
-                    Map position
+                    <g:message code="project.wizard.map_position"/>
                 </td>
                 <td class="prop-value">
                     <ui-gmap-google-map center='project.map.centre' zoom='project.map.zoom' options="mapOptions"></ui-gmap-google-map>
 
                     <div>
-                        Zoom: {{::project.map.zoom}} Longitude: {{::project.map.centre.longitude}} Latitude: {{::project.map.centre.latitude}}
+                        <g:message code="default.zoom.label"/>Zoom: {{::project.map.zoom}} <g:message code="admin.mapping_tool.longitude"/>Longitude: {{::project.map.centre.longitude}} <g:message code="admin.mapping_tool.latitude"/>Latitude: {{::project.map.centre.latitude}}
                     </div>
                 </td>
             </tr>
@@ -458,7 +458,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="prop-name">Tags</td>
+                <td class="prop-name"><g:message code="project.general_settings.tags"/></td>
                 <td class="prop-value">
                     <div id="labels">
                         <dv-label data-ng-repeat="label in labels" label="label"></dv-label>
@@ -466,7 +466,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="prop-name">Tutorials</td>
+                <td class="prop-name"><g:message code="default.tutorials.label"/></td>
                 <td class="prop-value" ng-bind-html="project.tutorialLinks"></td>
             </tr>
 
@@ -475,9 +475,9 @@
         <div class="form-horizontal">
             <div class="form-group" style="margin-top: 10px">
                 <div class="col-sm-offset-3 col-sm-9">
-                    <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()" data-ng-disabled="loading">Cancel</button>
-                    <button role="button" type="button" class="btn btn-default" data-ng-click="back()" data-ng-disabled="loading"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Back</button>
-                    <button role="button" type="button" class="btn btn-primary" data-ng-click="create()" data-ng-disabled="loading"><span ng-hide="loading">Create Expedition</span><span ng-show="loading"><i class="fa fa-2x fa-spin fa-cog"></i></span></button>
+                    <button role="button" type="button" class="btn btn-default" data-ng-click="cancel()" data-ng-disabled="loading"><g:message code="default.cancel"/></button>
+                    <button role="button" type="button" class="btn btn-default" data-ng-click="back()" data-ng-disabled="loading"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;<g:message code="default.back"/></button>
+                    <button role="button" type="button" class="btn btn-primary" data-ng-click="create()" data-ng-disabled="loading"><span ng-hide="loading"><g:message code="project.wizard.create_expedition"/></span><span ng-show="loading"><i class="fa fa-2x fa-spin fa-cog"></i></span></button>
                 </div>
             </div>
         </div>
@@ -486,38 +486,29 @@
     </script>
     <script type="text/ng-template" id="failed.html">
     <div class="form-horizontal">
-        <h3>Boo! Something went wrong</h3>
+        <h3><g:message code="project.wizard.something_went_wrong"/></h3>
 
         <div class="form-group" style="margin-top: 10px">
             <div class="col-sm-offset-3 col-sm-9">
-                <a class="btn btn-default" href="${createLink(controller: 'admin', action:"index")}">Done</a>
-                <a class="btn btn-default" href="${createLink(controller: 'project', action:'wizard')}">Create another project</a>
+                <a class="btn btn-default" href="${createLink(controller: 'admin', action:"index")}"><g:message code="project.wizard.done"/></a>
+                <a class="btn btn-default" href="${createLink(controller: 'project', action:'wizard')}"><g:message code="project.wizard.create_another_project"/></a>
             </div>
         </div>
     </div>
     </script>
     <script type="text/ng-template" id="success.html">
-        <h3>Your expedition has been created!</h3>
+        <h3><g:message code="project.wizard.success.title"/></h3>
 
-        <p>
-            <strong>Note:</strong> Your expedition is currently inactive, and transcribers will not be able to see it in the expeditions list until you mark it as active,
-        which you should only do once your tasks are loaded.
-        </p>
+        <p><g:message code="project.wizard.success.2"/></p>
 
-        <p>
-            You can now go to the task staging area and upload the images for each of your tasks <a ng-href="${createLink(controller: 'task', action: 'staging')}?projectId={{::projectId}}">here</a>
-        </p>
+        <p><g:message code="project.wizard.success.3"/> <a ng-href="${createLink(controller: 'task', action: 'staging')}?projectId={{::projectId}}"><g:message code="project.wizard.success.here"/></a></p>
 
-        <p>
-            OR
-        </p>
+        <p><g:message code="project.wizard.success.or"/></p>
 
-        <p>
-            You can edit it's settings <a ng-href="${createLink(controller: 'project', action: 'edit')}/{{::projectId}}">here</a>.
-        </p>
+        <p><g:message code="project.wizard.success.4"/> <a ng-href="${createLink(controller: 'project', action: 'edit')}/{{::projectId}}"><g:message code="project.wizard.success.here"/></a>.</p>
 
-        <a class="btn btn-default" href="${createLink(controller: 'admin', action:"index")}">Done</a>
-        <a class="btn btn-default" href="${createLink(controller: 'project', action:'wizard')}">Create another project</a>
+        <a class="btn btn-default" href="${createLink(controller: 'admin', action:"index")}"><g:message code="project.wizard.done"/></a>
+        <a class="btn btn-default" href="${createLink(controller: 'project', action:'wizard')}"><g:message code="project.wizard.create_another_project"/></a>
     </script>
     <script type="text/ng-template" id="label.html">
     <span class="label" data-ng-class="colour()" title="{{label.category}}">{{label.value}} <i
@@ -526,6 +517,8 @@
 <asset:javascript src="digivol-new-project-wizard" asset-defer="" />
 <asset:script>
   createProjectModule({
+     googleMapsApiKey: '${grailsApplication.config.google.maps.key}',
+     language: '${org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}',
      stagingId: '${stagingId.encodeAsJavaScript()}',
      cancelUrl: '${createLink(controller: 'project', action: 'wizardCancel', id: id)}',
      autosaveUrl: '${createLink(controller: 'project', action: 'wizardAutosave', id: stagingId)}',

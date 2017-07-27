@@ -193,6 +193,12 @@ function createProjectModule(config) {
 
       showErrorsConfigProvider.showSuccess(true);
 
+      uiGmapGoogleMapApiProvider.configure({
+        key: config.googleMapsApiKey,
+        v: '3.20',
+        language: config.language
+      });
+
     }
   ]);
 

@@ -16,7 +16,7 @@ function digivolNotify(config) {
     if (e.readyState == EventSource.CLOSED) {
       //console.debug("Eventsource closed", e);
     } else {
-      console.error("Eventsource error", e);
+      //console.error("Eventsource error", e);
     }
   }, false);
 

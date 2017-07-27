@@ -43,72 +43,72 @@
             <div style="" class="navbar-wrapper">
                 <div class="custom-search-input" style="">
                     <g:form controller="project" action="list" method="GET" >
-                    <div class="input-group">
-                        <g:textField name="q" class="form-control input-lg" placeholder="${message(code: "main.navigation.search.placeholder")}" />
-                        <span class="input-group-btn">
-                            <button class="btn btn-info btn-lg" type="button">
-                                <i class="glyphicon glyphicon-search"></i>
-                            </button>
-                        </span>
-                    </div>
+                        <div class="input-group">
+                            <g:textField name="q" class="form-control input-lg" placeholder="${message(code: "main.navigation.search.placeholder")}" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-info btn-lg" type="button">
+                                    <i class="glyphicon glyphicon-search"></i>
+                                </button>
+                            </span>
+                        </div>
                     </g:form>
                 </div>
 
                 <ul class="nav navbar-nav ">
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><g:link
-                        uri="/"><g:message code="main.navigation.home" /></g:link>
-                </li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'institutions' ? 'active' : ''}"><g:link
-                        controller="institution" action="list"><g:message code="main.navigation.institutions" /></g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
-                        controller="project" action="list"><g:message code="main.navigation.expeditions" /></g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
-                        controller="tutorials" action="index"><g:message code="main.navigation.tutorials" /></g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
-                        controller="forum" action="index"><g:message code="main.navigation.forum" /></g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link
-                        controller="contact" action="index"><g:message code="main.navigation.contact_us" /></g:link></li>
+                    <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><g:link
+                            uri="/"><g:message code="main.navigation.home" /></g:link>
+                    </li>
+                    <li class="${pageProperty(name: 'page.selectedNavItem') == 'institutions' ? 'active' : ''}"><g:link
+                            controller="institution" action="list"><g:message code="main.navigation.institutions" /></g:link></li>
+                    <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
+                            controller="project" action="list"><g:message code="main.navigation.expeditions" /></g:link></li>
+                    <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
+                            controller="tutorials" action="index"><g:message code="main.navigation.tutorials" /></g:link></li>
+                    <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
+                            controller="forum" action="index"><g:message code="main.navigation.forum" /></g:link></li>
+                    <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link
+                            controller="contact" action="index"><g:message code="main.navigation.contact_us" /></g:link></li>
 
 
                 <!-- Logged In Starts -->
-                <cl:isNotLoggedIn>
-                    <li>
-                        <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}/"><i class="glyphicon glyphicon-user"></i> <g:message code="main.navigation.log_in" /></a>
-                    </li>
-                </cl:isNotLoggedIn>
-                <cl:isLoggedIn>
-                    <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <span class="glyphicon glyphicon-user"></span>
-                           <!-- My Profile -->
-                            <g:message code="action.myProfile" /> <span class="hidden unread-count label label-danger label-as-badge"></span>
-                            <span class="glyphicon glyphicon-chevron-down"></span>
-                        </a>
-
-                        <g:render template="/layouts/profileDropDown"/>
-                    </li>
-                    <cl:ifAdmin>
-                        <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
-                            <a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> <g:message code="main.navigation.admin" /></a>
+                    <cl:isNotLoggedIn>
+                        <li>
+                            <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}/"><i class="glyphicon glyphicon-user"></i> <g:message code="main.navigation.log_in" /></a>
                         </li>
-                    </cl:ifAdmin>
-                </cl:isLoggedIn>
+                    </cl:isNotLoggedIn>
+                    <cl:isLoggedIn>
+                        <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-user"></span>
+                                <!-- My Profile -->
+                                <g:message code="action.myProfile" /> <span class="hidden unread-count label label-danger label-as-badge"></span>
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </a>
 
-            <!-- Logged In Ends -->
+                            <g:render template="/layouts/profileDropDown"/>
+                        </li>
+                        <cl:ifAdmin>
+                            <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
+                                <a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> <g:message code="main.navigation.admin" /></a>
+                            </li>
+                        </cl:ifAdmin>
+                    </cl:isLoggedIn>
 
-            <!-- Language selection starts -->
+                <!-- Logged In Ends -->
+
+                <!-- Language selection starts -->
                 <!--<ul class="nav navbar-nav navbar-right" style="">-->
                     <li class="dropdown language-selection ">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <span class="locale">${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
-                    <g:render template="/layouts/languageDropdown"/>
+                        <g:render template="/layouts/languageDropdown"/>
                     </li>
                     <!--</ul>-->
 
 
-            </ul>
+                </ul>
             </div>
         </div>
     </div>
@@ -134,9 +134,9 @@
     <div class="a-feature ${g.pageProperty(name: "page.pageType", default: "simple-header")}">
         <div class="container">
             %{--<div class="row">--}%
-                %{--<div class="col-sm-10">--}%
-                    <g:pageProperty name="page.page-title"/>
-                %{--</div>--}%
+            %{--<div class="col-sm-10">--}%
+            <g:pageProperty name="page.page-title"/>
+            %{--</div>--}%
             %{--</div>--}%
         </div>
     </div>
