@@ -272,6 +272,7 @@ class ForumController {
             taskInstance = (topic as TaskForumTopic).task
         }
 
+        userService.registerCurrentUser()
         def userInstance = userService.currentUser
         def isWatching = forumService.isUserWatchingTopic(userInstance, topic)
 

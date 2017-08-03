@@ -43,13 +43,13 @@ class TranscribeController {
                 def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
                 log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Another task will be allocated")
-                flash.message  = message(code: 'transcribe.the_requested_task_is_being_edited',args: [taskInstance.id])
+                flash.message  = "${message(code: 'transcribe.the_requested_task_is_being_edited',args: [taskInstance.id])}"
                 // redirect to another task
                 redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId])
                 return
             } else {
                 if (isLockedByOtherUser) {
-                    flash.message = message(code: 'transcribe.this_task_is_locked_by_another_user')
+                    flash.message = "${message(code: 'transcribe.this_task_is_locked_by_another_user')}"
                 }
                 // go ahead with this task
                 auditService.auditTaskViewing(taskInstance, currentUserId)

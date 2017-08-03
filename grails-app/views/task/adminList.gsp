@@ -9,11 +9,11 @@
 
 <body>
 
-<cl:headerContent title="Expedition administration - ${projectInstance ? projectInstance.featuredLabel : 'Tasks'}"
+<cl:headerContent title="${message(code: "expedition.administration.label")} - ${projectInstance ? projectInstance.featuredLabel : message(code: "task.thumbs.tasks")}"
                   selectedNavItem="expeditions">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'list'), label: 'Expeditions'],
+                [link: createLink(controller: 'project', action: 'list'), label: message(code: "default.expeditions.label")],
                 [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
         ]
     %>
@@ -54,7 +54,7 @@
             </div>
         </cl:ifAdmin>
         <g:link style="color: white" class="btn btn-info pull-right" controller="user" action="myStats"
-                id="${userInstance.id}" params="${['projectId': projectInstance.id]}"><g:message code="task.adminList.my_stats"/></g:link>
+                id="${userInstance?.id}" params="${['projectId': projectInstance?.id]}"><g:message code="task.adminList.my_stats"/></g:link>
     </div>
 </cl:headerContent>
 
