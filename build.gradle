@@ -78,7 +78,7 @@ dependencies {
     // Additional Plugins
 //    compile 'org.grails.plugins:cache:3.0.3'
 //    compile 'org.grails.plugins:cache-headers:2.0.0.ALA-SNAPSHOT'
-    compile 'org.grails.plugins:csv:1.0.ALA.2'
+    compile 'org.grails.plugins:csv:1.0.ALA.3'
 //    compile 'org.grails.plugins:postgresql-extensions:4.6.6' // check if needed
     compile 'org.grails.plugins:mail:2.0.0.RC6'
     compile 'org.grails.plugins:grails-executor:0.4' // used in TaskLoadService.backgroundProcessQueue

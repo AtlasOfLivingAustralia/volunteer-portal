@@ -35,9 +35,11 @@ class ForumController {
                 def userInstance = userService.currentUser
                 def isWatching = false
 
-                def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
-                if (projectWatchList) {
-                    isWatching = projectWatchList.users.find { it.id == userInstance.id }
+                if (userInstance) {
+                    def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
+                    if (projectWatchList) {
+                        isWatching = projectWatchList.users.any { it != null && it.id == userInstance.id }
+                    }
                 }
 
                 return [projectInstance: projectInstance, topics: topics, isWatching: isWatching]
