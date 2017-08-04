@@ -1150,7 +1150,7 @@ ORDER BY record_idx, name;
 
     public Integer findMaxSequenceNumber(Project project) {
         def select ="""
-            SELECT MAX(CAST(value as INT)) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
+            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
         """
 
         def sql = new Sql(dataSource: dataSource)
