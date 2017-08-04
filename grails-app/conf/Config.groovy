@@ -267,14 +267,14 @@ environments {
         images.urlPrefix = "/data/volunteer-portal/"
     }
     test {
-        grails.serverURL = "http://volunteer-dev.ala.org.au"
-        server.url = "http://volunteer-dev.ala.org.au"
-        security.cas.appServerName = "http://volunteer-dev.ala.org.au"
+        grails.serverURL = "https://volunteer-dev.ala.org.au"
+        server.url = "https://volunteer-dev.ala.org.au"
+        security.cas.appServerName = "https://volunteer-dev.ala.org.au"
         images.home = '/data/volunteer/data/volunteer'
     }
     production {
-        grails.serverURL = "http://volunteer.ala.org.au"
-        server.url = "http://volunteer.ala.org.au"
+        grails.serverURL = "https://volunteer.ala.org.au"
+        server.url = "https://volunteer.ala.org.au"
         security.cas.appServerName = server.url
         images.home = '/data/volunteer'
         ala.image.service.url = "http://images.ala.org.au/"
