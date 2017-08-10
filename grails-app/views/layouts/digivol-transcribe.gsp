@@ -8,9 +8,10 @@
     <cl:addApplicationMetaTags/>
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
-    <title><g:layoutTitle default="DIGIVOL | Home"/></title>
+    <title><g:layoutTitle default="${message(code: "main.title")}"/></title>
 
     <asset:stylesheet href="digivol.css"/>
+    <asset:stylesheet href="doedat-custom.css"/>
     <g:layoutHead/>
 
     <g:render template="/layouts/commonCss" />

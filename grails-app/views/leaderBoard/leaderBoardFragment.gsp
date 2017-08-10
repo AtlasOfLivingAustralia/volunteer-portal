@@ -3,7 +3,7 @@
         <thead style="background-color: #f0f0e8">
         <tr>
             <td colspan="2" style="vertical-align: middle">
-                <h3 style="margin: 0; display: inline-block">${institutionInstance ? institutionInstance.acronym + " " : ""}Honour Board</h3>
+                <h3 style="margin: 0; display: inline-block">${institutionInstance ? institutionInstance.acronym + " " : ""}<g:message code="index.leader_board.honour_board"/></h3>
             </td>
         </tr>
         </thead>
@@ -31,7 +31,7 @@
         var target = $(this);
         if (link) {
             $.ajax(link).done(function (data) {
-                var label = data.score == 0 ? 'No activity recorded' : data.name;
+                var label = data.score == 0 ? '${message(code: "leaderBoard.no_activity")}' : data.name;
                 var score = data.score == 0 ? '' : data.score;
                 var labelClass = data.score == 0 ? 'muted' : '';
 

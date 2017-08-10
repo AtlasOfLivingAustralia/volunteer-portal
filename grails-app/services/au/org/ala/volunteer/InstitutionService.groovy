@@ -72,7 +72,7 @@ class InstitutionService {
                     throw new RuntimeException("Failed to create institution directories: ${file.getParentFile().getAbsolutePath()}")
                 }
             }
-            mpfile.transferTo(file);
+            mpfile.transferTo(file.absoluteFile);
             return true
         } catch (Exception ex) {
             log.error("Failed to upload image file for institution", ex)

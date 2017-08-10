@@ -10,16 +10,17 @@
 <head>
     <meta name="layout" content="digivol-transcribe"/>
 
-    <title><g:layoutTitle default="${cl.pageTitle(title:"${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}" /></title>
+    <title><g:layoutTitle
+            default="${cl.pageTitle(title: "${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}"/></title>
     <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>
-    <meta property="og:url"           content="${shareUrl}" />
-    <meta property="og:type"          content="website" />
-    <meta property="og:title"         content="${taskInstance.project.name }Task Details - ${taskInstance.externalIdentifier}" />
+    <meta property="og:url" content="${shareUrl}"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="${taskInstance.project.name}Task Details - ${taskInstance.externalIdentifier}"/>
     %{--<meta property="og:description"   content="Your description" />--}%
-    <meta property="og:image"         content="${thumbnail}" />
+    <meta property="og:image" content="${thumbnail}"/>
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
-    <asset:stylesheet src="transcribe-widgets" />
+    <asset:stylesheet src="transcribe-widgets"/>
     <g:layoutHead/>
 
     <style type="text/css">
@@ -47,7 +48,6 @@
         font-weight: bold;
     }
 
-
     .transcribeSectionBody {
         border-top: 1px solid #d3d3d3;
         padding-top: 10px;
@@ -57,11 +57,9 @@
         font-weight: bold;
     }
 
-
     .closeSectionLink {
         float: right;
     }
-
 
     /* Mapping tool (popup) */
 
@@ -86,31 +84,51 @@
     <div id="page-header" class="row branding-row">
         <div class="col-sm-5">
 
-
             <div class="transcription-branding">
-                <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
-                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
+                <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>"
+                     class="img-responsive institution-logo-main pull-left">
+
+                <h1><g:link controller="project" action="show"
+                            id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
+
                 <h2>
-                    <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/>
+                    <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}"
+                                                sequenceNumber="${sequenceNumber}"/>
                     <g:if test="${taskInstance}"><ul class="list-inline" style="display: inline-block;">
                         <li style="vertical-align: top;">
-                            <div class="fb-share-button" data-href="${shareUrl}" data-layout="button" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse">Share</a></div>
+                            <div class="fb-share-button" data-href="${shareUrl}" data-layout="button"
+                                 data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank"
+                                                              href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse"><g:message
+                                        code="task.share"/></a></div>
                         </li>
                         <li style="vertical-align: top;">
-                            <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                            <a href="https://twitter.com/share" class="twitter-share-button"><g:message
+                                    code="task.tweet"/></a> <script>!function (d, s, id) {
+                            var js, fjs = d.getElementsByTagName(s)[0],
+                                p = /^http:/.test(d.location) ? 'http' : 'https';
+                            if (!d.getElementById(id)) {
+                                js = d.createElement(s);
+                                js.id = id;
+                                js.src = p + '://platform.twitter.com/widgets.js';
+                                fjs.parentNode.insertBefore(js, fjs);
+                            }
+                        }(document, 'script', 'twitter-wjs');</script>
                         </li>
                     </ul></g:if>
                 </h2>
             </div>
 
         </div>
+
         <div class="col-sm-7 col-xs-12 transcription-controls">
 
             <div class="btn-group" role="group" aria-label="Transcription controls">
                 <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
-                        title="Skip the to next image">Skip</button>
+                        title="${message(code: 'task.skip_image')}"><g:message
+                        code="task.skip"/></button>
                 <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
-                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
+                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank"><g:message
+                        code="task.view_tutorial"/></g:link>
             </div>
 
         </div>
@@ -120,7 +138,8 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="errors">
-                    There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list"/>
+                    <g:message code="task.error_saving"/> <g:renderErrors
+                            bean="${taskInstance}" as="list"/>
                 </div>
             </div>
         </div>
@@ -133,7 +152,7 @@
                 <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="redirect" value="${params.redirect}"/>
                 <g:hiddenField name="id" value="${taskInstance?.id}"/>
-                <g:hiddenField name="timeTaken" value="0" />
+                <g:hiddenField name="timeTaken" value="0"/>
 
                 <g:pageProperty name="page.templateView"/>
 
@@ -144,8 +163,11 @@
                                 <div class="row transcribeSectionHeader">
                                     <div class="col-sm-12">
                                         <span class="transcribeSectionHeaderLabel"><g:if
-                                                test="${!template.viewParams.hideSectionNumbers}"><g:sectionNumber />. </g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
-                                        <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                                                test="${!template.viewParams.hideSectionNumbers}"><g:sectionNumber/>.</g:if><g:message
+                                                code="task.notes"/></span> &nbsp; <g:message
+                                            code="task.notes.description"/>
+                                        <a style="float:right" class="closeSectionLink" href="#"><g:message
+                                                code="task.shrink"/></a>
                                     </div>
                                 </div>
 
@@ -155,13 +177,14 @@
                                         <div class="col-sm-6">
                                             <div class="row">
                                                 <div class="col-sm-4">
-                                                    ${(validator) ? 'Transcriber' : 'Your'} Notes
+                                                    ${(validator) ? message(code: 'task.transcriber_notes')  : message ( code : 'task.your_notes' ) }
                                                 </div>
 
                                                 <div class="col-sm-8">
                                                     <g:textArea name="recordValues.0.transcriberNotes"
                                                                 value="${recordValues?.get(0)?.transcriberNotes}"
-                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
+                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40"
+                                                                class="form-control"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -169,12 +192,14 @@
                                         <div class="col-sm-6">
                                             <g:if test="${validator}">
                                                 <div class="row">
-                                                    <div class="col-sm-4">Validator Notes</div>
+                                                    <div class="col-sm-4"><g:message
+                                                            code="task.validator_notes"/></div>
 
                                                     <div class="col-sm-8">
                                                         <g:textArea name="recordValues.0.validatorNotes"
                                                                     value="${recordValues?.get(0)?.validatorNotes}"
-                                                                    id="recordValues.0.validatorNotes" rows="5" cols="40"
+                                                                    id="recordValues.0.validatorNotes" rows="5"
+                                                                    cols="40"
                                                                     class="form-control"/>
                                                     </div>
                                                 </div>
@@ -188,21 +213,26 @@
                 </div>
 
                 <g:if test="${!isReadonly}">
-                    <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
-                    <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields"/>
+                    <g:set var="okCaption"
+                           value="${message(code: 'task.submit_anyway')}"/>
+                    <g:set var="cancelCaption"
+                           value="${message(code: 'task.cancel_submission')}"/>
                     <g:if test="${validator}">
-                        <g:set var="okCaption" value="It's ok, mark as valid anyway"/>
-                        <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields"/>
+                        <g:set var="okCaption"
+                               value="${message(code: 'task.validate_anyway')}"/>
+                        <g:set var="cancelCaption"
+                               value="${message(code: 'task.cancel_validation')}"/>
                     </g:if>
                     <div class="row" id="errorMessagesContainer" style="display: none">
                         <div class="col-sm-12">
                             <div class="alert alert-danger">
                                 <p class="lead">
-                                    <strong>Warning!</strong>
-                                    There are problems with the field(s) indicated.
-                                    Please correct the fields marked in red before proceeding.
+                                    <strong><g:message code="task.warning"/></strong>
+                                    <g:message
+                                            code="task.warning.description"/>
                                     <br/>
-                                    <button id="btnErrorCancelSubmission" class="btn btn-primary">${cancelCaption}</button>
+                                    <button id="btnErrorCancelSubmission"
+                                            class="btn btn-primary">${cancelCaption}</button>
                                 </p>
                             </div>
                         </div>
@@ -212,12 +242,14 @@
                         <div class="col-sm-12">
                             <div class="alert alert-warning">
                                 <p class="lead">
-                                    <strong>Warning!</strong> There may be some problems with the fields indicated.
-                                If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
+                                    <strong><g:message code="task.warning"/></strong>
+                                    <g:message
+                                            code="task.warning.description2"/>
                                 </p>
 
                                 <div>
-                                    <button id="btnValidateSubmitInvalid" class="btn btn-default bvp-submit-button">${okCaption}</button>
+                                    <button id="btnValidateSubmitInvalid"
+                                            class="btn btn-default bvp-submit-button">${okCaption}</button>
                                     <button id="btnWarningCancelSubmission"
                                             class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
                                 </div>
@@ -231,11 +263,12 @@
                                     <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i
                                             class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
                                     </button>
-                                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
+                                    <button type="button" id="btnDontValidate"
+                                            class="btn btn-danger bvp-submit-button"><i
                                             class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
                                     </button>
                                     <button type="button" class="btn btn-default bvp-submit-button"
-                                            id="showNextFromProject">Skip</button>
+                                            id="showNextFromProject"><g:message code="task.skip"/></button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
                                         <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
@@ -247,7 +280,7 @@
                                     <button type="button" id="btnSavePartial"
                                             class="btn btn-default bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
                                     <button type="button" class="btn btn-default bvp-submit-button"
-                                            id="showNextFromProject">Skip</button>
+                                            id="showNextFromProject"><g:message code="task.skip"/></button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>
                             </div>
@@ -268,7 +301,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="alert alert-warning">
-                        No tasks loaded for this project !
+                        <g:message code="task.no_tasks_loaded"/>
                     </div>
                 </div>
             </div>
@@ -286,11 +319,13 @@
                     <div class="col-sm-12">
                         <p><g:message code="transcribe.task.submit.confirm" default="Submit your selections?"/></p>
                     </div>
+
                     <div class="form-group">
                         <div class="col-sm-offset-1 col-sm-11">
                             <div class="checkbox">
                                 <label>
-                                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
+                                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> <g:message
+                                        code="task.dont_ask_me_again"/>
                                 </label>
                             </div>
                         </div>
@@ -300,12 +335,14 @@
 
             <div class="modal-footer">
                 <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal">Cancel</button>
-                <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
+                        data-dismiss="modal"><g:message code="default.cancel"/>Cancel</button>
+                <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary"><g:message
+                        code="default.submit"/></button>
             </div>
         </div>
     </div>
 </div>
+
 <div id="fb-root"></div>
 <asset:script type="text/javascript">(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
@@ -314,7 +351,7 @@
   js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.6";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</asset:script>
-<asset:javascript src="digivol-transcribe" asset-defer="" />
+<asset:javascript src="digivol-transcribe" asset-defer=""/>
 <asset:script type="text/javascript">
 
     // global Object
@@ -458,7 +495,7 @@
 
             function applyReadOnlyIfRequired() {
     <g:if test="${isReadonly}">
-        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
+        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('${message(code: "task.no_permission")}')}).attr('disabled','disabled').attr('readonly','readonly');
     </g:if>
     }
 
@@ -471,11 +508,11 @@
                     title: 'Mapping Tool',
                     buttons: {
                       close: {
-                        label: "Close & cancel",
+                        label: "${message(code: 'task.close_and_cancel')}",
                         className: 'btn-default'
                       },
                       copy: {
-                        label: 'Copy Values to main form <i class="fa fa-check fa-sm"></i>',
+                        label: '${message(code: "task.copy_values")} <i class="fa fa-check fa-sm"></i>',
                         className: 'btn-primary',
                         callback: function () {
                           setLocationFields(); // via geolocationtoolfragment
@@ -493,7 +530,7 @@
                     height:600,
                     hideHeader: false,
                     size: 'large',
-                    title: 'Previously transcribed tasks'
+                    title: '${message(code: 'task.previously_transcribed_tasks')}'
                 });
 
             }
@@ -506,10 +543,10 @@
                     if (body) {
                         if (body.css('display') == 'none') {
                             body.css('display', 'block');
-                            $(this).text("Shrink")
+                            $(this).text("${message(code: 'task.shrink')}")
                         } else {
                             body.css('display', 'none');
-                            $(this).text("Expand")
+                            $(this).text("${message(code: 'task.expand')}")
                         }
                     }
                 });
@@ -671,7 +708,7 @@
             return true;
         </g:if>
         },
-        message: "${rule.message}",
+        message: "${message(code: rule.message)}",
             type: "${rule.validationType ?: ValidationType.Warning}"
         };
     </g:each>
@@ -786,7 +823,7 @@
     function checkAndRecoverFromFailedSubmit() {
         var lastState = amplify.store("bvp_task_${taskInstance.id ?: 0}");
         if (lastState && lastState.fields) {
-            alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
+            alert("${message(code: 'task.session_invalidated')}");
 
             // If the form uses the dynamicDataSet template (observation diaries etc), we need to render them correctly first.
 

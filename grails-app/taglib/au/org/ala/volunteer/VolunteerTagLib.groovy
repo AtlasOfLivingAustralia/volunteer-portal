@@ -190,7 +190,7 @@ class VolunteerTagLib {
      */
     def lastUpdated = {attrs ->
         if (attrs.date) {
-            out << "<p class='lastUpdated'>last updated: ${attrs.date}</p>"
+            out << "<p class='lastUpdated'>${message(code: 'volunteerTagLib.last_updated')} ${attrs.date}</p>"
         }
     }
 
@@ -210,31 +210,31 @@ class VolunteerTagLib {
         def items = [:]
 
         items << [bvp:[link: createLink(uri: '/'), title: message(code:'default.application.name', default:'DigiVol')]]
-        items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
+        items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: message(code: 'volunteerTagLib.expeditions')]]
         def institutionsEnabled = settingsService.getSetting(SettingDefinition.InstitutionsEnabled)
 
         if (institutionsEnabled) {
-            items << [institutions:[link: createLink(controller: 'institution', action:'list'), title: 'Institutions']]
+            items << [institutions:[link: createLink(controller: 'institution', action:'list'), title: message(code: 'volunteerTagLib.institutions')]]
         }
 
-        items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
+        items << [tutorials: [link: createLink(controller: 'tutorials'), title: message(code: 'volunteerTagLib.tutorials')]]
         if (FrontPage.instance().enableForum) {
-            items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
+            items << [forum:[link: createLink(controller: 'forum'), title: message(code: 'volunteerTagLib.forum')]]
         }
 
         def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyNotebook)
         if (dashboardEnabled) {
             def isLoggedIn = AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)
             if (isLoggedIn || userService.currentUser) {
-                items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:"My Notebook"]]
+                items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:message(code: 'volunteerTagLib.my_notebook')]]
             }
         }
 
-        items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
-        items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:"How can I volunteer?"]]
+        items << [contact: [link: createLink(controller: 'contact'), title: message(code: 'volunteerTagLib.contact_us')]]
+        items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:message(code: 'volunteerTagLib.how_can_i_volunteer')]]
         items << [aboutbvp: [link: createLink(controller: 'about'), title: "About ${message(code:'default.application.name')}"]]
         if (isAdmin()) {
-            items << [bvpadmin: [link: createLink(controller: 'admin'), title: "Admin", icon:'icon-cog icon-white']]
+            items << [bvpadmin: [link: createLink(controller: 'admin'), title: message(code: 'volunteerTagLib.admin'), icon:'icon-cog icon-white']]
         }
 
         def mb = new MarkupBuilder(out)
@@ -294,7 +294,7 @@ class VolunteerTagLib {
             thead {
                 tr {
                     th {
-                        h3('Comments', style: "padding-bottom: 0px;min-height: 0px")
+                        h3(message(code: 'volunteerTagLib.comments'), style: "padding-bottom: 0px;min-height: 0px")
                     }
                 }
             }
@@ -309,7 +309,7 @@ class VolunteerTagLib {
                 if (userService.currentUserId) {
                     tr(class: 'prop', style: 'width: 100%; min-height: 0px') {
                         td(style: 'padding-bottom: 0px; padding-top: 0px;') {
-                            span('Add a new comment by typing in the box below, and clicking "Save comment"') {}
+                            span(message(code: 'volunteerTagLib.add_a_new_comment.description')) {}
                         }
                     }
                     tr(class:'prop',style: 'width: 100%') {
@@ -319,7 +319,7 @@ class VolunteerTagLib {
                     }
                     tr(class:'prop', style: 'width: 100%') {
                         td(class: 'name',style: "text-align: left; vertical-align: bottom; padding-top: 0px") {
-                            button(id: 'addCommentButton', 'Save comment')
+                            button(id: 'addCommentButton', message(code: 'volunteerTagLib.save_comment'))
                         }
                     }
                 }
@@ -385,7 +385,7 @@ class VolunteerTagLib {
 
             if (transcriber) {
                 mb.span(class:"label label-info") {
-                    mkp.yield("Transcribed by ${transcriber.displayName} on ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
+                    mkp.yield(message(code: 'volunteerTagLib.transcribed_by_x_on_y', args: [transcriber.displayName, taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")]))
                 }
             }
 
@@ -393,10 +393,10 @@ class VolunteerTagLib {
                 def status = "Not yet validated"
                 def badgeClass = "label"
                 if (taskInstance.isValid == false) {
-                    status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    status = message(code: 'volunteerTagLib.marked_as_invalid_by_x_on_y', args: [validator.displayName, taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")])
                     badgeClass = "label label-danger"
                 } else if (taskInstance.isValid) {
-                    status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    status = message(code: 'volunteerTagLib.marked_as_valid_by_x_on_y', args: [validator.displayName, taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")])
                     badgeClass = "label label-success"
                 }
                 mb.span(class:badgeClass) {
@@ -747,7 +747,7 @@ class VolunteerTagLib {
 
         if (displayName && email) {
             log.error("Both display name and email specified, select only one!")
-            throw new RuntimeException("Both display name and email specified, select only one!")
+            throw new RuntimeException(message(code: 'volunteerTagLib.both_display_name_and_email_specified'))
         }
 
         def user = userService.detailsForUserId(id)
@@ -921,7 +921,7 @@ class VolunteerTagLib {
 
         if(user){
             String date = g.formatDate(date:project.dateCreated, format: "dd MMMM, yyyy")
-            out << "<small>Created by <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> on ${date}.</small>"
+            out << ("<small>" + message(code:'project.project_settings.created_by') + " <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> "+message(code:'project.project_settings.on')+" ${date}.</small>")
         }
     }
 
@@ -952,6 +952,9 @@ class VolunteerTagLib {
             opts['key'] = mapsApiKey
         } else {
             log.warn("No google.maps.key config settings was found.")
+        }
+        if(org.springframework.context.i18n.LocaleContextHolder.getLocale()) {
+            opts['language'] = org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage();
         }
 
         if (opts) {

@@ -16,7 +16,7 @@
                 [link: createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id), label: institutionInstance.name]
         ]
     %>
-    <h1>Institution Settings - ${institutionInstance.name}</h1>
+    <h1><g:message code="institutionSettings.title"/> - ${institutionInstance.name}</h1>
 </cl:headerContent>
 
 <div class="container">
@@ -27,10 +27,10 @@
                     <ul class="list-group">
                         <cl:settingsMenuItem
                                 href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"
-                                title="General Settings"/>
+                                title="${message(code: 'institutionSettings.general_settings')}"/>
                         <cl:settingsMenuItem
                                 href="${createLink(controller: 'institutionAdmin', action: 'editNewsItems', id: institutionInstance.id)}"
-                                title="News items"/>
+                                title="${message(code: 'institutionSettings.news_items')}"/>
                     </ul>
                 </div>
 

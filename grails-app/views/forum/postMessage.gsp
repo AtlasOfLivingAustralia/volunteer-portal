@@ -86,7 +86,7 @@
                         <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
                     </g:if>
 
-                    <h3>Conversation history:</h3>
+                    <h3><g:message code="forum.post_message.history"/></h3>
 
                     <div style="height: 300px; overflow-y: scroll; border: 1px solid #a9a9a9">
                         <g:each in="${topic.messages?.sort { it.date }}" var="reply">
@@ -94,8 +94,8 @@
                                  style="border: 1px solid #a9a9a9; margin: 3px; padding: 3px; background: white">
                                 <div style="background-color: #3a5c83; color: white">
                                     <asset:image src="reply.png" style="vertical-align: bottom"/>
-                                    On ${formatDate(date: reply.date, format: 'dd MMM yyyy')} at ${formatDate(date: reply.date, format: 'HH:mm:ss')} <strong><cl:userDetails
-                                        id="${reply?.user?.userId}" displayName="true"/></strong> wrote:
+                                    <g:message code="forum.new_topic_notification.on"/> ${formatDate(date: reply.date, format: 'dd MMM yyyy')} at ${formatDate(date: reply.date, format: 'HH:mm:ss')} <strong><cl:userDetails
+                                        id="${reply?.user?.userId}" displayName="true"/></strong> <g:message code="forum.new_topic_notification.wrote"/>
                                 </div>
                                 <markdown:renderHtml>${reply.text}</markdown:renderHtml>
                             </div>
@@ -104,16 +104,16 @@
                     </div>
 
                     <div class="originalMessageButtons" class="form-inline">
-                        <button class="btn btn-default" id="btnInsertQuote" class="button">Insert quote</button>
+                        <button class="btn btn-default" id="btnInsertQuote" class="button"><g:message code="forum.post_message.insert_quote"/></button>
                         <label for="insertTagLine">
                             <g:checkBox name="insertTagline" id="insertTagLine" checked="true"/>
-                            Insert tag line
+                            <g:message code="forum.post_message.insert_tag_line"/>
                         </label>
                     </div>
 
-                    <h2>Your message:</h2>
-                    <small>* Note: To see help on how to format your messages, including bold and italics, see <a
-                            href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
+                    <h2><g:message code="forum.post_message.your_message"/></h2>
+                    <small><g:message code="forum.post_message.message.description"/> <a
+                            href="${createLink(action: 'markdownHelp')}" target="popup"><g:message code="forum.post_message.description.here"/></a></small>
                     <g:form id="messageForm" controller="forum">
 
                         <g:hiddenField name="topicId" value="${topic.id}"/>
@@ -122,20 +122,20 @@
 
                         <label for="watchTopic">
                             <g:checkBox name="watchTopic" checked="${isWatched}"/>
-                            Watch this topic
+                            <g:message code="forum.post_message.watch"/>
                         </label>
 
                         <div>
-                            <g:actionSubmit class="btn btn-success" value="Preview" action="previewMessage"/>
-                            <g:actionSubmit class="btn btn-primary" value="Post message" action="saveNewTopicMessage"/>
-                            <button class="btn btn-default" id="btnCancel">Cancel</button>
+                            <g:actionSubmit class="btn btn-success" value="${message(code: 'forum.post_message.preview')}" action="previewMessage"/>
+                            <g:actionSubmit class="btn btn-primary" value="${message(code: 'forum.post_message.post')}" action="saveNewTopicMessage"/>
+                            <button class="btn btn-default" id="btnCancel"><g:message code="default.cancel"/></button>
                         </div>
 
                     </g:form>
 
                     <g:if test="${params.messageText}">
                         <div class="messagePreview">
-                            <h3>Message preview</h3>
+                            <h3><g:message code="forum.post_message.message_preview"/></h3>
                             <markdown:renderHtml>${params.messageText}</markdown:renderHtml>
                         </div>
                     </g:if>

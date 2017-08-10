@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
     <cl:addApplicationMetaTags/>
-    <meta name="description" content="Atlas of Living Australia"/>
-    <meta name="author" content="Atlas of Living Australia"/>
+    <meta name="description" content="${message(code: "default.application.name")}"/>
+    <meta name="author" content="${message(code: "default.application.name")}"/>
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
-    <title><g:layoutTitle default="DIGIVOL | Home"/></title>
+    <title><g:layoutTitle default="${message(code: "main.title")}"/></title>
 
     <asset:stylesheet href="digivol.css"/>
+    <asset:stylesheet href="doedat-custom.css"/>
     <g:layoutHead/>
 
     <g:render template="/layouts/commonCss" />

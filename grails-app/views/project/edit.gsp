@@ -90,29 +90,29 @@
                         <input type="hidden" name="id" value="${projectInstance.id}"/>
                         <g:submitButton class="btn btn-small btn-primary" name="Upload"/>
                         <a href="${createLink(action: 'resizeExpeditionImage', id: projectInstance.id)}"
-                           class="btn btn-small">Resize existing image</a>
+                           class="btn btn-small"><g:message code="project.edit.resize_image"/></a>
                     </g:form>
                     <br/>
 
                     <div class="alert alert-danger">
-                        Expedition banner images must be exactly <strong>254 x 158</strong> pixels in size (w x h). Images that have different dimensions will be scaled to this size when uploaded. To preserve image quality, crop and scale them to this size before uploading.
+                        <g:message code="project.edit.resize_image.description"/>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <strong>Map initial position</strong>
+                    <strong><g:message code="project.edit.map.initial_position"/></strong>
                 </td>
                 <td>
                     <div id="recordsMap">
                     </div>
                 </td>
                 <td>
-                    Position the map on the left to how it should look on the project page (if map is enabled)
+                    <g:message code="project.edit.map.initial_position.description"/>
                     <g:form action="updateMapSettings" class="form-horizontal">
                         <g:hiddenField name="projectId" value="${projectInstance.id}"/>
                         <div class="control-group">
-                            <label class="control-label" for="mapZoomLevel">Zoom</label>
+                            <label class="control-label" for="mapZoomLevel"><g:message code="default.zoom.label"/></label>
 
                             <div class="controls">
                                 <g:textField name="mapZoomLevel" value="${initZoom}"/>
@@ -120,7 +120,7 @@
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="mapLatitude">Center Latitude:</label>
+                            <label class="control-label" for="mapLatitude"><g:message code="project.map_settings.map.center_latitude"/>:</label>
 
                             <div class="controls">
                                 <g:textField name="mapLatitude" value="${initLatitude}"/>
@@ -128,15 +128,15 @@
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="mapLongitude">Center Longitude:</label>
+                            <label class="control-label" for="mapLongitude"><g:message code="project.map_settings.map.center_longitude"/>:</label>
 
                             <div class="controls">
                                 <g:textField name="mapLongitude" value="${initLongitude}"/>
                             </div>
                         </div>
                         <button id="btnUpdateMap" type="button" class="btn btn-small"><i
-                                class="icon-arrow-left"></i>&nbsp;Update map from fields</button>
-                        <button type="submit" class="btn btn-small btn-primary">Save Map Position</button>
+                                class="icon-arrow-left"></i>&nbsp;<g:message code="project.edit.map.update_from_fields"/></button>
+                        <button type="submit" class="btn btn-small btn-primary"><g:message code="project.edit.map.save"/></button>
                     </g:form>
                 </td>
             </tr>
@@ -148,7 +148,7 @@
 <asset:script type="text/javascript">
 
     function confirmDeleteAllTasks() {
-        return confirm("Warning!!!! This will remove all tasks, including those that have already been transcribed!\n\nAre you sure you want to delete all ${taskCount} tasks for '${projectInstance.featuredLabel}'?");
+        return confirm("${message(code: 'project.delete.all.tasks', args: [taskCount, projectInstance.featuredLabel])}");
             }
 
             google.load("maps", "3.23", {other_params: ""});

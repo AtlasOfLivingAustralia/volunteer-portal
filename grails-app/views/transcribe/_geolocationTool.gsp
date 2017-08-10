@@ -5,16 +5,16 @@
             <div id="mapCanvas"></div>
             <div class="searchHint">
                 <br/>
-                <i class="fa fa-info-circle"></i> Hint: you can also drag & drop the marker icon to set the location data
+                <i class="fa fa-info-circle"></i> <g:message code="transcribe.geolocationTool.hint" />
             </div>
         </div>
 
         <div id="mapInfo" class="col-sm-4">
 
-            <h5>Locality Search</h5>
+            <h5><g:message code="transcribe.geolocationTool.locality_search" /></h5>
             <div class="custom-search-input in-modal">
                 <div class="input-group">
-                    <input type="text" name="address" id="address" class="form-control input-lg" placeholder="Search e.g. Wollongong">
+                    <input type="text" name="address" id="address" class="form-control input-lg" placeholder="${message(code: 'transcribe.geolocationTool.search_placeholder')}">
                     <span class="input-group-btn">
                         <button id="locationSearch" class="btn btn-info btn-lg" type="button">
                             <i class="glyphicon glyphicon-search"></i>
@@ -23,8 +23,8 @@
                 </div>
             </div>
 
-            <h5>Coordinate Uncertainty</h5>
-            <label for="infoUncert">Adjust uncertainty</label>
+            <h5><g:message code="transcribe.geolocationTool.coordinate_uncertainty" /></h5>
+            <label for="infoUncert"><g:message code="transcribe.geolocationTool.adjust_uncertainty" /></label>
             <select class="form-control" id="infoUncert">
                 <g:set var="coordinateUncertaintyPL"
                        value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
@@ -36,22 +36,22 @@
             </select>
 
             <p>
-                Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map.
+                <g:message code="transcribe.geolocationTool.please_choose_an_uncertainty_value" />
             </p>
 
-            <h5>Location Data</h5>
+            <h5><g:message code="transcribe.geolocationTool.location_data" /></h5>
             <table class="table table-striped">
                 <tbody>
                 <tr>
-                    <th scope="row">Latitude:</th>
+                    <th scope="row"><g:message code="transcribe.geolocationTool.latitude" /></th>
                     <td id="infoLat"></td>
                 </tr>
                 <tr>
-                    <th scope="row">Longitude:</th>
+                    <th scope="row"><g:message code="transcribe.geolocationTool.longitude" /></th>
                     <td id="infoLng"></td>
                 </tr>
                 <tr>
-                    <th scope="row">Location:</th>
+                    <th scope="row"><g:message code="transcribe.geolocationTool.location" /></th>
                     <td id="infoLoc"></td>
                 </tr>
                 </tbody>
@@ -117,12 +117,12 @@
     // Add dragging event listeners.
     google.maps.event.addListener(marker, 'dragstart',
       function () {
-        updateMarkerAddress('Dragging...');
+        updateMarkerAddress('${message(code: 'transcribe.geolocationTool.dragging')}');
       });
 
     google.maps.event.addListener(marker, 'drag',
       function () {
-        updateMarkerStatus('Dragging...');
+        updateMarkerStatus('${message(code: 'transcribe.geolocationTool.dragging')}');
         updateMarkerPosition(marker.getPosition());
       });
 
@@ -190,7 +190,7 @@
         if (responses && responses.length > 0) {
           updateMarkerAddress(responses[0].formatted_address, responses[0]);
         } else {
-          updateMarkerAddress('Cannot determine address at this location.');
+          updateMarkerAddress('${message(code: 'transcribe.geolocationTool.cannot_determine_address')}');
         }
       });
   }
@@ -343,7 +343,7 @@
 
       bvp.hideModal();
     } else {
-      alert('Location data is empty. Use the search and/or drag the map icon to set the location first.');
+      alert('${message(code: 'transcribe.geolocationTool.location_data_is_empty')}');
     }
   }
 

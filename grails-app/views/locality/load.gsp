@@ -22,7 +22,7 @@
         <g:uploadForm action="loadCSV" controller="locality">
             <table>
                 <tr>
-                    <td colspan="3">Enter a name (collection code) for your locality list to identify it clearly. This is the name you will choose when selecting a locality picklist when creating a new expedition. For eg AM_Entomology or ANIC or Smithsonian_MarineInverts</td>
+                    <td colspan="3"><g:message code="locality.load.enter_a_name"/></td>
                 </tr>
 
                 <tr>
@@ -32,7 +32,7 @@
                         <g:textField name="collectionCode"/>
                         %{--<g:select from="${collectionCodes}" name="collectionCode"/>--}%
                     </td>
-                    <td>Existing collection codes: ${collectionCodes?.join(", ")}</td>
+                    <td><g:message code="locality.load.existing_collection_codes"/> ${collectionCodes?.join(", ")}</td>
                 </tr>
                 <tr>
                     <td>File:</td>
@@ -41,24 +41,24 @@
                 <tr>
 
                     <td colspan="3">
-                        <b>Note:</b> Your upload file should be a comma separated value file, with the following columns defined in the first line:<b/>
+                        <g:message code="locality.load.note"/>
                         <pre>site_irn,LocCountry,LocProvinceStateTerritory,LocTownship,LocPreciseLocation,LatLatitude,LatLongitude,LatLatitudeDecimal,LatLongitudeDecimal</pre>
                         <table class="table table-bordered table-striped table-condensed">
-                            <tr><td>Field Name</td><td>Description</td></tr>
-                            <tr><td>site_irn</td><td>The internal record number (institution/database specific) for the locality/site.</td>
+                            <tr><td><g:message code="collectionEvent.upload.field_name"/></td><td><g:message code="collectionEvent.upload.description"/></td></tr>
+                            <tr><td><g:message code="collectionEvent.upload.site_irn"/></td><td><g:message code="collectionEvent.upload.site_irn.description"/></td>
                             </tr>
-                            <tr><td>LocCountry</td><td>The name of the country e.g. 'Australia'</td></tr>
-                            <tr><td>LocProvinceStateTerritory</td><td>The name of the State or Territory or Province e.g. 'New South Wales'</td>
+                            <tr><td><g:message code="collectionEvent.upload.LocCountry"/></td><td><g:message code="collectionEvent.upload.LocCountry.description"/></td></tr>
+                            <tr><td><g:message code="collectionEvent.upload.LocProvinceStateTerritory"/></td><td><g:message code="collectionEvent.upload.LocProvinceStateTerritory.description"/></td>
                             </tr>
-                            <tr><td>LocTownship</td><td>The name of the city, township, village etc e.g. 'Wagga Wagga'</td>
+                            <tr><td><g:message code="collectionEvent.upload.LocTownship"/></td><td><g:message code="collectionEvent.upload.LocTownship.description"/></td>
                             </tr>
-                            <tr><td>LocPreciseLocation</td><td>Textual description of the locality. e.g. 3 km north of Sandy Creek</td>
+                            <tr><td><g:message code="collectionEvent.upload.LocPreciseLocation"/></td><td><g:message code="collectionEvent.upload.LocPreciseLocation.description"/></td>
                             </tr>
-                            <tr><td>LatLatitude</td><td>Latitude formatted as degrees minutes seconds</td></tr>
-                            <tr><td>LatLongitude</td><td>Longitude formatted as degress minutes seconds</td>
+                            <tr><td><g:message code="collectionEvent.upload.LatLatitude"/></td><td><g:message code="collectionEvent.upload.LatLatitude.description"/></td></tr>
+                            <tr><td><g:message code="collectionEvent.upload.LatLongitude"/></td><td><g:message code="collectionEvent.upload.LatLongitude.description"/></td>
                             </tr>
-                            <tr><td>LatLatitudeDecimal</td><td>Latitude as decimal degrees</td></tr>
-                            <tr><td>LatLongitudeDecimal</td><td>Longitude as decimal degrees</td></tr>
+                            <tr><td><g:message code="collectionEvent.upload.LatLatitudeDecimal"/></td><td><g:message code="collectionEvent.upload.LatLatitudeDecimal.description"/></td></tr>
+                            <tr><td><g:message code="collectionEvent.upload.LatLongitudeDecimal"/></td><td><g:message code="collectionEvent.upload.LatLongitudeDecimal.description"/></td></tr>
                         </table>
                     </td>
                 </tr>
@@ -66,7 +66,7 @@
             </table>
 
             <div class="button"><g:actionSubmit class="submit btn btn-primary" action="loadCSV"
-                                                value="${message(code: 'default.button.submit.label', default: 'Submit')}"/></div>
+                                                value="${message(code: 'default.submit', default: 'Submit')}"/></div>
         </g:uploadForm>
     </div>
 </div>

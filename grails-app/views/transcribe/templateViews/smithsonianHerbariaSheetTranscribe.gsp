@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
     <content tag="templateView">
 <div class="row">
@@ -23,20 +23,20 @@
                         <table style="width: 100%">
                             <tr>
                                 <td>
-                                    <span class="metaDataLabel">Catalogue No.:</span> ${recordValues?.get(0)?.catalogNumber}
+                                    <span class="metaDataLabel"><g:message code="transcribe.templateViews.all.catalogue_no"/></span> ${recordValues?.get(0)?.catalogNumber}
                                     <br/>
-                                    <span class="metaDataLabel">Taxa:</span> ${recordValues?.get(0)?.scientificName}
+                                    <span class="metaDataLabel"><g:message code="transcribe.templateViews.all.taxa"/></span> ${recordValues?.get(0)?.scientificName}
                                 </td>
                                 <td style="text-align: right">
                                     <div class="col-md-10">
                                         <button type="button" class="btn btn-info btnCopyFromPreviousTask"
                                                 href="#task_selector"
-                                                style="">Copy from previous task</button>
+                                                style=""><g:message code="transcribe.templateViews.all.copy_values_from_a_previous_task"/></button>
                                     </div>
 
                                     <div class="col-md-2">
                                         <a href="#" class="btn btn-default btn-xs fieldHelp"
-                                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
+                                           title="${message(code: 'transcribe.templateViews.all.clicking_this_button.description')}"><i
                                                 class="fa fa-question help-container"></i></a>
                                     </div>
                                 </td>
@@ -55,7 +55,7 @@
         </div>
 
         <g:renderFieldCategorySection columns="1" category="${FieldCategory.miscellaneous}" task="${taskInstance}"
-                                      recordValues="${recordValues}" title="Museum details" description=""/>
+                                      recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.smithsonian.museum_details')}" description=""/>
 
     </div>
 </div>
@@ -64,14 +64,14 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-md-6">
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection details</span>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.smithsonian.collection_details"/></span>
                 <g:renderCategoryFieldsColumn columns="1" category="${FieldCategory.collectionEvent}"
                                               task="${taskInstance}" recordValues="${recordValues}"
                                               title="Collection details"/>
             </div>
 
             <div class="col-md-6">
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Location details</span>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.smithsonian.location_details"/></span>
                 <g:renderCategoryFieldsColumn columns="1" category="${FieldCategory.location}" task="${taskInstance}"
                                               recordValues="${recordValues}" title="Location details"/>
             </div>
@@ -80,8 +80,8 @@
 </div>
 
 <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}"
-                              recordValues="${recordValues}" title="Identification"
-                              description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
+                              recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.smithsonian.identification')}"
+                              description="${message(code: 'transcribe.templateViews.smithsonian.identification.description')}"/>
 
     </content>
 </g:applyLayout>

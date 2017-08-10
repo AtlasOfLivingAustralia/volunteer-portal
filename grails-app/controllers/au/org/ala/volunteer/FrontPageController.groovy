@@ -86,7 +86,7 @@ class FrontPageController {
             redirect(action: 'edit')
         } catch (e) {
             log.error("Exception uploading logos", e)
-            flash.message = 'Error uploading images'
+            flash.message = message(code: "frontPage.error_uploading_images")
             redirect(action: 'edit')
         }
     }

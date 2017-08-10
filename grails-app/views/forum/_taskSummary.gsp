@@ -18,8 +18,8 @@
             <table class="table table-condensed table-striped table-hover">
                 <thead>
                 <tr>
-                    <th>Field</th>
-                    <th>Name</th>
+                    <th><g:message code="forum.task_summary.field"/></th>
+                    <th><g:message code="forum.task_summary.name"/></th>
                 </tr>
                 </thead>
                 <tbody>

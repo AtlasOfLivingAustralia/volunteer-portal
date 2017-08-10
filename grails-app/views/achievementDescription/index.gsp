@@ -17,7 +17,7 @@
     %>
 
     <a class="btn btn-success" href="${createLink(action: "create")}"><i
-            class="icon-plus icon-white"></i>&nbsp;Add Badge</a>
+            class="icon-plus icon-white"></i>&nbsp;<g:message code="achievementDescription.edit.add_badge"/></a>
 </cl:headerContent>
 <div class="container" role="main">
     <div class="panel panel-default">

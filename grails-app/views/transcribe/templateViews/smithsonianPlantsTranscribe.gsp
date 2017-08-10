@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
     <content tag="templateView">
 <div class="row">
@@ -21,14 +21,14 @@
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
 
-                    <div class="transcribeSectionHeaderLabel">Specimen Information</div>
+                    <div class="transcribeSectionHeaderLabel"><g:message code="transcribe.templateViews.all.specimen"/></div>
                     <ul>
-                        <li><span class="metaDataLabel">Institution:</span> <span
+                        <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.institution"/></span> <span
                                 id="institutionCode">${recordValues?.get(0)?.institutionCode}</span></li>
-                        <li><span class="metaDataLabel">Project:</span> ${taskInstance?.project?.name}</li>
-                        <li><span class="metaDataLabel">Catalogue No.:</span> ${recordValues?.get(0)?.catalogNumber}
+                        <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.project"/></span> ${taskInstance?.project?.name}</li>
+                        <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.catalogue_no"/></span> ${recordValues?.get(0)?.catalogNumber}
                         </li>
-                        <li><span class="metaDataLabel">Taxa:</span> ${recordValues?.get(0)?.scientificName}</li>
+                        <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.taxa"/></span> ${recordValues?.get(0)?.scientificName}</li>
                         <g:hiddenField name="recordValues.0.basisOfRecord" class="basisOfRecord"
                                        id="recordValues.0.basisOfRecord"
                                        value="${recordValues?.get(0)?.basisOfRecord ?: TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.basisOfRecord, template)?.defaultValue}"/>
@@ -37,9 +37,9 @@
                     <span>
                         <button type="button" class="btn btn-small btn-info btnCopyFromPreviousTask"
                                 href="#task_selector"
-                                style="">Copy values from a previous task</button>
+                                style=""><g:message code="transcribe.templateViews.all.copy_values_from_a_previous_task"/></button>
                         <a href="#" class="btn btn-default btn-xs fieldHelp"
-                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
+                           title="${message(code: 'transcribe.templateViews.all.clicking_this_button.description')}"><i
                                 class="fa fa-question help-container"></i></a>
                     </span>
 
@@ -58,24 +58,24 @@
             <div class="panel-body">
                 <g:set var="allTextField"
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: message(code: 'transcribe.templateViews.all.transcribe_all_text_as_it_appears')}</span> <g:message code="transcribe.templateViews.all.record_exactly_what_appears.description"/>
                 <a href="#" class="btn btn-default btn-xs fieldHelp"
-                   title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
+                   title='${allTextField?.helpText ?: message(code: 'transcribe.templateViews.all.translate_all_text_as_it_appears_in_the_labels')}'><i
                         class="fa fa-question help-container"></i></a>
                 <g:textArea class="col-md-12" name="recordValues.0.occurrenceRemarks"
                             value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                             rows="6" cols="42"/>
                 <div>
                     <button type="button" class="insert-symbol-button" symbol="&deg;"
-                            title="Insert a degree symbol"></button>
+                            title="${message(code: 'transcribe.templateViews.all.insert_degree')}"></button>
                     <button type="button" class="insert-symbol-button" symbol="&#39;"
-                            title="Insert an apostrophe (minutes) symbol"></button>
+                            title="${message(code: 'transcribe.templateViews.all.insert_apostophe')}"></button>
                     <button type="button" class="insert-symbol-button" symbol="&quot;"
-                            title="Insert a quote (minutes) symbol"></button>
+                            title="${message(code: 'transcribe.templateViews.all.insert_quote')}"></button>
                     <button type="button" class="insert-symbol-button" symbol="&#x2642;"
-                            title="Insert the male gender symbol"></button>
+                            title="${message(code: 'transcribe.templateViews.all.insert_male_gender_symbol')}"></button>
                     <button type="button" class="insert-symbol-button" symbol="&#x2640;"
-                            title="Insert the female gender symbol"></button>
+                            title="${message(code: 'transcribe.templateViews.all.insert_frmale_gender_symbol')}"></button>
                 </div>
             </div>
         </div>
@@ -86,8 +86,8 @@
     <div class="panel-body">
         <div class="row transcribeSectionHeader">
             <div class="col-md-12">
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.all.collection_event.description"/>
+                <a style="float:right" class="closeSectionLink" href="#"><g:message code="transcribe.templateViews.all.shrink"/></a>
             </div>
         </div>
 
@@ -112,7 +112,7 @@
 
             <div class="row">
                 <div class="col-md-2">
-                    ${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: "Collector(s)"}
+                    ${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: message(code: 'transcribe.templateViews.all.collectors')}
                 </div>
 
                 <div class="col-md-10">
@@ -139,12 +139,12 @@
 </div>
 
 <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}"
-                              recordValues="${recordValues}" title="Miscellaneous"
-                              description="This section is for a range of fields. Many labels will not contain information for any or all of these fields."/>
+                              recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.smithsonianPlants.misc')}"
+                              description="${message(code: 'transcribe.templateViews.smithsonianPlants.this_section_is_for_a_range.description')}"/>
 
 <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}"
-                              recordValues="${recordValues}" title="Identification"
-                              description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
+                              recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.smithsonianPlants.identification')}"
+                              description="${message(code: 'transcribe.templateViews.smithsonianPlants.if_a_label_contains_information.description')}"/>
 
     </content>
 </g:applyLayout>

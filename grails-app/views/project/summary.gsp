@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-main"/>
-    <title><cl:pageTitle title="${(stringInstanceMap.project ?: 'Atlas of Living Australia')}"/></title>
+    <title><cl:pageTitle title="${(stringInstanceMap.project ?: message(code: 'project.default.title'))}"/></title>
 </head>
 
 <body class="content">

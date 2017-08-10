@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
     <content tag="templateView">
 <div class="row">
@@ -67,7 +67,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Details</span>
+                        <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.singleSectionTranscribe.details"/></span>
                     </div>
                     <g:set var="spanClass" value="${"col-md-${12 / columnCount}"}"/>
                     <g:each in="${columns}" var="column">

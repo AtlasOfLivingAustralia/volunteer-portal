@@ -1,25 +1,25 @@
 <div>
-    <h3>Select an export format</h3>
+    <h3><g:message code="task.exportOptionsFragment.select"/></h3>
 
     <div class="control-group">
         <label class="radio">
             <input type="radio" name="optionsExport" id="optionsExportCSV" value="csv" checked>
-            <strong>Single de-normalised CSV file</strong>
+            <strong><g:message code="task.exportOptionsFragment.csv"/></strong>
             <br/>
-            Repeating fields will get a column each with a record index suffix (e.g. recordedBy_0, recordedBy_1). This is probably the most appropriate choice for specimen label transcriptions.
+            <g:message code="task.exportOptionsFragment.csv.description"/>
         </label>
         <label class="radio">
             <input type="radio" name="optionsExport" id="optionsExportZip" value="zip">
-            <strong>ZIP file</strong>
+            <strong><g:message code="task.exportOptionsFragment.zip"/></strong>
             <br/>
-            A compressed archive of multiple flat CSV files, one for each one-to-many relationship. Files are linked by a task id. Suitable for field diaries and notebooks with large numbers of repeating fields.
+            <g:message code="task.exportOptionsFragment.zip.description"/>
         </label>
     </div>
 
     <div class="control-group">
         <div class="controls">
-            <button id="btnCancelExport" class="btn">Cancel</button>
-            <button id="btnExportTasks" class="btn btn-primary">Export</button>
+            <button id="btnCancelExport" class="btn"><g:message code="default.cancel"/></button>
+            <button id="btnExportTasks" class="btn btn-primary"><g:message code="task.exportOptionsFragment.export"/></button>
         </div>
     </div>
 

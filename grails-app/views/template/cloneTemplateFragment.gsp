@@ -1,16 +1,16 @@
 <form>
     <div class="form-group">
-        <p class="">This will create a copy of the '${templateInstance.name}' template, including all of its fields and settings.</p>
+        <p class=""><g:message code="template.cloneTemplateFragment.description" args="${[templateInstance.name]}"/></p>
     </div>
 
     <div class="form-group">
-        <label for="templateName" class="control-label">New template name:</label>
-        <g:textField name="templateName" class="form-control" value="Copy of ${templateInstance?.name}"/>
+        <label for="templateName" class="control-label"><g:message code="template.cloneTemplateFragment.new_template_name" /></label>
+        <g:textField name="templateName" class="form-control" value="${message(code: 'template.cloneTemplateFragment.copy_of', args: [templateInstance?.name])}"/>
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" id="btnCancelCloneTemplate">Cancel</button>
-        <button type="button" class="btn btn-success" id="btnCopyTemplate">Clone template</button>
+        <button type="button" class="btn btn-default" id="btnCancelCloneTemplate"><g:message code="default.cancel"/></button>
+        <button type="button" class="btn btn-success" id="btnCopyTemplate"><g:message code="template.cloneTemplateFragment.clone_template" /></button>
     </div>
 </form>
 

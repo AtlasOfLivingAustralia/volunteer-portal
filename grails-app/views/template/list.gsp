@@ -24,7 +24,7 @@
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-default"><g:message code="template.list.create_new_template" /></a>
         </div>
     </cl:headerContent>
 
@@ -53,12 +53,12 @@
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                                 <td>
-                                    <a class="btn btn-default btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
+                                    <a class="btn btn-default btnCloneTemplate" href="#" style="margin-top: 6px"><g:message code="template.list.clone" /></a>
                                     <a class="btn btn-default" style="margin-top: 6px"
-                                       href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">Edit</a>
+                                       href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}"><g:message code="template.list.edit" /></a>
                                     <a class="btn btn-default" style="margin-top: 6px"
-                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">Preview</a>
-                                    <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
+                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}"><g:message code="template.list.preview" /></a>
+                                    <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px"><g:message code="template.list.delete" /></a>
                                 </td>
                             </tr>
                         </g:each>
@@ -84,7 +84,7 @@
             var templateId = $(this).parents("[templateId]").attr("templateId");
             var templateName = $(this).parents("[templateName]").attr("templateName");
             if (templateId && templateName) {
-                bootbox.confirm("Are you sure you wish to delete template " + templateName + "?", function(result) {
+                bootbox.confirm("${message(code: 'template.list.are_you_sure_to_delete')} " + templateName + "?", function(result) {
                   window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
                         });
                     }

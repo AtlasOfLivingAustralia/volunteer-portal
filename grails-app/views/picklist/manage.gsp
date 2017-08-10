@@ -26,7 +26,7 @@
                         <g:hiddenField name="id" value="${params.id}"/>
 
                         <div class="form-group">
-                            <label class="col-md-2 control-label" for="picklistId">Picklist</label>
+                            <label class="col-md-2 control-label" for="picklistId"><g:message code="picklist.picklists"/></label>
 
                             <div class="col-md-4">
                                 <g:select name="picklistId" class="form-control" from="${picklistInstanceList}" optionKey="id" optionValue="uiLabel"
@@ -34,21 +34,21 @@
                             </div>
                             <div class="col-md-6">
                                 <a class="btn btn-default"
-                                   href="${createLink(controller: 'picklist', action: 'create')}">Create new picklist</a>
+                                   href="${createLink(controller: 'picklist', action: 'create')}"><g:message code="picklist.create"/></a>
                                 <a class="btn btn-default"
-                                   href="${createLink(controller: 'picklist', action: 'list')}">Show all picklists</a>
+                                   href="${createLink(controller: 'picklist', action: 'list')}"><g:message code="picklist.show_all"/></a>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-2" for="institutionCode">Collection Code</label>
+                            <label class="control-label col-md-2" for="institutionCode"><g:message code="picklist.collection_code"/></label>
 
                             <div class="col-md-4">
                                 <g:select name="institutionCode" class="form-control" from="${collectionCodes}" value="${institutionCode}"/>
                             </div>
                             <div class="col-md-6">
                                 <button id="btnAddCollectionCode" type="button" class="btn btn-success"><i
-                                        class="icon-plus icon-white"></i>&nbsp;Add collection code</button>
+                                        class="icon-plus icon-white"></i>&nbsp;<g:message code="picklist.add_collection_code"/></button>
                                 <g:actionSubmit class="btn btn-default" name="download.picklist"
                                                 value="${message(code: 'download.picklist.label', default: 'Download items as CSV')}"
                                                 action="download"/>
@@ -59,12 +59,12 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-2" for="picklist">
-                                <g:message code="picklist.paste.here.label"
+                                <g:message code="picklist.csv_list.label"
                                            default="CSV List"/>
                             </label>
                             <div class="col-md-8">
                                 <g:textArea class="input-block-level form-control" name="picklist" rows="25" cols="40" value="${picklistData}"/>
-                                <span class="help-block">Paste csv list here. Each line should take the format '&lt;value&gt;'[,&lt;optional key&gt;]</span>
+                                <span class="help-block"><g:message code="picklist.paste_csv_list"/></span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -78,7 +78,7 @@
                                    data-toggle="modal">${message(code: 'upload.bulkpicklist.label', default: 'Upload CSV File')}</a>
                                 <button id="sort-button" type="button" class="btn btn-default" title="Sort list"><i class="fa fa-arrow-down"></i>
                                 </button>
-                                <button id="reverse-button" type="button" class="btn btn-default" title="Reverse list order"><i
+                                <button id="reverse-button" type="button" class="btn btn-default" title="${message(code:'picklist.reverse_order')}"><i
                                         class="fa fa-refresh"></i></button>
                             </div>
                         </div>
@@ -100,13 +100,13 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 
-                        <h3 id="picklistModalLabel">Upload picklist file</h3>
+                        <h3 id="picklistModalLabel"><g:message code="picklist.upload_picklist_file"/></h3>
                     </div>
 
                     <div class="modal-body">
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="upPicklistId">Picklist</label>
+                            <label class="control-label col-md-3" for="upPicklistId"><g:message code="picklist.picklists"/></label>
 
                             <div class="col-md-6">
                                 <g:select id="upPicklistId" class="form-control" name="picklistId" from="${picklistInstanceList}" optionKey="id"
@@ -115,7 +115,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="upInstitutionCode">Collection Code</label>
+                            <label class="control-label col-md-3" for="upInstitutionCode"><g:message code="picklist.collection_code"/></label>
 
                             <div class="col-md-6">
                                 <g:select id="upInstitutionCode" class="form-control" name="institutionCode" from="${collectionCodes}"
@@ -124,7 +124,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="picklistFile">Picklist file</label>
+                            <label class="control-label col-md-3" for="picklistFile"><g:message code="picklist.picklist_file"/></label>
 
                             <div class="col-md-6">
                                 <input type="file" data-filename-placement="inside" id="picklistFile" name="picklistFile"/>
@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><g:message code="default.close"/></button>
                         <input class="btn btn-primary" type="submit"/>
                     </div>
                 </g:uploadForm>

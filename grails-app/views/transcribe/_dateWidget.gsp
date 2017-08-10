@@ -23,19 +23,19 @@
 
             <g:if test="${letter == 'Y'}">
                 <div class="col-md-3">
-                    <g:textField tabindex="${ti}" name="${field.fieldType}.startYear" placeholder="Year"
+                    <g:textField tabindex="${ti}" name="${field.fieldType}.startYear" placeholder="${message(code: 'transcribe.date.year')}"
                                  class="form-control startYear year" value=""/>
                 </div>
             </g:if>
             <g:elseif test="${letter == 'M'}">
                 <div class="col-md-3">
-                    <g:textField tabindex="${ti}" name="${field.fieldType}.startMonth" placeholder="MM"
+                    <g:textField tabindex="${ti}" name="${field.fieldType}.startMonth" placeholder="${message(code: 'transcribe.date.mm')}"
                                  class="form-control startMonth month" value=""/>
                 </div>
             </g:elseif>
             <g:elseif test="${letter == 'D'}">
                 <div class="col-md-3">
-                    <g:textField tabindex="${ti}" name="${field.fieldType}.startDay" placeholder="DD"
+                    <g:textField tabindex="${ti}" name="${field.fieldType}.startDay" placeholder="${message(code: 'transcribe.date.dd')}"
                                  class="form-control startDay day" value=""/>
                 </div>
             </g:elseif>
@@ -53,19 +53,19 @@
 
             <g:if test="${letter == 'Y'}">
                 <div class="col-md-3">
-                    <g:textField tabindex="${ti}" name="${field.fieldType}.endYear" placeholder="Year"
+                    <g:textField tabindex="${ti}" name="${field.fieldType}.endYear" placeholder="${message(code: 'transcribe.date.year')}"
                                  class="form-control endYear year" value=""/>
                 </div>
             </g:if>
             <g:elseif test="${letter == 'M'}">
                 <div class="col-md-3">
-                    <g:textField tabindex="${ti}" name="${field.fieldType}.endMonth" placeholder="MM"
+                    <g:textField tabindex="${ti}" name="${field.fieldType}.endMonth" placeholder="${message(code: 'transcribe.date.mm')}"
                                  class="form-control endMonth month" value=""/>
                 </div>
             </g:elseif>
             <g:elseif test="${letter == 'D'}">
                 <div class="col-md-3">
-                    <g:textField tabindex="${ti}" name="${field.fieldType}.endDay" placeholder="DD"
+                    <g:textField tabindex="${ti}" name="${field.fieldType}.endDay" placeholder="${message(code: 'transcribe.date.dd')}"
                                  class="form-control endDay day" value=""/>
                 </div>
             </g:elseif>

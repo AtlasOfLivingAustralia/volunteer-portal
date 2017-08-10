@@ -60,11 +60,11 @@ class UserService {
     @NotTransactional
     private void notifyNewUser(User user) {
         def interestedUsers = getUsersWithRole(BVPRole.SITE_ADMIN)
-        def message = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
-        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+        def messageBody = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
+        def messageSubject = messageSource.getMessage("userService.new_user_notification", null, "DigiVol", LocaleContextHolder.locale)
 
         interestedUsers.each {
-            emailService.pushMessageOnQueue(detailsForUserId(it.userId).email, "A new user has been registered to ${appName}", message)
+            emailService.pushMessageOnQueue(detailsForUserId(it.userId).email, messageSubject, messageBody)
         }
     }
 

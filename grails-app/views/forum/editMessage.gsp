@@ -45,28 +45,28 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <h2>Your message:</h2>
-                    <small>* Note: To see help on how to format your messages, including bold and italics, see <a
-                            href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
+                    <h2><g:message code="forum.edit_message.your_message"/>Your message:</h2>
+                    <small><g:message code="forum.edit_message.note" /> <a
+                            href="${createLink(action: 'markdownHelp')}" target="popup"><g:message code="forum.edit_message.note.here"/></a></small>
                     <g:form id="messageForm" controller="forum">
                         <g:hiddenField name="messageId" value="${forumMessage?.id}"/>
                         <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${messageText}"/>
                         <label for="watchTopic">
                             <g:checkBox name="watchTopic" checked="${isWatched}"/>
-                            Watch this topic
+                            <g:message code="forum.edit_message.watch"/>
                         </label>
 
                         <div>
-                            <g:actionSubmit class="btn btn-success" value="Preview" action="previewMessageEdit"/>
-                            <g:actionSubmit class="btn btn-primary" value="Save message" action="updateTopicMessage"/>
-                            <button class="btn btn-default" id="btnCancel">Cancel</button>
+                            <g:actionSubmit class="btn btn-success" value="${message(code: 'forum.edit_message.preview')}" action="previewMessageEdit"/>
+                            <g:actionSubmit class="btn btn-primary" value="${message(code: 'forum.edit_message.save')}" action="updateTopicMessage"/>
+                            <button class="btn btn-default" id="btnCancel"><g:message code="forum.edit_message.cancel"/></button>
                         </div>
 
                     </g:form>
 
                     <g:if test="${messageText}">
                         <div class="messagePreview">
-                            <h3>Message preview</h3>
+                            <h3><g:message code="forum.edit_message.message_preview"/></h3>
                             <markdown:renderHtml>${messageText}</markdown:renderHtml>
                         </div>
                     </g:if>

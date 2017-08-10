@@ -46,7 +46,7 @@ class NewsItemController {
             newsItemInstance.properties = params
             return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(controller: "project", action: "editNewsItemsSettings", id: params.id)
         }
     }
@@ -103,7 +103,7 @@ class NewsItemController {
                 return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
             }
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
@@ -142,7 +142,7 @@ class NewsItemController {
                 redirect(action: "list")
             }
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(controller: "project", action: "index", id: params.id)
         }
     }

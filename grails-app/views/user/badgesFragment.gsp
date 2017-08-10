@@ -47,7 +47,7 @@
 
                 <p>${ach.achievement.description}</p>
 
-                <div><em>Awarded <prettytime:display date="${ach.awarded}"/></em></div>
+                <div><em><g:message code="badged.badgesFragment.awarded"/> <prettytime:display date="${ach.awarded}"/></em></div>
             </div>
         </g:each>
         <g:each in="${allAchievements}" var="ach" status="i">
@@ -59,7 +59,7 @@
 
                 <p>${ach.description}</p>
 
-                <div><em>Not yet awarded</em></div>
+                <div><em><g:message code="badged.badgesFragment.not_yet_awarded"/></em></div>
             </div>
         </g:each>
     </div>

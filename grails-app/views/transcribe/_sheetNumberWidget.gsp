@@ -7,7 +7,7 @@
         </div>
 
         <div class="col-md-1">
-            of
+            <g:message code="transcribe.sheetNumber.of"/>
         </div>
 
         <div class="col-md-3">

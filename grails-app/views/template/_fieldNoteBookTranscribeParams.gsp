@@ -36,6 +36,6 @@
         <label for="transcribeSectionHeader"><g:message code="template.transcribeSectionHeader.label" default="Transcribe Section Header Label" /></label>
     </div>
     <div class="col-md-6">
-        <g:textArea name="transcribeSectionHeader" class="form-control" data-default="Where a species or common name appears in the text please enter any relevant information into the fields below" />
+        <g:textArea name="transcribeSectionHeader" class="form-control" data-default="${message(code:'template.fieldNoteBookTranscribe.default_description')}" />
     </div>
 </div>

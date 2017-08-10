@@ -39,11 +39,11 @@ class SortableTagLib {
     Closure sortableColumn = { attrs ->
         def writer = out
         if (!attrs.property) {
-            throwTagError("Tag [sortableColumn] is missing required attribute [property]")
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y", args: ["sortableColumn","property"]))
         }
 
         if (!attrs.title && !attrs.titleKey) {
-            throwTagError("Tag [sortableColumn] is missing required attribute [title] or [titleKey]")
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y_or_z", args: ["sortableColumn","title", "titleKey"]))
         }
 
         def property = attrs.remove("property")
@@ -54,7 +54,7 @@ class SortableTagLib {
 
         def tag = attrs.remove("tag")
         if (!tag) {
-            throwTagError("Tag [sortableColumn] is missing required attribute [tag]")
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y", args: ["sortableColumn","tag"]))
         }
 
         // current sorting property and order

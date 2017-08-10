@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
         <style type="text/css">
         #image-container {
             height: 100px;
@@ -15,13 +15,13 @@
                 <div class="col-md-12">
                     <span id="journalPageButtons">
                         <button type="button" class="btn btn-small" id="showPreviousJournalPage"
-                                title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
-                                src="left_arrow.png" /> show previous journal page</button>
+                                title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${prevTask ? '' : 'disabled="true"'}><asset:image
+                                src="left_arrow.png" /> <g:message code="transcribe.templateViews.all.show_previous_journal"/></button>
                         <button type="button" class="btn btn-small" id="showNextJournalPage"
-                                title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page
+                                title="${message(code: 'transcribe.templateViews.all.display_in_new_window')}" ${nextTask ? '' : 'disabled="true"'}><g:message code="transcribe.templateViews.all.show_next_journal_page"/>
                                 <asset:image src="right_arrow.png" /></button>
                         <button type="button" class="btn btn-small" id="rotateImage"
-                                title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
+                                title="${message(code: 'transcribe.templateViews.all.rotate_image')}"><g:message code="transcribe.templateViews.all.rotate"/>&nbsp;<asset:image
                                 style="vertical-align: middle; margin: 0 !important;"
                                 src="rotate.png" /></button>
                     </span>
@@ -41,10 +41,9 @@
                     </div>
                 </div>
             </div>
-
             <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}"
-                                              recordValues="${recordValues}" renderHeaderTitle="false" title="Identification"
-                                              description="Observations Transcribe Identification"/>
+                                              recordValues="${recordValues}" renderHeaderTitle="false" title="${message(code: 'transcribe.templateViews.aerialObservationsTranscribe.identification')}"
+                                              description="${message(code: 'transcribe.templateViews.aerialObservationsTranscribe.observations_transcribe_identification')}"/>
 
             <g:set var="entriesField"
                    value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="Contact Details" /></title>
+    <title><cl:pageTitle title="${message(code: 'contact.title')}" /></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
 </head>
 
@@ -14,18 +14,22 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <h3>Help in using <g:message code="default.application.name"/> and reporting issues</h3>
-                    <b>E</b> <a href="mailto:DigiVol@austmus.gov.au">DigiVol@austmus.gov.au</a><br/>
-                    <b>T</b> (02) 9320 6429<br/>
-                    Australian Museum<br/>
-                    Sydney NSW 2010
+                    <h3><g:message code="contact.help_in_using_digivol"/></h3>
+
+                    <p>
+                        <b>E</b> <a href="mailto:${message(code: 'contact.email_address')}">${message(code: 'contact.email_address')}</a><br/>
+                        <b>T</b> <g:message code="contact.phone"/><br/>
+                        <g:message code="contact.address"/>
                     <p/>
 
-                    <h3>Help in using the Atlas of Living Australia</h3>
-                    <b>E</b> <a href="mailto:support@ala.org.au">support@ala.org.au</a><br/>
-                    <b>T</b> (02) 6246 4108<br/>
-                    GPO Box 1700<br/>
-                    Canberra ACT 2601
+                    <h3><g:message code="contact.help_in_using_ala"/></h3>
+                    <p>
+                        <b>E</b> <a href="mailto:${message(code: 'contact.ala.email_address')}">${message(code: 'contact.ala.email_address')}</a>
+                        <br/>
+                        <b>T</b> <g:message code="contact.ala.phone"/>
+                        <br/>
+                        <g:message code="contact.ala.address"/>
+                    </p>
                 </div>
             </div>
         </div>

@@ -228,7 +228,7 @@ class TemplateController {
                 FieldType type = params.type ?: FieldType.text
                 def label = params.label ?: ""
                 def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
-                field.save(failOnError: true)
+                field.save(failOnError: true, flush: true)
             }
         }
 
@@ -284,14 +284,14 @@ class TemplateController {
         MultipartFile f = request.getFile('uploadFile')
 
         if (!f || f.isEmpty()) {
-            flash.message = "File missing or invalid. Make sure you select an upload file first!"
+            flash.message = message(code: 'template.file_missing_or_invalid')
         } else {
 
             def templateInstance = Template.get(params.int("id"))
             if (templateInstance) {
                 templateFieldService.importFieldsFromCSV(templateInstance, f)
             } else {
-                flash.message = "Missing/invalid template id specified in request!"
+                flash.message = message(code: 'template.missing_template_id')
             }
         }
 
@@ -305,7 +305,7 @@ class TemplateController {
         if (newName) {
             def existing = Template.findByName(newName)
             if (existing) {
-                flash.message = "Failed to clone template - a template with the name " + newName + " already exists!"
+                flash.message = message(code: 'template.failed_to_clone_template', args: [newName])
                 redirect(action:'list')
                 return
             }

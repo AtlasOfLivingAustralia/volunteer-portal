@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<content tag="pageTitle">Tester</content>
+<content tag="pageTitle"><g:message code="achievementDescription.edit.tester"/></content>
 
 <content tag="adminButtonBar">
     %{--This is just for formatting purposes--}%
@@ -23,8 +23,8 @@
     <table class="table">
         <thead>
         <tr>
-            <th>User</th>
-            <th>Achieved?</th>
+            <th><g:message code="achievementDescription.edit.user"/></th>
+            <th><g:message code="achievementDescription.edit.achieved"/></th>
         </tr>
         </thead>
         <tbody>
@@ -42,7 +42,7 @@
     </tabLe>
     <g:form class="form-horizontal" action="editTest" id="${achievementDescriptionInstance?.id}" method="GET">
         <div class="well">
-            <h4>Check User</h4>
+            <h4><g:message code="achievementDescription.edit.check_user"/></h4>
             <div class="form-group">
                 <label class="control-label col-md-3" for="user">
                     <g:message code="user.label" default="User"/>

@@ -2,7 +2,7 @@
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
     </head>
     <content tag="templateView">
 <g:set var="collectionEventInsitutionCode"
@@ -27,14 +27,14 @@
                     <div id="taskMetadata">
                         <div id="institutionLogo"></div>
 
-                        <div class="transcribeSectionHeaderLabel">Specimen Information</div>
+                        <div class="transcribeSectionHeaderLabel"><g:message code="transcribe.templateViews.all.specimen"/></div>
                         <ul>
-                            <li><span class="metaDataLabel">Institution:</span> <span
+                            <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.institution"/></span> <span
                                     id="institutionCode">${recordValues?.get(0)?.institutionCode}</span></li>
-                            <li><span class="metaDataLabel">Project:</span> ${taskInstance?.project?.name}</li>
-                            <li><span class="metaDataLabel">Catalogue No.:</span> ${recordValues?.get(0)?.catalogNumber}
+                            <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.project"/></span> ${taskInstance?.project?.name}</li>
+                            <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.catalogue_no"/></span> ${recordValues?.get(0)?.catalogNumber}
                             </li>
-                            <li><span class="metaDataLabel">Taxa:</span> ${recordValues?.get(0)?.scientificName}</li>
+                            <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.taxa"/></span> ${recordValues?.get(0)?.scientificName}</li>
                             <g:hiddenField name="recordValues.0.basisOfRecord" class="basisOfRecord"
                                            id="recordValues.0.basisOfRecord"
                                            value="${recordValues?.get(0)?.basisOfRecord ?: TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.basisOfRecord, template)?.defaultValue}"/>
@@ -42,8 +42,8 @@
 
                         <span>
                             <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
-                                    style="">Copy values from a previous task</button>
-                            <a href="#" class="btn btn-default btn-xs fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i class="help-container fa fa-question"></i></a>
+                                    style=""><g:message code="transcribe.templateViews.all.copy_values_from_a_previous_task"/></button>
+                            <a href="#" class="btn btn-default btn-xs fieldHelp" title="${message(code: 'transcribe.templateViews.all.clicking_this_button.description')}"><i class="help-container fa fa-question"></i></a>
                         </span>
 
                         <div style="display: none;">
@@ -62,13 +62,13 @@
                         <g:set var="allTextField"
                                value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                         <div class="col-md-12">
-                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: message(code: 'transcribe.templateViews.all.transcribe_all_text_as_it_appears')}</span> <g:message code="transcribe.templateViews.all.record_exactly_what_appears.description"/>
                         </div>
 
                         <div class="col-md-12" style="margin-top: 5px">
-                            All text
+                            <g:message code="transcribe.templateViews.all.all_text"/>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
+                               title='${allTextField?.helpText ?: message(code: 'transcribe.templateViews.all.translate_all_text_as_it_appears_in_the_labels')}'><i
                                     class="fa fa-question help-container"></i></a>
                         </div>
 
@@ -81,20 +81,20 @@
 
                         <div class="col-md-12">
                             <button type="button" class="insert-symbol-button" symbol="&deg;"
-                                    title="Insert a degree symbol"></button>
+                                    title="${message(code: 'transcribe.templateViews.all.insert_degree')}"></button>
                             <button type="button" class="insert-symbol-button" symbol="&#39;"
-                                    title="Insert an apostrophe (minutes) symbol"></button>
+                                    title="${message(code: 'transcribe.templateViews.all.insert_apostophe')}"></button>
                             <button type="button" class="insert-symbol-button" symbol="&quot;"
-                                    title="Insert a quote (minutes) symbol"></button>
+                                    title="${message(code: 'transcribe.templateViews.all.insert_quote')}"></button>
                             <button type="button" class="insert-symbol-button" symbol="&#x2642;"
-                                    title="Insert the male gender symbol"></button>
+                                    title="${message(code: 'transcribe.templateViews.all.insert_male_gender_symbol')}"></button>
                             <button type="button" class="insert-symbol-button" symbol="&#x2640;"
-                                    title="Insert the female gender symbol"></button>
+                                    title="${message(code: 'transcribe.templateViews.all.insert_frmale_gender_symbol')}"></button>
                         </div>
 
                         <div class="col-md-12" style="margin-top: 5px">
-                            Verbatim Locality <a href='#' class='btn btn-default btn-xs fieldHelp'
-                                                 title='Enter (or cut and paste from the box above) the locality information into this box'><i
+                            <g:message code="transcribe.templateViews.specimenLabel.verbatim_locality"/> <a href='#' class='btn btn-default btn-xs fieldHelp'
+                                                 title='${message(code: 'transcribe.templateViews.specimenLabel.verbatim_locality.description')}'><i
                                     class='fa fa-question help-container'></i></a>
                         </div>
 
@@ -118,8 +118,8 @@
         <div class="panel-body">
             <div class="row transcribeSectionHeader">
                 <div class="col-md-12">
-                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
-                    <a class="closeSectionLink" href="#">Shrink</a>
+                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. <g:message code="transcribe.templateViews.all.collection_event.description"/>
+                    <a class="closeSectionLink" href="#"><g:message code="transcribe.templateViews.all.shrink"/></a>
                 </div>
             </div>
 
@@ -127,19 +127,19 @@
 
                 <div class="row">
                     <div class="col-md-2">
-                        <h4>Step 1</h4>
+                        <h4><g:message code="transcribe.templateViews.specimenLabel.step1"/></h4>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-10 col-md-offset-2">
-                        <strong>Enter Collector and Event Date</strong>
+                        <strong><g:message code="transcribe.templateViews.specimenLabel.step1.enter_collector_and_event_date"/></strong>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-2">
-                        ${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: "Collector(s)"}
+                        ${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.recordedBy)?.label ?: message(code: 'transcribe.templateViews.all.collectors')}
                     </div>
 
                     <div class="col-md-10">
@@ -177,7 +177,7 @@
 
                     <div class="col-md-6 collectionEventSection">
                         <strong>a.</strong>&nbsp; <button type="button" class="btn btn-default"
-                                                          id="show_collection_event_selector">Find existing collection event</button>
+                                                          id="show_collection_event_selector"><g:message code="transcribe.templateViews.specimenLabel.find_existing_collection_event"/></button>
                     </div>
 
                     <div class="col-md-4">
@@ -188,18 +188,18 @@
                 <div class="existingLocalitySection">
                     <div class="row">
                         <div class="col-md-1 col-md-offset-1">
-                            <h4>OR</h4>
+                            <h4><g:message code="transcribe.templateViews.specimenLabel.or"/></h4>
                         </div>
 
                         <div class="col-md-10">
-                            <strong>b. Create a new Collection Event</strong> &ndash; you have already entered a collector and date above so now you need to enter a locality
+                            <g:message code="transcribe.templateViews.specimenLabel.create_new_event"/>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 col-md-offset-2">
                             <strong>i.</strong>&nbsp;<button type="button" class="btn btn-default"
-                                                             id="showLocalitySelector">Find existing locality</button>&nbsp;<strong>OR</strong>
+                                                             id="showLocalitySelector"><g:message code="transcribe.templateViews.specimenLabel.find_existing_locality"/></button>&nbsp;<strong><g:message code="transcribe.templateViews.specimenLabel.or"/></strong>
                         </div>
 
                         <div class="col-md-4">
@@ -211,14 +211,14 @@
                 <div class="newLocalitySection">
                     <div class="row">
                         <div class="col-md-10 col-md-offset-2">
-                            <strong>ii.&nbsp;Create a new locality</strong>
+                            <strong>ii.&nbsp;<g:message code="transcribe.templateViews.specimenLabel.create_a_new_locality"/></strong>
                         </div>
                     </div>
 
                     <div class="row" style="margin-bottom: 10px">
                         <div class="col-md-10 col-md-offset-2">
                             <button type="button" class="btn btn-small btn-info"
-                                    id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
+                                    id="btnGeolocate"><g:message code="transcribe.templateViews.all.mapping_tool"/> <i class="fa fa-map-pin"></i></button>
                         </div>
                     </div>
 
@@ -273,12 +273,12 @@
     </div>
 
     <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}"
-                                  recordValues="${recordValues}" title="Miscellaneous"
-                                  description="This section is for a range of fields. Many labels will not contain information for any or all of these fields."/>
+                                  recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.all.misc')}"
+                                  description="${message(code: 'transcribe.templateViews.all.misc.description')}"/>
 
     <g:renderFieldCategorySection category="${FieldCategory.identification}" task="${taskInstance}"
-                                  recordValues="${recordValues}" title="Identification"
-                                  description="If a label contains information on the name of the organism then record the name and associated information in this section"/>
+                                  recordValues="${recordValues}" title="${message(code: 'transcribe.templateViews.all.identification')}"
+                                  description="${message(code: 'transcribe.templateViews.all.identification.description')}"/>
 
 </div>
 
@@ -302,7 +302,7 @@
             url: contentUrl,
             width:800,
             height:650,
-            title: 'Find Existing Collecting Event'
+            title: '${message(code: 'transcribe.templateViews.specimenLabel.find_existing_collecting_event')}'
         });
     }
 
@@ -320,13 +320,13 @@
                 width:800,
                 height:650,
                 hideHeader: false,
-                title: 'Find Existing Collecting Event',
+                title: '${message(code: 'transcribe.templateViews.specimenLabel.find_existing_collecting_event')}',
                 onShown: function() {
                 }
             });
 
         } else {
-            alert("You must first enter either a date or at least one collector!")
+            alert("${message(code: 'transcribe.templateViews.specimenLabel.error.you_must_enter_date')}")
         }
     }
 
@@ -409,7 +409,7 @@
             var url = "${createLink(controller: 'locality', action: 'getLocalityJSON')}?externalLocalityId=" + externalLocalityId;
             $.ajax(url).done(function (locality) {
                 var localityDesc = '<span>' + renderLocalityDescription(locality) + '</span>';
-                var html = "This specimen is linked with an existing Locality: <br/>" + localityDesc + '<span style="float:right"><a href="#" id="unlinkLocality">Undo</a></span>'
+                var html = "${message(code: 'transcribe.templateViews.specimenLabel.this_specimen_is_linked')}<br/>" + localityDesc + '<span style="float:right"><a href="#" id="unlinkLocality">${message(code: 'transcribe.templateViews.specimenLabel.this_specimen_is_linked.undo')}</a></span>'
                 $("#boundLocality").html(html).css("display","block");
                 $("#unlinkLocality").click(function(e) {
                     e.preventDefault();
@@ -434,7 +434,7 @@
             var url = "${createLink(controller: 'collectionEvent', action: 'getCollectionEventJSON')}?externalCollectionEventId=" + externalEventId + "&institutionCode=${collectionEventInsitutionCode}";
             $.ajax(url).done(function (collectionEvent) {
                 var eventDesc = '<span>' + renderLocalityDescription(collectionEvent) + '<br/>' + collectionEvent.collector + " (" + collectionEvent.eventDate + ")";
-                var html = "This specimen is linked with an existing collection event: <br/>" + eventDesc + '</span><span style="float:right"><a href="#" id="unlinkCollectionEvent">Undo</a></span>'
+                var html = "${message(code: 'transcribe.templateViews.specimenLabel.this_specimen_is_linked2')}<br/>" + eventDesc + '</span><span style="float:right"><a href="#" id="unlinkCollectionEvent">${message(code: 'transcribe.templateViews.specimenLabel.this_specimen_is_linked.undo')}</a></span>'
                 $("#boundCollectionEvent").html(html).css("display","block");
                 $("#unlinkCollectionEvent").click(function(e) {
                     e.preventDefault();

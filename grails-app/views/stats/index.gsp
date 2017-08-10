@@ -32,22 +32,22 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>DigiVol Volunteers</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.title"/></h4></div>
                             <div class="panel-body">
-                                <h4>New Volunteers: {{ statsCtrl.newVolunteers }}</h4>
-                                <h4>Total Volunteers: {{ statsCtrl.totalVolunteers }}</h4>
+                                <h4><g:message code="stats.index.new_volunteers"/> {{ statsCtrl.newVolunteers }}</h4>
+                                <h4><g:message code="stats.index.total_volunteers"/> {{ statsCtrl.totalVolunteers }}</h4>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Historical Honourboard</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.historical_honourboard"/></h4></div>
                             <div class="panel-body">
                                 <span data-ng-if="statsCtrl.loading"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loading">
                                     <div tablechart data="statsCtrl.getHistoricalHonourBoard()" title="" width="100%" height="100%" searchdate="{{statsCtrl.searchDate}}"></div>
                                     <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.historicalHonourBoard, 'historicalHonourBoard')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                        <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                     </button>
 
                                 </span>
@@ -57,70 +57,70 @@
 
                     <div class="col-md-4">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Active Transcribers</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.active_transcribers"/></h4></div>
                             <div class="panel-body">
                                 <div tablechart data="statsCtrl.getActiveTranscribers()" title="" width="100%" height="100%" searchdate="{{statsCtrl.searchDate}}"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.activeTranscribers, 'activeTranscribers')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Day</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.transcriptions_by_day"/></h4></div>
                             <div class="panel-body">
                                 <div barchart data="statsCtrl.getTranscriptionsByDay()" title="" width="100%" height="350" yaxis="Transcriptions count"
                                      xaxis="Day" searchdate="{{statsCtrl.searchDate}}"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByDay, 'transcriptionsByDay')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Validations By Day</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.validations_by_day"/></h4></div>
                             <div class="panel-body">
                                 <div barchart data="statsCtrl.getValidationsByDay()" title="" width="100%" height="350" yaxis="Validations count"
                                      xaxis="Day" searchdate="{{statsCtrl.searchDate}}"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.validationsByDay, 'validationsByDay')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Volunteer And Project</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.transcriptions_by_volunteer"/></h4></div>
                             <div class="panel-body">
                                 <div tablechart data="statsCtrl.getTranscriptionsByVolunteerAndProject()" title="" width="100%" height="100%" searchdate="{{statsCtrl.searchDate}}"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByVolunteerAndProject, 'transcriptionsByVolunteerAndProject')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Hourly Contributions</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.hourly_contributions"/></h4></div>
                             <div class="panel-body">
                                 <div linechart data="statsCtrl.getHourlyContributions()" title="" width="100%" height="350" xaxis="Hour"
                                      yaxis="Contributions" searchdate="{{statsCtrl.searchDate}}"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.hourlyContributions, 'hourlyContributions')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Average Transcription Time by Project Type</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.avg_transcription_time"/></h4></div>
                             <div class="panel-body">
                                 <div barchart data="statsCtrl.getTranscriptionTimeByProjectType()" title="" width="100%" height="350" xaxis="Project Type"
                                      yaxis="Transcription Time" searchdate="{{statsCtrl.searchDate}}"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionTimeByProjectType, 'transcriptionTimeByProjectType')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Month</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.transcriptions_by_month"/></h4></div>
                             <div class="panel-body">
                                 <div id="transcriptionsByMonth">
                                     <div ng-show="statsCtrl.transcriptionsByMonth.loaded" google-chart chart="statsCtrl.transcriptionsByMonth" style="height: 400px; width: 100%" ></div>
@@ -142,7 +142,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Validations By Month</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.validations_by_month"/></h4></div>
                             <div class="panel-body">
                                 <div id="validationsByMonth">
                                     <div ng-show="statsCtrl.validationsByMonth.loaded" google-chart chart="statsCtrl.validationsByMonth" style="height: 400px; width: 100%" ></div>
@@ -157,36 +157,36 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Institution</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.transcriptions_by_institutions"/></h4></div>
                             <div class="panel-body">
                                 <div tablechart data="statsCtrl.getTranscriptionsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                      yaxis="Number of Transcriptions"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByInstitution, 'transcriptionsByInstitution')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Validations By Institution</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.validations_by_institution"/></h4></div>
                             <div class="panel-body">
                                 <div tablechart data="statsCtrl.getValidationsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                      yaxis="Number of Validations"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.validationsByInstitution, 'validationsByInstitution')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Institution By Month</h4></div>
+                            <div class="panel-heading"><h4><g:message code="stats.index.transcriptions_by_institutions_by_month"/></h4></div>
                             <div class="panel-body">
                                 <div tablechart data="statsCtrl.getTranscriptionsByInstitutionByMonth()" title="" width="100%" height="100%" xaxis="Institution"
                                      yaxis="Month"></div>
                                 <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByInstitutionByMonth, 'transcriptionsByInstitutionByMonth')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <span class="glyphicon glyphicon-download-alt"></span> <g:message code="stats.index.download"/>
                                 </button>
                             </div>
                         </div>
@@ -214,7 +214,7 @@
             </div>
         </label>
     </div>
-    <button class="search btn btn-primary" ng-click="$ctrl.confirm()">Search</button>
+    <button class="search btn btn-primary" ng-click="$ctrl.confirm()"><g:message code="default.search"/></button>
 </div>
 </script>
 <g:render template="/common/angularBootstrapTabSet" />

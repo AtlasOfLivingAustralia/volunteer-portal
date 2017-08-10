@@ -6,7 +6,7 @@
 
 <body>
 
-<content tag="pageTitle">Picklists</content>
+<content tag="pageTitle"><g:message code="project.piclists.label"/></content>
 
 <content tag="adminButtonBar">
 </content>
@@ -16,8 +16,7 @@
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
     <div class="alert alert-warning">
-        A picklist with a specific 'Collection Code' must be
-        <a href="${createLink(controller: 'picklist', action: 'manage')}">loaded</a> first
+        <g:message code="project.piclists.warning" args="${ [createLink(controller: 'picklist', action: 'manage')] }" />
     </div>
 
     <div class="form-group">

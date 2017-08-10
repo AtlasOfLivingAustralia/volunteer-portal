@@ -51,9 +51,9 @@ class SettingController {
         SettingDefinition settingDefinition = getSettingDefByKey(key)
         if (settingDefinition && value) {
             settingsService.setSetting(key, value)
-            flash.message= "Setting '${key}' set to '${value}'"
+            flash.message= message(code: 'setting.setting_key_to_value', args: [key,value])
         } else {
-            flash.message= "Save setting failed! Either the setting key or value was missing/null"
+            flash.message= message(code: 'setting.save_setting_failed', args: [key,value])
         }
 
         redirect(action:'index')
@@ -85,7 +85,7 @@ class SettingController {
 
         if (to) {
             emailService.sendMail(to,"Test message from ${name}", "This is a test message from ${name}.")
-            flash.message = "Sent a test message to '${to}'"
+            flash.message = message(code: 'setting.sent_a_test_message_to', args: [to])
         }
         redirect(action:'index')
     }

@@ -69,17 +69,21 @@ class ProjectService {
         // Load all related forum topics
         // Need to load them all first before querying for the UserForumWatchLists otherwise they can't be removed from
         // the UserForumWatchLists topics set as of Hibernate plugin v3.6.10.16.
-        def taskTopics = TaskForumTopic.findAllByTaskInList(projectInstance.tasks.toList())
-        def topics = ProjectForumTopic.findAllByProject(projectInstance)
+        def taskList = projectInstance.tasks.toList();
         def topicCount = 0
-
-        // Also need to delete forum topics/posts that might be associated with this project
-        log.info("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
-        taskTopics?.each { topic ->
-            log.info("Deleting topic ${topic.id}...")
-            forumService.deleteTopic(topic)
-            topicCount++
+        if(taskList.size()>0) {
+            def taskTopics = TaskForumTopic.findAllByTaskInList(taskList)
+            // Also need to delete forum topics/posts that might be associated with this project
+            log.info("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
+            taskTopics?.each { topic ->
+                log.info("Deleting topic ${topic.id}...")
+                forumService.deleteTopic(topic)
+                topicCount++
+            }
         }
+
+
+        def topics = ProjectForumTopic.findAllByProject(projectInstance)
 
         log.info("Delete Project ${projectInstance.id}: Delete Project Forum Topics...")
         topics?.each { topic ->
@@ -121,7 +125,7 @@ class ProjectService {
 
         // if we get here we can delete the project directory on the disk
         log.info("Project ${projectInstance.id}: Removing folder from disk...")
-        def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id )
+        def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id)
         if (dir.exists()) {
             log.info("DeleteProject: Preparing to remove project directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
@@ -160,14 +164,15 @@ class ProjectService {
         for (Project project : projectList) {
             //if (!project.inactive) {
 
-                def taskCount = (Long) taskCounts[project.id] ?: 0
-                long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
-                long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
+            def taskCount = (Long) taskCounts[project.id] ?: 0
+            long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
+            long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
 //                def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
 //                def validatorCount = (Integer) validatorCounts[project.id] ?: 0
-                if (transcribedCount < taskCount) {
-                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)//volunteerCount, validatorCount)
-                }
+            if (transcribedCount < taskCount) {
+                results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)
+//volunteerCount, validatorCount)
+            }
             //}
         }
         log.debug("make summary projects: ${sw.elapsed(MILLISECONDS)}ms")
@@ -200,7 +205,7 @@ class ProjectService {
         }
 
         // Default, if all else fails
-        def iconImage = grailsLinkGenerator.resource(file:'/iconLabels.png')
+        def iconImage = grailsLinkGenerator.resource(file: '/iconLabels.png')
         def iconLabel = 'Specimens'
 
         if (project.projectType) {
@@ -272,7 +277,7 @@ class ProjectService {
                 def project = projectSummary.project
 
                 // special syntax for label (project type). NdR Oct 2015.
-                if (query.startsWith(tagPrefix) && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst(tagPrefix,""))) {
+                if (query.startsWith(tagPrefix) && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst(tagPrefix, ""))) {
                     return true
                 }
 
@@ -396,7 +401,7 @@ class ProjectService {
 
     def projectSize(List<Project> projects) {
         projects.collectEntries {
-            [(it.id) : projectSize(it)]
+            [(it.id): projectSize(it)]
         }
     }
 
@@ -425,7 +430,7 @@ class ProjectService {
                 count('fullyValidatedBy', 'validated')
             }
         }.collectEntries { row ->
-            [(row[0].id): [ total: row[1], transcribed: row[2], validated: row[3] ] ]
+            [(row[0].id): [total: row[1], transcribed: row[2], validated: row[3]]]
         }
     }
 

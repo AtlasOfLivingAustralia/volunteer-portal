@@ -11,7 +11,7 @@
 
     <cl:headerContent title="${message(code: 'default.admin.label', default: 'Administration')}"
                       selectedNavItem="bvpadmin">
-        <small class="muted">Version <g:meta name="info.app.version" />&nbsp;(built <cl:buildDate/>&nbsp;${grails.util.Environment.current}&nbsp;sha:&nbsp;<a
+        <small class="muted"><g:message code="admin.version" /> <g:meta name="info.app.version" />&nbsp;(<g:message code="admin.built" /> <cl:buildDate/>&nbsp;${grails.util.Environment.current}&nbsp;sha:&nbsp;<a
                 href="https://github.com/AtlasOfLivingAustralia/volunteer-portal/commit/${g.meta(name: 'info.git.commit')}"><g:meta name="info.git.commit" /></a>)
         </small>
     </cl:headerContent>
@@ -24,101 +24,101 @@
                     <table class="table table-condensed table-striped table-hover admin-table">
                         <thead>
                         <tr>
-                            <th>Tool</th>
-                            <th>Description</th>
+                            <th><g:message code="admin.tool" /></th>
+                            <th><g:message code="admin.description" /></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
                             <td>
                                 <a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'project', action: 'wizard')}">Create New Expedition</a>
+                                   href="${createLink(controller: 'project', action: 'wizard')}"><g:message code="admin.create_new_expedition" /></a>
                             </td>
-                            <td>Create a new ${message(code: 'default.application.name')} Expedition</td>
+                            <td><g:message code="admin.create_a_new_expedition" /></td>
                         </tr>
                         <tr>
                             <td>
                                 <a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'template', action: 'list')}">Templates</a>
+                                   href="${createLink(controller: 'template', action: 'list')}"><g:message code="admin.templates" /></a>
                             </td>
-                            <td>Manage expedition templates and their fields</td>
+                            <td><g:message code="admin.templates.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'picklist', action: 'manage')}">Bulk manage picklists</a>
+                                   href="${createLink(controller: 'picklist', action: 'manage')}"><g:message code="admin.bulk_manage_picklists" /></a>
                             </td>
-                            <td>Allows modification to the values held in various picklists</td>
+                            <td><g:message code="admin.bulk_manage_picklists.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'validationRule', action: 'list')}">Validation Rules</a>
+                                   href="${createLink(controller: 'validationRule', action: 'list')}"><g:message code="admin.validation_rules" /></a>
                             </td>
-                            <td>Manage transcription validation rules</td>
+                            <td><g:message code="admin.validation_rules.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'frontPage', action: 'edit')}">Configure front page</a>
+                                   href="${createLink(controller: 'frontPage', action: 'edit')}"><g:message code="admin.configure_front_page" /></a>
                             </td>
-                            <td>Configure the appearance of the front page</td>
+                            <td><g:message code="admin.configure_front_page.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'leaderBoardAdmin', action: 'index')}">Configure Honour Board</a>
+                                   href="${createLink(controller: 'leaderBoardAdmin', action: 'index')}"><g:message code="admin.configure_honour_board" /></a>
                             </td>
-                            <td>Configure the appearance of the Honour Board</td>
+                            <td><g:message code="admin.configure_honour_board.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'stats', action: 'index')}">Stats</a></td>
-                            <td>Various Statistics (Experimental!)</td>
+                                   href="${createLink(controller: 'stats', action: 'index')}"><g:message code="admin.stats" /></a></td>
+                            <td><g:message code="admin.various_statistics" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Tutorial files</a>
+                                   href="${createLink(controller: 'admin', action: 'tutorialManagement')}"><g:message code="admin.tutorial_files" /></a>
                             </td>
-                            <td>Manage tutorial files</td>
+                            <td><g:message code="admin.tutorial_files.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
-                            <td>Tools</td>
+                                   href="${createLink(controller: 'admin', action: 'tools')}"><g:message code="admin.tools" /></a></td>
+                            <td><g:message code="admin.tools.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage Institutions</a>
+                                   href="${createLink(controller: 'institutionAdmin', action: 'index')}"><g:message code="admin.manage_institutions" /></a>
                             </td>
-                            <td>Manage Institutions</td>
+                            <td><g:message code="admin.manage_institutions.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'achievementDescription', action: 'index')}">Manage Badges</a>
+                                   href="${createLink(controller: 'achievementDescription', action: 'index')}"><g:message code="admin.manage_badges" /></a>
                             </td>
-                            <td>Manage Achievements</td>
+                            <td><g:message code="admin.manage_badges.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'label', action: 'index')}">Manage Tags</a></td>
-                            <td>Manage Project Tags</td>
+                                   href="${createLink(controller: 'label', action: 'index')}"><g:message code="admin.manage_tags" /></a></td>
+                            <td><g:message code="admin.manage_tags.description" /></td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'setting', action: 'index')}">Advanced Settings</a>
+                                   href="${createLink(controller: 'setting', action: 'index')}"><g:message code="admin.advanced_settings" /></a>
                             </td>
-                            <td>Advanced Settings</td>
+                            <td><g:message code="admin.advanced_settings.description" /></td>
                         </tr>
                         <tr>
-                            <td>Admin reports</td>
+                            <td><g:message code="admin.admin_reports" /></td>
                             <td>
                                 <a class="btn btn-default bs3"
                                    title="Display a list of email address for all volunteers"
-                                   href="${createLink(controller: 'admin', action: 'mailingList')}">Global mailing List</a>
+                                   href="${createLink(controller: 'admin', action: 'mailingList')}"><g:message code="admin.global_mailing_list" /></a>
                                 <a class="btn btn-default bs3"
                                    title="Users and their various counts and last activity etc..."
-                                   href="${createLink(controller: 'ajax', action: 'userReport', params: [wt: 'csv'])}">User report</a>
+                                   href="${createLink(controller: 'ajax', action: 'userReport', params: [wt: 'csv'])}"><g:message code="admin.user_report" /></a>
                                 <a class="btn btn-default bs3" title="A summary of recent user activity"
-                                   href="${createLink(controller: 'admin', action: 'currentUsers')}">Current users</a>
+                                   href="${createLink(controller: 'admin', action: 'currentUsers')}"><g:message code="admin.current_users" /></a>
                                 <a class="btn btn-default bs3" title="List of all expeditions and their statistics"
-                                   href="${createLink(controller: 'admin', action: 'projectSummaryReport')}">Expedition Summary Report</a>
+                                   href="${createLink(controller: 'admin', action: 'projectSummaryReport')}"><g:message code="admin.expedition_summary_report" /></a>
                             </td>
                         </tr>
                         </tbody>

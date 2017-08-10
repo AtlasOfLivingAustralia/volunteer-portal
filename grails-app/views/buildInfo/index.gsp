@@ -5,7 +5,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>Build Info</title>
+    <title><g:message code="build.build_info"/></title>
     <style type="text/css">
     h1 {
         color: #48802c;

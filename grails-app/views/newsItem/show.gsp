@@ -38,7 +38,7 @@
         <br/>
 
         <div>
-            <g:link class="btn btn-small" controller="newsItem" action="list">Read more news items...</g:link>
+            <g:link class="btn btn-small" controller="newsItem" action="list"><g:message code="newsItem.read_more_news_items"/></g:link>
         </div>
 
         <cl:ifAdmin>

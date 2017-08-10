@@ -36,10 +36,10 @@
                         <g:if test="${taskInstance}">
                             <g:set var="topicTitle" value="${taskInstance.externalIdentifier ?: (catalogNumber ?: taskInstance.id)}"/>
                             <g:hiddenField name="title" value="${topicTitle}"/>
-                            <h1>New forum topic for task ${topicTitle}</h1>
+                            <h1><g:message code="forum.new_topic"/> ${topicTitle}</h1>
                             <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
                             <div class="form-group">
-                                <label for="text" class="col-md-3 control-label">Message:</label>
+                                <label for="text" class="col-md-3 control-label"><g:message code="forum.message"/></label>
                                 <div class="col-md-6">
                                     <g:textArea name="text" rows="6" class="form-control" value="${params.text}"/>
                                 </div>
@@ -65,7 +65,7 @@
                             <div class="col-md-offset-3 col-md-9">
                                 <label for="watchTopic">
                                     <g:checkBox name="watchTopic" checked="checked"/>
-                                    Watch this topic
+                                    <g:message code="forum.watch_this_topic"/>
                                 </label>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                             <div class="form-group">
                                 <label for="priority" class="col-md-3 control-label"><g:message code="forum.priority.label" default="Priority"/></label>
                                 <div class="col-md-4">
-                                    <g:select class="form-control" from="${au.org.ala.volunteer.ForumTopicPriority.values()}" name="priority"/>
+                                    <g:select class="form-control" name="priority" optionValue="${{message(code: it.i18nLabel)}}" from="${au.org.ala.volunteer.ForumTopicPriority.values()}" />
                                 </div>
                             </div>
 
@@ -96,14 +96,14 @@
                                 <div class="col-md-offset-3 col-md-9">
                                     <label for="featured">
                                         <g:checkBox name="featured" checked="${params.featured}"/>
-                                        <g:message code="forum.featured.label" default="Featured topic"/> (<span>will be displayed on the Forum entry page if ticked</span>)
+                                        <g:message code="forum.featured.label" default="Featured topic"/> (<g:message code="forum.featured.description"/>)
                                     </label>
                                 </div>
                             </div>
                         </vpf:ifModerator>
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
-                                <button class="btn btn-primary" type="submit">Save</button>
+                                <button class="btn btn-primary" type="submit"><g:message code="forum.save"/></button>
                             </div>
                         </div>
                     </g:form>

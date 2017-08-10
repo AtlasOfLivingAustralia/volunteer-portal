@@ -49,7 +49,7 @@ class TaskController {
         if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, "adminList")
         } else {
-            flash.message = "You do not have permission to view the Admin Task List page (you need to be either an adminstrator or a validator)"
+            flash.message = message(code: 'taskController.no_permission')
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
@@ -155,7 +155,7 @@ class TaskController {
                     projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance, lockedMap: lockedMap])
         }
         else {
-            flash.message = "No project found for ID " + params.id
+            flash.message = message(code: 'taskController.no_project_found') + params.id
         }
     }
 
@@ -191,7 +191,7 @@ class TaskController {
             if (project) {
                 def (success, message) = taskLoadService.loadTaskFromCSV(project, params.csv, replaceDuplicates)
                 if (!success) {
-                    flash.message = message + " - Try again when current load is complete."
+                    flash.message = message + message(code: 'taskController.try_again_when_load_is_complete')
                 }
                 redirect( controller:'loadProgress', action:'index')
             }
@@ -200,7 +200,7 @@ class TaskController {
 
     def cancelLoad() {
         taskLoadService.cancelLoad()
-        flash.message = "Cancelled!"
+        flash.message = message(code: 'taskController.cancelled')
         redirect( controller:'loadProgress', action:'index')
     }
 
@@ -237,7 +237,7 @@ class TaskController {
             taskInstance.properties = params
             return [taskInstance: taskInstance]
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(view: '/index')
         }
     }
@@ -283,7 +283,7 @@ class TaskController {
                 // first check is user is logged in...
                 if (!currentUser) {
                     readonly = true
-                    msg = "You are not logged in. In order to transcribe tasks you need to register and log in."
+                    msg = message(code: 'taskController.you_are_not_logged_in')
                 } else {
                     // work out if the task is currently being edited by someone else...
                     def prevUserId = null
@@ -303,13 +303,13 @@ class TaskController {
                     if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
                         // task is already being viewed by another user (with timeout period)
                         log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
-                        msg = "This task is being viewed/edited by another user, and is currently read-only"
+                        msg = message(code: 'taskController.task_is_viewed_by_another_user')
                         readonly = true
                     } else if (taskInstance.fullyValidatedBy && taskInstance.isValid != null) {
-                        msg = "This task has been validated, and is currently read-only."
+                        msg = message(code: 'taskController.task_has_been_validated')
                         if (userService.isValidator(taskInstance.project)) {
                             def link = createLink(controller: 'validate', action: 'task', id: taskInstance.id)
-                            msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
+                            msg += message(code: 'taskController.as_a_validator_you_may_review_edit', args: [link])
                         }
                         readonly = true
                     }
@@ -347,7 +347,7 @@ class TaskController {
                 return [taskInstance: taskInstance]
             }
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(view: '/index')
         }
     }
@@ -418,7 +418,7 @@ class TaskController {
         }
          */
         if (!task) {
-            response.sendError(404, "Task not found")
+            response.sendError(404, message(code: 'taskController.task_not_found'))
             return
         }
 
@@ -627,13 +627,13 @@ class TaskController {
                 if (f != null) {
                     def allowedMimeTypes = ['text/plain','text/csv', 'application/octet-stream', 'application/vnd.ms-excel']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = "The image file must be one of: ${allowedMimeTypes}, recieved '${f.getContentType()}'}"
+                        flash.message = message(code: 'taskController.the_mage_file_must_be_one_of', args: [allowedMimeTypes,f.getContentType()])
                         redirect(action:'staging', params:[projectId:projectInstance?.id])
                         return
                     }
 
                     if (f.size == 0 || !f.originalFilename) {
-                        flash.message = "You must select a file to upload"
+                        flash.message = message(code: 'taskController.you_must_select_a_file')
                         redirect(action:'staging', params:[projectId:projectInstance?.id])
                         return
                     }
@@ -652,7 +652,7 @@ class TaskController {
                 if (f != null) {
                     def allowedMimeTypes = ['text/plain','text/csv']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = "The file must be one of: ${allowedMimeTypes}"
+                        flash.message = message(code: 'taskController.the_file_must_be_one_of')+ ' ' +allowedMimeTypes
                         redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
                         return
                     }
@@ -695,14 +695,14 @@ class TaskController {
                     if (f != null) {
                         def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
                         if (!allowedMimeTypes.contains(f.getContentType())) {
-                            flash.message = "The image file must be one of: ${allowedMimeTypes}"
+                            flash.message = message(code: 'taskController.the_image_file_must_be_one_of')+" ${allowedMimeTypes}"
                             return
                         }
 
                         try {
                             stagingService.stageImage(projectInstance, f)
                         } catch (Exception ex) {
-                            flash.message = "Failed to upload image file: " + ex.message;
+                            flash.message = message(code: 'taskController.failed_to_upload_image') + ex.message;
                         }
                     }
 
@@ -719,10 +719,10 @@ class TaskController {
         if (projectInstance && imageName) {
             try {
                 if (!stagingService.unstageImage(projectInstance, imageName)) {
-                    flash.message = "Failed to delete image. Possibly file permissions?"
+                    flash.message = message(code: 'taskController.failed_to_delete_image_possibily_permissions')
                 }
             } catch (Exception ex) {
-                flash.message = "Failed to delete image: " + ex.message
+                flash.message = message(code: 'taskController.failed_to_delete_image') + ex.message
             }
         }
         redirect(action:'staging', params:[projectId:projectInstance?.id])
@@ -835,7 +835,7 @@ class TaskController {
 
         def projectInstance = Project.get(params.int("projectId"))
         if (!projectInstance) {
-            flash.errorMessage = "No project/invalid project id!"
+            flash.errorMessage = message(code: 'taskController.no_project')
             redirect(controller:'admin', action:'index')
             return
         }
@@ -896,7 +896,7 @@ class TaskController {
             return
         }
         if (!userService.isAdmin()) {
-            flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
+            flash.errorMessage = message(code: 'taskController.only_administrators_can_perform_this_action')
             redirect(action:'showDetails', id: taskInstance.id)
             return
         }
@@ -913,7 +913,7 @@ class TaskController {
             return
         }
         if (!userService.isAdmin()) {
-            flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
+            flash.errorMessage = message(code: 'taskController.only_administrators_can_perform_this_action')
             redirect(action:'showDetails', id: taskInstance.id)
             return
         }
@@ -924,7 +924,7 @@ class TaskController {
 
     def showChangedFields(Task task) {
         if (!task || !task.id) {
-            response.sendError(SC_BAD_REQUEST, "must provide a task id")
+            response.sendError(SC_BAD_REQUEST, message(code: 'taskController.must_provide_a_task_id'))
             return
         }
         def fields = taskService.getChangedFields(task)
@@ -933,7 +933,7 @@ class TaskController {
 
     def viewTask(Task task) {
         if (!task || !task.id) {
-            response.sendError(SC_BAD_REQUEST, "must provide a task id")
+            response.sendError(SC_BAD_REQUEST, message(code: 'taskController.must_provide_a_task_id'))
             return
         }
         def userId = userService.currentUser?.userId

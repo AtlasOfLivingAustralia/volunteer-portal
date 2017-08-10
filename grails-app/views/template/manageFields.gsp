@@ -28,15 +28,15 @@
                     <g:hiddenField name="id" value="${templateInstance.id}"/>
                     <div class="col-md-6">
                         <button class="btn btn-success" id="btnAddField">
-                            <i class="icon-plus icon-white"></i>&nbsp;Add field
+                            <i class="icon-plus icon-white"></i>&nbsp;<g:message code="template.manageFields.add_field" />
                         </button>
-                        <button class="btn btn-default" id="btnCleanUpOrdering">Clean up ordering</button>
-                        <button class="btn btn-default" id="btnPreviewTemplate">Preview Template</button>
-                        <button class="btn btn-default" id="btnExportAsCSV">Export as CSV</button>
+                        <button class="btn btn-default" id="btnCleanUpOrdering"><g:message code="template.manageFields.clean_up_ordering" /></button>
+                        <button class="btn btn-default" id="btnPreviewTemplate"><g:message code="template.manageFields.preview_template" /></button>
+                        <button class="btn btn-default" id="btnExportAsCSV"><g:message code="template.manageFields.export_as_csv" /></button>
                     </div>
                     <div class="col-md-6">
                         <input type="file" data-filename-placement="inside" name="uploadFile"/>
-                        <button class="btn btn-success" id="btnImportFromCSV">Import from CSV</button>
+                        <button class="btn btn-success" id="btnImportFromCSV"><g:message code="template.manageFields.import_from_csv" /></button>
                     </div>
                 </g:uploadForm>
             </div>
@@ -47,14 +47,14 @@
                     <table class="table table-striped table-hover template-fields">
                         <thead>
                         <tr>
-                            <th>Order</th>
-                            <th>DwC Field</th>
-                            <th>Form type</th>
-                            <th>Label</th>
-                            <th>Layout Class</th>
-                            <th>Validation</th>
-                            <th>Category</th>
-                            <th>Help text</th>
+                            <th><g:message code="template.manageFields.order" /></th>
+                            <th><g:message code="template.manageFields.dwc_field" /></th>
+                            <th><g:message code="template.manageFields.form_type" /></th>
+                            <th><g:message code="template.manageFields.label" /></th>
+                            <th><g:message code="template.manageFields.layout_class" /></th>
+                            <th><g:message code="template.manageFields.validation" /></th>
+                            <th><g:message code="template.manageFields.category" /></th>
+                            <th><g:message code="template.manageFields.help_text" /></th>
                             <th></th>
                         </tr>
                         </thead>
@@ -94,22 +94,22 @@
         </div>
     </div>
 
-    <div id="dialog" title="Move field to position" style="display: none">
+    <div id="dialog" title="${message(code: 'template.manageFields.move_field_to_position')}" style="display: none">
         <g:hiddenField name="dialogFieldId" id="dialogFieldId"/>
         <table style="width: 100%">
             <tr>
-                <td><strong>Old&nbsp;position:</strong></td>
+                <td><strong><g:message code="template.manageFields.old_position" /></strong></td>
                 <td><g:textField name="oldPosition" id="oldPosition" disabled="true" size="10"/></td>
             </tr>
             <tr>
-                <td><strong>New&nbsp;position (Order):</strong></td>
+                <td><strong><g:message code="template.manageFields.new_position" /></strong></td>
                 <td><g:textField name="newPosition" id="newPosition" size="10"/></td>
             </tr>
         </table>
 
         <div style="margin-top: 15px">
-            <button class="btn" id="btnCancelMove">Cancel</button>
-            <button class="btn" id="btnApplyMove">Move Field</button>
+            <button class="btn" id="btnCancelMove"><g:message code="default.cancel" /></button>
+            <button class="btn" id="btnApplyMove"><g:message code="template.manageFields.move_field" /></button>
         </div>
     </div>
 </div>
@@ -186,7 +186,7 @@
                     e.preventDefault();
                     var fieldId = $(this).parents("[fieldId]").attr("fieldId");
                     if (fieldId) {
-                        if (confirm("Are you sure you wish to delete this field from the template?")) {
+                        if (confirm("${message(code: 'template.manageFields.are_you_sure_to_delete_this_field')}")) {
                             window.location.href = "${createLink(controller: 'template', action: 'deleteField', id: templateInstance.id)}?fieldId=" + fieldId;
                         }
                     }
@@ -212,7 +212,7 @@
 
                 $("#btnImportFromCSV").click(function(e) {
                     e.preventDefault();
-                    if (confirm("This will remove all existing fields, and replace them with the contents of the selected file. Are you sure?")) {
+                    if (confirm("${message(code: 'template.manageFields.this_will_remove_existing_fields')}")) {
                         $("form").submit();
                     }
                 });

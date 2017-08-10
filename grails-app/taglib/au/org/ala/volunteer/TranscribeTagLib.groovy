@@ -366,14 +366,14 @@ class TranscribeTagLib {
                         mkp.yieldUnescaped('&times;')
                     }
                     span() {
-                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                        mkp.yield(message(code: "transcribeTagLib.error_getting_meta_data", args: [multimedia.id]))
                     }
                 }
             }
 
             mb.div(id:'image-parent-container') {
                 mb.div(id:attrs.elementId ?: 'image-container', preserveWidthWhenPinned:attrs.preserveWidthWhenPinned) {
-                    mb.img(src:imageMetaData.url, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
+                    mb.img(src:imageMetaData.url, alt: attrs.altMessage ?: message(code: "transcribeTagLib.task_image"), 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
                     if (!attrs.hideControls) {
                         div(class:'imageviewer-controls') {
                             a(id:'panleft', href:"#", class:'left') {}
@@ -386,15 +386,15 @@ class TranscribeTagLib {
 
                         if (!attrs.hidePinImage) {
                             div(class:'pin-image-control') {
-                                a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window', ('data-container'): 'body') {
-                                    mkp.yield('Pin image in place')
+                                a(id:'pinImage', href:'#', title:message(code: "transcribeTagLib.fix_the_image_in_place"), ('data-container'): 'body') {
+                                    mkp.yield(message(code: "transcribeTagLib.fix_the_image_in_place"))
                                 }
                             }
                         }
                         if (!attrs.hideShowInOtherWindow) {
                             div(class:'show-image-control') {
-                                a(id:'showImageWindow', href:'#', title:'Show image in a separate window', ('data-container'): 'body') {
-                                    mkp.yield('Show image in a separate window')
+                                a(id:'showImageWindow', href:'#', title:message(code: "transcribeTagLib.show_image_in_a_separate_window"), ('data-container'): 'body') {
+                                    mkp.yield(message(code: "transcribeTagLib.show_image_in_a_separate_window"))
                                 }
                             }
 
@@ -527,7 +527,7 @@ class TranscribeTagLib {
                                 }
                             }
                             a(class: 'closeSectionLink', href: '#') {
-                                mkp.yield('Shrink');
+                                mkp.yield(message(code: "transcribeTagLib.shrink"));
                             }
                         }
 
@@ -615,7 +615,7 @@ class TranscribeTagLib {
         // fallback to default picklist if institution code given and no items found
         if (project?.picklistInstitutionCode && !items) items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(pl)
 
-        if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
+        if (!items) return [error: message(code: "transcribeTagLib.no_picklist_items_found", args: [pl.uiLabel, project?.picklistInstitutionCode])]
         def items2 = items.collectEntries {
             def key = it.key?.split(',')?.toList()?.collect { it?.trim() } ?: []
             [ (key) : it.value ]
@@ -626,15 +626,15 @@ class TranscribeTagLib {
             imageInfos = imageServiceService.getImageInfoForIds(imageIds)
         } catch (e) {
             log.error("Error calling image service for ${imageIds}", e)
-            return [error: "Error contacting image service: ${e.message}"]
+            return [error: message(code: "transcribeTagLib.error_contacting_image_service", args: [e.message])]
         }
 
         if (!imageInfos)
-            return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
+            return [error: message(code: "transcribeTagLib.could_not_find_images_for_keys", args: [imageIds.join(", ")])]
         else {
             //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
             def missing = imageIds.findAll { imageInfos[it] == null }
-            if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
+            if (missing) warnings.add(message(code: "transcribeTagLib.the_following_image_ids_cannot_be_found", args: [missing.join(', ')]))
         }
 
         [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]

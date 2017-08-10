@@ -47,7 +47,7 @@ class TwitterBootstrapTagLib {
 
         def writer = out
         if (attrs.total == null) {
-            throwTagError("Tag [paginate] is missing required attribute [total]")
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y", args: ["paginate","total"]))
         }
         def messageSource = grailsAttributes.messageSource
         def locale = RCU.getLocale(request)

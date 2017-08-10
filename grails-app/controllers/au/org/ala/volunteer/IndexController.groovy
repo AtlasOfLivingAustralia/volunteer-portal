@@ -31,10 +31,14 @@ class IndexController {
 
         def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentTranscribed }
 
-        def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null).projectRenderList?.get(0)
-        //def featuredProjectSummaries = projectService.makeSummaryListFromProjectList(featuredProjects, params)
+        if(frontPage.projectOfTheDay) {
+            def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null).projectRenderList?.get(0)
+            //def featuredProjectSummaries = projectService.makeSummaryListFromProjectList(featuredProjects, params)
 
-        render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
+            render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
+        }else {
+            render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: {}] )
+        }
     }
 
     def leaderBoardFragment() {

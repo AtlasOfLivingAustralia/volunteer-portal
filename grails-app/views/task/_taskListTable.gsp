@@ -21,7 +21,7 @@
                           title="${message(code: 'task.isValid.label', default: 'Validation Status')}"
                           params="${[q: params.q]}" style="text-align: center;"/>
 
-        <th style="text-align: center;">Action</th>
+        <th style="text-align: center;"><g:message code="task.list.action"/></th>
 
     </tr>
     </thead>
@@ -74,13 +74,13 @@
                 </g:if>
                 <g:elseif test="${taskInstance.fullyTranscribedBy}">
                     <button class="btn btn-small"
-                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
+                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'"><g:message code="task.taskListTable.validate"/></button>
                 %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
                 %{--</button>--}%
                 </g:elseif>
                 <g:else>
                     <button class="btn btn-small"
-                            onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'">transcribe</button>
+                            onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'"><g:message code="task.taskListTable.transcribe"/></button>
                 </g:else>
             </td>
 

@@ -28,7 +28,7 @@
                         <div class="col-md-4">
                             <g:textField class="form-control" name="settingValue" value="${currentValue}"/>
                         </div>
-                        <g:submitButton class="btn btn-primary" name="save">Save</g:submitButton>
+                        <g:submitButton class="btn btn-primary" name="save"><g:message code="default.button.save.label"/></g:submitButton>
                     </g:form>
                 </div>
             </div>

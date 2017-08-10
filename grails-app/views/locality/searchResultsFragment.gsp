@@ -8,7 +8,7 @@
                     <td colspan="2" class="locality">${locality.locality}</td>
                     <td class="buttonCell">
                         <button class="btn selectLocalityButton" localityId="${locality.id}"
-                                title="Use this locality">Select&nbsp;locality</button>
+                                title="Use this locality"><g:message code="locality.search.select_locality"/></button>
                     </td>
                 </tr>
                 <tr>
@@ -42,7 +42,7 @@
         });
 
 
-        $('#searchResultsStatus').text('${localities.size()} matching ${localities.size() == 1 ? "locality" : "localities"}');
+        $('#searchResultsStatus').text('${localities.size() == 1 ? message(code:'locality.matching_locality', args: [1]) : message(code:'locality.matching_localities', args: [localities.size()])}');
 
         localityMap.removeMarkers();
 
@@ -173,5 +173,5 @@
     </style>
 </g:if>
 <g:else>
-    <span>There are no matching localities.</span>
+    <span><g:message code="locality.search.no_matching_localities"/></span>
 </g:else>

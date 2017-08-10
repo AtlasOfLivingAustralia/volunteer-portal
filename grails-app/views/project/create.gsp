@@ -18,7 +18,7 @@
 
 <body>
 
-<cl:headerContent title="${message(code: 'default.createexpedition.label', default: "Create Expedition")}">
+<cl:headerContent title="${message(code: 'project.create_expedition', default: "Create Expedition")}">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Admin')]

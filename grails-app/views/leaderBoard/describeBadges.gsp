@@ -31,7 +31,7 @@
                                         <div class="caption">
                                             <h4>${b.name}</h4>
 
-                                            <p>You will receive this badge when you have...</p>
+                                            <p><g:message code="describeBadges.description"/></p>
                                             <p>${b.description}</p>
                                         </div>
                                     </div>

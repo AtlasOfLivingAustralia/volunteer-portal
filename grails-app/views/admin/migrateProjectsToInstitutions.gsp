@@ -24,7 +24,7 @@
 <div class="container">
     <div class="panel panel-default">
         <div class="panel-body">
-            <a id="migrate-button" class="btn btn-success" href="javascript:void(0)">Migrate Selected</a>
+            <a id="migrate-button" class="btn btn-success" href="javascript:void(0)"><g:message code="admin.migration.migrate_selected" /></a>
             <div id="list-institution" class="content scaffold-list table-responsive" role="main">
                 <table class="table table-striped table-hover">
                     <thead>
@@ -33,7 +33,7 @@
                         <g:sortableColumn property="name" title="${message(code: 'project.name.label', default: 'Project Name')}"/>
                         <g:sortableColumn property="featuredOwner"
                                           title="${message(code: 'project.featuredOwner.label', default: 'Project Sponsor')}"/>
-                        <th><g:message code="institution.migrate.select" default="New Institution"/></th>
+                        <th><g:message code="admin.migration.new_institution" default="New Institution"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -85,7 +85,7 @@
                     location.reload();
                 }
                 function failure() {
-                    alert("Migration failed, please reload and try again");
+                    alert(${message(code: 'admin.migration.error.failed')});
                 }
             });
 </asset:script>

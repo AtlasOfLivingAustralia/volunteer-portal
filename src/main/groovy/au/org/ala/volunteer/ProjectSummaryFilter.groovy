@@ -43,12 +43,12 @@ class ProjectSummaryFilter {
 
 public enum ProjectStatusFilterType {
 
-    showAll("All"), showIncompleteOnly("Incomplete"), showCompleteOnly("Completed")
+    showAll("ProjectStatusFilterType.all"), showIncompleteOnly("ProjectStatusFilterType.incomplete"), showCompleteOnly("ProjectStatusFilterType.completed")
 
-    def String description
+    def String i18nLabel
 
-    public ProjectStatusFilterType(String desc) {
-        description = desc
+    public ProjectStatusFilterType(String i18nLabel) {
+        this.i18nLabel = i18nLabel
     }
 
     public static ProjectStatusFilterType fromString(String statusFilter) {
@@ -63,12 +63,12 @@ public enum ProjectStatusFilterType {
 
 public enum ProjectActiveFilterType {
 
-    showAll("All"), showActiveOnly("Active"), showInactiveOnly("Deactivated")
+    showAll("projectActiveFilterType.all"), showActiveOnly("projectActiveFilterType.active"), showInactiveOnly("projectActiveFilterType.deactivated")
 
-    def String description
+    def String i18nLabel
 
-    public ProjectActiveFilterType(String desc) {
-        description = desc
+    public ProjectActiveFilterType(String i18nLabel) {
+        this.i18nLabel = i18nLabel
     }
 
     public static ProjectActiveFilterType fromString(String activeFilter) {

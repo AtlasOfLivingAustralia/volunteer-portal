@@ -77,7 +77,7 @@
                             <div class="col-md-offset-3 col-md-9">
                                 <g:actionSubmit class="btn save btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                <a href="${createLink(controller: 'validationRule', action: 'list')}" class="btn btn-default">Cancel</a>
+                                <a href="${createLink(controller: 'validationRule', action: 'list')}" class="btn btn-default"><g:message code="default.cancel" /></a>
                             </div>
                         </div>
                     </g:form>

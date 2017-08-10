@@ -38,10 +38,10 @@
                     <table class="table table-hover table-striped">
                         <thead>
                         <tr>
-                            <th>Key</th>
-                            <th>Default Value</th>
-                            <th>Value</th>
-                            <th>Description</th>
+                            <th><g:message code="setting.index.key"/></th>
+                            <th><g:message code="setting.index.default_value"/></th>
+                            <th><g:message code="setting.index.value"/></th>
+                            <th><g:message code="setting.index.description"/></th>
                             <th></th>
                         </tr>
                         </thead>
@@ -52,7 +52,7 @@
                                 <td>${setting.defaultValue}</td>
                                 <td><strong>${values[setting] instanceof org.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
                                 <td>${setting.description}</td>
-                                <td><button class="btn btn-default btnEditSetting">Change</button></td>
+                                <td><button class="btn btn-default btnEditSetting"><g:message code="setting.index.change"/></button></td>
                             </tr>
                         </g:each>
                         </tbody>
@@ -63,12 +63,12 @@
             <div class="row">
                 <div class="col-md-12">
                     <g:form action="sendTestEmail" class="form-horizontal">
-                        <label class="control-label col-md-1" for="to">To:</label>
+                        <label class="control-label col-md-1" for="to"><g:message code="setting.index.to"/></label>
                         <div class="col-md-5">
                             <g:textField class="form-control" name="to"/>
                         </div>
 
-                        <button class="btn btn-default" type="submit">Send test email</button>
+                        <button class="btn btn-default" type="submit"><g:message code="setting.index.send_test_email"/></button>
                     </g:form>
                 </div>
             </div>

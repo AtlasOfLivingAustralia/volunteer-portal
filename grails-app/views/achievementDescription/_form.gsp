@@ -197,7 +197,7 @@ jQuery(function($) {
             xhr: uploadProgressXhrFactory
         });
 
-        event.target.innerHTML = 'Uploading...';
+        event.target.innerHTML = '${message(code: "achievementDescription.uploading")}';
         r.done(function( data, textStatus, jqXHR ) {
             $('#upload-progress').addClass('hidden');
             $('#badge').val(data.filename).trigger('change');

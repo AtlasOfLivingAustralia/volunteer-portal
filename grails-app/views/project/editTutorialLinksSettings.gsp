@@ -6,7 +6,7 @@
 
 <body>
 
-<content tag="pageTitle">Tutorial Links</content>
+<content tag="pageTitle"><g:message code="project.edit_tutorial.label"/></content>
 
 <content tag="adminButtonBar">
 </content>

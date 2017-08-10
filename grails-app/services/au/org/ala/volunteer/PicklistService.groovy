@@ -110,7 +110,7 @@ class PicklistService {
 
     public boolean addCollectionCode(String code) {
         List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes) as List<String>
-        if (codes && code) {
+        if (codes != null && code != null) {
             if (!codes.contains(code)) {
                 codes.add(code)
                 settingsService.setSetting(SettingDefinition.PicklistCollectionCodes.key, codes.sort())

@@ -22,98 +22,66 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-3">
-                    <h4><span class="numberCircle">1</span>&nbsp;Upload Images</h4>
+                    <h4><span class="numberCircle">1</span>&nbsp;<g:message code="task.staging.upload_images"/></h4>
 
                     <p>
-                        Upload your images to the staging area
+                        <g:message code="task.staging.upload_images.description"/>
                     </p>
                     <p>
-                        In addition to task image files, you can also upload auxiliary data files that can contain additional data that should
-                        be attached to individual tasks (e.g. OCR text)
+                    <g:message code="task.staging.description2"/>
                         <cl:helpText markdown="${false}" tooltipPosition="bottomLeft" tipPosition="bottomLeft" customClass="upload-images-tooltip">
-                                <p>
-                                    Image filenames should be of the form <code>&lt;filename&gt;.jpg</code>
-                                    <b/>
-                                    Example: image01.jpg
-                                </p>
-
-                                <p>
-                                    Text files must match the following pattern:
-                                </p>
-                                <code>&lt;imageFilename&gt;__&lt;DwC field name&gt;__&lt;record index&gt;.txt</code>
-                                where:
-                                <ul>
-                                    <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension
-                                    </li>
-                                    <li><code>DwC field name</code> is the name of the field which should be populated with the contents of the file
-                                    </li>
-                                    <li><code>record index</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)
-                                    </li>
-                                </ul>
-
-                                <p><strong>Important:</strong> <code>__</code> in the filename are two underscore characters.
-                                </p>
-
-                                <div>
-                                    <p>
-                                        For example, assuming an image file has been staged with the name <code>image01.jpg</code>:
-                                        <br/>
-                                        The contents of <code>image01.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
-                                    </p>
-                                </div>
+                            <g:message code="task.staging.description.help1"/>
                         </cl:helpText>
                     </p>
                 </div>
             
                 <div class="col-md-3">
-                    <h4><span class="numberCircle">2</span>&nbsp;Upload datafile (Optional)</h4>
+                    <h4><span class="numberCircle">2</span>&nbsp;<g:message code="task.staging.upload_datafile"/></h4>
 
                     <p>
-                        Upload a csv file containing extra data to attach to each task. This can also be used for prepopulating fields within your template.
+                        <g:message code="task.staging.upload_datafile.description"/>
                     </p>
                 </div>
             
                 <div class="col-md-3">
-                    <h4><span class="numberCircle">3</span>&nbsp;Configure columns (Optional)</h4>
-                    <p>
-                        Add and configure columns in the table below to pre-populate data in your tasks.
+                    <h4><span class="numberCircle">3</span>&nbsp;<g:message code="task.staging.configure_columns"/></h4>
+                    <p><g:message code="task.staging.configure_columns.description"/>
+
                         <cl:helpText>
-                            <p>Pre-populated field values can be derived from the image filename, or portions thereof, or can also be read from a separate csv datafile keyed by the image filename.</p>
-        
-                            <p><strong>Note:</strong> Only data displayed in the staged images table will be loaded</p>
+                            <g:message code="task.staging.configure_columns.help"/>
                         </cl:helpText>
                     </p>
                 </div>
 
                 <div class="col-md-3">
-                    <h4><span class="numberCircle">4</span>&nbsp;Create tasks</h4>
-                    Review the staged images table, and create the tasks.
+                    <h4><span class="numberCircle">4</span>&nbsp;<g:message code="task.staging.create_tasks"/></h4>
+                    <g:message code="task.staging.create_tasks.description"/>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-3" style="text-align: center">
-                    <button id="btnSelectImages" class="btn btn-default">Select files</button>
+                    <button id="btnSelectImages" class="btn btn-default"><g:message code="task.staging.select_files"/></button>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
                     <g:if test="${hasDataFile}">
-                        <button class="btn btn-warning" id="btnClearDataFile">Clear data file</button>
-                        <a href="${dataFileUrl}">View data file</a>
+                        <button class="btn btn-warning" id="btnClearDataFile"><g:message code="task.staging.clear_data_file"/></button>
+                        <a href="${dataFileUrl}"><g:message code="task.staging.view_data_file"/></a>
                     </g:if>
                     <g:else>
-                        <button class="btn btn-default" id="btnUploadDataFile"><i class="fa fa-upload"></i>&nbsp;Upload data file
+                        <button class="btn btn-default" id="btnUploadDataFile"><i class="fa fa-upload"></i>&nbsp;<g:message code="task.staging.upload_data_file"/>
                         </button>
                     </g:else>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
-                    <button class="btnAddFieldDefinition btn btn-default"><i class="fa fa-plus"></i> Add column</button>
+                    <button class="btnAddFieldDefinition btn btn-default"><i class="fa fa-plus"></i> <g:message code="task.staging.add_column"/></button>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
                     <button id="btnLoadTasks" class="btn btn-primary"
-                            style="margin-left: 10px">Create tasks from staged images</button>
+                            style="margin-left: 10px"><g:message code="task.staging.create_tasks_from_staged_images"/></button>
                 </div>
             </div>
 
@@ -121,28 +89,28 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <h3>Staged images (${images.size()})
+                    <h3><g:message code="task.staging.staged_images"/> (${images.size()})
 
                         <div class="btn-group pull-right">
                             <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="fa fa-cog"></i> Actions
+                                <i class="fa fa-cog"></i> <g:message code="task.staging.actions"/>
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="#" class="btnAddFieldDefinition"><i
-                                            class="fa fa-plus"></i>&nbsp;Add a column</a>
+                                            class="fa fa-plus"></i>&nbsp;<g:message code="task.staging.add_a_column"/></a>
                                 </li>
                                 <li class="divider"></li>
 
                                 <li>
                                     <a href="#" id="btnExportTasksCSV"><i
-                                            class="fa fa-file"></i>&nbsp;Export staged tasks as CSV</a>
+                                            class="fa fa-file"></i>&nbsp;<g:message code="task.staging.export_staged_tasks_as_csv"/></a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="#" id="btnClearStagingArea"><i
-                                            class="fa fa-trash"></i>&nbsp;Delete all images</a>
+                                            class="fa fa-trash"></i>&nbsp;<g:message code="task.staging.delete_all_images"/></a>
                                 </li>
                             </ul>
                         </div>
@@ -157,7 +125,7 @@
                         <tr>
                             <th>
                                 <div>&nbsp;</div>
-                                Image file
+                                <g:message code="task.staging.image_file"/>
                             </th>
                             <g:each in="${profile.fieldDefinitions.sort({ it.id })}" var="field">
                                 <th fieldDefinitionId="${field.id}" style="vertical-align: bottom;">
@@ -167,11 +135,11 @@
                                         <div class="small">
                                             <span style="font-weight: normal">( ${field.fieldDefinitionType}: <b>${field.format}</b> - </span>
 
-                                            <a href="#" class="btnEditField btn btn-xs btn-default" title="Edit column definition">
+                                            <a href="#" class="btnEditField btn btn-xs btn-default" title="${message(code: 'task.staging.edit_column_definition')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             <g:if test="${field.fieldName != 'externalIdentifier'}">
-                                                <a href="#" class="btnDeleteField btn btn-xs btn-danger" title="Remove column">
+                                                <a href="#" class="btnDeleteField btn btn-xs btn-danger" title="${message(code: 'task.staging.remove_column')}">
                                                     <i class="fa fa-remove"></i>
                                                 </a>
                                             </g:if>
@@ -211,7 +179,7 @@
                                     <td>${image.valueMap[field.fieldName + "_" + field.recordIndex]}</td>
                                 </g:each>
                                 <td>
-                                    <button title="Delete image" class="btn btn-xs btn-danger btnDeleteImage" imageName="${image.name}"><i
+                                    <button title="${message(code: "task.staging.delete_image")}" class="btn btn-xs btn-danger btnDeleteImage" imageName="${image.name}"><i
                                             class="fa fa-remove"></i></button>
                                 </td>
                             </tr>
@@ -250,7 +218,7 @@
                 $(".btnAddFieldDefinition").click(function(e) {
                     e.preventDefault();
                     var options = {
-                        title: "Add field definition",
+                        title: "${message(code: 'task.staging.add_field_definition')}",
                         url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}"
                     }
                     bvp.showModal(options);
@@ -261,7 +229,7 @@
                     var fieldId = $(this).parents("[fieldDefinitionId]").attr("fieldDefinitionId");
                     if (fieldId) {
                         var options = {
-                            title: "Edit field definition",
+                            title: "${message(code: 'task.staging.edit_field_definition')}",
                             url:"${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}&fieldDefinitionId=" + fieldId
                         };
                         bvp.showModal(options);
@@ -288,7 +256,7 @@
                 $("#btnUploadDataFile").click(function(e) {
                     e.preventDefault();
                     var options = {
-                        title: "Upload a data file",
+                        title: "${message(code: 'task.staging.upload_a_data_file')}",
                         url:"${createLink(action: 'uploadDataFileFragment', params: [projectId: projectInstance.id])}"
                     }
                     bvp.showModal(options);
@@ -302,7 +270,7 @@
 
                 $("#btnClearStagingArea").click(function(e) {
                     e.preventDefault();
-                    bootbox.confirm('Are you sure you wish to delete all images from the staging area?', function(result) {
+                    bootbox.confirm('${message(code: 'task.staging.delete_confirmation')}', function(result) {
                         if (result) {
                             window.location = "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}";
                         }
@@ -312,7 +280,7 @@
                 $("#btnSelectImages").click(function(e) {
                     e.preventDefault();
                     var opts = {
-                        title:"Upload images to the staging area",
+                        title:"${message(code: 'task.staging.upload_images_to_the_staging_area')}",
                         url: "${createLink(action: "selectImagesForStagingFragment", params: [projectId: projectInstance.id])}"
                     };
 

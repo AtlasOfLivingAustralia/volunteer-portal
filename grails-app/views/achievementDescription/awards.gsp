@@ -31,11 +31,11 @@
     <table class="table table-striped table-hover">
         <thead>
         <tr>
-            <th>User</th>
-            <th>Awarded</th>
-            <th>Notified</th>
-            <th>Currently Eligible</th>
-            <th class="text-center">Actions</th>
+            <th><g:message code="achievementDescription.edit.user"/></th>
+            <th><g:message code="achievementDescription.edit.awarded"/></th>
+            <th><g:message code="achievementDescription.edit.notified"/></th>
+            <th><g:message code="achievementDescription.edit.currently_eligible"/></th>
+            <th class="text-center"><g:message code="achievementDescription.edit.actions"/></th>
         </tr>
         </thead>
         <tbody>
@@ -54,7 +54,7 @@
     </tabLe>
 
     <div class="well">
-        <h4>Grant achievement</h4>
+        <h4><g:message code="achievementDescription.edit.grant_achievement"/></h4>
         <g:form class="form-horizontal" action="award" id="${achievementDescriptionInstance?.id}" method="POST">
             <div class="form-group">
                 <label class="control-label col-md-3" for="user">
@@ -116,7 +116,7 @@ $(function($) {
         }).done(function (data) {
             event.delegateTarget.remove();
         }).fail(function (e) {
-            alert("Couldn't remove award, please refresh the page and try again.");
+            alert("${message(code: 'achievementDescription.edit.error.could_not_remove')}");
         });
     });
 

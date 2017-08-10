@@ -48,15 +48,16 @@ class BootStrap {
 
         prepareDefaultLabels()
 
-        // add system user
-        if (!User.findByUserId('system')) {
-            User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
-        }
-
         def internalRoles = [BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR, BVPRole.SITE_ADMIN]
 
         internalRoles.each { role ->
             ensureRoleExists(role)
+        }
+
+        // add system user
+        if (!User.findByUserId('system')) {
+            User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User', created: new Date())
+            u.save(flush: true, failOnError: true)
         }
 
         fullTextIndexService.ping()
@@ -68,9 +69,7 @@ class BootStrap {
         try {
             sql.execute("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch")
         } catch (e) {
-            log.fatal("Could not enable fuzzystrmatch PostgreSQL extension which is required by the application.  " +
-                    "Do you need to apt-get install postgresql-contrib or equivalent?", e)
-            throw e
+            log.error("Could not enable fuzzystrmatch PostgreSQL extension which is required by the application. Do you need to apt-get install postgresql-contrib or equivalent?", e)
         }
 
     }
@@ -80,7 +79,7 @@ class BootStrap {
         try {
             sql.execute("ALTER TABLE vp_user DROP COLUMN IF EXISTS display_name")
         } catch (e) {
-            log.warn("Could not remove vp_user.display_name", e)
+            log.error("Could not remove vp_user.display_name", e)
         }
     }
 
@@ -127,7 +126,7 @@ class BootStrap {
 
     private void prepareProjectTypes() {
         log.info("Checking project types...")
-        def builtIns = [[name:'specimens', label:'Specimens', icon:'/public/images/2.0/iconLabels.png'], [name:'fieldnotes', label: 'Field notes', icon:'/public/images/2.0/iconNotes.png'], [name: 'cameratraps', label: 'Camera Traps', icon: '/public/images/2.0/iconWild.png']]
+        def builtIns = [[name:'specimens', label: "bootstrap.specimens", icon:'/public/images/2.0/iconLabels.png'], [name:'fieldnotes', label: 'bootstrap.field_notes', icon:'/public/images/2.0/iconNotes.png'], [name: 'cameratraps', label: 'bootstrap.camera_traps', icon: '/public/images/2.0/iconWild.png']]
         builtIns.each {
             def projectType = ProjectType.findByName(it.name)
             if (!projectType) {
@@ -150,10 +149,10 @@ class BootStrap {
 
     private void prepareValidationRules() {
         log.info("Initialising validation rules")
-        checkOrCreateRule('mandatory', '.+', 'This field value is mandatory', "Mandatory fields must have a value supplied to them", true)
-        checkOrCreateRule('numeric', '^[-+]?[0-9]*\\.?[0-9]+$', 'This field must be a number', "Field values must be numeric (floating point or otherwise)", false)
-        checkOrCreateRule('integer', '^[-+]?[0-9]+$', 'This field must be a integer', "Field values must be integers", false)
-        checkOrCreateRule('positiveInteger', '^\\d+$', 'This field must be a positive integer', "Field values must be positive integers", false)
+        checkOrCreateRule('mandatory', '.+', "bootstrap.validation.this_field_is_mandatory", 'bootstrap.validation.this_field_is_mandatory.description', true)
+        checkOrCreateRule('numeric', '^[-+]?[0-9]*\\.?[0-9]+$', 'bootstrap.validation.this_field_must_be_a_number', 'bootstrap.validation.this_field_must_be_a_number.description', false)
+        checkOrCreateRule('integer', '^[-+]?[0-9]+$', 'bootstrap.validation.this_field_must_be_integer', 'bootstrap.validation.this_field_must_be_integer.description', false)
+        checkOrCreateRule('positiveInteger', '^\\d+$', 'bootstrap.validation.this_field_must_be_a_positive_integer', 'bootstrap.validation.this_field_must_be_a_positive_integer.description', false)
 
     }
 

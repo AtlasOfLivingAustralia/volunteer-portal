@@ -1,8 +1,7 @@
 <%@ page import="groovy.json.StringEscapeUtils" %>
 <g:if test="${!entriesField}">
     <div class="alert alert-danger">
-        No entriesField defined. Each template will require a specific field defined to capture the number of entries. Please consult with the <g:message
-                code="default.application.name"/> team for more details.
+        <g:message code="transcribe.dynamicDatasetRows.no_entriesField defined" />
     </div>
 </g:if>
 
@@ -14,7 +13,7 @@
     <div id="observationFields" entriesFieldId="recordValues.0.${entriesField?.fieldType}">
     </div>
     <button type="button" class="btn btn-small btn-success" id="btnAddRow"><i
-            class="icon-plus icon-white"></i>&nbsp;Add&nbsp;Row</button>
+            class="icon-plus icon-white"></i><g:message code="transcribe.dynamicDatasetRows.add_row defined" /></button>
 </g:if>
 
 <style type="text/css">
@@ -128,7 +127,7 @@
                     fieldCount++;
                 }
                 if (entryIndex > 0) {
-                htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="glyphicon glyphicon-remove glyphicon-white"></span> Delete </button>';
+                htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="glyphicon glyphicon-remove glyphicon-white"></span> <g:message code="default.button.delete.label" />Delete </button>';
                 }
                 htmlStr += "</div>";
                 itemCount++;

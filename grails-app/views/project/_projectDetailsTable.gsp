@@ -97,7 +97,7 @@
         <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'picklistInstitutionCode', 'errors')}">
             <g:select name="picklistInstitutionCode" from="${picklistInstitutionCodes}"
                       value="${projectInstance?.picklistInstitutionCode}"/>
-            <span>A picklist with a specific Insititution Code must be loaded first</span>
+            <span><g:message code="project.a_picklist_must_be_loaded_first" /></span>
         </td>
     </tr>
 
@@ -152,7 +152,7 @@
                 </g:each>
             </ul>
             <g:link class="btn btn-small" controller="newsItem" action="create"
-                    params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'newsItem.label', default: 'NewsItem')])}</g:link>
+                    params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'project.newsItem.label', default: 'NewsItem')])}</g:link>
         </td>
     </tr>
 
@@ -167,16 +167,16 @@
 
     <tr class="prop">
         <td valign="middle" class="name">
-            <label><g:message code="project.tasks.label" default="Tasks"/></label>
+            <label><g:message code="project.tasks" default="Tasks"/></label>
             <span>&nbsp;(<a
-                    href="${createLink(controller: 'task', action: 'list', id: projectInstance.id)}">${taskCount} tasks</a>)
+                    href="${createLink(controller: 'task', action: 'list', id: projectInstance.id)}">${taskCount} <g:message code="project.tasks" /></a>)
             </span>
         </td>
         <td valign="middle" class="value">
             <a class="btn"
-               href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks (CSV File)...</a>
+               href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}"><g:message code="project.load_tasks" /></a>
             <a class="btn"
-               href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}">Load Tasks (Image Staging)</a>
+               href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}"><g:message code="project.load_tasks_image_staging" /></a>
         </td>
     </tr>
 
@@ -184,8 +184,8 @@
         <td></td>
         <td>
             <a class="btn"
-               href="${createLink(controller: 'task', action: 'loadTaskData', params: [projectId: projectInstance.id])}">Load Task Data</a>
-            Load field values for existing tasks
+               href="${createLink(controller: 'task', action: 'loadTaskData', params: [projectId: projectInstance.id])}"><g:message code="project.load_task_data" /></a>
+            <g:message code="project.load_field_values_for_existing_tasks" />
         </td>
     </tr>
 
@@ -194,10 +194,10 @@
         <td>
             <span>
                 <span style="padding-left:7px; padding-top: 8px; padding-right: 5px; padding-bottom: 11px; background-image: url(${asset.assetPath(src: 'warning-button.png')})">
-                    <g:actionSubmit class="delete btn btn-danger" action="deleteTasks" value="Delete all tasks"
+                    <g:actionSubmit class="delete btn btn-danger" action="deleteTasks" value="${message(code: 'project.delete_all_tasks')}"
                                     onclick="return confirmDeleteAllTasks()"/>
                 </span>
-                &nbsp;Delete task images&nbsp;<g:checkBox style="width:20px" name="deleteImages"
+                &nbsp;<g:message code="project.delete_task_images" />&nbsp;<g:checkBox style="width:20px" name="deleteImages"
                                                           value="true"></g:checkBox>
             </span>
         </td>

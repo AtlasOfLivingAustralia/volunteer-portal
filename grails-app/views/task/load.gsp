@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'record.label', default: 'Record')}"/>
-    <title>CSV Image Upload</title>
+    <title><g:message code="task.load.csv"/></title>
     <asset:stylesheet src="qtip"/>
 </head>
 
@@ -15,13 +15,13 @@
     </span>
     <g:if test="${params.id}">
         <span class="menuButton"><a class="home"
-                                    href="${createLink(controller: 'project', action: 'edit', id: params.id)}">Edit project</a>
+                                    href="${createLink(controller: 'project', action: 'edit', id: params.id)}"><g:message code="task.load.edit_project"/></a>
         </span>
     </g:if>
 </div>
 
 <div class="inner">
-    <h1>Load CSV</h1>
+    <h1><g:message code="task.load.load_csv"/></h1>
 
     <g:form method="post">
         <div class="dialog">
@@ -56,15 +56,15 @@
         </div>
 
         <div class="buttons">
-            Duplicate handling mode:
+            <g:message code="task.load.duplicate_handling_mode"/>
             <select name="duplicateMode">
-                <option value="skip">Skip duplicates</option>
-                <option value="replace">Replace duplicates</option>
+                <option value="skip"><g:message code="task.load.skip_duplicates"/></option>
+                <option value="replace"><g:message code="task.load.replace_duplicates"/></option>
             </select>
             <span class="button"><g:actionSubmit class="submit" action="loadCSVAsync"
-                                                 value="${message(code: 'default.button.submit.label', default: 'Submit')}"/></span>
+                                                 value="${message(code: 'default.submit', default: 'Submit')}"/></span>
             <span class="button"><g:actionSubmit class="cancel" action="list"
-                                                 value="${message(code: 'default.button.cancel.label', default: 'Cancel')}"/></span>
+                                                 value="${message(code: 'default.cancel', default: 'Cancel')}"/></span>
         </div>
     </g:form>
 </div>

@@ -2,11 +2,11 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>New Transcribers</title>
+    <title><g:message code="mail.newTranscribers.title"/></title>
 </head>
 
 <body>
-<p>The following users have completed their fifth transcription within the last 24 hours:</p>
+<p><g:message code="mail.newTranscribers.description"/></p>
 <ul>
     <g:each in="${newTranscribers}" var="t">
         <li><g:link absolute="true" controller="user" action="show" id="${t.userId}">${t.displayName}</g:link></li>

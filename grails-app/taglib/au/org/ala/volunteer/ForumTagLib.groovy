@@ -55,7 +55,7 @@ class ForumTagLib {
                         th(style: 'text-align: right; vertical-align: middle; width: 150px') {
                             if (topic.locked) {
                                 mb.img(style: 'vertical-align: middle', src: resource(file: '/lock.png'))
-                                mkp.yield("Topic is locked")
+                                mkp.yield(message(code: "forumtaglib.topic_is_locked"))
                             } else {
                                 mb.a(id:'btnReply', class:'btn btn-primary') {
                                     mb.i(class: 'fa fa-reply') {mkp.yieldUnescaped("&nbsp;")}
@@ -68,7 +68,7 @@ class ForumTagLib {
 
                     tr {
                         th {}
-                        th { mkp.yield("${replies.size() - 1} " + (replies.size() == 2 ? 'reply' : "replies")) }
+                        th { mkp.yield("${replies.size() - 1} " + (replies.size() == 2 ? message(code: "forumtaglib.reply") : message(code: "forumtaglib.replies"))) }
                         th(style: 'text-align: right') {
                         }
                     }
@@ -102,28 +102,28 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            def message = markdownService.sanitize(reply.text ?: "")
-                            td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
+                            def markdownMessage= markdownService.sanitize(reply.text ?: "")
+                            td() { mkp.yieldUnescaped(markdownService.markdown(markdownMessage)) }
                             td(style:'text-align: right') {
                                 if (canEdit) {
 
                                     def timeLeft = forumService.messageEditTimeLeft(reply, userService.currentUser)
                                     if (timeLeft) {
                                         small(style:'color: orange') {
-                                            mkp.yield("You have ${timeLeft.minutes} minutes to change or delete this message")
+                                            mkp.yield(message(code: "forumtaglib.you_have_x_mins_left", args: [timeLeft.minutes]))
                                         }
                                         br {}
                                     }
 
                                     button(class:'btn btn-default editMessageButton') {
-                                        mkp.yield("Edit")
+                                        mkp.yield(message(code: "default.button.edit.label"))
                                     }
 
                                     // if this is the first message in the topic, you can't delete it
                                     // Only the first message as a null replyTo
                                     if (reply.replyTo != null) {
                                         button(class:'btn btn-danger deleteMessageButton') {
-                                            mkp.yield("Delete")
+                                            mkp.yield(message(code: "default.button.delete.label"))
                                         }
                                     }
                                 }
@@ -158,7 +158,7 @@ class ForumTagLib {
         Project projectInstance = null
         if (!topics) {
             mb.div {
-                mkp.yield("No topics found")
+                mkp.yield(message(code: "forumtaglib.no_topics_found"))
             }
             return
         }
@@ -173,12 +173,12 @@ class ForumTagLib {
             table(class: "table table-striped table-hover table-condensed") {
                 thead {
                     tr {
-                        mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"title", title: "Topic", action:paginateAction, params:params))
-                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"replies", title: "Replies", action:paginateAction, params:params))
-                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"views", title: "Views", action:paginateAction, params:params))
-                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"creator", title: "Posted&nbsp;by", action:paginateAction, params:params))
-                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"dateCreated", title: "Posted", action:paginateAction, params:params))
-                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"lastReplyDate", title: "Last reply", action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"title", title: message(code: "forumtaglib.topic"), action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"replies", title: message(code: "forumtaglib.replies"), action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"views", title: message(code: "forumtaglib.views"), action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"creator", title: message(code: "forumtaglib.posted_by"), action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"dateCreated", title: message(code: "forumtaglib.posted"), action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(class:"button", property:"lastReplyDate", title: message(code: "forumtaglib.last_reply"), action:paginateAction, params:params))
                         th(class: 'text-center') {
                             mkp.yield("")
                         }
@@ -188,7 +188,7 @@ class ForumTagLib {
                     if (topics.size() == 0) {
                         tr {
                             td(colspan: '8') {
-                                mkp.yield("There are no topics in this forum yet.")
+                                mkp.yield(message(code: "forumtaglib.there_are_no_topics_yet"))
                             }
                         }
                     } else {
@@ -209,10 +209,10 @@ class ForumTagLib {
                                 td(style: "width: ${topic instanceof ProjectForumTopic ? '100' : '60'}px;", class: 'text-center') {
                                     span(style: 'color:green') {
                                         if (topic.sticky) {
-                                            i(class:'fa fa-asterisk', title:'This topic is sticky') { mkp.yieldUnescaped("&nbsp;") }
+                                            i(class:'fa fa-asterisk', title:message(code: "forumtaglib.this_topic_is_sticky")) { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                         if (topic.locked) {
-                                            i(class:'fa fa-lock', title:'This topic is locked') { mkp.yieldUnescaped("&nbsp;") }
+                                            i(class:'fa fa-lock', title:message(code: "forumtaglib.this_topic_is_locked")) { mkp.yieldUnescaped("&nbsp;") }
                                         }
                                     }
                                     if (topic instanceof ProjectForumTopic) {
@@ -230,7 +230,7 @@ class ForumTagLib {
                                     }
                                     if (topic.featured) {
                                         sup {
-                                            mkp.yield("Featured Topic")
+                                            mkp.yield(message(code: "forumtaglib.featured_topic"))
                                         }
                                     }
                                 }
@@ -267,10 +267,10 @@ class ForumTagLib {
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
                                         a(class: 'btn btn-sm btn-default', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
-                                            mkp.yield("Edit")
+                                            mkp.yield(message(code: "default.button.edit.label"))
                                         }
                                         a(class: 'btn btn-sm btn-danger', href: createLink(controller: 'forum', action: 'deleteTopic', params: [topicId: topic.id])) {
-                                            mkp.yield("Delete")
+                                            mkp.yield(message(code: "default.button.delete.label"))
                                         }
 
                                     }
@@ -369,7 +369,7 @@ class ForumTagLib {
                 if (task.attached) {
                     topic = TaskForumTopic.findByTask(task)
                 }
-                def defaultLabel = topic ? 'View Forum Topic' : 'Create Forum Topic'
+                def defaultLabel = topic ? message(code: "forumtaglib.view_forum_topic") : message(code: "forumtaglib.create_forum_topic")
                 def label = attrs.label ?: defaultLabel
                 def mb = new MarkupBuilder(out)
                 mb.a(href: createLink(controller: 'forum', action: 'taskTopic', params: [taskId: task.id]), class: 'btn ' + attrs.class, style: attrs.style ?: '', target: 'forumWindow') {
@@ -480,7 +480,7 @@ class ForumTagLib {
             }
 
         } else {
-            out << "You have not posted any messages to the Forum"
+            out << message(code: "forumtaglib.you_have_not_posted_any_messages_to_the_forum")
         }
 
 

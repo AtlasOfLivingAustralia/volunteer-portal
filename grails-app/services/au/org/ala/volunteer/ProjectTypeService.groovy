@@ -31,7 +31,7 @@ class ProjectTypeService {
 
         def file = new File(getLocalFileNameForIcon(projectType));
         file.getParentFile().mkdirs();
-        imageFile.transferTo(file);
+        imageFile.transferTo(file.absoluteFile);
     }
 
     def getLocalFileNameForIcon(ProjectType projectType) {

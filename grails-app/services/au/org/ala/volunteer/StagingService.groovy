@@ -30,7 +30,7 @@ class StagingService {
         def filePath = createStagedPath(project, file.originalFilename)
         println "copying stagedFile to " + filePath
         def newFile = new File(filePath);
-        file.transferTo(newFile);
+        file.transferTo(newFile.absoluteFile);
     }
 
     def listStagedFiles(Project project) {
@@ -310,7 +310,7 @@ class StagingService {
         clearDataFile(project)
         def f = new File(createDataFilePath(project))
         f.mkdirs()
-        file.transferTo(f)
+        file.transferTo(f.absoluteFile)
     }
 
     public String dataFileUrl(Project project) {

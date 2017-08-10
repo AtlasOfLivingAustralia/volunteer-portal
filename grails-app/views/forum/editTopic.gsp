@@ -54,14 +54,14 @@
                                 <div class="col-md-offset-3 col-md-9">
                                     <label for="featured">
                                         <g:checkBox name="featured" checked="${topic.featured}"/>
-                                        <g:message code="forum.featured.label" default="Featured topic"/> (<span>will be displayed on the Forum entry page if ticked</span>)
+                                        <g:message code="forum.featured.label" default="Featured topic"/> <g:message code="forum.edit_topic.featured.description"/>
                                     </label>
                                 </div>
                             </div>
                         </vpf:ifModerator>
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
-                                <button class="btn btn-primary" type="submit">Update</button>
+                                <button class="btn btn-primary" type="submit"><g:message code="default.button.update.label"/></button>
                             </div>
                         </div>
                     </g:form>
