@@ -15,6 +15,8 @@
 
 package au.org.ala.volunteer
 
+import org.springframework.context.i18n.LocaleContextHolder
+
 class WebUtils {
 
     /**
@@ -164,4 +166,10 @@ class WebUtils {
         return sb.toString()
     }
 
+    public static Object safeGet(Object object, String key) {
+        return object?object[key]:null;
+    }
+    public static String getCurrentLocaleAsString() {
+        return LocaleContextHolder.getLocale().toString()
+    }
 }

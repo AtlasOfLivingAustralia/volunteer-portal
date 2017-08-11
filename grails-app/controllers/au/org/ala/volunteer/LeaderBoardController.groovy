@@ -11,7 +11,7 @@ class LeaderBoardController {
     def leaderBoardFragment() {
         def institutionInstance = Institution.get(params.int("institutionId"))
 
-        def legendName = institutionInstance ? institutionInstance.acronym : message(code:'default.application.name')
+        def legendName = institutionInstance ? institutionInstance.i18nAcronym : message(code:'default.application.name')
         def leaderBoardSections = [
             [category: LeaderBoardCategory.daily, label: message(code: 'daily.leader.label')],
             [category: LeaderBoardCategory.weekly, label:message(code: 'weekly.leader.label')],

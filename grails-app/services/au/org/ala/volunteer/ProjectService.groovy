@@ -2,15 +2,12 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
-import org.apache.commons.compress.archivers.zip.Zip64Mode
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.imageio.ImageIO
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
@@ -285,7 +282,7 @@ class ProjectService {
                     return true
                 }
 
-                if (project.institution && project.institution.name?.toLowerCase()?.contains(query)) {
+                if (project.institution && project.institution.i18nName?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
@@ -320,7 +317,7 @@ class ProjectService {
             }
 
             if (params?.sort == 'institution') {
-                return projectSummary.project.institution?.name ?: projectSummary.project.featuredOwner;
+                return projectSummary.project.institution?.i18nName ?: projectSummary.project.featuredOwner;
             }
 
             if (params?.sort == 'type') {

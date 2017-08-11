@@ -130,7 +130,7 @@
                                 </a>
                             </div>
                             <div class="caption">
-                                <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
+                                <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.i18nName}</a></h4>
 
                                 <div class="expedition-progress">
                                     <div class="progress-legend">

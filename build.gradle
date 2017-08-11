@@ -34,9 +34,11 @@ ext{
         pathingJar = true
     }
 }
-//ext {
-//    set "tomcat.version", "8.5.11" // use this to force a tomcat version
-//}
+
+/* Enable for doedat compilation*/
+/*ext {
+    set "tomcat.version", "7.0.52" // use this to force a tomcat version
+}*/
 
 repositories {
     mavenLocal()

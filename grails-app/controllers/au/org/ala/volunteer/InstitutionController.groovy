@@ -52,7 +52,7 @@ class InstitutionController {
         def totalCount
 
         if (!params.sort) {
-            params.sort = 'name'
+            params.sort = 'i18nName.'+WebUtils.getCurrentLocaleAsString()
         }
         if (!params.order) {
             params.order = 'asc'
@@ -68,11 +68,23 @@ class InstitutionController {
 
         if (params.q) {
             def query = "%${params.q}%"
-            institutions = Institution.findAllByNameIlikeOrAcronymIlike(query, query, params)
-            totalCount = Institution.countByNameIlikeOrAcronymIlike(query, query)
+
+            /* With internationalization */
+            institutions = (List<Institution>)Institution.createCriteria().list {
+                or {
+                    i18nName {
+                        like WebUtils.getCurrentLocaleAsString(), query
+                    }
+                    i18nAcronym {
+                        like WebUtils.getCurrentLocaleAsString(), query
+                    }
+                }
+            }
+            totalCount = institutions.size()
+
         } else {
             institutions = Institution.list(params)
-            totalCount = Institution.count()
+            totalCount = institutions.size()
         }
 
         def projectCounts = institutionService.getProjectCounts(institutions)

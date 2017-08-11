@@ -69,7 +69,7 @@
                     e.preventDefault();
                     bvp.showModal({
                         url: "${createLink(action: "uploadLogoImageFragment", id: institutionInstance.id)}",
-                        title: "${message(code: 'institutionAdmin.edit.upload_logo"')}"
+                        title: "${message(code: 'institutionAdmin.edit.upload_logo')}"
                     });
                 });
             });

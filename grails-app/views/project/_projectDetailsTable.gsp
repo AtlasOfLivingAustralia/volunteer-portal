@@ -54,7 +54,7 @@
             <label for="shortDescription"><g:message code="project.shortDescription.label"
                                                      default="Short description"/></label>
         </td>
-        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'shortDescription', 'errors')}">
+        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'i18nShortDescription', 'errors')}">
             <g:textArea class="input-xxlarge" name="shortDescription" value="${projectInstance?.shortDescription}"
                         rows="5" cols="100"/>
         </td>

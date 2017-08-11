@@ -1,5 +1,5 @@
 %{-- include CSS and JS assets in calling page --}%
-<g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
+<g:set var="instName" value="${institutionName ?: institutionInstance?.i18nName ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
 <section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl" class="ng-cloak">
     <g:if test="${!disableStats}">

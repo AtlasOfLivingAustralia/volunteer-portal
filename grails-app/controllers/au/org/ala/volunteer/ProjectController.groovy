@@ -8,8 +8,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
-import javax.servlet.http.HttpServletResponse
-
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
@@ -400,8 +398,8 @@ class ProjectController {
             redirect(action: "list")
         } else {
             final insts = Institution.list()
-            final names = insts*.name
-            final nameToId = insts.collectEntries { ["${it.name}": it.id] }
+            final names = insts*.i18nName.toString()
+            final nameToId = insts.collectEntries { ["${it.i18nName}": it.id] }
             final labelCats = Label.withCriteria { projections { distinct 'category' } }
 
             final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
@@ -870,7 +868,7 @@ class ProjectController {
         def project = new NewProjectDescriptor(stagingId: id)
 
         def list = Institution.list()
-        def institutions = list.collect { [id: it.id, name: it.name ] }
+        def institutions = list.collect { [id: it.id, name: it.i18nName.toString() ] }
         def templates = Template.listOrderByName([:])
         def projectTypes = ProjectType.listOrderByName([:])
         def projectImageUrl = projectStagingService.hasProjectImage(project) ? projectStagingService.getProjectImageUrl(project) : null

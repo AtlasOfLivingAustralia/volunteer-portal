@@ -1,7 +1,7 @@
 
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title><cl:pageTitle title="Edit Institution ${institutionInstance?.name}"/></title>
+    <title><cl:pageTitle title="Edit Institution ${institutionInstance?.i18nName}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
 </head>
@@ -13,10 +13,10 @@
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
                 [link: createLink(controller: 'institutionAdmin', action: 'index'), label: 'Manage Institutions'],
-                [link: createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id), label: institutionInstance.name]
+                [link: createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id), label: institutionInstance.i18nName]
         ]
     %>
-    <h1><g:message code="institutionSettings.title"/> - ${institutionInstance.name}</h1>
+    <h1><g:message code="institutionSettings.title"/> - ${institutionInstance.i18nName}</h1>
 </cl:headerContent>
 
 <div class="container">
@@ -37,7 +37,7 @@
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
                         <div class="panel-heading text-right" >
-                            <h4 class="pull-left">${institutionInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                            <h4 class="pull-left">${institutionInstance.i18nName} - <g:pageProperty name="page.pageTitle"/></h4>
 
                             <div class="btn-group">
                                 <g:pageProperty name="page.adminButtonBar"/>

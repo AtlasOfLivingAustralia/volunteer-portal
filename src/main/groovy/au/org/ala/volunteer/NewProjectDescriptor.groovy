@@ -33,7 +33,7 @@ class NewProjectDescriptor implements Serializable {
                 featuredOwner: p.featuredOwner.name,
                 featuredOwnerId: p.featuredOwner.id,
                 name: p.name,
-                shortDescription: p.shortDescription,
+                shortDescription: p.i18nShortDescription,
                 longDescription: p.longDescription,
                 templateId: p.templateId,
                 projectTypeId: p.projectTypeId,

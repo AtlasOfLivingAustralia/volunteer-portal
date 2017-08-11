@@ -112,7 +112,7 @@ class FullTextIndexService {
                 fields              : [],
                 project             : [
                         projectType            : task.project.projectType.toString(),
-                        institution            : task.project.institution ? task.project?.institution?.name : task.project.featuredOwner,
+                        institution            : task.project.institution ? task.project?.institution?.i18nName : task.project.featuredOwner,
                         institutionCollectoryId: task.project.institution?.collectoryUid,
                         harvestableByAla       : task.project.harvestableByAla,
                         name                   : task.project.featuredLabel,
@@ -136,7 +136,7 @@ class FullTextIndexService {
 
         fields.each { field ->
             if (field.value) {
-                data.fields << [fieldid: field.id, name: field.name, recordIdx: field.recordIdx, value: field.value, transcribedByUserId: field.transcribedByUserId, validatedByUserId: field.validatedByUserId, updated: field.updated, created: field.created]
+                data.fields << [fieldid: field.id, name: field.i18nName, recordIdx: field.recordIdx, value: field.value, transcribedByUserId: field.transcribedByUserId, validatedByUserId: field.validatedByUserId, updated: field.updated, created: field.created]
             }
         }
         return data

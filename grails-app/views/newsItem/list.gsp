@@ -11,7 +11,7 @@
 <div class="container">
 
     <%
-        def headingByLine = projectInstance?.featuredLabel ?: institutionInstance?.name ?: ""
+        def headingByLine = projectInstance?.featuredLabel ?: institutionInstance?.i18nName ?: ""
     %>
 
     <cl:headerContent crumbLabel="${message(code: 'default.list.label', args: [entityName])}" title="News Items ${headingByLine ? " - " + headingByLine : ' list'}" selectedNavItem="bvpadmin">
@@ -25,7 +25,7 @@
                 ]
             } else if (institutionInstance) {
                 pageScope.crumbs + [
-                        [link: createLink(controller: 'institution', action: 'index', id: institutionInstance.id), label: institutionInstance.acronym]
+                        [link: createLink(controller: 'institution', action: 'index', id: institutionInstance.id), label: institutionInstance.i18nAcronym]
                 ]
             }
         %>

@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title><cl:pageTitle title="${institutionInstance.name ?: 'unknown'}" /></title>
+    <title><cl:pageTitle title="${institutionInstance.i18nName ?: 'unknown'}" /></title>
     <content tag="primaryColour">${institutionInstance.themeColour}</content>
     <content tag="pageType">institution</content>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -38,7 +38,7 @@
 </head>
 
 <body class="content ${institutionInstance.themeColour}">
-<cl:headerContent title="${institutionInstance.name}" selectedNavItem="institutions" hideTitle="${true}" complexBodyMarkup="1">
+<cl:headerContent title="${institutionInstance.i18nName}" selectedNavItem="institutions" hideTitle="${true}" complexBodyMarkup="1">
     <%pageScope.crumbs = [[link: createLink(controller: 'institution', action: 'list'), label: message(code: 'default.institutions.label', default: 'Institutions')]] %>
     <div class="row">
         <div class="col-sm-4 col-sm-push-8">
@@ -61,8 +61,8 @@
             </table>
         </div>
         <div class="col-sm-8 col-sm-pull-4">
-            <h1 class="">${institutionInstance.name}</h1>
-            <p style="margin-top: 20px;">${institutionInstance.shortDescription}</p>
+            <h1 class="">${institutionInstance.i18nName}</h1>
+            <p style="margin-top: 20px;">${institutionInstance.i18nShortDescription}</p>
             <div class="cta-primary ">
                 <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="institution.see_our_expeditions" />
                     <span class="glyphicon glyphicon-arrow-down"></span></a>

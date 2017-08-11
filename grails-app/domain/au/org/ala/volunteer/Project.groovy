@@ -90,7 +90,7 @@ class Project implements Serializable {
     }
 
     public String getInstitutionName() {
-        institution ? institution.name : featuredOwner
+        institution ? institution.i18nName?.toString() : featuredOwner
     }
 
     public String getFeaturedImage() {
