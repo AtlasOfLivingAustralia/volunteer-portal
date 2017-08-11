@@ -23,9 +23,10 @@
         width: initial;
         margin-right: auto;
     }
-/*    .navbar > .container .navbar-brand {
-        margin-left: 30px !important;
-    }*/
+    .navbar-wrapper > .custom-search-input {
+        position: absolute;
+        right: 33px;
+    }
     .nav > li {
         display: inline-block;
     }
@@ -59,10 +60,6 @@
     }
     .navbar-brand {
         margin-left: initial !important;
-    }
-    .custom-search-input {
-        position: absolute;
-        right: 33px;
     }
     .expedition-landing .dropdown-menu {
         left: initial;

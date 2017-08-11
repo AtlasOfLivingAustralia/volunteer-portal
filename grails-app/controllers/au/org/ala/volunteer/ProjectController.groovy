@@ -398,7 +398,8 @@ class ProjectController {
             redirect(action: "list")
         } else {
             final insts = Institution.list()
-            final names = insts*.i18nName.toString()
+            //final names = insts*.i18nName.toString()
+            final names = insts.collect{ it.i18nName.toString() }
             final nameToId = insts.collectEntries { ["${it.i18nName}": it.id] }
             final labelCats = Label.withCriteria { projections { distinct 'category' } }
 

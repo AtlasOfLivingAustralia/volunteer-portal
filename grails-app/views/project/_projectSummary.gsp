@@ -3,9 +3,10 @@
                                  id="${projectSummary.project?.id}">${projectSummary.project?.featuredLabel}</g:link></h4>
 
     <div class="not-a-badge-row ellipsis primary-color">
-        <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + projectSummary.iconLabel]"
+        <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + message(code: projectSummary.iconLabel)]"
                 class="not-a-badge"><span
-                class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</g:link><g:link
+                class="glyphicon glyphicon-tag icon-flipped"></span>${message(code: projectSummary.iconLabel)}</g:link>
+        <g:link
             controller="institution" action="index" id="${projectSummary.project?.institutionId}"
             class="not-a-badge"><span
                 class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${projectSummary.project?.institutionName}</g:link>

@@ -1,10 +1,9 @@
 package au.org.ala.volunteer
 
-import org.springframework.context.i18n.LocaleContextHolder
-
 class Translation implements Serializable {
 
     public static Locale DEFAULT_LOCALE = Locale.ENGLISH;
+
     Translation() {}
     Translation(String defaultTranslation) {
         this[DEFAULT_LOCALE.toString()] = defaultTranslation;

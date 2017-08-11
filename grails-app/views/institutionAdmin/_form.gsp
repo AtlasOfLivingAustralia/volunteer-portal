@@ -83,7 +83,7 @@
         g:textArea class="form-contri18nNamenai18nShortDescriptiontion" rows="2" value="{institutionInstance?.shortDescription}"/>
     </div>
 </div>-->
-<div class="form-group ${hasErrors(bean: institutionInstance, field: 'i18nShortDescription', 'has-error')}" >
+<div class="form-group ${hasErrors(bean: institutionInstance, field: 'i18nShortDescriptivon', 'has-error')}" >
     <label class="control-label col-md-3" for="shortDescription">
         <g:message code="institution.shortDescription.label" default="Name"/>
         <span class="required-indicator">*</span>

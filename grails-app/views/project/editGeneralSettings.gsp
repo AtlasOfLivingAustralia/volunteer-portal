@@ -71,8 +71,7 @@
         <label class="control-label col-md-3" for="projectType"><g:message code="project.projectType.label"/></label>
 
         <div class="col-md-6">
-            <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
-                      optionValue="label" optionKey="id" class="form-control"/>
+            <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}" optionValue="${{message(code: it.label)}}" optionKey="id" class="form-control"/>
         </div>
     </div>
 
@@ -146,7 +145,7 @@
                                 $( "#labels" )
                             );
                     })
-                    .fail(function() { alert(${message(code: 'project.general_settings.error1')})});
+                    .fail(function() { alert("${message(code: 'project.general_settings.error1')}")});
                     //.always(hideSpinner);
                 return null;
             });
@@ -160,7 +159,7 @@
                         var p = t.parent("span");
                         p.remove();
                     })
-                    .fail(function() { alert(${message(code: 'project.general_settings.error2')})});
+                    .fail(function() { alert("${message(code: 'project.general_settings.error2')}")});
                     //.always(hideSpinner);
             }
 
