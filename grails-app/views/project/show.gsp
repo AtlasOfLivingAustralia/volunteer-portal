@@ -23,7 +23,7 @@
 %{--<span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>--}%
 %{--</div>--}%
 <div>
-    <h1><g:message code="default.show.label" args="[entityName]"/> - ${projectInstance.featuredLabel}</h1>
+    <h1><g:message code="default.show.label" args="[entityName]"/> - ${projectInstance.i18nName}</h1>
 
     <cl:messages/>
     <div class="inner">
@@ -126,7 +126,7 @@
             </tr>
 
             %{--<tr class="prop">--}%
-            %{--<td valign="top" class="name"><g:message code="project.tasks.label" default="Tasks" /></td>--}%
+            %{--<td valign="top" class="i18nName"><g:message code="project.tasks.label" default="Tasks" /></td>--}%
             %{----}%
             %{--<td valign="top" style="text-align: left;" class="value">--}%
             %{--<ul>--}%

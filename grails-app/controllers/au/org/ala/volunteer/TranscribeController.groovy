@@ -96,7 +96,7 @@ class TranscribeController {
      */
     def updatePicklists(Task task) {
 
-        // Add the name of the picklist here if it is to be updated with user entered values
+        // Add the i18nName of the picklist here if it is to be updated with user entered values
         def updateablePicklists = ['recordedBy']
 
         // Find the template fields used by this tasks template
@@ -105,7 +105,7 @@ class TranscribeController {
         // Isolate the fields whose names coincide with a picklist, and for which this task has a value
         for (TemplateField tf : templateFields) {
             def f = task.fields.find { it.name == tf.fieldType.name() }
-            // The fieldname/picklist name must also be in the list of updateable picklists
+            // The fieldname/picklist i18nName must also be in the list of updateable picklists
             if (f && updateablePicklists.contains(f.name) && StringUtils.isNotEmpty(f.value)) {
                 log.debug("Checking picklist ${f.name} for value ${f.value}")
                 // Check that the picklist actually exists...

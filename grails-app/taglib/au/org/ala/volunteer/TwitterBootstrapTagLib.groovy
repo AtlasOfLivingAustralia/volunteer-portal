@@ -24,8 +24,8 @@ class TwitterBootstrapTagLib {
      * @emptyTag
      *
      * @attr total REQUIRED The total number of results to paginate
-     * @attr action the name of the action to use in the link, if not specified the default action will be linked
-     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr action the i18nName of the action to use in the link, if not specified the default action will be linked
+     * @attr controller the i18nName of the controller to use in the link, if not specified the current controller will be linked
      * @attr id The id to use in the link
      * @attr params A map containing request parameters
      * @attr prev The text to display for the previous link (defaults to "Previous" as defined by default.paginate.prev property in I18n messages.properties)

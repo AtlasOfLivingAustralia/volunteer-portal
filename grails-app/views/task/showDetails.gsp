@@ -40,7 +40,7 @@
 
         ]
         if (taskInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project?.featuredLabel]
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project?.i18nName]
             pageScope.crumbs << [link: createLink(controller: 'task', action: 'projectAdmin', id: taskInstance?.project?.id), label: "Admin list"]
         }
     %>
@@ -94,7 +94,7 @@
                         </tr>
                         <tr>
                             <td><g:message code="task.showDetails.project"/></td>
-                            <td>${taskInstance.project?.name}</td>
+                            <td>${taskInstance.project?.i18nName}</td>
                         </tr>
                         <tr>
                             <td><g:message code="task.showDetails.created_date"/></td>

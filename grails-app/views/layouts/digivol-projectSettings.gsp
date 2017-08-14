@@ -1,6 +1,6 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title><cl:pageTitle title="Edit Project ${projectInstance?.name}"/></title>
+    <title><cl:pageTitle title="Edit Project ${projectInstance?.i18nName}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
@@ -13,10 +13,10 @@
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
-                    [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel ?: ""]
+                    [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName ?: ""]
             ]
         %>
-            <h1><g:message code="project.project_settings.expedition_settings" /> - ${projectInstance.name} <small><muted>${projectInstance.inactive ? ('(' + message(code: 'project.project_settings.deactivated') +  ')') : ''}</muted>
+            <h1><g:message code="project.project_settings.expedition_settings" /> - ${projectInstance.i18nName} <small><muted>${projectInstance.inactive ? ('(' + message(code: 'project.project_settings.deactivated') +  ')') : ''}</muted>
         </small></h1>
         <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>
     </cl:headerContent>
@@ -56,7 +56,7 @@
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
                         <div class="panel-heading text-right" >
-                            <h4 class="pull-left">${projectInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                            <h4 class="pull-left">${projectInstance.i18nName} - <g:pageProperty name="page.pageTitle"/></h4>
                             <g:form name="activationForm" controller="project" action="update" class="form-horizontal">
                                 <g:hiddenField name="id" value="${projectInstance.id}"/>
                                 <g:if test="${projectInstance.inactive}">
@@ -103,7 +103,7 @@
         $("#btnDeleteProject").click(function (e) {
             e.preventDefault();
             var opts = {
-                title: "${message(code: 'project.project_settings.delete_expedition')} '${projectInstance.name.encodeAsJavaScript()}'",
+                title: "${message(code: 'project.project_settings.delete_expedition')} '${projectInstance.i18nName.encodeAsJavaScript()}'",
                 url: "${createLink(action:"deleteProjectFragment",id: projectInstance.id)}"
             };
 

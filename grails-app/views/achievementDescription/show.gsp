@@ -61,7 +61,7 @@
             </li>
         </g:if>
 
-        <g:if test="${achievementDescriptionInstance?.name}">
+        <g:if test="${achievementDescriptionInstance?.i18nName}">
             <li class="fieldcontain">
                 <span id="name-label" class="property-label"><g:message code="achievementDescription.name.label"
                                                                         default="Name"/></span>

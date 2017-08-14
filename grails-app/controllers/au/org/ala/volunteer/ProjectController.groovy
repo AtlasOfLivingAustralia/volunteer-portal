@@ -266,7 +266,7 @@ class ProjectController {
                 export_func = exportService.export_zipFile
             }
 
-//            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
+//            def exporter_func_property = exportService.metaClass.getProperties().find() { it.i18nName == 'export_' + projectInstance.template.i18nName }
 //            if (exporter_func_property) {
 //                export_func = exporter_func_property.getProperty(exportService)
 //            }
@@ -341,7 +341,7 @@ class ProjectController {
             return
         }
 
-        if (!projectInstance.featuredLabel) {
+        if (!projectInstance.i18nName) {
             flash.message = "You must supply a featured label!"
             render(view: "create", model: [projectInstance: projectInstance])
             return
@@ -783,21 +783,26 @@ class ProjectController {
 
     def findProjectResultsFragment() {
 
-        def q = params.q as String ?: ""
+        def query = "%${params.q as String}%" ?: ""
 
-        def c = Project.createCriteria()
-        def projectList = c.list {
+        def projectList = (List<Project>)Project.createCriteria().list {
             or {
-                ilike("name", "%${q}%")
-                ilike("featuredOwner", "%${q}%")
-                ilike("featuredLabel", "%${q}%")
-                ilike("shortDescription", "%${q}%")
-                ilike("description", "%${q}%")
+                i18nName {
+                    ilike WebUtils.getCurrentLocaleAsString(), query
+                }
+                i18nDescription {
+                    ilike WebUtils.getCurrentLocaleAsString(), query
+                }
+                i18nshortDescription {
+                    ilike WebUtils.getCurrentLocaleAsString(), query
+                }
+                i18nfeaturedOwner {
+                    ilike WebUtils.getCurrentLocaleAsString(), query
+                }
             }
         }
 
         [projectList: projectList]
-
     }
 
     def addLabel(Project projectInstance) {
@@ -963,7 +968,11 @@ class ProjectController {
     }
 
     def wizardProjectNameValidator(String name) {
-        render([ count: Project.countByName(name) ] as JSON)
+        render([ count: ((List<Project>)Project.createCriteria().list {
+            i18nName {
+                like WebUtils.getCurrentLocaleAsString(), name
+            }
+        }).size() ] as JSON)
     }
 
     def wizardCancel(String id) {
@@ -1058,11 +1067,11 @@ class ProjectController {
         try {
             projectService.archiveProject(project)
             project.archived = true
-            log.info("${project.name} (id=${project.id}) archived")
+            log.info("${project.i18nName} (id=${project.id}) archived")
             respond status: SC_NO_CONTENT
         } catch (e) {
             log.error("Couldn't archive project $project", e)
-            response.sendError(SC_INTERNAL_SERVER_ERROR, "An error occured while archiving ${project.name}")
+            response.sendError(SC_INTERNAL_SERVER_ERROR, "An error occured while archiving ${project.i18nName}")
         }
     }
 
@@ -1072,7 +1081,7 @@ class ProjectController {
             return
         }
         response.contentType = 'application/zip'
-        response.setHeader('Content-Disposition', "attachment; filename=\"${project.id}-${project.name}-images.zip\"")
+        response.setHeader('Content-Disposition', "attachment; filename=\"${project.id}-${project.i18nName}-images.zip\"")
         final os = response.outputStream
         try {
             projectService.writeArchive(project, os)
@@ -1098,7 +1107,12 @@ class ProjectController {
         if (id.isLong()) {
             project = Project.get(id as Long)
         } else {
-            project = Project.findByName(id)
+            List<Project> projectList = ((List<Project>)Project.createCriteria().list {
+                i18nName {
+                    like WebUtils.getCurrentLocaleAsString(), id
+                }
+            })
+            project = projectList.size()>0?projectList.get(0):null;
         }
 
         if (!project) {
@@ -1113,7 +1127,7 @@ class ProjectController {
         def dates = projectService.calculateStartAndEndTranscriptionDates(project)
 //        projectService.
         def result = [
-                project: project.name,
+                project: project.i18nName,
                 contributors: contributors,
                 numberOfSubjects: numberOfSubjects,
                 percentComplete: percentComplete,

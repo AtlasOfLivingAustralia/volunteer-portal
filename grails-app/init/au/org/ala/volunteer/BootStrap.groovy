@@ -82,6 +82,9 @@ class BootStrap {
             log.error("Could not remove vp_user.display_name", e)
         }
     }
+    private addColumn(String table, String column, String columnType) {
+
+    }
 
     private void fixTaskLastViews() {
         log.info("Checking task last views...")

@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 class Translation implements Serializable {
 
-    public static Locale DEFAULT_LOCALE = Locale.ENGLISH;
+    public static Locale DEFAULT_LOCALE = Locale.US;
 
     Translation() {}
     Translation(String defaultTranslation) {
@@ -22,6 +22,6 @@ class Translation implements Serializable {
     }
 
     String toString() {
-        return WebUtils.safeGet(this,WebUtils.getCurrentLocaleAsString()?:DEFAULT_LOCALE.toString());
+        return WebUtils.safeGet(this,WebUtils.getCurrentLocaleAsString())?:WebUtils.safeGet(this,DEFAULT_LOCALE.toString());
     }
 }

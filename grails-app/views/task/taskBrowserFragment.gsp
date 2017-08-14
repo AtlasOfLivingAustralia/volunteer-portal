@@ -54,7 +54,7 @@
     </g:if>
 
     <div id="task_browser_controls">
-        <h3><g:message code="task.taskBrowserFragment.your_previously_transcribed_tasks" args="${[projectInstance?.featuredLabel ?: "<project>"]}"/></h3>
+        <h3><g:message code="task.taskBrowserFragment.your_previously_transcribed_tasks" args="${[projectInstance?.i18nName ?: "<project>"]}"/></h3>
 
         <div id="tasklist_container" style="color: white">
 

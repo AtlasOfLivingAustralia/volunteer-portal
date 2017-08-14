@@ -281,7 +281,7 @@ environments:
             url: jdbc:postgresql://localhost/volunteers
             username: "postgres"
             password: "password"
-            logSql: false
+            logSql: true
     test:
         dataSource:
             dbCreate: update

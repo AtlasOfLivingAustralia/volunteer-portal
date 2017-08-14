@@ -73,10 +73,10 @@ class InstitutionController {
             institutions = (List<Institution>)Institution.createCriteria().list {
                 or {
                     i18nName {
-                        like WebUtils.getCurrentLocaleAsString(), query
+                        ilike WebUtils.getCurrentLocaleAsString(), query
                     }
                     i18nAcronym {
-                        like WebUtils.getCurrentLocaleAsString(), query
+                       ilike WebUtils.getCurrentLocaleAsString(), query
                     }
                 }
             }

@@ -11,7 +11,7 @@
 <cl:headerContent title="Project Task Staging" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel],
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName],
                 [link: createLink(controller: 'project', action: 'editTaskSettings', id: projectInstance.id), label: "Edit Project"]
         ]
     %>

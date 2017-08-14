@@ -323,7 +323,7 @@
           } else if (type == 'administrative_area_level_1') {
             $(':input.stateProvince').val(name);
           } else {
-            //$(':input.locality').val(name);
+            i18nName
           }
         }
 

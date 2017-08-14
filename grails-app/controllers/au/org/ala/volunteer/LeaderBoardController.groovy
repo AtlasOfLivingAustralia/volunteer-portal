@@ -41,7 +41,8 @@ class LeaderBoardController {
     }
 
     def describeBadges() {
-        respond [:], model: [badges: AchievementDescription.findAllByEnabled(true, [sort: 'name'])]
+//        respond [:], model: [badges: AchievementDescription.findAllByEnabled(true, [sort: 'name'])]
+        respond [:], model: [badges: AchievementDescription.findAllByEnabled(true)]
     }
 
 }

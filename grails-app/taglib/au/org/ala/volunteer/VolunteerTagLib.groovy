@@ -695,7 +695,7 @@ class VolunteerTagLib {
 
     /**
      * @attr email
-     * @atte name
+     * @atte i18nName
      */
     def contactLink = { attrs, body ->
         def name = attrs.name ?: attrs.email
@@ -720,9 +720,9 @@ class VolunteerTagLib {
     }
 
     /**
-     * Gets the display name for a user as an object instead of writing it directly to the outputstream
+     * Gets the display i18nName for a user as an object instead of writing it directly to the outputstream
      *
-     * @attr id REQUIRED The userId to get the display name address for
+     * @attr id REQUIRED The userId to get the display i18nName address for
      */
     def displayNameForUserId = { attrs, body ->
         propForUserId(attrs, 'displayName')
@@ -735,10 +735,10 @@ class VolunteerTagLib {
     }
 
     /**
-     * Output a users email or display name, fetched from userdetails.
+     * Output a users email or display i18nName, fetched from userdetails.
      *
      * @attr id REQUIRED The user id to get the user details for
-     * @attr displayName true to output the display name, defaults to false
+     * @attr displayName true to output the display i18nName, defaults to false
      * @attr email true to output the email address, defaults to false
      */
     def userDetails = { attrs, body ->
@@ -761,7 +761,7 @@ class VolunteerTagLib {
     }
 
     /**
-     * Output a users display name and email, fetched from userdetails unless it's unavailable.  If the user can't
+     * Output a users display i18nName and email, fetched from userdetails unless it's unavailable.  If the user can't
      * be found a not found string is used instead.  The not found string can optionally be wrapped in a
      * &lt;span class="muted" /> if the muted attribute is set to true
      *
@@ -791,7 +791,7 @@ class VolunteerTagLib {
     /**
      * Output the meta tags (HTML head section) for the build meta data in application.properties
      * E.g.
-     * <meta name="svn.revision" content="${g.meta(name:'svn.revision')}"/>
+     * <meta i18nName="svn.revision" content="${g.meta(i18nName:'svn.revision')}"/>
      * etc.
      *
      * Updated to use properties provided by build-info plugin

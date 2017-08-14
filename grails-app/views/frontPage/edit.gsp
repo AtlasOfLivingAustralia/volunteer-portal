@@ -43,7 +43,7 @@
                             %{--<label for="useGlobalNewsItem" class="control-label col-md-3"><g:message code="frontPage.useGlobalNewsItem.label"--}%
                                                                                                    %{--default="Use global news item"/></label>--}%
                             %{--<div class="col-md-6">--}%
-                                %{--<g:checkBox name="useGlobalNewsItem" class="form-control" value="${frontPage.useGlobalNewsItem}"/>--}%
+                                %{--<g:checkBox i18nName="useGlobalNewsItem" class="form-control" value="${frontPage.useGlobalNewsItem}"/>--}%
                                 %{--<span class="help-block">(If unchecked the most recent project news item will be used instead)</span>--}%
                             %{--</div>--}%
                         %{--</div>--}%
@@ -52,7 +52,7 @@
                             %{--<label for="newsTitle" class="control-label col-md-3"><g:message code="frontPage.newsTitle.label"--}%
                                                                                                      %{--default="News title"/></label>--}%
                             %{--<div class="col-md-6">--}%
-                                %{--<g:textField class="form-control" name="newsTitle" value="${frontPage?.newsTitle}"/>--}%
+                                %{--<g:textField class="form-control" i18nName="newsTitle" value="${frontPage?.newsTitle}"/>--}%
                             %{--</div>--}%
                         %{--</div>--}%
 
@@ -60,7 +60,7 @@
                             %{--<label for="newsBody" class="control-label col-md-3"><g:message code="frontPage.newsBody.label"--}%
                                                                                              %{--default="News text"/></label>--}%
                             %{--<div class="col-md-6">--}%
-                                %{--<g:textArea class="form-control" rows="4" name="newsBody"--}%
+                                %{--<g:textArea class="form-control" rows="4" i18nName="newsBody"--}%
                                             %{--value="${frontPage?.newsBody}"/>--}%
                             %{--</div>--}%
                         %{--</div>--}%
@@ -69,7 +69,7 @@
                             %{--<label for="newsCreated" class="control-label col-md-3"><g:message code="frontPage.newsCreated.label"--}%
                                                                                             %{--default="News date"/></label>--}%
                             %{--<div class="col-md-6 grails-date">--}%
-                                %{--<g:datePicker name="newsCreated" precision="day" value="${frontPage?.newsCreated}"/>--}%
+                                %{--<g:datePicker i18nName="newsCreated" precision="day" value="${frontPage?.newsCreated}"/>--}%
                             %{--</div>--}%
                         %{--</div>--}%
 

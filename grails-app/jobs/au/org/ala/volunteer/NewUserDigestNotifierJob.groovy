@@ -12,7 +12,7 @@ class NewUserDigestNotifierJob {
 
     static triggers = {
         cron name: 'newUsersDigestTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
-//        cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // 6:00am
+//        cron i18nName: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // 6:00am
     }
 
     def execute() {

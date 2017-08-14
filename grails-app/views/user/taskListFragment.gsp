@@ -6,7 +6,7 @@
             <g:if test="${taskListResultInstance.selectedTab > 0}">
                 <p><strong><g:message code="user.taskList.x_tasks_found" args="${[taskListResultInstance.totalMatchingTasks]}" /></strong></p>
                  <g:if test="${taskListResultInstance.projectInstance}">
-                     <g:message code="user.taskList.for" /> ${taskListResultInstance.projectInstance.featuredLabel}
+                     <g:message code="user.taskList.for" /> ${taskListResultInstance.projectInstance.i18nName}
                  </g:if>
             </g:if>
             <g:else>

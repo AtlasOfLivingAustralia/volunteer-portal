@@ -33,13 +33,13 @@
 
 <body>
 
-<cl:headerContent title="Task List - ${projectInstance ? projectInstance?.featuredLabel : ''}"
+<cl:headerContent title="Task List - ${projectInstance ? projectInstance?.i18nName : ''}"
                   selectedNavItem="expeditions">
     <%
         if (projectInstance) {
             pageScope.crumbs = [
                     [link: createLink(controller: 'project', action: 'list'), label: 'Expeditions'],
-                    [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
+                    [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.i18nName]
             ]
         }
     %>

@@ -278,11 +278,11 @@ class ProjectService {
                     return true
                 }
 
-                if (project.featuredLabel?.toLowerCase()?.contains(query)) {
+                if (project.i18nName?.toString()?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
-                if (project.institution && project.institution.i18nName?.toLowerCase()?.contains(query)) {
+                if (project.institution && project.institution.i18nName?.toString()?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
@@ -290,11 +290,11 @@ class ProjectService {
                     return true
                 }
 
-                if (project.description?.toLowerCase()?.contains(query)) {
+                if (project.i18nDescription?.toString()?.toLowerCase()?.contains(query)) {
                     return true;
                 }
 
-                if (project.shortDescription?.toLowerCase()?.contains(query)) {
+                if (project.i18nShortDescription?.toString()?.toLowerCase()?.contains(query)) {
                     return true;
                 }
 
@@ -324,7 +324,7 @@ class ProjectService {
                 return projectSummary.iconLabel;
             }
 
-            projectSummary.project.featuredLabel?.toLowerCase()
+            projectSummary.project.i18nName?.toLowerCase()
         }
 
         Integer startIndex = params?.int('offset') ?: 0;

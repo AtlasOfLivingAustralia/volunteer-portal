@@ -9,14 +9,14 @@
 
 <body class="admin">
 
-<cl:headerContent title="${achievementDescriptionInstance?.name}" hideTitle="true" selectedNavItem="bvpadmin">
+<cl:headerContent title="${achievementDescriptionInstance?.i18nName}" hideTitle="true" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
                 [link: createLink(controller: 'achievementDescription', action: 'index'), label: 'Manage Achievements']
         ]
     %>
-    <h1>Achievement Settings - ${achievementDescriptionInstance?.name}</h1>
+    <h1>Achievement Settings - ${achievementDescriptionInstance?.i18nName}</h1>
 </cl:headerContent>
 
 <div class="container">
@@ -39,7 +39,7 @@
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
                         <div class="panel-heading text-right" >
-                            <h4 class="pull-left">${achievementDescriptionInstance?.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                            <h4 class="pull-left">${achievementDescriptionInstance?.i18nName} - <g:pageProperty name="page.pageTitle"/></h4>
                             <div class="btn-group">
                                 <g:pageProperty name="page.adminButtonBar"/>
                             </div>

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="${projectInstance.name} Forum"/></title>
+    <title><cl:pageTitle title="${projectInstance.i18nName} Forum"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="forum.css"/>
 
@@ -136,7 +136,7 @@
 <cl:headerContent title="${message(code: 'forum.expedition_forum')}" selectedNavItem="forum">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName]
         ]
     %>
 </cl:headerContent>
@@ -149,7 +149,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="thumbnail">
-                                <img src="${projectInstance.featuredImage}" alt="${projectInstance.name}" title="${projectInstance.name}">
+                                <img src="${projectInstance.featuredImage}" alt="${projectInstance.i18nName}" title="${projectInstance.i18nName}">
                                 <g:if test="${projectInstance.featuredImageCopyright}">
                                     <div class="caption">
                                         <g:message code="image.attribution.prefix" /> ${projectInstance.featuredImageCopyright}
@@ -158,9 +158,9 @@
                             </div>
                         </div>
                         <div class="col-md-9">
-                            <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a></h2>
+                            <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.i18nName}</a></h2>
                             <h3>${projectInstance.featuredOwner}</h3>
-                            <p>${raw(projectInstance.description)}</p>
+                            <p>${raw(projectInstance.i18nDescription?.toString())}</p>
                         </div>
                     </div>
                     <div class="alert alert-success">

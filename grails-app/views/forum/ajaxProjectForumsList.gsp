@@ -78,7 +78,7 @@
                         </div>
                         <%-- Name and progress bar --%>
                         <div class="col-sm-5">
-                            <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.featuredLabel}</a>
+                            <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.i18nName}</a>
                             </h3>
                             <g:render template="/project/projectSummaryProgressBar"
                                       model="${[projectSummary: projectSummary]}"/>

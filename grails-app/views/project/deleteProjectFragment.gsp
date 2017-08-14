@@ -2,7 +2,7 @@
 
     <g:if test="${taskCount}">
         <div class="alert alert-danger">
-            <g:message code="project.delete_expedition_fragment.overview" args="${ [projectInstance.name, taskCount] }" />
+            <g:message code="project.delete_expedition_fragment.overview" args="${ [projectInstance.i18nName, taskCount] }" />
         </div>
     </g:if>
 

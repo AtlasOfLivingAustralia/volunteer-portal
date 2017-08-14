@@ -1,12 +1,12 @@
 <div>
 
     <p>
-        <g:message code="project.delete_all_tasks_fragment.overview" args="${ [projectInstance.name, taskCount] }" />
+        <g:message code="project.delete_all_tasks_fragment.overview" args="${ [projectInstance.i18nName, taskCount] }" />
     </p>
 
     <div class="alert alert-danger">
 
-        <g:message code="project.delete_all_tasks_fragment.confirmation" args="${ [projectInstance.name] }" />
+        <g:message code="project.delete_all_tasks_fragment.confirmation" args="${ [projectInstance.i18nName] }" />
 
     </div>
 

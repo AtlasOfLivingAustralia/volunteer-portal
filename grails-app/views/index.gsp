@@ -88,7 +88,7 @@
 
             <div class="col-md-6">
                 <h3><g:link controller="project" action="index"
-                            id="${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.featuredLabel}</g:link>
+                            id="${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.i18nName}</g:link>
                 </h3>
                 <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + potdSummary.iconLabel]"
                         class="not-a-badge"><span
@@ -98,7 +98,7 @@
                         class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${frontPage.projectOfTheDay?.institutionName}</g:link>
 
                 <p>
-                    ${raw(frontPage.projectOfTheDay?.description)}
+                    ${raw(frontPage.projectOfTheDay?.i18nDescription?.toString())}
                 </p>
 
                 <g:render template="/project/projectSummaryProgressBar" model="[projectSummary: potdSummary]" />

@@ -23,7 +23,7 @@ class WebUtils {
      * Special case handling for checkboxes
      *
      * Checkboxes in grails are handled differently to all other input types. Two input fields are created, one with the
-     * name of the field you give it, and another hidden field with an underscore prefix. When you submit an unchecked checkbox
+     * i18nName of the field you give it, and another hidden field with an underscore prefix. When you submit an unchecked checkbox
      * only the hidden field will be submited (unchecked checkboxes don't get submitted). When you submit a checked checkbox both the
      * normally named field and the underscore version will be submited (both will have empty values.
      *

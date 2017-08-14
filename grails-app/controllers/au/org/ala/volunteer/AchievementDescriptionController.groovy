@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
 @AlaSecured("ROLE_VP_ADMIN")
 class AchievementDescriptionController {
@@ -211,7 +210,7 @@ class AchievementDescriptionController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, it.user.displayName]) }.join('<br/>')
+                flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.i18nName, it.user.displayName]) }.join('<br/>')
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { respond awards, [status: OK] }
@@ -236,7 +235,7 @@ class AchievementDescriptionController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, user.displayName])
+                flash.message = message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.i18nName, user.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { respond award, [status: OK] }
@@ -251,7 +250,7 @@ class AchievementDescriptionController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.i18nName, awards*.user*.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { render status: NO_CONTENT.value() }
@@ -267,7 +266,7 @@ class AchievementDescriptionController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.i18nName, awards*.user*.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { render status: NO_CONTENT.value() }

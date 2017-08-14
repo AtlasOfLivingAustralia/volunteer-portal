@@ -13,7 +13,7 @@ public class SettingDefinition<T> {
     public static def LabelCategories = new SettingDefinition<List<String>>("project.label.categories", ['country', 'subject'], "The list of users not eligible for the leaderboard")
     public static def FrontPageLogos = new SettingDefinition<List<String>>('frontpage.logos', [], "The list of insitution logos.")
 
-//    public static def NotificationEmailServerName = new SettingDefinition("notifications.emailServer.name", "localhost", "The name or address of the SMTP server to user to send out notifications")
+//    public static def NotificationEmailServerName = new SettingDefinition("notifications.emailServer.i18nName", "localhost", "The i18nName or address of the SMTP server to user to send out notifications")
 //    public static def NotificationEmailServerPort = new SettingDefinition("notifications.emailServer.port", 25, "The port that the SMTP server is listening on")
 //    public static def NotificationEmailServerUsername = new SettingDefinition("notifications.emailServer.username", "", "SMTP Server username")
 //    public static def NotificationEmailServerPassword = new SettingDefinition("notifications.emailServer.password", "", "SMTP Server password")

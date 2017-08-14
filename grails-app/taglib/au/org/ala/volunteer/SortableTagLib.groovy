@@ -27,14 +27,14 @@ class SortableTagLib {
      * @emptyTag
      *
      * @attr tag - the type of tag
-     * @attr property - name of the property relating to the field
+     * @attr property - i18nName of the property relating to the field
      * @attr defaultOrder default order for the property; choose between asc (default if not provided) and desc
      * @attr title title caption for the column
      * @attr titleKey title key to use for the column, resolved against the message source
      * @attr params a map containing request parameters
-     * @attr action the name of the action to use in the link, if not specified the list action will be linked
+     * @attr action the i18nName of the action to use in the link, if not specified the list action will be linked
      * @attr params A map containing URL query parameters
-     * @attr class CSS class name
+     * @attr class CSS class i18nName
      */
     Closure sortableColumn = { attrs ->
         def writer = out

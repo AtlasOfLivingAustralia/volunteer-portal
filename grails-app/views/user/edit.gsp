@@ -97,7 +97,7 @@
                                 <ul id="roles" class="form-control-static">
                                     <g:each var="role" in="${roles}">
                                         <li>${role.role.name}
-                                        (${role.project == null ? '<All Projects>' : role.project.featuredLabel})
+                                        (${role.project == null ? '<All Projects>' : role.project.i18nName})
                                         </li>
                                     </g:each>
                                 </ul>

@@ -1,6 +1,6 @@
 <div class="caption">
     <h4 class="ellipsis"><g:link controller="project" action="index"
-                                 id="${projectSummary.project?.id}">${projectSummary.project?.featuredLabel}</g:link></h4>
+                                 id="${projectSummary.project?.id}">${projectSummary.project?.i18nName}</g:link></h4>
 
     <div class="not-a-badge-row ellipsis primary-color">
         <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + message(code: projectSummary.iconLabel)]"
@@ -13,7 +13,7 @@
     </div>
 
     <g:if test="${includeDescription}">
-        <g:set var="descrptionSnippet"><cl:truncate maxlength="${params.mode == 'list' ? '150' : '85'}">${raw(projectSummary.project?.description)}</cl:truncate></g:set>
+        <g:set var="descrptionSnippet"><cl:truncate maxlength="${params.mode == 'list' ? '150' : '85'}">${raw(projectSummary.project?.i18nDescription?.toString())}</cl:truncate></g:set>
         <p class="projectDescription">${raw(descrptionSnippet)}</p>
     </g:if>
 

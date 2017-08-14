@@ -42,7 +42,7 @@
                   selectedNavItem="expeditions">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName]
         ]
     %>
 </cl:headerContent>
@@ -148,7 +148,7 @@
 <asset:script type="text/javascript">
 
     function confirmDeleteAllTasks() {
-        return confirm("${message(code: 'project.delete.all.tasks', args: [taskCount, projectInstance.featuredLabel])}");
+        return confirm("${message(code: 'project.delete.all.tasks', args: [taskCount, projectInstance.i18nName])}");
             }
 
             google.load("maps", "3.23", {other_params: ""});

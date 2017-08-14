@@ -229,7 +229,7 @@ class UserController {
                            fullyValidatedBy: validator,
                            projectId: t.projectId,
                            project: t.project,
-                           projectName: t.project.name,
+                           projectName: t.project.i18nName,
                            dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated,
                            dateValidated: t.dateFullyValidated
             ]
@@ -259,7 +259,7 @@ class UserController {
             dateStr += ";" + (t.dateLastUpdated ? sdf.format(t.dateLastUpdated) : "")
 
             def sb = new StringBuilder(512)
-            sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
+            sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.i18nName).append(";")
             sb.append(t.externalIdentifier).append(";").append(dateStr).append(";").append(t.id).append(";").append(validator)
             taskRow.searchColumn = sb.toString().toLowerCase()
 

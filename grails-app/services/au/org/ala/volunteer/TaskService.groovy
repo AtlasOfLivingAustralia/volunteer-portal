@@ -753,7 +753,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
      * Get the changes which the validator made.
      *
      * @task the task that is being selected
-     * @return list of changes. This is a hashmap of field name as key and list of old and new values
+     * @return list of changes. This is a hashmap of field i18nName as key and list of old and new values
      */
     def getChangedFields (Task task) {
 

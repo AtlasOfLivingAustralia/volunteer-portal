@@ -412,7 +412,7 @@ class TaskController {
           "valid": "isValid",
           "fields": {
             [
-              { "name", "value", ...}, ...
+              { "i18nName", "value", ...}, ...
             ]
           }
         }

@@ -13,7 +13,7 @@
         <td valign="top" class="name">
             <label for="description"><g:message code="project.description.label" default="Description"/></label>
         </td>
-        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'description', 'errors')}">
+        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'i18nDescription', 'errors')}">
             <g:textArea name="description" class="mce" rows="10" cols="60" value="${projectInstance?.description}" />
         </td>
     </tr>
@@ -22,7 +22,7 @@
         <td valign="top" class="name">
             <label for="description"><g:message code="project.tutorialLinks.label" default="Tutorial Links"/></label>
         </td>
-        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'tutorialLinks', 'errors')}">
+        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'i18nTutorialLinks', 'errors')}">
             <g:textArea name="tutorialLinks" cols="60" rows="10" class="mce" value="${projectInstance?.tutorialLinks}" />
         </td>
     </tr>
@@ -64,8 +64,8 @@
         <td valign="top" class="name">
             <label for="featuredLabel"><g:message code="project.featuredLabel.label" default="Featured Label"/></label>
         </td>
-        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'featuredLabel', 'errors')}">
-            <g:textField class="input-xxlarge" name="featuredLabel" value="${projectInstance?.featuredLabel}"/>
+        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'i18nName', 'errors')}">
+            <g:textField class="input-xxlarge" name="i18nName" value="${projectInstance?.i18nName}"/>
         </td>
     </tr>
 
@@ -103,20 +103,20 @@
 
 
     %{--<tr class="prop">--}%
-    %{--<td valign="top" class="name">--}%
+    %{--<td valign="top" class="i18nName">--}%
     %{--<label for="collectionEventLookupCollectionCode"><g:message code="project.collectionEventLookupCollectionCode.label" default="Collection Event Lookup collection code"/></label>--}%
     %{--</td>--}%
     %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'collectionEventLookupInstitution', 'errors')}">--}%
-    %{--<g:select name="collectionEventLookupCollectionCode" from="${eventCollectionCodes}" value="${projectInstance?.collectionEventLookupCollectionCode}"/>--}%
+    %{--<g:select i18nName="collectionEventLookupCollectionCode" from="${eventCollectionCodes}" value="${projectInstance?.collectionEventLookupCollectionCode}"/>--}%
     %{--</td>--}%
     %{--</tr>--}%
 
     %{--<tr class="prop">--}%
-    %{--<td valign="top" class="name">--}%
+    %{--<td valign="top" class="i18nName">--}%
     %{--<label for="localityLookupCollectionCode"><g:message code="project.localityLookupCollectionCode.label" default="Locality Lookup collection code"/></label>--}%
     %{--</td>--}%
     %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'localityEventLookupInstitution', 'errors')}">--}%
-    %{--<g:select name="localityLookupCollectionCode" from="${localityCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}"/>--}%
+    %{--<g:select i18nName="localityLookupCollectionCode" from="${localityCollectionCodes}" value="${projectInstance?.localityLookupCollectionCode}"/>--}%
     %{--</td>--}%
     %{--</tr>--}%
 

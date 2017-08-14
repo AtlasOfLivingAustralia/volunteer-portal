@@ -315,7 +315,7 @@ class ForumTagLib {
 
         pageScope.crumbs = []
         if (projectInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName]
             pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
         }
 
@@ -343,7 +343,7 @@ class ForumTagLib {
                     mkp.yieldUnescaped(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier]))
                 }
                 if (projectInstance) {
-                    mkp.yieldUnescaped(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel, topic.title]))
+                    mkp.yieldUnescaped(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.i18nName, topic.title]))
                 }
                 if (!projectInstance && !taskInstance) {
                     mkp.yieldUnescaped(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title]))
@@ -438,7 +438,7 @@ class ForumTagLib {
                                         if (projectInstance) {
                                             mkp.yield("  Project:")
                                             a(href: createLink(controller: 'project', action: 'index', id: projectInstance.id)) {
-                                                mkp.yield(projectInstance.featuredLabel)
+                                                mkp.yield(projectInstance.i18nName)
                                             }
                                         }
                                         if (taskInstance) {

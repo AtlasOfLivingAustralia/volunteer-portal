@@ -72,7 +72,7 @@
                                     <td><g:select name="userRole_${userRole.id}_role" from="${roles}" optionKey="id" class="form-control"
                                                   optionValue="name" value="${userRole.role?.id}"></g:select></td>
                                     <td><g:select name="userRole_${userRole.id}_project" from="${projects}" optionKey="id" class="form-control"
-                                                  optionValue="featuredLabel" value="${userRole.project?.id}"
+                                                  optionValue="i18nName" value="${userRole.project?.id}"
                                                   noSelection="${[null: '<All Projects>']}"></g:select></td>
                                     <td>
                                         <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">

@@ -8,9 +8,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
-import org.hibernate.FetchMode
 import org.hibernate.transform.DistinctRootEntityResultTransformer
-import org.hibernate.transform.ResultTransformer
 import org.ocpsoft.prettytime.PrettyTime
 import reactor.spring.context.annotation.Consumer
 import reactor.spring.context.annotation.Selector
@@ -97,7 +95,7 @@ class AchievementService {
         if (newAchievements) {
             final user = User.findByUserId(userId)
             newAchievements.collect {
-                log.info("${user?.id} (${user?.displayName} ${user?.email}) achieved ${it.name}")
+                log.info("${user?.id} (${user?.displayName} ${user?.email}) achieved ${it.i18nName}")
                 new AchievementAward(achievement: it, user: user, awarded: new Date())
             }*.save(true).each {
                 notify(AchievementService.ACHIEVEMENT_AWARDED, it)
@@ -261,9 +259,9 @@ class AchievementService {
         final message
         use (TimeCategory) {
             if ((new Date() - award.awarded) < 1.minute ) {
-                message = "You were just awarded the ${award.achievement.name} achievement!"
+                message = "You were just awarded the ${award.achievement.i18nName} achievement!"
             } else {
-                message = "You were awarded the ${award.achievement.name} achievement ${new PrettyTime().format(award.awarded)}!"
+                message = "You were awarded the ${award.achievement.i18nName} achievement ${new PrettyTime().format(award.awarded)}!"
             }
         }
 

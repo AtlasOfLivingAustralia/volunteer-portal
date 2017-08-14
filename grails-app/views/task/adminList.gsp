@@ -9,12 +9,12 @@
 
 <body>
 
-<cl:headerContent title="${message(code: "expedition.administration.label")} - ${projectInstance ? projectInstance.featuredLabel : message(code: "task.thumbs.tasks")}"
+<cl:headerContent title="${message(code: "expedition.administration.label")} - ${projectInstance ? projectInstance.i18nName : message(code: "task.thumbs.tasks")}"
                   selectedNavItem="expeditions">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'list'), label: message(code: "default.expeditions.label")],
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.i18nName]
         ]
     %>
     <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>

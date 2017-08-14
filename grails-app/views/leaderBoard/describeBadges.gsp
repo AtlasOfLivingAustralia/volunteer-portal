@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.AchievementDescription" %>
+    <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!doctype html>
 <html>
 <head>
@@ -23,16 +23,16 @@
                             <div class="thumbnail row-style">
                                 <div class="row">
                                     <div class="col-xs-3">
-                                        <a name="${b.name}"><img class="img-responsive" src="${cl.achievementBadgeUrl(achievement:  b)}"></a>
+                                        <a name="${b.i18nName}"><img class="img-responsive" src="${cl.achievementBadgeUrl(achievement:  b)}"></a>
                                     </div>
 
                                     <div class="col-xs-9">
 
                                         <div class="caption">
-                                            <h4>${b.name}</h4>
+                                            <h4>${b.i18nName}</h4>
 
                                             <p><g:message code="describeBadges.description"/></p>
-                                            <p>${b.description}</p>
+                                            <p>${raw(b.i18nDescription?.toString())}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -43,9 +43,9 @@
                             %{--<div class="thumbnail">--}%
                                 %{--<a href="#"><img src="${cl.achievementBadgeUrl(achievement:  b)}"></a>--}%
                                 %{--<div class="caption">--}%
-                                    %{--<h4><a href="#">${b.name}</a></h4>--}%
+                                    %{--<h4><a href="#">{b.i18nName}</a></h4>--}%
                                     %{--<p>You will receive this badge if you have...</p>--}%
-                                    %{--<p>${b.description}</p>--}%
+                                    %{--<p>${b.i18nDescription}</p>--}%
                                 %{--</div>--}%
                             %{--</div>--}%
                         %{--</div>--}%

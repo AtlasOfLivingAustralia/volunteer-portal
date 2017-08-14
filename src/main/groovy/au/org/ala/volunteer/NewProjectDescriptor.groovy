@@ -32,7 +32,7 @@ class NewProjectDescriptor implements Serializable {
                 stagingId: s,
                 featuredOwner: p.featuredOwner.name,
                 featuredOwnerId: p.featuredOwner.id,
-                name: p.name,
+                name: p.i18nName,
                 shortDescription: p.i18nShortDescription,
                 longDescription: p.longDescription,
                 templateId: p.templateId,
@@ -45,7 +45,7 @@ class NewProjectDescriptor implements Serializable {
                 mapInitZoomLevel: p.map.zoom,
                 picklistId: p.picklistId,
                 labelIds: p.labelIds,
-                tutorialLinks: p.tutorialLinks,
+                tutorialLinks: p.i18nTutorialLinks,
                 createdBy: p.createdBy
         )
     }

@@ -187,12 +187,12 @@ class IndexController {
 
             if (topic instanceof ProjectForumTopic) {
                 def project = ((ProjectForumTopic) topic).project
-                forumName = project.name
+                forumName = project.i18nName
                 thumbnail = project.featuredImage
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task
-                forumName = task.project.name
+                forumName = task.project.i18nName
                 thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
             } else {
@@ -218,7 +218,7 @@ class IndexController {
             def thumbnails = tasks.collect { Task t ->
                 [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(t.multimedia?.first())]
             }
-            [type             : 'task', projectId: proj.id, projectName: proj.name, userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
+            [type             : 'task', projectId: proj.id, projectName: proj.i18nName?.toString(), userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
              transcribedThumbs: thumbnails, transcribedItems: tasks.totalCount, timestamp: it[2].time / 1000]
         }
 

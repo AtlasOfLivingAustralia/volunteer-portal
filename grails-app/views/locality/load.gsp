@@ -30,7 +30,7 @@
 
                     <td>
                         <g:textField name="collectionCode"/>
-                        %{--<g:select from="${collectionCodes}" name="collectionCode"/>--}%
+                        %{--<g:select from="${collectionCodes}" i18nName="collectionCode"/>--}%
                     </td>
                     <td><g:message code="locality.load.existing_collection_codes"/> ${collectionCodes?.join(", ")}</td>
                 </tr>

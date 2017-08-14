@@ -52,7 +52,7 @@
                                                 id="${achievementDescriptionInstance.id}">${fieldValue(bean: achievementDescriptionInstance, field: "name")}</g:link></h3>
 
                                     <div class="well-small">
-                                        <p>${fieldValue(bean: achievementDescriptionInstance, field: "description")}</p>
+                                        <p>${fieldValue(bean: achievementDescriptionInstance, field: "i18nDescription")}</p>
                                     </div>
                                 </td>
 

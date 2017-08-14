@@ -14,7 +14,7 @@ class Institution implements Serializable {
 
     Long id
 /*
-    String name //obsolete
+    String i18nName //obsolete
     String acronym  //obsolete
     @SanitizedHtml
     String shortDescription //obsolete

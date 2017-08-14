@@ -11,11 +11,11 @@
     <meta name="layout" content="digivol-transcribe"/>
 
     <title><g:layoutTitle
-            default="${cl.pageTitle(title: "${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}"/></title>
+            default="${cl.pageTitle(title: "${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.i18nName}")}"/></title>
     <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>
     <meta property="og:url" content="${shareUrl}"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="${taskInstance.project.name}Task Details - ${taskInstance.externalIdentifier}"/>
+    <meta property="og:title" content="${taskInstance?.project?.i18nName}Task Details - ${taskInstance.externalIdentifier}"/>
     %{--<meta property="og:description"   content="Your description" />--}%
     <meta property="og:image" content="${thumbnail}"/>
     <cl:googleMapsScript callback="onGmapsReady"/>
@@ -89,7 +89,7 @@
                      class="img-responsive institution-logo-main pull-left">
 
                 <h1><g:link controller="project" action="show"
-                            id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
+                            id="${taskInstance?.project?.id}">${taskInstance?.project?.i18nName}</g:link> ${taskInstance?.externalIdentifier}</h1>
 
                 <h2>
                     <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}"
@@ -634,8 +634,8 @@
                 });
 
                 $("input.recordedBy").blur(function(e) {
-                    // If the value of the recordedBy field does not match the name in the collector_name attribute
-                    // of the recordedByID element it means that the collector name no longer matches the id, so the id
+                    i18nName
+                    i18nName
                     // must be cleared.
                     var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
                     var value = $(this).val();

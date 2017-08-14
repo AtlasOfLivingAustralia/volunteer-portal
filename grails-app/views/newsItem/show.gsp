@@ -16,7 +16,7 @@
         ]
 
         if (newsItemInstance.project) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'show', id: newsItemInstance?.project?.id), label: newsItemInstance.project?.featuredLabel]
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'show', id: newsItemInstance?.project?.id), label: newsItemInstance.project?.i18nName]
         }
     %>
 </cl:headerContent>
