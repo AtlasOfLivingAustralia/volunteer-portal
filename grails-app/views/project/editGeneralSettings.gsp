@@ -40,7 +40,7 @@
     <div class="form-group" >
         <label class="control-label col-md-3" for="name">
             <span><g:message code="project.general_settings.expedition_name"/>
-            (<span class="form-locale"></span>)</span>
+            (<span class="form-locale locale"></span>)</span>
         </label>
 
         <div class="col-md-6" id="name">
@@ -55,7 +55,7 @@
     <div class="form-group" >
         <label class="control-label col-md-3" for="shortDescription">
             <span><g:message code="project.general_settings.short_description"/>
-            (<span class="form-locale"></span>)</span>
+            (<span class="form-locale locale"></span>)</span>
         </label>
 
         <div class="col-md-6" id="shortDescription">
@@ -70,7 +70,7 @@
     <div class="form-group " >
         <label class="control-label col-md-3" for="description">
             <span><g:message code="project.general_settings.long_description"/>
-            (<span class="form-locale"></span>)</span>
+            (<span class="form-locale locale"></span>)</span>
         </label>
 
         <div class="col-md-8" id="description">

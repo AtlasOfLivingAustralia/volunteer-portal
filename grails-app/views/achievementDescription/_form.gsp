@@ -18,7 +18,7 @@
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'i18nName', 'has-error')}" >
     <label class="control-label col-md-3" for="name">
         <span><g:message code="achievementDescription.name.label" default="Name"/>
-            (<span class="form-locale"></span>)</span>
+            (<span class="form-locale locale"></span>)</span>
     </label>
 
     <div class="col-md-6" id="name">
@@ -44,7 +44,7 @@
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'i18nDescription', 'has-error')}" >
     <label class="control-label col-md-3" for="description">
         <span><g:message code="achievementDescription.description.label" default="Description"/>
-        (<span class="form-locale"></span>)</span>
+        (<span class="form-locale locale"></span>)</span>
     </label>
 
     <div class="col-md-8" id="description">

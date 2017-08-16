@@ -4,20 +4,11 @@
 <g:render template="/layouts/formLanguageDropdown"/>
 
 <!-- Name -->
-<!--<div class="form-group {hasErrors(bean: instii18nNameonInstance, fieli18nNamename', 'has-error')}">
-    <label class="control-label col-md-3" fi18nNamename">
-        g:message code="instituti18nNamename.label" default="Name"/>
-        <span class="required-indicator">*</span>
-    </label>
-    <div class="col-md-6">
-        g:textField class="form-contri18nNamenai18nNamename" required="" value="{institutionInstani18nNamename}"/>
-    </div>
-</div>-->
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'i18nName', 'has-error')}" >
     <label class="control-label col-md-3" for="name">
         <span><g:message code="institution.name.label" default="Name"/>
         <span class="required-indicator">*</span>
-            (<span class="form-locale"></span>)</span>
+            (<span class="form-locale locale"></span>)</span>
     </label>
 
     <div class="col-md-6" id="name">
@@ -27,20 +18,11 @@
     </div>
 </div>
 <!-- Acronym -->
-<!--<div class="form-group {hasErrors(bean: institutionInstance, fieli18nAcronymonym', 'has-error')}">
-    <label class="control-label col-md-3" fi18nAcronymonym">
-        g:message code="instituti18nAcronymonym.label" default="Acronym"/>
-        <span class="required-indicator">*</span>
-    </label>
-    <div class="col-md-6">
-        g:textField class="form-contri18nNamenai18nAcronymonym" required="" value="{institutionInstance?.acronym}"/>
-    </div>
-</div>-->
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'i18nAcronym', 'has-error')}" >
     <label class="control-label col-md-3" for="acronym">
         <span><g:message code="institution.acronym.label" default="Name"/>
         <span class="required-indicator">*</span>
-            (<span class="form-locale"></span>)</span>
+            (<span class="form-locale locale"></span>)</span>
     </label>
 
     <div class="col-md-6" id="acronym">
@@ -52,19 +34,11 @@
 
 
 <!-- ShortDescription -->
-<!--<div class="form-group {hasErrors(bean: institutionInstance, fieli18nShortDescriptiontion', 'has-error')}">
-    <label class="control-label col-md-3" fi18nShortDescriptiontion">
-        g:message code="instituti18nShortDescriptiontion.label" default="Short Description"/>
-    </label>
-    <div class="col-md-6">
-        g:textArea class="form-contri18nNamenai18nShortDescriptiontion" rows="2" value="{institutionInstance?.shortDescription}"/>
-    </div>
-</div>-->
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'i18nShortDescriptivon', 'has-error')}" >
     <label class="control-label col-md-3" for="shortDescription">
         <span><g:message code="institution.shortDescription.label" default="Name"/>
         <span class="required-indicator">*</span>
-            (<span class="form-locale"></span>)</span>
+            (<span class="form-locale locale"></span>)</span>
     </label>
 
     <div class="col-md-6" id="shortDescription">
@@ -75,25 +49,17 @@
 </div>
 
 
-<!-- Description
-<div class="form-group {hasErrors(bean: institutionInstance, field: 'description', 'has-error')}">
-    <label class="control-label col-md-3" for="description">
-        g:message code="institution.description.label" default="Description"/>
-    </label>
-    <div class="col-md-7">
-        g:textAi18nNamename="description" rows="10" class="mce form-control" value="{institutionInstance?.description}" />
-    </div>
-</div> -->
+<!-- Description -->
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'i18nDescription', 'has-error')}" >
     <label class="control-label col-md-3" for="description">
         <span><g:message code="institution.description.label" default="Description"/>
-        (<span class="form-locale"></span>)</span>
+        (<span class="form-locale locale"></span>)</span>
     </label>
 
     <div class="col-md-8" id="description">
         <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
             <span class="i18n-field i18n-field-${it.toString()}">
-                <g:textArea class="mce form-control" name="i18nDescription.${it.toString()}" rows="10" value="${WebUtils.safeGet(institutionInstance.i18nDescription, it.toString())}"/>
+                <g:textArea class="mce form-control" id="i18nDescription.${it.toString()}" name="i18nDescription.${it.toString()}" rows="10" value="${WebUtils.safeGet(institutionInstance.i18nDescription, it.toString())}"/>
             </span>
         </g:each>
     </div>
@@ -169,7 +135,6 @@
     </div>
 </g:if>
 <asset:javascript src="bootstrap-colorpicker" asset-defer="" />
-<asset:javascript src="tinymce-simple" asset-defer=""/>
 <asset:script>
     jQuery(function ($) {
         $('.colpick').colorpicker();
