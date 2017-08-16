@@ -30,6 +30,6 @@
 
 <ul class="dropdown-menu language-dropdown-menu">
     <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
-        <li ><a href="#" onclick="setLanguage('language-${it.toString()}', '${it.toString()}')" id="language-${it.toString()}"><span class="locale">${it.toString().substring(0,2)}</span></a></li>
+        <li><a class="selectable" onclick="setLanguage('language-${it.toString()}', '${it.toString()}')" id="language-${it.toString()}"><span class="locale">${it.toString().substring(0,2)}</span></a></li>
     </g:each>
 </ul>

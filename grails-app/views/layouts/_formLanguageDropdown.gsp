@@ -52,7 +52,7 @@
         </a>
         <ul class="dropdown-menu language-dropdown-menu">
             <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
-                <li ><a onclick="showLocale('${it.toString()}')"><span class="locale">${it.toString().substring(0,2)}</span></a></li>
+                <li><a class="selectable"  onclick="showLocale('${it.toString()}')"><span class="locale">${it.toString().substring(0,2)}</span></a></li>
             </g:each>
         </ul>
     </li>

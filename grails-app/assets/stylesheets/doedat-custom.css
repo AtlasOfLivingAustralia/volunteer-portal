@@ -1,5 +1,8 @@
 /***** DoeDat custom look & feel ******/
 
+.selectable {
+    cursor: pointer;
+}
 .a-feature.home {
     background-color: #858a58;
     background-image: url(../images/feature-doedat.png);

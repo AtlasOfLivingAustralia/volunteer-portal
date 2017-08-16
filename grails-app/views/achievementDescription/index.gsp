@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.AchievementDescription" %>
+<%@ page import="au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,7 +27,7 @@
                     <table class="table table-striped table-hover">
                         <thead>
                         <tr>
-                            <g:sortableColumn property="name" mapping="achievementDescription"
+                            <g:sortableColumn property="i18nName.${WebUtils.getCurrentLocaleAsString()}" mapping="achievementDescription"
                                               title="${message(code: 'achievementDescription.name.label', default: 'Name')}"/>
 
                             <g:sortableColumn width="10%" property="enabled" mapping="achievementDescription"
@@ -49,10 +49,10 @@
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                                 <td style="vertical-align: middle;">
                                     <h3><g:link action="edit"
-                                                id="${achievementDescriptionInstance.id}">${fieldValue(bean: achievementDescriptionInstance, field: "name")}</g:link></h3>
+                                                id="${achievementDescriptionInstance.id}">${fieldValue(bean: achievementDescriptionInstance, field: "i18nName")}</g:link></h3>
 
                                     <div class="well-small">
-                                        <p>${fieldValue(bean: achievementDescriptionInstance, field: "i18nDescription")}</p>
+                                        <p>${raw(achievementDescriptionInstance?.i18nDescription?.toString())}</p>
                                     </div>
                                 </td>
 
