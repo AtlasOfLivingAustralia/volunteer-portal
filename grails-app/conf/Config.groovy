@@ -406,7 +406,7 @@ log4j = {
 
     // Add these explicitly to the debug log, so that they can be adjusted inside
     // probe
-    off     additivity: false,
+    info     additivity: false,
             debugLog: [
                     'au.org.ala',
                     'au.org.ala.volunteer',
