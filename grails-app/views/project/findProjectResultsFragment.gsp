@@ -3,7 +3,7 @@
         <tr projectId="${project.id}">
             <td style="width: 125px"><img src="${project.featuredImage}" style="height: 75px"/></td>
             <td>
-                <strong>${project.name}</strong>
+                <strong>${project.i18nName}</strong>
                 <br/>
                 <small>${project.featuredOwner}</small>
             </td>
@@ -26,6 +26,7 @@
         var projectId = $(this).closest("[projectId]").attr("projectId");
         $("#selectedProjectId").val(projectId);
         bvp.hideModal();
+
     });
 
 </script>

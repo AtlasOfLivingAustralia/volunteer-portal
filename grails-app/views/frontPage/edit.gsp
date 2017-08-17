@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.Project; au.org.ala.volunteer.WebUtils" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -6,6 +7,7 @@
 </head>
 
 <body class="admin">
+<input type="hidden" id="selectedProjectId"/>
 <div class="container">
     <cl:headerContent title="${message(code: 'default.frontpageoptions.label', default: 'Front Page Options')}" selectedNavItem="bvpadmin">
         <%
@@ -28,8 +30,13 @@
                             <label for="projectOfTheDay" class="control-label col-md-3"><g:message code="frontPage.projectOfTheDay.label"
                                                                     default="Project of the day"/></label>
                             <div class="col-md-6">
-                                <g:select name="projectOfTheDay" class="form-control" from="${au.org.ala.volunteer.Project.listOrderByName()}"
-                                          optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
+                                <g:select name="projectOfTheDay" class="form-control" from="${(Project.createCriteria().list {
+                                    i18nName {
+                                        order( WebUtils.getCurrentLocaleAsString() )
+                                    }
+                                })
+                                }"
+                                          optionKey="id" optionValue="i18nName" value="${frontPage.projectOfTheDay?.id}"/>
 
                             </div>
                             <div class="col-md-3">

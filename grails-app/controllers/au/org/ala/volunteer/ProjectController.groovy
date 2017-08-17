@@ -793,10 +793,7 @@ class ProjectController {
                 i18nDescription {
                     ilike WebUtils.getCurrentLocaleAsString(), query
                 }
-                i18nshortDescription {
-                    ilike WebUtils.getCurrentLocaleAsString(), query
-                }
-                i18nfeaturedOwner {
+                i18nShortDescription {
                     ilike WebUtils.getCurrentLocaleAsString(), query
                 }
             }

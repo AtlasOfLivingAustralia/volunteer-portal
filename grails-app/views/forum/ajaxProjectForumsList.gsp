@@ -87,7 +87,7 @@
                         <div class="col-sm-2 project-type">
                             <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
                             <br/>
-                            <span>${projectSummary.iconLabel}</span>
+                            <span>${message(code: projectSummary.iconLabel)}</span>
                         </div>
 
                         <div class="col-sm-3">

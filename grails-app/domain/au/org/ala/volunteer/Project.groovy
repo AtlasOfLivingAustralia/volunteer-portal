@@ -14,11 +14,11 @@ class Project implements Serializable {
 
 
     //String i18nName
-    @SanitizedHtml
-    String description
-    @SanitizedHtml
-    String tutorialLinks
-    String shortDescription
+//    @SanitizedHtml
+//    String description
+//    @SanitizedHtml
+//    String tutorialLinks
+//    String shortDescription
 //    String featuredLabel
 
 

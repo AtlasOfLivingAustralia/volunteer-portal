@@ -89,8 +89,8 @@
     </div>
 </div>
 <asset:script type="text/javascript">
-    $("th > a").addClass("btn")
-    $("th.sorted > a").addClass("active")
+    $("th > a").addClass("btn");
+    $("th.sorted > a").addClass("active");
 </asset:script>
 
 </body>
