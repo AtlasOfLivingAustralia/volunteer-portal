@@ -173,7 +173,7 @@ class ForumTagLib {
             table(class: "table table-striped table-hover table-condensed") {
                 thead {
                     tr {
-                        mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"title", title: message(code: "forumtaglib.topic"), action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"i18nTitle."+WebUtils.getCurrentLocaleAsString(), title: message(code: "forumtaglib.topic"), action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"replies", title: message(code: "forumtaglib.replies"), action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"views", title: message(code: "forumtaglib.views"), action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"creator", title: message(code: "forumtaglib.posted_by"), action:paginateAction, params:params))

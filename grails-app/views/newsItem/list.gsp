@@ -54,7 +54,7 @@
 
                                 <td style="vertical-align: top">
                                     <b><g:link controller="newsItem" action="show"
-                                               id="${newsItemInstance.id}">${fieldValue(bean: newsItemInstance, field: "title")}</g:link></b>
+                                               id="${newsItemInstance.id}">${fieldValue(bean: newsItemInstance, field: "i18nTitle")}</g:link></b>
 
                                     <cl:ifAdmin>
                                         <div style="padding-top: 20px">
@@ -67,11 +67,11 @@
 
                                 <td>
                                     <div class="lead">
-                                        ${newsItemInstance?.shortDescription}
+                                        ${newsItemInstance?.i18nShortDescription}
                                     </div>
 
                                     <div>
-                                        ${newsItemInstance?.body}
+                                        ${newsItemInstance?.i18nBody}
                                     </div>
                                 </td>
 

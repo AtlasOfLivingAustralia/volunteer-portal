@@ -45,15 +45,15 @@ ${newsItems?.size() ?: 0} <g:message code="project.news_items.count"/>
             <td style="max-width: 40px"><g:formatDate date="${newsItem.created}" format="yyyy-MM-dd HH:mm:ss"/></td>
             <td>
                 <div>
-                    <strong>${newsItem.title}</strong>
+                    <strong>${newsItem.i18nTitle}</strong>
                 </div>
 
                 <div>
-                    <em>${newsItem.shortDescription}</em>
+                    <em>${newsItem.i18nShortDescription}</em>
                 </div>
 
                 <div>
-                    ${newsItem.body}
+                    ${raw(newsItem.i18nBody?.toString())}
                 </div>
             </td>
             <td style="max-width: 20px">

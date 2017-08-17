@@ -9,7 +9,7 @@
 
 <body>
 
-<cl:headerContent title="${newsItemInstance.title}">
+<cl:headerContent title="${newsItemInstance.i18nTitle}">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'newsItem', action: 'list', id: newsItemInstance?.project?.id), label: message(code: 'default.list.label', args: [entityName])],
@@ -25,14 +25,14 @@
     <div class="span12">
 
         <legend>
-            ${fieldValue(bean: newsItemInstance, field: "shortDescription")}
+            ${fieldValue(bean: newsItemInstance, field: "i18nShortDescription")}
             <small class="pull-right"><g:formatDate date="${newsItemInstance.created}"
                                                     format="yyyy-MM-dd HH:mm"/> by <cl:userDisplayName
                     userId="${newsItemInstance.createdBy}"/></small>
         </legend
 
         <div>
-            ${newsItemInstance.body}
+            ${newsItemInstance.i18nBody}
         </div>
 
         <br/>

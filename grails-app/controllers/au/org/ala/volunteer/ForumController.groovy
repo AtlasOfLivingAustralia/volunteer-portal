@@ -512,7 +512,7 @@ class ForumController {
         def sort = params.sort
 
         if (sort && !ForumTopic.declaredFields.find { it.name == sort }) {
-            sort = 'title'
+            sort = 'i18nTitle.'+WebUtils.getCurrentLocaleAsString()
         }
 
         def c = ForumTopic.createCriteria()

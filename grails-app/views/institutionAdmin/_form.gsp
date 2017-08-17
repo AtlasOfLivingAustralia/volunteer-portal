@@ -27,7 +27,7 @@
 
     <div class="col-md-6" id="acronym">
         <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
-            <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nAcronym.${it.toString()}" rows="1" value="${WebUtils.safeGet(institutionInstance.i18nAcronym, it.toString())}"/>
+            <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nAcronym.${it.toString()}" rows="1" value="${WebUtils.safeGet(institutionInstance?.i18nAcronym, it.toString())}"/>
         </g:each>
     </div>
 </div>
@@ -43,7 +43,7 @@
 
     <div class="col-md-6" id="shortDescription">
         <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
-            <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nShortDescription.${it.toString()}" rows="1" value="${WebUtils.safeGet(institutionInstance.i18nShortDescription, it.toString())}"/>
+            <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nShortDescription.${it.toString()}" rows="1" value="${WebUtils.safeGet(institutionInstance?.i18nShortDescription, it.toString())}"/>
         </g:each>
     </div>
 </div>
@@ -59,7 +59,7 @@
     <div class="col-md-8" id="description">
         <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
             <span class="i18n-field i18n-field-${it.toString()}">
-                <g:textArea class="mce form-control" id="i18nDescription.${it.toString()}" name="i18nDescription.${it.toString()}" rows="10" value="${WebUtils.safeGet(institutionInstance.i18nDescription, it.toString())}"/>
+                <g:textArea class="mce form-control" id="i18nDescription.${it.toString()}" name="i18nDescription.${it.toString()}" rows="10" value="${WebUtils.safeGet(institutionInstance?.i18nDescription, it.toString())}"/>
             </span>
         </g:each>
     </div>

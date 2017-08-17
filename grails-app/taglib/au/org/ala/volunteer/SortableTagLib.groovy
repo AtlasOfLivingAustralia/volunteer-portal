@@ -43,7 +43,7 @@ class SortableTagLib {
         }
 
         if (!attrs.title && !attrs.titleKey) {
-            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y_or_z", args: ["sortableColumn","title", "titleKey"]))
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y_or_z", args: ["sortableColumn","i18nTitle", "titleKey"]))
         }
 
         def property = attrs.remove("property")

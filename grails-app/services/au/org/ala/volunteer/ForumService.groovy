@@ -219,8 +219,11 @@ class ForumService {
             or {
                 ilike("text", q)
                 and {
-                    topic {
-                        ilike("title", q)
+//                    topic {
+//                        ilike("title", q)
+//                    }
+                    topic.i18nTitle {
+                        ilike WebUtils.getCurrentLocaleAsString(), q
                     }
                     isNull("replyTo")
                 }

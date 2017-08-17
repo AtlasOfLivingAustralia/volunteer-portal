@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.NewsItem" %>
+<%@ page import="au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.NewsItem" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -30,28 +30,50 @@
                         <g:hiddenField name="id" value="${newsItemInstance?.id}"/>
                         <g:hiddenField name="version" value="${newsItemInstance?.version}"/>
 
-                        <div class="form-group">
-                            <label for="title" class="control-label col-md-2"><g:message code="newsItem.title.label" default="Title"/></label>
 
-                            <div class="col-md-4">
-                                <g:textField name="title" class="form-control" value="${newsItemInstance?.title}"/>
+                        <!-- form language selector -->
+                        <g:render template="/layouts/formLanguageDropdown"/>
+                        <!-- Title -->
+                        <div class="form-group" >
+                            <label class="control-label col-md-3" for="name">
+                                <span><g:message code="newsItem.title.label" default="Name"/>
+                                (<span class="form-locale locale"></span>)</span>
+                            </label>
+
+                            <div class="col-md-6" id="name">
+                                <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                                    <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nTitle.${it.toString()}" rows="1" value="${ WebUtils.safeGet(newsItemInstance?.i18nTitle, it.toString()) }"/>
+                                </g:each>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="shortDescription" class="control-label col-md-2"><g:message code="newsItem.shortDescription.label"
-                                                                                           default="Short description"/></label>
+                        <!-- Short Description -->
+                        <div class="form-group" >
+                            <label class="control-label col-md-3" for="name">
+                                <span><g:message code="newsItem.shortDescription.label" default="Short description"/>
+                                (<span class="form-locale locale"></span>)</span>
+                            </label>
 
-                            <div class="col-md-4">
-                                <g:textField class="form-control" name="shortDescription" value="${newsItemInstance?.shortDescription}"/>
+                            <div class="col-md-6" id="i18nShortDescription">
+                                <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                                    <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nShortDescription.${it.toString()}" rows="1" value="${ WebUtils.safeGet(newsItemInstance?.i18nShortDescription, it.toString()) }"/>
+                                </g:each>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="body" class="control-label col-md-2"><g:message code="newsItem.body.label" default="Body"/></label>
+                        <!-- Description -->
+                        <div class="form-group" >
+                            <label class="control-label col-md-3" for="description">
+                                <span><g:message code="newsItem.body.label" default="Body"/>
+                                (<span class="form-locale locale"></span>)</span>
+                            </label>
 
-                            <div class="col-md-8">
-                                <g:textArea name="body" rows="10" class="mce form-control" value="${newsItemInstance?.body}" />
+                            <div class="col-md-8" id="description">
+                                <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                                    <span class="i18n-field i18n-field-${it.toString()}">
+                                        <g:textArea class="mce form-control" id="i18nBody.${it.toString()}" name="i18nBody.${it.toString()}" rows="10" value="${WebUtils.safeGet(newsItemInstance?.i18nBody, it.toString())}"/>
+                                    </span>
+                                </g:each>
                             </div>
                         </div>
 
