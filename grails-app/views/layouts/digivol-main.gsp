@@ -1,3 +1,4 @@
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -73,7 +74,7 @@
                 <!-- Logged In Starts -->
                     <cl:isNotLoggedIn>
                         <li>
-                            <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}&language=${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}"><i class="glyphicon glyphicon-user"></i> <g:message code="main.navigation.log_in" /></a>
+                            <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}&language=${ LocaleContextHolder.getLocale().getLanguage()}"><i class="glyphicon glyphicon-user"></i> <g:message code="main.navigation.log_in" /></a>
                         </li>
                     </cl:isNotLoggedIn>
                     <cl:isLoggedIn>
@@ -100,7 +101,7 @@
                 <!--<ul class="nav navbar-nav navbar-right" style="">-->
                     <li class="dropdown language-selection ">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <span class="locale">${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}</span>
+                            <span class="locale">${ LocaleContextHolder.getLocale().getLanguage()}</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
                         <g:render template="/layouts/languageDropdown"/>
