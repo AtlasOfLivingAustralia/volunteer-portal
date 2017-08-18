@@ -40,8 +40,12 @@
         });
     }
     $(function() {
+        // Checks fields when clicking out of an input field
         $(".i18n-field").focusout(function() { checkIfAllFieldsAreTranslated('${ LocaleContextHolder.getLocale().toString()}'); });
+
         showLocale('${ LocaleContextHolder.getLocale().toString()}')
+
+        setTimeout(function() { checkIfAllFieldsAreTranslated('${ LocaleContextHolder.getLocale().toString()}') }, 2000);
     });
 </asset:script>
 <ul class="nav">

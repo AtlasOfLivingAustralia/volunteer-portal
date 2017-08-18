@@ -874,6 +874,11 @@ class ProjectController {
         def institutions = list.collect { [id: it.id, name: it.i18nName.toString() ] }
         def templates = Template.listOrderByName([:])
         def projectTypes = ProjectType.listOrderByName([:])
+        projectTypes.each() { ProjectType t ->
+            t.name = message(code: t.label)
+        }
+
+
         def projectImageUrl = projectStagingService.hasProjectImage(project) ? projectStagingService.getProjectImageUrl(project) : null
         def labels = Label.list()
         def autosave = projectStagingService.getTempProjectDescriptor(id)

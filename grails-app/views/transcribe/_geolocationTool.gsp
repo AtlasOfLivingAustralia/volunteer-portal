@@ -287,11 +287,10 @@
   function setLocationFields() {
     if ($('#infoLat').html() && $('#infoLng').html()) {
       // copy map fields into main form
-
       var latWidget = $('.decimalLatitude');
       var lngWidget = $('.decimalLongitude');
       var localityWidget = $(".locality");
-      if (!latWidget.length || !lngWidget.length) {
+      if (latWidget.length != 0 && lngWidget.length != 0) {
         // decimal controls do not exist in current template, so try the verbatim ones
         latWidget = $(".verbatimLatitude");
         lngWidget = $(".verbatimLongitude");
@@ -302,8 +301,7 @@
 //                    localityWidget =  $(".verbatimLocality");
 //                }
 
-      if (latWidget.length && lngWidget.length) {
-
+      if (latWidget.length > 0 || lngWidget.length > 0) {
         latWidget.val($('#infoLat').html()).trigger("change");
         lngWidget.val($('#infoLng').html()).trigger("change");
 
@@ -322,8 +320,6 @@
             hasLocality = true;
           } else if (type == 'administrative_area_level_1') {
             $(':input.stateProvince').val(name);
-          } else {
-            i18nName
           }
         }
 

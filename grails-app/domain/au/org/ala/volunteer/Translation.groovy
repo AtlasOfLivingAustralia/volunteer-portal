@@ -8,6 +8,9 @@ class Translation implements Serializable {
     Translation(String defaultTranslation) {
         this[DEFAULT_LOCALE.toString()] = defaultTranslation;
     }
+    Translation(String locale, String translation) {
+        this[locale] = translation;
+    }
 
     String en_US;
     String nl_BE;

@@ -13,14 +13,6 @@ class Institution implements Serializable {
     Translation i18nAcronym
 
     Long id
-/*
-    String i18nName //obsolete
-    String acronym  //obsolete
-    @SanitizedHtml
-    String shortDescription //obsolete
-    @SanitizedHtml
-    String description//obsolete*/
-
 
     String contactName // optional
     String contactEmail // optional
@@ -41,8 +33,6 @@ class Institution implements Serializable {
         contactEmail email: true, blank: true, nullable: true
         contactPhone blank: true, nullable: true
         collectoryUid nullable: true
-        //i18nShortDescription nullable: true, blank: true, maxSize: 512
-        //description blank: true, nullable: true, maxSize: 16384
         websiteUrl blank: true, nullable: true
         imageCaption blank: true, nullable: true
         themeColour blank: true, nullable: true
@@ -54,8 +44,6 @@ class Institution implements Serializable {
     }
 
     static mapping = {
-        //description widget: 'textarea'
         disableNewsItems defaultValue: 'false'
     }
-
 }

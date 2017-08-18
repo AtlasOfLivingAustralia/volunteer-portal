@@ -11,13 +11,14 @@ class ProjectStagingService {
 
     public Project createProject(NewProjectDescriptor projectDescriptor) {
 
-        def project = new Project(i18nName: projectDescriptor.name)
+        def project = new Project()
 
         project.featuredOwner = projectDescriptor.featuredOwner
         project.institution = projectDescriptor.featuredOwnerId ? institutionService.findByIdOrName(projectDescriptor.featuredOwnerId, projectDescriptor.featuredOwner) : null
-        project.i18nName = projectDescriptor.name
-        project.i18nShortDescription = projectDescriptor.shortDescription
-        project.i18nDescription = projectDescriptor.longDescription
+        project.i18nName = new Translation(WebUtils.getCurrentLocaleAsString(), projectDescriptor.name)
+        project.i18nShortDescription = new Translation(WebUtils.getCurrentLocaleAsString(), projectDescriptor.shortDescription)
+        project.i18nDescription = new Translation(WebUtils.getCurrentLocaleAsString(), projectDescriptor.longDescription)
+        project.i18nTutorialLinks = new Translation(WebUtils.getCurrentLocaleAsString(), projectDescriptor.tutorialLinks)
         project.template = Template.get(projectDescriptor.templateId)
         project.projectType = ProjectType.get(projectDescriptor.projectTypeId)
         project.showMap = projectDescriptor.showMap
@@ -26,7 +27,6 @@ class ProjectStagingService {
         project.mapInitZoomLevel = projectDescriptor.mapInitZoomLevel
         project.featuredImageCopyright = projectDescriptor.imageCopyright
         project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
-        project.i18nTutorialLinks = projectDescriptor.tutorialLinks
         project.inactive = true
         project.createdBy = User.findByUserId(Long.parseLong(projectDescriptor.createdBy?.toString()))
 

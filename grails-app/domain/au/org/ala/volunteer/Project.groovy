@@ -68,15 +68,12 @@ class Project implements Serializable {
     }
 
     static constraints = {
-        description nullable: true, maxSize: 3000, widget: 'textarea'
         template nullable: true
         created nullable: true
         showMap nullable: true
-        tutorialLinks nullable: true, maxSize: 2000, widget: 'textarea'
         featuredImage nullable: true
         featuredOwner nullable: true
         institution nullable: true
-        shortDescription nullable: true, maxSize: 500
         disableNewsItems nullable: true
         leaderIconIndex nullable: true
         featuredImageCopyright nullable: true

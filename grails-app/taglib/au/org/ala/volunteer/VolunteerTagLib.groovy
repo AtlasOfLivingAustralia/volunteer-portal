@@ -470,9 +470,9 @@ class VolunteerTagLib {
                                 span(class:'glyphicon glyphicon-menu-right') {
                                     mkp.yield(' ')
                                 }
-                                if(item && item.link && item.label) {
-                                    a(href: item?.link) {
-                                        mkp.yield(item?.label)
+                                if(item && item.link != null && item.label != null && item.label?.toString() != null) {
+                                    a(href: item.link) {
+                                        mkp.yield(item.label)
                                     }
                                 }
                             }

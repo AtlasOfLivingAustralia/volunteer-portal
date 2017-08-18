@@ -128,7 +128,7 @@
                 <label class="col-sm-3 control-label" for="projectTypeId"><g:message code="project.projectType.label" /></label>
         
                 <div class="col-sm-6">
-                    <g:select class="form-control" name="projectTypeId" from="${projectTypes}" optionKey="id" optionValue="label"
+                    <g:select class="form-control" name="projectTypeId" from="${projectTypes}" optionKey="id" optionValue="name"
                               data-ng-model="project.projectTypeId" data-dv-convert-to-number="" data-ng-required="true"  />
                 </div>
 
