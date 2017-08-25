@@ -7,8 +7,7 @@ class Institution implements Serializable {
     Long id
     String name
     String acronym  // optional
-    @SanitizedHtml
-    String shortDescription // markdown, optional
+    String shortDescription // optional
     @SanitizedHtml
     String description // markdown, optional
     String contactName // optional
