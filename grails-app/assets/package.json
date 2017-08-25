@@ -26,18 +26,18 @@
   "devDependencies": {},
   "dependencies": {
     "angular": "^1.5.7",
-    "angular-animate": "^1.5.6",
-    "angular-aria": "^1.5.6",
-    "angular-cookies": "^1.5.6",
+    "angular-animate": "^1.5.7",
+    "angular-aria": "^1.5.7",
+    "angular-cookies": "^1.5.7",
     "angular-google-chart": "^0.1.0",
-    "angular-i18n": "^1.5.6",
+    "angular-i18n": "^1.5.7",
     "angular-marked": "^1.2.0",
-    "angular-message-format": "^1.5.6",
-    "angular-sanitize": "^1.5.6",
-    "angular-touch": "^1.5.6",
+    "angular-message-format": "^1.5.7",
+    "angular-sanitize": "^1.5.7",
+    "angular-touch": "^1.5.7",
     "angular-ui-bootstrap": "^1.3.3",
     "angular-ui-router": "^0.3.1",
-    "angular-ui-tinymce": "0.0.16",
-    "tinymce": "^4.3.13"
+    "angular-ui-tinymce": "0.0.19",
+    "tinymce": "^4.6.5"
   }
 }
