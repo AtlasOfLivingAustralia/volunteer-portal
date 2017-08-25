@@ -6,7 +6,6 @@
     <meta name="layout" content="digivol-institutionSettings"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <g:setProvider library="jquery"/>
 </head>
 
 <body>

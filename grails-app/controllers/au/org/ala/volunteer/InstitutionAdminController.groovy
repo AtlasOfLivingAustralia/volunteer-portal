@@ -38,7 +38,7 @@ class InstitutionAdminController {
 
         institutionInstance.save flush: true
 
-        redirect(action: 'index')
+        redirect(action: 'edit', id: institutionInstance.id)
 
     }
 
@@ -78,7 +78,7 @@ class InstitutionAdminController {
 
         institutionInstance.save flush: true
 
-        redirect(action: 'index')
+        redirect(action: 'edit', id: institutionInstance.id)
 
     }
 

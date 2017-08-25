@@ -53,7 +53,7 @@
     </div>
 </div>
 <asset:javascript src="bootstrap-switch" asset-defer="" />
-<asset:javascript src="bootbox" asset-defer="" />
-<asset:javascript src="tinymce-simple" asset-defer=""/>
+%{--<asset:javascript src="bootbox" asset-defer="" />--}%
+%{--<asset:javascript src="tinymce-simple" asset-defer=""/>--}%
 </body>
 </g:applyLayout>

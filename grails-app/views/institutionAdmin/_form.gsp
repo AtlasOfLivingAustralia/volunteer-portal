@@ -32,7 +32,7 @@
     <label class="control-label col-md-3" for="description">
         <g:message code="institution.description.label" default="Description"/>
     </label>
-    <div class="col-md-7">
+    <div class="col-md-9">
         <g:textArea name="description" rows="10" class="mce form-control" value="${institutionInstance?.description}" />
     </div>
 </div>
