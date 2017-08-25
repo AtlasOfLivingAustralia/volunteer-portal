@@ -13,7 +13,15 @@
 <content tag="adminButtonBar">
 </content>
 
-<g:form method="post" class="form-horizontal">
+<g:hasErrors>
+    <div class="alert alert-danger">
+        <ul>
+            <g:eachError><li><g:message error="${it}"/></li></g:eachError>
+        </ul>
+    </div>
+</g:hasErrors>
+
+<g:form method="post" class="form-horizontal" action="updateGeneralSettings">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
@@ -108,7 +116,7 @@
 
     <div class="form-group">
         <div class="col-md-9 col-md-offset-3">
-            <g:actionSubmit class="save btn btn-primary" action="updateGeneralSettings"
+            <g:actionSubmit class="save btn btn-primary"
                             value="${message(code: 'default.button.update.label', default: 'Update')}"/>
         </div>
     </div>

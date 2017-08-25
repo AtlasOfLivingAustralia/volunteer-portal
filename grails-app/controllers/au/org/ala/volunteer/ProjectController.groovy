@@ -588,6 +588,8 @@ class ProjectController {
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "Expedition updated"
                 return true
+            } else {
+                flash.message = "Expedition update failed"
             }
         }
         return false
