@@ -2,7 +2,7 @@
 
     <div class="control-group">
         <g:textField name="search" class="form-control" value="" placeholder="Search"/>
-        <button id="btnSearchProjects" class="btn btn-primary"><i class="icon-search"></i> Search</button>
+        <button id="btnSearchProjects" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
         <button class="btn btn-default" id="btnCancelProjectSearch">Cancel</button>
     </div>
 

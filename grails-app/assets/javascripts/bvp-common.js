@@ -17,7 +17,9 @@ var bvp = {};
             className: options.className ? options.className : null,
             title: options.title ? options.title : 'Modal Title',
             hideHeader: options.hideHeader ? options.hideHeader : false,
+            onClosing: options.onClosing || noop,
             onClose: options.onClose || noop,
+            onShowing: options.onShowing || noop,
             onShown: options.onShown || noop,
             buttons: options.buttons ? options.buttons : null
         };
@@ -43,6 +45,18 @@ var bvp = {};
                         window.history.back(1);
                     }
                 }
+            });
+
+            dialog.on('hide.bs.modal', function(e) {
+               if (opts.onClosing) {
+                   opts.onClosing();
+               }
+            });
+
+            dialog.on('show.bs.modal', function(e) {
+               if (opts.onShowing) {
+                   opts.onShowing();
+               }
             });
 
             dialog.on('shown.bs.modal', function(e) {
@@ -188,7 +202,7 @@ var bvp = {};
             title: "Find an Expedition",
             url: BVP_JS_URLS.selectProjectFragment,
             width: 800,
-            onClose: function() {
+            onClosing: function() {
                 if (callback) {
                     var projectId = $("#selectedProjectId").val();
                     if (projectId) {

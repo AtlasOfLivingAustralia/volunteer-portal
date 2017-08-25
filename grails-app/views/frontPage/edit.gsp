@@ -26,7 +26,7 @@
                     <g:form action="save" class="form-horizontal">
                         <div class="form-group">
                             <label for="projectOfTheDay" class="control-label col-md-3"><g:message code="frontPage.projectOfTheDay.label"
-                                                                    default="Project of the day"/></label>
+                                    default="Project of the day"/></label>
                             <div class="col-md-6">
                                 <g:select name="projectOfTheDay" class="form-control" from="${au.org.ala.volunteer.Project.listOrderByName()}"
                                           optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
