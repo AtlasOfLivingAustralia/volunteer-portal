@@ -10,8 +10,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver
 beans = {
 
     localeResolver(SmartConfigLocaleResolver) {
-          supportedLocales = grailsApplication.config.languages.enabled.tokenize(',').collect() { new Locale(it.tokenize("_")[0], it.tokenize("_")[1]) } ?: [grailsApplication.config.languages.default ? new Locale(grailsApplication.config.languages.default): new Locale('en', 'US')]
-          defaultLocale = grailsApplication.config.languages.default ? new Locale(grailsApplication.config.languages.default): new Locale('en','US')
+          supportedLocales = grailsApplication.config.languages.enabled.tokenize(',').collect() { new Locale(it.tokenize("_")[0], it.tokenize("_")[1]) } ?: [new Locale('en', 'US')]
+          defaultLocale = new Locale('en','US')
     }
 
 //    customPageRenderer(CustomPageRenderer, ref("groovyPagesTemplateEngine")) {

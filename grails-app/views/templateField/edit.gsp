@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.TemplateField" %>
+<%@ page import="au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.TemplateField" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -34,6 +34,36 @@
                         <g:hiddenField name="id" value="${templateFieldInstance?.id}"/>
                         <g:hiddenField name="version" value="${templateFieldInstance?.version}"/>
 
+
+                        <!-- form language selector -->
+                        <g:render template="/layouts/formLanguageDropdown"/>
+
+                        <!-- Label -->
+                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}" >
+                            <label class="control-label col-md-2" for="label">
+                                <span><g:message code="templateField.label.label" default="Label"/></span>
+                            </label>
+
+                            <div class="col-md-6" id="label">
+                                <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                                    <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="label.${it.toString()}" rows="1" value="${ WebUtils.safeGet(templateFieldInstance?.label, it.toString()) }"/>
+                                </g:each>
+                            </div>
+                        </div>
+
+                        <!-- HelpText -->
+                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}" >
+                            <label class="control-label col-md-2" for="helpText">
+                                <span><g:message code="templateField.helpText.label" default="Help Text"/></span>
+                            </label>
+
+                            <div class="col-md-6" id="helpText">
+                                <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                                    <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="helpText.${it.toString()}" rows="1" value="${ WebUtils.safeGet(templateFieldInstance?.helpText, it.toString()) }"/>
+                                </g:each>
+                            </div>
+                        </div>
+
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'fieldType', 'has-error')}">
                             <label for="fieldType" class="col-md-2 control-label"><g:message code="templateField.fieldType.label" default="Field Type"/></label>
                             <div class="col-md-6">
@@ -54,12 +84,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}">
-                            <label for="label" class="col-md-2 control-label"><g:message code="templateField.label.label" default="Label"/></label>
-                            <div class="col-md-6">
-                                <g:textField class="form-control" name="label" value="${templateFieldInstance?.label}"/>
-                            </div>
-                        </div>
+
 
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'defaultValue', 'has-error')}">
                             <label for="defaultValue" class="col-md-2 control-label"><g:message code="templateField.defaultValue.label" default="Default Value"/></label>
@@ -82,12 +107,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'helpText', 'has-error')}">
-                            <label for="helpText" class="col-md-2 control-label"><g:message code="templateField.helpText.label" default="Help Text"/></label>
-                            <div class="col-md-6">
-                                <g:textArea class="form-control" name="helpText" rows="4" value="${templateFieldInstance?.helpText}"/>
-                            </div>
-                        </div>
 
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'has-error')}">
                             <label for="validationRule" class="col-md-2 control-label"><g:message code="templateField.validationRule.label" default="Validation Rule"/></label>

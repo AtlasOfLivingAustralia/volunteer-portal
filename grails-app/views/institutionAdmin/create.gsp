@@ -45,5 +45,6 @@
         </div>
     </div>
 </div>
+<asset:javascript src="tinymce-simple" asset-defer="" />
 </body>
 </html>

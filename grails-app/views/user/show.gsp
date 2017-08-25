@@ -8,7 +8,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
     <g:if test="${project}">
-        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.name ?: message(code: 'user.show.unknown_project')])}"/></title>
+        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.i18nName ?: message(code: 'user.show.unknown_project')])}"/></title>
     </g:if>
     <g:else>
         <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
@@ -44,7 +44,7 @@
             <div class="col-sm-6">
                 <span class="pre-header"><g:message code="user.show.volunteer_profile"/></span>
                 <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}</h1>
-                <g:if test="${project}"><h2>${project.name}</h2></g:if>
+                <g:if test="${project}"><h2>${project?.i18nName}</h2></g:if>
                 <div class="row">
                     <div class="col-xs-4">
                         <h2><strong>${score}</strong></h2>

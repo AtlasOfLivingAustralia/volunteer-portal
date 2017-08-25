@@ -2,15 +2,16 @@ package au.org.ala.volunteer
 
 class TemplateField {
 
+    Translation label
+    Translation helpText
+
     DarwinCoreField fieldType
     String fieldTypeClassifier
-    String label
     String defaultValue
     FieldCategory category
     FieldType type
     Boolean mandatory
     Boolean multiValue
-    String helpText
     String validationRule
     Template template
     Integer displayOrder
