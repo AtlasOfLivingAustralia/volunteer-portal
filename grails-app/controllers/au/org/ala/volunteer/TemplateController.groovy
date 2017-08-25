@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
 
-    static allowedMethods = [save: "POST", update: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", cloneTemplate: "POST"]
 
     def userService
     def templateFieldService
@@ -312,22 +312,7 @@ class TemplateController {
         }
 
         if (template && newName) {
-
-            def newTemplate = new Template(name: newName, viewName: template.viewName, author: userService.currentUser.userId)
-
-            newTemplate.viewParams = [:]
-            template.viewParams.keySet().each { key ->
-                newTemplate.viewParams[key] = template.viewParams[key]
-            }
-
-            newTemplate.save(flush: true, failOnError: true)
-            // Now we need to copy over the template fields
-            def fields = TemplateField.findAllByTemplate(template)
-            fields.each { f ->
-                def newField = new TemplateField(f.properties)
-                newField.template = newTemplate
-                newField.save()
-            }
+            templateService.cloneTemplate(template, newName)
         }
 
         redirect(action:'list')

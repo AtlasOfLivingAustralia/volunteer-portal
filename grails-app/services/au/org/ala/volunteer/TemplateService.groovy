@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
 import grails.web.context.ServletContextHolder as SCH
 
 import java.util.regex.Pattern
@@ -7,6 +8,26 @@ import java.util.regex.Pattern
 class TemplateService {
 
     def grailsApplication
+    def userService
+
+    @Transactional
+    def cloneTemplate(Template template, String newName) {
+        def newTemplate = new Template(name: newName, viewName: template.viewName, author: userService.currentUser.userId)
+
+        newTemplate.viewParams = [:]
+        template.viewParams.entrySet().each { entry ->
+            newTemplate.viewParams[entry.key] = entry.value
+        }
+
+        newTemplate.save()
+        // Now we need to copy over the template fields
+        def fields = TemplateField.findAllByTemplate(template)
+        Field.saveAll(fields.collect { f ->
+            def newField = new TemplateField(f.properties)
+            newField.template = newTemplate
+            newField
+        })
+    }
 
     def getAvailableTemplateViews() {
         def views = []
