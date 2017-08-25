@@ -43,7 +43,7 @@ spring:
         banner-mode: "console"
     groovy:
         template:
-            check-template-location: false
+          check-template-location: false
     http:
         multipart:
           max-file-size: 50MB
