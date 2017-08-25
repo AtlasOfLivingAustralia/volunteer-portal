@@ -65,7 +65,7 @@ class InstitutionAdminControllerSpec extends Specification {
             controller.save(institution)
 
         then:"A redirect is issued to the show action"
-            response.redirectedUrl == '/admin/institutions/index'
+            response.redirectedUrl == '/admin/institutions/edit/1'
             Institution.count() == 1
     }
 
@@ -113,7 +113,7 @@ class InstitutionAdminControllerSpec extends Specification {
             controller.update(institution)
 
         then:"A redirect is issues to the show action"
-            response.redirectedUrl == "/admin/institutions/index"
+            response.redirectedUrl == "/admin/institutions/edit/1"
     }
 
     void "Test that the delete action deletes an instance if it exists"() {
