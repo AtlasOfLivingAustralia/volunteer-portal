@@ -309,7 +309,7 @@ class StagingService {
     public void uploadDataFile(Project project, MultipartFile file) {
         clearDataFile(project)
         def f = new File(createDataFilePath(project))
-        f.mkdirs()
+        f.getParentFile().mkdirs()
         file.transferTo(f.absoluteFile)
     }
 
