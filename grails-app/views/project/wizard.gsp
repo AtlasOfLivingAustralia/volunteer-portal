@@ -1,3 +1,4 @@
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -518,7 +519,9 @@
 <asset:script>
   createProjectModule({
      googleMapsApiKey: '${grailsApplication.config.google.maps.key}',
-     language: '${org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}',
+     defaultLatitude: ${grailsApplication.config.location.default.latitude},
+     defaultLongitude: ${grailsApplication.config.location.default.longitude},
+     language: '${LocaleContextHolder.getLocale().getLanguage()}',
      stagingId: '${stagingId.encodeAsJavaScript()}',
      cancelUrl: '${createLink(controller: 'project', action: 'wizardCancel', id: id)}',
      autosaveUrl: '${createLink(controller: 'project', action: 'wizardAutosave', id: stagingId)}',

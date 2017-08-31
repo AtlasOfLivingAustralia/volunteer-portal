@@ -82,8 +82,8 @@
 
         localityMap = new GMaps({
             div: '#localityMap',
-            lat: -34.397,
-            lng: 150.644,
+            lat: ${grailsApplication.config.location.default.latitude},
+            lng: ${grailsApplication.config.location.default.longitude},
             zoom: 10
         });
 

@@ -21,8 +21,8 @@ function createProjectModule(config) {
   }
 
   var LonLat = function LonLat() {
-    var latitude = arguments.length <= 0 || arguments[0] === undefined ? -27.76133033947936 : arguments[0];
-    var longitude = arguments.length <= 1 || arguments[1] === undefined ? 134.47265649999997 : arguments[1];
+    var latitude = arguments.length <= 0 || arguments[0] === undefined ? config.defaultLatitude : arguments[0];
+    var longitude = arguments.length <= 1 || arguments[1] === undefined ? config.defaultLongitude : arguments[1];
 
     _classCallCheck(this, LonLat);
 

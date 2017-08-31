@@ -76,7 +76,7 @@
       latLng = new google.maps.LatLng(lat, lng);
       $('#infoUncert').val(coordUncer);
     } else {
-      latLng = new google.maps.LatLng(-34.397, 150.644);
+      latLng = new google.maps.LatLng(${grailsApplication.config.location.default.latitude}, ${grailsApplication.config.location.default.longitude});
     }
 
     var myOptions = {
@@ -285,12 +285,13 @@
   }
 
   function setLocationFields() {
+    //debugger;
     if ($('#infoLat').html() && $('#infoLng').html()) {
       // copy map fields into main form
       var latWidget = $('.decimalLatitude');
       var lngWidget = $('.decimalLongitude');
       var localityWidget = $(".locality");
-      if (latWidget.length != 0 && lngWidget.length != 0) {
+      if (latWidget.length < 1 || lngWidget.length < 1) {
         // decimal controls do not exist in current template, so try the verbatim ones
         latWidget = $(".verbatimLatitude");
         lngWidget = $(".verbatimLongitude");
