@@ -36,20 +36,21 @@ HAVING
 """).collect { it[0] }
                 //def newTranscribers = userService.detailsForUserIds(userIds)
 
-                def users = User.findAllByUserIdInList(userIds)
+                if (userIds) {
+                    def users = User.findAllByUserIdInList(userIds)
 
-                if (users) {
+                    if (users) {
 
-                    log.info("Emailling $recipient with new transcribers: $users")
-                    mailService.sendMail {
-                        to recipient
-                        subject "DigiVol: New Transcribers"
-                        body( view:"/mail/newTranscribers",
-                                model: [newTranscribers: users])
+                        log.info("Emailling $recipient with new transcribers: $users")
+                        mailService.sendMail {
+                            to recipient
+                            subject "DigiVol: New Transcribers"
+                            body( view:"/mail/newTranscribers",
+                                    model: [newTranscribers: users])
+                        }
                     }
                 }
-
-            } catch (Exception e) {
+             } catch (Exception e) {
                 log.error("Update users job failed with exception", e)
             }
         }
