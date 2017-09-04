@@ -30,8 +30,6 @@ class BootStrap {
 
         ensureFuzzyStrMatchExtension()
 
-        dbMigrate()
-
         addSanitizer()
 
         defineMetaMethods()
@@ -73,15 +71,6 @@ class BootStrap {
             throw e
         }
 
-    }
-
-    private void dbMigrate() {
-        def sql = new Sql(dataSource)
-        try {
-            sql.execute("ALTER TABLE vp_user DROP COLUMN IF EXISTS display_name")
-        } catch (e) {
-            log.warn("Could not remove vp_user.display_name", e)
-        }
     }
 
     private void fixTaskLastViews() {
