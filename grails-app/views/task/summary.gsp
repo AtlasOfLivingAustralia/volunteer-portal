@@ -6,10 +6,10 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
     <title>${taskInstance.project.name} Task Details - ${taskInstance.externalIdentifier}</title>
 
-    <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>
+    <g:set var="shareUrl" value="${g.createLink(absolute: true, controller: 'task', action: 'summary', id: taskInstance?.id)}"/>
     <meta property="og:url"           content="${shareUrl}" />
     <meta property="og:type"          content="website" />
-    <meta property="og:title"         content="${taskInstance.project.name }Task Details - ${taskInstance.externalIdentifier}" />
+    <meta property="og:title"         content="${taskInstance.project.name} Task Details - ${taskInstance.externalIdentifier}" />
     %{--<meta property="og:description"   content="Your description" />--}%
     <meta property="og:image"         content="${stringInstanceMap?.thumbnail}" />
     <asset:stylesheet src="image-viewer"/>

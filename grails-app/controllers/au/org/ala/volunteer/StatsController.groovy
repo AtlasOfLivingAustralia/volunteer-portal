@@ -188,17 +188,17 @@ class StatsController {
 
     def exportCSVReport () {
 
-        def reportType = (params?.reportType != null)? params?.reportType : "fileName"
+        def reportType = StatsType.valueOf(params?.reportType ?: "fileName")
 
-        response.setHeader("Content-Disposition", "attachment;filename="+ reportType + ".csv");
-        response.setContentType("text/csv;charset=utf-8");
-        OutputStream fout = response.getOutputStream();
-        OutputStream bos = new BufferedOutputStream(fout);
-        OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+        response.setHeader("Content-Disposition", "attachment;filename="+ reportType + ".csv")
+        response.setContentType("text/csv;charset=utf-8")
+        OutputStream fout = response.getOutputStream()
+        OutputStream bos = new BufferedOutputStream(fout)
+        OutputStreamWriter outputwriter = new OutputStreamWriter(bos)
 
-        CSVWriter writer = new CSVWriter(outputwriter);
+        CSVWriter writer = new CSVWriter(outputwriter)
 
-        def result = getStatData(reportType);
+        def result = getStatData(reportType)
 
         if (result.get('header').size() > 0) {
             def header = [result.get('header')[0].get('label'), result.get('header')[1].get('label')]

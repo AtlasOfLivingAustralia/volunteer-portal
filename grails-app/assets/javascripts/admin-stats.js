@@ -319,7 +319,7 @@ function adminStats(config) {
       //    var csv =  dt.toCSV();
       //    if (downloadCSV(csv, reportType) == "failed") {
       //request browser to trigger server api to download
-      var url = config.exportCSVReport + "?reportType=" + reportType + "&&startDate=" + $scope.startDate + "&&endDate=" + $scope.endDate
+      var url = config.exportCSVReport + "?reportType=" + reportType + "&&startDate=" + $scope.startDate + "&&endDate=" + $scope.endDate;
       window.open(url, '_blank', '');
       //    };
     }
