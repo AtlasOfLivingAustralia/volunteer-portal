@@ -66,7 +66,6 @@ CREATE TABLE achievement_award (
     user_id bigint NOT NULL,
     user_notified boolean NOT NULL
 );
-ALTER TABLE achievement_award OWNER TO volunteers;
 
 --
 -- Name: achievement_description; Type: TABLE; Schema: public; Owner: volunteers
@@ -88,7 +87,6 @@ CREATE TABLE achievement_description (
     search_query character varying(10000),
     type character varying(255) NOT NULL
 );
-ALTER TABLE achievement_description OWNER TO volunteers;
 
 --
 -- Name: collection_event; Type: TABLE; Schema: public; Owner: postgres
@@ -249,7 +247,6 @@ CREATE TABLE institution (
     disable_news_items boolean DEFAULT false NOT NULL,
     theme_colour character varying(255)
 );
-ALTER TABLE institution OWNER TO volunteers;
 
 --
 -- Name: label; Type: TABLE; Schema: public; Owner: volunteers
@@ -261,7 +258,6 @@ CREATE TABLE label (
     category character varying(255) NOT NULL,
     value character varying(255) NOT NULL
 );
-ALTER TABLE label OWNER TO volunteers;
 
 --
 -- Name: locality; Type: TABLE; Schema: public; Owner: postgres
@@ -411,7 +407,6 @@ CREATE TABLE project_labels (
     label_id bigint NOT NULL,
     project_id bigint NOT NULL
 );
-ALTER TABLE project_labels OWNER TO volunteers;
 
 --
 -- Name: project_staging_profile; Type: TABLE; Schema: public; Owner: postgres

@@ -12,17 +12,16 @@ buildscript {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
-        classpath 'org.postgresql:postgresql:42.1.1'
+        classpath "org.postgresql:postgresql:$postgresVersion" // for flyway
     }
 }
 
 plugins {
     id "org.flywaydb.flyway" version "4.2.0"
     id 'nu.studer.jooq' version '2.0.7'
+    id 'pl.codelabs.flywayJooq' version '1.3.1'
     //    id "com.moowork.node" version "1.1.1"
 }
-
-ext['jooq.version'] = '3.9.5'
 
 version "4.0-SNAPSHOT"
 group "au.org.ala"
@@ -36,7 +35,7 @@ apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
 apply from: 'https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_publish.gradle'
 
-
+def ci = System.env.CI == 'true'
 def localProps = file("$project.rootDir/local.properties")
 if (localProps.exists()) {
     localProps.withReader {
@@ -47,8 +46,8 @@ if (localProps.exists()) {
 } else {
     project.ext.local = new Properties()
 }
-
-if (project.ext.local.flywayEnabled == 'true') {
+// don't run flyway / jooq in CI servers
+if (ci) {
     flyway {
         url = project.ext.local.flywayUrl
         user = project.ext.local.flywayUsername
@@ -104,9 +103,11 @@ if (project.ext.local.flywayEnabled == 'true') {
     }
 }
 
-//ext {
-//    set "tomcat.version", "8.5.11" // use this to force a tomcat version
-//}
+// override spring boot dependency management versions here
+ext {
+//    set "tomcat.version", "8.5.20" // use this to force a tomcat version
+    set "jooq.version", '3.9.5'
+}
 
 repositories {
     mavenLocal()
@@ -124,7 +125,7 @@ repositories {
 //}
 
 dependencies {
-    // Grails 3.2.6
+    // Grails 3.2.11
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.grails:grails-core"
@@ -172,7 +173,7 @@ dependencies {
 //    compile 'org.webjars:font-awesome:4.7.0'
 
     // Dependencies
-    runtime 'org.postgresql:postgresql:42.1.4'
+    runtime "org.postgresql:postgresql:$postgresVersion"
     compile 'org.imgscalr:imgscalr-lib:4.2'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
@@ -190,7 +191,7 @@ dependencies {
 
     // DB migrations, etc
     compile 'org.jooq:jooq'
-    jooqRuntime 'org.postgresql:postgresql:42.1.4'
+    jooqRuntime "org.postgresql:postgresql:$postgresVersion"
     compile "org.flywaydb:flyway-core:4.2.0"
 
 }
