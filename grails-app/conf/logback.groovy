@@ -102,6 +102,7 @@ final info  = [
         'org.hibernate',
         'org.quartz',
         'org.springframework',
+        'org.flywaydb',
 ]
 
 final debug = [
