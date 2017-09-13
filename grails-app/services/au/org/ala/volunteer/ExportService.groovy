@@ -1,12 +1,16 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
+import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 import org.springframework.context.i18n.LocaleContextHolder
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 @Transactional
 class ExportService {
@@ -23,6 +27,7 @@ class ExportService {
     }
 
     private String getTaskField(Task task, String fieldName, Range indexRange = 0..0) {
+        def sw = Stopwatch.createStarted()
 
         def result = ""
         switch (fieldName.toLowerCase()) {
@@ -60,6 +65,7 @@ class ExportService {
             case "validationstatus":
                 result = taskValidationStatus(task)
         }
+        log.debug("Got {} value in {}ms", fieldName, sw.elapsed(MILLISECONDS))
         return result
     }
 
@@ -91,7 +97,7 @@ class ExportService {
     }
 
     def export_default = { Project project, taskList, taskMap, fieldNames, response ->
-
+        def sw = Stopwatch.createStarted()
         def c = Field.createCriteria()
 
         def databaseFieldNames = c {
@@ -103,8 +109,12 @@ class ExportService {
                 max("recordIdx")
             }
         }
+        log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
+        sw.reset().start()
 
         def fieldIndexMap = databaseFieldNames.collectEntries { [ it[0], it[1] ] }
+        log.debug("Got fieldIndexMap in {}ms", sw.elapsed(MILLISECONDS))
+        sw.reset().start()
 
         List<String> columnNames = []
 
@@ -133,6 +143,9 @@ class ExportService {
                 }
             }
         }
+        log.debug("Got columnNames in {}ms", sw.elapsed(MILLISECONDS))
+        sw.reset().start()
+
 
         def filename = "Project-" + project.id + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".csv");
@@ -144,8 +157,12 @@ class ExportService {
         CSVWriter writer = new CSVWriter(outputwriter);
         // write header line (field names)
         writer.writeNext(columnNames as String[])
+        log.debug("Wrote column names in {}ms", sw.elapsed(MILLISECONDS))
+        sw.reset().start()
+
         def columnIndexRegex = Pattern.compile("^(\\w+)_(\\d+)\$")
         taskList.each { Task task ->
+            def sw2 = Stopwatch.createStarted()
             def fieldMap = taskMap[task.id]
             def values = []
             columnNames.each { columnName ->
@@ -166,8 +183,12 @@ class ExportService {
                 }
                 values << value
             }
+            log.debug("Got column values in {}ms", sw2.elapsed(MILLISECONDS))
             writer.writeNext(values as String[])
         }
+        log.debug("Wrote all tasks in {}ms", sw.elapsed(MILLISECONDS))
+        sw.reset().start()
+
         writer.close()
     }
 
