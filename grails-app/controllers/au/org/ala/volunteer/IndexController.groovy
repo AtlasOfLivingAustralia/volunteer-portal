@@ -187,16 +187,16 @@ class IndexController {
 
             if (topic instanceof ProjectForumTopic) {
                 def project = ((ProjectForumTopic) topic).project
-                forumName = project.i18nName
+                forumName = project.i18nName.toString()
                 thumbnail = project.featuredImage
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task
-                forumName = task.project.i18nName
+                forumName = task.project.i18nName.toString()
                 thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
             } else {
-                forumName = "General Discussion"
+                forumName = message(code: "indexController.general_discussion");//"General Discussion"
                 forumUrl = createLink(controller: 'forum', action: 'index', params: [selectedTab: 1])
             }
 

@@ -65,8 +65,8 @@
             <div class="row">
                 <div class="col-sm-8">
                     <g:message code="task.adminList.total_tasks"/> ${taskInstanceTotal},
-                    <g:message code="task.adminList.transcribed_tasks"/> ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                    <g:message code="task.adminList.validated_tasks"/> ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                    <g:message code="task.adminList.transcribed_tasks"/> ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
+                    <g:message code="task.adminList.validated_tasks"/> ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
                     &nbsp;
                     <div class="btn-group btn-group-sm" role="group" aria-label="Export">
                         <button id="btnExportAll" class="btn btn-default"><g:message code="task.adminList.export_all"/></button>

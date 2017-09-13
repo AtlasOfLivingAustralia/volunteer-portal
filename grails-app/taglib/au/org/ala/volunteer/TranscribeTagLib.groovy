@@ -676,7 +676,7 @@ class TranscribeTagLib {
         } else if (task?.project) {
             out << task.project.featuredImage
         } else {
-            out << grailsLinkGenerator.resource( file: '/logoDigivolGrey.png' )
+            out << grailsLinkGenerator.resource( file: '/logoDoeDat.png' )
         }
     }
 

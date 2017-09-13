@@ -652,7 +652,7 @@ class TaskController {
                 if (f != null) {
                     def allowedMimeTypes = ['text/plain','text/csv']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = message(code: 'taskController.the_file_must_be_one_of')+ ' ' +allowedMimeTypes
+                        flash.message = message(code: 'taskController.the_file_must_be_one_of', args: [allowedMimeTypes.join(",")])
                         redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
                         return
                     }
@@ -695,7 +695,7 @@ class TaskController {
                     if (f != null) {
                         def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
                         if (!allowedMimeTypes.contains(f.getContentType())) {
-                            flash.message = message(code: 'taskController.the_image_file_must_be_one_of')+" ${allowedMimeTypes}"
+                            flash.message = message(code: 'taskController.the_image_file_must_be_one_of', args: [allowedMimeTypes.join(",")])
                             return
                         }
 
@@ -881,7 +881,8 @@ class TaskController {
         def viewedTask = ViewedTask.get(params.int("viewedTaskId"));
         if (viewedTask) {
             def lastViewedDate = new Date(viewedTask?.lastView)
-            def tc = TimeCategory.minus(new Date(), lastViewedDate)
+            def tc = Time
+                    .minus(new Date(), lastViewedDate)
             def agoString = "${tc} ago"
 
             [viewedTask: viewedTask, lastViewedDate: lastViewedDate, agoString: agoString]

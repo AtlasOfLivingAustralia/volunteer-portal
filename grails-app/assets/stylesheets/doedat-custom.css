@@ -3,19 +3,40 @@
 .selectable {
     cursor: pointer;
 }
+
 .a-feature.home {
-    background-color: #858a58;
+    /*background-color: #357866;*/
     background-image: url(../images/feature-doedat.png);
     background-position-y: 28px;
     background-position-x: 67px;
 }
-/*.expedition-landing .dropdown-menu {
-    left: inherit;
-}*/
+
+/* Main colors */
+
+body .navbar, body.digivol .navbar, .pagination > .active > span, .pagination > .active > span:hover {
+    border-color: #236070 !important;
+}
+.navbar-brand, .navbar-brand:hover, .navbar-brand:focus, .navbar-brand:active, .digivol-tab img, body .navbar .navbar-brand, body .navbar .navbar-brand:hover, body .navbar .navbar-brand:focus, body .navbar .navbar-brand:active, body .btn-primary, body .btn-primary:hover, body .btn-primary:focus, body .btn-primary:active, body .btn-primary.active, .progress .progress-bar-transcribed, .key.transcribed, .pagination > .active > span, .pagination > .active > span:hover, .transcription-actions .btn.btn-next, .transcription-branding .institution-logo-main {
+    background-color: #009b7f;
+}
+.a-feature.home {
+ background-color: #236070;
+}
+
+
+
+/*#226070*/
+.transcription-branding .institution-logo-main {
+    background-color: transparent !important;
+}
+section#footer .footer-brand, section#footer .footer-brand img {
+    background: transparent !important;;
+}
+
 .locale {
     text-transform: uppercase;
 }
-@media (min-width: 1200px) {
+@media (min-width: 1345px) {
     .navbar-fixed-top .navbar-collapse {
         padding-left: 100px;
         padding-right: 100px;
@@ -63,10 +84,26 @@
     }
     .navbar-brand {
         margin-left: initial !important;
+        margin-top:25px;
     }
     .expedition-landing .dropdown-menu {
         left: initial;
     }
+}
+.digivol-tab img {
+    max-width: 110px;
+    margin: -3px 3px 0 2px;
+    padding: 0;
+}
+.navbar-brand img {
+    max-width: 170px;
+    margin: 0;
+}
+.navbar-brand {
+    background-color: transparent !important;
+}
+.digivol-tab img {
+    background: inherit !important;
 }
 
 

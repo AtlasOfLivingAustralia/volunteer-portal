@@ -23,7 +23,7 @@
 
                         <div>
                             <small>
-                                <g:message code="forum.watched_topics.posted_by"/> ${topic.creator.displayName}
+                                <g:message code="forum.watched_topics.posted_by" args="${[topic.creator.displayName]}"/>
                                 <br/>
                                 <g:message code="forum.watched_topics.on"/> <g:formatDate date="${topic.dateCreated}"
                                                   format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/>

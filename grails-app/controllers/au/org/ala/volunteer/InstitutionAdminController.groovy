@@ -233,7 +233,7 @@ class InstitutionAdminController {
                 if (f != null && f.size > 0) {
                     def allowedMimeTypes = ['image/jpeg', 'image/png']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = message(code: "institutionAdmin.image_must_be_one_of")+ allowedMimeTypes
+                        flash.message = message(code: "institutionAdmin.image_must_be_one_of", args: [allowedMimeTypes.join(",")])
                     } else {
                         boolean result
                         switch (imageType) {

@@ -11,7 +11,7 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="digivol-tab">
-                        <g:link uri="/" class="tab-brand">A <asset:image src="logoDigivolInverted.png" /> <g:message code="suffix.expedition" /></g:link>
+                        <g:link uri="/" class="tab-brand">A <asset:image src="logoDoeDatInverted.png" /> <g:message code="suffix.expedition" /></g:link>
                         <ul class="navbar-short navbar-right">
                         <!-- Logged In Starts -->
                             <cl:isNotLoggedIn>

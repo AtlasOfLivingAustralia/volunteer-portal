@@ -16,7 +16,7 @@ class TemplateService {
             findDevGsps 'grails-app/views/transcribe/templateViews', views
         }
 
-        def pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
+        def pattern = Pattern.compile(".*?templateViews[\\\\/](.*Transcribe)[.]gsp")
 
         def results = []
         views.each { String viewName ->

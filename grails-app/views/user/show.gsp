@@ -124,7 +124,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <p>
-                            <i><g:message code="user.show.first_contributed_in"/><g:formatDate date="${userInstance?.created}" format="MMM yyyy"/></i>
+                            <i><g:message code="user.show.first_contributed_in" args="${[formatDate(date: userInstance?.created, format: "MMM yyyy")]}"/></i>
                         </p>
                     </div>
                     <a id="profileTabs"></a>
@@ -413,7 +413,7 @@
 <div ng-hide="$ctrl.loading || $ctrl.error" class="modal-body">
     <div class="row" >
         <div class="col-sm-12">
-            <p><i><g:message code="task.validatedBy.label" />: {{ $ctrl.validatorDisplayName }}</i> </p>
+            <p><i><g:message code="task.validatedBy.label" args="${[$ctrl?.validatorDisplayName]}" /></i> </p>
         </div>
     </div>
 

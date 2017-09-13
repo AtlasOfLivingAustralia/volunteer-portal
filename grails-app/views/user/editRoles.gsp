@@ -38,7 +38,7 @@
 </head>
 
 <body class="admin">
-<cl:headerContent crumbLabel="Edit Roles" title="${message(code: 'user.editUser.edit_roles_for')} ${cl.displayNameForUserId(id: userInstance.userId)}">
+<cl:headerContent crumbLabel="Edit Roles" title="${message(code: 'user.editUser.edit_roles_for', args: cl.displayNameForUserId(id: userInstance.userId))}">
     <%
         pageScope.crumbs = []
         pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: cl.displayNameForUserId(id: userInstance.userId)]

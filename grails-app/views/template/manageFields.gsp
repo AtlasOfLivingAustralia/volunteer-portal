@@ -174,7 +174,7 @@
                 $("#btnAddField").click(function(e) {
                     e.preventDefault();
                     var options = {
-                        title:"Add field to template",
+                        title: "${message(code: "template.manageFields.add_field_to_template")}",
                         url:"${createLink(action: 'addTemplateFieldFragment', id: templateInstance.id)}",
                         onClose : function() { }
                     };

@@ -536,7 +536,7 @@ class UserService {
 
         def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, fullTextIndexService.hitsCount)
         def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
-        def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
+        def userPercent = String.format('%.2f', totalCount>0?((userCount / totalCount) * 100):0);
 
         sw.stop()
         log.debug("notbookMainFragment.percentage ${sw.toString()}")

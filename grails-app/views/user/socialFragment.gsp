@@ -27,7 +27,7 @@
                         </div>
 
                         <div class="forumPostDate">
-                            <g:message code="user.social.posted_on" /> ${post.date?.format("dd MMM, yyyy")}
+                            <g:message code="user.social.posted_on" args="${[post.date?.format("dd MMM, yyyy")]}" />
                         </div>
 
                         <div class="forumPostMessage">

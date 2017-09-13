@@ -923,7 +923,7 @@ class VolunteerTagLib {
 
         if(user){
             String date = g.formatDate(date:project.dateCreated, format: "dd MMMM, yyyy")
-            out << ("<small>" + message(code:'project.project_settings.created_by') + " <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> "+message(code:'project.project_settings.on')+" ${date}.</small>")
+            out << ("<small>" + message(code:'project.project_settings.created_by', args: [" <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> "])+message(code:'project.project_settings.on')+" ${date}.</small>")
         }
     }
 

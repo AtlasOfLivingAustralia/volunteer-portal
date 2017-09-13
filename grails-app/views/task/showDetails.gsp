@@ -158,7 +158,7 @@
                                 <ul>
                                     <g:each in="${taskInstance.viewedTasks?.sort({ it.lastView })}" var="view">
                                         <li><g:message code="task.showDetails.viewed_by"/> <cl:userDisplayString
-                                                id="${view.userId}"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " "+message(code:'task.showDetails.times')+")" : ""} <g:message code="task.showDetails.on"/> ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
+                                                id="${view.userId}"/><g:message code="task.showDetails.viewed_by.suffix"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " "+message(code:'task.showDetails.times')+")" : ""} <g:message code="task.showDetails.on"/> ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
                                     </g:each>
                                 </ul>
                             </td>

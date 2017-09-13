@@ -15,7 +15,7 @@
     <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>
     <meta property="og:url" content="${shareUrl}"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="${taskInstance?.project?.i18nName}Task Details - ${taskInstance.externalIdentifier}"/>
+    <meta property="og:title" content="${taskInstance?.project?.i18nName} Task Details - ${taskInstance.externalIdentifier}"/>
     %{--<meta property="og:description"   content="Your description" />--}%
     <meta property="og:image" content="${thumbnail}"/>
     <cl:googleMapsScript callback="onGmapsReady"/>
@@ -335,7 +335,7 @@
 
             <div class="modal-footer">
                 <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal"><g:message code="default.cancel"/>Cancel</button>
+                        data-dismiss="modal"><g:message code="default.cancel"/></button>
                 <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary"><g:message
                         code="default.submit"/></button>
             </div>
