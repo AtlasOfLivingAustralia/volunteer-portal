@@ -39,9 +39,9 @@ beans = {
         flyway(Flyway) { bean ->
             bean.initMethod = 'migrate'
             dataSource = ref('dataSource')
-            locations = application.config.flyway.locations
             baselineOnMigrate = application.config.flyway.baselineOnMigrate
-            baselineVersion = MigrationVersion.fromVersion(application.config.flyway.baselineVersion)
+            locations = application.config.flyway.locations ?: 'classpath:db/migration'
+            //baselineVersion = MigrationVersion.fromVersion(application.config.flyway.baselineVersion)
         }
 
         BeanDefinition sessionFactoryBeanDef = getBeanDefinition('sessionFactory')
