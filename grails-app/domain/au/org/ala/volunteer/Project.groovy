@@ -47,6 +47,7 @@ class Project implements Serializable {
 
     static mapping = {
         autoTimestamp true
+        description sqlType: 'text'
         tasks cascade: 'all,delete-orphan'
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false

@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
 import javax.servlet.http.HttpServletResponse
+import java.util.concurrent.TimeUnit
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
@@ -253,6 +255,7 @@ class ProjectController {
         boolean validatedOnly = params.validated?.toBoolean()
 
         if (projectInstance) {
+            def sw = Stopwatch.createStarted()
             def taskList
             if (transcribedOnly) {
                 taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
@@ -261,9 +264,15 @@ class ProjectController {
             } else {
                 taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
             }
+            log.debug("Got task list in {}ms", sw.elapsed(MILLISECONDS))
+            sw.reset().start()
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+            log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
+            sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
+            log.debug("Got all field names in {}ms", sw.elapsed(MILLISECONDS))
+            sw.reset().start()
 
             Closure export_func = exportService.export_default
             if (params.exportFormat == 'zip') {
@@ -279,6 +288,7 @@ class ProjectController {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
                 export_func(projectInstance, taskList, taskMap, fieldNames, response)
+                log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")
             }

@@ -255,7 +255,11 @@ environments:
     test:
         quartz:
             autoStartup: false
-
+---
+flyway:
+    enabled: true
+    baselineOnMigrate: true
+    baselineVersion: 1
 ---
 hibernate:
     cache:

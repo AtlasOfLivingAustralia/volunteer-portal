@@ -102,9 +102,13 @@ final info  = [
         'org.hibernate',
         'org.quartz',
         'org.springframework',
+        'org.flywaydb',
 ]
 
 final debug = [
+//        'grails.app.services.au.org.ala.volunteer.ExportService',
+//        'grails.app.controllers.au.org.ala.volunteer.ProjectController',
+//        'grails.plugin.cache'
 //        'org.apache.http.headers',
 //        'org.apache.http.wire',
 //        'org.hibernate.SQL'
