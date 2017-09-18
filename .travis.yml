@@ -20,10 +20,9 @@ cache:
   - $HOME/.m2
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
-before_script:
+before_install:
   - psql -c 'create database volunteerstest;' -U postgres
   - cp travis/travis.properties local.properties
-before_install:
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
 after_success:
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
