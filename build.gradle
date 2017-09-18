@@ -44,34 +44,33 @@ if (localProps.exists()) {
         project.ext.local = props
     }
 } else {
+    logger.error("No local.properties file found for flyway/jooq")
     project.ext.local = new Properties()
 }
-// don't run flyway / jooq in CI servers
-if (ci) {
-    flyway {
-        url = project.ext.local.flywayUrl
-        user = project.ext.local.flywayUsername
-        password = project.ext.local.flywayPassword
-        baselineOnMigrate = project.ext.local.flywayBaselineOnMigrate?.toBoolean() ?: false
-    }
-    jooq {
+flyway {
+    url = project.ext.local.flywayUrl
+    user = project.ext.local.flywayUsername
+    password = project.ext.local.flywayPassword
+    baselineOnMigrate = project.ext.local.flywayBaselineOnMigrate?.toBoolean() ?: false
+}
+jooq {
 //        version = "${ext['jooq.version']}"
 //        edition = 'OSS'
-        volunteer(sourceSets.main) {
-            jdbc {
-                driver = 'org.postgresql.Driver'
-                url = project.ext.local.flywayUrl
-                user = project.ext.local.flywayUsername
-                password = project.ext.local.flywayPassword
+    volunteer(sourceSets.main) {
+        jdbc {
+            driver = 'org.postgresql.Driver'
+            url = project.ext.local.flywayUrl
+            user = project.ext.local.flywayUsername
+            password = project.ext.local.flywayPassword
+        }
+        generator {
+            name = 'org.jooq.util.DefaultGenerator'
+            strategy {
+                name = 'org.jooq.util.DefaultGeneratorStrategy'
             }
-            generator {
-                name = 'org.jooq.util.DefaultGenerator'
-                strategy {
-                    name = 'org.jooq.util.DefaultGeneratorStrategy'
-                }
-                database {
-                    name = 'org.jooq.util.postgres.PostgresDatabase'
-                    inputSchema = 'public'
+            database {
+                name = 'org.jooq.util.postgres.PostgresDatabase'
+                inputSchema = 'public'
 //                    forcedTypes {
 //                        forcedType {
 //                            name = 'varchar'
@@ -84,20 +83,19 @@ if (ci) {
 //                            types = 'INET'
 //                        }
 //                    }
-                    // ...
-                }
-                generate {
-                    relations = true
-                    deprecated = false
-                    records = true
-                    immutablePojos = true
-                    fluentSetters = true
-                    // ...
-                }
-                target {
-                    packageName = 'au.org.ala.volunteer.jooq'
-                    // directory = ...
-                }
+                // ...
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                immutablePojos = true
+                fluentSetters = true
+                // ...
+            }
+            target {
+                packageName = 'au.org.ala.volunteer.jooq'
+                // directory = ...
             }
         }
     }

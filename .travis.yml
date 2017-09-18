@@ -2,16 +2,16 @@ sudo: false
 dist: trusty
 language: groovy
 jdk:
-  - oraclejdk8
+  - openjdk8
 branches:
   only:
   - master
   - develop
   - grails2
+services:
+  - postgresql
 addons:
-  apt:
-    packages:
-      - oracle-java8-installer
+  postgresql: "9.6"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -20,6 +20,9 @@ cache:
   - $HOME/.m2
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
+before_script:
+  - psql -c 'create database volunteerstest;' -U postgres
+  - cp travis/travis.properties local.properties
 before_install:
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
 after_success:
