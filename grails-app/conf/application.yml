@@ -271,6 +271,7 @@ hibernate:
     #type="trace,stdout"
 
 dataSource:
+    dbCreate: validate
     pooled: true
     jmxExport: true
     driverClassName: org.postgresql.Driver
@@ -281,17 +282,17 @@ dataSource:
 environments:
     development:
         dataSource:
-            dbCreate: update
+            dbCreate: validate
             url: jdbc:postgresql://localhost/volunteers
             username: "postgres"
             passowrd: "password"
             logSql: false
     test:
         dataSource:
-            dbCreate: update
+            dbCreate: validate
     production:
         dataSource:
-            dbCreate: update
+            dbCreate: validate
             properties:
                 jmxEnabled: true
                 initialSize: 5

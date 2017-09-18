@@ -41,20 +41,30 @@ beans = {
             dataSource = ref('dataSource')
             baselineOnMigrate = application.config.flyway.baselineOnMigrate
             locations = application.config.flyway.locations ?: 'classpath:db/migration'
-            //baselineVersion = MigrationVersion.fromVersion(application.config.flyway.baselineVersion)
+            if (application.config.flyway.baselineVersion) baselineVersionAsString = application.config.flyway.baselineVersion.toString()
         }
 
         BeanDefinition sessionFactoryBeanDef = getBeanDefinition('sessionFactory')
 
         if (sessionFactoryBeanDef) {
-            def dependsOnList = ['flyway'] as Set
-            if (sessionFactoryBeanDef.dependsOn?.length > 0) {
-                dependsOnList.addAll(sessionFactoryBeanDef.dependsOn)
-            }
-            sessionFactoryBeanDef.dependsOn = dependsOnList as String[]
+            addDependency(sessionFactoryBeanDef, 'flyway')
         }
+
+        BeanDefinition hibernateDatastoreBeanDef = getBeanDefinition('hibernateDatastore')
+        if (hibernateDatastoreBeanDef) {
+            addDependency(hibernateDatastoreBeanDef, 'flyway')
+        }
+
     }
     else {
         log.info "Grails Flyway plugin has been disabled"
     }
+}
+
+def addDependency(BeanDefinition beanDef, String dependencyName) {
+    def dependsOnList = [ dependencyName ] as Set
+    if (beanDef.dependsOn?.length > 0) {
+        dependsOnList.addAll(beanDef.dependsOn)
+    }
+    beanDef.dependsOn = dependsOnList as String[]
 }
