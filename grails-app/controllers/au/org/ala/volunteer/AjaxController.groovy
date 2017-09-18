@@ -273,8 +273,8 @@ class AjaxController {
             project.description = p.description
             project.expeditionPageURL = createLink(controller: 'project', action: 'index', id: p.id, absolute: true)
             project.taskCount = Task.countByProject(p)
-            project.transcribedCount = Task.countByProjectAndFullyTranscribedByNotIsNull(p)
-            project.validatedCount = Task.countByProjectAndFullyValidatedByNotIsNull(p)
+            project.transcribedCount = Task.countByProjectAndFullyTranscribedByIsNotNull(p)
+            project.validatedCount = Task.countByProjectAndFullyValidatedByIsNotNull(p)
 
             sql.query("select count(distinct(fully_transcribed_by)) from task where project_id = ${p.id} and length(fully_transcribed_by) > 0") { ResultSet rs ->
                 if (rs.next()) {

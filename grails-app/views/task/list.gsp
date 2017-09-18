@@ -53,8 +53,8 @@
                     <div class="alert alert-info">
                         Total Tasks: ${taskInstanceTotal},
                         <g:if test="${projectInstance}">
-                            Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                            Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
+                                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
                         </g:if>
                         &nbsp;&nbsp;
                         <input style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="40"/>
