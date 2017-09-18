@@ -383,21 +383,7 @@ class TaskLoadService {
 
                         if (existing && existing.size() > 0) {
                             if (replaceDuplicates) {
-                                for (Task t : existing) {
-                                    t.discard()
-                                    Task.withNewSession {
-                                        t.attach()
-                                        def fields = Field.findAllByTask(t)
-                                        fields?.each {
-                                            it.delete(flush: true)
-                                        }
-                                        def mm = Multimedia.findAllByTask(t)
-                                        mm.each {
-                                            it.delete(flush: true)
-                                        }
-                                        t.delete(flush: true);
-                                    }
-                                }
+                                Task.deleteAll(existing)
                             } else {
                                 synchronized (_report) {
                                     _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: taskDesc, message: "Skipped because task id already exists", time: Calendar.instance.time))

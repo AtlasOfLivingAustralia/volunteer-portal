@@ -2,7 +2,8 @@ package au.org.ala.volunteer
 
 class Field implements Serializable {
 
-  Task task
+  static belongsTo = [task:Task]
+
   String name
   String value
   Integer recordIdx
