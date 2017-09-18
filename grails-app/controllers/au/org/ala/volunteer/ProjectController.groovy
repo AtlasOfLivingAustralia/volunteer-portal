@@ -244,7 +244,7 @@ class ProjectController {
     /**
      * Produce an export file
      */
-    def exportCSV = {
+    def exportCSV() {
         def projectInstance = Project.get(params.id)
         boolean transcribedOnly = params.transcribed?.toBoolean()
         boolean validatedOnly = params.validated?.toBoolean()
@@ -258,9 +258,12 @@ class ProjectController {
             } else {
                 taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
             }
+            log.debug("Got tasks for export ${params.id}")
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+            log.debug("Got taskmap for export ${params.id}")
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
+            log.debug("Got field names for export ${params.id}")
 
             Closure export_func = exportService.export_default
             if (params.exportFormat == 'zip') {
@@ -276,7 +279,9 @@ class ProjectController {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
                 export_func(projectInstance, taskList, taskMap, fieldNames, response)
+                log.info("Completed export for ${params.id}")
             } else {
+                log.error("Exception during export ${params.id}", e)
                 throw new Exception("No export function for template ${projectInstance.template.name}!")
             }
 

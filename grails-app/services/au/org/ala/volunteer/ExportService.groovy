@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
+import au.org.ala.web.UserDetails
 
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
@@ -18,11 +19,11 @@ class ExportService {
     def messageSource
     def userService
 
-    private String getUserDisplayName(userId) {
-        return userService.propertyForUserId(userId, 'displayName')
+    private String getUserDisplayName(String userId, Map<String, UserDetails> usersMap = [:]) {
+        return usersMap[userId]?.displayName ?: userService.propertyForUserId(userId, 'displayName')
     }
 
-    private String getTaskField(Task task, String fieldName, Range indexRange = 0..0) {
+    private String getTaskField(Task task, String fieldName, Map<String, UserDetails> usersMap = [:]) {
 
         def result = ""
         switch (fieldName.toLowerCase()) {
@@ -33,10 +34,10 @@ class ExportService {
                 result = grailsLinkGenerator.link(absolute: true, controller: 'validate', action: 'task', id: task.id)
                 break
             case "transcriberid":
-                result = getUserDisplayName(task.fullyTranscribedBy)
+                result = getUserDisplayName(task.fullyTranscribedBy, usersMap)
                 break;
             case "validatorid":
-                result = getUserDisplayName(task.fullyValidatedBy)
+                result = getUserDisplayName(task.fullyValidatedBy, usersMap)
                 break;
             case "externalidentifier":
                 result = task.externalIdentifier
@@ -44,7 +45,7 @@ class ExportService {
             case "exportcomment":
                 def sb = new StringBuilder()
                 if (task.fullyTranscribedBy) {
-                    sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy)}. ")
+                    sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy, usersMap)}. ")
                 }
                 def date = new Date().format("dd-MMM-yyyy")
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
@@ -134,6 +135,8 @@ class ExportService {
             }
         }
 
+        def usersMap = getUserMapFromTaskList(taskList)
+
         def filename = "Project-" + project.id + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".csv");
         response.setContentType("text/plain");
@@ -162,7 +165,7 @@ class ExportService {
                     def valueMap = fieldMap?.getAt(fieldName)
                     value = valueMap?.getAt(recordIndex) ?: ""
                 } else {
-                    value = getTaskField(task, fieldName)
+                    value = getTaskField(task, fieldName, usersMap)
                 }
                 values << value
             }
@@ -193,6 +196,11 @@ class ExportService {
                 fieldNames.remove(it)  // this will get export in its own file
             }
         }
+        log.debug("Got datasetCategories and otherRepeatingFields for export ${project.id}")
+
+        def usersMap = getUserMapFromTaskList(taskList)
+
+        log.debug("Got usersMap for export ${project.id}")
 
         // Prepare the response for a zip file - use the project name as a basis of the filename
         def filename = "Project-" + project.featuredLabel.replaceAll(" ","") + "-DwC"
@@ -210,12 +218,16 @@ class ExportService {
         // write header line (field names)
         writer.writeNext((String[]) fieldNames.toArray(new String[0]))
 
+        log.debug("Wrote tasks.csv headers for export ${project.id}")
+
         taskList.each { task ->
-            String[] values = getFieldsForTask(task, fieldNames, valueMap)
+            String[] values = getFieldsForTask(task, fieldNames, valueMap, usersMap)
             writer.writeNext(values)
         }
         writer.flush();
         zipStream.closeEntry();
+
+        log.debug("Wrote tasks.csv for export ${project.id}")
 
         // now for each repeating field category...
         if (datasetCategoryFields) {
@@ -226,16 +238,20 @@ class ExportService {
                 exportDataSet(taskList, valueMap, writer, dataSetFieldNames)
                 writer.flush();
                 zipStream.closeEntry();
+                log.debug("Wrote ${category}.csv for export ${project.id}")
             }
         }
         // Now for the other repeating fields...
         if (otherRepeatingFields) {
+            log.debug("Writing otherRepeatingFields for export ${project.id}")
             otherRepeatingFields.each {
                 zipStream.putNextEntry(new ZipEntry("${it}.csv"))
                 exportDataSet(taskList, valueMap, writer, [it])
                 writer.flush();
                 zipStream.closeEntry();
+                log.debug("Wrote ${it}.csv for export ${project.id}")
             }
+            log.debug("Finished writing otherRepeatingFields for export ${project.id}")
         }
 
         // Export multimedia as 'associatedMedia'. There may be more than one piece of multimedia per task
@@ -245,47 +261,61 @@ class ExportService {
         exportMultimedia(taskList, writer);
         writer.flush();
         zipStream.closeEntry()
+        log.debug("Wrote associatedMedia.csv for export ${project.id}")
 
         // And finally the task comments, if any
         zipStream.putNextEntry(new ZipEntry("taskComments.csv"))
-        exportTaskComments(taskList, writer);
+        exportTaskComments(taskList, writer, usersMap);
         writer.flush();
         zipStream.closeEntry()
+        log.debug("Wrote taskComments.csv for export ${project.id}")
 
         zipStream.close();
 
     }
 
-    def exportTaskComments(List<Task> taskList, CSVWriter writer) {
+    def exportTaskComments(List<Task> taskList, CSVWriter writer, Map<String, UserDetails> usersMap = [:]) {
         String[] columnNames = ['taskID', 'externalIdentifier','userId', 'userDisplayName', 'date', 'comment']
 
         writer.writeNext(columnNames)
-        taskList.each { Task task ->
-            def c = TaskComment.createCriteria();
-            def comments = c {
-                eq("task", task)
-                order('date', 'asc')
-            }
-            for (TaskComment comment : comments) {
-                // TODO Get email from userdetails service
-                def props = userService.detailsForUserId(comment.user.userId)
-                String[] outputValues = [task.id.toString(), task.externalIdentifier, props.email, props.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
-                writer.writeNext(outputValues)
-            }
+        def c = TaskComment.createCriteria();
+        def comments = c {
+            inList("task", taskList)
+            order('task', 'asc')
+            order('date', 'asc')
+        }
+
+        for (TaskComment comment : comments) {
+            def userId = comment.user.userId
+            def props = usersMap[userId] ?: userService.detailsForUserId(userId)
+
+            def task = comment.task
+            String[] outputValues = [task.id.toString(), task.externalIdentifier, props.email, props.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
+            writer.writeNext(outputValues)
         }
     }
 
     def exportMultimedia(List<Task> taskList, CSVWriter writer) {
         String[] columnNames = ['taskID', 'externalIdentifier', 'recordIdx', 'associatedMedia', 'mimetype', 'licence']
         writer.writeNext(columnNames)
-        taskList.each { Task task ->
-            int recordIdx = 0
-            task.multimedia.each { multimedia ->
-                def url = multimediaService.getImageUrl(multimedia)
-                String[] values = [task.id.toString(), task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
-                writer.writeNext(values)
-                recordIdx++
-            }
+        def c = Multimedia.createCriteria()
+        def mms = c.list {
+            inList('task', taskList)
+            order('task', 'asc')
+        }
+        log.debug("Got ${mms.size()} multimedia for export")
+        def recordIdx = 0
+        def lastTaskId = null
+        def count = 0
+        mms.each { multimedia ->
+//            def multimedia = mms.get()[0]
+            def url = multimediaService.getImageUrl(multimedia)
+            def taskId = multimedia.task.id
+            String[] values = [multimedia.task.id.toString(), multimedia.task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
+            writer.writeNext(values)
+            recordIdx = taskId == lastTaskId ? recordIdx + 1 : 0
+            if (count % 100 == 0) log.debug("Wrote $count mms")
+            count++
         }
     }
 
@@ -329,7 +359,7 @@ class ExportService {
         return value.toString().replaceAll("\r\n|\n\r|\n|\r", '\\\\n')
     }
 
-    private String[] getFieldsForTask(Task task, List fields, Map taskMap) {
+    private String[] getFieldsForTask(Task task, List fields, Map taskMap, Map<String, UserDetails> usersMap = [:]) {
         List fieldValues = []
         def taskId = task.id
 
@@ -342,10 +372,10 @@ class ExportService {
                         fieldValues.add(taskId.toString())
                         break;
                     case "transcriberid":
-                        fieldValues.add(getUserDisplayName(task.fullyTranscribedBy))
+                        fieldValues.add(getUserDisplayName(task.fullyTranscribedBy, usersMap))
                         break;
                     case "validatorid":
-                        fieldValues.add(getUserDisplayName(task.fullyValidatedBy))
+                        fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
                         break;
                     case "externalidentifier":
                         fieldValues.add(task.externalIdentifier)
@@ -353,7 +383,7 @@ class ExportService {
                     case "exportcomment":
                         def sb = new StringBuilder()
                         if (task.fullyTranscribedBy) {
-                            sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy)}. ")
+                            sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy, usersMap)}. ")
                         }
                         def date = new Date().format("dd-MMM-yyyy")
                         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
@@ -381,6 +411,11 @@ class ExportService {
         }
 
         return fieldValues.toArray(new String[0]) // String array
+    }
+
+    private Map<String, UserDetails> getUserMapFromTaskList(List<Task> tasks) {
+        def userIds = tasks.collectMany { [it.fullyTranscribedBy, it.fullyValidatedBy] }.unique()
+        return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
     }
 
     private def taskValidationStatus(Task task) {
