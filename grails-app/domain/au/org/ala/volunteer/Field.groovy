@@ -2,7 +2,6 @@ package au.org.ala.volunteer
 
 class Field implements Serializable {
 
-  Task task
   String name
   String value
   Integer recordIdx
@@ -11,6 +10,8 @@ class Field implements Serializable {
   Boolean superceded = false
   Date created = new Date()
   Date updated = new Date()
+
+  static belongsTo = [task: Task]
 
   static mapping = {
     version false
