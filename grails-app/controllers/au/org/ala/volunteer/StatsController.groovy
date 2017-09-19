@@ -1,7 +1,10 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
+import com.google.common.base.Charsets
 import grails.converters.JSON
+
+import java.nio.charset.StandardCharsets
 
 class StatsController {
 
@@ -188,33 +191,36 @@ class StatsController {
 
     def exportCSVReport () {
 
+        log.debug("Beginning CSV report export")
         def reportType = StatsType.valueOf(params?.reportType ?: "fileName")
-
-        response.setHeader("Content-Disposition", "attachment;filename="+ reportType + ".csv")
-        response.setContentType("text/csv;charset=utf-8")
-        OutputStream fout = response.getOutputStream()
-        OutputStream bos = new BufferedOutputStream(fout)
-        OutputStreamWriter outputwriter = new OutputStreamWriter(bos)
-
-        CSVWriter writer = new CSVWriter(outputwriter)
-
         def result = getStatData(reportType)
 
-        if (result.get('header').size() > 0) {
-            def header = [result.get('header')[0].get('label'), result.get('header')[1].get('label')]
+        log.info("Beginning CSV report export for {} with {} records", reportType, result.size())
+        response.setHeader("Content-Disposition", "attachment;filename="+ reportType + ".csv")
+        response.setContentType("text/csv;charset=utf-8")
 
-            def array = result.get('statsData')
+        try {
+            new CSVWriter(new OutputStreamWriter(response.outputStream, Charsets.UTF_8)).withCloseable { CSVWriter writer ->
 
-            // write header line (field names)
-            writer.writeNext(header as String[])
+                if (result.get('header').size() > 0) {
+                    def header = [result.get('header')[0].get('label'), result.get('header')[1].get('label')]
 
-            // write all the values
-            array.each({
-                i -> writer.writeNext(i as String[])
-            })
+                    def array = result.get('statsData')
+
+                    // write header line (field names)
+                    writer.writeNext(header as String[])
+
+                    // write all the values
+                    array.each({
+                        i -> writer.writeNext(i as String[])
+                    })
+                }
+            }
+            log.info("CSV report export for {} completed without error", reportType)
+        } catch (Exception e) {
+            log.error("Error while writing CSV data for {}", reportType, e)
         }
 
-        writer.close()
     }
 
 }
