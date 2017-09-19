@@ -100,6 +100,7 @@ jooq {
         }
     }
 }
+generateVolunteerJooqSchemaSource.dependsOn flywayMigrate
 
 // override spring boot dependency management versions here
 ext {
