@@ -195,7 +195,7 @@ class StatsController {
         def reportType = StatsType.valueOf(params?.reportType ?: "fileName")
         def result = getStatData(reportType)
 
-        log.info("Beginning CSV report export for {} with {} records", reportType, result.size())
+        log.info("Beginning CSV report export for {} with {} records", reportType, result.get('statsData')?.size())
         response.setHeader("Content-Disposition", "attachment;filename="+ reportType + ".csv")
         response.setContentType("text/csv;charset=utf-8")
 
