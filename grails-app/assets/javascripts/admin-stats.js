@@ -319,7 +319,9 @@ function adminStats(config) {
       //    var csv =  dt.toCSV();
       //    if (downloadCSV(csv, reportType) == "failed") {
       //request browser to trigger server api to download
-      var url = config.exportCSVReport + "?reportType=" + reportType + "&&startDate=" + self.startDate + "&&endDate=" + self.endDate;
+      var startParam = self.startDate != null ? self.startDate.toISOString() : '';
+      var endParam = self.endDate != null ? self.endDate.toISOString() : '';
+      var url = config.exportCSVReport + "?reportType=" + reportType + "&startDate=" + encodeURIComponent(startParam) + "&endDate=" + encodeURIComponent(endParam);
       window.open(url, '_blank', '');
       //    };
     }
