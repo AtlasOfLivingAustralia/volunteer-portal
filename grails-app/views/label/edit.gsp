@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Label" %>
 <!DOCTYPE html>
 <html>
@@ -5,6 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}">
     <g:set var="entityName" value="${message(code: 'label.label', default: 'Label')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>

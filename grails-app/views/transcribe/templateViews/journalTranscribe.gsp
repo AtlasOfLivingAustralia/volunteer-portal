@@ -1,8 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
         <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     </head>
 <content tag="templateView">
 <div class="container-fluid">

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="org.grails.web.json.JSONArray; au.org.ala.volunteer.Project" %>
 <html>
 <head>

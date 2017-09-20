@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="caption">
     <h4 class="ellipsis"><g:link controller="project" action="index"
                                  id="${projectSummary.project?.id}">${projectSummary.project?.i18nName}</g:link></h4>

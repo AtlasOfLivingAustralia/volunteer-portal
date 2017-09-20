@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <style type="text/css">
 
 #task_browser_controls, #current_task_header {

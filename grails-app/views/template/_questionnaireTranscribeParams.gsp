@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">

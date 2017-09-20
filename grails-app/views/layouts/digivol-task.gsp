@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -10,6 +12,7 @@
 <head>
     <meta name="layout" content="digivol-transcribe"/>
 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:layoutTitle
             default="${cl.pageTitle(title: "${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.i18nName}")}"/></title>
     <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>

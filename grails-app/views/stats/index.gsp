@@ -1,7 +1,9 @@
-<<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="Admin Stats" /></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="admin-stats" />

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="row">
 <g:each in="${projects}" var="projectSummary" status="i">
     <div class="col-sm-12 col-md-6">

@@ -10,6 +10,7 @@
 <sitemesh:parameter name="backHref" value="${projectInstance.institutionId ? createLink(controller: 'institution', action: 'index', id: projectInstance.institutionId) : createLink(controller: 'project', action: 'list')}" />
 <html xmlns="http://www.w3.org/1999/html">
 <head>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-expedition"/>
     <title><cl:pageTitle title="${(projectInstance.i18nName?.toString() ?: message(code: "project.default.title")) + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>

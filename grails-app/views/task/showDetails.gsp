@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -5,7 +6,6 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
-<%@ page contentType="text/html; UTF-8" %>
 
 <html>
 <head>

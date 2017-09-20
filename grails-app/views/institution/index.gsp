@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ProjectActiveFilterType; au.org.ala.volunteer.ProjectStatusFilterType" contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
 <head>

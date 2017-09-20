@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <table class="table table-striped table-condensed">
     <g:each in="${projectList}" var="project">
         <tr projectId="${project.id}">

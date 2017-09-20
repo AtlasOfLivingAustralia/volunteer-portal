@@ -1,7 +1,8 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="leaderBoardAdmin.label" default="Honour Board Configuration"/></title>
     <asset:stylesheet src="label-autocomplete"/>
     <style>

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="sheetNumberWidget" targetField="${field.fieldType}">
 
     <div class="form-group">

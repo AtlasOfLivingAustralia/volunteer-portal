@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Field; au.org.ala.volunteer.TemplateField" %>
 <div class="row">
 

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <g:set var="picklists" value="${Picklist.list()}"/>
 <div class="form-group">

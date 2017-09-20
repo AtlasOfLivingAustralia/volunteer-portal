@@ -1,8 +1,10 @@
-<%@ page contentType="text/html"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE HTML>
 <html>
 <head>
     <title><g:message code="mail.newTranscribers.title"/></title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>

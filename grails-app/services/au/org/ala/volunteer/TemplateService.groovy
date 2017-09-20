@@ -11,7 +11,8 @@ class TemplateService {
     def getAvailableTemplateViews() {
         def views = []
         if (grailsApplication.isWarDeployed()) {
-            findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
+            //findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
+            findWarGsps '/WEB-INF/classes/transcribe/templateViews', views
         } else {
             findDevGsps 'grails-app/views/transcribe/templateViews', views
         }

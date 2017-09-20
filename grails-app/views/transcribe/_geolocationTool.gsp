@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem; au.org.ala.volunteer.Picklist" %>
 <div class="row">
     <div id="mapWidgets">
@@ -142,7 +143,7 @@
       var latLongRegex = /([-]{0,1}\d+)[^\d](\d+)[^\d](\d+).*?([-]{0,1}\d+)[^\d](\d+)[^\d](\d+)/;
       var match = latLongRegex.exec(localityStr);
       if (match) {
-        var interpretedLatLong = match[1] + 'Â°' + match[2] + "'" + match[3] + '" ' + match[4] + 'Â°' + match[5] + "'" + match[6] + '"';
+        var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
         $(':input#address').val(interpretedLatLong);
       } else {
 

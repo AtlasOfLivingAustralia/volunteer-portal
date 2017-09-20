@@ -1,7 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>

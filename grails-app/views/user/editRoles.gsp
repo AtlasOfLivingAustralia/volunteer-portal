@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>

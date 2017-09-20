@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.DateConstants" %>
 <%@page defaultCodec="none" %>
 <g:message code="forum.new_topic_notification.auto_generated"/>

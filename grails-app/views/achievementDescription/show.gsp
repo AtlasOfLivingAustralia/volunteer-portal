@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
@@ -6,6 +7,7 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'AchievementDescription')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>

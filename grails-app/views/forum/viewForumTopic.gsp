@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><cl:pageTitle title="${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="forum.css"/>
     <asset:stylesheet src="image-viewer"/>

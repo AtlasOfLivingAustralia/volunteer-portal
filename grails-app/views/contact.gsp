@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="${message(code: 'contact.title')}" /></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
 </head>

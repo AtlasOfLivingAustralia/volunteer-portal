@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="${projectInstance.i18nName} Forum"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="forum.css"/>

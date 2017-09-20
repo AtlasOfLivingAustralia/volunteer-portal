@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project; au.org.ala.volunteer.Picklist" %>
 
 <html>
@@ -98,7 +99,7 @@
                 <g:uploadForm class="form-horizontal" action="uploadCsvFile">
                     <g:hiddenField name="id" value="${params.id}"/>
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">Ã—</button>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 
                         <h3 id="picklistModalLabel"><g:message code="picklist.upload_picklist_file"/></h3>
                     </div>
@@ -206,7 +207,7 @@
             });
 
             function byteLength(str) {
-                // returns the byte length of an utf8 string
+                // returns the byte length of an UTF-8 string
                 var s = str.length;
                 for (var i=str.length-1; i>=0; i--) {
                     var code = str.charCodeAt(i);

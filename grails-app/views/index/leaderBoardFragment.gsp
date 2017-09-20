@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <div style="margin-top: 10px">
     <table class="table table-bordered table-condensed" style="background-color: white">

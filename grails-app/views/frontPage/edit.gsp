@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project; au.org.ala.volunteer.WebUtils" %>
 <html>
 <head>
@@ -266,7 +267,7 @@
           $.post({
             url: "${createLink(controller: 'frontPage', action: 'updateLogoImages')}",
             data: JSON.stringify(logos),
-            contentType: 'application/json; charset=utf-8',
+            contentType: 'application/json; charset=UTF-8',
             dataType: 'json'
           }).done(function(data, textStatus, jqXHR) {
             logos = data;

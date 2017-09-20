@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,6 +7,7 @@
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
     <asset:stylesheet src="codemirror/codemirror-monokai.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body class="admin">

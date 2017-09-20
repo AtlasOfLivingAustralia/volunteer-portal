@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <g:if test="${localities}">
     <div id="">
         <g:each in="${localities}" var="locality" status="i">

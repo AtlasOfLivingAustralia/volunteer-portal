@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <script id="notebookTabSet.html" type="text/ng-template">
 <div>
     <div class="container">

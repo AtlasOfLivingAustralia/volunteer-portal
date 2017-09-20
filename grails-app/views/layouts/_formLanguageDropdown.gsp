@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 <asset:javascript src="jquery-ui.js" asset-defer=""/>
 <!-- form language selector -->

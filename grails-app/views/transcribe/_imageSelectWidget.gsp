@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <g:set var="picklistInfo" value="${g.imageInfos(field: field, project: taskInstance?.project)}"/>
 <g:if test="${picklistInfo.error}">
     <div class="alert alert-danger alert-block">

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <table class="table table-striped">
     <tbody>
     <tr class="prop">

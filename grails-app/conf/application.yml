@@ -106,12 +106,12 @@ grails:
           maxFileSize: 52428800
           maxRequestSize: 52428800
     converters:
-        encoding: ISO-8859-1
+        encoding: UTF-8
     views:
         default:
             codec: html
         gsp:
-            encoding: ISO-8859-1
+            encoding: UTF-8
             htmlcodec: xml
             codecs:
                 expression: html

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="alert alert-danger" id="dialogMessageDiv" style="display: none">
 </div>
 

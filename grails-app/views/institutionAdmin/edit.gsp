@@ -1,8 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Institution" %>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-institutionSettings"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
@@ -30,7 +32,6 @@
 
     <g:form class="form-horizontal" url="[controller: 'institutionAdmin', id: institutionInstance?.id, action: 'update']" method="PUT">
         <g:hiddenField name="version" value="${institutionInstance?.version}"/>
-        <input type="hidden" name="_charset_" />
         <g:render template="form"/>
         <div class="form-group">
             <div class="col-md-offset-3 col-md-9">

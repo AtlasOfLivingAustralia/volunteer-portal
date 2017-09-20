@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
     <div class="buttonBar" style="margin-bottom: 10px">
         <button id="btnNewSiteTopic" class="btn btn-primary"><g:message code="forum.topic_list.create_a_topic"/></button>

@@ -2,7 +2,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><g:message code="default.application.name"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>--}%
 

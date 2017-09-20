@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <table class="table table-striped table-condensed table-bordered">
     <thead>

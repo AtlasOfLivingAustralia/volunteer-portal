@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 
 <g:set var="initZoom" value="${projectInstance.mapInitZoomLevel ?: 3}"/>

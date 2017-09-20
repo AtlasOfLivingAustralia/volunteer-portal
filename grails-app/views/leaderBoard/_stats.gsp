@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 %{-- include CSS and JS assets in calling page --}%
 <g:set var="instName" value="${institutionName ?: institutionInstance?.i18nName ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>

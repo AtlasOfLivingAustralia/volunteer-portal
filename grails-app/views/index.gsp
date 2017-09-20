@@ -1,7 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FrontPage" %>
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-main"/>
     <meta name="section" content="home"/>
     <title><cl:pageTitle title="Home"/></title>
@@ -38,7 +41,7 @@
 
         <div class="row">
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconLabels.png" class="img-responsive"/>
+                <asset:image src="doedat/if_xxx035_2091691.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -49,7 +52,7 @@
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconNotes.png" class="img-responsive"/>
+                <asset:image src="doedat/if_flat_seo2-04_334155.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -60,7 +63,7 @@
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconWild.png" class="img-responsive"/>
+                <asset:image src="doedat/if_squirrel_icon_731910.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">

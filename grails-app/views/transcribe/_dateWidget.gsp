@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%
     def dateLayout = "YMD"
     if (field.layoutClass?.contains("DMY")) {

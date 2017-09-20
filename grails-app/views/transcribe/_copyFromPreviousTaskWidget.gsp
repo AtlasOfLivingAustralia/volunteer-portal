@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="row ${cssClass}" style="margin-bottom: 10px">
 
     <div class="col-md-10">

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 %{-- Custom version of BuildInfo plugin index page (taken from 1.2.8) --}%
 %{-- Added layout meta tag so that buildInfo page is skinned --}%
 <%@ page contentType="text/html;charset=UTF-8" %>

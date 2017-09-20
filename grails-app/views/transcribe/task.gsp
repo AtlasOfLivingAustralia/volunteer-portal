@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -8,6 +9,8 @@
 <%@ page contentType="text/html; UTF-8" %>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-transcribe"/>
 
     <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>

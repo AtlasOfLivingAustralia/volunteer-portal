@@ -1,7 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.WebUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
     <meta name="layout" content="digivol-projectSettings"/>
     <asset:stylesheet src="institution-dropdown"/>
     <asset:stylesheet src="label-autocomplete"/>

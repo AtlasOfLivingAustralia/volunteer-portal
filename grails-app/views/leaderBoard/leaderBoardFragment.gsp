@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
     <table class="table table-bordered table-condensed table-striped">
         <thead style="background-color: #f0f0e8">

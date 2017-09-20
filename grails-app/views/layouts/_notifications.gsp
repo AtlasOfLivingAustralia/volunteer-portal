@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementService; au.org.ala.volunteer.FrontPageService" %>
 <cl:isLoggedIn>
 <asset:script type="text/javascript">

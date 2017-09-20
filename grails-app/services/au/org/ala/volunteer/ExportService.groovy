@@ -195,7 +195,7 @@ class ExportService {
         }
 
         // Prepare the response for a zip file - use the project i18nName as a basis of the filename
-        def filename = "Project-" + project.i18nName.replaceAll(" ","") + "-DwC"
+        def filename = "Project-" + project.i18nName.toString().replaceAll(" ","") + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
         response.setContentType("application/zip");
 

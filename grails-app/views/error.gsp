@@ -1,5 +1,7 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <html>
 <head>
+
     <title><cl:pageTitle title="An error has occured" /></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <form>
     <div class="form-group">
         <p class=""><g:message code="template.cloneTemplateFragment.description" args="${[templateInstance.name]}"/></p>

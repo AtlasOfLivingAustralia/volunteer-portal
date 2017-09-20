@@ -1,8 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
@@ -37,7 +38,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <g:link uri="/" class="navbar-brand"><asset:image src="logoDoeDat.png"/></g:link>
+            <g:link uri="/" class="navbar-brand"><asset:image src="doedat/logoDoeDat.png"/></g:link>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
@@ -176,7 +177,7 @@
         <div class="row">
 
             <div class="col-sm-12">
-                <asset:image src="institutions/logoAustMus@2x.png"/>
+                <!--asset:image src="institutions/logoAustMus@2x.png"/>-->
                 <asset:image src="institutions/logoCSIRO.svg"/>
                 <cl:insitutionLogos />
                 %{--<asset:image src="institutions/logoMelbourneVictoria@2x.png"/>--}%
@@ -197,7 +198,7 @@
             <div class="row footer-header">
                 <div class="col-sm-12">
                     <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image
-                            src="logoDoeDatInverted.png"/></a>
+                            src="doedat/logoDoeDatInverted.png"/></a>
 
                     <div class="social-icons pull-right">
                         <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
