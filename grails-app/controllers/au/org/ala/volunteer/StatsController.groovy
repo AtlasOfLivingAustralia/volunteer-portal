@@ -203,7 +203,7 @@ class StatsController {
             new CSVWriter(new OutputStreamWriter(response.outputStream, Charsets.UTF_8)).withCloseable { CSVWriter writer ->
 
                 if (result.get('header').size() > 0) {
-                    def header = [result.get('header')[0].get('label'), result.get('header')[1].get('label')]
+                    def header = result.get('header')*.get('label')
 
                     def array = result.get('statsData')
 
