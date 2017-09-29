@@ -1,13 +1,15 @@
 package au.org.ala.volunteer
 
+import com.google.common.io.Resources
+import grails.core.GrailsApplication
 import grails.transaction.Transactional
-import grails.web.context.ServletContextHolder as SCH
+import grails.util.Environment
 
 import java.util.regex.Pattern
 
 class TemplateService {
 
-    def grailsApplication
+    GrailsApplication grailsApplication
     def userService
 
     @Transactional
@@ -31,21 +33,22 @@ class TemplateService {
 
     def getAvailableTemplateViews() {
         def views = []
-        if (grailsApplication.isWarDeployed()) {
-            findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
-        } else {
+
+        if (Environment.isDevelopmentEnvironmentAvailable()) {
+            log.info("Checking for dev templates")
             findDevGsps 'grails-app/views/transcribe/templateViews', views
+        } else {
+            log.info("Checking for WAR deployed templates")
+            findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
         }
+        log.info("Got views: {}", views)
 
         def pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
 
-        def results = []
-        views.each { String viewName ->
+        def results = views.collectMany { String viewName ->
             def m = pattern.matcher(viewName)
-            if (m.matches()) {
-                results << m.group(1)
-            }
-        }
+            m.matches() ? [m.group(1)] : []
+        }.sort()
 
         return results
     }
@@ -60,14 +63,18 @@ class TemplateService {
         }
     }
 
-    private void findWarGsps(current, gsps) {
-        def servletContext = SCH.servletContext
-        for (path in servletContext.getResourcePaths(current)) {
-            if (path.endsWith('.gsp')) {
-                gsps << path - '/WEB-INF/grails-app/views/'
-            } else {
-                findWarGsps path, gsps
+    private void  findWarGsps(String current, List<String> gsps) {
+        try {
+            def properties = Resources.getResource('/gsp/views.properties').withReader('UTF-8') { r ->
+                def p = new Properties()
+                p.load(r)
+                p
             }
+            def keys = properties.keySet()
+            log.debug("Got keys from views.properties {}", keys)
+            keys.findAll { it.toString().startsWith(current) }.collect(gsps) { it - '/WEB-INF/grails-app/views/' }
+        } catch (e) {
+            log.error("Error loading views.properties!", e)
         }
     }
 
