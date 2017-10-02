@@ -17,7 +17,7 @@
         </div>
 
         <div class="col-md-3">
-            (if&nbsp;noted)
+            <g:message code="views.transcribe.if_noted"/>
         </div>
     </div>
     <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}"/>

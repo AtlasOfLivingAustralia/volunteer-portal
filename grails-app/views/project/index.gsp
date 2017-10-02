@@ -158,7 +158,7 @@
                                     <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-responsive" title="${roleIcon?.name}" alt="${roleIcon?.name}">
                                 </div>
                                 <div class="col-xs-9 col-sm-4 roleList">
-                                    <h3>${role.name}</h3>
+                                    <h3>${message(code: role.label)}</h3>
                                     <ul>
                                         <g:each in="${role.members}" var="member">
                                             <li><a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}">${member.name} (${member.count})</a>

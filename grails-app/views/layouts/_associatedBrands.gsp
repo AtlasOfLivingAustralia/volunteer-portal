@@ -3,11 +3,11 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-7" style="    margin-top: 20px;">
-                <asset:image src="logoAustMus.png"/> <asset:image src="logoALA.png"/>
+                <!-- asset:image src="logoAustMus.png"/>--><asset:image src="logoALA.png"/>
             </div>
 <!--
             <div class="col-sm-5">
-                <asset:image src="logoAGI.png" class="logo-agi"/>
+                asset:image src="logoAGI.png" class="logo-agi"/>
             </div>
 -->
 

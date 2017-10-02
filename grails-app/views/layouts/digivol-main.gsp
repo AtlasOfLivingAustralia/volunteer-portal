@@ -177,7 +177,7 @@
         <div class="row">
 
             <div class="col-sm-12">
-                <!--asset:image src="institutions/logoAustMus@2x.png"/>-->
+                <asset:image src="institutions/logoAustMus@2x.png"/>
                 <asset:image src="institutions/logoCSIRO.svg"/>
                 <cl:insitutionLogos />
                 %{--<asset:image src="institutions/logoMelbourneVictoria@2x.png"/>--}%

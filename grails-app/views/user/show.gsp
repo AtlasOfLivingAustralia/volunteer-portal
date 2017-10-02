@@ -232,7 +232,7 @@
             </div>
             <div class="pull-right search-help">
                 <button class="btn btn-info pull-right"
-                        uib-tooltip="${message(code:"notebook.taskList.searchHelp")}"><span
+                        uib-tooltip="${message(code:"notebook.taskList.searchHelp").replaceAll("\"","\\\"")}"><span
                         class="help-container"><i class="fa fa-question"></i></span>
                 </button>
             </div>

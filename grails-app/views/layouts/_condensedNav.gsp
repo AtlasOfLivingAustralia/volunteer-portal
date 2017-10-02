@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="digivol-tab">
-                        <g:link uri="/" class="tab-brand">A <asset:image src="doedat/logoDoeDatInverted.png" /> <g:message code="suffix.expedition" /></g:link>
+                            <g:link uri="/" class="tab-brand"><g:message code="condensedNav.a_digivol_expedition.a" /> <asset:image src="doedat/logoDoeDatInverted.png" /> <g:message code="condensedNav.a_digivol_expedition.expedition" /></g:link>
                         <ul class="navbar-short navbar-right">
                         <!-- Logged In Starts -->
                             <cl:isNotLoggedIn>

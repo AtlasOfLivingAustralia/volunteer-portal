@@ -263,7 +263,7 @@ class ForumTagLib {
                                         attrMap['disabled'] = 'true'
                                     }
                                     a(attrMap) {
-                                        mkp.yield("Reply")
+                                        mkp.yield(message(code: "forumtaglib.reply"))
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
                                         a(class: 'btn btn-sm btn-default', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {

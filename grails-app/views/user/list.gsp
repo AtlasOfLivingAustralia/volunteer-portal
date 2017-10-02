@@ -22,7 +22,7 @@
 
 <body class="admin">
 
-<cl:headerContent crumbLabel="Volunteers" title="${message(code: 'user.list.volunteer_transcribers')}"  selectedNavItem="bvpadmin">
+<cl:headerContent crumbLabel="${message(code: 'user.list.volunteers')}" title="${message(code: 'user.list.volunteer_transcribers')}"  selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = []
     %>

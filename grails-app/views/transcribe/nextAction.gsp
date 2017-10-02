@@ -38,13 +38,13 @@
 
 <body class="admin">
 
-<cl:headerContent title="Transcription Saved" crumbLabel="What next?"/>
+<cl:headerContent title="${message(code:"transcribe.nextAction.transcription_saved")}" crumbLabel="${message(code:"transcribe.nextAction.what_next")}"/>
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <div class="lead"><g:message code="transcribe.nextAction.thank_you" args="${[formatDate(date: taskInstance.dateLastUpdated, format: 'h:mm:ss a z d MMMM yyyy')]}"/>
+                    <div class="lead"><g:message code="transcribe.nextAction.thank_you" args="${[formatDate(date: taskInstance.dateLastUpdated, format: 'h:mm:ss MMMM yyyy')]}"/>
                     </div>
 
                     <ul>

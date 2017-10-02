@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" contentType="text/html; charset=UTF-8" %>
 %{-- include CSS and JS assets in calling page --}%
 <g:set var="instName" value="${institutionName ?: institutionInstance?.i18nName ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
@@ -149,12 +149,17 @@
                 <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
                 <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
 
-                <p><g:message code="transcribed.label" /> <span>{{contributor.transcribedItems}}</span> <g:message code="items.from.the" /> <a
-                        data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a></p>
+                <p>
+                    <g:message code="leaderboard.stats.transcribed.prefix" />
+                    <span>{{contributor.transcribedItems}}</span>
+                    <g:message code="leaderboard.stats.transcribed.items_from_the" />
+                    <a data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a>
+                    <g:message code="leaderboard.stats.transcribed.sufix" />
+                </p>
 
                 <div class="transcribed-thumbs">
                     <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}">
-                    <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
+                    <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span><g:message code="project.read_more" /></a>
                 </div>
                 <a class="btn btn-link btn-xs join" role="button"
                    data-ng-href="{{projectUrl(contributor)}}"><g:message code="join.expedition.label" /> »</a>
@@ -182,8 +187,11 @@
 </section>
 <asset:javascript src="digivol-stats.js" asset-defer=""/>
 <asset:script>
-digivolStats({
-statsUrl: "${createLink(controller: 'index', action: 'stats')}",
+
+    moment.locale("${ LocaleContextHolder.getLocale().getLanguage()}");  // Set the default/global locale
+
+  digivolStats({
+  statsUrl: "${createLink(controller: 'index', action: 'stats')}",
 projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
 userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
 taskSummaryUrl: "${createLink(controller: 'task', action: 'summary', id: -1)}",

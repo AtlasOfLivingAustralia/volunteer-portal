@@ -169,3 +169,6 @@ section#what-you-do img {
 .logo-agi {
     max-height: 85px !important;
 }
+.form-control {
+    padding: 3px 8px !important;
+}

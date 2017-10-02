@@ -324,7 +324,7 @@ class ProjectService {
                 return projectSummary.iconLabel;
             }
 
-            projectSummary.project.i18nName?.toLowerCase()
+            projectSummary.project.i18nName?.toString()?.toLowerCase()
         }
 
         Integer startIndex = params?.int('offset') ?: 0;
