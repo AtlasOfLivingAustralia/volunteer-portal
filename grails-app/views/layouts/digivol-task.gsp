@@ -508,7 +508,7 @@
                     size: 'large',
                     //height: 500,
                     //hideHeader: true,
-                    title: 'Mapping Tool',
+                    title: "${message(code:'default.tools.label')}",
                     buttons: {
                       close: {
                         label: "${message(code: 'task.close_and_cancel')}",
@@ -729,7 +729,7 @@
         function showTaskTimeoutMessage() {
             var options = {
                 url: "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}",
-                        title: 'Task lock will expire soon!',
+                        title: "${message(code:'digivolTask.task_lock_will_expire_soon')}",
                         backdrop: 'static',
                         keyboard: false
                     };

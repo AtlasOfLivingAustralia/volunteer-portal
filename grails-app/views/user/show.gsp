@@ -20,7 +20,7 @@
 
 <body data-ng-app="notebook">
 <cl:headerContent hideTitle="true"
-        title="${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}"
+        title="${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}"
         crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
     <%
         pageScope.crumbs = [
@@ -44,7 +44,7 @@
             </div>
             <div class="col-sm-6">
                 <span class="pre-header"><g:message code="user.show.volunteer_profile"/></span>
-                <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}</h1>
+                <h1>${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}</h1>
                 <g:if test="${project}"><h2>${project?.i18nName}</h2></g:if>
                 <div class="row">
                     <div class="col-xs-4">

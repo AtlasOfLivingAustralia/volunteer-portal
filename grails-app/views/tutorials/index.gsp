@@ -25,7 +25,7 @@
                 <div class="col-md-12">
                     <g:each in="${tutorials.keySet().sort()}" var="group">
                         <g:if test="${tutorials[group]}">
-                            <h3>${group == '-' ? 'Generic Tutorials' : group}</h3>
+                            <h3>${group == '-' ? message(code:"tutorials.generic_tutorials") : group}</h3>
                             <div class="list-group">
                                 <g:each in="${tutorials[group]?.sort({ it.title })}" var="tute">
                                     <a class="list-group-item" href="${tute.url}">${tute.title}</a>

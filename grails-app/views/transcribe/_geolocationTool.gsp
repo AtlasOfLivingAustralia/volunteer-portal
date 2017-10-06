@@ -143,7 +143,7 @@
       var latLongRegex = /([-]{0,1}\d+)[^\d](\d+)[^\d](\d+).*?([-]{0,1}\d+)[^\d](\d+)[^\d](\d+)/;
       var match = latLongRegex.exec(localityStr);
       if (match) {
-        var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
+        var interpretedLatLong = match[1] + 'ï¿½' + match[2] + "'" + match[3] + '" ' + match[4] + 'ï¿½' + match[5] + "'" + match[6] + '"';
         $(':input#address').val(interpretedLatLong);
       } else {
 
@@ -341,7 +341,7 @@
 
       bvp.hideModal();
     } else {
-      alert('${message(code: 'transcribe.geolocationTool.location_data_is_empty')}');
+      alert("${message(code: 'transcribe.geolocationTool.location_data_is_empty')}");
     }
   }
 

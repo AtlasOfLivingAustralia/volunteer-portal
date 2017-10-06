@@ -63,7 +63,7 @@
         </div>
         <div class="col-sm-8 col-sm-pull-4">
             <h1 class="">${institutionInstance.i18nName}</h1>
-            <p style="margin-top: 20px;">${institutionInstance.i18nShortDescription}</p>
+            <p style="margin-top: 20px;">${raw(institutionInstance?.i18nDescription.toString())}</p>
             <div class="cta-primary ">
                 <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="institution.see_our_expeditions" />
                     <span class="glyphicon glyphicon-arrow-down"></span></a>
