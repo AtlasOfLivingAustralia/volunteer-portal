@@ -103,8 +103,8 @@ grails:
     controllers:
         defaultScope: singleton
         upload:
-          maxFileSize: 52428800
-          maxRequestSize: 52428800
+          maxFileSize: 5368709120
+          maxRequestSize: 5368709120
     converters:
         encoding: UTF-8
     views:

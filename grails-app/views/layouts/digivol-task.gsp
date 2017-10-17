@@ -704,8 +704,8 @@
         <g:if test="${!rule.testEmptyValues}">
             if (value) {
         </g:if>
-        var pattern = /${rule.regularExpression}/;
-                    return pattern.test(value);
+            var pattern = new RegExp($("<div/>").html("${rule.regularExpression}").text());
+            return pattern.test(value);
         <g:if test="${!rule.testEmptyValues}">
             }
             return true;

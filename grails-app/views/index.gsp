@@ -23,7 +23,7 @@
         <div class="cta-primary">
             <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="index.cta.getInvolved" /> <span
                     class="glyphicon glyphicon-arrow-down"></span></a>  <a class="btn btn-lg btn-hollow"
-                                                                           href="#learnMore"><g:message code="index.cta.learnMore" /></a>
+                                                                           href="/about/index"><g:message code="index.cta.learnMore" /></a>
         </div>
 
         <div class="row">

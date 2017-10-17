@@ -31,6 +31,8 @@
                         <br/>
                         <g:message code="contact.ala.address"/>-->
                     </p>
+
+                    <a class="" href="/about/index"><g:message code="default.about.label" /></a>
                 </div>
             </div>
         </div>

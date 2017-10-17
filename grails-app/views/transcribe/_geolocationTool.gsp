@@ -28,7 +28,7 @@
             <label for="infoUncert"><g:message code="transcribe.geolocationTool.adjust_uncertainty" /></label>
             <select class="form-control" id="infoUncert">
                 <g:set var="coordinateUncertaintyPL"
-                       value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
+                       value="${Picklist.findByName('coordinateUncertaintyInMeters',[order: "asc"])}"/>
                 <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">
                     <g:set var="isSelected"><g:if
                             test="${(item.value == '1000')}">selected='selected'</g:if></g:set>

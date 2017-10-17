@@ -102,7 +102,7 @@
         <div>
             <g:each in="${fieldList}" var="field" status="fieldIndex">
                 <g:set var="fieldLabel"
-                       value="${StringEscapeUtils.escapeJavaScript(field.label ?: field.fieldType.label)}"/>
+                       value="${StringEscapeUtils.escapeJavaScript(field.label.toString() ?: field.fieldType.label)}"/>
                 <g:set var="fieldName" value="${field.fieldType.name()}"/>
                 <g:set var="fieldValue"
                        value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')}"/>
@@ -151,7 +151,7 @@
                             return "BVP.SlickGrid.Checkbox"
                         case FieldType.select:
                             def items = picklistService.getPicklistItemsForProject(darwinCoreField, taskInstance.project)
-                            def options = items.collect { '"' + StringEscapeUtils.escapeJavaScript(it.value) + '"' }
+                            def options = items.collect { '"' + StringEscapeUtils.escapeJavaScript(it.value?.toString()) + '"' }
                             return "BVP.SlickGrid.Select([${options.join(',')}])"
                         default:
                             return "Slick.Editors.Text"
@@ -202,11 +202,11 @@
             var columns = [
                 {id: 'id', name:'', field:'id', focusable: false, cssClass: 'fixed-column', maxWidth: 35, formatter: fixedColumnFormatter },
                 <g:each in="${fieldList}" var="field" status="fieldIndex">
-                <g:set var="fieldLabel" value="${StringEscapeUtils.escapeJavaScript(field.label ?: field.fieldType.label)}"/>
+                <g:set var="fieldLabel" value="${StringEscapeUtils.escapeJavaScript(field.label?.toString() ?: field.fieldType.label)}"/>
                 <g:set var="fieldName" value="${field.fieldType.name()}"/>
                 <g:set var="fieldValue"
                value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}"/>
-                <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText)}"/>
+                <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText.toString())}"/>
                 <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance?.id ?: -1, field.fieldType)}"/>
                 <g:set var="validationRuleName" value="${field.validationRule}"/>
                 <g:set var="formatter" value=""/>

@@ -168,7 +168,14 @@ section#what-you-do img {
 
 .logo-agi {
     max-height: 85px !important;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    border-radius: 2px;
 }
 .form-control {
     padding: 3px 8px !important;
+}
+#logos-institutions {
+    display: none;
 }

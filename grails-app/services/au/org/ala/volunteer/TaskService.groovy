@@ -873,6 +873,7 @@ ORDER BY record_idx, name;
      * @return fileMap
      */
     def createImageThumbs = { Map fileMap ->
+        log.debug()
         BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
         def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]

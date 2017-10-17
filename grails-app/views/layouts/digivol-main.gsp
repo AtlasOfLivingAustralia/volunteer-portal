@@ -219,19 +219,19 @@
                     <h3><g:message code="main.about_digivol" /></h3>
                     <ul>
                         <li><g:link controller="about" fragment="what-is-digivol"><g:message code="main.about_digivol.what" /></g:link></li>
-                        <li><g:link controller="about" fragment="why-capture-this-data"><g:message code="main.about_digivol.why" /></g:link></li>
-                        <li><g:link controller="about" fragment="submit-an-expedition"><g:message code="main.about_digivol.submit" /></g:link></li>
-                        <li><g:link controller="about" fragment="useful-references"><g:message code="main.about_digivol.references" /></g:link></li>
+                        <li><g:link controller="about" fragment="what-does-digivol-mean"><g:message code="main.about_digivol.why" /></g:link></li>
+                        <li><g:link controller="about" fragment="about-digivol"><g:message code="main.about_digivol.submit" /></g:link></li>
+                        <li><g:link controller="about" fragment="why"><g:message code="main.about_digivol.references" /></g:link></li>
                     </ul>
                 </div>
 
                 <div class="col-sm-3">
                     <h3><g:message code="main.about_digivol.how_can_i_volunteer" /></h3>
                     <ul>
-                        <li><g:link controller="about" fragment="registering"><g:message code="main.about_digivol.how_can_i_volunteer.become" /></g:link></li>
-                        <li><g:link controller="about" fragment="transcribing"><g:message code="main.about_digivol.how_can_i_volunteer.how" /></g:link></li>
-                        <li><g:link controller="about" fragment="what-happens-next"><g:message code="main.about_digivol.how_can_i_volunteer.what" /></g:link></li>
-                        <li><g:link controller="about" fragment="examples"><g:message code="main.about_digivol.how_can_i_volunteer.examples" /></g:link></li>
+                        <li><g:link controller="about" fragment="new-project"><g:message code="main.about_digivol.how_can_i_volunteer.become" /></g:link></li>
+                        <li><g:link controller="about" fragment="references"><g:message code="main.about_digivol.how_can_i_volunteer.how" /></g:link></li>
+                        <li><g:link controller="about" fragment="how-can-i-help"><g:message code="main.about_digivol.how_can_i_volunteer.what" /></g:link></li>
+                        <li><g:link controller="about" fragment="how-to-start"><g:message code="main.about_digivol.how_can_i_volunteer.examples" /></g:link></li>
                     </ul>
                 </div>
 

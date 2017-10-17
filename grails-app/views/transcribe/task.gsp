@@ -640,13 +640,15 @@
 
 </asset:script>
 <asset:script>
-
+    debugger;
     <g:each in="${ValidationRule.list()}" var="rule">
         transcribeValidation.rules.${rule.name} = {
             test: function(value, element) {
         <g:if test="${!rule.testEmptyValues}">
             if (value) {
         </g:if>
+        console.log("${rule.regularExpression}");
+
         var pattern = /${rule.regularExpression}/;
                     return pattern.test(value);
         <g:if test="${!rule.testEmptyValues}">
