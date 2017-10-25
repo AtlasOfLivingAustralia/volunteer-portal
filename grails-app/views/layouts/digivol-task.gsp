@@ -95,8 +95,7 @@
                             id="${taskInstance?.project?.id}">${taskInstance?.project?.i18nName}</g:link> ${taskInstance?.externalIdentifier}</h1>
 
                 <h2>
-                    <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}"
-                                                sequenceNumber="${sequenceNumber}"/>
+                    <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/>
                     <g:if test="${taskInstance}"><ul class="list-inline" style="display: inline-block;">
                         <li style="vertical-align: top;">
                             <div class="fb-share-button" data-href="${shareUrl}" data-layout="button"
