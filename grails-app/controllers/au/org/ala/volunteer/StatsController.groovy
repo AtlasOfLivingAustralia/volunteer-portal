@@ -91,6 +91,9 @@ class StatsController {
         return result
     }
 
+    private def getStatData (String reportType) {
+        return getStatData(StatsType.valueOf(reportType))
+    }
     private def getStatData (StatsType reportType) {
         def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
         def toDate = (params?.date('endDate', dateFormats) ?: new Date()) + 1
