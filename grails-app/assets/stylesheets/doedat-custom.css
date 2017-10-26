@@ -3,7 +3,10 @@
 .selectable {
     cursor: pointer;
 }
-
+h2.heading > div.subheading {
+    text-transform: initial;
+    margin-top: 10px;
+}
 .a-feature.home {
     /*background-color: #357866;*/
     background-image: url(../images/doedat/feature-doedat.png);
