@@ -185,7 +185,7 @@
             <div class="col-sm-4">
                 <div class="map-header">
                     <h2 class="heading"><g:message code="user.show.record_locations"/></h2>
-                    <p>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? message(code: 'user.show.you_have_transcribed_records') : message(code: 'user.show.user_has_transcribed_records')}</p>
+                    <p>${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.you_have_transcribed_records') : message(code: 'user.show.user_has_transcribed_records')}</p>
                 </div>
             </div>
         </div>
@@ -455,6 +455,8 @@
 <asset:script type="text/javascript">
     var json = <cl:json value="${[
         selectedTab: selectedTab,
+        defaultLatitude: grailsApplication.config.location.default.latitude,
+        defaultLongitude: grailsApplication.config.location.default.longitude,
         userInstance: userInstance,
         project: project,
         isValidator: isValidator,
