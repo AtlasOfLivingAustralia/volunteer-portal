@@ -7,6 +7,9 @@ h2.heading > div.subheading {
     text-transform: initial;
     margin-top: 10px;
 }
+.copyFromPreviousTask {
+    display: none;
+}
 .a-feature.home {
     /*background-color: #357866;*/
     background-image: url(../images/doedat/feature-doedat.png);

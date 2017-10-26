@@ -17,7 +17,7 @@
     </div>
 
     <div class="col-md-4">
-        <div class="row" id="taskMetadata">
+        <div class="row" id="taskMetadata" >
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-body">
@@ -28,7 +28,7 @@
                                     <br/>
                                     <span class="metaDataLabel"><g:message code="transcribe.templateViews.all.taxa"/></span> ${recordValues?.get(0)?.scientificName}
                                 </td>
-                                <td style="text-align: right">
+                                <td style="text-align: right" class="copyFromPreviousTask" >
                                     <div class="col-md-10">
                                         <button type="button" class="btn btn-info btnCopyFromPreviousTask"
                                                 href="#task_selector"
