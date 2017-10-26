@@ -143,6 +143,23 @@ class PicklistService {
                 } else {
                     results = PicklistItem.findAllByPicklistAndInstitutionCode(pl, null)
                 }
+
+                // Check if all keys are empty. If so, clone the values to the keys. This is needed for backwards
+                // compatibility
+                boolean emptyKeys = true;
+                for(PicklistItem item : results) {
+                    if(item.key!=null) {
+                        emptyKeys=false;
+                    }
+                }
+
+                // Clone the values into the keys
+                if(emptyKeys) {
+                    for(PicklistItem item : results) {
+                        item.key = item.value;
+                    }
+                }
+
             }
         }
         return results

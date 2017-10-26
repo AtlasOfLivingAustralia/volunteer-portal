@@ -284,7 +284,7 @@ class TranscribeTagLib {
                         name: widgetName,
                         from: options,
                         optionValue:'value',
-                        optionKey:'value',
+                        optionKey:'key',
                         value: existingValue ?: field?.defaultValue,
                         noSelection:['':''],
                         'class': "$cssClass form-control",
