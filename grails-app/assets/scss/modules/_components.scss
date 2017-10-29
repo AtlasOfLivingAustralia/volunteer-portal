@@ -13,6 +13,30 @@
 		background-size: cover;
 		padding-bottom: 0%;
 	}
+	&.wildlifespotter {
+		color: white;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		padding: 6% 0 0 0;
+		h1 {
+			text-transform: uppercase;
+			color: #CCD969;
+			span {
+				border-top: 1px solid #94867D;
+				border-bottom: 1px solid #94867D;
+			}
+		}
+		p {
+			font-size: 21px;
+			line-height: 26px;
+			margin-bottom: 27px;
+		}
+	}
 	&.institution {
 		background-color: #fff;
 		padding: 6% 0 0 0;

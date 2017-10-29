@@ -24,6 +24,7 @@ class BVPServletFilter implements Filter  {
         addPattern("/monitoring")
         addPattern("/assets/.*")
         addPattern("/static/.*")
+        //addPattern("/image/.*")
         addPattern("/es")
         addPattern("/admin/userActivityInfo")
     }
@@ -47,10 +48,12 @@ class BVPServletFilter implements Filter  {
                     }
                 }
 
+                def session = request.getSession(false)
+
                 if (doLog) {
                     def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
                     def userAgent = request.getHeader("user-agent")
-                    logger.info "Session: ${request.session.id} User: ${username} IP: ${request.remoteAddr} UA: ${userAgent} URI: ${request.requestURI}"
+                    logger.info "Session: ${session?.id} User: ${username} IP: ${request.remoteAddr} UA: ${userAgent} URI: ${request.requestURI}"
                 }
 //                request.getHeaderNames().each {
 //                    println it + " = " + request.getHeader(it)
