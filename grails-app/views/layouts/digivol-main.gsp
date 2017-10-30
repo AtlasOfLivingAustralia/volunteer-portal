@@ -17,6 +17,7 @@
     <g:layoutHead />
 
     <g:render template="/layouts/commonCss" />
+    <g:render template="/layouts/tinyMce" />
 
     <asset:stylesheet href="doedat-custom.css"/>
 

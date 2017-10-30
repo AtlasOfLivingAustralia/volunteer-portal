@@ -3,7 +3,7 @@
 //= require_self
 $(function(){
     tinymce.baseURL = BVP_JS_URLS.contextPath + 'assets/tinymce/4.3.13/';
-    tinymce.init({
+    /*tinymce.init({
       selector: 'textarea.mce',
       convert_urls: false,
       plugins: 'link anchor hr charmap',
@@ -14,4 +14,6 @@ $(function(){
       ],
       statusbar: false
     });
+    This has moved to tinyMce.gsp
+    */
 });

@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="Edit Project"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
+    <g:render template="/layouts/tinyMce" />
     <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>

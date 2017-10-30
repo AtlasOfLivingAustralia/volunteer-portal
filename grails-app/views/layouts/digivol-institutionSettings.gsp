@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="${institutionInstance?.i18nName}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
+    <g:render template="/layouts/tinyMce" />
     <g:layoutHead/>
 </head>
 

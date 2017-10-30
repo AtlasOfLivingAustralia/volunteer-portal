@@ -24,6 +24,7 @@
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
     <asset:stylesheet src="transcribe-widgets"/>
+    <g:render template="/layouts/tinyMce" />
     <g:layoutHead/>
 
     <style type="text/css">

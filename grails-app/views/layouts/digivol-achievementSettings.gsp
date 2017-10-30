@@ -6,6 +6,7 @@
            value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
+    <g:render template="/layouts/tinyMce" />
     <g:layoutHead />
 </head>
 
