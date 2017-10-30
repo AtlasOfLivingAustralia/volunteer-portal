@@ -172,7 +172,7 @@ bvp:
 
 images:
     home: /data/volunteer-portal
-    urlPrefix: data/volunteer/
+    urlPrefix: /data/volunteer/
 
 elasticsearch:
     location: "/data/volunteer/elasticsearch"
