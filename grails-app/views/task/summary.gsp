@@ -59,7 +59,7 @@
                             <g:imageViewer multimedia="${multimedia}"/>
                         </div>
                         <ul class="list-inline">
-                            <li>
+                            <li class="social-media-sharing">
                                 <div class="fb-share-button" data-href="${shareUrl}" data-layout="button" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse">Share</a></div>
                             </li>
                             <li style="vertical-align: middle;">

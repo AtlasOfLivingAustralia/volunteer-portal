@@ -51,7 +51,7 @@
                         </g:if>
                         <g:else>
                             <div class="label label-default">
-                                Not transcribed
+                                <g:message code="taskListThumb.not_transcribed" />
                             </div>
                         </g:else>
 

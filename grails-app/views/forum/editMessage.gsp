@@ -46,7 +46,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <h2><g:message code="forum.edit_message.your_message"/>Your message:</h2>
+                    <h2><g:message code="forum.edit_message.your_message"/></h2>
                     <small><g:message code="forum.edit_message.note" /> <a
                             href="${createLink(action: 'markdownHelp')}" target="popup"><g:message code="forum.edit_message.note.here"/></a></small>
                     <g:form id="messageForm" controller="forum">

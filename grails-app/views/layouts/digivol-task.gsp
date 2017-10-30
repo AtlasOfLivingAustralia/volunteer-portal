@@ -96,8 +96,8 @@
 
                 <h2>
                     <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/>
-                    <g:if test="${taskInstance}"><ul class="list-inline" style="display: inline-block;">
-                        <li style="vertical-align: top;">
+                    <g:if test="${taskInstance}"><ul class="list-inline social-media-sharing" style="display: inline-block;">
+                        <li style="vertical-align: top;" class="">
                             <div class="fb-share-button" data-href="${shareUrl}" data-layout="button"
                                  data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank"
                                                               href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse"><g:message
@@ -636,8 +636,6 @@
                 });
 
                 $("input.recordedBy").blur(function(e) {
-                    i18nName
-                    i18nName
                     // must be cleared.
                     var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
                     var value = $(this).val();

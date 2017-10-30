@@ -12,7 +12,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <title>Task Details</title>
+    <title><g:message code="taskDetails.task_details" /></title>
 
     <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
@@ -104,7 +104,8 @@
                             <td><g:message code="task.showDetails.transcribed"/></td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyTranscribed}">
-                                    ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyTranscribedBy) ?: "<span class='muted'>unknown</span>"}
+
+                                    ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} <g:message code="task.showDetails.by"/> ${cl.emailForUserId(id: taskInstance.fullyTranscribedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>
                                     <span class="muted">

@@ -7,8 +7,10 @@ h2.heading > div.subheading {
     text-transform: initial;
     margin-top: 10px;
 }
-.copyFromPreviousTask {
-    display: none;
+.copyFromPreviousTask,
+.social-media-sharing
+{
+    display: none !important;
 }
 .a-feature.home {
     /*background-color: #357866;*/

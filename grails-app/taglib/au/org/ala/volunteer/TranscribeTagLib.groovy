@@ -447,7 +447,7 @@ class TranscribeTagLib {
 
             def fieldIndex = 0;
             while (fieldIndex < fields.size()) {
-                mb.div(class:'row') {
+                    mb.div(class:'row form-group') {
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
                         mb.div(class:'') {
                             mb.div(class:spanClass) {

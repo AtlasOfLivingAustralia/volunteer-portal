@@ -130,47 +130,47 @@
                         };
                         bvp.showModal(options);
                     }
-                });
+        });
 
-                $("#searchButton").click(function (e) {
-                    e.preventDefault();
-                    doSearch();
-                });
+        $("#searchButton").click(function (e) {
+            e.preventDefault();
+            doSearch();
+        });
 
-                $("#projectAdminSearch").keyup(function (e) {
-                    if (e.keyCode == 13) {
-                        e.preventDefault();
-                        doSearch();
-                    }
-                });
+        $("#projectAdminSearch").keyup(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                doSearch();
+            }
+        });
 
-                $("#btnExportAll").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'${message(code:"task.adminList.export_all_tasks")}',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
-                });
+        $("#btnExportAll").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title:'${message(code:"task.adminList.export_all_tasks")}',
+                url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id]).encodeAsJavaScript()}"
+            };
+            bvp.showModal(options);
+        });
 
-                $("#btnExportTranscribed").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'${message(code:"task.adminList.export_transcribed_tasks")}',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
+        $("#btnExportTranscribed").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title:'${message(code:"task.adminList.export_transcribed_tasks")}',
+                url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id]).encodeAsJavaScript()}"
+            };
+            bvp.showModal(options);
 
-                });
+        });
 
-                $("#btnExportValidated").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'${message(code:"task.adminList.export_validated_tasks")}',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
-                });
+        $("#btnExportValidated").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title:'${message(code:"task.adminList.export_validated_tasks")}',
+                url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id]).encodeAsJavaScript()}"
+            };
+            bvp.showModal(options);
+        });
 
     <g:if test="${params.lastTaskId}">
         amplify.store("bvp_task_${params.lastTaskId}", null);

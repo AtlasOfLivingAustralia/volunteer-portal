@@ -881,8 +881,7 @@ class TaskController {
         def viewedTask = ViewedTask.get(params.int("viewedTaskId"));
         if (viewedTask) {
             def lastViewedDate = new Date(viewedTask?.lastView)
-            def tc = Time
-                    .minus(new Date(), lastViewedDate)
+            def tc = TimeCategory.minus(new Date(), lastViewedDate)
             def agoString = "${tc} ago"
 
             [viewedTask: viewedTask, lastViewedDate: lastViewedDate, agoString: agoString]

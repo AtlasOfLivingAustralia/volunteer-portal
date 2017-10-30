@@ -15,7 +15,7 @@
             title="${message(code: 'default.manageTemplateFields.label', default: 'Manage Template Fields')} - ${templateInstance.name}"  selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
                     [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: ['Template'])],
                     [link: createLink(controller: 'template', action: 'edit', id: templateInstance.id), label: message(code: 'default.edit.label', args: ['Template'])]
             ]

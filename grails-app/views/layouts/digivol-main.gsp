@@ -195,7 +195,7 @@
     <footer>
         <div class="container">
 
-            <div class="row footer-header">
+            <div class="row footer-header social-media-sharing">
                 <div class="col-sm-12">
                     <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image
                             src="doedat/logoDoeDatInverted.png"/></a>
