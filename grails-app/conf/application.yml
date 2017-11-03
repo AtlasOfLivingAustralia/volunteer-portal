@@ -146,7 +146,7 @@ security:
         adminRole: "ROLE_VP_ADMIN"
         validatorRole: "ROLE_VP_VALIDATOR"
         uriFilterPattern: '/validate/save.*,/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!summary).)*,/newsItem/.*,/picklist/.*,/admin,/admin/.*,/frontPage/.*,/ajax/userReport,/ws/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*,/locality/.*,/collectionEvent/.*,/ajax/keepSessionAlive.*,/ws/keepSessionAlive.*,/forum/.*,/template/.*,/monitoring,/metrics,/metrics/.*,/ws/acceptAchievements,/ajax/acceptAchievements,/project/createNewProject.*'
-        authenticateOnlyIfLoggedInPattern: '/,/;jsessionid=.*,/project/index/.*,/task/summary/.*,/tutorials/.*,/institution/.*,/buildInfo,/events/.*,/es,/eventSource.*'
+        authenticateOnlyIfLoggedInPattern: '/,/;jsessionid=.*,/project/index/.*,/task/summary/.*,/tutorials/.*,/institution/.*,/buildInfo,/events/.*,/es,/eventSource.*,/wildlife-spotter'
         uriExclusionFilterPattern: '/assets/.*,/static/.*,/fonts/.*,/images/.*,/css/.*,/js/.*,/less/.*,/image/.*'
 
 bvp:
