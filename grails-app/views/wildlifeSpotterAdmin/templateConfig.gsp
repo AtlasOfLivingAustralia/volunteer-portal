@@ -5,6 +5,21 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="templateEntityName" value="${message(code: 'template.label', default: 'Template')}"/>
     <title><g:message code="wildlifeSpotter.template.label" default="Wildlife Spotter Template Configuration"/></title>
+    <style>
+         .minimizable.ng-hide-add,
+         .minimizable.ng-hide-remove {
+            transition: all ease-out 0.25s;
+             max-height: 600px;
+             overflow-y: hidden;
+        }
+        .minimizable.ng-hide {
+            max-height: 0;
+            overflow-y: hidden;
+        }
+        .form-control {
+            height: 32px;
+        }
+    </style>
 </head>
 <body>
 <cl:headerContent title="${message(code: 'default.wildlifeSpotterOptions.label', default: 'Wildlife Spotter Options')}" selectedNavItem="bvpadmin">
@@ -45,35 +60,37 @@
                     </div>
                     <h2 class="panel-title" ng-bind="c.name || 'New category'"></h2>
                 </div>
-                <div ng-show="!tcc.categoryUiStatus[$index].minimized" class="panel-body">
-                    <form>
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" class="form-control" placeholder="Category name" ng-model="c.name" ng-change="tcc.categoryChange(c)">
-                        </div>
-                    </form>
+                <div class="minimizable" ng-show="!tcc.categoryUiStatus[$index].minimized">
+                    <div class="panel-body">
+                        <form>
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" placeholder="Category name" ng-model="c.name" ng-change="tcc.categoryChange(c)">
+                            </div>
+                        </form>
+                    </div>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Entry Name</th>
+                            <th>Icon</th>
+                            <th><button class="btn btn-mini btn-primary" ng-click="tcc.addEntry(c)"><i class="fa fa-plus"></i></button></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="e in c.entries">
+                            <td><input type="text" class="form-control" placeholder="Entry name" ng-model="e.name" ng-change="tcc.entryChange(c, e)"></td>
+                            <td ngf-drop="tcc.addImage(e,$index,$files)" ngf-accept="'image/*'"><img ng-src="{{tcc.entryUrl(e)}}"></td>
+                            <td>
+                                <button class="btn btn-mini btn-primary" type="file" ngf-select="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'"><i class="fa fa-upload"></i></button>
+                                <button class="btn btn-mini btn-default" ng-click="tcc.moveUp(c.entries,$index)"><i class="fa fa-arrow-up"></i></button>
+                                <button class="btn btn-mini btn-default" ng-click="tcc.moveDown(c.entries,$index)"><i class="fa fa-arrow-down"></i></button>
+                                <button class="btn btn-mini btn-danger" ng-click="tcc.removeEntry(c,$index)"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table ng-show="!tcc.categoryUiStatus[$index].minimized" class="table">
-                    <thead>
-                    <tr>
-                        <th>Entry Name</th>
-                        <th>Icon</th>
-                        <th><button class="btn btn-mini btn-primary" ng-click="tcc.addEntry(c)"><i class="fa fa-plus"></i></button></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="e in c.entries">
-                        <td><input type="text" class="form-control" placeholder="Entry name" ng-model="e.name" ng-change="tcc.entryChange(c, e)"></td>
-                        <td ngf-drop="tcc.addImage(e,$index,$files)" ngf-accept="'image/*'"><img ng-src="{{tcc.entryUrl(e)}}"></td>
-                        <td>
-                            <button class="btn btn-mini btn-primary" type="file" ngf-select="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'"><i class="fa fa-upload"></i></button>
-                            <button class="btn btn-mini btn-default" ng-click="tcc.moveUp(c.entries,$index)"><i class="fa fa-arrow-up"></i></button>
-                            <button class="btn btn-mini btn-default" ng-click="tcc.moveDown(c.entries,$index)"><i class="fa fa-arrow-down"></i></button>
-                            <button class="btn btn-mini btn-danger" ng-click="tcc.removeEntry(c,$index)"><i class="fa fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
             <button class="btn btn-primary" ng-click="tcc.addCategory()"><i class="fa fa-plus"></i> Add category</button>
         </div>
@@ -98,47 +115,49 @@
                     </div>
                     <h2 class="panel-title" ng-bind="tcc.fullName(a) || 'New animal'"></h2>
                 </div>
-                <div class="panel-body" ng-show="!tcc.animalUiStatus[$index].minimized">
-                    <form>
-                        <div class="form-group">
-                            <label>Common Name</label>
-                            <input type="text" class="form-control" placeholder="Animal name" ng-model="a.vernacularName">
-                        </div>
-                        <div class="form-group">
-                            <label>Scientific Name</label>
-                            <input type="text" class="form-control" placeholder="Animal name" ng-model="a.scientificName">
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea class="form-control" placeholder="Description (markdown?)" ng-model="a.description"></textarea>
-                        </div>
-                        <div class="form-group" ng-repeat="c in tcc.model.categories">
-                            <label>{{c.name}}</label>
-                            <select class="form-control" ng-options="e.name as e.name for e in c.entries" ng-model="a.categories[c.name]">
-                                <option value="">Other</option>
-                            </select>
-                        </div>
-                    </form>
+                <div class="minimizable" ng-show="!tcc.animalUiStatus[$index].minimized">
+                    <div class="panel-body">
+                        <form>
+                            <div class="form-group">
+                                <label>Common Name</label>
+                                <input type="text" class="form-control" placeholder="Animal name" ng-model="a.vernacularName">
+                            </div>
+                            <div class="form-group">
+                                <label>Scientific Name</label>
+                                <input type="text" class="form-control" placeholder="Animal name" ng-model="a.scientificName">
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="form-control" placeholder="Description (markdown?)" ng-model="a.description"></textarea>
+                            </div>
+                            <div class="form-group" ng-repeat="c in tcc.model.categories">
+                                <label>{{c.name}}</label>
+                                <select class="form-control" ng-options="e.name as e.name for e in c.entries" ng-model="a.categories[c.name]">
+                                    <option value="">Other</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th><button class="btn btn-mini btn-primary" ng-click="tcc.addBlankImage(a)"><i class="fa fa-plus"></i></button></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="i in a.images">
+                            <td ngf-drop="tcc.addImage(a,$index,$files)"><img ng-src="{{tcc.imageUrl(i)}}"></td>
+                            <td>
+                                <button class="btn btn-mini btn-primary" type="file" ngf-select="tcc.addImage(a.images,$index,$files)"><i class="fa fa-upload"></i></button>
+                                <button class="btn btn-mini btn-default" ng-click="tcc.moveUp(a.images,$index)"><i class="fa fa-arrow-up"></i></button>
+                                <button class="btn btn-mini btn-default" ng-click="tcc.moveDown(a.images,$index)"><i class="fa fa-arrow-down"></i></button>
+                                <button class="btn btn-mini btn-danger" ng-click="tcc.removeImage(a,$index)"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table class="table" ng-show="!tcc.animalUiStatus[$index].minimized">
-                    <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th><button class="btn btn-mini btn-primary" ng-click="tcc.addBlankImage(a)"><i class="fa fa-plus"></i></button></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="i in a.images">
-                        <td ngf-drop="tcc.addImage(a,$index,$files)"><img ng-src="{{tcc.imageUrl(i)}}"></td>
-                        <td>
-                            <button class="btn btn-mini btn-primary" type="file" ngf-select="tcc.addImage(a.images,$index,$files)"><i class="fa fa-upload"></i></button>
-                            <button class="btn btn-mini btn-default" ng-click="tcc.moveUp(a.images,$index)"><i class="fa fa-arrow-up"></i></button>
-                            <button class="btn btn-mini btn-default" ng-click="tcc.moveDown(a.images,$index)"><i class="fa fa-arrow-down"></i></button>
-                            <button class="btn btn-mini btn-danger" ng-click="tcc.removeImage(a,$index)"><i class="fa fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
             <button class="btn btn-primary" ng-click="tcc.addAnimal()"><i class="fa fa-plus"></i> Add animal</button>
         </div>
@@ -149,11 +168,11 @@
         </div>
     </div>
 </div>
-<asset:javascript src="wildlifespotter-template-config" asset-defer=""/>
+<asset:javascript src="wildlifespotter-template-config.js" asset-defer=""/>
 
 <asset:script type="text/javascript">
     var viewParams = <cl:json value="${viewParams2}"/>;
-    var wstc = angular.module('wildlifespottertemplateconfig', ['ngFileUpload']);
+    var wstc = angular.module('wildlifespottertemplateconfig', ['ngAnimate', 'ngFileUpload']);
     function TemplateConfigController($http, Upload) {
       var self = this;
       self.model = viewParams;
@@ -271,7 +290,7 @@
       };
 
       self.sortAnimals = function() {
-        self.minimizeAll(self.model.animals);
+        self.minimizeAll(self.animalUiStatus);
         self.model.animals.sort(function(a,b) {
           var nameA = self.fullName(a).toUpperCase();
           var nameB = self.fullName(b).toUpperCase();
@@ -313,7 +332,7 @@
         } else if (a.scientificName) {
           return a.scientificName;
         } else {
-          return null;
+          return '';
         }
       };
 

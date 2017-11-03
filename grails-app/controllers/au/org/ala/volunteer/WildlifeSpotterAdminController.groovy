@@ -78,32 +78,6 @@ class WildlifeSpotterAdminController {
             }
             def hash = FilenameUtils.getBaseName(file.name)
             def ext = FilenameUtils.getExtension(file.name)
-            // 446 x 305
-//            def image = ImageIO.read(file)
-//            if (!image) {
-//                log.warn("WildlifeSpotter animal upload ${animal.originalFilename} could not be read as an image")
-//                render([error: "${animal.originalFilename} could not be read as an image"] as JSON, status: 500)
-//            }
-//            def scaledFile = fileWithClassifier(file, 'scaled', 'jpg')
-//            if (!scaledFile.exists()) {
-//                def scaled = ImageUtils.centreCropAndScale(image, 446, 305)
-//                ImageIO.write(scaled, "jpg", scaledFile)
-//                scaled.flush()
-//                log.info("Scaled and saved $scaledFile")
-//            } else {
-//                log.info("$scaledFile already exists so skipping generating it")
-//            }
-//            // Orig WS: 146 x 107, Digivol WS: 150 x 150
-//            def thumbFile = fileWithClassifier(file, 'thumb', 'jpg')
-//            if (!thumbFile.exists()) {
-//                def thumb = ImageUtils.centreCropAndScale(image, 150, 150)
-//                ImageIO.write(thumb, 'jpg', thumbFile)
-//                thumb.flush()
-//                log.info("Scaled and saved $thumbFile")
-//            } else {
-//                log.info("$thumbFile already exists so skipping generating it")
-//            }
-//            image.flush()
             render([ hash: hash, format: ext ] as JSON)
         } else {
             MultipartFile entry = request.getFile('entry')
@@ -112,31 +86,9 @@ class WildlifeSpotterAdminController {
             }
             def hash = FilenameUtils.getBaseName(file.name)
             def ext = FilenameUtils.getExtension(file.name)
-            // 156 x 52
-//            def image = ImageIO.read(file)
-//            if (!image) {
-//                log.warn("WildlifeSpotter entry upload ${entry.originalFilename} could not be read as an image")
-//                render([error: "${entry.originalFilename} could not be read as an image"] as JSON, status: 500)
-//            }
-//            def scaledFile = fileWithClassifier(file, 'category', 'png')
-//            if (!scaledFile.exists()) {
-//                def scaled = ImageUtils.centreCropAndScale(image, 156, 52)
-//                ImageIO.write(scaled, "png", scaledFile)
-//                scaled.flush()
-//                log.info("Scaled and saved $scaledFile")
-//            } else {
-//                log.info("$scaledFile already exists so skipping generating it")
-//            }
             render([ hash: hash, format: ext ] as JSON)
         }
 
-    }
-
-    static File fileWithClassifier(File file, String classifier, String ext) {
-        def fullname = file.name
-//        def ext = FilenameUtils.getExtension(fullname)
-        def name = FilenameUtils.getBaseName(fullname)
-        new File(file.parentFile, "${name}_${classifier}.${ext}")
     }
 
 }
