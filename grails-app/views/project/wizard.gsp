@@ -4,7 +4,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><cl:pageTitle title="Create a new Expedition"/></title>
 
-    <asset:stylesheet src="digivol-new-project-wizard" />
+    <asset:stylesheet src="digivol-new-project-wizard.js" />
 </head>
 
 <body class="admin" data-ng-app="projectWizard">

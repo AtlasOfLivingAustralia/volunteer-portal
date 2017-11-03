@@ -162,7 +162,7 @@
 
         function doSearch() {
             var q = $("#searchbox").val();
-            var url = "${createLink(controller: 'project', action: 'list')}?mode=${params.mode}&q=" + encodeURIComponent(q);
+            var url = "${createLink(controller: 'project', action: 'wildlifespotter')}?statusFilter=${params.statusFilter}&activeFilter=${params.activeFilter}&offset=${params.offset}&max=${params.max}&sort=${params.sort}&order=${params.order}&q=" + encodeURIComponent(q);
                 window.location = url;
             }
         });

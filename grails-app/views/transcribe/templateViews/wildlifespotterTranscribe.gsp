@@ -59,7 +59,7 @@
                                         <div class="checkbox">
                                             <label>
                                                 <input type="checkbox" id="btn-animals-present" name="recordValues.0.noAnimalsVisible"
-                                                       value="yes" ${'yes' == recordValues[0]?.animalsVisible ? 'checked' : ''}> There's no animal in view
+                                                       value="yes" ${'yes' == recordValues[0]?.noAnimalsVisible ? 'checked' : ''}> There's no animal in view
                                             </label>
                                         </div>
                                     </div>
@@ -76,18 +76,18 @@
                                 </div>
                             </div>
                             <div id="classification-status-animals-selected" style="display: none;"></div>
-                            <div class="text-right" style="margin-top: 20px; margin-bottom: 20px;">
+                            <div class="text-right">
                                 <g:if test="${!validator}">
                                     <button type="button" id="btnSave"
-                                            class="btn btn-primary btn-lg bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
+                                            class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
                                 </g:if>
                                 <g:else>
                                     <button type="button" id="btnValidate"
-                                            class="btn btn-success btn-lg bvp-submit-button ${validator ? '' : 'hidden'}"><i
+                                            class="btn btn-success bvp-submit-button ${validator ? '' : 'hidden'}"><i
                                             class="glyphicon glyphicon-ok glyphicon glyphicon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
                                     </button>
                                     <button type="button" id="btnDontValidate"
-                                            class="btn btn-danger btn-lg bvp-submit-button ${validator ? '' : 'hidden'}"><i
+                                            class="btn btn-danger bvp-submit-button ${validator ? '' : 'hidden'}"><i
                                             class="glyphicon glyphicon-remove glyphicon glyphicon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
                                     </button>
                                 </g:else>

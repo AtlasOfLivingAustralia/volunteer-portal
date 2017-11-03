@@ -67,7 +67,7 @@
                 <h3><g:message code="index.whatyoudo.cameratraps.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.cameratraps.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Camera traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
+                <g:link controller="project" action="wildlifespotter"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
 
             </div>
 

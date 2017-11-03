@@ -330,7 +330,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
           return a.vernacularName === v.vernacularName || a.scientificName === v.scientificName;
         });
 
-        if (index) {
+        if (index >= 0) {
           selectedIndicies[index] = {
             comment: v.comment,
             count: v.individualCount,
@@ -339,6 +339,25 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
         }
       });
     }
+
+    transcribeValidation.addCustomValidator(function(errorList) {
+      var q1 = $('input[name=recordValues\\.0\\.noAnimalsVisible]:checked').val();
+      var q2 = $('input[name=recordValues\\.0\\.problemWithImage]:checked').val();
+      var q3 = _.keys(selectedIndicies).length > 0;
+      if (!q1 && !q2 && !q3) {
+
+        errorList.push({element: null, message: "You must either indicate that there are no animals, there's a problem with the image or select at least one animal before you can submit", type: "Error" });
+      }
+    });
+    transcribeValidation.setErrorRenderFunctions(function (errorList) {
+      },
+      function() {
+      });
+
+    submitRequiresConfirmation = true;
+    postValidationFunction = function(validationResults) {
+      if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
+    };
 
     transcribeWidgets.addBeforeSubmitHook(function (e) {
       generateFormFields();
@@ -349,9 +368,44 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       return true;
     });
 
-    // // restore filter
-    // var lastFilter = amplify.store('bvp_ct_last_filter');
-    // if (lastFilter) $('#'+lastFilter).click();
+    // IMAGE SEQUENCE
+    var $imgViewer = $("#image-container img");
+    var $imgSeq = $('#ct-image-sequence');
+    var $defaultImg = $imgSeq.find('.default');
+    var $clicked = $defaultImg;
+
+    function loadImage($src) {
+      $imgSeq.find('.active').removeClass('active');
+      $imgViewer.prop('src', $src.find('img').data('full-src'));
+      $imgViewer.panZoom('loadImage');
+      $src.addClass('active');
+    }
+
+    $imgSeq.on('click', '.faux-img-cell', function(e) {
+      var $this = $(this);
+      if (!$clicked.is($this)) {
+        $clicked = $this;
+        loadImage($this);
+      } else {
+        $clicked = $defaultImg;
+        loadImage($defaultImg);
+      }
+    });
+
+    $imgSeq.on('mouseover', '.faux-img-cell', function(e) {
+      var $this = $(this);
+      loadImage($this);
+    });
+
+    $imgSeq.on('mouseout', '.faux-img-cell', function(e) {
+      var $this = $(this);
+      loadImage($clicked);
+    });
+
+    $('#ct-question-span').click(function(e) {
+      $clicked = $defaultImg;
+      loadImage($defaultImg);
+    });
 
     // force intial sync of saved values
     syncRecordValues();
