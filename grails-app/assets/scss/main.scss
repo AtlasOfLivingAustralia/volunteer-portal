@@ -5,27 +5,27 @@
 */
 
 /* Bootstrap */
-@import 'bootstrap/_variables.scss';
+@import 'bootstrap/variables';
 
 /* Import Base */
 
-@import 'base/_variables.scss';
-@import 'base/_mixins.scss';
-@import 'base/_normalise.scss';
-@import 'base/_base.scss';
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/normalise';
+@import 'base/base';
 
 /* Import Layouts */
 
-@import 'layouts/_footer.scss';
-@import 'layouts/_header.scss';
-@import 'layouts/_nav.scss';
-@import 'layouts/_colours.scss';
+@import 'layouts/footer';
+@import 'layouts/header';
+@import 'layouts/nav';
+@import 'layouts/colours';
 
 /* Import Modules */
 
-@import 'modules/_blocks.scss';
-@import 'modules/_buttons.scss';
-@import 'modules/_components.scss';
-@import 'modules/_sections.scss';
-@import 'modules/_typography.scss';
+@import 'modules/blocks';
+@import 'modules/buttons';
+@import 'modules/components';
+@import 'modules/sections';
+@import 'modules/typography';
 

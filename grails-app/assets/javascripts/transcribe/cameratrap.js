@@ -2,6 +2,7 @@
 //  assume jquery
 //  assume underscore
 //  assume bootbox
+//= require mustache
 //= require dotdotdot
 //= require transitionend
 //= require_self

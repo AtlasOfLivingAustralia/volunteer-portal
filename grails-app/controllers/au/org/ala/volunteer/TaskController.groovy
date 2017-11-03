@@ -746,8 +746,11 @@ class TaskController {
                 fieldDefinition.recordIndex = recordIndex
                 fieldDefinition.fieldDefinitionType = fieldType
                 fieldDefinition.format = format
+                fieldDefinition.save(flush:true)
             } else {
-                profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex))
+                fieldDefinition = new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex)
+                profile.addToFieldDefinitions(fieldDefinition)
+                fieldDefinition.save(flush: true)
             }
 
         }

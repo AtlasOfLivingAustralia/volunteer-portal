@@ -670,6 +670,7 @@ class ProjectController {
         }
 
         projectInstance.featuredImageCopyright = params.featuredImageCopyright
+        projectInstance.save(flush: true)
         flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.id)
     }
@@ -709,6 +710,7 @@ class ProjectController {
 
         projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
         projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
+        projectInstance.save(flush: true)
         flash.message = "Background image settings updated."
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
