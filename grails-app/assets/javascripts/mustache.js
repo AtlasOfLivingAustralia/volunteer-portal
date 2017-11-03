@@ -7,7 +7,7 @@ var mu = {};
   var templates = {};
   jQuery(function($) {
 
-    $('script[type="x-tmpl-mustache"]').each(function () {
+    $('script[type="x-tmpl-mustache"], script[type="text/x-mustache-template"]').each(function () {
       var $this = $(this);
       var content = $this.html();
       templates[$this.prop('id')] = content;
@@ -20,5 +20,13 @@ var mu = {};
     var $rendered = $(rendered);
     $rendered.appendTo(parent);
     return $rendered;
-  }
+  };
+
+  mlib.replaceTemplate = function(parent, template, opts) {
+    var rendered = Mustache.render(templates[template], opts);
+    var $rendered = $(rendered);
+    parent.empty();
+    $rendered.appendTo(parent);
+    return $rendered;
+  };
 })(mu);

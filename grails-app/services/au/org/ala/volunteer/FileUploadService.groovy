@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing
 import com.google.common.hash.HashingInputStream
+import org.apache.commons.io.FilenameUtils
 import org.springframework.web.multipart.MultipartFile
 
 class FileUploadService {
@@ -40,6 +41,16 @@ class FileUploadService {
         uploadFile(imagesDir, mpf)
     }
 
+    File uploadImage(String directory, MultipartFile mpf, Closure<String> renameFile) {
+        if (!directory) throw new IllegalArgumentException('directory can not be empty')
+        def imagesHome = grailsApplication.config.images.home
+        if (!imagesHome) throw new IllegalStateException('images.home not set')
+        def imagesDir = new File(imagesHome, directory)
+        if (!imagesDir.exists() && !imagesDir.mkdirs()) throw new IOException("Couldn't create $imagesHome/$directory")
+
+        uploadFile(imagesDir, mpf, renameFile)
+    }
+
     File uploadFile(File directory, MultipartFile file) {
         uploadFile(directory, file) { MultipartFile f, HashCode hash ->
             f.originalFilename
@@ -67,7 +78,15 @@ class FileUploadService {
         }
     }
 
-    def extension(String contentType) {
+    def extension(MultipartFile mpf) {
+        def fromContentType = extension(mpf.contentType, '')
+        if (fromContentType) {
+            return fromContentType
+        }
+        return FilenameUtils.getExtension(mpf.originalFilename) ?: 'jpg'
+    }
+
+    def extension(String contentType, String defaultForNoMatch = 'bin') {
         def extension
         switch (contentType) {
             case 'image/jpeg':
@@ -86,7 +105,7 @@ class FileUploadService {
                 extension = 'svg'
                 break
             default:
-                extension = 'bin'
+                extension = defaultForNoMatch
         }
         return extension
     }

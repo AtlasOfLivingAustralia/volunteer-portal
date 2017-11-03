@@ -324,6 +324,28 @@ class ProjectController {
         ]
     }
 
+    def wildlifespotter() {
+        def offset = params.getInt('offset', 0)
+        def max = 24
+        def sort = 'completed'
+        def order = params.getOrDefault('sort', 'asc')
+
+        def projectSummaryList = projectService.getProjectSummaryList(ProjectStatusFilterType.getDefault(), ProjectActiveFilterType.getDefault(), '', sort, offset, max, order)
+
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+
+        def wsi = WildlifeSpotter.instance()
+
+        def model = [
+                wildlifeSpotterInstance: wsi,
+                projects: projectSummaryList.projectRenderList,
+                filteredProjectsCount: projectSummaryList.matchingProjectCount,
+                numberOfUncompletedProjects: numberOfUncompletedProjects,
+                totalUsers: User.countByTranscribedCountGreaterThan(0)
+        ]
+        render(view: 'wildlifespotter', model: model)
+    }
+
     def create() {
         def currentUser = userService.currentUserId
         if (currentUser != null && userService.isAdmin()) {

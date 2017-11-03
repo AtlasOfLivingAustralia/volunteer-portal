@@ -224,7 +224,11 @@ class ProjectService {
         return ps
     }
 
-    public makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params, Closure<Boolean> filter = null) {
+    ProjectSummaryList makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params, Closure<Boolean> filter = null) {
+        makeSummaryListFromProjectList(projectList, params?.q, params?.sort, params?.int('offset') ?: 0, params?.int('max') ?: 0, params?.order, filter)
+    }
+
+    ProjectSummaryList makeSummaryListFromProjectList(List<Project> projectList, String q, String sort, int offset, int max, String order, Closure<Boolean> filter = null) {
         //def projectIds = projectList*.id
         def taskCounts = taskService.getProjectTaskCounts()
         def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
@@ -265,8 +269,8 @@ class ProjectService {
         }
 
         // Then apply the query paramter
-        if (params?.q) {
-            String query = params.q.toLowerCase()
+        if (q) {
+            String query = q.toLowerCase()
             String tagPrefix = "tag:"
 
             renderList = renderList.findAll { projectSummary ->
@@ -303,43 +307,43 @@ class ProjectService {
 
         renderList = renderList.sort { projectSummary ->
 
-            if (params?.sort == 'completed') {
+            if (sort == 'completed') {
                 return projectSummary.percentTranscribed < 100 ? projectSummary.percentTranscribed : projectSummary.percentValidated + projectSummary.percentTranscribed
             }
 
-            if (params?.sort == 'validated') {
+            if (sort == 'validated') {
                 return projectSummary.percentValidated
             }
 
-            if (params?.sort == 'volunteers') {
+            if (sort == 'volunteers') {
                 return projectSummary.transcriberCount;
             }
 
-            if (params?.sort == 'institution') {
+            if (sort == 'institution') {
                 return projectSummary.project.institution?.name ?: projectSummary.project.featuredOwner;
             }
 
-            if (params?.sort == 'type') {
+            if (sort == 'type') {
                 return projectSummary.iconLabel;
             }
 
             projectSummary.project.featuredLabel?.toLowerCase()
         }
 
-        Integer startIndex = params?.int('offset') ?: 0;
+        Integer startIndex = offset
         if (startIndex >= renderList.size()) {
-            startIndex = renderList.size() - (params?.int('max') ?: 0)
+            startIndex = renderList.size() - max
             if (startIndex < 0) {
                 startIndex = 0;
             }
         }
 
-        int endIndex = startIndex + (params?.int('max') ?: 0) - 1
+        int endIndex = startIndex + max - 1
         if (endIndex >= renderList.size()) {
             endIndex = renderList.size() - 1;
         }
 
-        if (params?.order == 'desc') {
+        if (order == 'desc') {
             renderList = renderList.reverse()
         }
 
@@ -350,8 +354,10 @@ class ProjectService {
 
     }
 
-    public ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
+    ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
 
+        def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
+        def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
         def projectList
 
         if (userService.isAdmin()) {
@@ -360,12 +366,23 @@ class ProjectService {
             projectList = Project.findAllByInactiveOrInactive(false, null)
         }
 
-        def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
-        def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
-
         def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
 
         return makeSummaryListFromProjectList(projectList, params, filter)
+    }
+
+    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order) {
+        def projectList
+
+        if (userService.isAdmin()) {
+            projectList = Project.list()
+        } else {
+            projectList = Project.findAllByInactiveOrInactive(false, null)
+        }
+
+        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
+
+        return makeSummaryListFromProjectList(projectList, q, sort, offset, max, order, filter)
     }
 
     def checkAndResizeExpeditionImage(Project projectInstance) {
@@ -493,5 +510,31 @@ class ProjectService {
             }
         }
         return result ? [start: result[0][1], end: result[0][0]] : null
+    }
+
+    def countTasksForTag(String s) {
+        def pt = ProjectType.findByName(s)
+
+        Task.createCriteria().count {
+            project {
+                eq('projectType', pt)
+            }
+        }
+    }
+
+    def countTranscribedTasksForTag(String s) {
+        def pt = ProjectType.findByName(s)
+
+        Task.createCriteria().count {
+            project {
+                eq('projectType', pt)
+            }
+            isNotNull('fullyTranscribedBy')
+        }
+    }
+
+    def getTranscriberCountForTag(String s) {
+        def pt = ProjectType.findByName(s)
+        Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.projectType = :projectType", [projectType: pt]).get(0)
     }
 }

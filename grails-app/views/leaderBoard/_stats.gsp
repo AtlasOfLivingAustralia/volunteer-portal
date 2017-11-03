@@ -180,7 +180,7 @@
     <g:link controller="user" action="list"><g:message code="view.all.contributors.label" /> »</g:link>
 </section>
 <asset:javascript src="digivol-stats.js" asset-defer=""/>
-<asset:script>
+<asset:script type="text/javascript">
 digivolStats({
 statsUrl: "${createLink(controller: 'index', action: 'stats')}",
 projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
@@ -188,6 +188,7 @@ userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
 taskSummaryUrl: "${createLink(controller: 'task', action: 'summary', id: -1)}",
 institutionId: ${institutionId ?: -1},
 projectId: ${projectId ?: -1},
+tagName: "${tagName ?: ''}",
 maxContributors: ${maxContributors ?: 5},
 disableStats: ${disableStats ? 'true' : 'false' },
 disableHonourBoard: ${disableHonourBoard ? 'true' : 'false' },

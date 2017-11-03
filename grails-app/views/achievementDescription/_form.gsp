@@ -90,9 +90,9 @@
     </div>
 </div>
 <asset:javascript src="codemirror-groovy-js-sublime" asset-defer=""/>
-<asset:script>
+<asset:script type="text/javascript">
 jQuery(function($) {
-    var id = "${achievementDescriptionInstance?.id ?: 0}"
+    var id = "${achievementDescriptionInstance?.id ?: 0}";
     var badgeBase = "${cl.achievementBadgeBase()}";
     var noBadgeUrl = "<g:resource dir="/images/achievements" file="blank.png"/>";
 

@@ -49,14 +49,14 @@ class IndexController {
         ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount]
     }
 
-    def stats(long institutionId, long projectId) {
+    def stats(long institutionId, long projectId, String tagName) {
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
 
-        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard")
+        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, tagName: $tagName")
 
         def sw = Stopwatch.createStarted()
 
@@ -71,6 +71,10 @@ class IndexController {
             totalTasks = institutionService.countTasksForInstitution(institution)
             completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
             transcriberCount = institutionService.getTranscriberCount(institution)
+        } else if (tagName) {
+            totalTasks = projectService.countTasksForTag(tagName)
+            completedTasks = projectService.countTranscribedTasksForTag(tagName)
+            transcriberCount = projectService.getTranscriberCountForTag(tagName)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
             completedTasks = Task.countByFullyTranscribedByIsNotNull()

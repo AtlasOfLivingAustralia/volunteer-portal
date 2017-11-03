@@ -45,39 +45,45 @@ public enum ProjectStatusFilterType {
 
     showAll("All"), showIncompleteOnly("Incomplete"), showCompleteOnly("Completed")
 
-    def String description
+    String description
 
-    public ProjectStatusFilterType(String desc) {
+    ProjectStatusFilterType(String desc) {
         description = desc
     }
 
-    public static ProjectStatusFilterType fromString(String statusFilter) {
+    static ProjectStatusFilterType fromString(String statusFilter) {
         if (statusFilter) {
             statusFilter as ProjectStatusFilterType
         } else {
-            showAll
+            getDefault()
         }
+    }
+
+    static ProjectStatusFilterType getDefault() {
+        showAll
     }
 
 }
 
-public enum ProjectActiveFilterType {
+enum ProjectActiveFilterType {
 
     showAll("All"), showActiveOnly("Active"), showInactiveOnly("Deactivated")
 
-    def String description
+    String description
 
-    public ProjectActiveFilterType(String desc) {
+    ProjectActiveFilterType(String desc) {
         description = desc
     }
 
-    public static ProjectActiveFilterType fromString(String activeFilter) {
+    static ProjectActiveFilterType fromString(String activeFilter) {
         if (activeFilter) {
             activeFilter as ProjectActiveFilterType
         } else {
-            showAll
+            getDefault()
         }
     }
 
-
+    static ProjectActiveFilterType getDefault() {
+        showAll
+    }
 }
