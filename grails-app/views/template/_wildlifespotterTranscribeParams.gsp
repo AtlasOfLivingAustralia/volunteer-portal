@@ -39,4 +39,8 @@
         <g:field type="number" name="jumpNTasks" min="1" max="10" data-default="6" class="form-control"/>
     </div>
 </div>
-<g:link class="btn btn-primary" controller="wildlifeSpotterAdmin" action="templateConfig" id="${templateInstance.id}">Configure Wildlife Spotter Entries</g:link>
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+        <g:link class="btn btn-primary" controller="wildlifeSpotterAdmin" action="templateConfig" id="${templateInstance.id}">Configure Wildlife Spotter Entries</g:link>
+    </div>
+</div>

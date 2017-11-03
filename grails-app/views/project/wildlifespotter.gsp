@@ -112,7 +112,7 @@
                     </g:else>
                 </div>
                 <div class="col-sm-4">
-                    <g:render template="/leaderBoard/stats" model="[institutionName: 'Wildlife Spotter', tagName: 'cameraTrap']"/>
+                    <g:render template="/leaderBoard/stats" model="[institutionName: 'Wildlife Spotter', tagName: 'cameratraps']"/>
                 </div>
             </div>
         </div>

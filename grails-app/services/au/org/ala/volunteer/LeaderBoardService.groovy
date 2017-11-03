@@ -17,7 +17,7 @@ class LeaderBoardService {
     def settingsService
     def userService
 
-    def winner(LeaderBoardCategory category, Institution institution) {
+    def winner(LeaderBoardCategory category, Institution institution, ProjectType pt = null) {
         def today = todaysDate
 
         def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
@@ -25,14 +25,14 @@ class LeaderBoardService {
         def result = [name: '', score: 0]
         switch (category) {
             case LeaderBoardCategory.daily:
-                result = getLeaderboardWinner(today, today, institution, ineligibleUsers)
+                result = getLeaderboardWinner(today, today, institution, ineligibleUsers, pt)
                 break;
             case LeaderBoardCategory.weekly:
                 def startDate = (Date) today.clone()
                 while (startDate.getAt(Calendar.DAY_OF_WEEK) != 1) {
                     startDate--;
                 }
-                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers)
+                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers, pt)
                 break;
             case LeaderBoardCategory.monthly:
                 def startDate = (Date) today.clone()
@@ -40,12 +40,19 @@ class LeaderBoardService {
                     startDate--;
                 }
 
-                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers)
+                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers, pt)
                 break;
             case LeaderBoardCategory.alltime:
 
                 if (institution) {
                     def tmp = getTopNForInstitution(1, institution, ineligibleUsers)
+                    if (tmp) {
+                        result = tmp[0]
+                    } else {
+                        result = EMPTY_LEADERBOARD_WINNER
+                    }
+                } else if (pt) {
+                    def tmp = getTopNForProjectType(1, pt, ineligibleUsers)
                     if (tmp) {
                         result = tmp[0]
                     } else {
@@ -67,7 +74,7 @@ class LeaderBoardService {
         result
     }
 
-    def topList(LeaderBoardCategory category, Institution institution) {
+    def topList(LeaderBoardCategory category, Institution institution, ProjectType projectType = null) {
         def today = todaysDate
 
         def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
@@ -118,8 +125,8 @@ class LeaderBoardService {
         [category: category, results: results, heading: heading]
     }
 
-    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution, List<String> ineligbleUsers = []) {
-        def results = getTopNForPeriod(startDate, endDate, 1, institution, ineligbleUsers)
+    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution, List<String> ineligbleUsers = [], ProjectType pt = null) {
+        def results = getTopNForPeriod(startDate, endDate, 1, institution, ineligbleUsers, pt)
         if (results) {
             return results[0]
         }
@@ -132,44 +139,28 @@ class LeaderBoardService {
         def scoreMap = getUserCountsForInstitution(institution, ActivityType.Transcribed, ineligibleUsers)
         def validatedMap = getUserCountsForInstitution(institution, ActivityType.Validated, ineligibleUsers)
 
-        // merge the validated map into the transcribed map, forming a total activity score for the superset of users
-        validatedMap.each { kvp ->
-            // if there exists a validator who is not a transcriber, set the transcription count to 0
-            if (!scoreMap[kvp.key]) {
-                scoreMap[kvp.key] = 0
-            }
-            // combine the transcribed count with the validated count for that user.
-            scoreMap[kvp.key] += kvp.value
-        }
-
-        // Flatten the map into a list for easy sorting, so we can slice off the top N
-        def list = []
-        scoreMap.each { kvp ->
-            if (kvp.key) {
-                def user = User.findByUserId(kvp.key)
-                def details = userService.detailsForUserId(kvp.key)
-                if (user) {
-                    list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
-                } else {
-                    println "Failed to find user with key: ${kvp.key}"
-                }
-            }
-        }
-
-        // Sort in descending order...
-        list?.sort { a, b -> b.score <=> a.score }
-        // and just return the top N items
-        return list.subList(0, Math.min(list.size(), count))
-
+        return mergeScores(validatedMap, scoreMap, count)
     }
 
-    List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = []) {
+    List getTopNForProjectType(int count, ProjectType pt, List<String> ineligibleUsers = []) {
+
+        def scoreMap = getUserCountsForProjectType(pt, ActivityType.Transcribed, ineligibleUsers)
+        def validatedMap = getUserCountsForProjectType(pt, ActivityType.Validated, ineligibleUsers)
+        return mergeScores(validatedMap, scoreMap, count)
+    }
+
+    List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = [], ProjectType pt = null) {
 
         // Get a map of users who transcribed tasks during this period, along with the count
-        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institution, ineligibleUsers)
+        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institution, ineligibleUsers, pt)
         // Get a map of user who validated tasks during this periodn, along with the count
-        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institution, ineligibleUsers)
+        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institution, ineligibleUsers, pt)
 
+
+        return mergeScores(validatedMap, scoreMap, count)
+    }
+
+    private List mergeScores(LinkedHashMap validatedMap, LinkedHashMap scoreMap, int count) {
         // merge the validated map into the transcribed map, forming a total activity score for the superset of users
         validatedMap.each { kvp ->
             // if there exists a validator who is not a transcriber, set the transcription count to 0
@@ -198,7 +189,7 @@ class LeaderBoardService {
         return list.subList(0, Math.min(list.size(), count))
     }
 
-    Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds) {
+    Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds, ProjectType pt = null) {
         def c = Task.createCriteria()
 
         def results = c {
@@ -212,6 +203,12 @@ class LeaderBoardService {
             if (ineligibleUserIds) {
                 not {
                     inList "fully${activityType}By", ineligibleUserIds
+                }
+            }
+
+            if (pt) {
+                project {
+                    eq("projectType", pt)
                 }
             }
 
@@ -236,6 +233,36 @@ class LeaderBoardService {
             if (institution) {
                 project {
                     eq("institution", institution)
+                }
+            }
+
+            if (exceptUsers) {
+                not {
+                    inList("fully${activityType}By", exceptUsers)
+                }
+            }
+
+            projections {
+                groupProperty("fully${activityType}By")
+                count("fully${activityType}By", 'count')
+            }
+        }
+
+        def map = [:]
+        results.each { row ->
+            map[row[0]] = row[1]
+        }
+
+        return map
+    }
+
+    private getUserCountsForProjectType(ProjectType projectType, ActivityType activityType, List<String> exceptUsers = []) {
+        def c = Task.createCriteria()
+
+        def results = c {
+            if (projectType) {
+                project {
+                    eq("projectType", projectType)
                 }
             }
 

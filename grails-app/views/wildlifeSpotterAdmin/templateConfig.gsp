@@ -27,10 +27,25 @@
     </div>
     <div class="row" >
         <div class="col-sm-12">
-            <h1>Categories <button class="btn btn-mini btn-primary" ng-click="tcc.addCategory()"><i class="fa fa-plus"></i></button></h1>
+            <h1>
+                Categories
+                <button class="btn btn-mini btn-primary" ng-click="tcc.addCategory()"><i class="fa fa-plus"></i></button>
+                <button class="btn btn-mini btn-primary" ng-click="tcc.minimizeAll(tcc.categoryUiStatus)" title="Minimize all"><i class="fa fa-window-minimize"></i></button>
+            </h1>
             <div class="panel panel-default" ng-repeat="c in tcc.model.categories">
-                <div class="panel-heading"><button class="btn btn-default pull-right" ng-click="tcc.removeCategory($index)"><i class="fa fa-close"></i></button><h2 class="panel-title" ng-bind="c.name || 'New category'"></h2></div>
-                <div class="panel-body">
+                <div class="panel-heading">
+                    <div class="pull-right">
+                        <div class="btn-group btn-group-xs" role="group" aria-label="Category options">
+                            <button class="btn btn-default" ng-click="tcc.moveCategoryUp($index)"><i class="fa fa-arrow-up"></i></button>
+                            <button class="btn btn-default" ng-click="tcc.moveCategoryDown($index)"><i class="fa fa-arrow-down"></i></button>
+                            <button ng-if="!tcc.categoryUiStatus[$index].minimized" class="btn btn-default" ng-click="tcc.categoryUiStatus[$index].minimized = true" ><i class="fa fa-window-minimize"></i></button>
+                            <button ng-if="tcc.categoryUiStatus[$index].minimized" class="btn btn-default" ng-click="tcc.categoryUiStatus[$index].minimized = false" ><i class="fa fa-window-maximize"></i></button>
+                        </div>
+                        <button class="btn btn-danger btn-xs" ng-click="tcc.removeCategory($index)" ><i class="fa fa-close"></i></button>
+                    </div>
+                    <h2 class="panel-title" ng-bind="c.name || 'New category'"></h2>
+                </div>
+                <div ng-show="!tcc.categoryUiStatus[$index].minimized" class="panel-body">
                     <form>
                         <div class="form-group">
                             <label>Name</label>
@@ -38,7 +53,7 @@
                         </div>
                     </form>
                 </div>
-                <table class="table">
+                <table ng-show="!tcc.categoryUiStatus[$index].minimized" class="table">
                     <thead>
                     <tr>
                         <th>Entry Name</th>
@@ -65,10 +80,25 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            <h1>Animals <button class="btn btn-mini btn-primary" ng-click="tcc.addAnimal()"><i class="fa fa-plus"></i></button></h1>
+            <h1>Animals
+                <button class="btn btn-mini btn-primary" ng-click="tcc.addAnimal()"><i class="fa fa-plus"></i></button>
+                <button class="btn btn-mini btn-primary" ng-click="tcc.sortAnimals()" title="Sort alphabetically"><i class="fa fa-sort-alpha-asc"></i></button>
+                <button class="btn btn-mini btn-primary" ng-click="tcc.minimizeAll(tcc.animalUiStatus)" title="Minimize all"><i class="fa fa-window-minimize"></i></button>
+            </h1>
             <div class="panel panel-default" ng-repeat="a in tcc.model.animals">
-                <div class="panel-heading"><button class="btn btn-default pull-right" ng-click="tcc.removeAnimal(a)"><i class="fa fa-close"></i></button><h2 class="panel-title" ng-bind="tcc.fullName(a) || 'New animal'"></h2></div>
-                <div class="panel-body">
+                <div class="panel-heading">
+                    <div class="pull-right">
+                        <div class="btn-group btn-group-xs" role="group" aria-label="Animal options">
+                            <button class="btn btn-default" ng-click="tcc.moveAnimalUp($index)"><i class="fa fa-arrow-up"></i></button>
+                            <button class="btn btn-default" ng-click="tcc.moveAnimalDown($index)"><i class="fa fa-arrow-down"></i></button>
+                            <button ng-if="!tcc.animalUiStatus[$index].minimized" class="btn btn-default" ng-click="tcc.animalUiStatus[$index].minimized = true" ><i class="fa fa-window-minimize"></i></button>
+                            <button ng-if="tcc.animalUiStatus[$index].minimized" class="btn btn-default" ng-click="tcc.animalUiStatus[$index].minimized = false" ><i class="fa fa-window-maximize"></i></button>
+                        </div>
+                        <button class="btn btn-danger btn-xs" ng-click="tcc.removeAnimal(a)"><i class="fa fa-close"></i></button>
+                    </div>
+                    <h2 class="panel-title" ng-bind="tcc.fullName(a) || 'New animal'"></h2>
+                </div>
+                <div class="panel-body" ng-show="!tcc.animalUiStatus[$index].minimized">
                     <form>
                         <div class="form-group">
                             <label>Common Name</label>
@@ -90,7 +120,7 @@
                         </div>
                     </form>
                 </div>
-                <table class="table">
+                <table class="table" ng-show="!tcc.animalUiStatus[$index].minimized">
                     <thead>
                     <tr>
                         <th>Image</th>
@@ -127,13 +157,25 @@
     function TemplateConfigController($http, Upload) {
       var self = this;
       self.model = viewParams;
+      self.categoryUiStatus = [];
+      self.animalUiStatus = [];
+
+      for (var i = 0; i < self.model.categories.length; ++i) {
+        self.categoryUiStatus.push({minimized: true});
+      }
+
+      for (i = 0; i < self.model.animals.length; ++i) {
+        self.animalUiStatus.push({minimized: true});
+      }
 
       self.addCategory = function() {
         self.model.categories.push({name: '', entries: []});
+        self.categoryUiStatus.push({minimized: false});
       };
 
       self.removeCategory = function(index) {
         self.model.categories.splice(index, 1);
+        self.categoryUiStatus.splice(index, 1);
       };
 
       self.addEntry = function(c) {
@@ -146,10 +188,12 @@
 
       self.addAnimal = function() {
         self.model.animals.push({vernacularName: '', scientificName: '', description: '', categories: {}, images: []});
+        self.animalUiStatus.push({minimized: false});
       };
 
       self.removeAnimal = function($index) {
         self.model.animals.splice($index, 1);
+        self.animalUiStatus.splice(index, 1);
       };
 
       self.addBlankImage = function(a) {
@@ -191,6 +235,23 @@
         });
       };
 
+      self.moveCategoryUp = function(index) {
+        self.moveUp(self.model.categories, index);
+        self.moveUp(self.categoryUiStatus, index);
+      };
+      self.moveCategoryDown = function(index) {
+        self.moveDown(self.model.categories, index);
+        self.moveDown(self.categoryUiStatus, index);
+      };
+      self.moveAnimalUp = function(index) {
+        self.moveUp(self.model.animals, index);
+        self.moveUp(self.animalUiStatus, index);
+      };
+      self.moveAnimalDown = function(index) {
+        self.moveDown(self.model.animals, index);
+        self.moveDown(self.animalUiStatus, index);
+      };
+
       self.moveUp = function(a, $index) {
         if ($index <= 0) {
           return;
@@ -207,6 +268,29 @@
         var a1 = a[$index];
         a[$index] = a[$index + 1];
         a[$index + 1] = a1;
+      };
+
+      self.sortAnimals = function() {
+        self.minimizeAll(self.model.animals);
+        self.model.animals.sort(function(a,b) {
+          var nameA = self.fullName(a).toUpperCase();
+          var nameB = self.fullName(b).toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        });
+      };
+
+      self.minimizeAll = function(array) {
+        for (var i = 0; i < array.length; ++i) {
+          array[i].minimized = true;
+        }
       };
 
       var imageUrlTemplate = "<cl:sizedImageUrl prefix="wildlifespotter" name="{{name}}" width="{{width}}" height="{{height}}" format="{{format}}" template="true"/>";

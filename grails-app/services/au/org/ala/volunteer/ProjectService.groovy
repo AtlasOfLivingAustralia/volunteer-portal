@@ -371,13 +371,21 @@ class ProjectService {
         return makeSummaryListFromProjectList(projectList, params, filter)
     }
 
-    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order) {
+    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null) {
         def projectList
 
         if (userService.isAdmin()) {
-            projectList = Project.list()
+            if (projectType) {
+                projectList = Project.findAllByProjectType(projectType)
+            } else {
+                projectList = Project.list()
+            }
         } else {
-            projectList = Project.findAllByInactiveOrInactive(false, null)
+            if (projectType) {
+                projectList = Project.findAllByInactiveOrInactiveAndProjectType(false, null, projectType)
+            } else {
+                projectList = Project.findAllByInactiveOrInactive(false, null)
+            }
         }
 
         def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
@@ -512,8 +520,7 @@ class ProjectService {
         return result ? [start: result[0][1], end: result[0][0]] : null
     }
 
-    def countTasksForTag(String s) {
-        def pt = ProjectType.findByName(s)
+    def countTasksForTag(ProjectType pt) {
 
         Task.createCriteria().count {
             project {
@@ -522,9 +529,7 @@ class ProjectService {
         }
     }
 
-    def countTranscribedTasksForTag(String s) {
-        def pt = ProjectType.findByName(s)
-
+    def countTranscribedTasksForTag(ProjectType pt) {
         Task.createCriteria().count {
             project {
                 eq('projectType', pt)
@@ -533,8 +538,17 @@ class ProjectService {
         }
     }
 
-    def getTranscriberCountForTag(String s) {
-        def pt = ProjectType.findByName(s)
-        Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.projectType = :projectType", [projectType: pt]).get(0)
+    def getTranscriberCountForTag(ProjectType pt) {
+        def result = Task.createCriteria().list {
+            project {
+                eq('projectType', pt)
+            }
+            isNotNull('fullyTranscribedBy')
+            projections {
+                countDistinct 'fullyTranscribedBy'
+            }
+        }
+
+        return result[0]
     }
 }

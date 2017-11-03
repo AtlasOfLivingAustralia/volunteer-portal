@@ -135,7 +135,8 @@
                                         </div>
                                         <div id="ct-animals-filter" style="display: none;">
                                         </div>
-                                        <p class="sr-only">Click 'i', or press the 'i' key on your keyboard for more information about each animal</p>
+                                        <p class="sr-only">Click 'i' for more information about each animal</p>
+                                        %{--, or press the 'i' key on your keyboard--}%
                                     </div>
                                 </div>
 
@@ -179,26 +180,6 @@
 
                             <div id="ws-dynamic-container" class="ct-item clearfix"></div>
                         </div>
-                    </div>
-
-                    <div class="text-right" style="margin-top: 20px; margin-bottom: 20px;">
-                        %{--<button type="button" id="btnNext"--}%
-                                %{--class="btn btn-primary btn-lg ${validator ? 'hidden' : ''}">${message(code: 'default.button.next.label', default: 'Next Step')} <i--}%
-                                %{--class="fa fa-chevron-right"></i></button>--}%
-                        <g:if test="${!validator}">
-                            <button type="button" id="btnSave"
-                                    class="btn btn-primary btn-lg bvp-submit-button hidden">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
-                        </g:if>
-                        <g:else>
-                            <button type="button" id="btnValidate"
-                                    class="btn btn-success btn-lg bvp-submit-button ${validator ? '' : 'hidden'}"><i
-                                    class="glyphicon glyphicon-ok glyphicon glyphicon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
-                            </button>
-                            <button type="button" id="btnDontValidate"
-                                    class="btn btn-danger btn-lg bvp-submit-button ${validator ? '' : 'hidden'}"><i
-                                    class="glyphicon glyphicon-remove glyphicon glyphicon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
-                            </button>
-                        </g:else>
                     </div>
                 </div>
             </div>
