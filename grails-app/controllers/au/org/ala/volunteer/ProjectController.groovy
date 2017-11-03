@@ -628,6 +628,9 @@ class ProjectController {
     def uploadFeaturedImage() {
         def projectInstance = Project.get(params.id)
 
+        projectInstance.featuredImageCopyright = params.featuredImageCopyright
+        projectInstance.save(flush: true)
+
         if(request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
             
@@ -654,13 +657,16 @@ class ProjectController {
             }
         }
 
-        projectInstance.featuredImageCopyright = params.featuredImageCopyright
         flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.id)
     }
 
     def uploadBackgroundImage() {
         def projectInstance = Project.get(params.id)
+
+        projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
+        projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
+        projectInstance.save(flush: true)
 
         if(request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('backgroundImage')
@@ -692,8 +698,6 @@ class ProjectController {
             }
         }
 
-        projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
-        projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
         flash.message = "Background image settings updated."
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
+<asset:javascript src="tinymce-simple.js" asset-defer="" />
 <asset:script>
     $(function(){
         tinymce.baseURL = BVP_JS_URLS.contextPath + 'assets/tinymce/4.3.13/';

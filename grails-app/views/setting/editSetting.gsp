@@ -12,7 +12,7 @@
 <cl:headerContent title="Change setting value - ${settingDefinition.key}" crumbLabel="Edit Setting" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
                 [link: createLink(controller: 'setting', action: 'index'), label: 'Advanced Settings']
         ]
     %>

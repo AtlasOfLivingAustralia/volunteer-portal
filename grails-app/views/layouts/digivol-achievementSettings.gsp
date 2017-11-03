@@ -15,7 +15,7 @@
 <cl:headerContent title="${achievementDescriptionInstance?.i18nName}" hideTitle="true" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
                 [link: createLink(controller: 'achievementDescription', action: 'index'), label: 'Manage Achievements']
         ]
     %>

@@ -13,7 +13,7 @@
     <cl:headerContent title="${message(code: 'default.create.label', args: [entityName])}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
                     [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
             ]
         %>

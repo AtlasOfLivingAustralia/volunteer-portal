@@ -54,7 +54,7 @@
 <cl:headerContent title="${message(code: "default.progress.label", default: "Task Loading Progress")}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')]
         ]
     %>
 </cl:headerContent>

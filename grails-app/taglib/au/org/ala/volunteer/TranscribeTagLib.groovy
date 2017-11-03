@@ -199,7 +199,7 @@ class TranscribeTagLib {
         def cssClass = name
 
         if (field.mandatory) {
-            cssClass = cssClass + " validate[required]"
+            cssClass = cssClass + "  "
         }
 
         if (auxClass) {
