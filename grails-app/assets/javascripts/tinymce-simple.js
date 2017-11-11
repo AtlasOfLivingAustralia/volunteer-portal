@@ -1,7 +1,7 @@
 //= encoding UTF-8
 //= require tinymce
 //= require_self
-tinymce.baseURL = BVP_JS_URLS.contextPath + 'assets/tinymce/4.6.5/';
+tinymce.baseURL = BVP_JS_URLS.contextPath + 'assets/tinymce/4.6.5';
 tinymce.init({
   selector: 'textarea.mce',
   convert_urls: false,
