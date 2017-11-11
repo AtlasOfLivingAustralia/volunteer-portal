@@ -46,7 +46,7 @@
 
                             <div>
                                 <p style="margin-top:10px"
-                                   class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
+                                   class="text-center">${message(code: 'wildlifespotter.sequence.label', default: 'Only classify the image highlighted with a black border. Images on either side are used to help you classify this image.')}</p>
                             </div>
                         </div>
                     </div>

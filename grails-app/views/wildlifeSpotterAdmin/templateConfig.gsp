@@ -187,7 +187,7 @@
     var templateId = ${templateInstance.id};
     var viewParams = <cl:json value="${viewParams2}"/>;
     var wstc = angular.module('wildlifespottertemplateconfig', ['ngAnimate', 'ngFileUpload']);
-    function TemplateConfigController($document, $http, $log, $timeout, $window, Upload) {
+    function TemplateConfigController($http, $log, $timeout, $window, Upload) {
       var self = this;
       self.model = viewParams;
 
@@ -238,8 +238,15 @@
       };
 
       self.addBlankImage = function(a) {
+        ensureImagesArray(a);
         a.images.push({hash: ''});
       };
+
+      function ensureImagesArray(a) {
+        if (angular.isUndefined(a.images) || a.images === null) {
+          a.images = [];
+        }
+      }
 
       self.removeImage = function(a, $index) {
         a.images.splice($index, 1);
@@ -250,10 +257,11 @@
           var file = $files[i];
           var hashable;
           if (category) {
-            hashable = {name: $files[i].name, hash: ''}
+            hashable = {name: $files[i].name, hash: ''};
             category.entries.push(hashable);
           } else {
             hashable = {hash: ''};
+            ensureImagesArray(hashable);
             animal.images.push(hashable);
           }
 
@@ -285,14 +293,14 @@
           url: "<g:createLink controller="wildlifeSpotterAdmin" action="uploadImage" />",
           data: data
         }).then(function (resp) {
-          console.log('Success ' + name + ' uploaded. Response: ' + JSON.stringify(resp.data));
+          $log.debug('Success ' + name + ' uploaded. Response: ' + JSON.stringify(resp.data));
           hashable.hash = resp.data.hash;
         }, function (resp) {
           bootbox.alert("Image upload failed");
-          console.log('Error status: ' + resp.status);
+          $log.error('Error status: ' + resp.status);
         }, function (evt) {
           var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-          console.log('progress: ' + progressPercentage + '% ' + name);
+          $log.info('progress: ' + progressPercentage + '% ' + name);
         });
       }
 
@@ -486,6 +494,7 @@
             }).object().value();
 
             if (animal.images) animal.images = animal.images.split(',').map(function (s,i,l) { return {hash: s.trim()}; });
+            else animal.images = [];
 
 
             var categories = _.chain(row).filter(function(v2,i2) {
@@ -556,7 +565,7 @@
           var cats = self.model.categories.map(function(v2,i2,l2) {
             return v.categories[v2.name];
           });
-          var images = v.images.map(function(v2,i2,l2) { return v2.hash}).join(',');
+          var images = (v.images || []).map(function(v2,i2,l2) { return v2.hash}).join(',');
           return start.concat(cats,[images]);
         });
         var data = CSV.serialize([fields].concat(records));
