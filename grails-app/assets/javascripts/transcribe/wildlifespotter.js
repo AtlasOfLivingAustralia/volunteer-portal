@@ -53,8 +53,11 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       var usKeys = _.chain(selectedIndicies).keys().filter(function(idx) { return selectedIndicies[idx].count > 0; });
       var dataItemIndexes = usKeys.map(function(v,i,l) { return "[data-item-index='"+v+"']"});
       var wsSelectionIndicator = dataItemIndexes.map(function(v,i,l) { return v + " .ws-selected"; });
+      var wsSelectorIndicator = dataItemIndexes.map(function(v,i,l) { return v + " .ws-selector"; });
       $(wsSelectionIndicator.value().join(", ")).addClass('selected');
-      $('[data-item-index]:not('+ dataItemIndexes.value().join(',') + ') .ws-selected').removeClass('selected');
+      $(wsSelectorIndicator.value().join(", ")).attr('aria-selected', 'true');
+      $('[data-item-index]:not('+ dataItemIndexes.value().join(',') + ') .ws-selected').removeClass('selected').attr('aria-selected', 'false');
+      $('[data-item-index]:not('+ dataItemIndexes.value().join(',') + ') .ws-selector').attr('aria-selected', 'false');
       var length = usKeys.value().length;
       if (length == 0) {
         hideSelectionPanel();
@@ -62,11 +65,6 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
         showSelectionPanel();
       }
       generateFormFields();
-      // for (index in selectedIndicies) {
-      //   if (selectedIndicies[index]) {
-      //     $('[data-item-index="'+index+'"] .ws-selection-indicator').addClass('selected');
-      //   }
-      // }
     }
 
     function hideSelectionPanel() {
@@ -88,7 +86,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
             options: _([1,2,3,4,5,6,7,8,9,10]).map(function(opt,i) {
               return {
                 val: opt,
-                selected: selectedIndicies[v].count == opt ? 'selected' : ''
+                selected: selectedIndicies[v].count == opt ? 'selected' : '',
+                isSelected: selectedIndicies[v].count == opt ? 'true' : 'false'
               };
             }),
             comment: selectedIndicies[v].comment
@@ -262,7 +261,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       showDetail(idx);
     });
 
-    $('#ct-container').on('click', '.ct-full-image-carousel-close', function(e) {
+    $('#ct-container').on('click', '.ws-full-image-carousel-close', function(e) {
       e.stopPropagation();
       var $this = $(this);
       hideDetail();
@@ -325,7 +324,15 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
 
     function syncRecordValues() {
       var animals = wsParams.animals;
-      _.chain(recordValues).each(function(v,k,l) {
+      _.chain(recordValues).keys().sort().each(function(e, i, l) {
+
+        var key = parseInt(e);
+        if (isNaN(key)) {
+          return;
+        }
+
+        var v = recordValues[e];
+
         var index = _.findIndex(animals, function(a) {
           return a.vernacularName === v.vernacularName || a.scientificName === v.scientificName;
         });
@@ -409,8 +416,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
 
     // force intial sync of saved values
     syncRecordValues();
-    syncSelectionState();
-    // syncUnlistedTray();
+    syncSelections();
 
     // enable tooltips
     $('[title]').tooltip();

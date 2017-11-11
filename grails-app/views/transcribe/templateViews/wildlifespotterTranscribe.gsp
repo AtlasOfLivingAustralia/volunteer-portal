@@ -153,31 +153,6 @@
 
                             </div>
 
-                            <div id="ct-animals-summary" class="ct-item ${validator ? 'active' : ''}">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <p><strong>Animals visible:</strong> <span id="ct-animals-question-summary">${step1}</span>.
-                                        <p><strong>Selected animals</strong></p>
-                                    </div>
-
-                                    <div class="col-sm-12">
-                                        <div class="itemgrid ct-selection-grid"></div>
-                                    </div>
-
-                                    <div class="col-sm-12">
-                                        <div class="ct-unknown-selections-unknown">
-                                            <span></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-12">
-                                        <div class="ct-unknown-selections">
-                                            <label style="font-weight: bold; display: inline-block;">${message(code: 'cameratrap.transcribe.unlisted.label', default: 'Others:')}</label> <span></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div id="ws-dynamic-container" class="ct-item clearfix"></div>
                         </div>
                     </div>
@@ -213,30 +188,6 @@
             </ul>
         </script>
 
-        <script id="selected-item-template" type="text/x-mustache-template">
-        <div class="griditem bvpBadge">
-            <div class="thumbnail ct-thumbnail {{selected}}" data-image-select-key="{{key}}" data-image-select-value="{{value}}">
-                <span class="ct-badge ct-badge-sure"><i class="fa fa-check-circle"></i></span>
-                <span class="ct-badge ct-badge-uncertain"><i class="fa fa-question-circle"></i></span>
-                <img src="{{squareThumbUrl}}" alt="{{value}}">
-                <div class="ct-caption-table">
-                    <div class="ct-caption-cell">
-                        <div class="ct-caption dotdotdot" title="{{value}}">{{value}}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </script>
-
-        <script id="new-unlisted-template" type="text/x-mustache-template">
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="recordValues.{{index}}.unlisted">Species name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="speciesName form-control autocomplete" data-picklist-id="${template.viewParams.animalsPicklistId}" id="recordValues.{{index}}.unlisted" name="recordValues.{{index}}.unlisted" placeholder="{{placeholder}}" />
-                </div>
-            </div>
-        </script>
-
         <script id="input-template" type="text/x-mustache-template">
             <input id="{{id}}" name="{{id}}" type="hidden" value="{{value}}" />
         </script>
@@ -244,8 +195,8 @@
         <script id="detail-template" type="text/x-mustache-template">
             <div class="detail-animal" >
                 <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" data-item-index="{{itemIndex}}">
-                    <span class="ct-badge ct-badge-large ct-badge-sure ws-selector ws-selected {{animal.selected}}" data-container="body" title="${g.message(code: 'wildlifespotter.widget.badge.title', default: 'There is a {0} in the image', args: ['{{animal.vernacularName}}'])}"><i class="fa fa-check-circle"></i></span>
-                    <span class="ct-full-image-carousel-close">&times;</span>
+                    <span class="ws-selector ws-selected ws-selected-large {{animal.selected}}" data-container="body" aria-selected="{{animal.isSelected}}" title="${g.message(code: 'wildlifespotter.widget.badge.title', args: ['{{animal.vernacularName}}'])}"><i class="fa fa-check"></i></span>
+                    <span class="ws-full-image-carousel-close">&times;</span>
                     <ol class="carousel-indicators">
                         {{#animal.images}}
                         <li class="{{active}}" data-target="#ct-full-image-carousel" data-slide-to="{{idx}}"></li>
