@@ -4,9 +4,15 @@
 //  assume bootbox
 //= require dotdotdot
 //= require transitionend
+//= require mustache
+//= require image-viewer
 //= require_self
-function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
+
+
+function cameratrap(smImageInfos, smItems, recordValues, placeholders, language, namespace) {
   jQuery(function ($) {
+    setupPanZoom();
+
     var values = _.pluck([].concat(_.values(smItems)), 'value');
 
     var itemValueMap = smItems;
@@ -133,8 +139,20 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
       var selectionCertainty = (selections.hasOwnProperty(value) && selections[value].certainty) || 0;
       var selected = selectionCertainty == 1 ? 'ct-selected ct-certain-selected' : selectionCertainty == 0.5 ? 'ct-selected ct-uncertain-selected' : '';
-      var similarSpecies = itemValueMap[value].similarSpecies.join(', ');
-      var templateObj = {value: value, key: key, selected: selected, similarSpecies: similarSpecies};
+
+      var similarSpecies = [];var templateObj; var convValue;
+      if(namespace == "ct") {
+        similarSpecies = itemValueMap[value].similarSpecies.join(', ');
+        templateObj = {value: value, key: key, selected: selected, similarSpecies: similarSpecies};
+        convValue = value;
+      }else if(namespace == "dct") {
+          var mapKey = $(e.target).closest('[data-image-select-value]').attr('data-image-key');
+          itemValueMap[mapKey].similarSpecies.forEach(function(item) {
+            similarSpecies.push(item[language]);
+          });
+          convValue = itemValueMap[mapKey].name[language]
+      }
+      var templateObj = {value: convValue, key: key, selected: selected, similarSpecies: similarSpecies};
 
       var urls = _.map(_.filter(_.zip(keys, _.map(keys, function(key, i) { return firstInfoWithKey(key); })), function(keyAndInfo, i) {
         if (keyAndInfo[1] == null && window.console) console.warn('Missing info ' + keyAndInfo[0]);

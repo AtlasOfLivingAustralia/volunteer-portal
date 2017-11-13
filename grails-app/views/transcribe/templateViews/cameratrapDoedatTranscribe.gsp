@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory;au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField; org.springframework.context.i18n.LocaleContextHolder" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
@@ -122,13 +122,13 @@
                                                     <input type="radio" name="options" id="ct-btn-all" class="btn-animal-filter" autocomplete="off" data-filter-tag="" checked><g:message code="transcribe.templateViews.cameratrapTranscribe.all"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-sm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="small mammals (<500g)"><g:message code="transcribe.templateViews.cameratrapTranscribe.small_mammals"/>
+                                                    <input type="radio" name="options" id="ct-sm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="small_mammals"><g:message code="transcribe.templateViews.cameratrapTranscribe.small_mammals"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-mm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="medium mammals (0.5-5kg)"><g:message code="transcribe.templateViews.cameratrapTranscribe.medium_mammals"/>
+                                                    <input type="radio" name="options" id="ct-mm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="medium_mammals"><g:message code="transcribe.templateViews.cameratrapTranscribe.medium_mammals"/>
                                                 </label>
                                                 <label class="btn btn-default">
-                                                    <input type="radio" name="options" id="ct-lm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="large mammals (>5kg)"><g:message code="transcribe.templateViews.cameratrapTranscribe.large_mammals"/>
+                                                    <input type="radio" name="options" id="ct-lm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="large_mammals"><g:message code="transcribe.templateViews.cameratrapTranscribe.large_mammals"/>
                                                 </label>
                                                 <label class="btn btn-default">
                                                     <input type="radio" name="options" id="ct-reptiles-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="reptiles"><g:message code="transcribe.templateViews.cameratrapTranscribe.reptiles"/>
@@ -171,8 +171,8 @@
                                     <div class="col-sm-12 ct-sub-item-container">
                                         <div class="ct-sub-item active sortable text-center" id="ct-animals-list">
                                             <g:set var="animalInfos"
-                                                   value="${ct.cameraTrapImageInfos(picklist: Picklist.get(template.viewParams.animalsPicklistId?.toLong()), project: taskInstance?.project)}"/>
-                                            <g:render template="/transcribe/cameratrapWidget"
+                                                   value="${dct.cameraTrapImageInfos(picklist: Picklist.get(template.viewParams.animalsPicklistId?.toLong()), project: taskInstance?.project)}"/>
+                                            <g:render template="/transcribe/multiLanguageCameratrapWidget"
                                                       model="${[imageInfos: animalInfos, picklistId: template.viewParams.animalsPicklistId?.toLong()]}"/>
                                         </div>
 
@@ -365,7 +365,7 @@
             var items = <cl:json value="${animalInfos.items}"/>;
             var recordValues = <cl:json value="${recordValues}"/>;
             var placeholders = <cl:json value="${placeholders}"/>;
-            cameratrap(imageInfos, items, recordValues, placeholders, null, "ct");
+            cameratrap(imageInfos, items, recordValues, placeholders, "${LocaleContextHolder.getLocale().getLanguage()}","dct");
         </asset:script>
     </content>
 </g:applyLayout>

@@ -115,7 +115,7 @@ class FullTextIndexService {
                 fields              : [],
                 project             : [
                         projectType            : task.project.projectType.toString(),
-                        institution            : task.project.institution ? task.project?.institution?.i18nName : task.project.featuredOwner,
+                        institution            : task.project.institution ? task.project?.institution?.i18nName.toString() : task.project.featuredOwner,
                         institutionCollectoryId: task.project.institution?.collectoryUid,
                         harvestableByAla       : task.project.harvestableByAla,
                         name                   : task.project.i18nName.toString(),

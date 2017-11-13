@@ -746,8 +746,10 @@ class TaskController {
                 fieldDefinition.recordIndex = recordIndex
                 fieldDefinition.fieldDefinitionType = fieldType
                 fieldDefinition.format = format
+                fieldDefinition.save(flush: true)
             } else {
                 profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex))
+                profile.save(flush: true)
             }
 
         }
@@ -761,6 +763,7 @@ class TaskController {
         String newFieldType = params.newFieldType
         if (projectInstance && fieldDefinition && newFieldType) {
             fieldDefinition.fieldDefinitionType = newFieldType
+            fieldDefinition.save(flush: true)
         }
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
