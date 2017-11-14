@@ -65,6 +65,12 @@ class VolunteerTagLib {
      */
     def ifValidator = {attrs, body ->
         Project p = attrs.project as Project
+        if(p == null) {
+            Task t = attrs.task as Task
+            if(t!=null) {
+                p = t.project
+            }
+        }
         if (userService.isValidator(p)) {
             out << body()
         }
