@@ -558,3 +558,7 @@ ul.filterInfo li span {
 .classificationComments {
     font-size: 0.9em;
 }
+
+.faux-img-cell, .faux-empty-cell {
+    width: 14.285714285%;
+}

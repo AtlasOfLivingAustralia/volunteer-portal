@@ -189,7 +189,7 @@
     var wstc = angular.module('wildlifespottertemplateconfig', ['ngAnimate', 'ngFileUpload']);
     function TemplateConfigController($http, $log, $timeout, $window, Upload) {
       var self = this;
-      self.model = viewParams;
+      self.model = _.defaults(viewParams, { animals: [], categories:[]});
 
       function initCategoryUiStatus() {
         self.categoryUiStatus = [];
@@ -504,13 +504,17 @@
               var field = v2[0];
               var origValue = v2[1];
               var value = findCatEntry(field, origValue);
-              if (origValue && !value) bootbox.alert("Can't find a matching value for row " + (i+2) + ", category " + field + ", value of " + origValue );
+              if (origValue && !value) bootbox.alert("Can't find a matching value for row " + (i+2) + ", vernacular name " + animal.vernacularName + ", category " + field + ", value of " + origValue );
               return [ field, value ];
             }).object().value();
 
             animal.categories = _.defaults(categories, defaultCats);
 
-            _.defaults(animal, animalDefaults);
+            animal = _.defaults(animal, animalDefaults);
+            if (animal.vernacularName == null) animal.vernacularName = '';
+            if (animal.scientificName == null) animal.scientificName = '';
+            if (animal.description == null) animal.description = '';
+
             return animal;
           });
 
@@ -588,7 +592,28 @@
         }, 60 * 1000, false);
       }
 
+      function filterModel() {
+        var results = _.chain(self.model.animals).zip(self.animalUiStatus).filter(function(e,i,l) {
+          var animal = e[0];
+          var result = animal.scientificName || animal.vernacularName || animal.description || (animal.images && animal.images.length && animal.images.some(function(v) { return !!v.hash}));
+          return result;
+        }).unzip().value();
+        self.model.animals = results[0];
+        self.animalUiStatus = results[1];
+
+        results = _.chain(self.model.categories).zip(self.categoryUiStatus).filter(function(e,i,l) {
+          var cat = e[0];
+          var result = cat.name || (cat.entries && cat.entries.length && cat.entries.every(function(entry) {
+            return !!entry.name || !!entry.hash;
+          }));
+          return result;
+        }).unzip().value();
+        self.model.categories = results[0];
+        self.categoryUiStatus = results[1];
+      }
+
       self.save = function() {
+        filterModel();
         var p = $http.post("<g:createLink controller="wildlifeSpotterAdmin" action="saveTemplateConfig" id="${id}"/>", self.model);
         p.then(function(response) {
           bootbox.alert("Saved!");

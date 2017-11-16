@@ -69,6 +69,7 @@ class FileUploadService {
             def filename = renameFile(file, hashStream.hash())
             def result = new File(directory, filename)
             f.renameTo(result)
+            log.info("Uploaded ${file.originalFilename} to $f and renamed to $result")
             return result
         } finally {
             // remove temp UUID file.

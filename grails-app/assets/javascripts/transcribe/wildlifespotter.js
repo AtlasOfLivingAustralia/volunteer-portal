@@ -221,12 +221,13 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
 
       var animals = wsParams.animals;
       var animal = animals[index];
+      var description = animal.description != null ? marked(animal.description) : "";
       var templateObj = {
         animal: {
           selected: selectedIndicies.hasOwnProperty(index) && selectedIndicies[index].count > 0 ? 'selected' : '',
           vernacularName: animal.vernacularName,
           scientificName: animal.scientificName,
-          description: marked(animal.description),
+          description: description,
           images: _.map(animal.images, function(v, i, l) {
             return {
               idx: i,

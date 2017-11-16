@@ -4,6 +4,7 @@ import grails.converters.JSON
 
 import javax.imageio.ImageIO
 
+import static au.org.ala.volunteer.ImageUtils.contentType
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
@@ -19,6 +20,9 @@ class ImageController {
 
         log.debug("Image request for $prefix, $name at ${width}x${height} in $format")
 
+        def encodedPrefix = IOUtils.toFileSystemDirectorySafeName(prefix)
+        def encodedName = IOUtils.toFileSystemSafeName(name)
+
         format = format.toLowerCase()
         if (!FORMATS.contains(format)) {
             render([error: "${format} not supported"] as JSON, status: SC_BAD_REQUEST)
@@ -31,14 +35,14 @@ class ImageController {
         }
 
         def imagesHome = grailsApplication.config.getProperty('images.home')
-        File result = new File("$imagesHome${File.separator}$prefix", "${name}_${width}_${height}.${format}")
+        File result = new File("$imagesHome${File.separator}$encodedPrefix", "${encodedName}_${width}_${height}.${format}")
 
         if (result.exists()) {
             sendImage(result, contentType(format))
             return
         }
 
-        File original = findImage(prefix, name)
+        File original = findImage(encodedPrefix, encodedName)
         if (!original) {
             response.sendError(SC_NOT_FOUND)
             return
@@ -91,16 +95,13 @@ class ImageController {
     }
 
     static final TYPES = [
-            '.jpg','jpeg',
+            '.jpg','.jpeg', '.png', '.gif', '.bmp', '.webp',
+            '.tiff', '.tif',
+            '.svg',
             '.jp2', '.j2k', '.jpf', '.jpx', '.jpm', '.mj2',
             '.jxr', '.hdp', '.wdp',
-            '.png','.apng',
-            '.gif',
-            '.bmp',
-            '.webp',
-            '.tiff', '.tif',
+            '.apng',
             '.mng',
-            '.svg',
             '.xbm',
             '.ico'
     ]
@@ -108,19 +109,13 @@ class ImageController {
     private File findImage(String prefix, String name) {
         def imagesHome = grailsApplication.config.getProperty('images.home')
         File home = new File(imagesHome, prefix)
-        def ext = TYPES.find { ext ->
-            new File(home, name + ext).exists()
+        for (def ext : TYPES) {
+            def f = new File(home, name + ext)
+            if (f.exists()) {
+                return f
+            }
         }
-        ext ? new File(home, name + ext) : null
+        return null
     }
 
-    // TODO move to utils
-    private String contentType(String format) {
-        switch(format) {
-            case 'jpg': return 'image/jpeg'
-            case 'png': return 'image/png'
-            case 'gif': return 'image/gif'
-        }
-        return 'application/octet-stream'
-    }
 }

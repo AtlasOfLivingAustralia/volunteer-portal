@@ -7,7 +7,9 @@ import org.apache.commons.io.FilenameUtils
 import org.springframework.web.multipart.MultipartFile
 
 import javax.imageio.ImageIO
+import javax.servlet.http.HttpServletResponse
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 
 class WildlifeSpotterAdminController {
@@ -71,22 +73,17 @@ class WildlifeSpotterAdminController {
     }
 
     def uploadImage() {
-        MultipartFile animal = request.getFile('animal')
-        if (animal) {
-            def file = fileUploadService.uploadImage('wildlifespotter', animal) { MultipartFile f, HashCode h ->
+        MultipartFile upload = request.getFile('animal') ?: request.getFile('entry')
+
+        if (upload) {
+            def file = fileUploadService.uploadImage('wildlifespotter', upload) { MultipartFile f, HashCode h ->
                 h.toString() + "." + fileUploadService.extension(f)
             }
             def hash = FilenameUtils.getBaseName(file.name)
             def ext = FilenameUtils.getExtension(file.name)
             render([ hash: hash, format: ext ] as JSON)
         } else {
-            MultipartFile entry = request.getFile('entry')
-            def file = fileUploadService.uploadImage('wildlifespotter', entry) { MultipartFile f, HashCode h ->
-                h.toString() + "." + fileUploadService.extension(f)
-            }
-            def hash = FilenameUtils.getBaseName(file.name)
-            def ext = FilenameUtils.getExtension(file.name)
-            render([ hash: hash, format: ext ] as JSON)
+            render([ error: "One of animal or entry must be provided" ] as JSON, status: SC_BAD_REQUEST)
         }
 
     }

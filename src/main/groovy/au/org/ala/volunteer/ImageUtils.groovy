@@ -136,4 +136,13 @@ public class ImageUtils {
         }
     }
 
+    static String contentType(String format) {
+        switch(format) {
+            case 'jpg': return 'image/jpeg'
+            case 'png': return 'image/png'
+            case 'gif': return 'image/gif'
+        }
+        return 'application/octet-stream'
+    }
+
 }
