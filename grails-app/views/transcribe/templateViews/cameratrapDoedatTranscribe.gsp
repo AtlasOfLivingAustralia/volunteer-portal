@@ -303,7 +303,7 @@
                 <img src="{{squareThumbUrl}}" alt="{{value}}">
                 <div class="ct-caption-table">
                     <div class="ct-caption-cell">
-                        <div class="ct-caption dotdotdot" title="{{value}}">{{value}}</div>
+                        <div class="ct-caption" title="{{value}}">{{value}}</div>
                     </div>
                 </div>
             </div>

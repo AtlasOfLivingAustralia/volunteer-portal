@@ -118,13 +118,13 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
         // only handle the ct-item transition
         if ($(e.target).hasClass('ct-item')) {
           $(e.target).removeClass('fading');
-          $('.ct-item.active .ct-caption').dotdotdot();
+          $('.dotdotdot').dotdotdot();
         }
       });
       $ctq.on(transitionendname, '.ct-sub-item', function(e) {
         if ($(e.target).hasClass('ct-sub-item')) {
           $(e.target).removeClass('fading');
-          $('.ct-sub-item.active .ct-caption').dotdotdot();
+          $('.dotdotdot').dotdotdot();
         }
       });
     }
@@ -235,7 +235,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
         selected: selected
       };
       mu.appendTemplate(selElem, 'selected-item-template', opts);
-      $('.ct-caption').dotdotdot();
+      $('.dotdotdot').dotdotdot();
     }
 
     function syncSelectionState() {
