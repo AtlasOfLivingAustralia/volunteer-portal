@@ -11,7 +11,7 @@
 <html>
 <head>
     <meta name="layout" content="digivol-transcribe"/>
-
+    <meta name="google" value="notranslate">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:layoutTitle
             default="${cl.pageTitle(title: "${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.i18nName}")}"/></title>

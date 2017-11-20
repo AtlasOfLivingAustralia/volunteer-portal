@@ -2,7 +2,7 @@
 
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-
+    <meta name="google" value="notranslate">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="Edit Project"/></title>
     <asset:stylesheet src="bootstrap-switch"/>

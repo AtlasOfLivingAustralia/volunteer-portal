@@ -7,6 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-main"/>
     <meta name="section" content="home"/>
+    <meta name="google" value="notranslate">
     <title><cl:pageTitle title="Home"/></title>
     <content tag="disableBreadcrumbs">true</content>
     <content tag="selectedNavItem">bvp</content>

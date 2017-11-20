@@ -2,6 +2,7 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="google" value="notranslate">
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>

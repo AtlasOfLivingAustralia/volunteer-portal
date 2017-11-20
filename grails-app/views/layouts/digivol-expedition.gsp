@@ -9,6 +9,7 @@
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
     <cl:addApplicationMetaTags/>
     <meta name="description" content="${message(code: "default.application.name")}"/>
+    <meta name="google" value="notranslate">
     <meta name="author" content="${message(code: "default.application.name")}"/>
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
