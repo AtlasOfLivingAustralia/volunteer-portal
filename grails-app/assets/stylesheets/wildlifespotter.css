@@ -559,6 +559,36 @@ ul.filterInfo li span {
     font-size: 0.9em;
 }
 
-.faux-img-cell, .faux-empty-cell {
+.film-strip {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    background-color: dimgrey;
+    border-radius: 0 0 5px 5px;
+    border-top-style: dotted;
+    border-top-color: white;
+    border-top-width: 5px;
+    border-bottom-style: dotted;
+    border-bottom-color: white;
+    border-bottom-width: 5px;
+}
+.film-cell {
+    border: 5px dimgrey solid;
     width: 14.285714285%;
+}
+
+.film-cell.default.active {
+    border-color: black;
+}
+.film-cell.active {
+    border-color: #df4a21;
+}
+.film-cell.default {
+    border-color: black;
+}
+
+.film-cell img {
+    width: 100%;
+    height: auto;
 }

@@ -20,33 +20,25 @@
                                     <g:imageViewer multimedia="${multimedia}"/>
                                 </g:if>
                             </g:each>
-                            <div id="ct-image-sequence" class="faux-table text-center">
-                                <div>
-                                    <g:each in="${0..<(3 - sequences.previous.size())}">
-                                        <div class="faux-empty-cell">&nbsp;</div>
-                                    </g:each>
-                                    <g:each in="${sequences.previous}" var="p">
-                                        <div class="faux-img-cell" data-seq-no="${p}">
-                                            <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
-                                        </div>
-                                    </g:each>
-                                    <div class="faux-img-cell active default">
-                                        <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
+                            <div id="ct-image-sequence" class="film-strip">
+                                <g:each in="${sequences.previous}" var="p">
+                                    <div class="film-cell" data-seq-no="${p}">
+                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
                                     </div>
-                                    <g:each in="${sequences.next}" var="n">
-                                        <div class="faux-img-cell" data-seq-no="${n}">
-                                            <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${n}"/>
-                                        </div>
-                                    </g:each>
-                                    <g:each in="${0..<(3 - sequences.next.size())}">
-                                        <div class="faux-empty-cell">&nbsp;</div>
-                                    </g:each>
+                                </g:each>
+                                <div class="film-cell active default" data-seq-no="${sequenceNumber}">
+                                    <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
                                 </div>
+                                <g:each in="${sequences.next}" var="n">
+                                    <div class="film-cell" data-seq-no="${n}">
+                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${n}"/>
+                                    </div>
+                                </g:each>
                             </div>
 
                             <div>
                                 <p style="margin-top:10px"
-                                   class="text-center">${message(code: 'wildlifespotter.sequence.label', default: 'Only classify the image highlighted with a black border. Images on either side are used to help you classify this image.')}</p>
+                                   class="text-center">${message(code: 'wildlifespotter.sequenceImages.helpText')}</p>
                             </div>
                         </div>
                     </div>
