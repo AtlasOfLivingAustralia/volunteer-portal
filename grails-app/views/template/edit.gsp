@@ -15,7 +15,7 @@
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [message(code: 'project.template.label')])]
             ]
         %>
         <div>

@@ -33,7 +33,7 @@
 
 <body>
 
-<cl:headerContent title="Task Details - ${taskInstance?.id}">
+<cl:headerContent title="${message(code:"taskDetails.task_details")} - ${taskInstance?.id}">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
@@ -119,7 +119,7 @@
                             <td><g:message code="task.showDetails.validated"/></td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyValidated}">
-                                    ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
+                                    ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} <g:message code="task.showDetails.by"/> ${cl.emailForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>
                                     <span class="muted">

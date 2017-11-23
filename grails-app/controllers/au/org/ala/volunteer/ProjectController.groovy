@@ -581,6 +581,7 @@ class ProjectController {
                 }
             }
             projectInstance.properties = params
+            projectInstance.save(flush: true)
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = message(code: "project.backend.expedition_updated")

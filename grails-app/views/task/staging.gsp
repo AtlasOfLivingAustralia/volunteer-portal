@@ -271,7 +271,7 @@
 
                 $("#btnClearStagingArea").click(function(e) {
                     e.preventDefault();
-                    bootbox.confirm('${message(code: 'task.staging.delete_confirmation')}', function(result) {
+                    bootbox.confirm('${URLEncoder.encode(message(code: 'task.staging.delete_confirmation'),'UTF8')}', function(result) {
                         if (result) {
                             window.location = "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}";
                         }
