@@ -49,7 +49,7 @@
                 <h3><g:message code="index.whatyoudo.specimens.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.specimens.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
             </div>
 
             <div class="col-sm-1 col-xs-4">
@@ -60,7 +60,7 @@
                 <h3><g:message code="index.whatyoudo.fieldjournals.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.fieldjournals.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Field Notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.field_notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
             </div>
 
             <div class="col-sm-1 col-xs-4">
@@ -71,7 +71,7 @@
                 <h3><g:message code="index.whatyoudo.cameratraps.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.cameratraps.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Camera traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.camera_traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
 
             </div>
 

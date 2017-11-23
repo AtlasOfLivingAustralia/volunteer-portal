@@ -4,7 +4,7 @@
                                  id="${projectSummary.project?.id}">${projectSummary.project?.i18nName}</g:link></h4>
 
     <div class="not-a-badge-row ellipsis primary-color">
-        <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + message(code: projectSummary.iconLabel)]"
+        <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + projectSummary.iconLabel]"
                 class="not-a-badge"><span
                 class="glyphicon glyphicon-tag icon-flipped"></span>${message(code: projectSummary.iconLabel)}</g:link>
         <g:link
