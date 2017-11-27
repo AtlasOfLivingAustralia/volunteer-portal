@@ -113,7 +113,7 @@ class ExportService {
                 if (!(fieldIndexMap.containsKey(it) && fieldIndexMap[it])) columnNames << it
             }
             def maxIdx = fieldIndexMap.values().max()
-            for (int i = 0 ; i < maxIdx; ++i) {
+            for (int i = 0 ; i <= maxIdx; ++i) {
                 fieldNames.each {
                     if (fieldIndexMap.containsKey(it) && fieldIndexMap[it] && fieldIndexMap[it] >= i) columnNames << "${it}_$i"
                 }
