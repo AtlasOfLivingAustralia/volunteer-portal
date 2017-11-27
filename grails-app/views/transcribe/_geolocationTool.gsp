@@ -118,12 +118,12 @@
     // Add dragging event listeners.
     google.maps.event.addListener(marker, 'dragstart',
       function () {
-        updateMarkerAddress('${message(code: 'transcribe.geolocationTool.dragging')}');
+        updateMarkerAddress('${URLEncoder.encode(message(code: 'transcribe.geolocationTool.dragging'),"UTF8")}');
       });
 
     google.maps.event.addListener(marker, 'drag',
       function () {
-        updateMarkerStatus('${message(code: 'transcribe.geolocationTool.dragging')}');
+        updateMarkerStatus('${URLEncoder.encode(message(code: 'transcribe.geolocationTool.dragging'),"UTF8")}');
         updateMarkerPosition(marker.getPosition());
       });
 
@@ -191,7 +191,7 @@
         if (responses && responses.length > 0) {
           updateMarkerAddress(responses[0].formatted_address, responses[0]);
         } else {
-          updateMarkerAddress('${message(code: 'transcribe.geolocationTool.cannot_determine_address')}');
+          updateMarkerAddress('${URLEncoder.encode(message(code: 'transcribe.geolocationTool.cannot_determine_address'),"UTF8")}');
         }
       });
   }
@@ -341,7 +341,7 @@
 
       bvp.hideModal();
     } else {
-      alert("${message(code: 'transcribe.geolocationTool.location_data_is_empty')}");
+      alert("${URLEncoder.encode(message(code: 'transcribe.geolocationTool.location_data_is_empty'),"UTF8")}");
     }
   }
 
