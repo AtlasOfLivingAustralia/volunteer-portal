@@ -18,10 +18,10 @@ class Translation implements Serializable {
     String fr_FR;
 
     static constraints = {
-        en_US maxSize: 2000, nullable: true
-        nl_BE maxSize: 2000, nullable: true
-        de_DE maxSize: 2000, nullable: true
-        fr_FR maxSize: 2000, nullable: true
+        en_US nullable: true, type: 'text'
+        nl_BE nullable: true, type: 'text'
+        de_DE nullable: true, type: 'text'
+        fr_FR nullable: true, type: 'text'
     }
 
     String toString() {
