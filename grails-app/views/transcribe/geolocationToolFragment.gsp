@@ -28,7 +28,7 @@
             <select class="form-control" id="infoUncert">
                 <g:set var="coordinateUncertaintyPL"
                        value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
-                <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">
+                <g:each in="${PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(coordinateUncertaintyPL)}" var="item">
                     <g:set var="isSelected"><g:if
                             test="${(item.value == '1000')}">selected='selected'</g:if></g:set>
                     <option ${isSelected} value="${item.value}">${item.key ?: item.value}</option>
