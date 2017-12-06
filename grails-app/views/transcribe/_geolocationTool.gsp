@@ -82,7 +82,7 @@
     var myOptions = {
       zoom: 10,
       center: latLng,
-      scrollwheel: true,
+      gestureHandling: 'greedy',
       scaleControl: true,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
