@@ -566,12 +566,6 @@ ul.filterInfo li span {
     flex-wrap: wrap;
     background-color: dimgrey;
     border-radius: 0 0 5px 5px;
-    border-top-style: dotted;
-    border-top-color: white;
-    border-top-width: 5px;
-    border-bottom-style: dotted;
-    border-bottom-color: white;
-    border-bottom-width: 5px;
 }
 .film-cell {
     border: 5px dimgrey solid;

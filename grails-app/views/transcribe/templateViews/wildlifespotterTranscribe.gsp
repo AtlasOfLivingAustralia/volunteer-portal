@@ -36,9 +36,8 @@
                                 </g:each>
                             </div>
 
-                            <div>
-                                <p style="margin-top:10px"
-                                   class="text-center">${message(code: 'wildlifespotter.sequenceImages.helpText')}</p>
+                            <div style="margin-top:10px" class="text-center">
+                                <markdown:renderHtml><g:message code="wildlifespotter.sequenceImages.helpText" /></markdown:renderHtml>
                             </div>
                         </div>
                     </div>
