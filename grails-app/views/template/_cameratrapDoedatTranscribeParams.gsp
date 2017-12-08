@@ -44,6 +44,15 @@
 </div>
 
 <div class="form-group">
+    <label class="col-md-3 control-label" for="showNImages"><g:message code="template.cameratrap.images_to_display"
+                                                                      default="Number of images to display"/></label>
+
+    <div class="col-md-6">
+        <g:field type="number" name="showNImages" min="1" max="10" data-default="3" class="form-control"/>
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-md-3 control-label" for="animalsPicklistId"><g:message code="template.cameratrap.animals.label"
                                                                     default="All Animals Picklist"/></label>
 

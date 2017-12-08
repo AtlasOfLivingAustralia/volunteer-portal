@@ -11,7 +11,7 @@
     <content tag="templateView">
         <div id="ct-container" >
 
-            <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 1)}"/>
+            <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: (Math.floor(Integer.parseInt(template.viewParams.showNImages)/2)))}"/>
 
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
@@ -43,7 +43,7 @@
                                             <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
                                         </div>
                                     </g:each>
-                                    <div class="faux-img-cell active default">
+                                    <div class="faux-img-cell default">
                                         <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
                                     </div>
                                     <g:each in="${sequences.next}" var="n">

@@ -1,5 +1,7 @@
 /***** DoeDat custom look & feel ******/
-
+.faux-img-cell img {
+    max-width: 100% !important;
+}
 .selectable {
     cursor: pointer;
 }

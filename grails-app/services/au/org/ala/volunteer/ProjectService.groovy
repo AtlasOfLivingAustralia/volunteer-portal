@@ -35,13 +35,13 @@ class ProjectService {
                             try {
                                 multimediaService.deleteMultimedia(image)
                             } catch (IOException ex) {
-                                log.error("Failed to delete multimedia: ", e)
+                                log.error("Failed to delete multimedia: ", ex)
                             }
                         }
                     }
                     t.delete()
                 } catch (Exception ex) {
-                    log.error("Failed to delete task ${t.id}: ", e)
+                    log.error("Failed to delete task ${t.id}: ", ex)
                 }
             }
         }
