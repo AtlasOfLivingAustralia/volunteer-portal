@@ -30,10 +30,10 @@
              data-last-used="${piItem.value.lastUsed}">
             <span class="ct-badge ct-badge-sure" data-container="body"
                   title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: "There is definitely a {0} in the image", args: [piItem.value.name[LocaleContextHolder.getLocale().getLanguage()]])}"><i
-                    class="fa fa-check-circle"></i></span>
+                    class="fa fa-square-o"></i></span>
             <span class="ct-badge ct-badge-uncertain" data-container="body"
                   title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: "There could possibly be a {0} in the image", args: [piItem.value.name[LocaleContextHolder.getLocale().getLanguage()]])}"><i
-                    class="fa fa-check-circle"></i></span>
+                    class="fa fa-square-o"></i></span>
             <g:if test="${piItem.value.similarSpecies}">
                 <span class="ct-info" data-container="body"
                       title="${g.message(code: 'cameratrap.widget.similar.badge.title', default: "The {0} looks very similar to the {1}.  Please consider these other options before submitting your choices.", args: [piItem.value.name[LocaleContextHolder.getLocale().getLanguage()], piItem.value.similarSpecies.collect({species -> species[LocaleContextHolder.getLocale().getLanguage()]}).join(', ')])}"><i

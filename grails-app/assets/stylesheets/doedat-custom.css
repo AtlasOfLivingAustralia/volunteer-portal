@@ -1,4 +1,7 @@
 /***** DoeDat custom look & feel ******/
+.ct-badge, .ct-info {
+    background-color: #111;
+}
 .faux-img-cell img {
     max-width: 100% !important;
 }

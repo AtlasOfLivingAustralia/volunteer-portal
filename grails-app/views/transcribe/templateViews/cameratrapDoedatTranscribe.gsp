@@ -298,8 +298,8 @@
         <script id="selected-item-template" type="x-tmpl-mustache">
         <div class="griditem bvpBadge">
             <div class="thumbnail ct-thumbnail {{selected}}" data-image-select-key="{{key}}" data-image-select-value="{{value}}">
-                <span class="ct-badge ct-badge-sure"><i class="fa fa-check-circle"></i></span>
-                <span class="ct-badge ct-badge-uncertain"><i class="fa fa-question-circle"></i></span>
+                <span class="ct-badge ct-badge-sure"><i class="fa fa-square-o"></i></span>
+                <span class="ct-badge ct-badge-uncertain"><i class="fa fa-square-o"></i></span>
                 <img src="{{squareThumbUrl}}" alt="{{value}}">
                 <div class="ct-caption-table">
                     <div class="ct-caption-cell">
@@ -325,8 +325,8 @@
 
         <script id="single-image-template" type="x-tmpl-mustache">
             <div id="ct-full-image" class="{{selected}}" style="position:relative;" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
-                <span class="ct-badge ct-badge-large ct-badge-sure" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
-                <span class="ct-badge ct-badge-large ct-badge-uncertain" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
+                <span class="ct-badge ct-badge-large ct-badge-sure" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-square-o"></i></span>
+                <span class="ct-badge ct-badge-large ct-badge-uncertain" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-square-o"></i></span>
                 {{#similarSpecies}}
                     <span class="ct-info ct-info-large" data-container="body" title="${g.message(code: 'cameratrap.widget.similar.badge.title', default: "The {0} looks very similar to the {1}.  Please consider these other options before submitting your choices.", args: ['{{value}}', '{{similarSpecies}}'])}"><i class="fa fa-info-circle"></i></span>
                 {{/similarSpecies}}
@@ -337,8 +337,8 @@
 
         <script id="carousel-template" type="x-tmpl-mustache">
             <div id="ct-full-image-carousel" data-interval="0" class="carousel slide {{selected}}" data-image-select-value="{{value}}" data-image-select-key="{{key}}">
-                <span class="ct-badge ct-badge-large ct-badge-sure" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
-                <span class="ct-badge ct-badge-large ct-badge-uncertain" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-check-circle"></i></span>
+                <span class="ct-badge ct-badge-large ct-badge-sure" data-container="body" title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: 'There is definitely a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-square-o"></i></span>
+                <span class="ct-badge ct-badge-large ct-badge-uncertain" data-container="body" title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: 'There could possibly be a {0} in the image', args: ['{{value}}'])}"><i class="fa fa-square-o"></i></span>
                 {{#similarSpecies}}
                     <span class="ct-info ct-info-large" data-container="body" title="${g.message(code: 'cameratrap.widget.similar.badge.title', default: "The {0} looks very similar to the {1}.  Please consider these other options before submitting your choices.", args: ['{{value}}', '{{similarSpecies}}'])}"><i class="fa fa-info-circle"></i></span>
                 {{/similarSpecies}}

@@ -146,6 +146,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
         templateObj = {value: value, key: key, selected: selected, similarSpecies: similarSpecies};
         convValue = value;
       }else if(namespace == "dct") {
+          // Doedat camera traps
           var mapKey = $(e.target).closest('[data-image-select-value]').attr('data-image-key');
           itemValueMap[mapKey].similarSpecies.forEach(function(item) {
             similarSpecies.push(item[language]);
@@ -221,6 +222,10 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
       return '[data-image-select-value="' + v + '"]'
     }
 
+    function removeSelectionFromContainer(sel, selElem) {
+
+    }
+
     function addSelectionToContainer(sel, selElem) {
       var certainty = selections[sel].certainty;
       var imageKey = selections[sel].key;
@@ -245,26 +250,35 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
       var nonSelector = _.map(_.difference(values, selectedValues), valueToSelector).join(', ');
 
       var selElem = $('.ct-selection-grid');
+
       var uiSelectedValues = selElem.find('.thumbnail').map(function (i, e) {
         return $(e).data('image-select-value');
       }).toArray();
 
       var add = _.difference(selectedValues, uiSelectedValues);
+      var remove = _.difference(uiSelectedValues, selectedValues);
 
       for (var i = 0; i < add.length; ++i) {
         addSelectionToContainer(add[i], selElem);
       }
+      for (var i = 0; i < remove.length; ++i) {
+          selElem.find("[data-image-select-value='"+remove[i]+"']").remove();
+          $("[data-image-select-value='"+remove[i]+"']").removeClass("ct-certain-selected ct-uncertain-selected");
+      }
+
       selElem.find(nonSelector).parent().remove();
 
       //ctContainer.find('[data-image-select-value] .badge').removeClass('selected');
       //ctContainer.find(badgeSelector).addClass('selected');
 
       ctContainer.find(nonSelector).removeClass('ct-selected ct-uncertain-selected ct-certain-selected');
+      ctContainer.find(".fa-check-square-o").removeClass('fa-check-square-o').addClass("fa-square-o");
       ctContainer.find(_.map(selectedValues, valueToSelector).join(', ')).each(function() {
         var $this = $(this);
         var certain = selections[$this.data('image-select-value')].certainty == 1;
         $this.addClass('ct-selected ct-'+(certain ? 'certain' : 'uncertain') +'-selected');
         $this.removeClass('ct-' + (certain ? 'uncertain' : 'certain') +'-selected');
+            $this.find('.ct-badge-'+(certain ? 'sure' : 'uncertain')+" i").removeClass("fa-square-o").addClass("fa-check-square-o");
       });
 
       generateFormFields();
