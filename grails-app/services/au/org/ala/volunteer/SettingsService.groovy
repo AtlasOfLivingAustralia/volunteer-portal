@@ -1,7 +1,9 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import grails.transaction.Transactional
 
+@Transactional(readOnly = true)
 class SettingsService {
 
     def <T> T getSetting(SettingDefinition<T> setting) {
@@ -17,6 +19,7 @@ class SettingsService {
         return JSON.parse(str) as List<String>
     }
 
+    @Transactional(readOnly = false)
     def setSetting(String key, List<String> items) {
         String str = items as JSON
         set(key, str)
@@ -34,18 +37,22 @@ class SettingsService {
         return get(key, defaultValue)?.toBoolean()
     }
 
+    @Transactional(readOnly = false)
     def setSetting(String key, String value) {
         set(key, value)
     }
 
+    @Transactional(readOnly = false)
     def setSetting(String key, int value) {
         set(key, value)
     }
 
+    @Transactional(readOnly = false)
     def setSetting(String key, double value) {
         set(key, value)
     }
 
+    @Transactional(readOnly = false)
     def setSetting(String key, boolean value) {
         set(key, value)
     }

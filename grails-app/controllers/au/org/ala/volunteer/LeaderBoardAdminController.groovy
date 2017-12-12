@@ -38,14 +38,16 @@ class LeaderBoardAdminController {
     }
 
     def addIneligibleUser(int id) {
-        settingsService.setSetting(SettingDefinition.IneligibleLeaderBoardUsers.key, 
-                settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers) + (Integer.toString(id)))
+        def newSetting = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers) + (Integer.toString(id))
+        log.debug("Setting ineligible leaderboard users to {}", newSetting)
+        settingsService.setSetting(SettingDefinition.IneligibleLeaderBoardUsers.key, newSetting)
         render status: 204
     }
 
     def removeIneligibleUser(int id) {
-        settingsService.setSetting(SettingDefinition.IneligibleLeaderBoardUsers.key,
-                settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers) - (Integer.toString(id)))
+        def newSetting = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers) - (Integer.toString(id))
+        log.debug("Setting ineligible leaderboard users to {}", newSetting)
+        settingsService.setSetting(SettingDefinition.IneligibleLeaderBoardUsers.key, newSetting)
         render status: 204
     }
 }
