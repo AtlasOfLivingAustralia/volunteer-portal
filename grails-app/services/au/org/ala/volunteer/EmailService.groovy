@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import grails.core.GrailsApplication
+
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class EmailService {
@@ -10,7 +12,7 @@ class EmailService {
 
     def mailService
     def logService
-    def grailsApplication
+    GrailsApplication grailsApplication
 
     /**
      * Sends a message immediately to the configured SMTP server (typically localhost on port 25)
@@ -21,9 +23,10 @@ class EmailService {
      */
     def sendMail(String emailAddress, String subj, String message) {
         log.info("Sending email to ${emailAddress} - ${subj}")
+        def fromAddress = grailsApplication.config.getProperty('mail.fromAddress', "noreply@volunteer.ala.org.au")
         mailService.sendMail {
             to emailAddress
-            from grailsApplication.mail.fromAddress ?: "noreply@volunteer.ala.org.au"
+            from fromAddress
             subject subj
             body message
         }

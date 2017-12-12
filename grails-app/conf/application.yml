@@ -122,13 +122,6 @@ grails:
                 preprocess: true
     databinding:
         convertEmptyStringsToNull: false
-        # tiny mce loads its own files, so don't hash it
-    assets:
-        excludes:
-            - '/tinymce/**/*.js'
-        minifyOptions:
-            excludes:
-                - '**/*.min.js'
 
 ---
 ala:
@@ -240,7 +233,11 @@ grails:
             fixtaglib: true
     mail:
         default:
-            from: support@ala.org.au
+            from: noreply@volunteer.ala.org.au
+digest:
+    enabled: false
+    threshold: 5
+#    address:
 ---
 quartz:
     autoStartup: true
@@ -262,6 +259,7 @@ flyway:
     baselineVersion: 1
 ---
 hibernate:
+    dialect: net.kaleidos.hibernate.PostgresqlExtensionsDialect
     cache:
         queries: false
         use_second_level_cache: true

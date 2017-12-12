@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.util.Environment
 import groovy.sql.Sql
 
 class NewUserDigestNotifierJob {
@@ -11,13 +12,19 @@ class NewUserDigestNotifierJob {
     def description = "Notify admin users about new users who have completed their first five transcriptions"
 
     static triggers = {
-        cron name: 'newUsersDigestTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
-//        cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // 6:00am
+        if (Environment.current == Environment.DEVELOPMENT) {
+            log.info("Enabling 30s trigger")
+            cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // every 30s
+        } else {
+            log.info("Enabling 6am trigger")
+            cron name: 'newUsersDigestTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
+        }
     }
 
     def execute() {
-        if (grailsApplication.config.digest.enabled) {
-            def recipient = grailsApplication.config.digest.address
+        if (grailsApplication.config.getProperty('digest.enabled', Boolean, false)) {
+            def recipient = grailsApplication.config.getProperty('digest.address')
+            def threshold = grailsApplication.config.getProperty('digest.threshold', Integer, 5)
             if (!recipient) {
                 throw new IllegalStateException("New user transcriptions digest email is enabled but no email address (digest.address) was specified")
             }
@@ -30,13 +37,14 @@ SELECT t.fully_transcribed_by
 FROM task t
 GROUP BY t.fully_transcribed_by
 HAVING
-  sum(CASE WHEN date_fully_transcribed < (current_timestamp - interval '1 day') THEN 1 ELSE 0 END) < 5
+  sum(CASE WHEN date_fully_transcribed < (current_timestamp - interval '1 day') THEN 1 ELSE 0 END) < ?
   AND
-  count(date_fully_transcribed) >= 5;
-""").collect { it[0] }
+  count(date_fully_transcribed) >= ?;
+""", [threshold, threshold]).collect { it[0] }
                 //def newTranscribers = userService.detailsForUserIds(userIds)
 
                 if (userIds) {
+                    log.info("Found {} user ids for new user digest", userIds.size())
                     def users = User.findAllByUserIdInList(userIds)
 
                     if (users) {
@@ -49,6 +57,8 @@ HAVING
                                     model: [newTranscribers: users])
                         }
                     }
+                } else {
+                    log.debug("No new users found for digest")
                 }
              } catch (Exception e) {
                 log.error("Update users job failed with exception", e)
