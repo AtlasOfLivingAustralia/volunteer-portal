@@ -69,7 +69,8 @@ class ProjectService {
         // Load all related forum topics
         // Need to load them all first before querying for the UserForumWatchLists otherwise they can't be removed from
         // the UserForumWatchLists topics set as of Hibernate plugin v3.6.10.16.
-        def taskTopics = TaskForumTopic.findAllByTaskInList(projectInstance.tasks.toList())
+        def tasks = projectInstance.tasks.toList()
+        def taskTopics = tasks ? TaskForumTopic.findAllByTaskInList(tasks) : []
         def topics = ProjectForumTopic.findAllByProject(projectInstance)
         def topicCount = 0
 
