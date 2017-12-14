@@ -224,7 +224,6 @@
     </div>
 </g:else>
 </section>
-<asset:javascript src="bootstrap" asset-defer=""/>
 <asset:javascript src="image-viewer" asset-defer=""/>
 
 <asset:script type="text/javascript">

@@ -23,12 +23,9 @@ class BootStrap {
     def sessionFactory
     def authService
     def fullTextIndexService
-    def dataSource
     def sanitizerService
 
     def init = { servletContext ->
-
-        ensureFuzzyStrMatchExtension()
 
         addSanitizer()
 
@@ -58,18 +55,6 @@ class BootStrap {
         }
 
         fullTextIndexService.ping()
-
-    }
-
-    private void ensureFuzzyStrMatchExtension() {
-        def sql = new Sql(dataSource)
-        try {
-            sql.execute("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch")
-        } catch (e) {
-            log.fatal("Could not enable fuzzystrmatch PostgreSQL extension which is required by the application.  " +
-                    "Do you need to apt-get install postgresql-contrib or equivalent?", e)
-            throw e
-        }
 
     }
 
