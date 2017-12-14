@@ -107,6 +107,15 @@
 
     <div class="form-group">
         <div class="col-md-9 col-md-offset-3">
+            <label for="imageSharingEnabled" class="checkbox">
+                <g:checkBox name="imageSharingEnabled"
+                            checked="${projectInstance.imageSharingEnabled}"/>&nbsp;Enable buttons to share images from this project to social networks
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-9 col-md-offset-3">
             <label for="harvestableByAla" class="checkbox">
                 <g:checkBox name="harvestableByAla"
                             checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia

@@ -28,6 +28,7 @@ class Project implements Serializable {
     Double mapInitLatitude
     Double mapInitLongitude
     Boolean harvestableByAla = true
+    Boolean imageSharingEnabled = false
     Boolean archived = false
 
     Date dateCreated
@@ -54,6 +55,7 @@ class Project implements Serializable {
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
         harvestableByAla defaultValue: true
         version defaultValue: '0'
+        imageSharingEnabled defaultValue: 'false'
         archived defaultValue: 'false'
     }
 

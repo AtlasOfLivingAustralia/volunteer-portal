@@ -92,7 +92,7 @@
                 <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
                 <h2>
                     <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/>
-                    <g:if test="${taskInstance}"><ul class="list-inline" style="display: inline-block;">
+                    <g:if test="${taskInstance?.project?.imageSharingEnabled}"><ul class="list-inline" style="display: inline-block;">
                         <li style="vertical-align: top;">
                             <div class="fb-share-button" data-href="${shareUrl}" data-layout="button" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse">Share</a></div>
                         </li>
@@ -306,14 +306,18 @@
         </div>
     </div>
 </div>
+<g:if test="${taskInstance?.project?.imageSharingEnabled}">
 <div id="fb-root"></div>
-<asset:script type="text/javascript">(function(d, s, id) {
+<asset:script type="text/javascript">
+(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
   js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.6";
   fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</asset:script>
+}(document, 'script', 'facebook-jssdk'));
+</asset:script>
+</g:if>
 <asset:javascript src="digivol-transcribe" asset-defer="" />
 <asset:script type="text/javascript">
 
