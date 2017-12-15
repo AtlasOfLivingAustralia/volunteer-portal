@@ -96,11 +96,17 @@ class AchievementService {
 
         if (newAchievements) {
             final user = User.findByUserId(userId)
-            newAchievements.collect {
+            newAchievements.each {
                 log.info("${user?.id} (${user?.displayName} ${user?.email}) achieved ${it.name}")
-                new AchievementAward(achievement: it, user: user, awarded: new Date())
-            }*.save(true).each {
-                notify(AchievementService.ACHIEVEMENT_AWARDED, it)
+                def aa = new AchievementAward(achievement: it, user: user, awarded: new Date())
+                def aaSaved = aa.save(true)
+
+                if (!aaSaved || aa.hasErrors()) {
+                    log.error("Couldn't save achievement {} for user {} due to {}", it, user, aa?.errors)
+                } else {
+                    notify(AchievementService.ACHIEVEMENT_AWARDED, aaSaved)
+                }
+
             }
         }
     }
