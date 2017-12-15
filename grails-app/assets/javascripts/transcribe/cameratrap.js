@@ -356,7 +356,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       $src.addClass('active');
     }
 
-    $imgSeq.on('click', '.faux-img-cell', function(e) {
+    $imgSeq.on('click', '.film-cell', function(e) {
       var $this = $(this);
       if (!$clicked.is($this)) {
         $clicked = $this;
@@ -367,12 +367,12 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       }
     });
 
-    $imgSeq.on('mouseover', '.faux-img-cell', function(e) {
+    $imgSeq.on('mouseover', '.film-cell', function(e) {
       var $this = $(this);
       loadImage($this);
     });
 
-    $imgSeq.on('mouseout', '.faux-img-cell', function(e) {
+    $imgSeq.on('mouseout', '.film-cell', function(e) {
       var $this = $(this);
       loadImage($clicked);
     });

@@ -570,6 +570,7 @@ ul.filterInfo li span {
 .film-cell {
     border: 5px dimgrey solid;
     width: 14.285714285%;
+    cursor: pointer;
 }
 
 .film-cell.default.active {
