@@ -386,7 +386,7 @@ class ProjectService {
                     eq 'projectType', projectType
                     or {
                         eq 'inactive', false
-                        isNotNull 'inactive'
+                        isNull 'inactive'
                     }
                 }
             } else {

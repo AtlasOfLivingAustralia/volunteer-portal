@@ -16,7 +16,7 @@ class AchievementAward {
         achievement unique: 'user'
     }
 
-    public String toString() {
+    String toString() {
         "AchievementAward (${achievement}, ${user}, awarded: ${awarded}, userNotified: ${userNotified})"
     }
 }

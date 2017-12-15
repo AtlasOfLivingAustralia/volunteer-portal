@@ -690,8 +690,14 @@ class UserController {
         def score = userService.getUserScore(userInstance)
         def awardedIds = achievements*.achievement*.id.toList()
         def otherAchievements
-        if (awardedIds) otherAchievements = AchievementDescription.findAllByIdNotInListAndEnabled(awardedIds, true, [sort: 'name'])
-        else otherAchievements = AchievementDescription.findAllByEnabled(true, [sort: 'name'])
+        otherAchievements = AchievementDescription.withCriteria(sort: 'name') {
+            eq 'enabled', true
+            if (awardedIds) {
+                not {
+                    'in'('id', awardedIds)
+                }
+            }
+        }
 
         [userInstance: userInstance, achievements: sortedAchievements, score: score, allAchievements: otherAchievements]
     }

@@ -332,7 +332,7 @@ class ProjectController {
         def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
         def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
         def q = params.q ?: null
-        def ProjectType pt = ProjectType.findByName('cameratraps')
+        ProjectType pt = ProjectType.findByName('cameratraps')
 
         def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt)
 

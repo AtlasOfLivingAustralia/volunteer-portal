@@ -1,7 +1,12 @@
+import ch.qos.logback.classic.boolex.JaninoEventEvaluator
+import ch.qos.logback.core.filter.EvaluatorFilter
 import ch.qos.logback.core.util.FileSize
 import grails.util.Environment
 import org.springframework.boot.logging.logback.ColorConverter
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter
+
+import static ch.qos.logback.core.spi.FilterReply.DENY
+import static ch.qos.logback.core.spi.FilterReply.NEUTRAL
 
 conversionRule 'clr', ColorConverter
 conversionRule 'wex', WhitespaceThrowableProxyConverter
@@ -16,6 +21,13 @@ for (def a : APPENDERS) {
     switch (Environment.current) {
         case Environment.PRODUCTION:
             appender(a.name, RollingFileAppender) {
+                filter(EvaluatorFilter) {
+                    evaluator(JaninoEventEvaluator) {
+                        expression = 'return logger.equals("org.grails.plugins.rx.web.RxResultSubscriber") && message.contains("Async Dispatch Error: Broken pipe");'
+                    }
+                    onMismatch = NEUTRAL
+                    onMatch = DENY
+                }
                 file = "$loggingDir/$appName${a.suffix}.log"
                 encoder(PatternLayoutEncoder) {
                     pattern =
@@ -59,6 +71,13 @@ for (def a : APPENDERS) {
         case Environment.DEVELOPMENT:
         default:
             appender(a.name, ConsoleAppender) {
+                filter(EvaluatorFilter) {
+                    evaluator(JaninoEventEvaluator) {
+                        expression = 'return logger.equals("org.grails.plugins.rx.web.RxResultSubscriber") && message.startsWith("Async Dispatch Error: Broken pipe");'
+                    }
+                    onMismatch = NEUTRAL
+                    onMatch = DENY
+                }
                 encoder(PatternLayoutEncoder) {
                     pattern = '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} ' + // Date
                             '%clr(%5p) ' + // Log level
