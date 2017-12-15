@@ -52,6 +52,7 @@ flyway {
     user = project.ext.local.flywayUsername
     password = project.ext.local.flywayPassword
     baselineOnMigrate = project.ext.local.flywayBaselineOnMigrate?.toBoolean() ?: false
+    outOfOrder = true
 }
 jooq {
 //        version = "${ext['jooq.version']}"

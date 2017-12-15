@@ -257,6 +257,7 @@ flyway:
     enabled: true
     baselineOnMigrate: true
     baselineVersion: 1
+    outOfOrder: true
 ---
 hibernate:
     dialect: net.kaleidos.hibernate.PostgresqlExtensionsDialect
