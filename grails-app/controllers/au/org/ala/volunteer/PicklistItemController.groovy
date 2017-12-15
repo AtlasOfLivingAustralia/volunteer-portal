@@ -34,10 +34,9 @@ class PicklistItemController {
                 if (items) {
                     // Send the results back as an array
                     render(contentType: "application/json") {
-                        autoCompleteList = array {
-                            for (pli in items) {
-                                picklistItem(name: pli.value, key: pli.key)
-                            }
+                        autoCompleteList(items) { pli ->
+                            name pli.value
+                            key pli.key
                         }
                     }
                     return
