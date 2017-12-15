@@ -105,101 +105,101 @@
         $("#btnPreview").click(function(e) {
             e.preventDefault();
             window.open("${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}", "TemplatePreview");
+        });
+
+        $("#btnEditFields").click(function(e) {
+            e.preventDefault();
+            window.location = "${createLink(controller: 'template', action: 'manageFields', id: templateInstance.id)}";
+        });
+
+        $('#row-view-params-form').on('change', 'input,textarea,select', function(e) {
+            var formInputs = $('#row-view-params-form').find('input,textarea,select').filter(function(i,e) { return !e.name.startsWith("_");});
+            var formObj = _.reduce(formInputs, function(memo, e) {
+                var $e = $(e);
+                var v;
+                if ($e.attr('type') === 'checkbox') {
+                  v = e.checked;
+                } else {
+                  v = $e.val();
+                }
+                memo[$e.prop('name')] = v;
+                return memo;
+            }, {});
+            var $viewParamsJSON = $('#viewParamsJSON');
+            var str = $viewParamsJSON.val();
+            var params = jsonToParams(str);
+            _.extend(params, formObj);
+            var jsonString = paramsToJson(params);
+            $viewParamsJSON.val(jsonString);
+        });
+
+        function addDefaults() {
+            var $viewParamsJSON = $('#viewParamsJSON');
+            var str = $viewParamsJSON.val();
+            var params = jsonToParams(str);
+            $('#row-view-params-form').find('[data-default]').each(function() {
+                var $this = $(this);
+                var name = $this.attr('name');
+                var p = params[name];
+                if (p == undefined) {
+                    params[name] = $this.data('default');
+                }
+            });
+            var jsonString = paramsToJson(params);
+            $viewParamsJSON.val(jsonString);
+        }
+
+        function jsonToParams(json) {
+          return JSON.parse(json, function(k,v) {
+              if (k === '') { return v; }
+              if (v === 'true') { return true; }
+              if (v === 'false') { return false; }
+              return v;
+            });
+        }
+
+        function paramsToJson(params) {
+            return JSON.stringify(params, function(k,v) {
+              if (typeof v === 'boolean') { return v.toString(); }
+              return v;
+            }, 2);
+
+        }
+
+        function syncParamsFields() {
+            var str = $('#viewParamsJSON').val();
+            var params = jsonToParams(str);
+            var $paramsForm = $('#row-view-params-form');
+            _.each(_.keys(params), function(k) {
+                $paramsForm.find('[name="'+k+'"]').each(function(i,e) {
+                  var $e = $(e);
+                  if ($e.attr('type') === 'checkbox') {
+                    $(e).prop('checked', params[k]);
+                  } else {
+                    $e.val(params[k]);
+                  }
                 });
+            });
+        }
 
-                $("#btnEditFields").click(function(e) {
-                    e.preventDefault();
-                    window.location = "${createLink(controller: 'template', action: 'manageFields', id: templateInstance.id)}";
-                });
-
-                $('#row-view-params-form').on('change', 'input,textarea,select', function(e) {
-                    var formInputs = $('#row-view-params-form').find('input,textarea,select').filter(function(i,e) { return !e.name.startsWith("_");});
-                    var formObj = _.reduce(formInputs, function(memo, e) {
-                        var $e = $(e);
-                        var v;
-                        if ($e.attr('type') === 'checkbox') {
-                          v = e.checked;
-                        } else {
-                          v = $e.val();
-                        }
-                        memo[$e.prop('name')] = v;
-                        return memo;
-                    }, {});
-                    var $viewParamsJSON = $('#viewParamsJSON');
-                    var str = $viewParamsJSON.val();
-                    var params = jsonToParams(str);
-                    _.extend(params, formObj);
-                    var jsonString = paramsToJson(params);
-                    $viewParamsJSON.val(jsonString);
-                });
-
-                function addDefaults() {
-                    var $viewParamsJSON = $('#viewParamsJSON');
-                    var str = $viewParamsJSON.val();
-                    var params = jsonToParams(str);
-                    $('#row-view-params-form').find('[data-default]').each(function() {
-                        var $this = $(this);
-                        var name = $this.attr('name');
-                        var p = params[name];
-                        if (p == undefined) {
-                            params[name] = $this.data('default');
-                        }
-                    });
-                    var jsonString = paramsToJson(params);
-                    $viewParamsJSON.val(jsonString);
-                }
-
-                function jsonToParams(json) {
-                  return JSON.parse(json, function(k,v) {
-                      if (k === '') { return v; }
-                      if (v === 'true') { return true; }
-                      if (v === 'false') { return false; }
-                      return v;
-                    });
-                }
-
-                function paramsToJson(params) {
-                    return JSON.stringify(params, function(k,v) {
-                      if (typeof v === 'boolean') { return v.toString(); }
-                      return v;
-                    }, 2);
-
-                }
-
-                function syncParamsFields() {
-                    var str = $('#viewParamsJSON').val();
-                    var params = jsonToParams(str);
-                    var $paramsForm = $('#row-view-params-form');
-                    _.each(_.keys(params), function(k) {
-                        $paramsForm.find('[name="'+k+'"]').each(function(i,e) {
-                          var $e = $(e);
-                          if ($e.attr('type') === 'checkbox') {
-                            $(e).prop('checked', params[k]);
-                          } else {
-                            $e.val(params[k]);
-                          }
-                        });
-                    });
-                }
-
-                $('#viewName').change(function(e) {
-                    var $this = $(this);
-                    var p = $.ajax('${createLink(controller: 'template', action: 'viewParamsForm')}?view=' + encodeURIComponent($this.val()));
-                    p.done(function(data, textStatus, jqXHR) {
-                        $('#row-view-params-form').css('display', 'initial').html(data);
-                        addDefaults();
-                        syncParamsFields();
-                    });
-
-                    p.fail(function(jqXHR, textStatus, errorThrown) {
-                      $('#row-view-params-form').css('display', 'none');
-                    });
-                }).change();
-
+        $('#viewName').change(function(e) {
+            var $this = $(this);
+            var p = $.ajax('${createLink(controller: 'template', action: 'viewParamsForm', id: templateInstance.id)}?view=' + encodeURIComponent($this.val()));
+            p.done(function(data, textStatus, jqXHR) {
+                $('#row-view-params-form').css('display', 'initial').html(data);
+                addDefaults();
+                syncParamsFields();
             });
 
+            p.fail(function(jqXHR, textStatus, errorThrown) {
+              $('#row-view-params-form').css('display', 'none');
+            });
+        }).change();
+
+    });
+
 </asset:script>
-<asset:script>
+<asset:script type="text/javascript">
     var _result = false;
     $(function() {
         $('#deleteButton').on('click', function(e) {

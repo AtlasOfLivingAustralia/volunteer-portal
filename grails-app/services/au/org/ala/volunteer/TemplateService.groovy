@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.io.Resources
 import grails.core.GrailsApplication
+import grails.converters.JSON
 import grails.transaction.Transactional
 import grails.util.Environment
 
@@ -20,6 +21,8 @@ class TemplateService {
         template.viewParams.entrySet().each { entry ->
             newTemplate.viewParams[entry.key] = entry.value
         }
+
+        newTemplate.viewParams2 = JSON.parse((template.viewParams2 as JSON).toString()) as Map
 
         newTemplate.save()
         // Now we need to copy over the template fields

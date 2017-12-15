@@ -63,6 +63,12 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'wildlifeSpotterAdmin', action: 'edit')}">Configure Wildlife Spotter</a>
+                            </td>
+                            <td>Configure the appearance of the wildlife spotter landing page</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'leaderBoardAdmin', action: 'index')}">Configure Honour Board</a>
                             </td>
                             <td>Configure the appearance of the Honour Board</td>

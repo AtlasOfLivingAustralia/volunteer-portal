@@ -6,7 +6,9 @@ class UrlMappings {
 
         "/"(controller: "index", action: 'index')
 
+        "/wildlife-spotter"(controller: 'project', action: 'wildlifespotter')
         "/es"(controller: 'eventSource', action: 'index')
+        "/image/$prefix/$width/$height/$name.$format"(controller: 'image', action: 'size')
 
         name institutionAdmin: "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin')
         "/admin/label/$action?" (controller: 'label')

@@ -323,10 +323,11 @@ class TemplateController {
         [templateInstance: template]
     }
 
-    def viewParamsForm() {
+    def viewParamsForm(Template template) {
         def view = (params?.view ?: '') + 'Params'
         try { //if (resExists(view)) {
-            render template: view
+            def model = [templateInstance: template]
+            render template: view, model: model
         } catch (e) { //} else {
             log.trace("Could not render template $view", e)
             render status: 404

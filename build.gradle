@@ -151,7 +151,7 @@ dependencies {
     compile "org.hibernate:hibernate-java8:5.1.3.Final"
 
     // Additional Plugins
-//    compile 'org.grails.plugins:cache-headers:2.0.0.ALA-SNAPSHOT'
+    compile 'org.grails.plugins:cache-headers:2.0.2'
     compile 'org.grails.plugins:csv:1.0.ALA.3'
     compile 'org.grails.plugins:postgresql-extensions:5.2.0'
     compile 'org.grails.plugins:mail:2.0.0.RC6'

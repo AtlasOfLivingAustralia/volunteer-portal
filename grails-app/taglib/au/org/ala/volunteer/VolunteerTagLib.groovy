@@ -642,6 +642,45 @@ class VolunteerTagLib {
         out << institutionService.getImageUrl(Institution.get(attrs.id as Long))
     }
 
+    def imageUrlPrefix = { attrs, body ->
+        def name = attrs.remove('name')
+        def type = attrs.remove('type')
+        if (name) {
+            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}/$name"
+        } else {
+            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}"
+        }
+    }
+
+    def sizedImage = { attrs, body ->
+        def title = attrs.remove('title')
+        def alt = attrs.remove('alt')
+        def cssClass = attrs.remove('class')
+        out << "<img src="
+        out << sizedImageUrl(attrs,body)
+        if (cssClass) {
+            out << " class=\"${cssClass.encodeAsHTML()}\""
+        }
+        if (title) {
+            out << " title=\"${title.encodeAsHTML()}\""
+        }
+        if (alt) {
+            out << " alt=\"${alt.encodeAsHTML()}\""
+        }
+        out << "/>"
+    }
+
+    def sizedImageUrl = { attrs, body ->
+        def prefix = attrs.remove('prefix')
+        def name = attrs.remove('name')
+        def width = attrs.remove('width')
+        def height = attrs.remove('height')
+        def format = attrs.remove('format') ?: 'jpg'
+        def template = attrs.remove('template')?.toBoolean()
+        String url = g.createLink(controller: 'image', action: 'size', params: [prefix: prefix, width: width, height: height, name: name, format: format])
+        out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
+    }
+
 
     /**
      * @id The id of the institution

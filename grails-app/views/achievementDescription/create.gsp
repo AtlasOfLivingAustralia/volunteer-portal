@@ -42,8 +42,8 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
-<asset:script>
+<asset:javascript src="bootstrap-file-input.js" asset-defer=""/>
+<asset:script type="text/javascript">
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();

@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import net.kaleidos.hibernate.usertype.JsonbMapType
+
 class Template implements Serializable {
 
     String name
@@ -7,11 +9,13 @@ class Template implements Serializable {
     String fieldOrder = "[]" // not used - consider removing
     String author
     Map<String, String> viewParams
+    Map viewParams2 // Like view params but can store hierarchical data
 
     static hasMany = [project: Project]
 
     static mapping = {
         version false
+        viewParams2 type: JsonbMapType
     }
 
     static constraints = {

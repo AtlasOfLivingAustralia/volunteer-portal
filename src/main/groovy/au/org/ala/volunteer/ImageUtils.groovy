@@ -10,6 +10,8 @@ import java.text.DecimalFormat
 import javax.imageio.ImageIO
 import org.imgscalr.Scalr
 
+import static java.lang.Math.round
+
 public class ImageUtils {
 
     static {
@@ -108,6 +110,39 @@ public class ImageUtils {
         def labels = [ ' bytes', 'KB', 'MB', 'GB' ]
         def label = labels.find { ( filesize < 1024 ) ? true : { filesize /= 1024 ; false }() } ?: 'TB'
         return "${new DecimalFormat( '0.#' ).format( filesize )} $label"
+    }
+
+    static BufferedImage centreCropAndScale(BufferedImage src, int targetWidth, int targetHeight) {
+        def cropped = centreCrop(src, ((double)targetWidth) / ((double)targetHeight))
+        def scaled = Scalr.resize(cropped, targetWidth, targetHeight)
+        if  (!cropped.is(src)) {
+            cropped.flush()
+        }
+        return scaled
+    }
+
+    static BufferedImage centreCrop(BufferedImage src, double targetRatio) {
+        double width = (double)src.getWidth()
+        double height = (double)src.getHeight()
+        double aspectHeight = width / targetRatio
+        double aspectWidth = height * targetRatio
+
+        if (aspectHeight < height) {
+            return Scalr.crop(src, 0, (int)round((height - aspectHeight) / 2.0), src.width, (int)round(aspectHeight))
+        } else if (aspectWidth < width) {
+            return Scalr.crop(src, (int)round((width - aspectWidth) / 2.0), 0, (int)round(aspectWidth), src.height)
+        } else {
+            return src
+        }
+    }
+
+    static String contentType(String format) {
+        switch(format) {
+            case 'jpg': return 'image/jpeg'
+            case 'png': return 'image/png'
+            case 'gif': return 'image/gif'
+        }
+        return 'application/octet-stream'
     }
 
 }

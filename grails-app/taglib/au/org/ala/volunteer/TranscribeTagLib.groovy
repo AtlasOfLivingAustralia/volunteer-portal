@@ -659,7 +659,7 @@ class TranscribeTagLib {
         def max = taskService.findMaxSequenceNumber(project)
         def results
         if (max) {
-            def previous = (Math.max(0, number - count))..<number
+            def previous = (Math.max(1, number - count))..<number
             def next = number == max ? [] : (number+1)..(Math.min(max,number+count))
             results = [previous: previous, next: next]
         } else {

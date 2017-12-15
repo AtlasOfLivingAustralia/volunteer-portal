@@ -59,12 +59,14 @@
                         controller="institution" action="list">Institutions</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
                         controller="project" action="list">Expeditions</g:link></li>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'wildlife-spotter' ? 'active' : ''}"><g:link
+                        controller="project" action="wildlifespotter">Wildlife Spotter</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
                         controller="tutorials" action="index">Tutorials</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
                         controller="forum" action="index">Forum</g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link
-                        controller="contact" action="index">Contact Us</g:link></li>
+                %{--<li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link--}%
+                        %{--controller="contact" action="index">Contact Us</g:link></li>--}%
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
                     <li>
