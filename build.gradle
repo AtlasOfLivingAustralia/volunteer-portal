@@ -194,6 +194,9 @@ dependencies {
     jooqRuntime "org.postgresql:postgresql:$postgresVersion"
     compile "org.flywaydb:flyway-core:4.2.0"
 
+    // For logback filter
+    compile 'org.codehaus.janino:janino:3.0.6'
+
 }
 
 bootRun {

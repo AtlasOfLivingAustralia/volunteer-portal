@@ -87,9 +87,15 @@ class AchievementService {
                 property 'achievement.id'
             }
         }
-        final achievements = alreadyAwarded ?
-                AchievementDescription.findAllByIdNotInListAndEnabled(alreadyAwarded, true)
-                : AchievementDescription.findAllByEnabled(true)
+        final achievements
+        achievements = AchievementDescription.withCriteria {
+            eq 'enabled', true
+            if (alreadyAwarded) {
+                not {
+                    'in'('id', alreadyAwarded)
+                }
+            }
+        }
 
         final newAchievements = achievements
                 .find { evaluateAchievement(it, userId)}
