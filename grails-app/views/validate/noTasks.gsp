@@ -5,13 +5,13 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title>Thank you - we are done for now!</title>
-    <r:require module="amplify"/>
-    <r:script type="text/javascript">
+    <asset:javascript src="amplify" asset-defer=""/>
+    <asset:script type="text/javascript">
             $(document).ready(function () {
                 // clear the temporarily saved state, now that it is known that the task was saved
                 amplify.store("bvp_task_${taskInstance.id}", null);
             });
-    </r:script>
+    </asset:script>
 
 </head>
 

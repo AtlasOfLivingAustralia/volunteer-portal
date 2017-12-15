@@ -4,22 +4,22 @@ class ProjectAssociationController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [projectAssociationInstanceList: ProjectAssociation.list(params), projectAssociationInstanceTotal: ProjectAssociation.count()]
     }
 
-    def create = {
+    def create() {
         def projectAssociationInstance = new ProjectAssociation()
         projectAssociationInstance.properties = params
         return [projectAssociationInstance: projectAssociationInstance]
     }
 
-    def save = {
+    def save() {
         def projectAssociationInstance = new ProjectAssociation(params)
         if (projectAssociationInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation'), projectAssociationInstance.id])}"
@@ -30,7 +30,7 @@ class ProjectAssociationController {
         }
     }
 
-    def show = {
+    def show() {
         def projectAssociationInstance = ProjectAssociation.get(params.id)
         if (!projectAssociationInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation'), params.id])}"
@@ -41,7 +41,7 @@ class ProjectAssociationController {
         }
     }
 
-    def edit = {
+    def edit() {
         def projectAssociationInstance = ProjectAssociation.get(params.id)
         if (!projectAssociationInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'projectAssociation.label', default: 'ProjectAssociation'), params.id])}"
@@ -52,7 +52,7 @@ class ProjectAssociationController {
         }
     }
 
-    def update = {
+    def update() {
         def projectAssociationInstance = ProjectAssociation.get(params.id)
         if (projectAssociationInstance) {
             if (params.version) {
@@ -79,7 +79,7 @@ class ProjectAssociationController {
         }
     }
 
-    def delete = {
+    def delete() {
         def projectAssociationInstance = ProjectAssociation.get(params.id)
         if (projectAssociationInstance) {
             try {

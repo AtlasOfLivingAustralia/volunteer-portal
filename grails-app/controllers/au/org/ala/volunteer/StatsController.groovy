@@ -1,23 +1,25 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
+import com.google.common.base.Charsets
 import grails.converters.JSON
-import java.text.SimpleDateFormat
+
+import java.nio.charset.StandardCharsets
 
 class StatsController {
 
     static int defaultDayDiff = 7;
-    static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    static dateFormats = ['yyyy-MM-dd', "yyyy-MM-dd'T'hh:mm:ss.SSSXXX", "dd/MM/yyyy"]
 
     def statsService
     def settingsService
     def leaderBoardService
 
-    def index = {}
+    def index() {}
 
     def volunteerStats() {
-        def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
-        def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
+        def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
+        def toDate = params?.date('endDate', dateFormats) ?: new Date()
         def userList = statsService.getNewUser(fromDate, toDate)
         def result = [newVolunteers: userList[0][0], totalVolunteers: userList[0][1]]
         render result as JSON
@@ -65,13 +67,25 @@ class StatsController {
         render result as JSON
     }
 
+    def transcriptionsByInstitutionByMonth() {
+        def reportType = StatsType.transcriptionsByInstitutionByMonth
+        def result = prepareJsonData(reportType)
+        render result as JSON
+    }
+
     def validationsByInstitution() {
         def reportType =  StatsType.validationsByInstitution
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
-    def prepareJsonData (def reportType) {
+    def transcriptionTimeByProjectType() {
+        def reportType = StatsType.transcriptionTimeByProjectType
+        def result = prepareJsonData(reportType)
+        render result as JSON
+    }
+
+    private def prepareJsonData (StatsType reportType) {
         def statResult = getStatData(reportType)
         def header = statResult.get('header')
         def array = statResult.get('statsData')
@@ -80,18 +94,9 @@ class StatsController {
         return result
     }
 
-    def getStatData (def reportType) {
-        def fromDate = (params?.startDate == null || params?.startDate=="")? sdf.format(new Date() - defaultDayDiff) : params.startDate
-        def toDateStr = (params?.endDate == null || params?.endDate=="")? sdf.format(new Date()) : params.endDate
-
-        def nextDayDate = sdf.parse(toDateStr)
-
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(nextDayDate)
-        cal.add(Calendar.DATE, 1)
-        nextDayDate = cal.getTime()
-
-        def toDate = sdf.format(nextDayDate)
+    private def getStatData (StatsType reportType) {
+        def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
+        def toDate = (params?.date('endDate', dateFormats) ?: new Date()) + 1
 
         def header = []
         def statsData = []
@@ -142,7 +147,7 @@ class StatsController {
 
                 def maxRows = 20
 
-                def scoreList = leaderBoardService.getTopNForPeriod(sdf.parse(fromDate), sdf.parse(toDate), maxRows, null, ineligibleUsers)
+                def scoreList = leaderBoardService.getTopNForPeriod(fromDate, toDate, maxRows, null, ineligibleUsers)
 
                 scoreList.each { kvp ->
                     statsData << [kvp.get("name"), kvp.get("score")]
@@ -168,41 +173,54 @@ class StatsController {
                                [ id: "tasks_count",   label: "Number of Validations", type: "number" ]]
 
                 return [header: header, statsData: statsData];
-
-            default: return [header: [], statsData: []];
+            case StatsType.transcriptionsByInstitutionByMonth.name():
+                return statsService.getTranscriptionsByInstitutionByMonth()
+            case StatsType.transcriptionTimeByProjectType:
+                statsData = statsService.getTranscriptionTimeByProjectType(fromDate, toDate)
+                header =  [
+                        [ id: 'label', label: 'Project Type', type: 'string'],
+                        [ id: 'avg', label: 'Average Transcription Time', type: 'number' ]
+                ]
+                return [header: header, statsData: statsData]
+            default:
+                log.warn("Unknown report type: $reportType")
+                return [header: [], statsData: []];
         }
 
     }
 
     def exportCSVReport () {
 
-        def reportType = (params?.reportType != null)? params?.reportType : "fileName"
+        log.debug("Beginning CSV report export")
+        def reportType = StatsType.valueOf(params?.reportType ?: "fileName")
+        def result = getStatData(reportType)
 
-        response.setHeader("Content-Disposition", "attachment;filename="+ reportType + ".csv");
-        response.setContentType("text/csv;charset=utf-8");
-        OutputStream fout = response.getOutputStream();
-        OutputStream bos = new BufferedOutputStream(fout);
-        OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+        log.info("Beginning CSV report export for {} with {} records", reportType, result.get('statsData')?.size())
+        response.setHeader("Content-Disposition", "attachment;filename="+ reportType + ".csv")
+        response.setContentType("text/csv;charset=utf-8")
 
-        CSVWriter writer = new CSVWriter(outputwriter);
+        try {
+            new CSVWriter(new OutputStreamWriter(response.outputStream, Charsets.UTF_8)).withCloseable { CSVWriter writer ->
 
-        def result = getStatData(reportType);
+                if (result.get('header').size() > 0) {
+                    def header = result.get('header')*.get('label')
 
-        if (result.get('header').size() > 0) {
-            def header = [result.get('header')[0].get('label'), result.get('header')[1].get('label')]
+                    def array = result.get('statsData')
 
-            def array = result.get('statsData')
+                    // write header line (field names)
+                    writer.writeNext(header as String[])
 
-            // write header line (field names)
-            writer.writeNext(header as String[])
-
-            // write all the values
-            array.each({
-                i -> writer.writeNext(i as String[])
-            })
+                    // write all the values
+                    array.each({
+                        i -> writer.writeNext(i as String[])
+                    })
+                }
+            }
+            log.info("CSV report export for {} completed without error", reportType)
+        } catch (Exception e) {
+            log.error("Error while writing CSV data for {}", reportType, e)
         }
 
-        writer.close()
     }
 
 }

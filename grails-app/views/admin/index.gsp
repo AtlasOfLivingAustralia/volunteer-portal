@@ -11,8 +11,8 @@
 
     <cl:headerContent title="${message(code: 'default.admin.label', default: 'Administration')}"
                       selectedNavItem="bvpadmin">
-        <small class="muted">Version ${grailsApplication.metadata['app.version']}&nbsp;(built <cl:buildDate/>&nbsp;${grails.util.Environment.current}&nbsp;sha:&nbsp;<a
-                href="https://github.com/AtlasOfLivingAustralia/volunteer-portal/commit/${grailsApplication.metadata['environment.TRAVIS_COMMIT']}">${grailsApplication.metadata['environment.TRAVIS_COMMIT']}</a>)
+        <small class="muted">Version <g:meta name="info.app.version" />&nbsp;(built <cl:buildDate/>&nbsp;${grails.util.Environment.current}&nbsp;sha:&nbsp;<a
+                href="https://github.com/AtlasOfLivingAustralia/volunteer-portal/commit/${g.meta(name: 'info.git.commit')}"><g:meta name="info.git.commit" /></a>)
         </small>
     </cl:headerContent>
 
@@ -60,6 +60,12 @@
                                    href="${createLink(controller: 'frontPage', action: 'edit')}">Configure front page</a>
                             </td>
                             <td>Configure the appearance of the front page</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'wildlifeSpotterAdmin', action: 'edit')}">Configure Wildlife Spotter</a>
+                            </td>
+                            <td>Configure the appearance of the wildlife spotter landing page</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"

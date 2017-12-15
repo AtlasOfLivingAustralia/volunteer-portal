@@ -1,0 +1,2 @@
+ALTER TABLE task ADD COLUMN IF NOT EXISTS time_to_transcribe INTEGER;
+ALTER TABLE task ADD COLUMN IF NOT EXISTS time_to_validate INTEGER;

@@ -4,8 +4,8 @@
 <head>
     <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-    <r:require module="panZoom"/>
+    <asset:stylesheet src="forum.css"/>
+    <asset:stylesheet src="image-viewer"/>
 
     <style type="text/css">
 
@@ -25,8 +25,8 @@
 <cl:headerContent title="${topic.title}" selectedNavItem="forum" hideTitle="${true}">
     <vpf:forumNavItems topic="${topic}"/>
     <div class="buttonBar">
-        <button class="btn btn-default" id="btnReturnToForum" class="button"><img
-                src="${resource(dir: 'images', file: 'left_arrow.png')}"/>&nbsp;Return to forum</button>
+        <button class="btn btn-default" id="btnReturnToForum" class="button"><asset:image
+                src="left_arrow.png"/>&nbsp;Return to forum</button>
         <g:if test="${taskInstance}">
             <button id="btnViewTask" class="btn btn-success">View Task</button>
         </g:if>
@@ -50,7 +50,7 @@
         </div>
     </div>
 </div>
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
     $(function () {
 
@@ -99,6 +99,6 @@
 
     });
 
-</r:script>
+</asset:script>
 </body>
 </html>

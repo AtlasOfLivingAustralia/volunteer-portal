@@ -4,10 +4,9 @@ import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.input.BOMInputStream
 import org.springframework.web.multipart.MultipartFile
-import sun.misc.IOUtils
 
 import java.util.regex.Pattern
-import org.grails.plugins.csv.CSVMapReader
+import grails.plugins.csv.CSVMapReader
 
 class StagingService {
 
@@ -44,7 +43,7 @@ class StagingService {
         def images = []
         files.each {
             if (!it.isDirectory()) {
-                def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(it.name, "UTF-8").replaceAll("\\+", "%20")
+                def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(it.name, "UTF-8").replaceAll("\\+", "%20")
                 images << [file: it, name: it.name, url: url]
             }
         }
@@ -315,7 +314,7 @@ class StagingService {
     }
 
     public String dataFileUrl(Project project) {
-        def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "/${project.id}/staging/datafile/datafile.csv"
+        def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "/${project.id}/staging/datafile/datafile.csv"
         return url
     }
 

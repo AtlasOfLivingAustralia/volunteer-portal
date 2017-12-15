@@ -1,34 +1,33 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
 
-    static allowedMethods = [save: "POST", update: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", cloneTemplate: "POST"]
 
     def userService
     def templateFieldService
     def templateService
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [templateInstanceList: Template.list(params), templateInstanceTotal: Template.count()]
     }
 
-    def create = {
+    def create() {
         def templateInstance = new Template()
         templateInstance.author = userService.currentUserId
         templateInstance.properties = params
         return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
-    def save = {
+    def save() {
         params.author = userService.currentUserId
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
@@ -40,7 +39,7 @@ class TemplateController {
         }
     }
 
-    def show = {
+    def show() {
         def templateInstance = Template.get(params.id)
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -51,7 +50,7 @@ class TemplateController {
         }
     }
 
-    def edit = {
+    def edit() {
         def templateInstance = Template.get(params.id)
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -63,7 +62,7 @@ class TemplateController {
         }
     }
 
-    def update = {
+    def update() {
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             if (params.version) {
@@ -99,7 +98,7 @@ class TemplateController {
         }
     }
 
-    def delete = {
+    def delete() {
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             try {
@@ -267,7 +266,7 @@ class TemplateController {
         def recordValues = [:]
         def imageMetaData = [0: [width: 2048, height: 1433]]
 
-        render(view: '/transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData, isPreview: true])
+        render(view: '/transcribe/templateViews/' + templateInstance.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData, isPreview: true])
     }
 
     def exportFieldsAsCSV() {
@@ -313,22 +312,7 @@ class TemplateController {
         }
 
         if (template && newName) {
-
-            def newTemplate = new Template(name: newName, viewName: template.viewName, author: userService.currentUser.userId)
-
-            newTemplate.viewParams = [:]
-            template.viewParams.keySet().each { key ->
-                newTemplate.viewParams[key] = template.viewParams[key]
-            }
-
-            newTemplate.save(flush: true, failOnError: true)
-            // Now we need to copy over the template fields
-            def fields = TemplateField.findAllByTemplate(template)
-            fields.each { f ->
-                def newField = new TemplateField(f.properties)
-                newField.template = newTemplate
-                newField.save()
-            }
+            templateService.cloneTemplate(template, newName)
         }
 
         redirect(action:'list')
@@ -339,10 +323,11 @@ class TemplateController {
         [templateInstance: template]
     }
 
-    def viewParamsForm() {
+    def viewParamsForm(Template template) {
         def view = (params?.view ?: '') + 'Params'
         try { //if (resExists(view)) {
-            render template: view
+            def model = [templateInstance: template]
+            render template: view, model: model
         } catch (e) { //} else {
             log.trace("Could not render template $view", e)
             render status: 404

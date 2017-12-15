@@ -5,7 +5,7 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:stylesheet src="codemirror/codemirror-monokai.css" />
 </head>
 
 <body class="admin">
@@ -42,11 +42,12 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:javascript src="bootstrap-file-input.js" asset-defer=""/>
+<asset:script type="text/javascript">
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
     });
-</r:script>
+</asset:script>
 </body>
 </html>

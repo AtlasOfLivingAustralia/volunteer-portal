@@ -18,7 +18,7 @@ class InstitutionAdminController {
 
     def index() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [institutionInstanceList: Institution.list(params),institutionInstanceCount: Institution.count()]
+        respond Institution.list(params), model: [institutionInstanceCount: Institution.count()]
     }
 
     def create() {
@@ -38,7 +38,7 @@ class InstitutionAdminController {
 
         institutionInstance.save flush: true
 
-        redirect(action: 'index')
+        redirect(action: 'edit', id: institutionInstance.id)
 
     }
 
@@ -78,7 +78,7 @@ class InstitutionAdminController {
 
         institutionInstance.save flush: true
 
-        redirect(action: 'index')
+        redirect(action: 'edit', id: institutionInstance.id)
 
     }
 

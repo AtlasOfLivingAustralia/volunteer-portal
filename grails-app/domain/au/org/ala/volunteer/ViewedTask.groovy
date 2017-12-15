@@ -3,11 +3,12 @@ package au.org.ala.volunteer
 class ViewedTask implements Serializable {
 
   String userId
-  Task task
   Integer numberOfViews = 0
   Date dateCreated
   Date lastUpdated
   Long lastView
+
+  static belongsTo = [task: Task]
 
   static mapping = {
     version false

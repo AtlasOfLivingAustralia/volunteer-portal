@@ -3,21 +3,19 @@ package au.org.ala.volunteer
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
-import org.grails.plugins.metrics.groovy.Timed
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class IndexController {
 
     def userService
-    def grailsApplication
     def projectService
     def leaderBoardService
     def multimediaService
     def institutionService
 
-    @Timed
     def index() {
+        log.debug("Index Controller, Index action")
         def frontPage = FrontPage.instance()
 
         // News item
@@ -39,11 +37,11 @@ class IndexController {
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }
 
-    def leaderBoardFragment = {
+    def leaderBoardFragment() {
         [:]
     }
 
-    def statsFragment = {
+    def statsFragment() {
         // Stats
         def totalTasks = Task.count()
         def completedTasks = Task.countByFullyTranscribedByIsNotNull()
@@ -51,14 +49,15 @@ class IndexController {
         ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount]
     }
 
-    def stats(long institutionId, long projectId) {
+    def stats(long institutionId, long projectId, String tagName) {
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
+        ProjectType pt = tagName ? ProjectType.findByName(tagName) : null
 
-        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard")
+        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, tagName: $tagName")
 
         def sw = Stopwatch.createStarted()
 
@@ -71,8 +70,12 @@ class IndexController {
             transcriberCount = 0
         } else if (institution) {
             totalTasks = institutionService.countTasksForInstitution(institution)
-            completedTasks = institutionService.countValidatedTasksForInstitution(institution)
+            completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
             transcriberCount = institutionService.getTranscriberCount(institution)
+        } else if (tagName) {
+            totalTasks = projectService.countTasksForTag(pt)
+            completedTasks = projectService.countTranscribedTasksForTag(pt)
+            transcriberCount = projectService.getTranscriberCountForTag(pt)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
             completedTasks = Task.countByFullyTranscribedByIsNotNull()
@@ -91,10 +94,10 @@ class IndexController {
         if (disableHonourBoard) {
             daily = weekly = monthly = alltime = LeaderBoardService.EMPTY_LEADERBOARD_WINNER
         } else { // TODO Project honour board, not needed for v2.3
-            daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution)
-            weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution)
-            monthly = leaderBoardService.winner(LeaderBoardCategory.monthly, institution)
-            alltime = leaderBoardService.winner(LeaderBoardCategory.alltime, institution)
+            daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution, pt)
+            weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution, pt)
+            monthly = leaderBoardService.winner(LeaderBoardCategory.monthly, institution, pt)
+            alltime = leaderBoardService.winner(LeaderBoardCategory.alltime, institution, pt)
         }
 
         // Encode the email addresses for gravatar before sending to the client to prevent
@@ -105,7 +108,7 @@ class IndexController {
 
         sw.start()
 
-        List<LinkedHashMap<String, Serializable>> contributors = generateContributors(institution, projectInstance, maxContributors)
+        List<LinkedHashMap<String, Serializable>> contributors = generateContributors(institution, projectInstance, pt, maxContributors)
 
         log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate contributors section")
 
@@ -115,14 +118,24 @@ class IndexController {
         render result as JSON
     }
 
-    private generateContributors(Institution institution, Project projectInstance, maxContributors) {
+    private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
         def latestTranscribers = Task.withCriteria {
             if (institution) {
                 project {
                     eq('institution', institution)
+                    ne('inactive', true)
+                }
+            } else if (pt) {
+                project {
+                    eq('projectType', pt)
+                    ne('inactive', true)
                 }
             } else if (projectInstance) {
                 eq('project', projectInstance)
+            } else {
+                project {
+                    ne('inactive', true)
+                }
             }
             isNotNull('fullyTranscribedBy')
             projections {
@@ -139,6 +152,9 @@ class IndexController {
         if (institution) {
             latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
             latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
+        } else if (pt) {
+            latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
+            latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
         } else if (projectInstance) {
             latestMessages = ForumMessage.withCriteria {
                 or {

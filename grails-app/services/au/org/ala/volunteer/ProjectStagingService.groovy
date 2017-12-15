@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import org.apache.commons.io.FileUtils
-import org.codehaus.groovy.runtime.IOGroovyMethods
 import org.springframework.web.multipart.MultipartFile
 
 class ProjectStagingService {
@@ -29,6 +28,7 @@ class ProjectStagingService {
         project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
         project.tutorialLinks = projectDescriptor.tutorialLinks
         project.inactive = true
+        project.createdBy = User.findByUserId(Long.parseLong(projectDescriptor.createdBy?.toString()))
 
         if (projectDescriptor.labelIds) {
             Label.findAllByIdInList(projectDescriptor.labelIds).each { project.addToLabels(it) }
@@ -98,11 +98,11 @@ class ProjectStagingService {
     }
 
     def getProjectImageUrl(NewProjectDescriptor project) {
-        return grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-image.jpg"
+        return grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-image.jpg"
     }
 
     def getProjectBackgroundImageUrl(NewProjectDescriptor project) {
-        return grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-background-image.jpg"
+        return grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-background-image.jpg"
     }
 
     private String getProjectImagePath(NewProjectDescriptor project) {

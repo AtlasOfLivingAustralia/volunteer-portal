@@ -1,7 +1,8 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title>Edit Project ${projectInstance?.name}</title>
-    <r:require modules="bootstrap-switch, tinymce-simple"/>
+    <title><cl:pageTitle title="Edit Project ${projectInstance?.name}"/></title>
+    <asset:stylesheet src="bootstrap-switch"/>
+    <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>
 
@@ -17,6 +18,7 @@
         %>
         <h1>Expedition Settings - ${projectInstance.name} <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted>
         </small></h1>
+        <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>
     </cl:headerContent>
 
     <div class="panel panel-default">
@@ -94,7 +96,9 @@
         </div>
     </div>
 </div>
-<script>
+<asset:javascript src="bootstrap-switch" asset-defer="" />
+<asset:javascript src="tinymce-simple" asset-defer="" />
+<asset:script type="text/javascript">
     $(document).ready(function () {
         $("#btnDeleteProject").click(function (e) {
             e.preventDefault();
@@ -112,6 +116,6 @@
         });
 
     });
-</script>
+</asset:script>
 </body>
 </g:applyLayout>

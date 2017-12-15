@@ -4,31 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration - Current users"/></title>
-    <style type="text/css">
-    </style>
-    <r:require modules="angular-moment" />
-    <r:script type='text/javascript'>
-
-    angular.module('currentUsers', ['angularMoment'])
-      .controller("CurrentUsersCtrl",
-        [ '$scope', '$interval', '$http',
-        function($scope, $interval, $http) {
-          $scope.lastRefreshed = new Date();
-          $scope.activities = [];
-
-          function refreshActivity() {
-              $http.get('${createLink(controller: 'admin', action: 'userActivityInfo', format: 'json')}').then(function(resp) {
-                $scope.activities = resp.data.activities;
-                $scope.lastRefreshed = new Date();
-              });
-          }
-
-          refreshActivity();
-          $interval(refreshActivity, 5000);
-        }
-    ]);
-
-    </r:script>
 </head>
 
 <body class="admin" data-ng-app="currentUsers">
@@ -78,5 +53,29 @@
         </div>
     </div>
 </div>
+<asset:javascript src="digivol-module" asset-defer="" />
+<asset:javascript src="angular/angular-moment" asset-defer=""/>
+<asset:script type='text/javascript'>
+
+    angular.module('currentUsers', ['digivol', 'angularMoment'])
+      .controller("CurrentUsersCtrl",
+        [ '$scope', '$interval', '$http',
+        function($scope, $interval, $http) {
+          $scope.lastRefreshed = new Date();
+          $scope.activities = [];
+
+          function refreshActivity() {
+              $http.get('${createLink(controller: 'admin', action: 'userActivityInfo', format: 'json')}').then(function(resp) {
+                $scope.activities = resp.data.activities;
+                $scope.lastRefreshed = new Date();
+              });
+          }
+
+          refreshActivity();
+          $interval(refreshActivity, 5000);
+        }
+    ]);
+
+</asset:script>
 </body>
 </html>

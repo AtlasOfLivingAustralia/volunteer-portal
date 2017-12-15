@@ -10,7 +10,7 @@ class CollectionEventController {
     def collectionEventService
     def logService
 
-    def searchFragment = {
+    def searchFragment() {
         def taskInstance = Task.get(params.int("taskId"))
         def collectors = []
         (0..3).each {
@@ -20,7 +20,7 @@ class CollectionEventController {
         [collectors:collectors, eventDate: eventDate, taskInstance: taskInstance]
     }
 
-    def searchResultsFragment = {
+    def searchResultsFragment() {
 
         def taskInstance = Task.get(params.int("taskId"))
 
@@ -81,13 +81,13 @@ class CollectionEventController {
         [collectors:collectors, eventDate: eventDate, collectionEvents: events, searchWidened: loopcount > 1, taskInstance: taskInstance]
     }
 
-    def load = {
+    def load() {
         def collectionCodes = collectionEventService.getCollectionCodes()?.join(", ");
 
         [collectionCodes: collectionCodes]
     }
 
-    def loadCSV = {
+    def loadCSV() {
         def collectionCode = params.collectionCode;
         MultipartFile f = request.getFile('csvfile')
 
@@ -98,7 +98,7 @@ class CollectionEventController {
         render(view: 'load')
     }
 
-    def getCollectionEventJSON = {
+    def getCollectionEventJSON() {
 
         CollectionEvent event = null;
         if (params.collectionEventId) {

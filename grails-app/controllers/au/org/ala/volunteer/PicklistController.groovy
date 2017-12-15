@@ -4,7 +4,7 @@ import au.com.bytecode.opencsv.CSVReader
 import grails.converters.JSON
 import groovy.json.JsonOutput
 import org.apache.commons.lang3.StringEscapeUtils
-import org.grails.plugins.csv.CSVWriter
+import grails.plugins.csv.CSVWriter
 
 class PicklistController {
 
@@ -14,18 +14,18 @@ class PicklistController {
     def imagesWebService
     def imageServiceService
 
-    def index = {
+    def index () {
         redirect(action: "list", params: params)
     }
 
-    def load = {}
+    def load () {}
 
-    def upload = {
+    def upload () {
         picklistService.load(params.name, params.picklist)
         redirect(action: "list")
     }
     
-    def uploadCsvData = {
+    def uploadCsvData () {
         picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist.toCsvReader(), params.institutionCode)
         redirect(action: "manage")
     }
@@ -36,7 +36,7 @@ class PicklistController {
         redirect(action: "manage")
     }
 
-    def manage = {
+    def manage () {
         def picklistInstitutionCodes = [""]
         picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
         [picklistInstanceList: Picklist.list(), collectionCodes: picklistInstitutionCodes]
@@ -98,7 +98,7 @@ class PicklistController {
             headers.put(entry.toLowerCase(), i)
         }
         int i = 0
-        def pis = []
+        List<PicklistItem> pis = []
         def warnings = []
         while (line = reader.readNext()) {
             def species = getValueFromLine(line, headers, 'species')
@@ -126,7 +126,8 @@ class PicklistController {
 
         log.debug("Deleted $n picklist items for $picklistInstance ($instCode)")
 
-        PicklistItem.saveAll(pis)
+//        PicklistItem.saveAll(pis)
+        pis*.save()
 
         if (warnings) flash.message = "Couldn't find images for ${warnings.join(', ')}"
 
@@ -165,7 +166,7 @@ class PicklistController {
         idx == null ? null : line[idx]
     }
 
-    def loadcsv = {
+    def loadcsv () {
         def picklist = Picklist.get(params.picklistId)
         def institutionCode = params.institutionCode
         def csvdata = ''
@@ -179,7 +180,7 @@ class PicklistController {
         render(view: "manage", model: [picklistData:csvdata, picklistInstanceList: Picklist.list(params), name: picklist?.name, id: picklist?.id, institutionCode: params.institutionCode, collectionCodes: picklistInstitutionCodes])
     }
 
-    def download = {
+    def download () {
         def picklist = Picklist.get(params.picklistId)
         if (picklist) {
             response.setHeader("Content-disposition", "attachment;filename=" + picklist.name + ".csv")
@@ -191,18 +192,18 @@ class PicklistController {
         }
     }
 
-    def list = {
+    def list () {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
     }
 
-    def create = {
+    def create () {
         def picklistInstance = new Picklist()
         picklistInstance.properties = params
         return [picklistInstance: picklistInstance]
     }
 
-    def save = {
+    def save () {
         def picklistInstance = new Picklist(params)
 
         def existing
@@ -227,7 +228,7 @@ class PicklistController {
         }
     }
 
-    def show = {
+    def show () {
         def picklistInstance = Picklist.get(params.id)
         if (!picklistInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
@@ -249,7 +250,7 @@ class PicklistController {
         }
     }
 
-    def edit = {
+    def edit () {
         def picklistInstance = Picklist.get(params.id)
         if (!picklistInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
@@ -260,7 +261,7 @@ class PicklistController {
         }
     }
 
-    def update = {
+    def update () {
         def picklistInstance = Picklist.get(params.id)
         if (picklistInstance) {
             if (params.version) {
@@ -287,7 +288,7 @@ class PicklistController {
         }
     }
 
-    def delete = {
+    def delete () {
         def picklistInstance = Picklist.get(params.id)
         if (picklistInstance) {
             try {

@@ -4,19 +4,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><cl:pageTitle title="Create a new Expedition"/></title>
 
-    <r:require module="digivol-new-project-wizard" />
-
-    <r:style>
-.angular-google-map-container { height: 400px; }
-
-.angular-google-map-container img {
-    max-width: none !important;
-    max-height: none !important;
-}
-span.label i.remove {
-    cursor: pointer;
-}
-    </r:style>
+    <asset:stylesheet src="digivol-new-project-wizard.js" />
 </head>
 
 <body class="admin" data-ng-app="projectWizard">
@@ -116,7 +104,7 @@ span.label i.remove {
                 <label class="col-sm-3 control-label" id="long-description-label">Long description</label>
         
                 <div class="col-sm-6">
-                    <textarea ui-tinymce aria-labelledby="long-description-label" aria-label="Long description" rows="8" class="form-control" name="longDescription"
+                    <textarea ui-tinymce="wizardTinyMceOptions" aria-labelledby="long-description-label" aria-label="Long description" rows="8" class="form-control" name="longDescription"
                                 data-ng-model="project.longDescription" required="required" data-ng-required="true"></textarea>
                 </div>
 
@@ -354,7 +342,7 @@ span.label i.remove {
         <div class="form-group">
         <label class="col-sm-3 control-label" id="tutorial-links-label">Tutorial Links</label>
         <div class="col-sm-9">
-            <textarea ui-tinymce aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
+            <textarea ui-tinymce="wizardTinyMceOptions" aria-labelledby="tutorial-links-label" aria-label="Tutorial Links" ng-model="project.tutorialLinks"></textarea>
         </div>
     </div>
 
@@ -536,7 +524,8 @@ span.label i.remove {
     <span class="label" data-ng-class="colour()" title="{{label.category}}">{{label.value}} <i
             data-ng-if="hasRemove" class="glyphicon glyphicon-remove glyphicon-white remove" data-ng-click="remove({label: label})" data-label-id="{{label.id}}"></i></span>
     </script>
-<r:script>
+<asset:javascript src="digivol-new-project-wizard" asset-defer="" />
+<asset:script>
   createProjectModule({
      stagingId: '${stagingId.encodeAsJavaScript()}',
      cancelUrl: '${createLink(controller: 'project', action: 'wizardCancel', id: id)}',
@@ -554,7 +543,7 @@ span.label i.remove {
      projectTypes: <cl:json value="${projectTypes}" />,
      projectImageUrl: '${projectImageUrl.encodeAsJavaScript()}'
   });
-</r:script>
+</asset:script>
 </div>
 </body>
 </html>

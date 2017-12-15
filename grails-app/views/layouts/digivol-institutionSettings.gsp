@@ -1,8 +1,9 @@
 
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title>Edit Institution ${institutionInstance?.name}</title>
-    <r:require modules="bootstrap-switch, bootbox, tinymce-simple"/>
+    <title><cl:pageTitle title="Edit Institution ${institutionInstance?.name}"/></title>
+    <asset:stylesheet src="bootstrap-switch"/>
+    <g:layoutHead/>
 </head>
 
 <body class="admin">
@@ -51,5 +52,8 @@
         </div>
     </div>
 </div>
+<asset:javascript src="bootstrap-switch" asset-defer="" />
+%{--<asset:javascript src="bootbox" asset-defer="" />--}%
+%{--<asset:javascript src="tinymce-simple" asset-defer=""/>--}%
 </body>
 </g:applyLayout>

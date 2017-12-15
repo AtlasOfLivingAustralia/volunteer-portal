@@ -6,7 +6,7 @@
     <meta name="section" content="home"/>
     <title><cl:pageTitle title="About"/></title>
     <content tag="selectedNavItem">bvp</content>
-    <r:style>
+    <style>
     a[name]:before {
         display: block;
         content: " ";
@@ -14,7 +14,7 @@
         height: 83px;
         visibility: hidden;
     }
-    </r:style>
+    </style>
 </head>
 <body>
 
@@ -104,7 +104,7 @@
                 </p>
                 <p>
                     To become a volunteer you must register on DigiVol before you can join an expedition. To do so you need to provide your email address and a few details
-                    <a href="https://auth.ala.org.au/cas/login?service=http://volunteer.ala.org.au/">here</a>. By registering you will be given access to DigiVol and associated forums. You
+                    <a href="${grailsApplication.config.security.cas.loginUrl}?service=${g.createLink(uri:'/')}">here</a>. By registering you will be given access to DigiVol and associated forums. You
                     will also receive occasional updates and newsletters.
                 </p>
                 <h2 class="body-heading"><a name="transcribing">How to get started.</a></h2>
@@ -133,7 +133,7 @@
                 </p>
                 <h2 class="body-heading"><a name="examples">Examples</a></h2>
                 <p>
-                    <r:img uri="/images/digivol-example.png" class="img-responsive"/>
+                    <asset:image src="digivol-example.png" class="img-responsive"/>
                 </p>
 
             </div>

@@ -1,16 +1,18 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVReader
-import org.grails.plugins.csv.CSVReaderUtils
+import grails.plugins.csv.CSVReaderUtils
+import grails.transaction.Transactional
+
+//import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.FlushMode
 
+@Transactional
 class PicklistService {
 
-    static transactional = true
     def sessionFactory
     def settingsService
     def logService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
      * Loads a CSV of external identifiers and external URLs
@@ -69,7 +71,6 @@ class PicklistService {
                     // Doing this significantly speeds up imports...
                     sessionFactory.currentSession.flush()
                     sessionFactory.currentSession.clear()
-                    propertyInstanceMap.get().clear()
                     log.info "${rowsProcessed} picklist items imported (${picklist.name})"
                 }
             }

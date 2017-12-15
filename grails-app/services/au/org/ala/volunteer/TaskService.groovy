@@ -2,9 +2,11 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
+import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
-import org.grails.plugins.metrics.groovy.Timed
 import org.imgscalr.Scalr
+import org.springframework.core.io.FileSystemResource
+import org.springframework.core.io.Resource
 
 import javax.imageio.ImageIO
 import javax.sql.DataSource
@@ -14,6 +16,7 @@ import groovy.sql.Sql
 import java.sql.Connection
 import java.text.SimpleDateFormat
 
+@Transactional
 class TaskService {
 
     DataSource dataSource
@@ -25,9 +28,7 @@ class TaskService {
     def i18nService
     def userService
 
-    private static final int NUMBER_OF_RECENT_DAYS = 90;
-
-    static transactional = true
+    private static final int NUMBER_OF_RECENT_DAYS = 90
 
   /**
    * This could be a large result set for a system with many registered users.
@@ -86,7 +87,6 @@ class TaskService {
         projectTaskCounts.toMap()
     }
 
-    @Timed
     Map getProjectTranscriberCounts() {
         def volunteerCounts = Task.executeQuery(
             """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
@@ -95,7 +95,6 @@ class TaskService {
         volunteerCounts.toMap()
     }
 
-    @Timed
     Map getProjectValidatorCounts() {
         def volunteerCounts = Task.executeQuery(
                 """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount
@@ -992,18 +991,18 @@ ORDER BY record_idx, name;
             String imagesHome = grailsApplication.config.images.home
             path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
 
-            return getImageMetaDataFromFile(new File(path), imageUrl, rotate)
+            return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
         return null
     }
 
-    def getImageMetaDataFromFile(File file, String imageUrl, int rotate) {
+    def getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
         try {
-            image = ImageIO.read(file)
+            image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
-            log.error("Exception trying to read image path: ${file.getAbsolutePath()}", ex)
+            log.error("Exception trying to read image path: $resource", ex)
         }
 
         if (image) {
@@ -1015,7 +1014,7 @@ ORDER BY record_idx, name;
             }
             return new ImageMetaData(width: width, height: height, url: imageUrl)
         } else {
-            log.info("Could not read image file: ${file?.getAbsolutePath()} - could not get image metadata")
+            log.info("Could not read image file: $resource - could not get image metadata")
         }
 
     }
@@ -1150,7 +1149,7 @@ ORDER BY record_idx, name;
 
     public Integer findMaxSequenceNumber(Project project) {
         def select ="""
-            SELECT MAX(CAST(value as INT)) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
+            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
         """
 
         def sql = new Sql(dataSource: dataSource)
@@ -1195,7 +1194,7 @@ ORDER BY record_idx, name;
     }
 
     @NotTransactional // handle the read only transaction at the sql level
-    // TODO Upgrade to Grails 3.1 and use Gradle, Flyway, JOOQ instead of this GORM rubbish
+    // TODO Use Gradle, Flyway, JOOQ instead of plain SQL
     // Or upgrade Elastic Search, add additional fields to the index for user display names and the like
     // and use it to search.
     /**
@@ -1303,12 +1302,13 @@ ORDER BY record_idx, name;
         final querySnippet
         if (query) {
             querySnippet = """AND (
-p.name = :query
+p.name ilike '%' || :query || '%'
 OR t.id::VARCHAR = :query
-OR c.catalog_number @> ARRAY[ :query ]
-OR p.name = :query
-OR t.external_identifier = :query
-OR vu.display_name = :query
+OR c.catalog_number @> ARRAY[ :query ]::text[]
+OR p.name ilike '%' || :query || '%'
+OR t.external_identifier ilike '%' || :query || '%'
+OR (tu.first_name || ' ' || tu.last_name) ilike '%' || :query || '%'
+OR (vu.first_name || ' ' || vu.last_name) ilike '%' || :query || '%'
 OR ($statusSnippet) = :query
 )
 """
@@ -1320,8 +1320,8 @@ OR ($statusSnippet) = :query
         def selectClause = """
 SELECT
 t.*,
-    tu.display_name AS "transcriber_display_name",
-    vu.display_name AS "validator_display_name",
+    (tu.first_name || ' ' || tu.last_name) AS "transcriber_display_name",
+    (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
     c.catalog_number[1] AS "catalog_number",
     p.name AS "project_name",
     $statusSnippet AS "status",
@@ -1344,7 +1344,7 @@ ORDER BY $sortColumn $order;
 """
         def results = [:]
 
-        final params = [userId: user.userId, project: project?.id]
+        final params = [userId: user.userId, project: project?.id, query: query]
         final countQuery = """
 $withClause
 $countClause

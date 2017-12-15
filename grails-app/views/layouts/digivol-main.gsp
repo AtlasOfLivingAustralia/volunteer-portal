@@ -1,30 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
     <cl:addApplicationMetaTags/>
-    <meta name="description" content="Atlas of Living Australia"/>
-    <meta name="author" content="Atlas of Living Australia"/>
-    <r:external dir="images/" file="favicon.ico"/>
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
-    <r:require modules="digivol, bvp-js, bootbox"/>
-    <g:layoutHead/>
-    <r:layoutResources/>
+    <asset:stylesheet href="digivol.css"/>
+    <g:render template="/layouts/jsUrls" />
+    <g:layoutHead />
 
     <g:render template="/layouts/commonCss" />
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    %{--<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->--}%
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-
 <body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app')}">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -36,7 +33,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <g:link uri="/" class="navbar-brand"><r:img dir="images/2.0/" file="logoDigivol.png"/></g:link>
+            <g:link uri="/" class="navbar-brand"><asset:image src="logoDigivol.png"/></g:link>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
@@ -62,12 +59,14 @@
                         controller="institution" action="list">Institutions</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
                         controller="project" action="list">Expeditions</g:link></li>
+                <li class="${pageProperty(name: 'page.selectedNavItem') == 'wildlife-spotter' ? 'active' : ''}"><g:link
+                        controller="project" action="wildlifespotter">Wildlife Spotter</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
                         controller="tutorials" action="index">Tutorials</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
                         controller="forum" action="index">Forum</g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link
-                        controller="contact" action="index">Contact Us</g:link></li>
+                %{--<li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link--}%
+                        %{--controller="contact" action="index">Contact Us</g:link></li>--}%
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
                     <li>
@@ -153,16 +152,17 @@
 
 <section id="logos-institutions">
     <div class="container">
-        <h2 class="heading">Institutions using digivol</h2>
+        <h2 class="heading">Institutions using DigiVol</h2>
 
         <div class="row">
 
             <div class="col-sm-12">
-                <r:img dir="images/2.0/institutions/" file="logoAustMus@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoCSIRO.svg"/>
-                <r:img dir="images/2.0/institutions/" file="logoMelbourneVictoria@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoVermont@2x.png"/>
-                <r:img dir="images/2.0/institutions/" file="logoSmithsonian@2x.png"/>
+                <asset:image src="institutions/logoAustMus@2x.png"/>
+                <asset:image src="institutions/logoCSIRO.svg"/>
+                <cl:insitutionLogos />
+                %{--<asset:image src="institutions/logoMelbourneVictoria@2x.png"/>--}%
+                %{--<asset:image src="institutions/logoVermont@2x.png"/>--}%
+                %{--<asset:image src="institutions/logoSmithsonian@2x.png"/>--}%
             </div>
 
         </div>
@@ -177,8 +177,8 @@
 
             <div class="row footer-header">
                 <div class="col-sm-12">
-                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><r:img
-                            dir="images/2.0/" file="logoDigivolInverted.png"/></a>
+                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image
+                            src="logoDigivolInverted.png"/></a>
 
                     <div class="social-icons pull-right">
                         <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
@@ -191,7 +191,7 @@
                 <div class="col-sm-3">
                     <h3>Expeditions</h3>
                     <ul>
-                        <li><a href="${g.createLink(controller: 'project', action: 'list')}">View all expeditions</a></li>
+                        <li><g:link controller="project" action="list">View all expeditions</g:link></li>
                     </ul>
                 </div>
 
@@ -239,10 +239,8 @@
 
 <g:render template="/layouts/ga" />
 
-%{--<asset:javascript src="application.js" />--}%
-<g:render template="/layouts/jsUrls" />
-%{--<asset:deferredScripts/>--}%
+<asset:javascript src="digivol.js" />
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 </body>
 </html>

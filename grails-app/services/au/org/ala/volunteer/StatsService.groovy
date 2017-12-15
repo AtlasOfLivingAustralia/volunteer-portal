@@ -1,13 +1,15 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
 import groovy.sql.Sql
 
+import javax.sql.DataSource
+
+@Transactional
 class StatsService {
 
-    static transactional = true
-
     def grailsApplication
-    javax.sql.DataSource dataSource
+    DataSource dataSource
 
     def transcriptionsByMonth() {
 
@@ -21,7 +23,13 @@ class StatsService {
             order by transcribeDate
         """
 
-        return prepareByMonthResults(query)
+        return [
+                cols: [
+                        [id: 'transcriptions', label: 'Transcriptions', type: 'string' ],
+                        [id: 'count', label: 'Count', type: 'number' ]
+                ],
+                rows: prepareByMonthResults(query)
+        ]
     }
 
     def validationsByMonth() {
@@ -36,14 +44,20 @@ class StatsService {
             order by validateDate
         """
 
-        return prepareByMonthResults(query)
+        return [
+                cols: [
+                        [id: 'validations', label: 'Validations', type: 'string' ],
+                        [id: 'count', label: 'Count', type: 'number' ]
+                ],
+                rows: prepareByMonthResults(query)
+        ]
     }
 
     private prepareByMonthResults(String query) {
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
+        def sql = new Sql(dataSource)
         sql.eachRow(query) { row ->
             def taskRow = [month: row.month, count: row.taskCount ]
             results.add(taskRow)
@@ -70,23 +84,22 @@ class StatsService {
 
         }
 
-        return results.sort { it.month };
+        return results.sort { it.month }.collect { [c : [ [v: it.month], [v: it.count] ] ] }
 
     }
 
-    def getNewUser(String startDate, String endDate) {
+    def getNewUser(Date startDate, Date endDate) {
         String select ="""
-            SELECT  count (*) as newVolunteers,
-                    (SELECT count (*) FROM   vp_user) as totalVolunteers
-            FROM    vp_user
-            WHERE   created >= '$startDate' AND
-                    created <= '$endDate'
-        """
+            SELECT  SUM( CASE WHEN v.created >= :startDate AND v.created <= :endDate THEN 1 ELSE 0 END ) as newVolunteers,
+                    COUNT(v.id) as totalVolunteers
+            FROM    vp_user v
+            WHERE   EXISTS ( SELECT 1 FROM task t WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id LIMIT 1)
+        """.stripIndent()
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select) { row ->
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
             def volunteerStats = [row.newVolunteers, row.totalVolunteers]
             results.add(volunteerStats)
         }
@@ -95,23 +108,25 @@ class StatsService {
 
     }
 
-    def getActiveTasks(String startDate, String endDate) {
+    def getActiveTasks(Date startDate, Date endDate) {
 
         String select ="""
-            SELECT vp_user.display_name, count (*)
-            FROM   task, vp_user
-            WHERE  task.fully_transcribed_by = vp_user.user_id AND
-                   task.date_fully_transcribed IS NOT NULL AND
-                   task.date_fully_transcribed >= '$startDate' AND
-                   task.date_fully_transcribed <= '$endDate'
-            GROUP BY vp_user.display_name
+            WITH task_count AS (
+              SELECT fully_transcribed_by as user_id, count(*) as count
+              FROM task
+              WHERE
+                date_fully_transcribed BETWEEN :startDate AND :endDate
+               GROUP BY fully_transcribed_by
+               )
+            SELECT u.user_id, u.first_name || ' ' || u.last_name AS display_name, t.count
+            FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id
             ORDER BY count DESC;
         """
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select) { row ->
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
             def transcriberTask = [row.display_name, row.count ]
             results.add(transcriberTask)
         }
@@ -119,32 +134,33 @@ class StatsService {
         return results
     }
 
-    def getTasksGroupByVolunteerAndProject (String startDate, String endDate) {
+    def getTasksGroupByVolunteerAndProject (Date startDate, Date endDate) {
 
         String select ="""
-            SELECT vp_user.display_name, project.name, count (*)
-            FROM   task, vp_user, project
-            WHERE  task.fully_transcribed_by = vp_user.user_id AND
-                   task.project_id = project.id AND
-                   task.date_fully_transcribed IS NOT NULL AND
-                   task.date_fully_transcribed >= '$startDate' AND
-                   task.date_fully_transcribed <= '$endDate'
-            GROUP BY vp_user.display_name, project.name
+            WITH task_count AS (
+              SELECT t.fully_transcribed_by as user_id, p.id as project_id, count(*) as count
+              FROM task t JOIN project p on t.project_id = p.id
+              WHERE
+                t.date_fully_transcribed BETWEEN :startDate AND :endDate
+               GROUP BY t.fully_transcribed_by, p.id
+               )
+            SELECT u.user_id, u.first_name || ' ' || u.last_name AS display_name, p.name as name, t.count
+            FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id JOIN project p ON t.project_id = p.id
             ORDER BY count DESC;
         """
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select) { row ->
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
             def transcriberTask = [row.display_name, row.name, row.count ]
             results.add(transcriberTask)
         }
 
-        return results;
+        return results
     }
 
-    def getTranscriptionsByDay(String startDate, String endDate) {
+    def getTranscriptionsByDay(Date startDate, Date endDate) {
 
         String select ="""
                         SELECT DISTINCT transcribeDate as day,
@@ -156,16 +172,16 @@ class StatsService {
                           to_char(date_fully_transcribed, 'DD/MM') as transcribeDate
                    FROM task
                    WHERE date_fully_transcribed is not null
-                   AND  date_fully_transcribed >= '$startDate'
-                   AND  task.date_fully_transcribed <= '$endDate' ) as tmp
+                   AND  date_fully_transcribed >= :startDate
+                   AND  task.date_fully_transcribed <= :endDate ) as tmp
             group by transcribeDate
             ORDER BY MAX(transcribeMonth), MAX(transcribeDay)
         """
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select) { row ->
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
             def taskByDay = [row.day, row.taskCount ]
             results.add(taskByDay)
         }
@@ -173,7 +189,7 @@ class StatsService {
         return results
     }
 
-    def getValidationsByDay(String startDate, String endDate) {
+    def getValidationsByDay(Date startDate, Date endDate) {
 
         String select ="""
             SELECT DISTINCT tmp.validateDate as day,
@@ -185,16 +201,16 @@ class StatsService {
                           to_char(date_fully_validated, 'MM') as validateMonth
                    FROM task
                    WHERE date_fully_validated is not null
-                   AND  date_fully_validated >= '$startDate'
-                   AND  task.date_fully_validated <= '$endDate' ) as tmp
+                   AND  date_fully_validated >= :startDate
+                   AND  task.date_fully_validated <= :endDate ) as tmp
             group by validateDate
             order by max(validateMonth), max(validateDay)
         """
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select) { row ->
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
             def taskByDay = [row.day, row.taskCount ]
             results.add(taskByDay)
         }
@@ -205,17 +221,16 @@ class StatsService {
     def getTranscriptionsByInstitution() {
 
         String select ="""
-            SELECT project.featured_owner featured_owner, count(project.name) as task_count
-            FROM task, project
-            WHERE task.project_id = project.id
-            AND task.fully_transcribed_by is NOT null
+            SELECT project.featured_owner featured_owner, count(task.id) as task_count
+            FROM task JOIN project ON task.project_id = project.id
+            WHERE task.fully_transcribed_by is NOT null
             GROUP BY project.featured_owner
             ORDER BY task_count DESC;
         """
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
+        def sql = new Sql(dataSource)
         sql.eachRow(select) { row ->
             def taskByInstitution = [row.featured_owner, row.task_count ]
             results.add(taskByInstitution)
@@ -224,20 +239,50 @@ class StatsService {
         return results
     }
 
+    def getTranscriptionsByInstitutionByMonth() {
+        String select = """
+            SELECT
+                p.featured_owner featured_owner,
+                extract(year from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') || '-' || extract(month from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') as month,
+                count(t.id) as task_count
+            FROM task t JOIN project p on t.project_id = p.id
+            WHERE t.fully_transcribed_by is NOT NULL
+            GROUP BY month, p.featured_owner
+            ORDER BY 1, 2
+""".stripIndent()
+
+        Set<String> columnSet = new HashSet<String>()
+
+        def sql = new Sql(dataSource)
+        def rows = sql.rows(select)
+        rows.forEach { row ->
+            columnSet.add(row.month)
+        }
+        def columns = columnSet.sort().reverse()
+        def data = rows
+                .groupBy { it.featured_owner }
+                .collectEntries { [ (it.key) : it.value.collectEntries { [ (it.month): it.task_count ] } ] }
+                .collect { row ->
+                    [row.key] + columns.collect { row.value[it] ?: 0 }
+                }
+
+        def header = [[ id: 'institution', label: 'Institution', type: 'string' ]] + columns.collect { [ id: it, label: it, type: 'number']}
+        return [header: header, statsData: data]
+    }
+
     def getValidationsByInstitution() {
 
         String select ="""
-            SELECT project.featured_owner featured_owner, count(project.name) as task_count
-            FROM task, project
-            WHERE task.project_id = project.id
-            AND task.fully_validated_by is NOT null
+            SELECT project.featured_owner featured_owner, count(task.id) as task_count
+            FROM task JOIN project ON task.project_id = project.id
+            WHERE task.fully_validated_by is NOT null
             GROUP BY project.featured_owner
             ORDER BY task_count DESC;
         """
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
+        def sql = new Sql(dataSource)
         sql.eachRow(select) { row ->
             def validationsByInstitution = [row.featured_owner, row.task_count ]
             results.add(validationsByInstitution)
@@ -246,7 +291,7 @@ class StatsService {
         return results
     }
 
-    def getHourlyContributions(String startDate, String endDate) {
+    def getHourlyContributions(Date startDate, Date endDate) {
 
         String select = """
             SELECT  trim(leading ' ' from to_char(date_part('hour', updated)::numeric(4,2), '00D99')) as hour,
@@ -254,18 +299,18 @@ class StatsService {
             FROM field,
                  (SELECT count (*) as total
                   FROM  field
-                  WHERE updated >= '$startDate'
-                  AND   updated <= '$endDate') as allContributions
-            WHERE  updated >= '$startDate'
-            AND updated <= '$endDate'
+                  WHERE updated >= :startDate
+                  AND   updated <= :endDate) as allContributions
+            WHERE  updated >= :startDate
+            AND updated <= :endDate
             GROUP BY date_part('hour', updated)
             ORDER BY date_part('hour', updated)
         """
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select) { row ->
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
             def validationsByInstitution = [row.hour, row.contribution ]
             results.add(validationsByInstitution)
         }
@@ -273,4 +318,30 @@ class StatsService {
         return results
     }
 
+    def getTranscriptionTimeByProjectType(Date startDate, Date endDate) {
+        String select = """
+SELECT
+    CASE
+        WHEN p.project_type_id is null THEN 'Total'
+        ELSE (SELECT pt.label FROM project_type pt WHERE pt.id = p.project_type_id)
+    END AS label,
+    p.project_type_id,
+    AVG(t.time_to_transcribe)
+FROM
+    task t
+    JOIN project p on t.project_id = p.id
+WHERE
+  t.time_to_transcribe IS NOT null
+  AND t.date_fully_transcribed BETWEEN :startDate AND :endDate
+GROUP BY ROLLUP (p.project_type_id);
+"""
+        def results = []
+        def sql = new Sql(dataSource)
+        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
+            def transcriptionTimesByProjectType = [row.label, row.avg]
+            results.add(transcriptionTimesByProjectType)
+        }
+
+        return results
+    }
 }

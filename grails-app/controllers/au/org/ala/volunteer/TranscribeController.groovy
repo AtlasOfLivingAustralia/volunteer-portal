@@ -8,16 +8,16 @@ class TranscribeController {
     private static final String HEADER_EXPIRES = "Expires";
     private static final String HEADER_CACHE_CONTROL = "Cache-Control";
 
-    def grailsApplication
     def fieldSyncService
     def auditService
     def taskService
     def userService
     def logService
+    def multimediaService
 
     static allowedMethods = [saveTranscription: "POST"]
 
-    def index = {
+    def index() {
         if (params.id) {
             log.debug("index redirect to showNextFromProject: " + params.id)
             redirect(action: "showNextFromProject", id: params.id)
@@ -28,7 +28,7 @@ class TranscribeController {
 
     }
 
-    def task = {
+    def task() {
 
         def taskInstance = Task.get(params.int('id'))
         def currentUserId = userService.currentUserId
@@ -79,13 +79,13 @@ class TranscribeController {
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
-            render(view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
+            render(view: 'templateViews/' + project.template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
     }
 
-    def showNextAction = {
+    def showNextAction() {
         log.debug("rendering view: nextAction")
         def taskInstance = Task.get(params.id)
         render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: userService.currentUserId])
@@ -152,6 +152,10 @@ class TranscribeController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
+            def seconds = params.getInt('timeTaken', null)
+            if (seconds) {
+                taskInstance.timeToTranscribe = (taskInstance.timeToTranscribe ?: 0) + seconds
+            }
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
@@ -175,7 +179,7 @@ class TranscribeController {
     /**
      * Show the next task for the supplied project.
      */
-    def showNextFromProject = {
+    def showNextFromProject() {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
 

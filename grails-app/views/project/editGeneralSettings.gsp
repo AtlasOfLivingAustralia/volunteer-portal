@@ -1,71 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <r:require modules="institution-dropdown,labelAutocomplete"/>
-    <r:script type="text/javascript">
-        jQuery(function($) {
-            var institutions = <cl:json value="${institutions}"/>;
-            var nameToId = <cl:json value="${institutionsMap}"/>;
-            var labelColourMap = <cl:json value="${labelColourMap}"/>;
-            var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
-
-            setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
-            labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
-                //var obj = JSON.parse(item);
-                var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
-                //showSpinner();
-                $.ajax(updateUrl, {type: 'POST', data: { labelId: item.id }})
-                    .done(function(data) {
-                        $( "<span>" )
-                            .addClass("label")
-                            .addClass(labelColourMap[item.category])
-                            .attr("title", item.category)
-                            .text(item.value)
-                            .append(
-                            $( "<i>" )
-                                .attr("data-label-id", item.id)
-                                .addClass("fa")
-                                .addClass("fa-times-circle")
-                                .addClass("delete-label")
-                            )
-                            .appendTo(
-                                $( "#labels" )
-                            );
-                    })
-                    .fail(function() { alert("Couldn't add label")});
-                    //.always(hideSpinner);
-                return null;
-            });
-
-            function onDeleteClick(e) {
-                var deleteUrl = "${createLink(controller: 'project', action: 'removeLabel', id: projectInstance.id)}";
-            //    showSpinner();
-                $.ajax(deleteUrl, {type: 'POST', data: { labelId: e.target.dataset.labelId }})
-                    .done(function (data) {
-                        var t = $(e.target);
-                        var p = t.parent("span");
-                        p.remove();
-                    })
-                    .fail(function() { alert("Couldn't remove label")});
-                    //.always(hideSpinner);
-            }
-
-            $('#labels').on('click', 'span.label i.delete-label', onDeleteClick);
-        });
-    </r:script>
-    <r:style>
-    div#labels {
-    padding-top: 4px;
-    padding-bottom: 4px;
-    }
-    div#labels > span.label {
-    margin: 2px;
-    }
-    i.delete-label {
-    cursor: pointer;
-    }
-    </r:style>
+    <asset:stylesheet src="institution-dropdown"/>
+    <asset:stylesheet src="label-autocomplete"/>
 </head>
 
 <body>
@@ -75,7 +13,15 @@
 <content tag="adminButtonBar">
 </content>
 
-<g:form method="post" class="form-horizontal">
+<g:hasErrors>
+    <div class="alert alert-danger">
+        <ul>
+            <g:eachError><li><g:message error="${it}"/></li></g:eachError>
+        </ul>
+    </div>
+</g:hasErrors>
+
+<g:form method="post" class="form-horizontal" action="updateGeneralSettings">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
@@ -161,6 +107,15 @@
 
     <div class="form-group">
         <div class="col-md-9 col-md-offset-3">
+            <label for="imageSharingEnabled" class="checkbox">
+                <g:checkBox name="imageSharingEnabled"
+                            checked="${projectInstance.imageSharingEnabled}"/>&nbsp;Enable buttons to share images from this project to social networks
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-9 col-md-offset-3">
             <label for="harvestableByAla" class="checkbox">
                 <g:checkBox name="harvestableByAla"
                             checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia
@@ -170,12 +125,64 @@
 
     <div class="form-group">
         <div class="col-md-9 col-md-offset-3">
-            <g:actionSubmit class="save btn btn-primary" action="updateGeneralSettings"
+            <g:actionSubmit class="save btn btn-primary"
                             value="${message(code: 'default.button.update.label', default: 'Update')}"/>
         </div>
     </div>
 
 </g:form>
+<asset:javascript src="institution-dropdown" asset-defer=""/>
+<asset:javascript src="label-autocomplete" asset-defer=""/>
+<asset:script type="text/javascript">
+    jQuery(function($) {
+        var institutions = <cl:json value="${institutions}"/>;
+            var nameToId = <cl:json value="${institutionsMap}"/>;
+            var labelColourMap = <cl:json value="${labelColourMap}"/>;
+            var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
+            setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
+            labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
+                //var obj = JSON.parse(item);
+                var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
+                //showSpinner();
+                $.ajax(updateUrl, {type: 'POST', data: { labelId: item.id }})
+                    .done(function(data) {
+                        $( "<span>" )
+                            .addClass("label")
+                            .addClass(labelColourMap[item.category])
+                            .attr("title", item.category)
+                            .text(item.value)
+                            .append(
+                            $( "<i>" )
+                                .attr("data-label-id", item.id)
+                                .addClass("fa")
+                                .addClass("fa-times-circle")
+                                .addClass("delete-label")
+                            )
+                            .appendTo(
+                                $( "#labels" )
+                            );
+                    })
+                    .fail(function() { alert("Couldn't add label")});
+                    //.always(hideSpinner);
+                return null;
+            });
+
+            function onDeleteClick(e) {
+                var deleteUrl = "${createLink(controller: 'project', action: 'removeLabel', id: projectInstance.id)}";
+            //    showSpinner();
+                $.ajax(deleteUrl, {type: 'POST', data: { labelId: e.target.dataset.labelId }})
+                    .done(function (data) {
+                        var t = $(e.target);
+                        var p = t.parent("span");
+                        p.remove();
+                    })
+                    .fail(function() { alert("Couldn't remove label")});
+                    //.always(hideSpinner);
+            }
+
+            $('#labels').on('click', 'span.label i.delete-label', onDeleteClick);
+        });
+</asset:script>
 </body>
 </html>

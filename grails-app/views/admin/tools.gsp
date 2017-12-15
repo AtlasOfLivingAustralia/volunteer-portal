@@ -4,29 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.tools.label" default="Administration - Tools"/></title>
-    <style type="text/css">
-    </style>
-    <r:require module="bootbox"/>
-    <r:require modules="codemirror-json, codemirror-codeedit, codemirror-sublime, codemirror-monokai"/>
-    <r:script type='text/javascript'>
-
-        jQuery(function ($) {
-            $('button.confirmation-required').click(function (e) {
-                var confirm = e.target.dataset.confirm || 'Confirm';
-                var cancel = e.target.dataset.cancel || 'Cancel';
-                bootbox.confirm({
-                    message: "Are you sure you want to " + e.target.dataset.message,
-                    callback: function (result) {
-                        if (result) {
-                            window.open(e.target.dataset.href, "_self");
-                        }
-                    }
-
-                });
-            });
-        });
-
-    </r:script>
+    <asset:stylesheet src="codemirror/codemirror-monokai.css"/>
 </head>
 
 <body class="admin">
@@ -51,6 +29,7 @@
                            class="btn btn-default">Expedition-Institution migration tool</a>
                         <a href="${createLink(action: 'stagingTasks')}" class="btn btn-default">Manage staging queue</a>
                         <g:link controller="project" action="archiveList" class="btn btn-warning">Archive Expeditions</g:link>
+                        <g:link action="updateUsers" class="btn btn-default">Update users now</g:link>
                     </div>
                 </div>
             </div>
@@ -98,10 +77,10 @@
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="query" name="query" rows="10">{
-            "query_string": {
-                "query": "query string"
-            }
-        }</textarea>
+    "query_string": {
+        "query": "query string"
+    }
+}</textarea>
                                     </div>
                                 </div>
 
@@ -125,14 +104,14 @@
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="aggregation" name="aggregation" rows="10">{
-            "&lt;aggregation_name>" : {
-                "&lt;aggregation_type>" : {
-                    &lt;aggregation_body>
-                }
-                [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
-            }
-            [,"&lt;aggregation_name_2>" : { ... } ]*
-        }</textarea>
+    "&lt;aggregation_name>" : {
+        "&lt;aggregation_type>" : {
+            &lt;aggregation_body>
+        }
+        [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
+    }
+    [,"&lt;aggregation_name_2>" : { ... } ]*
+}</textarea>
                                     </div>
                                 </div>
 
@@ -150,7 +129,28 @@
     </div>
 </div>
 </body>
-<r:script>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:javascript src="codemirror/codemirror-js-sublime" asset-defer="" />
+<asset:script type='text/javascript'>
+
+    jQuery(function ($) {
+        $('button.confirmation-required').click(function (e) {
+            var confirm = e.target.dataset.confirm || 'Confirm';
+            var cancel = e.target.dataset.cancel || 'Cancel';
+            bootbox.confirm({
+                message: "Are you sure you want to " + e.target.dataset.message,
+                callback: function (result) {
+                    if (result) {
+                        window.open(e.target.dataset.href, "_self");
+                    }
+                }
+
+            });
+        });
+    });
+
+</asset:script>
+<asset:script type='text/javascript'>
 
 
         $(document).ready(function() {
@@ -194,5 +194,5 @@
             aEditor.getDoc().setValue(q.a ? JSON.stringify(q.a, null, 2) : "");
         });
 
-</r:script>
+</asset:script>
 </html>

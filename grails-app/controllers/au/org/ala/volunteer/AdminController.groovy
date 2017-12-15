@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import groovy.time.TimeCategory
 import org.elasticsearch.action.search.SearchType
-import org.grails.plugins.csv.CSVWriter
+import grails.plugins.csv.CSVWriter
 import org.hibernate.FlushMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat
 class AdminController {
 
     def taskService
-    def grailsApplication
     def grailsCacheAdminService
     def tutorialService
     def sessionFactory
@@ -23,11 +22,12 @@ class AdminController {
     def taskLoadService
     def eventSourceService
 
-    def index = {
+    def index() {
         checkAdmin()
+        return
     }
 
-    def mailingList = {
+    def mailingList() {
         if (checkAdmin()) {
             def userIds = User.withCriteria {
                 projections {
@@ -225,13 +225,19 @@ class AdminController {
 
     def userActivityInfo() {
         def activities = UserActivity.list([sort:'timeLastActivity', order:'desc'])
-        def emailToIdMap = User.withCriteria {
-            inList('email', activities*.userId)
-            projections {
-                property('email')
-                property('userId')
-            }
-        }.toMap()
+        def emailToIdMap
+        if (activities) {
+            emailToIdMap = User.withCriteria {
+                inList('email', activities*.userId)
+                projections {
+                    property('email')
+                    property('userId')
+                }
+            }.toMap()
+        } else {
+            emailToIdMap = [:]
+        }
+
         def actWithOpenEventSources = activities*.properties.collect { it + [ openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '') ] }
         respond([activities: actWithOpenEventSources])
     }

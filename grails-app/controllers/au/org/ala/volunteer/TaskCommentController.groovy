@@ -8,10 +8,10 @@ class TaskCommentController {
 
     def authService, userService
 
-    def index = {
+    def index() {
     }
 
-    def saveComment = {
+    def saveComment() {
 
         if (params.taskId && params.comment) {
             def username = AuthenticationCookieUtils.getUserName(request)
@@ -28,7 +28,7 @@ class TaskCommentController {
         render([message: 'failed! Missing a required parameter'] as JSON)
     }
 
-    def deleteComment = {
+    def deleteComment() {
         if (params.commentId) {
             def commentId = params.int("commentId")
             def comment = TaskComment.get(commentId);
@@ -43,7 +43,7 @@ class TaskCommentController {
         }
     }
 
-    def getCommentsAjax = {
+    def getCommentsAjax() {
         def w = new StringWriter()
 
         def task = Task.get(params.int("taskId"))

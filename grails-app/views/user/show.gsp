@@ -7,10 +7,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <gvisualization:apiImport/>
-    <r:require module="digivol-notebook"/>
+    <g:if test="${project}">
+        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.name ?: 'Unknown project'])}"/></title>
+    </g:if>
+    <g:else>
+        <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
+    </g:else>
+    <cl:googleChartsScript />
+    <cl:googleMapsScript callback="onGmapsReady"/>
 </head>
 
 <body data-ng-app="notebook">
@@ -40,6 +44,7 @@
             <div class="col-sm-6">
                 <span class="pre-header">Volunteer Profile</span>
                 <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? " (that's you!)" : ''}</h1>
+                <g:if test="${project}"><h2>${project.name}</h2></g:if>
                 <div class="row">
                     <div class="col-xs-4">
                         <h2><strong>${score}</strong></h2>
@@ -132,7 +137,7 @@
 
 </cl:headerContent>
 
-<section id="user-progress" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
+<section id="user-progress" class="in-body" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
     <uib-tabset active="nbtCtrl.selectedTab" template-url="notebookTabSet.html">
         %{--<uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">--}%
             %{--<uib-tab-heading>--}%
@@ -191,26 +196,7 @@
     </div>
 </section>
 
-<script id="notebookTabSet.html" type="text/ng-template">
-<div>
-    <div class="container">
-        <ul class="nav nav-{{tabset.type || 'tabs'}}" ng-class="{'nav-stacked': vertical, 'nav-justified': justified}"
-            ng-transclude></ul>
-    </div>
-
-    <div class="tab-content-bg">
-        <div class="container">
-            <div class="tab-content">
-                <div class="tab-pane"
-                     ng-repeat="tab in tabset.tabs"
-                     ng-class="{active: tabset.active === tab.index}"
-                     uib-tab-content-transclude="tab">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</script>
+<g:render template="/common/angularBootstrapTabSet" />
 
 <script id="taskList.html" type="text/ng-template">
 <a id="tasklist-top-{{ $ctrl.tabIndex }}"></a>
@@ -237,7 +223,7 @@
                 <div class="input-group">
                     <input type="text" id="searchbox" ng-model="$ctrl.query" name="searchbox" class="form-control input-lg" placeholder="${message(code:"default.search.label")}" />
                     <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="button" ng-click="$ctrl.doSearch">
+                        <button class="btn btn-info btn-lg" type="button" ng-click="$ctrl.load()">
                             <i class="glyphicon glyphicon-search"></i>
                         </button>
                     </span>
@@ -341,10 +327,10 @@
                            ng-href="${createLink(controller: 'task', action:'show')}/{{taskInstance.id}}">
                             <g:message code="action.view.label" />
                         </a>
-                        <a ng-show="taskInstance.fullyTranscribedBy && isValidator(taskInstance.project)" class="btn btn-default btn-xs"
+                        <a ng-show="taskInstance.fullyTranscribedBy && taskInstance.isValidator" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller: 'validate', action:'task')}/{{taskInstance.id}}">
-                            <span ng-show="taskInstance.status == 'validated'"><g:message code="action.review.label" /></span>
-                            <span ng-hide="taskInstance.status == 'validated'"><g:message code="action.validate.label" /></span>
+                            <span ng-show="taskInstance.status == 'Validated'"><g:message code="action.review.label" /></span>
+                            <span ng-hide="taskInstance.status == 'Validated'"><g:message code="action.validate.label" /></span>
                         </a>
                         <a ng-hide="taskInstance.fullyTranscribedBy" class="btn btn-default btn-small"
                            ng-href="${createLink(controller:'transcribe', action:'task')}/{{taskInstance.id}}">
@@ -464,12 +450,12 @@
     <button class="btn btn-primary" type="button" ng-click="$ctrl.close()">OK</button>
 </div>
 </script>
-
-<r:script>
+<asset:javascript src="digivol-notebook" asset-defer=""/>
+<asset:script type="text/javascript">
     var json = <cl:json value="${[
         selectedTab: selectedTab,
         userInstance: userInstance,
-        projectInstance: projectInstance,
+        project: project,
         isValidator: isValidator,
         isAdmin: isAdmin,
         isCurrentUser: userInstance?.userId == currentUser,
@@ -484,7 +470,7 @@
         auditViewUrl: createLink(controller: 'task', action: 'viewTask')
 ]}" />
     digivolNotebooksTabs(json);
-</r:script>
+</asset:script>
 
 </body>
 </html>

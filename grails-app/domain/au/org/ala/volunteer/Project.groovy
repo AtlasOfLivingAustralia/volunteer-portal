@@ -28,12 +28,15 @@ class Project implements Serializable {
     Double mapInitLatitude
     Double mapInitLongitude
     Boolean harvestableByAla = true
+    Boolean imageSharingEnabled = false
     Boolean archived = false
 
     Date dateCreated
     Date lastUpdated
 
     Integer version
+
+    User createdBy
 
     def grailsApplication
     def grailsLinkGenerator
@@ -45,18 +48,20 @@ class Project implements Serializable {
 
     static mapping = {
         autoTimestamp true
+        description sqlType: 'text'
         tasks cascade: 'all,delete-orphan'
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
         harvestableByAla defaultValue: true
         version defaultValue: '0'
+        imageSharingEnabled defaultValue: 'false'
         archived defaultValue: 'false'
     }
 
     static constraints = {
         name maxSize: 200
-        description nullable: true, maxSize: 3000, widget: 'textarea'
+        description nullable: true, maxSize: 20000, widget: 'textarea'
         template nullable: true
         created nullable: true
         showMap nullable: true
@@ -80,6 +85,7 @@ class Project implements Serializable {
         mapInitLatitude nullable: true
         mapInitLongitude nullable: true
         harvestableByAla nullable: true
+        createdBy nullable: true
     }
 
     public String toString() {
@@ -96,10 +102,12 @@ class Project implements Serializable {
         def localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-image.jpg"
         def file = new File(localPath)
         if (!file.exists()) {
-            return grailsLinkGenerator.resource([dir: '/images/banners', file:'default-expedition-large.jpg'])
+            return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
 
         } else {
-            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-image.jpg"
+            def urlPrefix = grailsApplication.config.images.urlPrefix
+            def infix = urlPrefix.endsWith('/') ? '' : '/'
+            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${id}/expedition-image.jpg"
         }
     }
 

@@ -1,0 +1,1 @@
+ALTER TABLE vp_user DROP COLUMN IF EXISTS display_name;

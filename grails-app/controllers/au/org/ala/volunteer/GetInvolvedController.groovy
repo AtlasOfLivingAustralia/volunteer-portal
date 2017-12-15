@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 class GetInvolvedController {
 
-    def index = {
+    def index() {
         render(view: '/getInvolved')
     }
 

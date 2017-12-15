@@ -356,10 +356,10 @@ class TranscribeTagLib {
 
             if (!imageMetaData) {
 
-                def sampleFile = grailsApplication.mainContext.getResource("images/sample-task.jpg").file
+                def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg")
 
 
-                def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
+                def sampleUrl = resource(file:'/sample-task.jpg')
                 imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
                 mb.div(class:'alert alert-danger') {
                     button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
@@ -403,9 +403,10 @@ class TranscribeTagLib {
                 }
             }
             if (attrs.height) {
-                mb.script(type:"text/javascript") {
-                    mkp.yieldUnescaped("   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );")
-                }
+                asset.script([type: 'text/javascript', 'asset-defer': ''], "   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );" )
+//                mb.script(type:"text/javascript") {
+//                    mkp.yieldUnescaped("   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );")
+//                }
             }
         }
     }
@@ -501,7 +502,7 @@ class TranscribeTagLib {
 
         def bodyContent = body()
 
-        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
+        def nextSectionNumberClosure = this.&nextSectionNumber
 
         mb.div(class:'panel panel-default transcribeSection') {
             div(class: 'panel-body') {
@@ -569,8 +570,6 @@ class TranscribeTagLib {
         def mb = new MarkupBuilder(out)
 
         def bodyContent = body()
-
-        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
 
         renderFieldsInColumns(1, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
 
@@ -660,7 +659,7 @@ class TranscribeTagLib {
         def max = taskService.findMaxSequenceNumber(project)
         def results
         if (max) {
-            def previous = (Math.max(0, number - count))..<number
+            def previous = (Math.max(1, number - count))..<number
             def next = number == max ? [] : (number+1)..(Math.min(max,number+count))
             results = [previous: previous, next: next]
         } else {
@@ -677,7 +676,7 @@ class TranscribeTagLib {
         } else if (task?.project) {
             out << task.project.featuredImage
         } else {
-            out << grailsLinkGenerator.resource( dir: 'images/2.0/', file: 'logoDigivolGrey.png' )
+            out << grailsLinkGenerator.resource( file: '/logoDigivolGrey.png' )
         }
     }
 
@@ -707,6 +706,17 @@ class TranscribeTagLib {
         }
 
         out << m
+    }
+
+    private def nextSectionNumber() {
+        def sectionNumber = ++(request.getAttribute('sectionNumber') ?: 0)
+        request.setAttribute('sectionNumber', sectionNumber)
+        return sectionNumber
+    }
+
+    def sectionNumber = { attrs, body ->
+        def sectionNumber = nextSectionNumber()
+        out << sectionNumber
     }
 
 }

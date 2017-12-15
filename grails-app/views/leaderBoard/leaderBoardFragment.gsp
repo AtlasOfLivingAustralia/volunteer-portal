@@ -17,7 +17,7 @@
                 </th>
             </tr>
             <tr resultLink="${createLink(action: 'ajaxLeaderBoardCategoryWinner', params: [category: section.category, institutionId: institutionInstance?.id])}">
-                <td><img src="${resource(dir: 'images', file: 'spinner.gif')}"/></td>
+                <td><img src="${resource(file: '/spinner.gif')}"/></td>
                 <td></td>
             </tr>
         </g:each>

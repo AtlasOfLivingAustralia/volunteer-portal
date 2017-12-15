@@ -6,8 +6,7 @@
     <meta name="layout" content="digivol-institutionSettings"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <g:setProvider library="jquery"/>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:stylesheet src="bootstrap-colorpicker"/>
 </head>
 
 <body>
@@ -29,12 +28,12 @@
         </ul>
     </g:hasErrors>
 
-    <g:form class="form-horizontal" url="[controller: 'institutionAdmin', id: institutionInstance?.id, action: 'update']" method="PUT">
+    <g:form class="form-horizontal" controller="institutionAdmin" action="update" id="${institutionInstance?.id}" method="PUT">
         <g:hiddenField name="version" value="${institutionInstance?.version}"/>
         <g:render template="form"/>
         <div class="form-group">
             <div class="col-md-offset-3 col-md-9">
-                <g:actionSubmit class="save btn btn-primary" action="update"
+                <g:submitButton class="save btn btn-primary" name="update"
                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
             </div>
         </div>
@@ -62,7 +61,8 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:script>
 
             $(function() {
                 $("#btnUploadLogoImage").click(function(e) {
@@ -74,6 +74,6 @@
                 });
             });
 
-</r:script>
+</asset:script>
 </body>
 </html>

@@ -1,30 +1,57 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+import com.google.common.io.Resources
+import grails.core.GrailsApplication
+import grails.converters.JSON
+import grails.transaction.Transactional
+import grails.util.Environment
 
 import java.util.regex.Pattern
 
 class TemplateService {
 
-    def grailsApplication
+    GrailsApplication grailsApplication
+    def userService
+
+    @Transactional
+    def cloneTemplate(Template template, String newName) {
+        def newTemplate = new Template(name: newName, viewName: template.viewName, author: userService.currentUser.userId)
+
+        newTemplate.viewParams = [:]
+        template.viewParams.entrySet().each { entry ->
+            newTemplate.viewParams[entry.key] = entry.value
+        }
+
+        newTemplate.viewParams2 = JSON.parse((template.viewParams2 as JSON).toString()) as Map
+
+        newTemplate.save()
+        // Now we need to copy over the template fields
+        def fields = TemplateField.findAllByTemplate(template)
+        Field.saveAll(fields.collect { f ->
+            def newField = new TemplateField(f.properties)
+            newField.template = newTemplate
+            newField
+        })
+    }
 
     def getAvailableTemplateViews() {
         def views = []
-        if (grailsApplication.isWarDeployed()) {
-            findWarGsps '/WEB-INF/grails-app/views/transcribe', views
+
+        if (Environment.isDevelopmentEnvironmentAvailable()) {
+            log.info("Checking for dev templates")
+            findDevGsps 'grails-app/views/transcribe/templateViews', views
         } else {
-            findDevGsps 'grails-app/views/transcribe', views
+            log.info("Checking for WAR deployed templates")
+            findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
         }
+        log.info("Got views: {}", views)
 
-        def pattern = Pattern.compile("^transcribe/_(.*Transcribe)[.]gsp\$")
+        def pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
 
-        def results = []
-        views.each { String viewName ->
+        def results = views.collectMany { String viewName ->
             def m = pattern.matcher(viewName)
-            if (m.matches()) {
-                results << m.group(1)
-            }
-        }
+            m.matches() ? [m.group(1)] : []
+        }.sort()
 
         return results
     }
@@ -39,14 +66,18 @@ class TemplateService {
         }
     }
 
-    private void findWarGsps(current, gsps) {
-        def servletContext = SCH.servletContext
-        for (path in servletContext.getResourcePaths(current)) {
-            if (path.endsWith('.gsp')) {
-                gsps << path - '/WEB-INF/grails-app/views/'
-            } else {
-                findWarGsps path, gsps
+    private void  findWarGsps(String current, List<String> gsps) {
+        try {
+            def properties = Resources.getResource('/gsp/views.properties').withReader('UTF-8') { r ->
+                def p = new Properties()
+                p.load(r)
+                p
             }
+            def keys = properties.keySet()
+            log.debug("Got keys from views.properties {}", keys)
+            keys.findAll { it.toString().startsWith(current) }.collect(gsps) { it - '/WEB-INF/grails-app/views/' }
+        } catch (e) {
+            log.error("Error loading views.properties!", e)
         }
     }
 

@@ -1,0 +1,47 @@
+diff --git a/grails-app/controllers/au/org/ala/volunteer/ForumController.groovy b/grails-app/controllers/au/org/ala/volunteer/ForumController.groovy
+index b4385002..7ad11a3e 100644
+--- a/grails-app/controllers/au/org/ala/volunteer/ForumController.groovy
++++ b/grails-app/controllers/au/org/ala/volunteer/ForumController.groovy
+@@ -35,9 +35,11 @@ class ForumController {
+                 def userInstance = userService.currentUser
+                 def isWatching = false
+ 
+-                def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
+-                if (projectWatchList) {
+-                    isWatching = projectWatchList.users.find { it.id == userInstance.id }
++                if (userInstance) {
++                    def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
++                    if (projectWatchList) {
++                        isWatching = projectWatchList.users.find { it.id == userInstance.id }
++                    }
+                 }
+ 
+                 return [projectInstance: projectInstance, topics: topics, isWatching: isWatching]
+diff --git a/grails-app/services/au/org/ala/volunteer/TaskService.groovy b/grails-app/services/au/org/ala/volunteer/TaskService.groovy
+index 085f5c22..1182d465 100644
+--- a/grails-app/services/au/org/ala/volunteer/TaskService.groovy
++++ b/grails-app/services/au/org/ala/volunteer/TaskService.groovy
+@@ -1150,7 +1150,7 @@ ORDER BY record_idx, name;
+ 
+     public Integer findMaxSequenceNumber(Project project) {
+         def select ="""
+-            SELECT MAX(CAST(value as INT)) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
++            SELECT COALESCE(MAX(CAST(value as INT)), 0) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
+         """
+ 
+         def sql = new Sql(dataSource: dataSource)
+diff --git a/grails-app/services/au/org/ala/volunteer/UserService.groovy b/grails-app/services/au/org/ala/volunteer/UserService.groovy
+index 276a8b24..0376c389 100644
+--- a/grails-app/services/au/org/ala/volunteer/UserService.groovy
++++ b/grails-app/services/au/org/ala/volunteer/UserService.groovy
+@@ -228,8 +228,9 @@ class UserService {
+     }
+ 
+     def isUserForumModerator(User user, Project projectInstance) {
++        if (!user) return false
+         def moderators = getUsersWithRole("forum_moderator", projectInstance)
+-        return moderators.find { it.userId == user.userId }
++        return moderators.find { it?.userId == user?.userId }
+     }
+ 
+     /**

@@ -1,11 +1,11 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
 
+@Transactional
 class MultimediaService {
-
-    static transactional = true
 
     def logService
     def grailsApplication
@@ -36,7 +36,7 @@ class MultimediaService {
     public String getImageThumbnailUrl(Multimedia media, boolean absolute = false) {
         if (media == null) {
             log.warn("getImageThumbnailUrl called for null media object")
-            return grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+            return grailsLinkGenerator.resource(file:'/sample-task-thumbnail.jpg')
         }
         String filePath = filePathFor(media) ?: ''
         String filename = filenameFromFilePath(media.filePathToThumbnail) ?: ''
@@ -46,7 +46,7 @@ class MultimediaService {
             return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
         } else {
             log.warn("Thumbnail requested for $media but $file doesn't exist")
-            return grailsLinkGenerator.resource(dir:'/images', file:'sample-task-thumbnail.jpg', absolute: absolute)
+            return grailsLinkGenerator.resource(file:'/sample-task-thumbnail.jpg', absolute: absolute)
         }
     }
 

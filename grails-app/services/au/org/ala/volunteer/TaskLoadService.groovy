@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import com.google.common.collect.Lists
+import grails.transaction.Transactional
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import org.apache.commons.io.FileUtils
@@ -11,6 +12,7 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.regex.Pattern
 
+@Transactional
 class TaskLoadService {
 
     private static BlockingQueue<TaskDescriptor> _loadQueue = new LinkedBlockingQueue<TaskDescriptor>()
@@ -28,8 +30,6 @@ class TaskLoadService {
     def logService
     def stagingService
     def fieldService
-
-    static transactional = true
 
     def status() {
         def completedTasks = _currentBatchSize - _loadQueue.size();
@@ -383,21 +383,7 @@ class TaskLoadService {
 
                         if (existing && existing.size() > 0) {
                             if (replaceDuplicates) {
-                                for (Task t : existing) {
-                                    t.discard()
-                                    Task.withNewSession {
-                                        t.attach()
-                                        def fields = Field.findAllByTask(t)
-                                        fields?.each {
-                                            it.delete(flush: true)
-                                        }
-                                        def mm = Multimedia.findAllByTask(t)
-                                        mm.each {
-                                            it.delete(flush: true)
-                                        }
-                                        t.delete(flush: true);
-                                    }
-                                }
+                                Task.deleteAll(existing)
                             } else {
                                 synchronized (_report) {
                                     _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: taskDesc, message: "Skipped because task id already exists", time: Calendar.instance.time))

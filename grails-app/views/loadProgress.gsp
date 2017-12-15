@@ -6,7 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>--}%
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
 
           (function poll() {
              setTimeout(function() {
@@ -14,36 +14,36 @@
                  $.ajax({ url: "${createLink(controller: 'ajax', action: 'loadProgress')}", success: function(data) {
 
                    if (data.queueLength > 0) {
-                     $("#progress").css("display", "block")
-                     $("#notasks").css("display", "none")
+                     $("#progress").css("display", "block");
+                     $("#notasks").css("display", "none");
 
                      $("#total_records").text("" + data.totalTasks);
                      $("#start_time").text("" + data.startTime);
                      $("#start_by").text("" + data.startedBy);
                      $("#completed_tasks").text("" + data.tasksLoaded);
                      var percent =  Math.round((data.tasksLoaded / data.totalTasks) * 100);
-                     $("#progressBar").css("width", "" + percent + "%")
+                     $("#progressBar").css("width", "" + percent + "%");
                      $("#completed_percent").text("" + percent);
                      $("#current_item").text("" + data.currentItem);
                      $("#time_remaining").text("" + data.timeRemaining);
                      $("#error_count").text("" + data.errorCount);
 
                    } else {
-                     $("#progress").css("display", "none")
-                     $("#notasks").css("display", "block")
+                     $("#progress").css("display", "none");
+                     $("#notasks").css("display", "block");
                    }
 
                    if (data.errorCount > 0) {
-                     $("#error-link").css("display", "block")
+                     $("#error-link").css("display", "block");
                    } else {
-                     $("#error-link").css("display", "none")
+                     $("#error-link").css("display", "none");
                    }
 
                  }, dataType: "json", complete: poll });
 
               }, 1000);
           })();
-    </r:script>
+    </asset:script>
 
 </head>
 

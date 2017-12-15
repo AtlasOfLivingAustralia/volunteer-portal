@@ -1,15 +1,17 @@
 package au.org.ala.volunteer
 
+import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.gson.GsonBuilder
 import grails.converters.JSON
 import grails.util.Environment
 import grails.util.Metadata
 import groovy.time.TimeCategory
-import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
+import org.grails.web.mapping.CachingLinkGenerator
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.servlet.support.RequestDataValueProcessor
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 class VolunteerTagLib {
@@ -17,7 +19,6 @@ class VolunteerTagLib {
     static namespace = 'cl'
 
     def userService
-    def grailsApplication
     def settingsService
     def multimediaService
     def markdownService
@@ -43,6 +44,12 @@ class VolunteerTagLib {
 
     def showCurrentUserEmail = {attrs, body ->
         out << userService.authService.email
+    }
+
+    def urlAppend = {attrs, body ->
+        def base = attrs.remove('base')?.toString() ?: ''
+        def path = attrs.remove('path')?.toString() ?: ''
+        out << (base?.endsWith('/') ? base + path : base + '/' + path)
     }
 
     def isLoggedIn = { attrs, body ->
@@ -181,25 +188,6 @@ class VolunteerTagLib {
             mb.mkp.yieldUnescaped("&nbsp;")
         }
     }
-
-    /**
-     * Show map of records based on UID
-     *
-     * - content is loaded by ajax calls
-     */
-    def recordsMap = {
-        out <<
-            "<div class='recordsMap'>" +
-            " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-            " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-            "</div>" +
-            "<div class='learnMaps'><span class='asterisk-container'><a href='${grailsApplication.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
-
-        /*out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-                "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-                "</div>"*/
-    }
-
 
     /**
      * Writes a para with date last updated.
@@ -557,10 +545,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -588,10 +576,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -652,6 +640,45 @@ class VolunteerTagLib {
      */
     def institutionImageUrl = { attrs, body ->
         out << institutionService.getImageUrl(Institution.get(attrs.id as Long))
+    }
+
+    def imageUrlPrefix = { attrs, body ->
+        def name = attrs.remove('name')
+        def type = attrs.remove('type')
+        if (name) {
+            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}/$name"
+        } else {
+            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}"
+        }
+    }
+
+    def sizedImage = { attrs, body ->
+        def title = attrs.remove('title')
+        def alt = attrs.remove('alt')
+        def cssClass = attrs.remove('class')
+        out << "<img src="
+        out << sizedImageUrl(attrs,body)
+        if (cssClass) {
+            out << " class=\"${cssClass.encodeAsHTML()}\""
+        }
+        if (title) {
+            out << " title=\"${title.encodeAsHTML()}\""
+        }
+        if (alt) {
+            out << " alt=\"${alt.encodeAsHTML()}\""
+        }
+        out << "/>"
+    }
+
+    def sizedImageUrl = { attrs, body ->
+        def prefix = attrs.remove('prefix')
+        def name = attrs.remove('name')
+        def width = attrs.remove('width')
+        def height = attrs.remove('height')
+        def format = attrs.remove('format') ?: 'jpg'
+        def template = attrs.remove('template')?.toBoolean()
+        String url = g.createLink(controller: 'image', action: 'size', params: [prefix: prefix, width: width, height: height, name: name, format: format])
+        out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
     }
 
 
@@ -813,12 +840,29 @@ class VolunteerTagLib {
      * Updated to use properties provided by build-info plugin
      */
     def addApplicationMetaTags = { attrs ->
-        def metaList = ['app.version', 'app.grails.version', 'build.date', 'scm.version', 'environment.TRAVIS_JDK_VERSION', 'environment.TRAVIS_REPO_SLUG', 'environment.TRAVIS_BUILD_NUMBER', 'environment.TRAVIS_TAG', 'environment.TRAVIS_BRANCH', 'environment.TRAVIS_COMMIT']
+        def metaList = [
+                'app.version', 
+                'app.grailsVersion',
+                'build.ci',
+                'build.date', 
+                'build.jdk', 
+                'build.number', 
+                'git.branch', 
+                'git.commit',
+                'git.slug', 
+                'git.tag', 
+                'git.timestamp'
+        ]
         def mb = new MarkupBuilder(out)
 
         mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
-            mb.meta(name:it, content: g.meta(name:it))
+            def content = g.meta(name: 'info.' + it)
+            if (content) {
+                mb.meta(name:it, content: content)
+            } else {
+                log.debug("info.$it not found in meta info")
+            }
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }
@@ -842,11 +886,15 @@ class VolunteerTagLib {
     }
 
     def buildDate = { attrs ->
-        def bd = Metadata.current['build.date']
+        def bd = Metadata.current['info.build.date']
         log.debug("Build Date type is ${bd?.class?.name}")
         def df = new SimpleDateFormat('MMM d, yyyy')
         if (bd) {
-            df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
+            try {
+                df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
+            } catch (e) {
+                df.format(new Date())
+            }
         } else {
             df.format(new Date())
         }
@@ -906,4 +954,74 @@ class VolunteerTagLib {
         def size = attrs.remove('size')
         return FileUtils.byteCountToDisplaySize(size)
     }
+
+    /**
+     * Display text describing who created the project and the date it was created on.
+     * parameters
+     * project - required - project instance
+     */
+    def projectCreatedBy = { attrs, body ->
+        Project project = attrs.project
+        User user = project.createdBy
+
+        if(user){
+            String date = g.formatDate(date:project.dateCreated, format: "dd MMMM, yyyy")
+            out << "<small>Created by <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> on ${date}.</small>"
+        }
+    }
+
+    def insitutionLogos = { attrs, body ->
+        def logos = settingsService.getSetting(SettingDefinition.FrontPageLogos)
+        logos.each {
+            out << "<img src=\"${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/logos/$it\">"
+        }
+    }
+
+    @Value('${google.maps.key}')
+    String mapsApiKey
+
+    /**
+     * Insert a script tag for the google maps api using the google.maps.key property if one
+     * is set.
+     * @attr callback The callback function to use
+     */
+    def googleMapsScript = { attrs, body ->
+        if ( attrs.containsKey('if') && !attrs.remove('if') ) return
+        def url = "https://maps.googleapis.com/maps/api/js"
+        def opts = [:]
+        def callback = attrs.remove('callback')
+        if (callback) {
+            opts['callback'] = callback
+        }
+        if (mapsApiKey) {
+            opts['key'] = mapsApiKey
+        } else {
+            log.warn("No google.maps.key config settings was found.")
+        }
+
+        if (opts) {
+            url += "?" + opts.collect { "${URLEncoder.encode(it.key, 'UTF-8')}=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
+        }
+        asset.script(type: 'text/javascript', src: url, async: true, defer: true)
+        asset.script(type: 'text/javascript') {'''
+var gmapsReady = false;
+function onGmapsReady() {
+    gmapsReady = true;
+    notify();
+}
+function notify() {
+    if (typeof $ != 'undefined') {
+        $(window).trigger('digivol.gmapsReady');
+    } else {
+        window.setTimeout(notify);
+    }
+}
+'''
+        }
+    }
+
+    def googleChartsScript = { attrs, body ->
+        out << '<script type="text/javascript" src="https://www.google.com/jsapi"></script>'
+    }
+
 }

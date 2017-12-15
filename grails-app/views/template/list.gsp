@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
-    <r:require modules="jquery-ui, bootbox, bvp-js"/>
+    <asset:stylesheet src="jquery-ui"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
     <style type="text/css">
 
@@ -13,37 +13,6 @@
     }
 
     </style>
-    <r:script type="text/javascript">
-
-            $(function() {
-
-                $(".btnDeleteTemplate").click(function(e) {
-                    e.preventDefault();
-                    var templateId = $(this).parents("[templateId]").attr("templateId");
-                    var templateName = $(this).parents("[templateName]").attr("templateName");
-                    if (templateId && templateName) {
-                        bootbox.confirm("Are you sure you wish to delete template " + templateName + "?", function(result) {
-                          window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
-                        });
-                    }
-                });
-
-                $(".btnCloneTemplate").click(function(e) {
-                    e.preventDefault();
-                    var oldTemplateId = $(this).parents("[templateId]").attr("templateId");
-                    var oldTemplateName = $(this).parents("[templateName]").attr("templateName");
-
-                    if (oldTemplateId && oldTemplateName) {
-                        bvp.showModal({
-                            url:"${createLink(action: 'cloneTemplateFragment')}?sourceTemplateId=" + oldTemplateId,
-                            title:"Clone template '" + oldTemplateName + "'"
-                        });
-                    }
-                });
-
-            });
-
-    </r:script>
 </head>
 
 <body class="admin">
@@ -104,5 +73,38 @@
         </div>
     </div>
 </div>
+<asset:javascript src="jquery-ui" asset-defer=""/>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:script type="text/javascript">
+
+    $(function() {
+
+        $(".btnDeleteTemplate").click(function(e) {
+            e.preventDefault();
+            var templateId = $(this).parents("[templateId]").attr("templateId");
+            var templateName = $(this).parents("[templateName]").attr("templateName");
+            if (templateId && templateName) {
+                bootbox.confirm("Are you sure you wish to delete template " + templateName + "?", function(result) {
+                  window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
+                        });
+                    }
+                });
+
+                $(".btnCloneTemplate").click(function(e) {
+                    e.preventDefault();
+                    var oldTemplateId = $(this).parents("[templateId]").attr("templateId");
+                    var oldTemplateName = $(this).parents("[templateName]").attr("templateName");
+
+                    if (oldTemplateId && oldTemplateName) {
+                        bvp.showModal({
+                            url:"${createLink(action: 'cloneTemplateFragment')}?sourceTemplateId=" + oldTemplateId,
+                            title:"Clone template '" + oldTemplateName + "'"
+                        });
+                    }
+                });
+
+            });
+
+</asset:script>
 </body>
 </html>

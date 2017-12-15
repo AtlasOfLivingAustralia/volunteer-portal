@@ -1,0 +1,6 @@
+/*= encoding UTF-8
+ *= require jquery-ui
+ */
+.ui-state-hover, .ui-widget-content .ui-state-hover {
+    border: none;
+}

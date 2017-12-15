@@ -8,15 +8,15 @@
     <cl:addApplicationMetaTags/>
     <meta name="description" content="Atlas of Living Australia"/>
     <meta name="author" content="Atlas of Living Australia"/>
-    <r:external dir="images/" file="favicon.ico"/>
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
     <title><g:layoutTitle default="DIGIVOL | Home"/></title>
 
-    <r:require module="digivol"/>
+    <asset:stylesheet href="digivol.css"/>
     <g:layoutHead/>
-    <r:layoutResources/>
 
     <g:render template="/layouts/commonCss" />
+    <g:render template="/layouts/jsUrls" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -32,13 +32,13 @@
 <g:layoutBody/>
 
 <g:render template="/layouts/associatedBrands" />
-<g:render template="/layouts/jsUrls" />
 <g:render template="/layouts/notifications" />
 
 <g:render template="/layouts/ga" />
 
+<asset:javascript src="digivol.js" />
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 
 </body>
 </html>

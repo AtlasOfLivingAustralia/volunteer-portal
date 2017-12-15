@@ -8,7 +8,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title>My Field Notebook</title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
-    <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
+    <script src="${resource(file: '/js/markerclusterer.js')}" type="text/javascript"></script>
 
     <style type="text/css">
 
@@ -93,7 +93,7 @@
 </body>
 </html>
 
-<r:script>
+<asset:script>
 
     var map, infowindow;
     google.load("maps", "3.3", {other_params: "sensor=false"});
@@ -222,4 +222,4 @@
 
     }
 
-</r:script>
+</asset:script>

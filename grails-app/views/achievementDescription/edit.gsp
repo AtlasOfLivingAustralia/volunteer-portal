@@ -5,7 +5,7 @@
     <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:stylesheet href="codemirror/codemirror-monokai.css" />
 </head>
 
 <body>
@@ -44,7 +44,9 @@
         </div>
     </g:form>
 </div>
-<r:script>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:javascript src="codemirror/codemirror-groovy-js-sublime.js" asset-defer="" />
+<asset:script type="text/javascript" asset-defer="">
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
@@ -58,27 +60,28 @@
                 }
             });
         });
+
+        $("[name='enabled']").bootstrapSwitch().on('switchChange.bootstrapSwitch', function(event, state) {
+            var p = $.ajax({
+                type: 'POST',
+                headers: {
+                    Accept : "application/json"
+                },
+                url: '${createLink(controller: 'achievementDescription', action: 'enable', id: achievementDescriptionInstance?.id)}?format=json',
+                data: {
+                    enabled: state
+                },
+                dataType: 'json'
+            });
+
+            p.fail(function ( jqXHR, textStatus, errorThrown ) {
+                alert("Could not enable badge :(  Please refresh and try again.");
+                $(event.target).bootstrapSwitch('state', !state, true);
+                console.log(errorThrown);
+            });
+        });
     });
 
-    $("[name='enabled']").bootstrapSwitch().on('switchChange.bootstrapSwitch', function(event, state) {
-        var p = $.ajax({
-            type: 'POST',
-            headers: {
-                Accept : "application/json"
-            },
-            url: '${createLink(controller: 'achievementDescription', action: 'enable', id: achievementDescriptionInstance?.id)}?format=json',
-            data: {
-                enabled: state
-            },
-            dataType: 'json'
-        });
-
-        p.fail(function ( jqXHR, textStatus, errorThrown ) {
-            alert("Could not enable badge :(  Please refresh and try again.");
-            $(event.target).bootstrapSwitch('state', !state, true);
-            console.log(errorThrown);
-        });
-    });
-</r:script>
+</asset:script>
 </body>
 </html>

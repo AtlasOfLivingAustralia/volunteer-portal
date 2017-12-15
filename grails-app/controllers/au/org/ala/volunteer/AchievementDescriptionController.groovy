@@ -23,7 +23,11 @@ class AchievementDescriptionController {
     }
 
     def show(AchievementDescription achievementDescriptionInstance) {
-        redirect action: 'edit', id: achievementDescriptionInstance.id
+        if (!achievementDescriptionInstance) {
+            notFound()
+        } else {
+            redirect action: 'edit', id: achievementDescriptionInstance.id
+        }
     }
     
     def create() {
@@ -63,9 +67,9 @@ class AchievementDescriptionController {
         def userId = params.userId ?: userService.currentUserId
         def user = User.findByUserId(userId)
         def eval = achievementService.evaluateAchievement(achievementDescriptionInstance, userId)
-        def cheevMap = ["$user.displayName": eval]
+        def cheevMap = [(user.displayName): eval]
 
-        request.withFormat {
+        withFormat {
             form html {
                 render view: 'editTest', model: [achievementDescriptionInstance: achievementDescriptionInstance, cheevMap: cheevMap, displayName: user?.displayName, userId: userId]
             }
@@ -200,9 +204,10 @@ class AchievementDescriptionController {
                         .findAll { achievementService.evaluateAchievement(achievementDescriptionInstance, it) }
                         .collect { new AchievementAward(user: User.findByUserId(it), achievement: achievementDescriptionInstance, awarded: new Date()) }
 
-        AchievementAward.saveAll(awards)
+//        AchievementAward.saveAll(awards)
+        awards*.save()
 
-        awards.each { event(AchievementService.ACHIEVEMENT_AWARDED, it) }
+        awards.each { notify(AchievementService.ACHIEVEMENT_AWARDED, it) }
 
         request.withFormat {
             form multipartForm {
@@ -227,7 +232,7 @@ class AchievementDescriptionController {
         def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
         award.save flush: true
 
-        event(AchievementService.ACHIEVEMENT_AWARDED, award)
+        notify(AchievementService.ACHIEVEMENT_AWARDED, award)
 
         request.withFormat {
             form multipartForm {

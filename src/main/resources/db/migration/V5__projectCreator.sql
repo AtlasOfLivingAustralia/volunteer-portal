@@ -1,0 +1,1 @@
+ALTER TABLE project ADD COLUMN IF NOT EXISTS created_by_id bigint REFERENCES vp_user(id);

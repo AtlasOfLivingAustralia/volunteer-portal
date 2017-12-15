@@ -6,8 +6,6 @@
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title>Create Expedition</title>
 
-    <r:require modules="tinymce-simple" />
-
     <style type="text/css">
 
     .table tr td {
@@ -166,5 +164,6 @@
         </g:form>
     </div>
 </div>
+<asset:javascript src="tinymce-simple" asset-defer=""/>
 </body>
 </html>

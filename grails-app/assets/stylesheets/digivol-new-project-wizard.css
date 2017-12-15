@@ -1,0 +1,15 @@
+/*= encoding UTF-8
+ *= require angular
+ *= require typeahead
+ *= require qtip
+ *= require_self
+ */
+.angular-google-map-container { height: 400px; }
+
+.angular-google-map-container img {
+    max-width: none !important;
+    max-height: none !important;
+}
+span.label i.remove {
+    cursor: pointer;
+}

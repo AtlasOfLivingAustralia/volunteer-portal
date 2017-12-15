@@ -35,9 +35,11 @@ class ForumController {
                 def userInstance = userService.currentUser
                 def isWatching = false
 
-                def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
-                if (projectWatchList) {
-                    isWatching = projectWatchList.users.find { it.id == userInstance.id }
+                if (userInstance) {
+                    def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
+                    if (projectWatchList) {
+                        isWatching = projectWatchList.users.any { it != null && it.id == userInstance.id }
+                    }
                 }
 
                 return [projectInstance: projectInstance, topics: topics, isWatching: isWatching]
@@ -379,7 +381,7 @@ class ForumController {
         if (topic && params.messageText && user) {
 
             def text = params.messageText as String
-            def maxSize = ForumMessage.constraints.text.getAppliedConstraint( 'maxSize' ).maxSize
+            def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
 
             text = markdownService.sanitize(text)
 
@@ -550,8 +552,8 @@ class ForumController {
         def id = params.int("id")
         def userInstance = User.get(id)
         def messages = forumService.getMessagesForUser(userInstance, params)
-        def totalCount = messages.totalCount
-        def xformMessages = messages.groupBy { it.topic }.collect {
+        def totalCount = messages?.totalCount ?: 0
+        def xformMessages = messages?.groupBy { it.topic }?.collect {
             def topic = it.key
             def tms = it.value
             [ topicTask: (topic instanceof TaskForumTopic) ? topic.task : null, // the default json renderer doesn't put the task or project fields in the output but I don't really care about fixing this properly right now.
@@ -563,7 +565,7 @@ class ForumController {
                       isUserForumModerator: userService.isUserForumModerator(it.user, it.topic instanceof ProjectForumTopic ? it.topic.project : null ) as Boolean
                   ]}
             ]
-        }
+        } ?: []
         render([totalCount: totalCount, messages: xformMessages] as JSON)
     }
 

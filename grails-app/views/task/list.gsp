@@ -6,7 +6,7 @@
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
         $(document).ready(function () {
 
             $("#searchButton").click(function (e) {
@@ -27,7 +27,7 @@
             var query = $("#q").val()
             location.href = "?q=" + query;
         }
-    </r:script>
+    </asset:script>
 
 </head>
 
@@ -53,8 +53,8 @@
                     <div class="alert alert-info">
                         Total Tasks: ${taskInstanceTotal},
                         <g:if test="${projectInstance}">
-                            Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                            Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
+                                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
                         </g:if>
                         &nbsp;&nbsp;
                         <input style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="40"/>
@@ -107,8 +107,8 @@
                                 <td>
                                     <g:if test="${taskInstance.fullyTranscribedBy}">
                                         <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                                        <g:link controller="user" action="show" id="${thisUser.id}"><cl:userDetails
-                                                id="${thisUser.userId}" displayName="true"/></g:link>
+                                        <g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails
+                                                id="${taskInstance.fullyTranscribedBy}" displayName="true"/></g:link>
                                     </g:if>
                                 </td>
 

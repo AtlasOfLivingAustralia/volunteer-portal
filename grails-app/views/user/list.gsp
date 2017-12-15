@@ -8,7 +8,7 @@
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
     <title>Volunteers</title>
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
 
             doSearch = function () {
                 var searchTerm = $('#searchbox').val()
@@ -16,7 +16,7 @@
                 window.location.href = link;
             };
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">
@@ -102,9 +102,9 @@
         </div>
     </div>
 </div>
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
     $("th > a").addClass("btn")
     $("th.sorted > a").addClass("active")
-</r:script>
+</asset:script>
 </body>
 </html>

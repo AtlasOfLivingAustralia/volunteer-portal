@@ -2,14 +2,14 @@ package au.org.ala.volunteer
 
 import grails.converters.JSON
 import groovy.time.TimeCategory
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import javax.servlet.http.HttpServletResponse
 
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 
 class TaskController {
 
@@ -23,7 +23,6 @@ class TaskController {
     def taskLoadService
     def logService
     def userService
-    def grailsApplication
     def stagingService
     def auditService
     def multimediaService
@@ -331,7 +330,7 @@ class TaskController {
 
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-                render(view: '/transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
+                render(view: '/transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
             }
         }
     }
@@ -747,8 +746,11 @@ class TaskController {
                 fieldDefinition.recordIndex = recordIndex
                 fieldDefinition.fieldDefinitionType = fieldType
                 fieldDefinition.format = format
+                fieldDefinition.save(flush:true)
             } else {
-                profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex))
+                fieldDefinition = new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex)
+                profile.addToFieldDefinitions(fieldDefinition)
+                fieldDefinition.save(flush: true)
             }
 
         }

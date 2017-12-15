@@ -1,8 +1,9 @@
 package au.org.ala.volunteer
 
-class AuditService {
+import grails.transaction.Transactional
 
-    static transactional = true
+@Transactional
+class AuditService {
 
     def grailsApplication
     def userService

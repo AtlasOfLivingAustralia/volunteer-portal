@@ -8,7 +8,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
 
         $(document).ready(function () {
 
@@ -34,7 +34,7 @@
 
         });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">

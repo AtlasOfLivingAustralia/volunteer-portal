@@ -1,0 +1,31 @@
+/* 
+	Digivol Bootstrap CSS Theme
+	Author: Peter Chen
+	Version: 0.0.1
+*/
+
+/* Bootstrap */
+@import 'bootstrap/variables';
+
+/* Import Base */
+
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/normalise';
+@import 'base/base';
+
+/* Import Layouts */
+
+@import 'layouts/footer';
+@import 'layouts/header';
+@import 'layouts/nav';
+@import 'layouts/colours';
+
+/* Import Modules */
+
+@import 'modules/blocks';
+@import 'modules/buttons';
+@import 'modules/components';
+@import 'modules/sections';
+@import 'modules/typography';
+

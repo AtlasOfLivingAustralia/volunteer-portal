@@ -1,17 +1,19 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
 import org.springframework.web.multipart.MultipartFile
 import org.hibernate.FlushMode
 import org.hibernate.Criteria
 import groovy.sql.Sql
 
+import javax.sql.DataSource
+
+@Transactional
 class LocalityService {
 
-    static transactional = true
     def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def logService
-    javax.sql.DataSource dataSource
+    DataSource dataSource
 
     private List<String> _allStates = null;
 
@@ -95,7 +97,6 @@ class LocalityService {
                         // Doing this significantly speeds up imports...
                         sessionFactory.currentSession.flush()
                         sessionFactory.currentSession.clear()
-                        propertyInstanceMap.get().clear()
                         log.info "${rowsProcessed} rows processed, ${count} rows imported..."
                     }
 

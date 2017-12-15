@@ -65,7 +65,7 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
     $(function() {
         $('a.delete-button').on('click', function(e) {
             e.preventDefault();
@@ -78,6 +78,6 @@
             });
         });
     });
-</r:script>
+</asset:script>
 </body>
 </html>

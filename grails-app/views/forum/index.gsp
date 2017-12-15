@@ -21,7 +21,7 @@
 
 <body>
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
             function renderTab(tabIndex, q, offset, max, sort, order) {
                 // var $tabs = $('#tabControl').tabs();
@@ -42,7 +42,7 @@
                 }
 
                 if (baseUrl && selector) {
-                    $(selector).html('<div>Retrieving list of topics... <img src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
+                    $(selector).html('<div>Retrieving list of topics... <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
                     baseUrl += "?selectedTab=" + tabIndex;
                     if (q) {
                         baseUrl += "&q=" + q;
@@ -84,7 +84,7 @@
 
             });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="${message(code: 'default.forum.label', default: 'DigiVol Forum')}" selectedNavItem="forum">
 </cl:headerContent>

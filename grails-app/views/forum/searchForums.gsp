@@ -4,8 +4,7 @@
 <head>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>--}%
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+    <asset:stylesheet src="forum.css"/>
 
     <style type="text/css">
     </style>
@@ -14,12 +13,12 @@
 
 <body class="forum">
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
     $(document).ready(function () {
     });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="Search results: '${query}'" selectedNavItem="forum">
     <%

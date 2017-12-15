@@ -3,15 +3,21 @@ package au.org.ala.volunteer
 import com.google.common.base.Stopwatch
 import grails.converters.*
 import org.apache.commons.io.FileUtils
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
+import javax.servlet.http.HttpServletResponse
+import java.util.concurrent.TimeUnit
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+import static javax.servlet.http.HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE
+import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE
 
 class ProjectController {
 
@@ -24,7 +30,6 @@ class ProjectController {
     static final LABEL_COLOURS = ["label-success", "label-warning", "label-danger", "label-info", "label-primary", "label-default"]
     public static final int MAX_BACKGROUND_SIZE = 512 * 1024
 
-    def grailsApplication
     def taskService
     def fieldService
     def logService
@@ -41,7 +46,7 @@ class ProjectController {
     /**
      * Project home page - shows stats, etc.
      */
-    def index = {
+    def index() {
         def projectInstance = Project.get(params.id)
 
         String currentUserId = null
@@ -55,7 +60,7 @@ class ProjectController {
         } else {
             // project info
             def taskCount = Task.countByProject(projectInstance)
-            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:'dateLastUpdated', order:'desc'])
+            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
             def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
             def expedition = grailsApplication.config.expedition
             def roles = [] //  List of Map
@@ -170,7 +175,7 @@ class ProjectController {
     /**
      * Output list of email addresses for a given project
      */
-    def mailingList = {
+    def mailingList() {
         def projectInstance = Project.get(params.id)
 
         if (projectInstance && userService.isAdmin()) {
@@ -244,12 +249,13 @@ class ProjectController {
     /**
      * Produce an export file
      */
-    def exportCSV = {
+    def exportCSV() {
         def projectInstance = Project.get(params.id)
         boolean transcribedOnly = params.transcribed?.toBoolean()
         boolean validatedOnly = params.validated?.toBoolean()
 
         if (projectInstance) {
+            def sw = Stopwatch.createStarted()
             def taskList
             if (transcribedOnly) {
                 taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
@@ -258,9 +264,15 @@ class ProjectController {
             } else {
                 taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
             }
+            log.debug("Got task list in {}ms", sw.elapsed(MILLISECONDS))
+            sw.reset().start()
             def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+            log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
+            sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldService.getAllFieldNames(taskList))
+            log.debug("Got all field names in {}ms", sw.elapsed(MILLISECONDS))
+            sw.reset().start()
 
             Closure export_func = exportService.export_default
             if (params.exportFormat == 'zip') {
@@ -276,6 +288,7 @@ class ProjectController {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
                 export_func(projectInstance, taskList, taskMap, fieldNames, response)
+                log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")
             }
@@ -286,13 +299,13 @@ class ProjectController {
         }
     }
 
-    def deleteTasks = {
+    def deleteTasks() {
         def projectInstance = Project.get(params.id)
         projectService.deleteTasksForProject(projectInstance, true)
         redirect(action: "edit", id: projectInstance?.id)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 24, 1000)
 
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
@@ -311,7 +324,35 @@ class ProjectController {
         ]
     }
 
-    def create = {
+    def wildlifespotter() {
+        def offset = params.getInt('offset', 0)
+        def max = Math.min(params.int('max', 24), 1000)
+        def sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
+        def order = params.getOrDefault('sort', 'asc')
+        def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
+        def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
+        def q = params.q ?: null
+        def ProjectType pt = ProjectType.findByName('cameratraps')
+
+        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt)
+
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+
+        def wsi = WildlifeSpotter.instance()
+
+        session.expeditionSort = params.sort
+
+        def model = [
+                wildlifeSpotterInstance: wsi,
+                projects: projectSummaryList.projectRenderList,
+                filteredProjectsCount: projectSummaryList.matchingProjectCount,
+                numberOfUncompletedProjects: numberOfUncompletedProjects,
+                totalUsers: User.countByTranscribedCountGreaterThan(0)
+        ]
+        render(view: 'wildlifespotter', model: model)
+    }
+
+    def create() {
         def currentUser = userService.currentUserId
         if (currentUser != null && userService.isAdmin()) {
             def projectInstance = new Project()
@@ -333,7 +374,7 @@ class ProjectController {
         }
     }
 
-    def save = {
+    def save() {
         def projectInstance = new Project(params)
 
         if (!projectInstance.template) {
@@ -360,7 +401,7 @@ class ProjectController {
     /**
      * Redirects a image for the supplied project
      */
-    def showImage = {
+    def showImage() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             params.max = 1
@@ -371,7 +412,7 @@ class ProjectController {
         }
     }
 
-    def show = {
+    def show() {
         def projectInstance = Project.get(params.id)
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -381,7 +422,7 @@ class ProjectController {
         }
     }
 
-    def edit = {
+    def edit() {
         def currentUser = userService.currentUserId
         if (currentUser != null && userService.isAdmin()) {
             redirect(action:"editGeneralSettings", params: params)
@@ -585,6 +626,8 @@ class ProjectController {
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "Expedition updated"
                 return true
+            } else {
+                flash.message = "Expedition update failed"
             }
         }
         return false
@@ -606,7 +649,7 @@ class ProjectController {
     }
 
 
-    def delete = {
+    def delete() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             try {
@@ -625,7 +668,7 @@ class ProjectController {
         }
     }
     
-    def uploadFeaturedImage = {
+    def uploadFeaturedImage() {
         def projectInstance = Project.get(params.id)
 
         if(request instanceof MultipartHttpServletRequest) {
@@ -655,11 +698,12 @@ class ProjectController {
         }
 
         projectInstance.featuredImageCopyright = params.featuredImageCopyright
+        projectInstance.save(flush: true)
         flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.id)
     }
 
-    def uploadBackgroundImage = {
+    def uploadBackgroundImage() {
         def projectInstance = Project.get(params.id)
 
         if(request instanceof MultipartHttpServletRequest) {
@@ -694,6 +738,7 @@ class ProjectController {
 
         projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
         projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
+        projectInstance.save(flush: true)
         flash.message = "Background image settings updated."
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
@@ -719,7 +764,7 @@ class ProjectController {
         redirect(action:'edit', id:projectInstance?.id)
     }
 
-    def setLeaderIconIndex = {
+    def setLeaderIconIndex() {
         if (params.id) {
             def project = Project.get(params.id)
             if (project) {
@@ -912,6 +957,7 @@ class ProjectController {
         def project = new NewProjectDescriptor(stagingId: id)
 
         def errors = []
+        def errorStatus = SC_BAD_REQUEST
         def result
 
         if (request instanceof MultipartHttpServletRequest) {
@@ -920,10 +966,12 @@ class ProjectController {
                 final allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     errors << "Image must be one of: ${allowedMimeTypes}"
+                    errorStatus = SC_UNSUPPORTED_MEDIA_TYPE
                 } else {
                     if (params.type == 'backgroundImageUrl') {
                         if (f.size > MAX_BACKGROUND_SIZE) {
                             errors << "Background image must be less than 512KB"
+                            errorStatus = SC_REQUEST_ENTITY_TOO_LARGE
                         } else {
                             projectStagingService.uploadProjectBackgroundImage(project, f)
                             result = projectStagingService.getProjectBackgroundImageUrl(project)
@@ -939,11 +987,10 @@ class ProjectController {
         }
 
         if (errors) {
-            response.status = 400
-            render errors as JSON
+            response.status = errorStatus
+            render(errors as JSON)
         } else {
             render([imageUrl: result] as JSON)
-
         }
     }
 
@@ -973,6 +1020,7 @@ class ProjectController {
         }
         try {
             def body = request.getJSON()
+            body.createdBy = userService.getCurrentUserId()
             def descriptor = NewProjectDescriptor.fromJson(id, body)
 
             log.debug("Attempting to create project with descriptor: $descriptor")

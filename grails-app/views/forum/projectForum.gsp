@@ -4,7 +4,7 @@
 <head>
     <title><cl:pageTitle title="${projectInstance.name} Forum"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+    <asset:stylesheet src="forum.css"/>
 
     <style type="text/css">
 
@@ -34,8 +34,8 @@
 
 <body class="forum">
 
-<r:require module="url"/>
-<r:script type="text/javascript">
+<asset:javascript src="page-forum.js" asset-defer=""/>
+<asset:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -76,7 +76,7 @@
                 var url = "${createLink(controller: 'forum', action: 'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}";
 
                 function displayTaskTopicsSpinner() {
-                    $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
+                    $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
                 }
 
                 function activateTaskTopics(jqElem, params) {
@@ -131,7 +131,7 @@
 
     });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="Expedition Forum" selectedNavItem="forum">
     <%
@@ -188,7 +188,7 @@
                             <div id="tabProjectTopics" class="tabContent tab-pane ${!params.selectedTab ? 'active' : ''}">
                                 <div class="buttonBar">
                                     <button id="btnNewProjectTopic" class="btn btn-default">
-                                        Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
+                                        Create a new topic&nbsp;<asset:image src="newTopic.png"/>
                                     </button>
                                 </div>
 
