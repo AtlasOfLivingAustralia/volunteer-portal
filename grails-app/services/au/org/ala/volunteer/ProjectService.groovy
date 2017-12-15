@@ -382,7 +382,13 @@ class ProjectService {
             }
         } else {
             if (projectType) {
-                projectList = Project.findAllByProjectTypeOrInactiveOrInactiveIsNull(projectType, false)
+                projectList = Project.withCriteria {
+                    eq 'projectType', projectType
+                    or {
+                        eq 'inactive', false
+                        isNotNull 'inactive'
+                    }
+                }
             } else {
                 projectList = Project.findAllByInactiveOrInactive(false, null)
             }
