@@ -460,8 +460,8 @@
     max-width: 150px;
 }
 .faux-img-cell.default {
-    border: solid #df4a21 5px;
-    background-color: #df4a21;
+    border: solid #df4a21 5px !important;
+    background-color: #df4a21 !important;
 }
 .faux-img-cell.active {
     border: solid black 5px;

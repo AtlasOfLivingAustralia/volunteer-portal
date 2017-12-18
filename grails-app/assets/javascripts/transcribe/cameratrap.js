@@ -25,9 +25,10 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
     for (var index in recordValues) {
       if (recordValues.hasOwnProperty(index)) {
         var vn = recordValues[index].vernacularName;
+        var animalKey = recordValues[index].animalKey;
         var certainty = recordValues[index].certainty || 1;
-        if (vn && itemValueMap[vn]) {
-          selections[vn] = {certainty: certainty, key: itemValueMap[vn].imageIds}
+        if (vn && itemValueMap[animalKey]) {
+          selections[vn] = {certainty: certainty,  key: itemValueMap[animalKey].imageIds, animalKey: itemValueMap[animalKey].animalKey}
         }
       }
     }
@@ -210,10 +211,11 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
       var selectedThumbnail = t.closest('[data-image-select-value]');//.closest('.thumbnail');
       var value = selectedThumbnail.data('image-select-value');
       var imageKey = selectedThumbnail.data('image-select-key');
+      var animalKey = selectedThumbnail.attr('data-image-key');
       if (selections.hasOwnProperty(value) && selections[value].certainty == selectionCertainty) {
         delete selections[value];
       } else {
-        selections[value] = {certainty: selectionCertainty, key: imageKey};
+        selections[value] = {certainty: selectionCertainty, key: imageKey, animalKey: animalKey};
       }
       syncSelectionState();
     }
@@ -262,7 +264,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
         addSelectionToContainer(add[i], selElem);
       }
       for (var i = 0; i < remove.length; ++i) {
-          selElem.find("[data-image-select-value='"+remove[i]+"']").remove();
+          selElem.find("[data-image-select-value='"+remove[i]+"']").parent().remove();
           $("[data-image-select-value='"+remove[i]+"']").removeClass("ct-certain-selected ct-uncertain-selected");
       }
 
@@ -303,6 +305,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
       var i = 0;
       _.each(selections, function (value, key, list) {
         mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.' + i + '.vernacularName', value: key});
+        mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.' + i + '.animalKey', value: value.animalKey});
         mu.appendTemplate($ctFields, 'input-template', {
           id: 'recordValues.' + i + '.certainty',
           value: value.certainty

@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<content tag="pageTitle">Awards</content>
+<content tag="pageTitle">${message(code:"awards.awards")}</content>
 
 <content tag="adminButtonBar">
     <g:form class="form-inline" style="display: inline-block; padding-right: 10px;" action="awardAll"

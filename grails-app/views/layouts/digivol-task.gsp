@@ -98,13 +98,13 @@
                 <h2>
                     <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/>
                     <g:if test="${taskInstance}"><ul class="list-inline social-media-sharing" style="display: inline-block;">
-                        <li style="vertical-align: top;" class="">
+                        <li style="vertical-align: top;" class="social-media-facebook">
                             <div class="fb-share-button" data-href="${shareUrl}" data-layout="button"
                                  data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank"
                                                               href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse"><g:message
                                         code="task.share"/></a></div>
                         </li>
-                        <li style="vertical-align: top;">
+                        <li style="vertical-align: top;" class="social-media-twitter">
                             <a href="https://twitter.com/share" class="twitter-share-button"><g:message
                                     code="task.tweet"/></a> <script>!function (d, s, id) {
                             var js, fjs = d.getElementsByTagName(s)[0],

@@ -12,10 +12,13 @@ h2.heading > div.subheading {
     text-transform: initial;
     margin-top: 10px;
 }
+
 .copyFromPreviousTask,
-.social-media-sharing
-{
+.social-media-facebook {
     display: none !important;
+}
+.social-media-sharing,.social-media-twitter{
+
 }
 .a-feature.home {
     /*background-color: #357866;*/

@@ -73,8 +73,8 @@
                         <div class="col-sm-12 badges">
                             <g:each in="${achievements}" var="ach" status="i">
                                 <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>'
-                                     width="50px" alt="${ach.achievement.name}"
-                                     title="${ach.achievement.description}"/>
+                                     width="50px" alt="${ach.achievement?.i18nName?.toString()}"
+                                     uib-tooltip="${ach.achievement?.i18nName?.toString()}"/>
                             </g:each>
                         </div>
                     </div>

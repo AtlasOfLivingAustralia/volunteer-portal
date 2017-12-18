@@ -36,7 +36,7 @@
     <div class="col-sm-12">
         <h1><g:message code="error.title" default="Oh no!  An error has occured" /></h1>
 
-        <h2>Error Details</h2>
+        <h2><g:message code="error.details"></g:message></h2>
 
         <div class="message">
             <strong>Error ${request.'javax.servlet.error.status_code'}:</strong> ${request.'javax.servlet.error.message'.encodeAsHTML()}<br/>

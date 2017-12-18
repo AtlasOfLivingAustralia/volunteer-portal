@@ -41,7 +41,7 @@
         ]
         if (taskInstance) {
             pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project?.i18nName]
-            pageScope.crumbs << [link: createLink(controller: 'task', action: 'projectAdmin', id: taskInstance?.project?.id), label: "Admin list"]
+            pageScope.crumbs << [link: createLink(controller: 'task', action: 'projectAdmin', id: taskInstance?.project?.id), label: "${message(code:"showDetails.adminList")}"]
         }
     %>
 

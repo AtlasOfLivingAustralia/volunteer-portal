@@ -17,10 +17,10 @@
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
-                [link: createLink(controller: 'achievementDescription', action: 'index'), label: 'Manage Achievements']
+                [link: createLink(controller: 'achievementDescription', action: 'index'), label: message(code: 'achievementSettings.manage_achievements')]
         ]
     %>
-    <h1>Achievement Settings - ${achievementDescriptionInstance?.i18nName}</h1>
+    <h1>${message(code:"achievementSettings.achievement_settings_x", args: [achievementDescriptionInstance?.i18nName?.toString()])}</h1>
 </cl:headerContent>
 
 <div class="container">
@@ -31,13 +31,13 @@
                     <ul class="list-group">
                         <cl:settingsMenuItem
                                 href="${createLink(controller: 'achievementDescription', action: 'edit', id: achievementDescriptionInstance?.id)}"
-                                title="General Settings"/>
+                                title="${message(code: 'achievementSettings.general_settings')}"/>
                         <cl:settingsMenuItem
                                 href="${createLink(controller: 'achievementDescription', action: 'awards', id: achievementDescriptionInstance?.id)}"
-                                title="Awards"/>
+                                title="${message(code: 'achievementSettings.awards')}"/>
                         <cl:settingsMenuItem
                                 href="${createLink(controller: 'achievementDescription', action: 'editTest', id: achievementDescriptionInstance?.id)}"
-                                title="Tester"/>
+                                title="${message(code: 'achievementSettings.tester')}"/>
                     </ul>
                 </div>
                 <div class="col-md-9">

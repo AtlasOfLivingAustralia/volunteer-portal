@@ -691,7 +691,7 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         def sequenceNumber = attrs.sequenceNumber
 
-        if(task.project) {
+        if(task.project && task.project.id) {
             def maxSeqNo = sequenceNumber ? taskService.findMaxSequenceNumber(task.project) : -1
 
             def cn = recordValues?.get(0)?.catalogNumber

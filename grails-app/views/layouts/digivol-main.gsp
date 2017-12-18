@@ -199,12 +199,12 @@
 
             <div class="row footer-header social-media-sharing">
                 <div class="col-sm-12">
-                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image
+                    <a class="footer-brand social-media-facebook" href="https://www.facebook.com/groups/181836918595085/"><asset:image
                             src="doedat/logoDoeDatInverted.png"/></a>
 
                     <div class="social-icons pull-right">
-                        <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
-                        <a href="https://twitter.com/AMDigiVol" class="btn-lg"><i class="fa fa-twitter fa-lg"></i></a>
+                        <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg social-media-facebook"><i class="fa fa-facebook fa-lg"></i></a>
+                        <a href="https://twitter.com/botanicgarden01" class="btn-lg social-media-twitter"><i class="fa fa-twitter fa-lg"></i></a>
                     </div>
                 </div>
             </div>

@@ -251,7 +251,7 @@ class TemplateController {
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
         if (field && templateInstance) {
-            field.delete()
+            field.delete(flush: true)
         }
         redirect(action:'manageFields', id: templateInstance?.id)
     }

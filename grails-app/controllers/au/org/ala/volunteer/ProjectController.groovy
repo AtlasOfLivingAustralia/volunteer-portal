@@ -816,6 +816,7 @@ class ProjectController {
         }
 
         projectInstance.addToLabels(label)
+        projectInstance.save(flush: true)
         // Just adding a label won't trigger the GORM update event, so force a project update
         DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
         render status: 204

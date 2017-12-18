@@ -86,7 +86,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="well well-sm transcribeSection" style="margin-top: 10px">
-            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${template.viewParams?.datasetSectionHeader ?: 'Specimen details'}</span>
+            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${template.viewParams?.datasetSectionHeader ?: message(code: 'transcribe.specimenDetails')}</span>
 
             <div class="row" style="margin-top: 10px">
                 <div class="col-md-12">
