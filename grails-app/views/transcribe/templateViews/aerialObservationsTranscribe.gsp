@@ -3,11 +3,6 @@
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
         <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
-        <style type="text/css">
-        #image-container {
-            height: 100px;
-        }
-        </style>
     </head>
     <content tag="templateView">
         <div class="container-fluid">
