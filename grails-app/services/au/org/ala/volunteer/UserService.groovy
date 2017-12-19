@@ -50,17 +50,17 @@ class UserService {
                 user.created = new Date()
                 user.firstName = firstName
                 user.lastName = lastName
-                user.save(flush: true)
+                def savedUser = user.save(flush: true)
                 // Notify admins that a new user has registered
-                notifyNewUser(user)
+                notifyNewUser(savedUser, displayName)
             }
         }
     }
 
     @NotTransactional
-    private void notifyNewUser(User user) {
+    private void notifyNewUser(User user, String displayName) {
         def interestedUsers = getUsersWithRole(BVPRole.SITE_ADMIN)
-        def message = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user])
+        def message = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user, displayName: displayName])
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
 
         interestedUsers.each {

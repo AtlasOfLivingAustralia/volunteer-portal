@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
+import grails.transaction.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
@@ -414,6 +415,7 @@ class UserController {
         return [userInstance: userInstance, roles: roles, userDetails: authService.getUserForUserId(userInstance.getUserId())]
     }
 
+    @Transactional
     def update() {
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
@@ -442,6 +444,7 @@ class UserController {
         }
     }
 
+    @Transactional
     def delete() {
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
@@ -480,6 +483,7 @@ class UserController {
         [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list(sort: 'name', order: 'asc')]
     }
 
+    @Transactional
     def updateRoles() {
         def userInstance = User.get(params.id)
 
