@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Charsets
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.input.BOMInputStream
@@ -290,7 +291,7 @@ class StagingService {
     public List getDataFileColumns(Project projectInstance) {
         def f = new File(createDataFilePath(projectInstance))
         if (f.exists()) {
-            def lines = FileUtils.readLines(f)
+            def lines = FileUtils.readLines(f, Charsets.UTF_8)
             if (lines && lines.size() > 0) {
                 return lines[0].split(",")
             }
@@ -309,7 +310,7 @@ class StagingService {
     public void uploadDataFile(Project project, MultipartFile file) {
         clearDataFile(project)
         def f = new File(createDataFilePath(project))
-        f.mkdirs()
+        f.parentFile?.mkdirs()
         file.transferTo(f)
     }
 
