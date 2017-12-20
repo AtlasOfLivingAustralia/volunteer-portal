@@ -283,7 +283,7 @@ class AdminController {
 
             def dates = taskService.getProjectDates()
 
-            def projectSummaries = projectService.getProjectSummaryList()
+            def projectSummaries = projectService.getProjectSummaryList(params)
 
             projects.each { project ->
                 def summary = projectSummaries.projectRenderList.find { it.project.id == project.id }
