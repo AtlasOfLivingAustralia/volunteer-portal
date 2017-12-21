@@ -90,14 +90,17 @@
                                         <div id="ct-animals-question">
                                             <label class="radio-inline">
                                                 <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible"
-                                                       value="yes" ${'yes' == step1 ? 'checked' : ''}><g:message code="default.yes"/>
+                                                       value="yes" ${'yes' == step1 ? 'checked' : ''}
+                                                       label="${message(code:'default.yes')}"><g:message code="default.yes"/>
                                             </label>
                                             <label class="radio-inline">
                                                 <input type="radio" name="recordValues.0.animalsVisible"
+                                                       label="${message(code:'default.no')}"
                                                        value="no" ${'no' == step1 ? 'checked' : ''}><g:message code="default.no"/>
                                             </label>
                                             <label class="radio-inline">
                                                 <input type="radio" name="recordValues.0.animalsVisible"
+                                                       label="${message(code:'transcribe.templateViews.cameratrapTranscribe.unsure')}"
                                                        value="unsure" ${'unsure' == step1 ? 'checked' : ''}><g:message code="transcribe.templateViews.cameratrapTranscribe.unsure"/>
                                             </label>
                                         </div>
@@ -244,7 +247,9 @@
                             <div id="ct-animals-summary" class="ct-item ${validator ? 'active' : ''}">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <p><strong><g:message code="transcribe.templateViews.cameratrapTranscribe.animals_visible"/></strong> <span id="ct-animals-question-summary">${step1}</span>.
+                                        <p><strong><g:message code="transcribe.templateViews.cameratrapTranscribe.animals_visible"/></strong>
+                                            <span id="ct-animals-question-summary">${step1}</span> <!-- placeholder, will be filled by cameratraps.js -->
+                                        </p>
                                         <p><strong><g:message code="transcribe.templateViews.cameratrapTranscribe.selected_animals"/></strong></p>
                                     </div>
 

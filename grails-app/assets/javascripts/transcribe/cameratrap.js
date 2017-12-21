@@ -370,11 +370,11 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
 
     $('#ct-animals-question input').change(function(e) {
       var $this = $(this);
-      $('#ct-animals-question-summary').text($this.val());
+      $('#ct-animals-question-summary').text($this.attr('label'));
     });
     $('#ct-bnw-question input').change(function(e) {
       var $this = $(this);
-      $('#ct-bnw-question-summary').text($this.val());
+      $('#ct-bnw-question-summary').text($this.attr('label'));
     });
 
     // IMAGE SEQUENCE
