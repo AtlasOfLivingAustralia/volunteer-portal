@@ -1,10 +1,12 @@
 package au.org.ala.volunteer
 
-import grails.converters.JSON
+import grails.transaction.Transactional
 import org.springframework.web.multipart.MultipartFile
 
+@Transactional(readOnly = true)
 class TemplateFieldService {
 
+    @Transactional
     def importFieldsFromCSV(Template template, MultipartFile file) {
 
         if (!template || !file) {
