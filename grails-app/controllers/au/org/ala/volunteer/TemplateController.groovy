@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
@@ -141,6 +142,7 @@ class TemplateController {
         }
     }
 
+    @Transactional
     def moveFieldUp() {
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
@@ -159,6 +161,7 @@ class TemplateController {
         redirect(action:'manageFields', id: field?.template?.id)
     }
 
+    @Transactional
     def moveFieldDown() {
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
@@ -178,6 +181,7 @@ class TemplateController {
         redirect(action:'manageFields', id: field?.template?.id)
     }
 
+    @Transactional
     def moveFieldToPosition() {
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
@@ -199,6 +203,7 @@ class TemplateController {
         redirect(action:'manageFields', id: field?.template?.id)
     }
 
+    @Transactional
     def cleanUpOrdering() {
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
@@ -207,11 +212,13 @@ class TemplateController {
             fields.each {
                 it.displayOrder = i++
             }
+            TemplateField.saveAll(fields)
         }
 
         redirect(action:'manageFields', id: templateInstance?.id)
     }
 
+    @Transactional
     def addField() {
         def templateInstance = Template.get(params.int("id"))
         def fieldType = params.fieldType
@@ -246,7 +253,8 @@ class TemplateController {
         def max = results?.getAt(0) ?: 0
         return max
     }
-    
+
+    @Transactional
     def deleteField() {
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
