@@ -225,7 +225,7 @@ assets {
     minifyJs = true
     minifyCss = true
     enableSourceMaps = true
-    includes = ['tinymce/**/*', 'compile/**/*.ttf', 'compile/**/*.otf', 'compile/**/*.eot', 'compile/**/*.svg', 'compile/**/*.woff', 'compile/**/*.woff2']
+    includes = ['tinymce/**/*', 'compile/**/*.ttf', 'compile/**/*.otf', 'compile/**/*.eot', 'compile/**/*.svg', 'compile/**/*.woff', 'compile/**/*.woff2', 'compile/**/*.png', 'compile/**/*.jpg', 'compile/**/*.gif']
     excludes = ['compile/*', 'compile/**/*']
 //    excludes = ['codemirror/**/*.html', "**/*.min.js", "**/*.min.css", "angular/*/i18n/**", "**/*.map"]
 //    includes = ["fonts/*", "node_modules/*", "lib/*"]
