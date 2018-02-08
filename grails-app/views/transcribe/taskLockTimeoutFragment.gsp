@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
     <div class="text-center">
         <g:message code="transcribe.taskLockTimeout.title"/>

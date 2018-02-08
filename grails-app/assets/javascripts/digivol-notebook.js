@@ -8,15 +8,17 @@
 //= require_self
 "use strict";
 
+var notebookConfig;
 var notebook = {
   map: null,
 
   infowindow: null,
 
+
   initMap: function (){
     notebook.map = new google.maps.Map(document.getElementById('map'), {
       scaleControl: true,
-      center: new google.maps.LatLng(-24.766785, 134.824219), // centre of Australia
+      center: new google.maps.LatLng(notebookConfig.defaultLatitude==null?-24.766785:notebookConfig.defaultLatitude, notebookConfig.defaultLongitude==null?34.824219:notebookConfig.defaultLongitude), // centre of Australia
       zoom: 3,
       minZoom: 1,
       streetViewControl: false,
@@ -92,8 +94,8 @@ $(function() {
   }
 });
 
-
 function digivolNotebooksTabs(config) {
+    notebookConfig = config;
 
   var projectId = config.project ? config.project.id : null;
 

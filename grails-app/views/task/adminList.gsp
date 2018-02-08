@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <html>
 <head>
@@ -9,12 +10,12 @@
 
 <body>
 
-<cl:headerContent title="${message(code: "expedition.administration.label")} - ${projectInstance ? projectInstance.featuredLabel : message(code: "task.thumbs.tasks")}"
+<cl:headerContent title="${message(code: "expedition.administration.label")} - ${projectInstance ? projectInstance.i18nName : message(code: "task.thumbs.tasks")}"
                   selectedNavItem="expeditions">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'list'), label: message(code: "default.expeditions.label")],
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.i18nName]
         ]
     %>
     <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>
@@ -65,8 +66,8 @@
             <div class="row">
                 <div class="col-sm-8">
                     <g:message code="task.adminList.total_tasks"/> ${taskInstanceTotal},
-                    <g:message code="task.adminList.transcribed_tasks"/> ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                    <g:message code="task.adminList.validated_tasks"/> ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                    <g:message code="task.adminList.transcribed_tasks"/> ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
+                    <g:message code="task.adminList.validated_tasks"/> ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
                     &nbsp;
                     <div class="btn-group btn-group-sm" role="group" aria-label="Export">
                         <button id="btnExportAll" class="btn btn-default"><g:message code="task.adminList.export_all"/></button>
@@ -129,47 +130,47 @@
                         };
                         bvp.showModal(options);
                     }
-                });
+        });
 
-                $("#searchButton").click(function (e) {
-                    e.preventDefault();
-                    doSearch();
-                });
+        $("#searchButton").click(function (e) {
+            e.preventDefault();
+            doSearch();
+        });
 
-                $("#projectAdminSearch").keyup(function (e) {
-                    if (e.keyCode == 13) {
-                        e.preventDefault();
-                        doSearch();
-                    }
-                });
+        $("#projectAdminSearch").keyup(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                doSearch();
+            }
+        });
 
-                $("#btnExportAll").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'${message(code:"task.adminList.export_all_tasks")}',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
-                });
+        $("#btnExportAll").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title:'${message(code:"task.adminList.export_all_tasks")}',
+                url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'all', projectId: projectInstance.id]).encodeAsJavaScript()}"
+            };
+            bvp.showModal(options);
+        });
 
-                $("#btnExportTranscribed").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'${message(code:"task.adminList.export_transcribed_tasks")}',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
+        $("#btnExportTranscribed").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title:'${message(code:"task.adminList.export_transcribed_tasks")}',
+                url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'transcribed', projectId: projectInstance.id]).encodeAsJavaScript()}"
+            };
+            bvp.showModal(options);
 
-                });
+        });
 
-                $("#btnExportValidated").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:'${message(code:"task.adminList.export_validated_tasks")}',
-                        url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id]).encodeAsJavaScript()}"
-                    };
-                    bvp.showModal(options);
-                });
+        $("#btnExportValidated").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title:'${message(code:"task.adminList.export_validated_tasks")}',
+                url:"${createLink(action: "exportOptionsFragment", params: [exportCriteria: 'validated', projectId: projectInstance.id]).encodeAsJavaScript()}"
+            };
+            bvp.showModal(options);
+        });
 
     <g:if test="${params.lastTaskId}">
         amplify.store("bvp_task_${params.lastTaskId}", null);

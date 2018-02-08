@@ -2,15 +2,12 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
-import org.apache.commons.compress.archivers.zip.Zip64Mode
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.imageio.ImageIO
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
@@ -38,13 +35,13 @@ class ProjectService {
                             try {
                                 multimediaService.deleteMultimedia(image)
                             } catch (IOException ex) {
-                                log.error("Failed to delete multimedia: ", e)
+                                log.error("Failed to delete multimedia: ", ex)
                             }
                         }
                     }
                     t.delete()
                 } catch (Exception ex) {
-                    log.error("Failed to delete task ${t.id}: ", e)
+                    log.error("Failed to delete task ${t.id}: ", ex)
                 }
             }
         }
@@ -281,11 +278,11 @@ class ProjectService {
                     return true
                 }
 
-                if (project.featuredLabel?.toLowerCase()?.contains(query)) {
+                if (project.i18nName?.toString()?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
-                if (project.institution && project.institution.name?.toLowerCase()?.contains(query)) {
+                if (project.institution && project.institution.i18nName?.toString()?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
@@ -293,11 +290,11 @@ class ProjectService {
                     return true
                 }
 
-                if (project.description?.toLowerCase()?.contains(query)) {
+                if (project.i18nDescription?.toString()?.toLowerCase()?.contains(query)) {
                     return true;
                 }
 
-                if (project.shortDescription?.toLowerCase()?.contains(query)) {
+                if (project.i18nShortDescription?.toString()?.toLowerCase()?.contains(query)) {
                     return true;
                 }
 
@@ -320,14 +317,14 @@ class ProjectService {
             }
 
             if (params?.sort == 'institution') {
-                return projectSummary.project.institution?.name ?: projectSummary.project.featuredOwner;
+                return projectSummary.project.institution?.i18nName ?: projectSummary.project.featuredOwner;
             }
 
             if (params?.sort == 'type') {
                 return projectSummary.iconLabel;
             }
 
-            projectSummary.project.featuredLabel?.toLowerCase()
+            projectSummary.project.i18nName?.toString()?.toLowerCase()
         }
 
         Integer startIndex = params?.int('offset') ?: 0;

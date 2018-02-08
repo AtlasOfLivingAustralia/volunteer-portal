@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
 @AlaSecured("ROLE_VP_ADMIN")
 class AchievementDescriptionController {
@@ -205,13 +204,13 @@ class AchievementDescriptionController {
                         .collect { new AchievementAward(user: User.findByUserId(it), achievement: achievementDescriptionInstance, awarded: new Date()) }
 
 //        AchievementAward.saveAll(awards)
-        awards*.save()
+        awards*.save(flush:true)
 
         awards.each { notify(AchievementService.ACHIEVEMENT_AWARDED, it) }
 
         request.withFormat {
             form multipartForm {
-                flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, it.user.displayName]) }.join('<br/>')
+                flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.i18nName, it.user.displayName]) }.join('<br/>')
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { respond awards, [status: OK] }
@@ -236,7 +235,7 @@ class AchievementDescriptionController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, user.displayName])
+                flash.message = message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.i18nName, user.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { respond award, [status: OK] }
@@ -247,11 +246,12 @@ class AchievementDescriptionController {
         def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
         log.info("Removing awarded achievements: ${awards.join('\n')}")
 
-        AchievementAward.deleteAll(awards)
+        awards.forEach({award -> award.delete(flush:true)});
+//        AchievementAward.deleteAll(awards)
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.i18nName, awards*.user*.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { render status: NO_CONTENT.value() }
@@ -263,11 +263,12 @@ class AchievementDescriptionController {
         def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
         log.info("Removing awarded achievements: ${awards.join('\n')}")
 
-        AchievementAward.deleteAll(awards)
+        //AchievementAward.deleteAll(awards)
+        awards.forEach({award -> award.delete(flush:true)});
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.i18nName, awards*.user*.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { render status: NO_CONTENT.value() }

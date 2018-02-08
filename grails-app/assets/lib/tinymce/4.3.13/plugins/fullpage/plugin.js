@@ -435,7 +435,7 @@ tinymce.PluginManager.add('fullpage', function(editor) {
 		var header = '', value, styles = '';
 
 		if (editor.getParam('fullpage_default_xml_pi')) {
-			header += '<?xml version="1.0" encoding="' + editor.getParam('fullpage_default_encoding', 'ISO-8859-1') + '" ?>\n';
+			header += '<?xml version="1.0" encoding="' + editor.getParam('fullpage_default_encoding', 'UTF-8') + '" ?>\n';
 		}
 
 		header += editor.getParam('fullpage_default_doctype', '<!DOCTYPE html>');

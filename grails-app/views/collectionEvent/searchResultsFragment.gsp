@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <g:if test="${collectionEvents}">
     <div id="">
         <g:each in="${collectionEvents}" var="event" status="i">

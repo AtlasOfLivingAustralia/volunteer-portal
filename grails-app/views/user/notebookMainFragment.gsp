@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <style>
 
 .recentAcheivement img {
@@ -67,7 +68,7 @@
                             <li class="span2">
                                 <a href="javascript:void(0)" class="thumbnail" data-switch-tab="badgesTab">
                                     <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>'
-                                         alt="${ach.achievement.name}" title="${ach.achievement.description}"/>
+                                         alt="${ach.achievement.i18nName}" title="${ach.achievement.i18nDescription}"/>
                                 </a>
                             </li>
                         </g:each>

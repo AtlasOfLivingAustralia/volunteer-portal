@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
@@ -8,7 +9,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
     <g:if test="${project}">
-        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.name ?: message(code: 'user.show.unknown_project')])}"/></title>
+        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.i18nName ?: message(code: 'user.show.unknown_project')])}"/></title>
     </g:if>
     <g:else>
         <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
@@ -19,7 +20,7 @@
 
 <body data-ng-app="notebook">
 <cl:headerContent hideTitle="true"
-        title="${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}"
+        title="${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}"
         crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
     <%
         pageScope.crumbs = [
@@ -43,8 +44,8 @@
             </div>
             <div class="col-sm-6">
                 <span class="pre-header"><g:message code="user.show.volunteer_profile"/></span>
-                <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}</h1>
-                <g:if test="${project}"><h2>${project.name}</h2></g:if>
+                <h1>${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}</h1>
+                <g:if test="${project}"><h2>${project?.i18nName}</h2></g:if>
                 <div class="row">
                     <div class="col-xs-4">
                         <h2><strong>${score}</strong></h2>
@@ -72,8 +73,8 @@
                         <div class="col-sm-12 badges">
                             <g:each in="${achievements}" var="ach" status="i">
                                 <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>'
-                                     width="50px" alt="${ach.achievement.name}"
-                                     title="${ach.achievement.description}"/>
+                                     width="50px" alt="${ach.achievement?.i18nName?.toString()}"
+                                     uib-tooltip="${ach.achievement?.i18nName?.toString()}"/>
                             </g:each>
                         </div>
                     </div>
@@ -124,7 +125,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <p>
-                            <i><g:message code="user.show.first_contributed_in"/><g:formatDate date="${userInstance?.created}" format="MMM yyyy"/></i>
+                            <i><g:message code="user.show.first_contributed_in" args="${[formatDate(date: userInstance?.created, format: "MMM yyyy")]}"/></i>
                         </p>
                     </div>
                     <a id="profileTabs"></a>
@@ -184,7 +185,7 @@
             <div class="col-sm-4">
                 <div class="map-header">
                     <h2 class="heading"><g:message code="user.show.record_locations"/></h2>
-                    <p>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? message(code: 'user.show.you_have_transcribed_records') : message(code: 'user.show.user_has_transcribed_records')}</p>
+                    <p>${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.you_have_transcribed_records') : message(code: 'user.show.user_has_transcribed_records')}</p>
                 </div>
             </div>
         </div>
@@ -231,7 +232,7 @@
             </div>
             <div class="pull-right search-help">
                 <button class="btn btn-info pull-right"
-                        uib-tooltip="${message(code:"notebook.taskList.searchHelp")}"><span
+                        uib-tooltip="${message(code:"notebook.taskList.searchHelp").replaceAll("\"","\\\"")}"><span
                         class="help-container"><i class="fa fa-question"></i></span>
                 </button>
             </div>
@@ -413,7 +414,7 @@
 <div ng-hide="$ctrl.loading || $ctrl.error" class="modal-body">
     <div class="row" >
         <div class="col-sm-12">
-            <p><i><g:message code="task.validatedBy.label" />: {{ $ctrl.validatorDisplayName }}</i> </p>
+            <p><i><g:message code="task.validatedBy.label" args="${[$ctrl?.validatorDisplayName]}" /></i> </p>
         </div>
     </div>
 
@@ -454,6 +455,8 @@
 <asset:script type="text/javascript">
     var json = <cl:json value="${[
         selectedTab: selectedTab,
+        defaultLatitude: grailsApplication.config.location.default.latitude,
+        defaultLongitude: grailsApplication.config.location.default.longitude,
         userInstance: userInstance,
         project: project,
         isValidator: isValidator,

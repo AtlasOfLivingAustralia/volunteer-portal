@@ -251,7 +251,7 @@ class TemplateController {
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
         if (field && templateInstance) {
-            field.delete()
+            field.delete(flush: true)
         }
         redirect(action:'manageFields', id: templateInstance?.id)
     }
@@ -259,7 +259,7 @@ class TemplateController {
     def preview() {
         def templateInstance = Template.get(params.int("id"))
 
-        def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "${templateInstance.name} Preview (${templateInstance.viewName})")
+        def projectInstance = new Project(template: templateInstance, featuredOwner: "ALA", i18nName: "${templateInstance.name} Preview (${templateInstance.viewName})")
         def taskInstance = new Task(project: projectInstance)
         def multiMedia = new Multimedia(id: 0)
         taskInstance.addToMultimedia(multiMedia)

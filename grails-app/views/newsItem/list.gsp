@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.NewsItem" %>
 <html>
 <head>
@@ -11,7 +12,7 @@
 <div class="container">
 
     <%
-        def headingByLine = projectInstance?.featuredLabel ?: institutionInstance?.name ?: ""
+        def headingByLine = projectInstance?.i18nName ?: institutionInstance?.i18nName ?: ""
     %>
 
     <cl:headerContent crumbLabel="${message(code: 'default.list.label', args: [entityName])}" title="News Items ${headingByLine ? " - " + headingByLine : ' list'}" selectedNavItem="bvpadmin">
@@ -21,11 +22,11 @@
             ]
             if (projectInstance) {
                 pageScope.crumbs + [
-                        [link: createLink(controller: 'project', action: 'show', id: projectInstance.id), label: projectInstance.featuredLabel]
+                        [link: createLink(controller: 'project', action: 'show', id: projectInstance.id), label: projectInstance.i18nName]
                 ]
             } else if (institutionInstance) {
                 pageScope.crumbs + [
-                        [link: createLink(controller: 'institution', action: 'index', id: institutionInstance.id), label: institutionInstance.acronym]
+                        [link: createLink(controller: 'institution', action: 'index', id: institutionInstance.id), label: institutionInstance.i18nAcronym]
                 ]
             }
         %>
@@ -54,7 +55,7 @@
 
                                 <td style="vertical-align: top">
                                     <b><g:link controller="newsItem" action="show"
-                                               id="${newsItemInstance.id}">${fieldValue(bean: newsItemInstance, field: "title")}</g:link></b>
+                                               id="${newsItemInstance.id}">${fieldValue(bean: newsItemInstance, field: "i18nTitle")}</g:link></b>
 
                                     <cl:ifAdmin>
                                         <div style="padding-top: 20px">
@@ -67,11 +68,11 @@
 
                                 <td>
                                     <div class="lead">
-                                        ${newsItemInstance?.shortDescription}
+                                        ${newsItemInstance?.i18nShortDescription}
                                     </div>
 
                                     <div>
-                                        ${newsItemInstance?.body}
+                                        ${newsItemInstance?.i18nBody}
                                     </div>
                                 </td>
 
@@ -89,8 +90,8 @@
     </div>
 </div>
 <asset:script type="text/javascript">
-    $("th > a").addClass("btn")
-    $("th.sorted > a").addClass("active")
+    $("th > a").addClass("btn");
+    $("th.sorted > a").addClass("active");
 </asset:script>
 
 </body>

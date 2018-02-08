@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="org.grails.web.json.JSONArray; au.org.ala.volunteer.Project" %>
 <html>
 <head>
@@ -25,7 +26,7 @@
 <cl:headerContent title="${message(code: 'default.advancedSettings.label', default: 'Advanced Settings')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')]
         ]
     %>
 </cl:headerContent>

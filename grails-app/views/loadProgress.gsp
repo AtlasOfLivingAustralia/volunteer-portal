@@ -2,7 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><g:message code="default.application.name"/></title>
+    <meta name="google" value="notranslate">
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>--}%
 
@@ -52,7 +55,7 @@
 <cl:headerContent title="${message(code: "default.progress.label", default: "Task Loading Progress")}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')]
         ]
     %>
 </cl:headerContent>

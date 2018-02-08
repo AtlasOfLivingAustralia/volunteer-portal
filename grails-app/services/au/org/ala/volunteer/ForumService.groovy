@@ -222,6 +222,9 @@ class ForumService {
                     topic {
                         ilike("title", q)
                     }
+//                    topic.i18nTitle {
+//                        ilike WebUtils.getCurrentLocaleAsString(), q
+//                    }
                     isNull("replyTo")
                 }
             }

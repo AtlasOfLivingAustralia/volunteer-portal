@@ -1,7 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!doctype html>
 <html>
 <head>
+    <meta name="google" value="notranslate">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-main"/>
     <meta name="section" content="home"/>
     <title><cl:pageTitle title="About"/></title>

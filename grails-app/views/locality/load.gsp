@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
@@ -30,7 +31,7 @@
 
                     <td>
                         <g:textField name="collectionCode"/>
-                        %{--<g:select from="${collectionCodes}" name="collectionCode"/>--}%
+                        %{--<g:select from="${collectionCodes}" i18nName="collectionCode"/>--}%
                     </td>
                     <td><g:message code="locality.load.existing_collection_codes"/> ${collectionCodes?.join(", ")}</td>
                 </tr>

@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="au.org.ala.volunteer.Project; au.org.ala.volunteer.WebUtils" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -6,6 +8,7 @@
 </head>
 
 <body class="admin">
+<input type="hidden" id="selectedProjectId"/>
 <div class="container">
     <cl:headerContent title="${message(code: 'default.frontpageoptions.label', default: 'Front Page Options')}" selectedNavItem="bvpadmin">
         <%
@@ -28,8 +31,13 @@
                             <label for="projectOfTheDay" class="control-label col-md-3"><g:message code="frontPage.projectOfTheDay.label"
                                                                     default="Project of the day"/></label>
                             <div class="col-md-6">
-                                <g:select name="projectOfTheDay" class="form-control" from="${au.org.ala.volunteer.Project.listOrderByName()}"
-                                          optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
+                                <g:select name="projectOfTheDay" class="form-control" from="${(Project.createCriteria().list {
+                                    i18nName {
+                                        order( WebUtils.getCurrentLocaleAsString() )
+                                    }
+                                })
+                                }"
+                                          optionKey="id" optionValue="i18nName" value="${frontPage.projectOfTheDay?.id}"/>
 
                             </div>
                             <div class="col-md-3">
@@ -43,7 +51,7 @@
                             %{--<label for="useGlobalNewsItem" class="control-label col-md-3"><g:message code="frontPage.useGlobalNewsItem.label"--}%
                                                                                                    %{--default="Use global news item"/></label>--}%
                             %{--<div class="col-md-6">--}%
-                                %{--<g:checkBox name="useGlobalNewsItem" class="form-control" value="${frontPage.useGlobalNewsItem}"/>--}%
+                                %{--<g:checkBox i18nName="useGlobalNewsItem" class="form-control" value="${frontPage.useGlobalNewsItem}"/>--}%
                                 %{--<span class="help-block">(If unchecked the most recent project news item will be used instead)</span>--}%
                             %{--</div>--}%
                         %{--</div>--}%
@@ -52,7 +60,7 @@
                             %{--<label for="newsTitle" class="control-label col-md-3"><g:message code="frontPage.newsTitle.label"--}%
                                                                                                      %{--default="News title"/></label>--}%
                             %{--<div class="col-md-6">--}%
-                                %{--<g:textField class="form-control" name="newsTitle" value="${frontPage?.newsTitle}"/>--}%
+                                %{--<g:textField class="form-control" i18nName="newsTitle" value="${frontPage?.newsTitle}"/>--}%
                             %{--</div>--}%
                         %{--</div>--}%
 
@@ -60,7 +68,7 @@
                             %{--<label for="newsBody" class="control-label col-md-3"><g:message code="frontPage.newsBody.label"--}%
                                                                                              %{--default="News text"/></label>--}%
                             %{--<div class="col-md-6">--}%
-                                %{--<g:textArea class="form-control" rows="4" name="newsBody"--}%
+                                %{--<g:textArea class="form-control" rows="4" i18nName="newsBody"--}%
                                             %{--value="${frontPage?.newsBody}"/>--}%
                             %{--</div>--}%
                         %{--</div>--}%
@@ -69,7 +77,7 @@
                             %{--<label for="newsCreated" class="control-label col-md-3"><g:message code="frontPage.newsCreated.label"--}%
                                                                                             %{--default="News date"/></label>--}%
                             %{--<div class="col-md-6 grails-date">--}%
-                                %{--<g:datePicker name="newsCreated" precision="day" value="${frontPage?.newsCreated}"/>--}%
+                                %{--<g:datePicker i18nName="newsCreated" precision="day" value="${frontPage?.newsCreated}"/>--}%
                             %{--</div>--}%
                         %{--</div>--}%
 
@@ -259,7 +267,7 @@
           $.post({
             url: "${createLink(controller: 'frontPage', action: 'updateLogoImages')}",
             data: JSON.stringify(logos),
-            contentType: 'application/json; charset=utf-8',
+            contentType: 'application/json; charset=UTF-8',
             dataType: 'json'
           }).done(function(data, textStatus, jqXHR) {
             logos = data;

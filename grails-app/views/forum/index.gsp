@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="${message(code: 'forum.index.forum')}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>--}%
@@ -22,7 +23,11 @@
 <body>
 
 <asset:script type="text/javascript">
-
+            function htmlEncode(value){
+              // Create a in-memory div, set its inner text (which jQuery automatically encodes)
+              // Then grab the encoded contents back out. The div never exists on the page.
+              return $('<div/>').text(value).html();
+            }
             function renderTab(tabIndex, q, offset, max, sort, order) {
                 // var $tabs = $('#tabControl').tabs();
                 var selector = "";
@@ -42,7 +47,7 @@
                 }
 
                 if (baseUrl && selector) {
-                    $(selector).html('<div>${message(code: 'forum.index.retrieving_list')} <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
+                    $(selector).html('<div>'+htmlEncode("${message(code: 'forum.index.retrieving_list')}")+' <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
                     baseUrl += "?selectedTab=" + tabIndex;
                     if (q) {
                         baseUrl += "&q=" + q;
@@ -99,7 +104,7 @@
                         <div class="custom-search-input body">
                             <div class="input-group">
                                 <g:textField id="search-input" class="form-control input-lg"
-                                             placeholder="Search forums" name="query"/>
+                                             placeholder="${message(code: "forum.index.search_forums")}" name="query"/>
                                 <span class="input-group-btn">
                                     <button class="btn btn-info btn-lg" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                                 </span>
@@ -113,7 +118,7 @@
                     <ul class="nav nav-tabs">
                         <li class="${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"><a
                                 href="#tabRecentTopics" class="forum-tab-title" data-toggle="tab"
-                                tabIndex="0">Featured and recent topics</a></li>
+                                tabIndex="0"><g:message code="forum.index.featured_and_recent_topics"/></a></li>
                         <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabGeneralTopics"
                                                                                     class="forum-tab-title"
                                                                                     data-toggle="tab"

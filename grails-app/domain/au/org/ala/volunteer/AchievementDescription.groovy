@@ -1,12 +1,17 @@
 package au.org.ala.volunteer
 
-import groovy.transform.ToString
+import au.org.ala.volunteer.sanitizer.SanitizedHtml
 import org.codehaus.groovy.control.CompilationFailedException
 
 class AchievementDescription {
 
-    String name
-    String description
+    Translation i18nName
+
+    @SanitizedHtml
+    Translation i18nDescription
+
+//    String name
+//    String description
     String badge
 
     boolean enabled = false
@@ -49,7 +54,7 @@ class AchievementDescription {
     Date lastUpdated
     
     static constraints = {
-        description maxSize: 1000
+        //description maxSize: 1000
         code nullable: true, minSize: 0, maxSize: 10000, widget: 'textArea', validator: { val, obj, errors ->
             if (obj.type != AchievementType.GROOVY_SCRIPT
                     && (obj.aggregationType != AggregationType.CODE) || obj.type != AchievementType.ELASTIC_SEARCH_AGGREGATION_QUERY)
@@ -83,6 +88,6 @@ class AchievementDescription {
     }
 
     public String toString() {
-        "AchievementDescription (id: $id, name: ${name})"
+        "AchievementDescription (id: $id, i18nName: ${this.i18nName})"
     }
 }

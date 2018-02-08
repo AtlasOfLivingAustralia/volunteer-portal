@@ -82,6 +82,9 @@ class BootStrap {
             log.error("Could not remove vp_user.display_name", e)
         }
     }
+    private addColumn(String table, String column, String columnType) {
+
+    }
 
     private void fixTaskLastViews() {
         log.info("Checking task last views...")
@@ -128,7 +131,7 @@ class BootStrap {
         log.info("Checking project types...")
         def builtIns = [[name:'specimens', label: "bootstrap.specimens", icon:'/public/images/2.0/iconLabels.png'], [name:'fieldnotes', label: 'bootstrap.field_notes', icon:'/public/images/2.0/iconNotes.png'], [name: 'cameratraps', label: 'bootstrap.camera_traps', icon: '/public/images/2.0/iconWild.png']]
         builtIns.each {
-            def projectType = ProjectType.findByName(it.name)
+            def projectType = ProjectType.findByLabel(it.label)
             if (!projectType) {
                 log.info("Creating project type ${it.name}")
                 projectType = new ProjectType(name: it.name, label: it.label)

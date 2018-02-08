@@ -4,21 +4,32 @@ import au.org.ala.volunteer.sanitizer.SanitizedHtml
 
 class Project implements Serializable {
 
-    String name
+    Translation i18nName
     @SanitizedHtml
-    String description
+    Translation i18nShortDescription
     @SanitizedHtml
-    String tutorialLinks
+    Translation i18nDescription
+    @SanitizedHtml
+    Translation i18nTutorialLinks
+
+
+    //String i18nName
+//    @SanitizedHtml
+//    String description
+//    @SanitizedHtml
+//    String tutorialLinks
+//    String shortDescription
+//    String featuredLabel
+
+
+    String featuredImageCopyright = null
+    String backgroundImageAttribution = null
     Boolean showMap = true
     Date created
-    String shortDescription
-    String featuredLabel
     String featuredOwner
     Institution institution
     Boolean disableNewsItems = false
     Integer leaderIconIndex = 0
-    String featuredImageCopyright = null
-    String backgroundImageAttribution = null
     String backgroundImageOverlayColour = null
     Boolean inactive = false
     String collectionEventLookupCollectionCode
@@ -57,17 +68,12 @@ class Project implements Serializable {
     }
 
     static constraints = {
-        name maxSize: 200
-        description nullable: true, maxSize: 3000, widget: 'textarea'
         template nullable: true
         created nullable: true
         showMap nullable: true
-        tutorialLinks nullable: true, maxSize: 2000, widget: 'textarea'
         featuredImage nullable: true
-        featuredLabel nullable: true
         featuredOwner nullable: true
         institution nullable: true
-        shortDescription nullable: true, maxSize: 500
         disableNewsItems nullable: true
         leaderIconIndex nullable: true
         featuredImageCopyright nullable: true
@@ -83,14 +89,28 @@ class Project implements Serializable {
         mapInitLongitude nullable: true
         harvestableByAla nullable: true
         createdBy nullable: true
+
+        i18nName blank: false, nullable: false, lazy: false
+        i18nShortDescription blank: true, nullable: true, lazy: false
+        i18nDescription blank: true, nullable: true, lazy: false
+        i18nTutorialLinks blank: true, nullable: true, lazy: false
     }
 
     public String toString() {
-        return name
+        return this.i18nName
     }
 
+    public void setName(String name) {
+        // do nothing
+    }
     public String getInstitutionName() {
-        institution ? institution.name : featuredOwner
+        institution ? institution.i18nName?.toString() : featuredOwner
+    }
+
+    // For backwards compatibility
+    @Deprecated
+    public Translation getFeaturedLabel() {
+        return this.i18nName
     }
 
     public String getFeaturedImage() {

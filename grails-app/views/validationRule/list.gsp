@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
 <html>
 <head>
@@ -12,7 +13,7 @@
     <cl:headerContent title="${message(code: 'default.validationRuleList.label', default: 'Manage Validation Rules')}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
             ]
         %>
         <a href="${createLink(action: 'addRule')}" class="btn btn-primary"><i

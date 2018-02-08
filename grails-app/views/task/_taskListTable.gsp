@@ -1,3 +1,4 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <table class="table table-striped table-condensed table-bordered">
     <thead>
@@ -68,7 +69,7 @@
 
             <td style="text-align: center;">
                 <g:if test="${taskInstance.fullyValidatedBy}">
-                    <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
+                    <g:link controller="validate" action="task" id="${taskInstance.id}"><g:message code="task.adminList.review" /></g:link>
                 %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
                 %{--</button>--}%
                 </g:if>

@@ -2,8 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="google" value="notranslate">
     <style>
 
     #transcribeButton {

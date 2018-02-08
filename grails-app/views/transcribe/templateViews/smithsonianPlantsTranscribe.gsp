@@ -1,8 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
     </head>
     <content tag="templateView">
 <div class="row">
@@ -25,7 +26,7 @@
                     <ul>
                         <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.institution"/></span> <span
                                 id="institutionCode">${recordValues?.get(0)?.institutionCode}</span></li>
-                        <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.project"/></span> ${taskInstance?.project?.name}</li>
+                        <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.project"/></span> ${taskInstance?.project?.i18nName}</li>
                         <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.catalogue_no"/></span> ${recordValues?.get(0)?.catalogNumber}
                         </li>
                         <li><span class="metaDataLabel"><g:message code="transcribe.templateViews.all.taxa"/></span> ${recordValues?.get(0)?.scientificName}</li>

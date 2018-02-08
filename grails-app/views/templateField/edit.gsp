@@ -1,4 +1,6 @@
-<%@ page import="au.org.ala.volunteer.TemplateField" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.TemplateField" %>
+
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -13,10 +15,10 @@
             title="${message(code: 'default.edit.label', args: [entityName])} - ${templateFieldInstance.fieldType}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: ['Template'])],
-                    [link: createLink(controller: 'template', action: 'edit', id: templateFieldInstance.template.id), label: message(code: 'default.edit.label', args: ['Template'])],
-                    [link: createLink(controller: 'template', action: 'manageFields', id: templateFieldInstance.template.id), label: 'Manage Template Fields']
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [message(code: 'project.template.label')])],
+                    [link: createLink(controller: 'template', action: 'edit', id: templateFieldInstance.template.id), label: message(code: 'default.edit.label', args: [message(code: 'project.template.label')])],
+                    [link: createLink(controller: 'template', action: 'manageFields', id: templateFieldInstance.template.id), label: message(code: 'default.edit.label', args: [entityName])]
             ]
         %>
     </cl:headerContent>
@@ -33,6 +35,36 @@
                     <g:form method="post" class="form-horizontal">
                         <g:hiddenField name="id" value="${templateFieldInstance?.id}"/>
                         <g:hiddenField name="version" value="${templateFieldInstance?.version}"/>
+
+
+                        <!-- form language selector -->
+                        <g:render template="/layouts/formLanguageDropdown"/>
+
+                        <!-- Label -->
+                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}" >
+                            <label class="control-label col-md-2" for="label">
+                                <span><g:message code="templateField.label.label" default="Label"/></span>
+                            </label>
+
+                            <div class="col-md-6" id="label">
+                                <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                                    <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="label.${it.toString()}" rows="1" value="${ WebUtils.safeGet(templateFieldInstance?.label, it.toString()) }"/>
+                                </g:each>
+                            </div>
+                        </div>
+
+                        <!-- HelpText -->
+                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}" >
+                            <label class="control-label col-md-2" for="helpText">
+                                <span><g:message code="templateField.helpText.label" default="Help Text"/></span>
+                            </label>
+
+                            <div class="col-md-6" id="helpText">
+                                <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                                    <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="helpText.${it.toString()}" rows="1" value="${ WebUtils.safeGet(templateFieldInstance?.helpText, it.toString()) }"/>
+                                </g:each>
+                            </div>
+                        </div>
 
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'fieldType', 'has-error')}">
                             <label for="fieldType" class="col-md-2 control-label"><g:message code="templateField.fieldType.label" default="Field Type"/></label>
@@ -54,12 +86,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}">
-                            <label for="label" class="col-md-2 control-label"><g:message code="templateField.label.label" default="Label"/></label>
-                            <div class="col-md-6">
-                                <g:textField class="form-control" name="label" value="${templateFieldInstance?.label}"/>
-                            </div>
-                        </div>
+
 
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'defaultValue', 'has-error')}">
                             <label for="defaultValue" class="col-md-2 control-label"><g:message code="templateField.defaultValue.label" default="Default Value"/></label>
@@ -82,12 +109,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'helpText', 'has-error')}">
-                            <label for="helpText" class="col-md-2 control-label"><g:message code="templateField.helpText.label" default="Help Text"/></label>
-                            <div class="col-md-6">
-                                <g:textArea class="form-control" name="helpText" rows="4" value="${templateFieldInstance?.helpText}"/>
-                            </div>
-                        </div>
 
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'has-error')}">
                             <label for="validationRule" class="col-md-2 control-label"><g:message code="templateField.validationRule.label" default="Validation Rule"/></label>

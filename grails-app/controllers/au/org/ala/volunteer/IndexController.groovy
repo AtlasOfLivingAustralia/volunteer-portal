@@ -23,7 +23,7 @@ class IndexController {
 
         // Removed from calculations until news items add to front page or removed altogether
 //        if (frontPage.useGlobalNewsItem) {
-//            newsItem = new NewsItem(shortDescription: frontPage.newsBody, title: frontPage.newsTitle, created: frontPage.newsCreated);
+//            newsItem = new NewsItem(i18nShortDescription: frontPage.newsBody, i18nTitle: frontPage.newsTitle, created: frontPage.newsCreated);
 //        } else {
 //            // We need to find the latest news item from all projects, but we only include news items from projects whose news items have not been disabled
 //            newsItem = NewsItem.find("""from NewsItem n where (n.project is not null and (n.project.disableNewsItems is null or project.disableNewsItems != true)) or (n.institution is not null and (n.institution.disableNewsItems is null or n.institution.disableNewsItems != true)) order by n.created desc""")
@@ -187,16 +187,16 @@ class IndexController {
 
             if (topic instanceof ProjectForumTopic) {
                 def project = ((ProjectForumTopic) topic).project
-                forumName = project.name
+                forumName = project.i18nName.toString()
                 thumbnail = project.featuredImage
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task
-                forumName = task.project.name
+                forumName = task.project.i18nName.toString()
                 thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
             } else {
-                forumName = "General Discussion"
+                forumName = message(code: "indexController.general_discussion");//"General Discussion"
                 forumUrl = createLink(controller: 'forum', action: 'index', params: [selectedTab: 1])
             }
 
@@ -218,7 +218,7 @@ class IndexController {
             def thumbnails = tasks.collect { Task t ->
                 [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(t.multimedia?.first())]
             }
-            [type             : 'task', projectId: proj.id, projectName: proj.name, userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
+            [type             : 'task', projectId: proj.id, projectName: proj.i18nName?.toString(), userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
              transcribedThumbs: thumbnails, transcribedItems: tasks.totalCount, timestamp: it[2].time / 1000]
         }
 

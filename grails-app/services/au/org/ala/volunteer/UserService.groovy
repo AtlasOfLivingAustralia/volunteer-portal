@@ -36,7 +36,7 @@ class UserService {
      * Register the current user in the system.
      */
     def registerCurrentUser() {
-        def userId = currentUserId
+        def userId = authService.userId
         def displayName = authService.displayName
         def firstName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_FIRST_NAME)
         def lastName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_LAST_NAME)
@@ -110,7 +110,7 @@ class UserService {
 
     public boolean isInstitutionAdmin(Institution institution) {
 
-        def userId = currentUserId
+        def userId = getCurrentUserId()
 
         if (!userId) {
             return false;
@@ -127,7 +127,7 @@ class UserService {
 
     public boolean isSiteAdmin() {
 
-        def userId = currentUserId
+        def userId = getCurrentUserId()
 
         if (!userId) {
             return false;
@@ -166,7 +166,7 @@ class UserService {
      */
     public boolean isValidatorForProjectId(Long projectId) {
 
-        def userId = currentUserId
+        def userId = getCurrentUserId()
 
         if (!userId) {
             return false;
@@ -203,6 +203,9 @@ class UserService {
     }
 
     public String getCurrentUserId() {
+
+        registerCurrentUser()
+
         return authService.userId
     }
 
@@ -211,7 +214,7 @@ class UserService {
     }
 
     public User getCurrentUser() {
-        def userId = currentUserId
+        def userId = getCurrentUserId()
         if (userId) {
             return User.findByUserId(userId)
         }
@@ -533,7 +536,7 @@ class UserService {
 
         def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, fullTextIndexService.hitsCount)
         def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
-        def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
+        def userPercent = String.format('%.2f', totalCount>0?((userCount / totalCount) * 100.0):0.0);
 
         sw.stop()
         log.debug("notbookMainFragment.percentage ${sw.toString()}")

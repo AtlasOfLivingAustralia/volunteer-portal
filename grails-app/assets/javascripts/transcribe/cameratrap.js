@@ -4,9 +4,15 @@
 //  assume bootbox
 //= require dotdotdot
 //= require transitionend
+//= require mustache
+//= require image-viewer
 //= require_self
-function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
+
+
+function cameratrap(smImageInfos, smItems, recordValues, placeholders, language, namespace) {
   jQuery(function ($) {
+    setupPanZoom();
+
     var values = _.pluck([].concat(_.values(smItems)), 'value');
 
     var itemValueMap = smItems;
@@ -19,9 +25,10 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     for (var index in recordValues) {
       if (recordValues.hasOwnProperty(index)) {
         var vn = recordValues[index].vernacularName;
+        var animalKey = recordValues[index].animalKey;
         var certainty = recordValues[index].certainty || 1;
-        if (vn && itemValueMap[vn]) {
-          selections[vn] = {certainty: certainty, key: itemValueMap[vn].imageIds}
+        if (vn && itemValueMap[animalKey]) {
+          selections[vn] = {certainty: certainty,  key: itemValueMap[animalKey].imageIds, animalKey: itemValueMap[animalKey].animalKey}
         }
       }
     }
@@ -112,13 +119,13 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
         // only handle the ct-item transition
         if ($(e.target).hasClass('ct-item')) {
           $(e.target).removeClass('fading');
-          $('.ct-item.active .ct-caption').dotdotdot();
+          $('.dotdotdot').dotdotdot();
         }
       });
       $ctq.on(transitionendname, '.ct-sub-item', function(e) {
         if ($(e.target).hasClass('ct-sub-item')) {
           $(e.target).removeClass('fading');
-          $('.ct-sub-item.active .ct-caption').dotdotdot();
+          $('.dotdotdot').dotdotdot();
         }
       });
     }
@@ -133,8 +140,21 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
       var selectionCertainty = (selections.hasOwnProperty(value) && selections[value].certainty) || 0;
       var selected = selectionCertainty == 1 ? 'ct-selected ct-certain-selected' : selectionCertainty == 0.5 ? 'ct-selected ct-uncertain-selected' : '';
-      var similarSpecies = itemValueMap[value].similarSpecies.join(', ');
-      var templateObj = {value: value, key: key, selected: selected, similarSpecies: similarSpecies};
+
+      var similarSpecies = [];var templateObj; var convValue;
+      if(namespace == "ct") {
+        similarSpecies = itemValueMap[value].similarSpecies.join(', ');
+        templateObj = {value: value, key: key, selected: selected, similarSpecies: similarSpecies};
+        convValue = value;
+      }else if(namespace == "dct") {
+          // Doedat camera traps
+          var mapKey = $(e.target).closest('[data-image-select-value]').attr('data-image-key');
+          itemValueMap[mapKey].similarSpecies.forEach(function(item) {
+            similarSpecies.push(item[language]);
+          });
+          convValue = itemValueMap[mapKey].name[language]
+      }
+      var templateObj = {value: convValue, key: key, selected: selected, similarSpecies: similarSpecies};
 
       var urls = _.map(_.filter(_.zip(keys, _.map(keys, function(key, i) { return firstInfoWithKey(key); })), function(keyAndInfo, i) {
         if (keyAndInfo[1] == null && window.console) console.warn('Missing info ' + keyAndInfo[0]);
@@ -191,16 +211,21 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       var selectedThumbnail = t.closest('[data-image-select-value]');//.closest('.thumbnail');
       var value = selectedThumbnail.data('image-select-value');
       var imageKey = selectedThumbnail.data('image-select-key');
+      var animalKey = selectedThumbnail.attr('data-image-key');
       if (selections.hasOwnProperty(value) && selections[value].certainty == selectionCertainty) {
         delete selections[value];
       } else {
-        selections[value] = {certainty: selectionCertainty, key: imageKey};
+        selections[value] = {certainty: selectionCertainty, key: imageKey, animalKey: animalKey};
       }
       syncSelectionState();
     }
 
     function valueToSelector(v, i, a) {
       return '[data-image-select-value="' + v + '"]'
+    }
+
+    function removeSelectionFromContainer(sel, selElem) {
+
     }
 
     function addSelectionToContainer(sel, selElem) {
@@ -217,7 +242,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
         selected: selected
       };
       mu.appendTemplate(selElem, 'selected-item-template', opts);
-      $('.ct-caption').dotdotdot();
+      $('.dotdotdot').dotdotdot();
     }
 
     function syncSelectionState() {
@@ -227,26 +252,35 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       var nonSelector = _.map(_.difference(values, selectedValues), valueToSelector).join(', ');
 
       var selElem = $('.ct-selection-grid');
+
       var uiSelectedValues = selElem.find('.thumbnail').map(function (i, e) {
         return $(e).data('image-select-value');
       }).toArray();
 
       var add = _.difference(selectedValues, uiSelectedValues);
+      var remove = _.difference(uiSelectedValues, selectedValues);
 
       for (var i = 0; i < add.length; ++i) {
         addSelectionToContainer(add[i], selElem);
       }
+      for (var i = 0; i < remove.length; ++i) {
+          selElem.find("[data-image-select-value='"+remove[i]+"']").parent().remove();
+          $("[data-image-select-value='"+remove[i]+"']").removeClass("ct-certain-selected ct-uncertain-selected");
+      }
+
       selElem.find(nonSelector).parent().remove();
 
       //ctContainer.find('[data-image-select-value] .badge').removeClass('selected');
       //ctContainer.find(badgeSelector).addClass('selected');
 
       ctContainer.find(nonSelector).removeClass('ct-selected ct-uncertain-selected ct-certain-selected');
+      ctContainer.find(".fa-check-square-o").removeClass('fa-check-square-o').addClass("fa-square-o");
       ctContainer.find(_.map(selectedValues, valueToSelector).join(', ')).each(function() {
         var $this = $(this);
         var certain = selections[$this.data('image-select-value')].certainty == 1;
         $this.addClass('ct-selected ct-'+(certain ? 'certain' : 'uncertain') +'-selected');
         $this.removeClass('ct-' + (certain ? 'uncertain' : 'certain') +'-selected');
+            $this.find('.ct-badge-'+(certain ? 'sure' : 'uncertain')+" i").removeClass("fa-square-o").addClass("fa-check-square-o");
       });
 
       generateFormFields();
@@ -271,6 +305,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       var i = 0;
       _.each(selections, function (value, key, list) {
         mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.' + i + '.vernacularName', value: key});
+        mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.' + i + '.animalKey', value: value.animalKey});
         mu.appendTemplate($ctFields, 'input-template', {
           id: 'recordValues.' + i + '.certainty',
           value: value.certainty
@@ -335,11 +370,11 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     $('#ct-animals-question input').change(function(e) {
       var $this = $(this);
-      $('#ct-animals-question-summary').text($this.val());
+      $('#ct-animals-question-summary').text($this.attr('label'));
     });
     $('#ct-bnw-question input').change(function(e) {
       var $this = $(this);
-      $('#ct-bnw-question-summary').text($this.val());
+      $('#ct-bnw-question-summary').text($this.attr('label'));
     });
 
     // IMAGE SEQUENCE

@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
-import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
@@ -245,7 +244,7 @@ class AjaxController {
 
         def writer = new CSVWriter(response.writer,  {
             'time' { sdf.format(it.time) }
-            'project' { it.taskDescriptor?.project?.name }
+            'project' { it.taskDescriptor?.project?.i18nName }
             'task_id' { it.taskDescriptor?.externalIdentifier }
             'succeeded' { it.succeeded }
             'error_message' { it.message }
@@ -269,8 +268,8 @@ class AjaxController {
         def results = []
         for (Project p : projects) {
             def project = [:]
-            project.name = p.name
-            project.description = p.description
+            project.name = p.i18nName
+            project.description = p.i18nDescription
             project.expeditionPageURL = createLink(controller: 'project', action: 'index', id: p.id, absolute: true)
             project.taskCount = Task.countByProject(p)
             project.transcribedCount = Task.countByProjectAndFullyTranscribedByNotIsNull(p)
@@ -412,10 +411,10 @@ class AjaxController {
             final fullyValidatedCount = project.tasks.count { t -> t.dateFullyValidated as boolean }
             final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: project.id)
 
-            def citation = i18nService.message("harvest.citation", '{0} digitised at {1} ({2})', [project.name, i18nService.message('default.application.name'), createLink(uri: '/', absolute: true)])
+            def citation = i18nService.message("harvest.citation", '{0} digitised at {1} ({2})', [project.i18nName, i18nService.message('default.application.name'), createLink(uri: '/', absolute: true)])
             def licenseType = i18nService.message('harvest.license.type', 'Creative Commons Attribution Australia', [])
             def licenseVersion = i18nService.message('harvest.license.version', '3.0', [])
-            results << [id: project.id, name: project.name, description: project.description, newsItemsCount: project.newsItems.size(), tasksCount: project.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl, citation: citation, licenseType: licenseType, licenseVersion: licenseVersion]
+            results << [id: project.id, name: project.i18nName, description: project.i18nDescription, newsItemsCount: project.newsItems.size(), tasksCount: project.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl, citation: citation, licenseType: licenseType, licenseVersion: licenseVersion]
         }
 
         results.collect { result ->
@@ -512,7 +511,7 @@ class AjaxController {
         }.collect { task ->
             def id = task.id
             def projectId = task.project.id
-            def projectName = task.project.name
+            def projectName = task.project.i18nName
             def transcriber = task.fullyTranscribedBy
             def timestamp = task.dateFullyTranscribed
             def ipAddress = task.fullyTranscribedIpAddress

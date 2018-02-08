@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Field; au.org.ala.volunteer.TemplateField" %>
 <div class="row">
 
@@ -26,7 +27,7 @@
                 <g:each in="${fields.sort { it.name }}" var="field">
                     <g:if test="${!field.superceded && field.value}">
                         <tr>
-                            <td>${templateFields[field.name]?.label ?: field.name}</td>
+                            <td>${templateFields[field.name]?.label ?: field.name.equals("catalogNumber")?message(code:"transcribe.templateViews.all.catalogue_no"):field.name}</td>
                             <td>${field.value}</td>
                         </tr>
                     </g:if>

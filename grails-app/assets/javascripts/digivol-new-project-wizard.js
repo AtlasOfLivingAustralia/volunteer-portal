@@ -21,8 +21,8 @@ function createProjectModule(config) {
   }
 
   var LonLat = function LonLat() {
-    var latitude = arguments.length <= 0 || arguments[0] === undefined ? -27.76133033947936 : arguments[0];
-    var longitude = arguments.length <= 1 || arguments[1] === undefined ? 134.47265649999997 : arguments[1];
+    var latitude = arguments.length <= 0 || arguments[0] === undefined ? config.defaultLatitude : arguments[0];
+    var longitude = arguments.length <= 1 || arguments[1] === undefined ? config.defaultLongitude : arguments[1];
 
     _classCallCheck(this, LonLat);
 
@@ -108,7 +108,7 @@ function createProjectModule(config) {
           templateUrl: 'start.html',
           data: {
             next: 'institutions',
-            title: 'Welcome'
+            title: config.translations["project.wizard.start.title"]
           }
         })
         .state('institutions', {
@@ -118,7 +118,7 @@ function createProjectModule(config) {
           data: {
             next: 'details',
             prev: 'start',
-            title: 'Expedition institution'
+            title: config.translations["project.wizard.institutions.title"]
           }
         })
         .state('details', {
@@ -128,7 +128,7 @@ function createProjectModule(config) {
           data: {
             next: 'image',
             prev: 'institutions',
-            title: 'Details'
+            title: config.translations["project.wizard.details.title"]
           }
         })
         .state('image', {
@@ -138,7 +138,7 @@ function createProjectModule(config) {
           data: {
             next: 'map',
             prev: 'details',
-            title: 'Expedition image'
+            title: config.translations["project.wizard.image.title"]
           }
         })
         .state('map', {
@@ -148,7 +148,7 @@ function createProjectModule(config) {
           data: {
             next: 'extras',
             prev: 'image',
-            title: 'Map Options'
+            title: config.translations["project.wizard.map.title"]
           }
         })
         .state('extras', {
@@ -158,7 +158,7 @@ function createProjectModule(config) {
           data: {
             next: 'summary',
             prev: 'map',
-            title: 'Details'
+            title: config.translations["project.wizard.extras.title"]
           }
         })
         .state('summary', {
@@ -167,14 +167,14 @@ function createProjectModule(config) {
           templateUrl: 'summary.html',
           data: {
             prev: 'extras',
-            title: 'Expedition Summary'
+            title: config.translations["project.wizard.summary.title"]
           }
         })
         .state('failed', {
           url: '/failed',
           templateUrl: 'failed.html',
           data: {
-            title: 'Project Creation Failed'
+            title: config.translations["project.wizard.failed.title"]
           }
         })
         .state('success', {
@@ -182,7 +182,7 @@ function createProjectModule(config) {
           templateUrl: 'success.html',
           controller: 'SuccessCtrl',
           data: {
-            title: 'Project Created'
+            title: config.translations["project.wizard.success.title.label"]
           },
           params: {
             id: null

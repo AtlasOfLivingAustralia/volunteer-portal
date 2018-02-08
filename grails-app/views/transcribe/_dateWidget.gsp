@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%
     def dateLayout = "YMD"
     if (field.layoutClass?.contains("DMY")) {
@@ -13,7 +14,7 @@
 
     <div class="row form-group">
         <div class="col-md-3">
-            (from)
+            <g:message code="dateWidget.from"/>
         </div>
         <g:set var="count" value="${0}"/>
 
@@ -45,7 +46,7 @@
 
     <div class="row form-group">
         <div class="col-md-3">
-            (to)
+            <g:message code="dateWidget.to"/>
         </div>
 
         <g:each var="letter" in="${dateLayout}">

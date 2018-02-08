@@ -1,9 +1,13 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FrontPage" %>
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-main"/>
     <meta name="section" content="home"/>
+    <meta name="google" value="notranslate">
     <title><cl:pageTitle title="Home"/></title>
     <content tag="disableBreadcrumbs">true</content>
     <content tag="selectedNavItem">bvp</content>
@@ -20,7 +24,7 @@
         <div class="cta-primary">
             <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="index.cta.getInvolved" /> <span
                     class="glyphicon glyphicon-arrow-down"></span></a>  <a class="btn btn-lg btn-hollow"
-                                                                           href="#learnMore"><g:message code="index.cta.learnMore" /></a>
+                                                                           href="/about/index"><g:message code="index.cta.learnMore" /></a>
         </div>
 
         <div class="row">
@@ -38,36 +42,36 @@
 
         <div class="row">
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconLabels.png" class="img-responsive"/>
+                <asset:image src="doedat/if_xxx035_2091691.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
                 <h3><g:message code="index.whatyoudo.specimens.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.specimens.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconNotes.png" class="img-responsive"/>
+                <asset:image src="doedat/if_flat_seo2-04_334155.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
                 <h3><g:message code="index.whatyoudo.fieldjournals.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.fieldjournals.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Field Notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.field_notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconWild.png" class="img-responsive"/>
+                <asset:image src="doedat/if_squirrel_icon_731910.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
                 <h3><g:message code="index.whatyoudo.cameratraps.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.cameratraps.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Camera traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.camera_traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
 
             </div>
 
@@ -88,17 +92,17 @@
 
             <div class="col-md-6">
                 <h3><g:link controller="project" action="index"
-                            id="${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.featuredLabel}</g:link>
+                            id="${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.i18nName}</g:link>
                 </h3>
                 <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + potdSummary.iconLabel]"
                         class="not-a-badge"><span
-                        class="glyphicon glyphicon-tag icon-flipped"></span>${potdSummary.iconLabel}</g:link><g:link
+                        class="glyphicon glyphicon-tag icon-flipped"></span>${message(code: potdSummary.iconLabel)}</g:link><g:link
                     controller="institution" action="index" id="${frontPage.projectOfTheDay?.institutionId}"
                     class="not-a-badge"><span
                         class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${frontPage.projectOfTheDay?.institutionName}</g:link>
 
                 <p>
-                    ${raw(frontPage.projectOfTheDay?.description)}
+                    ${raw(frontPage.projectOfTheDay?.i18nDescription?.toString())}
                 </p>
 
                 <g:render template="/project/projectSummaryProgressBar" model="[projectSummary: potdSummary]" />

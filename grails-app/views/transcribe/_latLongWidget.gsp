@@ -1,9 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="latLongWidget ${cssClass}" targetField="${field.fieldType}">
     <div class="row">
         <div class="col-md-12">
             <g:select tabindex="${tabindex}" class="form-control latLongFormatSelector" optionKey="value"
                       optionValue="label" name="${field.fieldType}.format" value=""
-                      from="${[[label: "DÂ°M'S\"", value: "DMS"], [label: "${message(code: 'transcribe.latLong.decimal')}", value: "DD"]]}"/>
+                      from="${[[label: "D°M'S\"", value: "DMS"], [label: "${message(code: 'transcribe.latLong.decimal')}", value: "DD"]]}"/>
         </div>
     </div>
 

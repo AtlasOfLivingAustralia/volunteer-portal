@@ -129,7 +129,7 @@ class AdminController {
 
         try {
             fields.each { field ->
-                // find the collector name
+                // find the collector i18nName
                 def collectorNameField = Field.findByTaskAndNameAndRecordIdxAndSuperceded(field.task, "recordedBy", field.recordIdx, false)
                 def collectorName = collectorNameField?.value
                 def newValue = ''
@@ -311,8 +311,8 @@ class AdminController {
 
             def writer = new CSVWriter((Writer) response.writer,  {
                 'Expedition Id' { it.project.id }
-                'Expedtion Name' { it.project.featuredLabel }
-                'Institution' { it.project.institution ? it.project.institution.name : it.project.featuredOwner }
+                'Expedtion Name' { it.project.i18nName }
+                'Institution' { it.project.institution ? it.project.institution.i18nName : it.project.featuredOwner }
                 'Institution Id' { it.project.institution?.id ?: "" }
                 'Inactive' { it.project.inactive ? "t" : "f" }
                 'Template' { it.project.template?.name }

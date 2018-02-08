@@ -74,8 +74,10 @@ class PicklistController {
         else items = PicklistItem.findAllByPicklist(picklistInstance)
 
         def imageIds = items.collect {
-            def o = JSON.parse(it.key)
-            o.dayImages + o.nightImages
+            if(it.key != null) {
+                def o = JSON.parse(it.key)
+                o.dayImages + o.nightImages
+            }
         }.flatten()
 
         def imageMap = imageServiceService.getImageInfoForIds(imageIds)
@@ -129,7 +131,7 @@ class PicklistController {
 //        PicklistItem.saveAll(pis)
         pis*.save()
 
-        if (warnings) flash.message = message(code: 'picklist.could_not_find_images_for') + warnings.join(', ')
+        if (warnings) flash.message = message(code: 'picklist.could_not_find_images_for', args: [warnings.join(', ')])
 
         redirect action: 'wildcount', id: picklistInstance.id, params: [institutionCode: instCode]
     }

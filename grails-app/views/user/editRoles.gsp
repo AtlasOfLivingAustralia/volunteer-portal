@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
@@ -38,7 +39,7 @@
 </head>
 
 <body class="admin">
-<cl:headerContent crumbLabel="Edit Roles" title="${message(code: 'user.editUser.edit_roles_for')} ${cl.displayNameForUserId(id: userInstance.userId)}">
+<cl:headerContent crumbLabel="Edit Roles" title="${message(code: 'user.editUser.edit_roles_for', args: cl.displayNameForUserId(id: userInstance.userId))}">
     <%
         pageScope.crumbs = []
         pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: cl.displayNameForUserId(id: userInstance.userId)]
@@ -72,7 +73,7 @@
                                     <td><g:select name="userRole_${userRole.id}_role" from="${roles}" optionKey="id" class="form-control"
                                                   optionValue="name" value="${userRole.role?.id}"></g:select></td>
                                     <td><g:select name="userRole_${userRole.id}_project" from="${projects}" optionKey="id" class="form-control"
-                                                  optionValue="featuredLabel" value="${userRole.project?.id}"
+                                                  optionValue="i18nName" value="${userRole.project?.id}"
                                                   noSelection="${[null: '<All Projects>']}"></g:select></td>
                                     <td>
                                         <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">

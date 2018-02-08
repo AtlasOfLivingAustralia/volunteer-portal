@@ -1,8 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
     </head>
     <content tag="templateView">
 <div class="row">
@@ -16,7 +17,7 @@
     </div>
 
     <div class="col-md-4">
-        <div class="row" id="taskMetadata">
+        <div class="row" id="taskMetadata" >
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-body">
@@ -27,7 +28,7 @@
                                     <br/>
                                     <span class="metaDataLabel"><g:message code="transcribe.templateViews.all.taxa"/></span> ${recordValues?.get(0)?.scientificName}
                                 </td>
-                                <td style="text-align: right">
+                                <td style="text-align: right" class="copyFromPreviousTask" >
                                     <div class="col-md-10">
                                         <button type="button" class="btn btn-info btnCopyFromPreviousTask"
                                                 href="#task_selector"

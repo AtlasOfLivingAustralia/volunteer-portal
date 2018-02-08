@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><cl:pageTitle title="${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="forum.css"/>
     <asset:stylesheet src="image-viewer"/>
@@ -30,6 +31,9 @@
         <g:if test="${taskInstance}">
             <button id="btnViewTask" class="btn btn-success"><g:message code="forum.view_task"/></button>
         </g:if>
+        <cl:ifValidator task="${taskInstance}">
+            <button id="btnValidateTask" class="btn btn-success"><g:message code="action.validate.label"/></button>
+        </cl:ifValidator>
     </div>
 </cl:headerContent>
 
@@ -93,6 +97,10 @@
         $("#btnViewTask").click(function(e) {
             e.preventDefault();
             window.location = "${createLink(controller: 'task', action: 'show', id: taskInstance.id)}";
+                });
+        $("#btnValidateTask").click(function(e) {
+            e.preventDefault();
+            window.location = "${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}";
                 });
 
     </g:if>

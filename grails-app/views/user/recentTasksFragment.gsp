@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <style>
 
 .taskProjectLabel {
@@ -24,7 +25,7 @@
                         ${task.externalIdentifier}
                     </a>
 
-                    <div class="taskProjectLabel">${task.project.featuredLabel}, ${task.dateFullyTranscribed?.format("dd MMM, yyyy")}</div>
+                    <div class="taskProjectLabel">${task.project.i18nName}, ${task.dateFullyTranscribed?.format("dd MMM, yyyy")}</div>
                 </div>
             </li>
         </g:each>

@@ -1,21 +1,59 @@
-<%@ page import="au.org.ala.volunteer.AggregationType; au.org.ala.volunteer.AchievementType; au.org.ala.volunteer.AchievementDescription" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="au.org.ala.volunteer.WebUtils; au.org.ala.volunteer.AggregationType; au.org.ala.volunteer.AchievementType; au.org.ala.volunteer.AchievementDescription" %>
+
+<!-- form language selector -->
+<g:render template="/layouts/formLanguageDropdown"/>
+
+<!-- Name -->
+<!--
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'has-error')} required">
     <label class="control-label col-md-3" for="name">
-        <g:message code="achievementDescription.name.label" default="Name"/>
+        g:message code="achievementDescription.name.label" default="Name"/>
     </label>
 
     <div class="col-md-6">
-        <g:textField class="form-control" name="name" required="" value="${achievementDescriptionInstance?.name}"/>
+        g:textField class="form-control" name="name" required="" value="${achievementDescriptionInstance?.i18nName}"/>
+    </div>
+</div>-->
+
+<div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'i18nName', 'has-error')}" >
+    <label class="control-label col-md-3" for="name">
+        <span><g:message code="achievementDescription.name.label" default="Name"/>
+            (<span class="form-locale locale"></span>)</span>
+    </label>
+
+    <div class="col-md-6" id="name">
+        <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+
+            <g:textArea style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nName.${it.toString()}" rows="1" value="${ WebUtils.safeGet(achievementDescriptionInstance.i18nName, it.toString()) }"/>
+        </g:each>
     </div>
 </div>
 
-<div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'has-error')} required">
+<!-- Description -->
+<!--
+<div class="form-group {hasErrors(bean: achievementDescriptionInstance, field: 'i18nDescription', 'has-error')} required">
     <label class="control-label col-md-3" for="description">
-        <g:message code="achievementDescription.description.label" default="Description"/>    </label>
+        g:message code="achievementDescription.description.label" default="Description"/>    </label>
 
     <div class="col-md-6">
-        <g:textArea class="form-control" rows="5" name="description" required=""
-                    value="${achievementDescriptionInstance?.description}"/>
+        g:textArea class="form-control" rows="5" name="description" required=""
+                    value="{achievementDescriptionInstance?.description}"/>
+    </div>
+</div>
+-->
+<div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'i18nDescription', 'has-error')}" >
+    <label class="control-label col-md-3" for="description">
+        <span><g:message code="achievementDescription.description.label" default="Description"/>
+        (<span class="form-locale locale"></span>)</span>
+    </label>
+
+    <div class="col-md-8" id="description">
+        <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+            <span class="i18n-field i18n-field-${it.toString()}">
+                <g:textArea class="mce form-control" name="i18nDescription.${it.toString()}" rows="10" value="${WebUtils.safeGet(achievementDescriptionInstance.i18nDescription, it.toString())}"/>
+            </span>
+        </g:each>
     </div>
 </div>
 
@@ -89,7 +127,8 @@
         <div class="bar" style="width: 0%;"></div>
     </div>
 </div>
-<asset:javascript src="codemirror-groovy-js-sublime" asset-defer=""/>
+
+<asset:javascript src="tinymce-simple" asset-defer=""/>
 <asset:script>
 jQuery(function($) {
     var id = "${achievementDescriptionInstance?.id ?: 0}"

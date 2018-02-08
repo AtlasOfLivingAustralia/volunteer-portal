@@ -56,23 +56,28 @@ class CameraTrapTagLib {
                     def tags = doc.tags
                     def dayImageIds = doc.dayImages
                     def nightImageIds = doc.nightImages
+                    def name = doc.name
                     def imageIds = (dayImageIds + nightImageIds).findAll { it?.trim() != null }.collect { it?.trim() }
                     def similarSpecies = doc.similarSpecies
                     def popularity = valueCountMap.get(it.value) ?: 0
                     def lastUsed = myLastList.size() - (myLastMap.get(it.value) ?: myLastList.size())
-                    results = [ (it.value): [imageIds: imageIds, value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), similarSpecies: similarSpecies.toList(), popularity: popularity, lastUsed: lastUsed ] ]
+                    results = [ (it.value): [name: name, imageIds: imageIds, value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), similarSpecies: similarSpecies.toList(), popularity: popularity, lastUsed: lastUsed ] ]
                     allImageIds += imageIds
                 } else {
                     results = [:]
                 }
 
             } catch (ConverterException e) {
-                warnings.add(message(code: "cameraTrapTagLib.could_not_parse_entry_for", args: [it.value]))
+                warnings.add(message(code: "cameraTrapTagLib.could_not_parse_entry_for", args: [it.value])+"")
                 results = [:]
             }
             results
         }
 
+        return [items: items2, infos: readImageInfo(allImageIds,warnings), warnings: warnings]
+    }
+
+    def readImageInfo(allImageIds,warnings) {
         //def imageIds = items2*.key.flatten()
         def imageInfos
         try {
@@ -85,12 +90,12 @@ class CameraTrapTagLib {
         if (!imageInfos)
             return [error: message(code: "transcribeTagLib.could_not_find_images_for_keys", args: [imageIds.join(", ")])]
         else {
-            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            //def missing = imageIds.collect { [i18nName: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.i18nName }
             def missing = allImageIds.findAll { imageInfos[it] == null }
             if (missing) warnings.add(message(code: "transcribeTagLib.the_following_image_ids_cannot_be_found", args: [missing.join(', ')]))
         }
 
-        return [items: items2, infos: imageInfos, warnings: warnings]
+        return imageInfos;
     }
 
     def imageInfosByPopularity = { attrs, body ->
@@ -150,7 +155,7 @@ class CameraTrapTagLib {
         if (!imageInfos)
             return [error: message(code: "transcribeTagLib.could_not_find_images_for_keys", args: [imageIds.join(", ")])]
         else {
-            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            //def missing = imageIds.collect { [i18nName: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.i18nName }
             def missing = imageIds.findAll { imageInfos[it] == null }
             if (missing) warnings.add(message(code: "transcribeTagLib.the_following_image_ids_cannot_be_found", args: [missing.join(', ')]))
         }

@@ -1,9 +1,15 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="au.org.ala.volunteer.WebUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
     <meta name="layout" content="digivol-projectSettings"/>
     <asset:stylesheet src="institution-dropdown"/>
     <asset:stylesheet src="label-autocomplete"/>
+    <asset:stylesheet src="jquery"/>
+    <asset:stylesheet src="jquery-ui"/>
 </head>
 
 <body>
@@ -17,7 +23,10 @@
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
-    <div class="form-group">
+    <!-- form language selector -->
+    <g:render template="/layouts/formLanguageDropdown"/>
+
+    <div class="form-group" style="    margin-top: 40px;    ">
         <label class="control-label col-md-3" for="featuredOwner"><g:message code="project.expedition_institution"/></label>
 
         <div class="col-md-6">
@@ -30,29 +39,53 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <label class="control-label col-md-3" for="name"><g:message code="project.general_settings.expedition_name"/></label>
+    <!-- Name -->
+    <div class="form-group" >
+        <label class="control-label col-md-3" for="name">
+            <span><g:message code="project.general_settings.expedition_name"/>
+            (<span class="form-locale locale"></span>)</span>
+        </label>
 
-        <div class="col-md-6">
-            <g:textField class="form-control" name="name" value="${projectInstance.name}"/>
+        <div class="col-md-6" id="name">
+            <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                <g:textField style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nName.${it.toString()}" rows="1" value="${ WebUtils.safeGet(projectInstance?.i18nName, it.toString()) }"/>
+            </g:each>
         </div>
     </div>
 
-    <div class="form-group">
-        <label class="control-label col-md-3" for="shortDescription"><g:message code="project.general_settings.short_description"/></label>
 
-        <div class="col-md-6">
-            <g:textField class="form-control" name="shortDescription" value="${projectInstance.shortDescription}"/>
+    <!-- Short Description -->
+    <div class="form-group" >
+        <label class="control-label col-md-3" for="shortDescription">
+            <span><g:message code="project.general_settings.short_description"/>
+            (<span class="form-locale locale"></span>)</span>
+        </label>
+
+        <div class="col-md-6" id="shortDescription">
+            <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                <g:textField style="display:none;" class="form-control i18n-field i18n-field-${it.toString()}" name="i18nShortDescription.${it.toString()}" rows="1" value="${ WebUtils.safeGet(projectInstance?.i18nShortDescription, it.toString()) }"/>
+            </g:each>
         </div>
     </div>
 
-    <div class="form-group">
-        <label class="control-label col-md-3" for="description"><g:message code="project.general_settings.long_description"/></label>
 
-        <div class="col-md-9">
-            <g:textArea name="description" class="mce form-control" rows="10" value="${projectInstance?.description}" />
+    <!-- Long Description -->
+    <div class="form-group " >
+        <label class="control-label col-md-3" for="description">
+            <span><g:message code="project.general_settings.long_description"/>
+            (<span class="form-locale locale"></span>)</span>
+        </label>
+
+        <div class="col-md-8" id="description">
+            <g:each in="${grailsApplication.config.languages.enabled.tokenize(',')}">
+                <span class="i18n-field i18n-field-${it.toString()}">
+                    <g:textArea class="mce form-control" name="i18nDescription.${it.toString()}" rows="10" value="${WebUtils.safeGet(projectInstance.i18nDescription, it.toString())}"/>
+                </span>
+            </g:each>
         </div>
     </div>
+
+
 
     <div class="form-group">
         <label class="control-label col-md-3" for="template"><g:message code="project.template.label"/></label>
@@ -71,8 +104,7 @@
         <label class="control-label col-md-3" for="projectType"><g:message code="project.projectType.label"/></label>
 
         <div class="col-md-6">
-            <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
-                      optionValue="label" optionKey="id" class="form-control"/>
+            <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}" optionValue="${{message(code: it.label)}}" optionKey="id" class="form-control"/>
         </div>
     </div>
 
@@ -146,7 +178,7 @@
                                 $( "#labels" )
                             );
                     })
-                    .fail(function() { alert(${message(code: 'project.general_settings.error1')})});
+                    .fail(function() { alert("${message(code: 'project.general_settings.error1')}")});
                     //.always(hideSpinner);
                 return null;
             });
@@ -160,7 +192,7 @@
                         var p = t.parent("span");
                         p.remove();
                     })
-                    .fail(function() { alert(${message(code: 'project.general_settings.error2')})});
+                    .fail(function() { alert("${message(code: 'project.general_settings.error2')}")});
                     //.always(hideSpinner);
             }
 

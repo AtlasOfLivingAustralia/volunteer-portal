@@ -48,6 +48,9 @@ class FullTextIndexService {
         log.info("ElasticSearch service starting...")
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
         settings.put("path.home", grailsApplication.config.elasticsearch.location);
+        //settings.put("script.groovy.sandbox.receiver_whitelist","org.springframework.beans.factory.annotation.Autowired")
+        settings.put("script.groovy.sandbox.class_whitelist","org.springframework.beans.factory.annotation.Autowired")
+
         node = nodeBuilder().local(true).settings(settings).node();
         client = node.client();
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
@@ -112,10 +115,10 @@ class FullTextIndexService {
                 fields              : [],
                 project             : [
                         projectType            : task.project.projectType.toString(),
-                        institution            : task.project.institution ? task.project?.institution?.name : task.project.featuredOwner,
+                        institution            : task.project.institution ? task.project?.institution?.i18nName.toString() : task.project.featuredOwner,
                         institutionCollectoryId: task.project.institution?.collectoryUid,
                         harvestableByAla       : task.project.harvestableByAla,
-                        name                   : task.project.featuredLabel,
+                        name                   : task.project.i18nName.toString(),
                         templateName           : task.project.template?.name,
                         templateViewName       : task.project.template?.viewName,
                         labels                 : task.project.labels?.collect {

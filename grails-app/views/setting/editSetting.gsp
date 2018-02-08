@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <html>
 <head>
@@ -11,7 +12,7 @@
 <cl:headerContent title="Change setting value - ${settingDefinition.key}" crumbLabel="Edit Setting" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
                 [link: createLink(controller: 'setting', action: 'index'), label: 'Advanced Settings']
         ]
     %>

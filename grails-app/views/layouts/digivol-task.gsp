@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -9,18 +11,20 @@
 <html>
 <head>
     <meta name="layout" content="digivol-transcribe"/>
-
+    <meta name="google" value="notranslate">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:layoutTitle
-            default="${cl.pageTitle(title: "${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}")}"/></title>
+            default="${cl.pageTitle(title: "${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.i18nName}")}"/></title>
     <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>
     <meta property="og:url" content="${shareUrl}"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="${taskInstance.project.name}Task Details - ${taskInstance.externalIdentifier}"/>
+    <meta property="og:title" content="${taskInstance?.project?.i18nName} Task Details - ${taskInstance.externalIdentifier}"/>
     %{--<meta property="og:description"   content="Your description" />--}%
     <meta property="og:image" content="${thumbnail}"/>
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
     <asset:stylesheet src="transcribe-widgets"/>
+    <g:render template="/layouts/tinyMce" />
     <g:layoutHead/>
 
     <style type="text/css">
@@ -89,19 +93,18 @@
                      class="img-responsive institution-logo-main pull-left">
 
                 <h1><g:link controller="project" action="show"
-                            id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
+                            id="${taskInstance?.project?.id}">${taskInstance?.project?.i18nName}</g:link> ${taskInstance?.externalIdentifier}</h1>
 
                 <h2>
-                    <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}"
-                                                sequenceNumber="${sequenceNumber}"/>
-                    <g:if test="${taskInstance}"><ul class="list-inline" style="display: inline-block;">
-                        <li style="vertical-align: top;">
+                    <g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/>
+                    <g:if test="${taskInstance}"><ul class="list-inline social-media-sharing" style="display: inline-block;">
+                        <li style="vertical-align: top;" class="social-media-facebook">
                             <div class="fb-share-button" data-href="${shareUrl}" data-layout="button"
                                  data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank"
                                                               href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse"><g:message
                                         code="task.share"/></a></div>
                         </li>
-                        <li style="vertical-align: top;">
+                        <li style="vertical-align: top;" class="social-media-twitter">
                             <a href="https://twitter.com/share" class="twitter-share-button"><g:message
                                     code="task.tweet"/></a> <script>!function (d, s, id) {
                             var js, fjs = d.getElementsByTagName(s)[0],
@@ -335,7 +338,7 @@
 
             <div class="modal-footer">
                 <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal"><g:message code="default.cancel"/>Cancel</button>
+                        data-dismiss="modal"><g:message code="default.cancel"/></button>
                 <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary"><g:message
                         code="default.submit"/></button>
             </div>
@@ -505,7 +508,7 @@
                     size: 'large',
                     //height: 500,
                     //hideHeader: true,
-                    title: 'Mapping Tool',
+                    title: "${message(code:'default.tools.label')}",
                     buttons: {
                       close: {
                         label: "${message(code: 'task.close_and_cancel')}",
@@ -634,8 +637,6 @@
                 });
 
                 $("input.recordedBy").blur(function(e) {
-                    // If the value of the recordedBy field does not match the name in the collector_name attribute
-                    // of the recordedByID element it means that the collector name no longer matches the id, so the id
                     // must be cleared.
                     var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]recordedBy$/);
                     var value = $(this).val();
@@ -701,8 +702,8 @@
         <g:if test="${!rule.testEmptyValues}">
             if (value) {
         </g:if>
-        var pattern = /${rule.regularExpression}/;
-                    return pattern.test(value);
+            var pattern = new RegExp($("<div/>").html("${rule.regularExpression}").text());
+            return pattern.test(value);
         <g:if test="${!rule.testEmptyValues}">
             }
             return true;
@@ -726,7 +727,7 @@
         function showTaskTimeoutMessage() {
             var options = {
                 url: "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}",
-                        title: 'Task lock will expire soon!',
+                        title: "${message(code:'digivolTask.task_lock_will_expire_soon')}",
                         backdrop: 'static',
                         keyboard: false
                     };

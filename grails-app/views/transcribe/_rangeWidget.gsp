@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField; au.org.ala.volunteer.Task; au.org.ala.volunteer.PicklistItem; au.org.ala.volunteer.Picklist" %>
 <%
     def values = ["", message(code: 'transcribe.range.metres'), message(code: 'transcribe.range.feet')]

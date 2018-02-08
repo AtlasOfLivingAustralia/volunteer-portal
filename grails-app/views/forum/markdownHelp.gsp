@@ -2,8 +2,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia - Forum formatting help</title>
+    <title><g:message code="default.application.name"/></title>
     <asset:stylesheet src="forum.css"/>
 
 </head>

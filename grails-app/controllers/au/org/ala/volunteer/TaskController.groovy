@@ -412,7 +412,7 @@ class TaskController {
           "valid": "isValid",
           "fields": {
             [
-              { "name", "value", ...}, ...
+              { "i18nName", "value", ...}, ...
             ]
           }
         }
@@ -652,7 +652,7 @@ class TaskController {
                 if (f != null) {
                     def allowedMimeTypes = ['text/plain','text/csv']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = message(code: 'taskController.the_file_must_be_one_of')+ ' ' +allowedMimeTypes
+                        flash.message = message(code: 'taskController.the_file_must_be_one_of', args: [allowedMimeTypes.join(",")])
                         redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
                         return
                     }
@@ -695,7 +695,7 @@ class TaskController {
                     if (f != null) {
                         def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
                         if (!allowedMimeTypes.contains(f.getContentType())) {
-                            flash.message = message(code: 'taskController.the_image_file_must_be_one_of')+" ${allowedMimeTypes}"
+                            flash.message = message(code: 'taskController.the_image_file_must_be_one_of', args: [allowedMimeTypes.join(",")])
                             return
                         }
 
@@ -746,8 +746,10 @@ class TaskController {
                 fieldDefinition.recordIndex = recordIndex
                 fieldDefinition.fieldDefinitionType = fieldType
                 fieldDefinition.format = format
+                fieldDefinition.save(flush: true)
             } else {
                 profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex))
+                profile.save(flush: true)
             }
 
         }
@@ -761,6 +763,7 @@ class TaskController {
         String newFieldType = params.newFieldType
         if (projectInstance && fieldDefinition && newFieldType) {
             fieldDefinition.fieldDefinitionType = newFieldType
+            fieldDefinition.save(flush: true)
         }
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }

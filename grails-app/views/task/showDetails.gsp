@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -5,14 +6,13 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
-<%@ page contentType="text/html; UTF-8" %>
 
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <title>Task Details</title>
+    <title><g:message code="taskDetails.task_details" /></title>
 
     <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 
@@ -33,15 +33,15 @@
 
 <body>
 
-<cl:headerContent title="Task Details - ${taskInstance?.id}">
+<cl:headerContent title="${message(code:"taskDetails.task_details")} - ${taskInstance?.id}">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'list'), label: message(code: 'default.expeditions.label', default: 'Expeditions')]
 
         ]
         if (taskInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project?.featuredLabel]
-            pageScope.crumbs << [link: createLink(controller: 'task', action: 'projectAdmin', id: taskInstance?.project?.id), label: "Admin list"]
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project?.i18nName]
+            pageScope.crumbs << [link: createLink(controller: 'task', action: 'projectAdmin', id: taskInstance?.project?.id), label: "${message(code:"showDetails.adminList")}"]
         }
     %>
 
@@ -94,7 +94,7 @@
                         </tr>
                         <tr>
                             <td><g:message code="task.showDetails.project"/></td>
-                            <td>${taskInstance.project?.name}</td>
+                            <td>${taskInstance.project?.i18nName}</td>
                         </tr>
                         <tr>
                             <td><g:message code="task.showDetails.created_date"/></td>
@@ -104,7 +104,8 @@
                             <td><g:message code="task.showDetails.transcribed"/></td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyTranscribed}">
-                                    ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyTranscribedBy) ?: "<span class='muted'>unknown</span>"}
+
+                                    ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} <g:message code="task.showDetails.by"/> ${cl.emailForUserId(id: taskInstance.fullyTranscribedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>
                                     <span class="muted">
@@ -118,7 +119,7 @@
                             <td><g:message code="task.showDetails.validated"/></td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyValidated}">
-                                    ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
+                                    ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} <g:message code="task.showDetails.by"/> ${cl.emailForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>
                                     <span class="muted">
@@ -158,7 +159,7 @@
                                 <ul>
                                     <g:each in="${taskInstance.viewedTasks?.sort({ it.lastView })}" var="view">
                                         <li><g:message code="task.showDetails.viewed_by"/> <cl:userDisplayString
-                                                id="${view.userId}"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " "+message(code:'task.showDetails.times')+")" : ""} <g:message code="task.showDetails.on"/> ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
+                                                id="${view.userId}"/><g:message code="task.showDetails.viewed_by.suffix"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " "+message(code:'task.showDetails.times')+")" : ""} <g:message code="task.showDetails.on"/> ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
                                     </g:each>
                                 </ul>
                             </td>

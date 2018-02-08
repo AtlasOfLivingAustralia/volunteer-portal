@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -130,7 +131,7 @@
                                 </a>
                             </div>
                             <div class="caption">
-                                <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
+                                <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.i18nName}</a></h4>
 
                                 <div class="expedition-progress">
                                     <div class="progress-legend">

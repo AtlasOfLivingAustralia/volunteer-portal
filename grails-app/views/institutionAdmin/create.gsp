@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,5 +46,6 @@
         </div>
     </div>
 </div>
+<asset:javascript src="tinymce-simple" asset-defer="" />
 </body>
 </html>

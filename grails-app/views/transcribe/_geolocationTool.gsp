@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem; au.org.ala.volunteer.Picklist" %>
 <div class="row">
     <div id="mapWidgets">
@@ -27,7 +28,7 @@
             <label for="infoUncert"><g:message code="transcribe.geolocationTool.adjust_uncertainty" /></label>
             <select class="form-control" id="infoUncert">
                 <g:set var="coordinateUncertaintyPL"
-                       value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
+                       value="${Picklist.findByName('coordinateUncertaintyInMeters',[order: "asc"])}"/>
                 <g:each in="${PicklistItem.findAllByPicklist(coordinateUncertaintyPL)}" var="item">
                     <g:set var="isSelected"><g:if
                             test="${(item.value == '1000')}">selected='selected'</g:if></g:set>
@@ -76,7 +77,7 @@
       latLng = new google.maps.LatLng(lat, lng);
       $('#infoUncert').val(coordUncer);
     } else {
-      latLng = new google.maps.LatLng(-34.397, 150.644);
+      latLng = new google.maps.LatLng(${grailsApplication.config.location.default.latitude}, ${grailsApplication.config.location.default.longitude});
     }
 
     var myOptions = {
@@ -117,12 +118,12 @@
     // Add dragging event listeners.
     google.maps.event.addListener(marker, 'dragstart',
       function () {
-        updateMarkerAddress('${message(code: 'transcribe.geolocationTool.dragging')}');
+        updateMarkerAddress('${URLEncoder.encode(message(code: 'transcribe.geolocationTool.dragging'),"UTF8")}');
       });
 
     google.maps.event.addListener(marker, 'drag',
       function () {
-        updateMarkerStatus('${message(code: 'transcribe.geolocationTool.dragging')}');
+        updateMarkerStatus('${URLEncoder.encode(message(code: 'transcribe.geolocationTool.dragging'),"UTF8")}');
         updateMarkerPosition(marker.getPosition());
       });
 
@@ -142,7 +143,7 @@
       var latLongRegex = /([-]{0,1}\d+)[^\d](\d+)[^\d](\d+).*?([-]{0,1}\d+)[^\d](\d+)[^\d](\d+)/;
       var match = latLongRegex.exec(localityStr);
       if (match) {
-        var interpretedLatLong = match[1] + '°' + match[2] + "'" + match[3] + '" ' + match[4] + '°' + match[5] + "'" + match[6] + '"';
+        var interpretedLatLong = match[1] + '�' + match[2] + "'" + match[3] + '" ' + match[4] + '�' + match[5] + "'" + match[6] + '"';
         $(':input#address').val(interpretedLatLong);
       } else {
 
@@ -190,7 +191,7 @@
         if (responses && responses.length > 0) {
           updateMarkerAddress(responses[0].formatted_address, responses[0]);
         } else {
-          updateMarkerAddress('${message(code: 'transcribe.geolocationTool.cannot_determine_address')}');
+          updateMarkerAddress('${URLEncoder.encode(message(code: 'transcribe.geolocationTool.cannot_determine_address'),"UTF8")}');
         }
       });
   }
@@ -285,13 +286,13 @@
   }
 
   function setLocationFields() {
+    //debugger;
     if ($('#infoLat').html() && $('#infoLng').html()) {
       // copy map fields into main form
-
       var latWidget = $('.decimalLatitude');
       var lngWidget = $('.decimalLongitude');
       var localityWidget = $(".locality");
-      if (!latWidget.length || !lngWidget.length) {
+      if (latWidget.length < 1 || lngWidget.length < 1) {
         // decimal controls do not exist in current template, so try the verbatim ones
         latWidget = $(".verbatimLatitude");
         lngWidget = $(".verbatimLongitude");
@@ -302,8 +303,7 @@
 //                    localityWidget =  $(".verbatimLocality");
 //                }
 
-      if (latWidget.length && lngWidget.length) {
-
+      if (latWidget.length > 0 || lngWidget.length > 0) {
         latWidget.val($('#infoLat').html()).trigger("change");
         lngWidget.val($('#infoLng').html()).trigger("change");
 
@@ -322,8 +322,6 @@
             hasLocality = true;
           } else if (type == 'administrative_area_level_1') {
             $(':input.stateProvince').val(name);
-          } else {
-            //$(':input.locality').val(name);
           }
         }
 
@@ -343,7 +341,7 @@
 
       bvp.hideModal();
     } else {
-      alert('${message(code: 'transcribe.geolocationTool.location_data_is_empty')}');
+      alert("${URLEncoder.encode(message(code: 'transcribe.geolocationTool.location_data_is_empty'),"UTF8")}");
     }
   }
 

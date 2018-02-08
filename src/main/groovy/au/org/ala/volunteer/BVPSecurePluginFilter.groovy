@@ -17,12 +17,12 @@ class BVPSecurePluginFilter implements Filter {
 
     /*
     <filter>
-        <filter-name>BVPSecurePluginFilter</filter-name>
+        <filter-i18nName>BVPSecurePluginFilter</filter-i18nName>
         <filter-class>au.org.ala.volunteer.BVPSecurePluginFilter</filter-class>
     </filter>
 
     <filter-mapping>
-        <filter-name>BVPSecurePluginFilter</filter-name>
+        <filter-i18nName>BVPSecurePluginFilter</filter-i18nName>
         <url-pattern>/monitoring</url-pattern>
         <url-pattern>/metrics</url-pattern>
         <url-pattern>/metrics/*</url-pattern>

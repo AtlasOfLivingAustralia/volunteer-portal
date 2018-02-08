@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <html>
 <head>
@@ -41,8 +42,8 @@
                     <td valign="top" class="name">
                         <label for="name"><g:message code="project.name.label" default="Name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'name', 'errors')}">
-                        <g:textField name="name" maxlength="200" value="${projectInstance?.name}"/>
+                    <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'i18nName', 'errors')}">
+                        <g:textField name="name" maxlength="200" value="${projectInstance?.i18nName}"/>
                     </td>
                 </tr>
 
@@ -51,8 +52,8 @@
                         <label for="description"><g:message code="project.description.label"
                                                             default="Description"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'description', 'errors')}">
-                        <g:textArea name="description" class="mce" rows="10" cols="60" value="${projectInstance?.description}" />
+                    <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'i18nDescription', 'errors')}">
+                        <g:textArea name="description" class="mce" rows="10" cols="60" value="${projectInstance?.i18nDescription}" />
                     </td>
                 </tr>
 
@@ -62,8 +63,8 @@
                                                               default="Tutorial Links"/></label>
                     </td>
                     <td valign="top"
-                        class="value ${hasErrors(bean: projectInstance, field: 'tutorialLinks', 'errors')}">
-                        <g:textArea name="tutorialLinks" cols="60" rows="10" class="mce" value="${projectInstance?.tutorialLinks}" />
+                        class="value ${hasErrors(bean: projectInstance, field: 'i18nTutorialLinks', 'errors')}">
+                        <g:textArea name="tutorialLinks" cols="60" rows="10" class="mce" value="${projectInstance?.i18nTutorialLinks}" />
                     </td>
                 </tr>
 
@@ -83,9 +84,9 @@
                                                                  default="Short description"/></label>
                     </td>
                     <td valign="top"
-                        class="value ${hasErrors(bean: projectInstance, field: 'shortDescription', 'errors')}">
+                        class="value ${hasErrors(bean: projectInstance, field: 'i18nShortDescription', 'errors')}">
                         <g:textArea class="input-xxlarge" name="shortDescription"
-                                    value="${projectInstance?.shortDescription}" rows="5" cols="100"/>
+                                    value="${projectInstance?.i18nShortDescription}" rows="5" cols="100"/>
                     </td>
                 </tr>
 
@@ -95,9 +96,9 @@
                                                               default="Featured Label"/></label>
                     </td>
                     <td valign="top"
-                        class="value ${hasErrors(bean: projectInstance, field: 'featuredLabel', 'errors')}">
-                        <g:textField class="input-xxlarge" name="featuredLabel"
-                                     value="${projectInstance?.featuredLabel}"/>
+                        class="value ${hasErrors(bean: projectInstance, field: 'i18nName', 'errors')}">
+                        <g:textField class="input-xxlarge" name="i18nName"
+                                     value="${projectInstance?.i18nName}"/>
                     </td>
                 </tr>
 
@@ -127,11 +128,11 @@
                 </tr>
 
                 %{--<tr class="prop">--}%
-                %{--<td valign="top" class="name">--}%
+                %{--<td valign="top" class="i18nName">--}%
                 %{--<label for="created"><g:message code="project.created.label" default="Created" /></label>--}%
                 %{--</td>--}%
                 %{--<td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'created', 'errors')}">--}%
-                %{--<g:datePicker name="created" precision="day" value="${projectInstance?.created}" noSelection="['': '']" />--}%
+                %{--<g:datePicker i18nName="created" precision="day" value="${projectInstance?.created}" noSelection="['': '']" />--}%
                 %{--</td>--}%
                 %{--</tr>--}%
 

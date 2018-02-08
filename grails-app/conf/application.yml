@@ -103,8 +103,8 @@ grails:
     controllers:
         defaultScope: singleton
         upload:
-          maxFileSize: 52428800
-          maxRequestSize: 52428800
+          maxFileSize: 5368709120
+          maxRequestSize: 5368709120
     converters:
         encoding: UTF-8
     views:
@@ -168,6 +168,13 @@ bvp:
         ensureDefault: true
     tmpdir: /data/volunteer-portal/config/
 
+languages:
+  enabled: "en_US,fr_FR,nl_BE,de_DE"
+
+location:
+  default:
+    latitude: -34.397
+    longitude: 150.644
 
 images:
     home: /data/volunteer-portal
@@ -281,7 +288,7 @@ environments:
             url: jdbc:postgresql://localhost/volunteers
             username: "postgres"
             password: "password"
-            logSql: false
+            logSql: true
     test:
         dataSource:
             dbCreate: update

@@ -1,7 +1,9 @@
-<!doctype html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><!doctype html>
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
+    <%@ page contentType="text/html; charset=UTF-8" %>
+
 </head>
 
 <body>

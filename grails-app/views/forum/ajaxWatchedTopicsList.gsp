@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ProjectForumTopic" %>
 <div>
     <g:if test="${topics}">
@@ -23,16 +24,16 @@
 
                         <div>
                             <small>
-                                <g:message code="forum.watched_topics.posted_by"/> ${topic.creator.displayName}
+                                <g:message code="forum.watched_topics.posted_by" args="${[topic.creator.displayName]}"/>
                                 <br/>
                                 <g:message code="forum.watched_topics.on"/> <g:formatDate date="${topic.dateCreated}"
                                                   format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/>
                                 <br/>
                                 <g:if test="${topic.instanceOf(au.org.ala.volunteer.ProjectForumTopic)}">
-                                    <g:message code="forum.watched_topics.project"/> <strong>${topic.project?.featuredLabel}</strong>
+                                    <g:message code="forum.watched_topics.project"/> <strong>${topic.project?.i18nName}</strong>
                                 </g:if>
                                 <g:if test="${topic.instanceOf(au.org.ala.volunteer.TaskForumTopic)}">
-                                    <g:message code="forum.watched_topics.project"/> <strong>${topic.task?.project?.featuredLabel}</strong>
+                                    <g:message code="forum.watched_topics.project"/> <strong>${topic.task?.project?.i18nName}</strong>
                                     <br/>
                                     <g:message code="forum.watched_topics.task"/> <strong>${topic.task?.externalIdentifier}</strong>
                                 </g:if>

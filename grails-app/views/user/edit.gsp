@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <html>
 <head>
@@ -97,7 +98,7 @@
                                 <ul id="roles" class="form-control-static">
                                     <g:each var="role" in="${roles}">
                                         <li>${role.role.name}
-                                        (${role.project == null ? '<All Projects>' : role.project.featuredLabel})
+                                        (${role.project == null ? '<All Projects>' : role.project.i18nName})
                                         </li>
                                     </g:each>
                                 </ul>

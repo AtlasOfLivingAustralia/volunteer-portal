@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
@@ -6,10 +7,11 @@
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <asset:stylesheet src="label-autocomplete"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>
-<content tag="pageTitle">Awards</content>
+<content tag="pageTitle">${message(code:"awards.awards")}</content>
 
 <content tag="adminButtonBar">
     <g:form class="form-inline" style="display: inline-block; padding-right: 10px;" action="awardAll"

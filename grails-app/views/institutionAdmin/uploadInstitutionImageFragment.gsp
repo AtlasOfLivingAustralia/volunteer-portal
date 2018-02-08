@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
 
     <g:uploadForm class="form-horizontal" action="uploadInstitutionImage">

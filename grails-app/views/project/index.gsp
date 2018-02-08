@@ -10,9 +10,10 @@
 <sitemesh:parameter name="backHref" value="${projectInstance.institutionId ? createLink(controller: 'institution', action: 'index', id: projectInstance.institutionId) : createLink(controller: 'project', action: 'list')}" />
 <html xmlns="http://www.w3.org/1999/html">
 <head>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-expedition"/>
-    <title><cl:pageTitle title="${(projectInstance.name ?: message(code: "project.default.title")) + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>
+    <title><cl:pageTitle title="${(projectInstance.i18nName?.toString() ?: message(code: "project.default.title")) + (projectInstance.institutionName ? " : ${projectInstance.institutionName}" : '')}"/></title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
     <cl:googleMapsScript callback="onGmapsReady" if="${projectInstance.showMap}"/>
 
@@ -46,17 +47,17 @@
         </div>
         <div class="row">
             <div class="col-sm-8">
-                <h1>${projectInstance.name}<g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="project.status.archived" /></span></small></g:if><g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="project.inactive" /></span></small></g:if></h1>
+                <h1>${projectInstance.i18nName}<g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="project.status.archived" /></span></small></g:if><g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="project.inactive" /></span></small></g:if></h1>
                 <div id="projectDescription" class="hidden">
-                    <p>${raw(projectInstance.description)}</p><!-- end description -->
+                    <p>${raw(projectInstance.i18nDescription?.toString())}</p><!-- i18nDescriptiontion -->
                     <a href="#" title="read more" class="readmore"><g:message code="project.read_more" /> »</a>
                 </div>
                 <div class="cta-primary">
                     <g:if test="${percentComplete < 100}">
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button"><g:message code="project.get_started" /> <span class="glyphicon glyphicon-arrow-right"></span></a>
-                        <g:if test="${projectInstance.tutorialLinks}">
-                            <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow ${oldClass} tutorial"><g:message code="project.view_tutorial" /></a>
-                            <div id="tutorialContent" class="hidden">${raw(projectInstance.tutorialLinks)}</div>
+                        <g:if test="${projectInstance.i18nTutorialLinks}">
+                            <a href="${(projectInstance.i18nTutorialLinks?.toString() ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow ${oldClass} tutorial"><g:message code="project.view_tutorial" /></a>
+                            <div id="tutorialContent" class="hidden">${raw(projectInstance.i18nTutorialLinks?.toString())}</div>
                         </g:if>
                         <g:else>
                             <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-lg btn-hollow ${oldClass}  tutorial"><g:message code="project.view_tutorial" /></a>
@@ -71,7 +72,7 @@
             </div>
             <div class="col-sm-4">
                 <g:if test="${!bgImage}">
-                    <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
+                    <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.i18nName}" class="thumb-old img-responsive">
                 </g:if>
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
@@ -126,7 +127,7 @@
                 <div class="col-sm-4">
                     <div class="map-header">
                         <h2 class="heading"><g:message code="project.record_locations" /></h2>
-                        <p><g:message code="project.record_locations.description" args="${ [projectInstance.name] }" /></p>
+                        <p><g:message code="project.record_locations.description" args="${ [projectInstance.i18nName] }" /></p>
                     </div>
                 </div>
             </div>
@@ -157,7 +158,7 @@
                                     <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-responsive" title="${roleIcon?.name}" alt="${roleIcon?.name}">
                                 </div>
                                 <div class="col-xs-9 col-sm-4 roleList">
-                                    <h3>${role.name}</h3>
+                                    <h3>${message(code: role.label)}</h3>
                                     <ul>
                                         <g:each in="${role.members}" var="member">
                                             <li><a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}">${member.name} (${member.count})</a>

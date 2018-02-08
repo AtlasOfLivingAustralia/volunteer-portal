@@ -138,7 +138,8 @@ var bvp = {};
                 tip: true,
                 position: {
                     my: tooltipPosition,
-                    at: targetPosition
+                    at: targetPosition,
+                    viewport: $(window)
                 },
                 hide: {
                   fixed: true

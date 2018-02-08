@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -54,7 +56,7 @@
                     <cl:ngHelpText><g:message code="project.wizard.expedition_institution.help" /></cl:ngHelpText>
                     <input type="hidden" name="featuredOwnerId" data-ng-model="project.featuredOwner.id"/>
                     <span id="institution-link-icon" class="ng-cloak muted" data-ng-show="project.featuredOwner.id"><small><i class="icon-ok"></i> <g:message code="project.wizard.expedition_institution.linked_to" /> <a
-                            id="institution-link" ng-href="${createLink(controller: 'institution', action: 'index')}/{{project.featuredOwner.id}}" target="_blank"><g:message code="project.wizard.expedition_institution.institution" />!</a></small></span>
+                            id="institution-link" ng-href="${createLink(controller: 'institution', action: 'index')}/{{project.featuredOwner.id}}" target="_blank"><g:message code="project.wizard.expedition_institution.institution" /><g:message code="project.wizard.expedition_institution.linked_to_suffix" />!</a></small></span>
                 </div>
             </div>
 
@@ -128,7 +130,7 @@
                 <label class="col-sm-3 control-label" for="projectTypeId"><g:message code="project.projectType.label" /></label>
         
                 <div class="col-sm-6">
-                    <g:select class="form-control" name="projectTypeId" from="${projectTypes}" optionKey="id" optionValue="label"
+                    <g:select class="form-control" name="projectTypeId" from="${projectTypes}" optionKey="id" optionValue="name"
                               data-ng-model="project.projectTypeId" data-dv-convert-to-number="" data-ng-required="true"  />
                 </div>
 
@@ -518,7 +520,8 @@
 <asset:script>
   createProjectModule({
      googleMapsApiKey: '${grailsApplication.config.google.maps.key}',
-     language: '${org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}',
+     defaultLatitude: ${grailsApplication.config.location.default.latitude},
+     defaultLongitude: ${grailsApplication.config.location.default.longitude},
      stagingId: '${stagingId.encodeAsJavaScript()}',
      cancelUrl: '${createLink(controller: 'project', action: 'wizardCancel', id: id)}',
      autosaveUrl: '${createLink(controller: 'project', action: 'wizardAutosave', id: stagingId)}',
@@ -533,7 +536,22 @@
      picklists: <cl:json value="${picklists}" />,
      templates: <cl:json value="${templates}" />,
      projectTypes: <cl:json value="${projectTypes}" />,
-     projectImageUrl: '${projectImageUrl.encodeAsJavaScript()}'
+     projectImageUrl: '${projectImageUrl.encodeAsJavaScript()}',
+     language: '${LocaleContextHolder.getLocale().getLanguage()}',
+     translations: {
+        "project.wizard.start.title" : "${message(code: "project.wizard.start.title")}",
+        "project.wizard.institutions.title" : "${message(code: "project.wizard.institutions.title")}",
+        "project.wizard.details.title" : "${message(code: "project.wizard.details.title")}",
+        "project.wizard.image.title" : "${message(code: "project.wizard.image.title")}",
+        "project.wizard.map.title" : "${message(code: "project.wizard.map.title")}",
+        "project.wizard.extras.title" : "${message(code: "project.wizard.extras.title")}",
+        "project.wizard.summary.title" : "${message(code: "project.wizard.summary.title")}",
+        "project.wizard.failed.title" : "${message(code: "project.wizard.failed.title")}",
+        "project.wizard.success.title.label" : "${message(code: "project.wizard.success.title.label")}"
+     }
+
+
+
   });
 </asset:script>
 </div>

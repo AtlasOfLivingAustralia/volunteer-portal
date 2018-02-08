@@ -4,13 +4,16 @@ import au.org.ala.volunteer.sanitizer.SanitizedHtml
 
 class Institution implements Serializable {
 
+    Translation i18nName
+    @SanitizedHtml
+    Translation i18nShortDescription
+    @SanitizedHtml
+    Translation i18nDescription // markdown, optional
+
+    Translation i18nAcronym
+
     Long id
-    String name
-    String acronym  // optional
-    @SanitizedHtml
-    String shortDescription // markdown, optional
-    @SanitizedHtml
-    String description // markdown, optional
+
     String contactName // optional
     String contactEmail // optional
     String contactPhone // optional
@@ -30,17 +33,17 @@ class Institution implements Serializable {
         contactEmail email: true, blank: true, nullable: true
         contactPhone blank: true, nullable: true
         collectoryUid nullable: true
-        shortDescription nullable: true, blank: true, maxSize: 512
-        description blank: true, nullable: true, maxSize: 16384
-        acronym blank: true, nullable: true
         websiteUrl blank: true, nullable: true
         imageCaption blank: true, nullable: true
         themeColour blank: true, nullable: true
+
+        i18nName blank: false, nullable: false, lazy: false
+        i18nShortDescription blank: true, nullable: true, lazy: false
+        i18nDescription blank: true, nullable: true, lazy: false
+        i18nAcronym blank: true, nullable: true, lazy: false
     }
 
     static mapping = {
-        description widget: 'textarea'
         disableNewsItems defaultValue: 'false'
     }
-
 }

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <html>
 <head>
@@ -93,7 +94,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default" id="btnCancelRename"><g:message code="admin.tutorial_management.cancel"/></button>
-                <button class="btn btn-primary" id="btnApplyRename"><g:message code="admin.tutorial_management.rename"/>Rename</button>
+                <button class="btn btn-primary" id="btnApplyRename"><g:message code="admin.tutorial_management.rename"/></button>
             </div>
         </div>
     </div>

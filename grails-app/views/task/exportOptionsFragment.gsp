@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
     <h3><g:message code="task.exportOptionsFragment.select"/></h3>
 

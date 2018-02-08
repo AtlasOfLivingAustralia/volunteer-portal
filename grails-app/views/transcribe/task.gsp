@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; chars  et=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -8,9 +9,11 @@
 <%@ page contentType="text/html; UTF-8" %>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-transcribe"/>
 
-    <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
+    <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
 
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
@@ -84,7 +87,7 @@
 
             <div class="transcription-branding">
                 <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
-                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
+                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.i18nName}</g:link> ${taskInstance?.externalIdentifier}</h1>
                 <h2><g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
             </div>
 
@@ -637,13 +640,15 @@
 
 </asset:script>
 <asset:script>
-
+    debugger;
     <g:each in="${ValidationRule.list()}" var="rule">
         transcribeValidation.rules.${rule.name} = {
             test: function(value, element) {
         <g:if test="${!rule.testEmptyValues}">
             if (value) {
         </g:if>
+        console.log("${rule.regularExpression}");
+
         var pattern = /${rule.regularExpression}/;
                     return pattern.test(value);
         <g:if test="${!rule.testEmptyValues}">

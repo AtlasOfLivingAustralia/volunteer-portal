@@ -8,8 +8,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
-import javax.servlet.http.HttpServletResponse
-
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
@@ -268,7 +266,7 @@ class ProjectController {
                 export_func = exportService.export_zipFile
             }
 
-//            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
+//            def exporter_func_property = exportService.metaClass.getProperties().find() { it.i18nName == 'export_' + projectInstance.template.i18nName }
 //            if (exporter_func_property) {
 //                export_func = exporter_func_property.getProperty(exportService)
 //            }
@@ -343,7 +341,7 @@ class ProjectController {
             return
         }
 
-        if (!projectInstance.featuredLabel) {
+        if (!projectInstance.i18nName) {
             flash.message = "You must supply a featured label!"
             render(view: "create", model: [projectInstance: projectInstance])
             return
@@ -400,8 +398,9 @@ class ProjectController {
             redirect(action: "list")
         } else {
             final insts = Institution.list()
-            final names = insts*.name
-            final nameToId = insts.collectEntries { ["${it.name}": it.id] }
+            //final names = insts*.i18nName.toString()
+            final names = insts.collect{ it.i18nName.toString() }
+            final nameToId = insts.collectEntries { ["${it.i18nName}": it.id] }
             final labelCats = Label.withCriteria { projections { distinct 'category' } }
 
             final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
@@ -582,6 +581,7 @@ class ProjectController {
                 }
             }
             projectInstance.properties = params
+            projectInstance.save(flush: true)
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = message(code: "project.backend.expedition_updated")
@@ -629,6 +629,9 @@ class ProjectController {
     def uploadFeaturedImage() {
         def projectInstance = Project.get(params.id)
 
+        projectInstance.featuredImageCopyright = params.featuredImageCopyright
+        projectInstance.save(flush: true)
+
         if(request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
             
@@ -655,13 +658,16 @@ class ProjectController {
             }
         }
 
-        projectInstance.featuredImageCopyright = params.featuredImageCopyright
         flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.id)
     }
 
     def uploadBackgroundImage() {
         def projectInstance = Project.get(params.id)
+
+        projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
+        projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
+        projectInstance.save(flush: true)
 
         if(request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('backgroundImage')
@@ -693,8 +699,6 @@ class ProjectController {
             }
         }
 
-        projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
-        projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
         flash.message = "Background image settings updated."
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
@@ -784,21 +788,23 @@ class ProjectController {
 
     def findProjectResultsFragment() {
 
-        def q = params.q as String ?: ""
+        def query = "%${params.q as String}%" ?: ""
 
-        def c = Project.createCriteria()
-        def projectList = c.list {
+        def projectList = (List<Project>)Project.createCriteria().list {
             or {
-                ilike("name", "%${q}%")
-                ilike("featuredOwner", "%${q}%")
-                ilike("featuredLabel", "%${q}%")
-                ilike("shortDescription", "%${q}%")
-                ilike("description", "%${q}%")
+                i18nName {
+                    ilike WebUtils.getCurrentLocaleAsString(), query
+                }
+                i18nDescription {
+                    ilike WebUtils.getCurrentLocaleAsString(), query
+                }
+                i18nShortDescription {
+                    ilike WebUtils.getCurrentLocaleAsString(), query
+                }
             }
         }
 
         [projectList: projectList]
-
     }
 
     def addLabel(Project projectInstance) {
@@ -810,6 +816,7 @@ class ProjectController {
         }
 
         projectInstance.addToLabels(label)
+        projectInstance.save(flush: true)
         // Just adding a label won't trigger the GORM update event, so force a project update
         DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
         render status: 204
@@ -870,9 +877,14 @@ class ProjectController {
         def project = new NewProjectDescriptor(stagingId: id)
 
         def list = Institution.list()
-        def institutions = list.collect { [id: it.id, name: it.name ] }
+        def institutions = list.collect { [id: it.id, name: it.i18nName.toString() ] }
         def templates = Template.listOrderByName([:])
         def projectTypes = ProjectType.listOrderByName([:])
+        projectTypes.each() { ProjectType t ->
+            t.name = message(code: t.label)
+        }
+
+
         def projectImageUrl = projectStagingService.hasProjectImage(project) ? projectStagingService.getProjectImageUrl(project) : null
         def labels = Label.list()
         def autosave = projectStagingService.getTempProjectDescriptor(id)
@@ -964,7 +976,11 @@ class ProjectController {
     }
 
     def wizardProjectNameValidator(String name) {
-        render([ count: Project.countByName(name) ] as JSON)
+        render([ count: ((List<Project>)Project.createCriteria().list {
+            i18nName {
+                like WebUtils.getCurrentLocaleAsString(), name
+            }
+        }).size() ] as JSON)
     }
 
     def wizardCancel(String id) {
@@ -1059,11 +1075,11 @@ class ProjectController {
         try {
             projectService.archiveProject(project)
             project.archived = true
-            log.info("${project.name} (id=${project.id}) archived")
+            log.info("${project.i18nName} (id=${project.id}) archived")
             respond status: SC_NO_CONTENT
         } catch (e) {
             log.error("Couldn't archive project $project", e)
-            response.sendError(SC_INTERNAL_SERVER_ERROR, "An error occured while archiving ${project.name}")
+            response.sendError(SC_INTERNAL_SERVER_ERROR, "An error occured while archiving ${project.i18nName}")
         }
     }
 
@@ -1073,7 +1089,7 @@ class ProjectController {
             return
         }
         response.contentType = 'application/zip'
-        response.setHeader('Content-Disposition', "attachment; filename=\"${project.id}-${project.name}-images.zip\"")
+        response.setHeader('Content-Disposition', "attachment; filename=\"${project.id}-${project.i18nName}-images.zip\"")
         final os = response.outputStream
         try {
             projectService.writeArchive(project, os)
@@ -1099,7 +1115,12 @@ class ProjectController {
         if (id.isLong()) {
             project = Project.get(id as Long)
         } else {
-            project = Project.findByName(id)
+            List<Project> projectList = ((List<Project>)Project.createCriteria().list {
+                i18nName {
+                    like WebUtils.getCurrentLocaleAsString(), id
+                }
+            })
+            project = projectList.size()>0?projectList.get(0):null;
         }
 
         if (!project) {
@@ -1114,7 +1135,7 @@ class ProjectController {
         def dates = projectService.calculateStartAndEndTranscriptionDates(project)
 //        projectService.
         def result = [
-                project: project.name,
+                project: project.i18nName,
                 contributors: contributors,
                 numberOfSubjects: numberOfSubjects,
                 percentComplete: percentComplete,

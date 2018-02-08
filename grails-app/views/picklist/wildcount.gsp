@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="grails.converters.JSON; au.org.ala.volunteer.Project; au.org.ala.volunteer.Picklist" %>
 
 <html>

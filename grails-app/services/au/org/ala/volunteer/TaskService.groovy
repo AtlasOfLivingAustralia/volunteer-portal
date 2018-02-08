@@ -753,7 +753,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
      * Get the changes which the validator made.
      *
      * @task the task that is being selected
-     * @return list of changes. This is a hashmap of field name as key and list of old and new values
+     * @return list of changes. This is a hashmap of field i18nName as key and list of old and new values
      */
     def getChangedFields (Task task) {
 
@@ -920,7 +920,7 @@ ORDER BY record_idx, name;
 
     List<Map> transcribedDatesByUserAndProject(String userid, long projectId, String labelTextFilter) {
         String select = """
-            SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
+            SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.i18n_name_id as project
             FROM Project p, Task t
             LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = '${userid}' group by f.task_id) as field2 on field2.task_id = t.id
             WHERE t.fully_transcribed_by = '${userid}' and p.id = t.project_id and p.id = ${projectId}
@@ -929,7 +929,7 @@ ORDER BY record_idx, name;
 
         if (labelTextFilter) {
             select = """
-                SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
+                SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.i18n_name_id as project
                 FROM Project p, Task t
                 INNER JOIN (select f.task_id, f.value from Field f where f.name = 'occurrenceRemarks' and f.superceded = false and f.value ilike '%${labelTextFilter}%') as field on field.task_id = t.id
                 INNER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = '${userid}' group by f.task_id) as field2 on field2.task_id = t.id
@@ -1302,10 +1302,10 @@ ORDER BY record_idx, name;
         final querySnippet
         if (query) {
             querySnippet = """AND (
-p.name ilike '%' || :query || '%'
+p.i18n_name_id ilike '%' || :query || '%'
 OR t.id::VARCHAR = :query
 OR c.catalog_number @> ARRAY[ :query ]::text[]
-OR p.name ilike '%' || :query || '%'
+OR p.i18n_name_id ilike '%' || :query || '%'
 OR t.external_identifier ilike '%' || :query || '%'
 OR (tu.first_name || ' ' || tu.last_name) ilike '%' || :query || '%'
 OR (vu.first_name || ' ' || vu.last_name) ilike '%' || :query || '%'
@@ -1323,7 +1323,7 @@ t.*,
     (tu.first_name || ' ' || tu.last_name) AS "transcriber_display_name",
     (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
     c.catalog_number[1] AS "catalog_number",
-    p.name AS "project_name",
+    p.i18n_name_id AS "project_name",
     $statusSnippet AS "status",
     $dateTranscribed AS "date_transcribed"
 """

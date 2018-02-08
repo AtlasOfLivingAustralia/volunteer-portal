@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <html>
 <head>
@@ -33,13 +34,13 @@
 
 <body>
 
-<cl:headerContent title="Task List - ${projectInstance ? projectInstance?.featuredLabel : ''}"
+<cl:headerContent title="Task List - ${projectInstance ? projectInstance?.i18nName : ''}"
                   selectedNavItem="expeditions">
     <%
         if (projectInstance) {
             pageScope.crumbs = [
                     [link: createLink(controller: 'project', action: 'list'), label: 'Expeditions'],
-                    [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
+                    [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.i18nName]
             ]
         }
     %>
@@ -53,8 +54,8 @@
                     <div class="alert alert-info">
                         <g:message code="task.list.total_tasks"/> ${taskInstanceTotal},
                         <g:if test="${projectInstance}">
-                            <g:message code="task.list.transcribed_tasks"/> ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                            <g:message code="task.list.validated_tasks"/> ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                            <g:message code="task.list.transcribed_tasks"/> ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
+                            <g:message code="task.list.validated_tasks"/> ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
                         </g:if>
                         &nbsp;&nbsp;
                         <input style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="40"/>

@@ -143,6 +143,12 @@ class PicklistService {
                 } else {
                     results = PicklistItem.findAllByPicklistAndInstitutionCode(pl, null)
                 }
+                // Clone the values into the keys if there are none
+                for(PicklistItem item : results) {
+                    if(!item.key)  {
+                        item.key = item.value;
+                    }
+                }
             }
         }
         return results

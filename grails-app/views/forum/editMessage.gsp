@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><g:message code="default.application.name"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="forum.css"/>
 
@@ -45,7 +46,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <h2><g:message code="forum.edit_message.your_message"/>Your message:</h2>
+                    <h2><g:message code="forum.edit_message.your_message"/></h2>
                     <small><g:message code="forum.edit_message.note" /> <a
                             href="${createLink(action: 'markdownHelp')}" target="popup"><g:message code="forum.edit_message.note.here"/></a></small>
                     <g:form id="messageForm" controller="forum">

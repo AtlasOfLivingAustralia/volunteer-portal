@@ -170,7 +170,13 @@ class InstitutionService {
             retVal = Institution.get(id)
         } else {
             try {
-               retVal = Institution.findByName(name)
+               List<Institution> matchingInstitutions
+                matchingInstitutions = (List<Institution>)Institution.createCriteria().list {
+                    i18nName {
+                        like WebUtils.getCurrentLocaleAsString(), name
+                    }
+                }
+                retVal = (matchingInstitutions && matchingInstitutions.size()>0)?matchingInstitutions[0]:null;
             } catch (Exception e) {
                 log.error("Exception", e)
                 throw e

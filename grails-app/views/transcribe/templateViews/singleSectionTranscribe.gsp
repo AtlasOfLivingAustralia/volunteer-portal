@@ -1,8 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FieldType; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
     </head>
     <content tag="templateView">
 <div class="row">
@@ -24,7 +25,7 @@
                 </td>
                 <td>
                     <strong>Project:</strong>
-                    <span class="institutionName">${taskInstance?.project?.name}</span>
+                    <span class="institutionName">${taskInstance?.project?.i18nName}</span>
                 </td>
                 <td>
                     <strong>Catalog Number:</strong>
@@ -39,9 +40,9 @@
     </div>
 
     <div class="col-md-3">
-        <g:if test="${taskInstance?.project?.tutorialLinks}">
+        <g:if test="${taskInstance?.project?.i18nTutorialLinks}">
             <div class="tutorialLinks" style="text-align: right">
-                ${raw(taskInstance?.project?.tutorialLinks)}
+                ${raw(taskInstance?.project?.i18nTutorialLinks?.toString())}
             </div>
         </g:if>
     </div>

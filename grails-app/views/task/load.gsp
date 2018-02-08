@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 
 <html>
@@ -33,7 +34,7 @@
                     </td>
                     <td valign="top" class="value">
                         <g:select name="projectId" id="projectId" from="${projectList}" optionKey="id"
-                                  optionValue="name" value="${params.id}"/>
+                                  optionValue="i18nName" value="${params.id}"/>
                     </td>
                 </tr>
 

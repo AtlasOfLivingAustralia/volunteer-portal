@@ -11,7 +11,7 @@ public class TaskDescriptor {
 
     @Override
     String toString() {
-        "{ project.name:'$project.name', externalIdentifier:'$externalIdentifier', imageUrl:$imageUrl }"
+        "{ project.i18nName:'$project.i18nName', externalIdentifier:'$externalIdentifier', imageUrl:$imageUrl }"
     }
 }
 

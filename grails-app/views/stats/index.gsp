@@ -1,7 +1,9 @@
-<<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><cl:pageTitle title="Admin Stats" /></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="admin-stats" />
@@ -22,7 +24,7 @@
 <section id="admin-stats" class="in-body">
     <div ng-controller="StatsCtrl as statsCtrl" ng-cloak>
         <uib-tabset active="statsCtrl.active" template-url="notebookTabSet.html">
-            <uib-tab heading="Reports By Date">
+            <uib-tab heading="${message(code:"stats.reports_by_date")}">
                 <div class="row">
                     <div class="col-md-12">
                         <date-range start-date="statsCtrl.startDate" end-date="statsCtrl.endDate" on-dates-confirmed="statsCtrl.setDateRange()"></date-range>
@@ -127,7 +129,7 @@
                     </div>
                 </div>
             </uib-tab>
-            <uib-tab heading="Reports by Month" select="statsCtrl.loadMonthlyStats()">
+            <uib-tab heading="${message(code:"stats.reports_by_month")}" select="statsCtrl.loadMonthlyStats()">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
@@ -153,7 +155,7 @@
                     </div>
                 </div>
             </uib-tab>
-            <uib-tab heading="Reports by Institution">
+            <uib-tab heading="${message(code:"stats.reports_by_institution")}">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
@@ -199,7 +201,7 @@
 <script type="text/ng-template" id="dateRange.html">
 <div class="form-inline">
     <div class="form-group">
-        <label>From
+        <label>${message(code:"stats.from")}
             <div class="input-group">
                 <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="fromDate" ng-model="$ctrl.startDate" is-open="$ctrl.fromDatePopupOpened" />
                 <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="$ctrl.fromDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>
@@ -207,7 +209,7 @@
         </label>
     </div>
     <div class="form-group">
-        <label>to
+        <label>${message(code:"stats.to")}
             <div class="input-group">
                 <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="toDate" ng-model="$ctrl.endDate" is-open="$ctrl.toDatePopupOpened" />
                 <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="$ctrl.toDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>

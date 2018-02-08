@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Institution" %>
 <!DOCTYPE html>
 <html>
@@ -48,7 +49,7 @@
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
                                 <td><g:link action="edit"
-                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
+                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "i18nName")}</g:link></td>
 
                                 <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
 

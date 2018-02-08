@@ -137,11 +137,11 @@ class InstitutionAdminController {
             return
         }
         def institutionInstance = new Institution(
-                name: collectoryObject.name,
-                description: collectoryObject.pubDescription,
+                i18nName: collectoryObject.name,
+                i18nDescription: collectoryObject.pubDescription,
                 contactPhone: collectoryObject.phone,
                 contactEmail: collectoryObject.email,
-                acronym: collectoryObject.acronym,
+                i18nAcronym: collectoryObject.acronym,
                 websiteUrl: collectoryObject.websiteUrl,
                 collectoryUid: cid)
 
@@ -233,7 +233,7 @@ class InstitutionAdminController {
                 if (f != null && f.size > 0) {
                     def allowedMimeTypes = ['image/jpeg', 'image/png']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = message(code: "institutionAdmin.image_must_be_one_of")+ allowedMimeTypes
+                        flash.message = message(code: "institutionAdmin.image_must_be_one_of", args: [allowedMimeTypes.join(",")])
                     } else {
                         boolean result
                         switch (imageType) {

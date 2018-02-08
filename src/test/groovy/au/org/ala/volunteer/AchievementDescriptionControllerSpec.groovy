@@ -17,7 +17,7 @@ class AchievementDescriptionControllerSpec extends Specification {
         assert params != null
         // TODO: Populate valid properties like...
         params["name"] = 'badge'
-        params['description'] = 'badge'
+        params['i18nDescription'] = 'badge'
         params['badge'] = 'badge'
         params['enabled'] = 'false'
         params['type'] = AchievementType.ELASTIC_SEARCH_QUERY

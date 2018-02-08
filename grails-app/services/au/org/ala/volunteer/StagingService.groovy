@@ -217,7 +217,7 @@ class StagingService {
 
         def shadowFilePattern = Pattern.compile('^(.+?)__([A-Za-z]+)(?:__(\\d+))?[.]txt$')
 
-        // First pass - computed defined field values (either literals, name captures etc...)
+        // First pass - computed defined field values (either literals, i18nName captures etc...)
         stagedFiles.each { stagedFile ->
 
             def m = shadowFilePattern.matcher(stagedFile.name)
@@ -309,7 +309,7 @@ class StagingService {
     public void uploadDataFile(Project project, MultipartFile file) {
         clearDataFile(project)
         def f = new File(createDataFilePath(project))
-        f.mkdirs()
+        f.getParentFile().mkdirs()
         file.transferTo(f.absoluteFile)
     }
 

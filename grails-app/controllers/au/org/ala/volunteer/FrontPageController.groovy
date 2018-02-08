@@ -63,7 +63,7 @@ class FrontPageController {
             def frontPage = FrontPage.instance()
 
             frontPage.heroImage = heroImage.name
-            frontPage.save()
+            frontPage.save(flush: true)
         }
         redirect(action: 'edit')
     }

@@ -12,15 +12,15 @@ class InstitutionAdminControllerSpec extends Specification {
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
+        //params["i18nName"] = 'someValidName'
         params['name'] = 'name'
         params['contactName'] = 'contactName'
         params['contactEmail'] = 'contact@email.com'
         params['contactPhone'] = 'contactPhone'
         params['collectoryUid'] = 'collectoryUid'
-        params['shortDescription'] = 'shortDescription'
+        params['i18nShortDescription'] = 'i18nShortDescription'
         params['description'] = 'description'
-        params['acronym'] = 'ACR'
+        params['i18nAcronym'] = new Translation('ACR')
         params['websiteUrl'] = 'http://website.url'
         params['imageCaption'] = 'imageCaption'
         params['themeColour'] = '#000000'

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="transcribeTool"/>
 </head>
 
@@ -116,8 +117,8 @@
     var event_map;
     event_map = new GMaps({
         div: '#event_map',
-        lat: -34.397,
-        lng: 150.644,
+        lat: ${grailsApplication.config.location.default.latitude},
+        lng: ${grailsApplication.config.location.default.longitude},
         zoom: 10
     });
 

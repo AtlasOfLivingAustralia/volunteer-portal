@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <style>
 .forumPostTitle {
     font-weight: bold;
@@ -27,7 +28,7 @@
                         </div>
 
                         <div class="forumPostDate">
-                            <g:message code="user.social.posted_on" /> ${post.date?.format("dd MMM, yyyy")}
+                            <g:message code="user.social.posted_on" args="${[post.date?.format("dd MMM, yyyy")]}" />
                         </div>
 
                         <div class="forumPostMessage">

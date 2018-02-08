@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data"
         class="form-horizontal">
     <g:hiddenField name="projectId" value="${projectInstance.id}"/>

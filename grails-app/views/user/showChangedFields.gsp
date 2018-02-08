@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Task; au.org.ala.volunteer.Field; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.Project; au.org.ala.volunteer.Template; au.org.ala.volunteer.DarwinCoreField;" %>
 
 <p><i>Last Modified By: ${recordValues?.entrySet()[0]?.getValue().lastModifiedBy}</i> </p>

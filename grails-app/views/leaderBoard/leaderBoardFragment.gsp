@@ -1,9 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
     <table class="table table-bordered table-condensed table-striped">
         <thead style="background-color: #f0f0e8">
         <tr>
             <td colspan="2" style="vertical-align: middle">
-                <h3 style="margin: 0; display: inline-block">${institutionInstance ? institutionInstance.acronym + " " : ""}<g:message code="index.leader_board.honour_board"/></h3>
+                <h3 style="margin: 0; display: inline-block">${institutionInstance ? institutionInstance.i18nAcronym + " " : ""}<g:message code="index.leader_board.honour_board"/></h3>
             </td>
         </tr>
         </thead>

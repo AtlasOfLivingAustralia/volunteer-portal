@@ -1,3 +1,4 @@
+    <%@ page contentType="text/html; charset=UTF-8" %>
 <div class="row" style="padding-bottom: 10px">
     <div class="col-md-10">
         <g:message code="transcribe.mappingTool.find_them_using_the_mapping_tool"/>

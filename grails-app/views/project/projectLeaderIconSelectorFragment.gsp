@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="row-fluid">
     <div class="span12">
         <p class="lead">

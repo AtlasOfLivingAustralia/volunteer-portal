@@ -1,6 +1,7 @@
 // Mappings for expedition labels, icons, etc
 expedition = [
         [name: "Expedition Leader",
+         label: "expedition.expedition_leader",
          icons: [
                  [
                          icon: "images/team/teamExpeditionLeader.png",
@@ -38,6 +39,7 @@ expedition = [
          max: 1,
          threshold: 1],
         [name: "Scientists",
+         label: "expedition.scientist",
          icons: [
                  [
                          icon: "images/team/teamScientist.png",
@@ -54,6 +56,7 @@ expedition = [
          max: 9999,
          threshold: 50],
         [name: "Collection Managers",
+         label: "expedition.collection_managers",
          icons: [
                  [
                          icon: "images/team/teamCollectionsManager.png",
@@ -70,6 +73,7 @@ expedition = [
          max: 9999,
          threshold: 10],
         [name: "Technical Officers",
+         label: "expedition.technical_officers",
          icons: [
                  [
                          icon: "images/team/teamTechnicalOfficer.png",

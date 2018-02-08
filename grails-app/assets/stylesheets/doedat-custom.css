@@ -1,18 +1,107 @@
 /***** DoeDat custom look & feel ******/
+.ct-badge, .ct-info {
+    background-color: #111;
+}
+.faux-img-cell img {
+    max-width: 100% !important;
+}
+.selectable {
+    cursor: pointer;
+}
+h2.heading > div.subheading {
+    text-transform: initial;
+    margin-top: 10px;
+}
 
+.copyFromPreviousTask,
+.social-media-facebook {
+    display: none !important;
+}
+.social-media-sharing,.social-media-twitter{
+
+}
 .a-feature.home {
-    background-color: #858a58;
-    background-image: url(../images/feature-doedat.png);
+    /*background-color: #357866;*/
+    background-image: url(../images/doedat/feature-doedat.png);
     background-position-y: 28px;
     background-position-x: 67px;
 }
-/*.expedition-landing .dropdown-menu {
-    left: inherit;
-}*/
+
+/* Main colors */
+
+body .navbar, body.digivol .navbar, .pagination > .active > span, .pagination > .active > span:hover {
+    border-color: #236070 !important;
+}
+.navbar-brand, .navbar-brand:hover, .navbar-brand:focus, .navbar-brand:active, .digivol-tab img, body .navbar .navbar-brand, body .navbar .navbar-brand:hover, body .navbar .navbar-brand:focus, body .navbar .navbar-brand:active, body .btn-primary, body .btn-primary:hover, body .btn-primary:focus, body .btn-primary:active, body .btn-primary.active, .progress .progress-bar-transcribed, .key.transcribed, .pagination > .active > span, .pagination > .active > span:hover, .transcription-actions .btn.btn-next, .transcription-branding .institution-logo-main {
+    background-color: #009b7f;
+}
+.a-feature.home {
+ background-color: #236070;
+}
+
+
+.btn-warning {
+    color: #fff;
+    background-color: #85ac9e;
+    border-color: #526e62;
+}
+.btn-warning:focus,
+.btn-warning.focus {
+    color: #fff;
+    background-color: #009b7f;
+    border-color: #526e62;
+}
+.btn-warning:hover {
+    color: #fff;
+    background-color: #00be9f;
+    border-color: #526e62;
+}
+.btn-warning:active,
+.btn-warning.active,
+.open > .dropdown-toggle.btn-warning {
+    color: #fff;
+    background-color: #009b7f;
+    border-color: #526e62;
+}
+.btn-warning:active:hover,
+.btn-warning.active:hover,
+.open > .dropdown-toggle.btn-warning:hover,
+.btn-warning:active:focus,
+.btn-warning.active:focus,
+.open > .dropdown-toggle.btn-warning:focus,
+.btn-warning:active.focus,
+.btn-warning.active.focus,
+.open > .dropdown-toggle.btn-warning.focus {
+    color: #fff;
+    background-color: #00be9f;
+    border-color: #526e62;
+}
+.btn-warning.disabled:hover,
+.btn-warning[disabled]:hover,
+fieldset[disabled] .btn-warning:hover,
+.btn-warning.disabled:focus,
+.btn-warning[disabled]:focus,
+fieldset[disabled] .btn-warning:focus,
+.btn-warning.disabled.focus,
+.btn-warning[disabled].focus,
+fieldset[disabled] .btn-warning.focus {
+    background-color: #00d1ac;
+    border-color: #526e62;
+}
+
+
+/*#226070*/
+.transcription-branding .institution-logo-main {
+    background-color: transparent !important;
+}
+section#footer .footer-brand, section#footer .footer-brand img {
+    background: transparent !important;;
+}
+
 .locale {
     text-transform: uppercase;
 }
-@media (min-width: 1200px) {
+@media (min-width: 1345px) {
     .navbar-fixed-top .navbar-collapse {
         padding-left: 100px;
         padding-right: 100px;
@@ -23,9 +112,10 @@
         width: initial;
         margin-right: auto;
     }
-/*    .navbar > .container .navbar-brand {
-        margin-left: 30px !important;
-    }*/
+    .navbar-wrapper > .custom-search-input {
+        position: absolute;
+        right: 33px;
+    }
     .nav > li {
         display: inline-block;
     }
@@ -59,14 +149,26 @@
     }
     .navbar-brand {
         margin-left: initial !important;
-    }
-    .custom-search-input {
-        position: absolute;
-        right: 33px;
+        margin-top:25px;
     }
     .expedition-landing .dropdown-menu {
         left: initial;
     }
+}
+.digivol-tab img {
+    max-width: 110px;
+    margin: -3px 3px 0 2px;
+    padding: 0;
+}
+.navbar-brand img {
+    max-width: 170px;
+    margin: 0;
+}
+.navbar-brand {
+    background-color: transparent !important;
+}
+.digivol-tab img {
+    background: inherit !important;
 }
 
 
@@ -74,4 +176,22 @@
     width: 80%;
     margin-left: auto;
     margin-right: auto;
+}
+section#what-you-do img {
+    max-height: 72px !important;
+    min-width: 55px;
+}
+
+.logo-agi {
+    max-height: 85px !important;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    border-radius: 2px;
+}
+.form-control {
+    padding: 3px 8px !important;
+}
+#logos-institutions {
+    display: none;
 }

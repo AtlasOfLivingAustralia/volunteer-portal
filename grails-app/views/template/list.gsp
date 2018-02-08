@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Template" %>
 <html>
 <head>
@@ -20,7 +21,7 @@
     <cl:headerContent title="${message(code: 'default.list.label', args: [entityName])}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')]
             ]
         %>
         <div>

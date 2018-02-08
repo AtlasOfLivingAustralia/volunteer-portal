@@ -173,7 +173,7 @@ class ForumTagLib {
             table(class: "table table-striped table-hover table-condensed") {
                 thead {
                     tr {
-                        mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"title", title: message(code: "forumtaglib.topic"), action:paginateAction, params:params))
+                        mkp.yieldUnescaped(sortableColumn(colspan:2, class:"button", property:"i18nTitle."+WebUtils.getCurrentLocaleAsString(), title: message(code: "forumtaglib.topic"), action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"replies", title: message(code: "forumtaglib.replies"), action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"views", title: message(code: "forumtaglib.views"), action:paginateAction, params:params))
                         mkp.yieldUnescaped(sortableColumn(class:"button", property:"creator", title: message(code: "forumtaglib.posted_by"), action:paginateAction, params:params))
@@ -263,7 +263,7 @@ class ForumTagLib {
                                         attrMap['disabled'] = 'true'
                                     }
                                     a(attrMap) {
-                                        mkp.yield("Reply")
+                                        mkp.yield(message(code: "forumtaglib.reply"))
                                     }
                                     if (userService.isForumModerator(projectInstance)) {
                                         a(class: 'btn btn-sm btn-default', href: createLink(controller: 'forum', action: 'editTopic', params: [topicId: topic.id])) {
@@ -315,7 +315,7 @@ class ForumTagLib {
 
         pageScope.crumbs = []
         if (projectInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName]
             pageScope.crumbs << [link: createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
         }
 
@@ -343,7 +343,7 @@ class ForumTagLib {
                     mkp.yieldUnescaped(message(code: 'forum.taskTopic.heading', default: 'Task Topic - {0}', args: [taskInstance.externalIdentifier]))
                 }
                 if (projectInstance) {
-                    mkp.yieldUnescaped(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.featuredLabel, topic.title]))
+                    mkp.yieldUnescaped(message(code: 'forum.projectTopic.heading', default: '{0} Forum Topic - {1}', args: [projectInstance.i18nName, topic.title]))
                 }
                 if (!projectInstance && !taskInstance) {
                     mkp.yieldUnescaped(message(code: 'forum.generalDiscussionTopic.heading', default: 'General Discussion Topic - {0}', args: [topic.title]))
@@ -438,7 +438,7 @@ class ForumTagLib {
                                         if (projectInstance) {
                                             mkp.yield("  Project:")
                                             a(href: createLink(controller: 'project', action: 'index', id: projectInstance.id)) {
-                                                mkp.yield(projectInstance.featuredLabel)
+                                                mkp.yield(projectInstance.i18nName)
                                             }
                                         }
                                         if (taskInstance) {

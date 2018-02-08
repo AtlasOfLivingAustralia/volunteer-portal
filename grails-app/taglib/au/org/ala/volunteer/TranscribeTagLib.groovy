@@ -70,7 +70,7 @@ class TranscribeTagLib {
      * @attr recordIdx
      * @attr labelClass
      * @attr valueClass
-     * @attr field Optional, if the template already has the field object, no need to look up from it's name.
+     * @attr field Optional, if the template already has the field object, no need to look up from it's i18nName.
      * @attr helpTargetPosition Optional, the target position for the qtip help pop up
      * @attr helpTooltipPosition Optional, the tooltip position for the qtip help pop up
      */
@@ -167,7 +167,7 @@ class TranscribeTagLib {
     }
 
     /**
-     * Gets the id/name for a HTML widget as a String
+     * Gets the id/i18nName for a HTML widget as a String
      *
      * @attr field The field
      * @attr recordIdx The record index
@@ -199,7 +199,7 @@ class TranscribeTagLib {
         def cssClass = name
 
         if (field.mandatory) {
-            cssClass = cssClass + " validate[required]"
+            cssClass = cssClass + "  "
         }
 
         if (auxClass) {
@@ -284,7 +284,7 @@ class TranscribeTagLib {
                         name: widgetName,
                         from: options,
                         optionValue:'value',
-                        optionKey:'value',
+                        optionKey:'key',
                         value: existingValue ?: field?.defaultValue,
                         noSelection:['':''],
                         'class': "$cssClass form-control",
@@ -447,7 +447,7 @@ class TranscribeTagLib {
 
             def fieldIndex = 0;
             while (fieldIndex < fields.size()) {
-                mb.div(class:'row') {
+                    mb.div(class:'row form-group') {
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
                         mb.div(class:'') {
                             mb.div(class:spanClass) {
@@ -632,7 +632,7 @@ class TranscribeTagLib {
         if (!imageInfos)
             return [error: message(code: "transcribeTagLib.could_not_find_images_for_keys", args: [imageIds.join(", ")])]
         else {
-            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            //def missing = imageIds.collect { [i18nName: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.i18nName }
             def missing = imageIds.findAll { imageInfos[it] == null }
             if (missing) warnings.add(message(code: "transcribeTagLib.the_following_image_ids_cannot_be_found", args: [missing.join(', ')]))
         }
@@ -653,13 +653,13 @@ class TranscribeTagLib {
 
     def sequenceNumbers = { attrs, body ->
         def project = attrs.project
-        def number = attrs.number ?: 0
-        def count = attrs.count ?: 0
+        int number = attrs.number ?: 0
+        int count = attrs.count ?: 0
 
         def max = taskService.findMaxSequenceNumber(project)
         def results
         if (max) {
-            def previous = (Math.max(0, number - count))..<number
+            List<Integer> previous = (Math.max(0, number - count))..<number
             def next = number == max ? [] : (number+1)..(Math.min(max,number+count))
             results = [previous: previous, next: next]
         } else {
@@ -676,7 +676,7 @@ class TranscribeTagLib {
         } else if (task?.project) {
             out << task.project.featuredImage
         } else {
-            out << grailsLinkGenerator.resource( file: '/logoDigivolGrey.png' )
+            out << grailsLinkGenerator.resource( file: 'doedat/logoDoeDat.png' )
         }
     }
 
@@ -691,21 +691,24 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         def sequenceNumber = attrs.sequenceNumber
 
-        def maxSeqNo = sequenceNumber ? taskService.findMaxSequenceNumber(task.project) : -1
+        if(task.project && task.project.id) {
+            def maxSeqNo = sequenceNumber ? taskService.findMaxSequenceNumber(task.project) : -1
 
-        def cn = recordValues?.get(0)?.catalogNumber
-        def m
-        if (cn && sequenceNumber) {
-            m = message(code: 'transcribe.subheading.full', default: 'Catalog Number {0} <span>({1} of {2})</span>', args: [cn, sequenceNumber, maxSeqNo])
-        } else if (cn) {
-            m = message(code: 'transcribe.subheading.catalog', default: 'Catalog Number {0}', args: [cn])
-        } else if (sequenceNumber) {
-            m = message(code: 'transcribe.subheading.seqNo', default: '<span>{0} of {1}</span>', args: [sequenceNumber, maxSeqNo])
-        } else {
-            m = ''
+            def cn = recordValues?.get(0)?.catalogNumber
+
+            def m
+            if (cn && sequenceNumber) {
+                m = message(code: 'transcribe.subheading.full', default: 'Catalog Number {0} <span>({1} of {2})</span>', args: [cn, sequenceNumber, maxSeqNo])
+            } else if (cn) {
+                m = message(code: 'transcribe.subheading.catalog', default: 'Catalog Number {0}', args: [cn])
+            } else if (sequenceNumber) {
+                m = message(code: 'transcribe.subheading.seqNo', default: '<span>{0} of {1}</span>', args: [sequenceNumber, maxSeqNo])
+            } else {
+                m = ''
+            }
+
+            out << m
         }
-
-        out << m
     }
 
     private def nextSectionNumber() {

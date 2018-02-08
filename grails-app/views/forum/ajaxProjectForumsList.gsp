@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ProjectStatusFilterType; au.org.ala.volunteer.ProjectActiveFilterType" %>
 <style>
 
@@ -78,7 +79,7 @@
                         </div>
                         <%-- Name and progress bar --%>
                         <div class="col-sm-5">
-                            <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.featuredLabel}</a>
+                            <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.i18nName}</a>
                             </h3>
                             <g:render template="/project/projectSummaryProgressBar"
                                       model="${[projectSummary: projectSummary]}"/>
@@ -87,7 +88,7 @@
                         <div class="col-sm-2 project-type">
                             <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
                             <br/>
-                            <span>${projectSummary.iconLabel}</span>
+                            <span>${message(code: projectSummary.iconLabel)}</span>
                         </div>
 
                         <div class="col-sm-3">

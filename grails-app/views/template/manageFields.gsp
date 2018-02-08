@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FieldDefinitionType; au.org.ala.volunteer.Project" %>
 <html>
 <head>
@@ -14,9 +15,9 @@
             title="${message(code: 'default.manageTemplateFields.label', default: 'Manage Template Fields')} - ${templateInstance.name}"  selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: ['Template'])],
-                    [link: createLink(controller: 'template', action: 'edit', id: templateInstance.id), label: message(code: 'default.edit.label', args: ['Template'])]
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [message(code: 'project.template.label')])],
+                    [link: createLink(controller: 'template', action: 'edit', id: templateInstance.id), label: message(code: 'default.edit.label', args: [message(code: 'project.template.label')])]
             ]
         %>
     </cl:headerContent>
@@ -174,7 +175,7 @@
                 $("#btnAddField").click(function(e) {
                     e.preventDefault();
                     var options = {
-                        title:"Add field to template",
+                        title: "${message(code: "template.manageFields.add_field_to_template")}",
                         url:"${createLink(action: 'addTemplateFieldFragment', id: templateInstance.id)}",
                         onClose : function() { }
                     };

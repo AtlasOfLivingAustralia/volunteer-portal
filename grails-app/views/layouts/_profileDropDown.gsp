@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <ul class="dropdown-menu">
     <li class="hidden-xs">
         <div class="navbar-login logged-in">

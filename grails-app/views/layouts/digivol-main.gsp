@@ -1,8 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google" value="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
     <cl:addApplicationMetaTags/>
@@ -11,11 +14,13 @@
     <title><g:message code="main.title" /></title>
 
     <asset:stylesheet href="digivol.css"/>
-    <asset:stylesheet href="doedat-custom.css"/>
     <g:render template="/layouts/jsUrls" />
     <g:layoutHead />
 
     <g:render template="/layouts/commonCss" />
+    <g:render template="/layouts/tinyMce" />
+
+    <asset:stylesheet href="doedat-custom.css"/>
 
     %{--<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->--}%
     <!--[if lt IE 9]>
@@ -35,7 +40,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <g:link uri="/" class="navbar-brand"><asset:image src="logoDigivol.png"/></g:link>
+            <g:link uri="/" class="navbar-brand"><asset:image src="doedat/logoDoeDat.png"/></g:link>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
@@ -73,7 +78,7 @@
                 <!-- Logged In Starts -->
                     <cl:isNotLoggedIn>
                         <li>
-                            <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}&language=${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}/"><i class="glyphicon glyphicon-user"></i> <g:message code="main.navigation.log_in" /></a>
+                            <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}&language=${ LocaleContextHolder.getLocale().getLanguage()}"><i class="glyphicon glyphicon-user"></i> <g:message code="main.navigation.log_in" /></a>
                         </li>
                     </cl:isNotLoggedIn>
                     <cl:isLoggedIn>
@@ -100,7 +105,7 @@
                 <!--<ul class="nav navbar-nav navbar-right" style="">-->
                     <li class="dropdown language-selection ">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <span class="locale">${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}</span>
+                            <span class="locale">${ LocaleContextHolder.getLocale().getLanguage()}</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
                         <g:render template="/layouts/languageDropdown"/>
@@ -192,14 +197,14 @@
     <footer>
         <div class="container">
 
-            <div class="row footer-header">
+            <div class="row footer-header social-media-sharing">
                 <div class="col-sm-12">
-                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image
-                            src="logoDigivolInverted.png"/></a>
+                    <a class="footer-brand social-media-facebook" href="https://www.facebook.com/groups/181836918595085/"><asset:image
+                            src="doedat/logoDoeDatInverted.png"/></a>
 
                     <div class="social-icons pull-right">
-                        <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
-                        <a href="https://twitter.com/AMDigiVol" class="btn-lg"><i class="fa fa-twitter fa-lg"></i></a>
+                        <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg social-media-facebook"><i class="fa fa-facebook fa-lg"></i></a>
+                        <a href="https://twitter.com/botanicgarden01" class="btn-lg social-media-twitter"><i class="fa fa-twitter fa-lg"></i></a>
                     </div>
                 </div>
             </div>
@@ -216,19 +221,19 @@
                     <h3><g:message code="main.about_digivol" /></h3>
                     <ul>
                         <li><g:link controller="about" fragment="what-is-digivol"><g:message code="main.about_digivol.what" /></g:link></li>
-                        <li><g:link controller="about" fragment="why-capture-this-data"><g:message code="main.about_digivol.why" /></g:link></li>
-                        <li><g:link controller="about" fragment="submit-an-expedition"><g:message code="main.about_digivol.submit" /></g:link></li>
-                        <li><g:link controller="about" fragment="useful-references"><g:message code="main.about_digivol.references" /></g:link></li>
+                        <li><g:link controller="about" fragment="what-does-digivol-mean"><g:message code="main.about_digivol.why" /></g:link></li>
+                        <li><g:link controller="about" fragment="about-digivol"><g:message code="main.about_digivol.submit" /></g:link></li>
+                        <li><g:link controller="about" fragment="why"><g:message code="main.about_digivol.references" /></g:link></li>
                     </ul>
                 </div>
 
                 <div class="col-sm-3">
                     <h3><g:message code="main.about_digivol.how_can_i_volunteer" /></h3>
                     <ul>
-                        <li><g:link controller="about" fragment="registering"><g:message code="main.about_digivol.how_can_i_volunteer.become" /></g:link></li>
-                        <li><g:link controller="about" fragment="transcribing"><g:message code="main.about_digivol.how_can_i_volunteer.how" /></g:link></li>
-                        <li><g:link controller="about" fragment="what-happens-next"><g:message code="main.about_digivol.how_can_i_volunteer.what" /></g:link></li>
-                        <li><g:link controller="about" fragment="examples"><g:message code="main.about_digivol.how_can_i_volunteer.examples" /></g:link></li>
+                        <li><g:link controller="about" fragment="new-project"><g:message code="main.about_digivol.how_can_i_volunteer.become" /></g:link></li>
+                        <li><g:link controller="about" fragment="references"><g:message code="main.about_digivol.how_can_i_volunteer.how" /></g:link></li>
+                        <li><g:link controller="about" fragment="how-can-i-help"><g:message code="main.about_digivol.how_can_i_volunteer.what" /></g:link></li>
+                        <li><g:link controller="about" fragment="how-to-start"><g:message code="main.about_digivol.how_can_i_volunteer.examples" /></g:link></li>
                     </ul>
                 </div>
 

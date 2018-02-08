@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ProjectActiveFilterType; au.org.ala.volunteer.ProjectStatusFilterType; au.org.ala.volunteer.Project" %>
 
 <html>
@@ -26,7 +27,7 @@
                                 <g:if test="${params.q}">
                                     <g:message code="project.projectlist.expeditions_matching"/>:
                                     <span class="tag currentFilter">
-                                        <span>${params.q.replaceAll('tag:','')}</span>
+                                        <span>${message(code: params.q.replaceAll('tag:',''))}</span>
                                         <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
                                     </span>
                                 </g:if>

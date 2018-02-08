@@ -1,14 +1,17 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
-        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.name}" /></title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
         <asset:stylesheet src="cameratrap"/>
     </head>
     <content tag="templateView">
         <div id="ct-container" >
 
-            <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}"/>
+            <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 1)}"/>
 
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
@@ -24,7 +27,7 @@
                                     <div class="controls" style="margin-left: initial; display: inline-block;">
                                         <label class="checkbox" for="recordValues.0.interesting">
                                             <g:checkBox name="recordValues.0.interesting"
-                                                        checked="${recordValues[0]?.interesting == 'true'}"/> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting – alert the WildCount team')}
+                                                        checked="${recordValues[0]?.interesting == 'true'}"/> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting')}
                                         </label>
                                     </div>
                                 </div>
@@ -362,7 +365,7 @@
             var items = <cl:json value="${animalInfos.items}"/>;
             var recordValues = <cl:json value="${recordValues}"/>;
             var placeholders = <cl:json value="${placeholders}"/>;
-            cameratrap(imageInfos, items, recordValues, placeholders);
+            cameratrap(imageInfos, items, recordValues, placeholders, null, "ct");
         </asset:script>
     </content>
 </g:applyLayout>

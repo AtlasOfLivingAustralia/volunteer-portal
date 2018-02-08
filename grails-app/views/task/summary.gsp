@@ -4,12 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <title>${taskInstance.project.name} <g:message code="task.summary.task_details"/> - ${taskInstance.externalIdentifier}</title>
+    <title>${taskInstance?.project?.i18nName} <g:message code="task.summary.task_details"/> - ${taskInstance.externalIdentifier}</title>
 
     <g:set var="shareUrl" value="${g.createLink(absolute: true, action: 'summary', id: taskInstance?.id)}"/>
     <meta property="og:url"           content="${shareUrl}" />
     <meta property="og:type"          content="website" />
-    <meta property="og:title"         content="${taskInstance.project.name }${message(code:'task.summary.task_details')} - ${taskInstance.externalIdentifier}" />
+    <meta property="og:title"         content="${taskInstance?.project?.i18nName }${message(code:'task.summary.task_details')} - ${taskInstance.externalIdentifier}" />
     %{--<meta property="og:description"   content="Your description" />--}%
     <meta property="og:image"         content="${stringInstanceMap?.thumbnail}" />
     <asset:stylesheet src="image-viewer"/>
@@ -31,7 +31,7 @@
 
         ]
         if (taskInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project?.featuredLabel]
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: taskInstance?.project?.id), label: taskInstance?.project?.i18nName]
         }
     %>
 
@@ -59,7 +59,7 @@
                             <g:imageViewer multimedia="${multimedia}"/>
                         </div>
                         <ul class="list-inline">
-                            <li>
+                            <li class="social-media-sharing">
                                 <div class="fb-share-button" data-href="${shareUrl}" data-layout="button" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${URLEncoder.encode(shareUrl, 'UTF-8')}&amp;src=sdkpreparse">Share</a></div>
                             </li>
                             <li style="vertical-align: middle;">

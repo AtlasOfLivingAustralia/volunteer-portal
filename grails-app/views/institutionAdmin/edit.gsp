@@ -1,4 +1,6 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Institution" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -69,7 +71,7 @@
                     e.preventDefault();
                     bvp.showModal({
                         url: "${createLink(action: "uploadLogoImageFragment", id: institutionInstance.id)}",
-                        title: "${message(code: 'institutionAdmin.edit.upload_logo"')}"
+                        title: "${message(code: 'institutionAdmin.edit.upload_logo')}"
                     });
                 });
             });

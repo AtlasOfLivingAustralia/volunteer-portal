@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="itemgrid">
     <g:if test="${imageInfos.error}">
         <div class="alert alert-block alert-danger">

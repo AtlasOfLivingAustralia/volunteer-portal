@@ -27,6 +27,7 @@
 
     </style>
 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>
@@ -34,7 +35,7 @@
     <div id="imageViewerHeader">
         <div class="row">
             <div class="col-xs-12">
-                <h4>${taskInstance?.project?.featuredLabel} - ${taskInstance?.externalIdentifier}</h4>
+                <h4>${taskInstance?.project?.i18nName} - ${taskInstance?.externalIdentifier}</h4>
                 <cl:messages/>
             </div>
         </div>

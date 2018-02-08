@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FieldDefinitionType; au.org.ala.volunteer.Project" %>
 <html>
 <head>
@@ -11,7 +12,7 @@
 <cl:headerContent title="Project Task Staging" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel],
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName],
                 [link: createLink(controller: 'project', action: 'editTaskSettings', id: projectInstance.id), label: "Edit Project"]
         ]
     %>
@@ -270,7 +271,7 @@
 
                 $("#btnClearStagingArea").click(function(e) {
                     e.preventDefault();
-                    bootbox.confirm('${message(code: 'task.staging.delete_confirmation')}', function(result) {
+                    bootbox.confirm('${URLEncoder.encode(message(code: 'task.staging.delete_confirmation'),'UTF8')}', function(result) {
                         if (result) {
                             window.location = "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}";
                         }

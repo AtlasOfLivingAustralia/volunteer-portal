@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="groovy.json.StringEscapeUtils" %>
 <g:if test="${!entriesField}">
     <div class="alert alert-danger">
