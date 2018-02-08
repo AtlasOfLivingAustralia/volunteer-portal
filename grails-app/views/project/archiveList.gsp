@@ -71,7 +71,7 @@
                                     ${projectInstance.project.id}
                                 </td>
                                 <td style="vertical-align: middle;">
-                                    <g:link action="edit" id="${projectInstance.project.id}">${fieldValue(bean: projectInstance.project, field: "name")}</g:link>
+                                    <g:link action="edit" id="${projectInstance.project.id}">${projectInstance?.project?.name?.toString()}</g:link>
                                 </td>
 
                                 <td style="vertical-align: middle;">${fieldValue(bean: projectInstance, field: "percentTranscribed")}</td>
