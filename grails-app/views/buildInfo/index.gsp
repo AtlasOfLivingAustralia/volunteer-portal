@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 %{-- Custom version of BuildInfo plugin index page (taken from 1.2.8) --}%
 %{-- Added layout meta tag so that buildInfo page is skinned --}%
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -5,7 +6,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>Build Info</title>
+    <title><g:message code="build.build_info"/></title>
     <style type="text/css">
     h1 {
         color: #48802c;

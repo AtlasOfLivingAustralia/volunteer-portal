@@ -1,4 +1,6 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Institution" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,17 +8,16 @@
     <meta name="layout" content="digivol-institutionSettings"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <g:setProvider library="jquery"/>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:stylesheet src="bootstrap-colorpicker"/>
 </head>
 
 <body>
 
-<content tag="pageTitle">General Settings</content>
+<content tag="pageTitle"><g:message code="institutionAdmin.edit.general_settings"/></content>
 
 <content tag="adminButtonBar">
     <a class="btn btn-default" href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
-            class="icon-eye-open"></i> View client page</a>
+            class="icon-eye-open"></i> <g:message code="institutionAdmin.edit.view_client_page"/></a>
 </content>
 
 <div id="edit-institution" class="content scaffold-edit" role="main">
@@ -41,10 +42,10 @@
     </g:form>
 
     <div>
-        <h3>Logo</h3>
+        <h3><g:message code="institutionAdmin.edit.logo"/></h3>
 
         <div class="alert alert-info">
-            For best results a centered square image between <strong>200px and 150px</strong> for width and height is recommended. The logo will appear in the list of institutions, as well as on the institution index (home) page
+            <g:message code="institutionAdmin.edit.logo.description"/>
         </div>
 
         <div class="text-center">
@@ -56,24 +57,25 @@
             <button class="btn btn-default" type="button" id="btnUploadLogoImage">Upload logo</button>
             <cl:ifInstitutionHasLogo institution="${institutionInstance}">
                 <a href="${createLink(action: 'clearLogoImage', id: institutionInstance.id)}"
-                   class="btn btn-danger">Clear logo</a>
+                   class="btn btn-danger"><g:message code="institutionAdmin.edit.clear_logo"/></a>
             </cl:ifInstitutionHasLogo>
             </div>
         </div>
     </div>
 </div>
-<r:script>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:script>
 
             $(function() {
                 $("#btnUploadLogoImage").click(function(e) {
                     e.preventDefault();
                     bvp.showModal({
                         url: "${createLink(action: "uploadLogoImageFragment", id: institutionInstance.id)}",
-                        title: "Upload institution logo"
+                        title: "${message(code: 'institutionAdmin.edit.upload_logo')}"
                     });
                 });
             });
 
-</r:script>
+</asset:script>
 </body>
 </html>

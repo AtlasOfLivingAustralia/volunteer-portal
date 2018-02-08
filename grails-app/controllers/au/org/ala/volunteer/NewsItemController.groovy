@@ -6,11 +6,11 @@ class NewsItemController {
 
     def userService
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = params.sort ?: 'created'
         params.order = params.order ?: 'desc'
@@ -39,19 +39,19 @@ class NewsItemController {
         [newsItemInstanceList: newsItems, newsItemInstanceTotal: newsItems?.size(), projectInstance: project, institutionInstance: institution]
     }
 
-    def create = {
+    def create() {
         def currentUserId = userService.currentUserId
         if (currentUserId != null && userService.isAdmin()) {
             def newsItemInstance = new NewsItem()
             newsItemInstance.properties = params
             return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(controller: "project", action: "editNewsItemsSettings", id: params.id)
         }
     }
 
-    def save = {
+    def save() {
         def projectId = params.int("project")
         def institutionId = params.int("institution")
         params.project = null
@@ -80,7 +80,7 @@ class NewsItemController {
         }
     }
 
-    def show = {
+    def show() {
         def newsItemInstance = NewsItem.get(params.id)
         if (!newsItemInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
@@ -103,12 +103,12 @@ class NewsItemController {
                 return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
             }
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
-    def update = {
+    def update() {
         def currentUserId = userService.currentUserId
         if (currentUserId != null && userService.isAdmin()) {
             def newsItemInstance = NewsItem.get(params.id)
@@ -142,12 +142,12 @@ class NewsItemController {
                 redirect(action: "list")
             }
         } else {
-            flash.message = "You do not have permission to view this page"
+            flash.message = message(code: 'admin.you_do_not_have_permission')
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
-    def delete = {
+    def delete() {
         def newsItemInstance = NewsItem.get(params.id)
         if (newsItemInstance) {
             def fromProjectId = newsItemInstance.project?.id

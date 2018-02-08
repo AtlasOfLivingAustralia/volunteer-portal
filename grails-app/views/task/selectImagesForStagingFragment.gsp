@@ -1,7 +1,8 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="form-horizontal">
 
     <div class="alert alert-info">
-        Depending on your connection speed and the size of your images, it might be a good idea to stage images in batches of 200 or less.
+        <g:message code="task.selectImagesForStagingFragment.description"/>
     </div>
 
     <g:form name="stageImagesForm" controller="task" action="stageImage" method="post" enctype="multipart/form-data"
@@ -15,14 +16,14 @@
 
         <div class="form-group">
             <div class="col-md-12 text-center">
-                <button id="btnCancelUploadImages" class="btn btn-default">Cancel</button>
-                <button id="btnUploadImages" class="btn btn-primary">Stage images</button>
+                <button id="btnCancelUploadImages" class="btn btn-default"><g:message code="default.cancel"/></button>
+                <button id="btnUploadImages" class="btn btn-primary"><g:message code="task.selectImagesForStagingFragment.stage_images"/></button>
             </div>
         </div>
 
         <div class="form-group">
             <div id="uploadingMessage" class="col-md-12 text-center" style="display: none">
-                <cl:spinner/> Uploading, please wait...
+                <cl:spinner/> <g:message code="task.selectImagesForStagingFragment.uploading"/>
             </div>
         </div>
 

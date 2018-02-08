@@ -7,9 +7,9 @@ class ValidateController {
     def taskService
     def userService
     def logService
-    def grailsApplication
+    def multimediaService
 
-    def task = {
+    def task() {
         def taskInstance = Task.get(params.id)
         def currentUser = userService.currentUserId
         userService.registerCurrentUser()
@@ -44,9 +44,9 @@ class ValidateController {
                 // check that the validator is not the transcriber...Admins can, though!
                 if ((currentUser == taskInstance.fullyTranscribedBy)) {
                     if (userService.isAdmin()) {
-                        flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
+                        flash.message = message(code: 'validate.normally_you_cannot_validate_your_own_tasks')
                     } else {
-                        flash.message = "This task is read-only. You cannot validate your own tasks!"
+                        flash.message = message(code: 'validate.this_task_is_read_only')
                         isReadonly = "readonly"
                     }
                 }
@@ -55,7 +55,7 @@ class ValidateController {
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
-            render(view: '../transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData])
+            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -64,7 +64,7 @@ class ValidateController {
     /**
      * Mark a task as validated, hence removing it from the list of tasks to be validated.
      */
-    def validate = {
+    def validate() {
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
@@ -74,6 +74,10 @@ class ValidateController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
+            def seconds = params.getInt('timeTaken', null)
+            if (seconds) {
+                taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
+            }
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
@@ -85,7 +89,7 @@ class ValidateController {
     /**
      * To do determine actions if the validator chooses not to validate
      */
-    def dontValidate = {
+    def dontValidate() {
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
@@ -95,6 +99,10 @@ class ValidateController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
+            def seconds = params.getInt('timeTaken', null)
+            if (seconds) {
+                taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
+            }
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
@@ -103,17 +111,17 @@ class ValidateController {
         }
     }
 
-    def skip = {
+    def skip() {
         def taskInstance = Task.get(params.id)
         if (taskInstance != null) {
             redirect(action: 'showNextFromProject', id:taskInstance.project.id)
         } else {
-            flash.message = "No task id supplied!"
+            flash.message = message(code: 'validate.no_task_id_supplied')
             redirect(uri:"/")
         }
     }
 
-    def showNextFromProject = {
+    def showNextFromProject() {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
 
@@ -140,14 +148,14 @@ class ValidateController {
         }
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         def tasks = Task.findAllByFullyTranscribedByIsNotNull(params)
         def taskInstanceTotal = Task.countByFullyTranscribedByIsNotNull()
         render(view: '../task/list', model: [tasks: tasks, taskInstanceTotal: taskInstanceTotal])
     }
 
-    def listForProject = {
+    def listForProject() {
         def projectInstance = Task.get(params.id)
         def tasks = Task.executeQuery("""select t from Task t
          where t.project = :project and t.fullyTranscribedBy is not null""",

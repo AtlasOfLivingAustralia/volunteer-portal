@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import com.google.common.collect.Lists
+import grails.transaction.Transactional
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import org.apache.commons.io.FileUtils
@@ -11,6 +12,7 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.regex.Pattern
 
+@Transactional
 class TaskLoadService {
 
     private static BlockingQueue<TaskDescriptor> _loadQueue = new LinkedBlockingQueue<TaskDescriptor>()
@@ -28,8 +30,6 @@ class TaskLoadService {
     def logService
     def stagingService
     def fieldService
-
-    static transactional = true
 
     def status() {
         def completedTasks = _currentBatchSize - _loadQueue.size();

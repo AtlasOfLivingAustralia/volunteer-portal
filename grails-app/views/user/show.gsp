@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
@@ -7,19 +8,23 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <gvisualization:apiImport/>
-    <r:require module="digivol-notebook"/>
+    <g:if test="${project}">
+        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.i18nName ?: message(code: 'user.show.unknown_project')])}"/></title>
+    </g:if>
+    <g:else>
+        <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
+    </g:else>
+    <cl:googleChartsScript />
+    <cl:googleMapsScript callback="onGmapsReady"/>
 </head>
 
 <body data-ng-app="notebook">
 <cl:headerContent hideTitle="true"
-        title="${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? " (that's you!)" : ''}"
+        title="${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}"
         crumbLabel="${cl.displayNameForUserId(id: userInstance.userId)}" selectedNavItem="userDashboard">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'user', action: 'list'), label: 'Volunteers']
+                [link: createLink(controller: 'user', action: 'list'), label: message(code: 'user.show.volunteers')]
         ]
     %>
     <div class="container">
@@ -28,7 +33,7 @@
             <div class="col-sm-2">
                 <div class="avatar-holder">
                     <g:if test="${userInstance.userId == currentUser}">
-                        <a href="//en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="To customise your avatar, register your email address at gravatar.com...">
+                        <a href="//en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="${message(code: 'user.show.to_customize_your_avatar')}">
                             <img src="//www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=150" alt="" class="center-block img-circle img-responsive">
                         </a>
                     </g:if>
@@ -38,21 +43,22 @@
                 </div>
             </div>
             <div class="col-sm-6">
-                <span class="pre-header">Volunteer Profile</span>
-                <h1>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? " (that's you!)" : ''}</h1>
+                <span class="pre-header"><g:message code="user.show.volunteer_profile"/></span>
+                <h1>${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.thats_you') : ''}</h1>
+                <g:if test="${project}"><h2>${project?.i18nName}</h2></g:if>
                 <div class="row">
                     <div class="col-xs-4">
                         <h2><strong>${score}</strong></h2>
-                        <p>Total Contribution</p>
+                        <p><g:message code="user.show.total_contribution"/></p>
                     </div><!--/col-->
                     <div class="col-xs-4">
                         <h2><strong>${totalTranscribedTasks}</strong></h2>
-                        <p>Transcribed</p>
+                        <p><g:message code="user.show.transcribed"/></p>
                     </div><!--/col-->
                     <div class="col-xs-4">
                     <g:if test="${userInstance.validatedCount > 0}">
                         <h2><strong>${userInstance.validatedCount}</strong></h2>
-                        <p>Validated</p>
+                        <p><g:message code="user.show.validated"/></p>
                     </g:if>
                     </div><!--/col-->
                 </div>
@@ -60,15 +66,15 @@
                 <div class="achievements">
                     <div class="row">
                         <div class="col-sm-8">
-                            <span class="pre-header">Achievements</span>
+                            <span class="pre-header"><g:message code="user.show.achievements"/></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12 badges">
                             <g:each in="${achievements}" var="ach" status="i">
                                 <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>'
-                                     width="50px" alt="${ach.achievement.name}"
-                                     title="${ach.achievement.description}"/>
+                                     width="50px" alt="${ach.achievement?.i18nName?.toString()}"
+                                     uib-tooltip="${ach.achievement?.i18nName?.toString()}"/>
                             </g:each>
                         </div>
                     </div>
@@ -79,11 +85,11 @@
 
             <div class="col-sm-4">
                 <div class="contribution-chart">
-                    <h2>Contribution to Research</h2>
+                    <h2><g:message code="user.show.contributions_to_research"/></h2>
                     <ul>
                         <g:if test="${totalSpeciesCount > 0}">
                             <li>
-                                <span>You have added ${totalSpeciesCount} species to the ALA:</span>
+                                <span><g:message code="user.notebookMain.you_have_added_species" args="${[totalSpeciesCount]}"/></span>
 
                                 <div id="piechart"></div>
                                 <gvisualization:pieCoreChart
@@ -101,17 +107,17 @@
                         </g:if>
                         <g:if test="${fieldObservationCount > 0}">
                             <li>
-                                <span>You have contributed to ${fieldObservationCount} new field observations.</span>
+                                <span><g:message code="user.notebookMain.you_have_contributed" args="${[fieldObservationCount]}"/></span>
                             </li>
                         </g:if>
                         <g:if test="${expeditionCount > 0}">
                             <li>
-                                <span>You have participated in ${expeditionCount} expeditions.</span>
+                                <span><g:message code="user.notebookMain.you_have_participated_expeditions" args="${[expeditionCount]}"/></span>
                             </li>
                         </g:if>
                         <g:if test="${userPercent != '0.00'}">
                             <li>
-                                <span>You have transcribed ${userPercent}% of the total transcriptions on DigiVol.</span>
+                                <span><g:message code="user.notebookMain.you_have_transcribed" args="${[userPercent]}"/></span>
                             </li>
                         </g:if>
                     </ul>
@@ -119,7 +125,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <p>
-                            <i>First contributed in <g:formatDate date="${userInstance?.created}" format="MMM yyyy"/></i>
+                            <i><g:message code="user.show.first_contributed_in" args="${[formatDate(date: userInstance?.created, format: "MMM yyyy")]}"/></i>
                         </p>
                     </div>
                     <a id="profileTabs"></a>
@@ -132,7 +138,7 @@
 
 </cl:headerContent>
 
-<section id="user-progress" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
+<section id="user-progress" class="in-body" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
     <uib-tabset active="nbtCtrl.selectedTab" template-url="notebookTabSet.html">
         %{--<uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">--}%
             %{--<uib-tab-heading>--}%
@@ -178,8 +184,8 @@
         <div class="row">
             <div class="col-sm-4">
                 <div class="map-header">
-                    <h2 class="heading">Record Locations</h2>
-                    <p>${cl.displayNameForUserId(id: userInstance.userId)}${userInstance.userId == currentUser ? ', you' : ''} ${userInstance.userId == currentUser ? 'have' : 'has'} transcribed records from all the locations on this map</p>
+                    <h2 class="heading"><g:message code="user.show.record_locations"/></h2>
+                    <p>${cl.displayNameForUserId(id: userInstance.userId)} ${userInstance.userId == currentUser ? message(code: 'user.show.you_have_transcribed_records') : message(code: 'user.show.user_has_transcribed_records')}</p>
                 </div>
             </div>
         </div>
@@ -191,26 +197,7 @@
     </div>
 </section>
 
-<script id="notebookTabSet.html" type="text/ng-template">
-<div>
-    <div class="container">
-        <ul class="nav nav-{{tabset.type || 'tabs'}}" ng-class="{'nav-stacked': vertical, 'nav-justified': justified}"
-            ng-transclude></ul>
-    </div>
-
-    <div class="tab-content-bg">
-        <div class="container">
-            <div class="tab-content">
-                <div class="tab-pane"
-                     ng-repeat="tab in tabset.tabs"
-                     ng-class="{active: tabset.active === tab.index}"
-                     uib-tab-content-transclude="tab">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</script>
+<g:render template="/common/angularBootstrapTabSet" />
 
 <script id="taskList.html" type="text/ng-template">
 <a id="tasklist-top-{{ $ctrl.tabIndex }}"></a>
@@ -237,7 +224,7 @@
                 <div class="input-group">
                     <input type="text" id="searchbox" ng-model="$ctrl.query" name="searchbox" class="form-control input-lg" placeholder="${message(code:"default.search.label")}" />
                     <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="button" ng-click="$ctrl.doSearch">
+                        <button class="btn btn-info btn-lg" type="button" ng-click="$ctrl.load()">
                             <i class="glyphicon glyphicon-search"></i>
                         </button>
                     </span>
@@ -245,7 +232,7 @@
             </div>
             <div class="pull-right search-help">
                 <button class="btn btn-info pull-right"
-                        uib-tooltip="${message(code:"notebook.taskList.searchHelp")}"><span
+                        uib-tooltip="${message(code:"notebook.taskList.searchHelp").replaceAll("\"","\\\"")}"><span
                         class="help-container"><i class="fa fa-question"></i></span>
                 </button>
             </div>
@@ -341,10 +328,10 @@
                            ng-href="${createLink(controller: 'task', action:'show')}/{{taskInstance.id}}">
                             <g:message code="action.view.label" />
                         </a>
-                        <a ng-show="taskInstance.fullyTranscribedBy && isValidator(taskInstance.project)" class="btn btn-default btn-xs"
+                        <a ng-show="taskInstance.fullyTranscribedBy && taskInstance.isValidator" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller: 'validate', action:'task')}/{{taskInstance.id}}">
-                            <span ng-show="taskInstance.status == 'validated'"><g:message code="action.review.label" /></span>
-                            <span ng-hide="taskInstance.status == 'validated'"><g:message code="action.validate.label" /></span>
+                            <span ng-show="taskInstance.status == 'Validated'"><g:message code="action.review.label" /></span>
+                            <span ng-hide="taskInstance.status == 'Validated'"><g:message code="action.validate.label" /></span>
                         </a>
                         <a ng-hide="taskInstance.fullyTranscribedBy" class="btn btn-default btn-small"
                            ng-href="${createLink(controller:'transcribe', action:'task')}/{{taskInstance.id}}">
@@ -427,7 +414,7 @@
 <div ng-hide="$ctrl.loading || $ctrl.error" class="modal-body">
     <div class="row" >
         <div class="col-sm-12">
-            <p><i><g:message code="task.validatedBy.label" />: {{ $ctrl.validatorDisplayName }}</i> </p>
+            <p><i><g:message code="task.validatedBy.label" args="${[$ctrl?.validatorDisplayName]}" /></i> </p>
         </div>
     </div>
 
@@ -464,12 +451,14 @@
     <button class="btn btn-primary" type="button" ng-click="$ctrl.close()">OK</button>
 </div>
 </script>
-
-<r:script>
+<asset:javascript src="digivol-notebook" asset-defer=""/>
+<asset:script type="text/javascript">
     var json = <cl:json value="${[
         selectedTab: selectedTab,
+        defaultLatitude: grailsApplication.config.location.default.latitude,
+        defaultLongitude: grailsApplication.config.location.default.longitude,
         userInstance: userInstance,
-        projectInstance: projectInstance,
+        project: project,
         isValidator: isValidator,
         isAdmin: isAdmin,
         isCurrentUser: userInstance?.userId == currentUser,
@@ -484,7 +473,7 @@
         auditViewUrl: createLink(controller: 'task', action: 'viewTask')
 ]}" />
     digivolNotebooksTabs(json);
-</r:script>
+</asset:script>
 
 </body>
 </html>

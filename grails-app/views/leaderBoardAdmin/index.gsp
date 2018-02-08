@@ -1,17 +1,18 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="leaderBoardAdmin.label" default="Honour Board Configuration"/></title>
-    <r:require modules="labelAutocomplete"/>
-    <r:style>
+    <asset:stylesheet src="label-autocomplete"/>
+    <style>
         li.user > span {
             margin-right: 5px;
         }
         i.icon-remove {
             cursor: pointer;
         }
-    </r:style>
+    </style>
 </head>
 
 <body class="admin">
@@ -30,7 +31,7 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Ineligible Honour Board users <r:img dir="images" file="spinner.gif" height="16px" width="16px"
+                            <h4><g:message code="leaderBoard.admin.ineligible_users"/> <asset:image src="spinner.gif" height="16px" width="16px"
                                                             id="ajax-spinner" class="hidden"/></h4>
                             <hr/>
                         </div>
@@ -48,7 +49,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-2 text-right">
-                            <label for="add-user">Add User:</label>
+                            <label for="add-user"><g:message code="leaderBoard.admin.add_users"/></label>
                         </div>
                         <div class="col-md-4">
                             <input id="add-user" type="text" autocomplete="off" class="form-control typeahead"
@@ -62,8 +63,8 @@
         </div>
     </div>
 </div>
-
-<r:script>
+<asset:javascript src="label-autocomplete" asset-defer=""/>
+<asset:script>
 
 
 
@@ -89,7 +90,7 @@
 
                         $("#add-user").val('');
                     })
-                    .fail(function() { alert("Couldn't add user")});
+                    .fail(function() { alert("${message(code:'leaderBoard.admin.could_not_add_user')}")});
                 return null;
         }, 'displayName');
 
@@ -111,14 +112,14 @@
                 p.remove();
                 $("#add-user").val('');
             })
-            .fail(alert("Couldn't remove user"))
+            .fail(alert("${message(code:'leaderBoard.admin.could_not_remove_user')}"))
             .always(hideSpinner);
         }
 
         $('#user-list').on('click', 'li.user i.fa-times', onDeleteClick);
     });
 
-</r:script>
+</asset:script>
 
 </body>
 </html>

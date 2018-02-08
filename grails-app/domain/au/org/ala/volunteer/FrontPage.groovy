@@ -13,6 +13,9 @@ class FrontPage {
     Boolean enableTaskComments = false
     Boolean enableForum = false
 
+    String heroImage
+    String heroImageAttribution
+
     String systemMessage
 
     static mapping = {
@@ -29,6 +32,8 @@ class FrontPage {
         enableForum nullable: true
         projectOfTheDay nullable: true
         numberOfContributors nullable: false, min: 0, max: 20
+        heroImage nullable: true
+        heroImageAttribution nullable: true
     }
 
     static FrontPage instance() {

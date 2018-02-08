@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+import grails.web.context.ServletContextHolder as SCH
 
 import java.util.regex.Pattern
 
@@ -11,12 +11,13 @@ class TemplateService {
     def getAvailableTemplateViews() {
         def views = []
         if (grailsApplication.isWarDeployed()) {
-            findWarGsps '/WEB-INF/grails-app/views/transcribe', views
+            //findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
+            findWarGsps '/WEB-INF/classes/transcribe/templateViews', views
         } else {
-            findDevGsps 'grails-app/views/transcribe', views
+            findDevGsps 'grails-app/views/transcribe/templateViews', views
         }
 
-        def pattern = Pattern.compile("^transcribe/_(.*Transcribe)[.]gsp\$")
+        def pattern = Pattern.compile(".*?templateViews[\\\\/](.*Transcribe)[.]gsp")
 
         def results = []
         views.each { String viewName ->

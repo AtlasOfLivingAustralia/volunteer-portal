@@ -72,7 +72,7 @@ class InstitutionService {
                     throw new RuntimeException("Failed to create institution directories: ${file.getParentFile().getAbsolutePath()}")
                 }
             }
-            mpfile.transferTo(file);
+            mpfile.transferTo(file.absoluteFile);
             return true
         } catch (Exception ex) {
             log.error("Failed to upload image file for institution", ex)
@@ -110,7 +110,7 @@ class InstitutionService {
         if (hasImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/image.jpg"
         } else {
-            return grailsLinkGenerator.resource([dir: '/images/banners', file: 'default-institution-image.jpg'])
+            return grailsLinkGenerator.resource([file: '/images/banners/default-institution-banner.jpg'])
         }
     }
 
@@ -124,7 +124,7 @@ class InstitutionService {
         if (institution && hasLogoImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/logo-image.jpg"
         } else {
-            return grailsLinkGenerator.resource([dir: '/images/banners', file: 'default-institution-logo.png'])
+            return grailsLinkGenerator.resource([file: '/images/banners/default-institution-logo.png'])
         }
     }
 
@@ -170,7 +170,13 @@ class InstitutionService {
             retVal = Institution.get(id)
         } else {
             try {
-               retVal = Institution.findByName(name)
+               List<Institution> matchingInstitutions
+                matchingInstitutions = (List<Institution>)Institution.createCriteria().list {
+                    i18nName {
+                        like WebUtils.getCurrentLocaleAsString(), name
+                    }
+                }
+                retVal = (matchingInstitutions && matchingInstitutions.size()>0)?matchingInstitutions[0]:null;
             } catch (Exception e) {
                 log.error("Exception", e)
                 throw e

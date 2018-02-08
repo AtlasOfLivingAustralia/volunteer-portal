@@ -11,12 +11,12 @@ class LeaderBoardController {
     def leaderBoardFragment() {
         def institutionInstance = Institution.get(params.int("institutionId"))
 
-        def legendName = institutionInstance ? institutionInstance.acronym : message(code:'default.application.name')
+        def legendName = institutionInstance ? institutionInstance.i18nAcronym : message(code:'default.application.name')
         def leaderBoardSections = [
-            [category: LeaderBoardCategory.daily, label:'Day Tripper'],
-            [category: LeaderBoardCategory.weekly, label:'Weekly Wonder'],
-            [category: LeaderBoardCategory.monthly, label:'Monthly Maestro'],
-            [category: LeaderBoardCategory.alltime, label:"${legendName} Legend"]
+            [category: LeaderBoardCategory.daily, label: message(code: 'daily.leader.label')],
+            [category: LeaderBoardCategory.weekly, label:message(code: 'weekly.leader.label')],
+            [category: LeaderBoardCategory.monthly, label:message(code: 'monthly.leader.label')],
+            [category: LeaderBoardCategory.alltime, label:message(code: 'alltime.leader.label')]
         ]
 
         [leaderBoardSections : leaderBoardSections, institutionInstance: institutionInstance ]
@@ -41,7 +41,8 @@ class LeaderBoardController {
     }
 
     def describeBadges() {
-        respond [:], model: [badges: AchievementDescription.findAllByEnabled(true, [sort: 'name'])]
+//        respond [:], model: [badges: AchievementDescription.findAllByEnabled(true, [sort: 'name'])]
+        respond [:], model: [badges: AchievementDescription.findAllByEnabled(true)]
     }
 
 }

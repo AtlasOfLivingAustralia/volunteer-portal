@@ -1,7 +1,8 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="itemgrid">
     <g:if test="${imageInfos.error}">
         <div class="alert alert-block alert-danger">
-            Images for picklist id: ${picklistId} could not be loaded because ${imageInfos.error}
+            <g:message code="transcribe.cameraTrapWidget.images_for_picklist" args="${[picklistId, imageInfos.error]}"/>
         </div>
     </g:if>
     <g:else>

@@ -2,16 +2,12 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
-import org.apache.commons.compress.archivers.zip.Zip64Mode
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.plugins.metrics.groovy.Timed
+import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.imageio.ImageIO
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
@@ -39,13 +35,13 @@ class ProjectService {
                             try {
                                 multimediaService.deleteMultimedia(image)
                             } catch (IOException ex) {
-                                log.error("Failed to delete multimedia: ", e)
+                                log.error("Failed to delete multimedia: ", ex)
                             }
                         }
                     }
                     t.delete()
                 } catch (Exception ex) {
-                    log.error("Failed to delete task ${t.id}: ", e)
+                    log.error("Failed to delete task ${t.id}: ", ex)
                 }
             }
         }
@@ -70,17 +66,21 @@ class ProjectService {
         // Load all related forum topics
         // Need to load them all first before querying for the UserForumWatchLists otherwise they can't be removed from
         // the UserForumWatchLists topics set as of Hibernate plugin v3.6.10.16.
-        def taskTopics = TaskForumTopic.findAllByTaskInList(projectInstance.tasks.toList())
-        def topics = ProjectForumTopic.findAllByProject(projectInstance)
+        def taskList = projectInstance.tasks.toList();
         def topicCount = 0
-
-        // Also need to delete forum topics/posts that might be associated with this project
-        log.info("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
-        taskTopics?.each { topic ->
-            log.info("Deleting topic ${topic.id}...")
-            forumService.deleteTopic(topic)
-            topicCount++
+        if(taskList.size()>0) {
+            def taskTopics = TaskForumTopic.findAllByTaskInList(taskList)
+            // Also need to delete forum topics/posts that might be associated with this project
+            log.info("Delete Project ${projectInstance.id}: Delete Task Forum Topics...")
+            taskTopics?.each { topic ->
+                log.info("Deleting topic ${topic.id}...")
+                forumService.deleteTopic(topic)
+                topicCount++
+            }
         }
+
+
+        def topics = ProjectForumTopic.findAllByProject(projectInstance)
 
         log.info("Delete Project ${projectInstance.id}: Delete Project Forum Topics...")
         topics?.each { topic ->
@@ -122,7 +122,7 @@ class ProjectService {
 
         // if we get here we can delete the project directory on the disk
         log.info("Project ${projectInstance.id}: Removing folder from disk...")
-        def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id )
+        def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id)
         if (dir.exists()) {
             log.info("DeleteProject: Preparing to remove project directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
@@ -132,7 +132,6 @@ class ProjectService {
 
     }
 
-    @Timed
     public List<ProjectSummary> getFeaturedProjectList() {
 
         Stopwatch sw = Stopwatch.createStarted()
@@ -162,14 +161,15 @@ class ProjectService {
         for (Project project : projectList) {
             //if (!project.inactive) {
 
-                def taskCount = (Long) taskCounts[project.id] ?: 0
-                long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
-                long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
+            def taskCount = (Long) taskCounts[project.id] ?: 0
+            long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
+            long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
 //                def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
 //                def validatorCount = (Integer) validatorCounts[project.id] ?: 0
-                if (transcribedCount < taskCount) {
-                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)//volunteerCount, validatorCount)
-                }
+            if (transcribedCount < taskCount) {
+                results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)
+//volunteerCount, validatorCount)
+            }
             //}
         }
         log.debug("make summary projects: ${sw.elapsed(MILLISECONDS)}ms")
@@ -202,7 +202,7 @@ class ProjectService {
         }
 
         // Default, if all else fails
-        def iconImage = grailsLinkGenerator.resource(dir:'/images/2.0/images', file:'iconLabels.png')
+        def iconImage = grailsLinkGenerator.resource(file: '/iconLabels.png')
         def iconLabel = 'Specimens'
 
         if (project.projectType) {
@@ -274,15 +274,15 @@ class ProjectService {
                 def project = projectSummary.project
 
                 // special syntax for label (project type). NdR Oct 2015.
-                if (query.startsWith(tagPrefix) && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst(tagPrefix,""))) {
+                if (query.startsWith(tagPrefix) && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst(tagPrefix, ""))) {
                     return true
                 }
 
-                if (project.featuredLabel?.toLowerCase()?.contains(query)) {
+                if (project.i18nName?.toString()?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
-                if (project.institution && project.institution.name?.toLowerCase()?.contains(query)) {
+                if (project.institution && project.institution.i18nName?.toString()?.toLowerCase()?.contains(query)) {
                     return true
                 }
 
@@ -290,11 +290,11 @@ class ProjectService {
                     return true
                 }
 
-                if (project.description?.toLowerCase()?.contains(query)) {
+                if (project.i18nDescription?.toString()?.toLowerCase()?.contains(query)) {
                     return true;
                 }
 
-                if (project.shortDescription?.toLowerCase()?.contains(query)) {
+                if (project.i18nShortDescription?.toString()?.toLowerCase()?.contains(query)) {
                     return true;
                 }
 
@@ -317,14 +317,14 @@ class ProjectService {
             }
 
             if (params?.sort == 'institution') {
-                return projectSummary.project.institution?.name ?: projectSummary.project.featuredOwner;
+                return projectSummary.project.institution?.i18nName ?: projectSummary.project.featuredOwner;
             }
 
             if (params?.sort == 'type') {
                 return projectSummary.iconLabel;
             }
 
-            projectSummary.project.featuredLabel?.toLowerCase()
+            projectSummary.project.i18nName?.toString()?.toLowerCase()
         }
 
         Integer startIndex = params?.int('offset') ?: 0;
@@ -398,7 +398,7 @@ class ProjectService {
 
     def projectSize(List<Project> projects) {
         projects.collectEntries {
-            [(it.id) : projectSize(it)]
+            [(it.id): projectSize(it)]
         }
     }
 
@@ -427,7 +427,7 @@ class ProjectService {
                 count('fullyValidatedBy', 'validated')
             }
         }.collectEntries { row ->
-            [(row[0].id): [ total: row[1], transcribed: row[2], validated: row[3] ] ]
+            [(row[0].id): [total: row[1], transcribed: row[2], validated: row[3]]]
         }
     }
 

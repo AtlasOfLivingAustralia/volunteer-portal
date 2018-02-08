@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="Forum"/></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><cl:pageTitle title="${message(code: 'forum.index.forum')}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>--}%
 
@@ -21,8 +22,12 @@
 
 <body>
 
-<r:script type="text/javascript">
-
+<asset:script type="text/javascript">
+            function htmlEncode(value){
+              // Create a in-memory div, set its inner text (which jQuery automatically encodes)
+              // Then grab the encoded contents back out. The div never exists on the page.
+              return $('<div/>').text(value).html();
+            }
             function renderTab(tabIndex, q, offset, max, sort, order) {
                 // var $tabs = $('#tabControl').tabs();
                 var selector = "";
@@ -42,7 +47,7 @@
                 }
 
                 if (baseUrl && selector) {
-                    $(selector).html('<div>Retrieving list of topics... <img src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
+                    $(selector).html('<div>'+htmlEncode("${message(code: 'forum.index.retrieving_list')}")+' <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
                     baseUrl += "?selectedTab=" + tabIndex;
                     if (q) {
                         baseUrl += "&q=" + q;
@@ -84,7 +89,7 @@
 
             });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="${message(code: 'default.forum.label', default: 'DigiVol Forum')}" selectedNavItem="forum">
 </cl:headerContent>
@@ -99,7 +104,7 @@
                         <div class="custom-search-input body">
                             <div class="input-group">
                                 <g:textField id="search-input" class="form-control input-lg"
-                                             placeholder="Search forums" name="query"/>
+                                             placeholder="${message(code: "forum.index.search_forums")}" name="query"/>
                                 <span class="input-group-btn">
                                     <button class="btn btn-info btn-lg" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                                 </span>
@@ -107,27 +112,27 @@
                         </div>
                     </div>
                 </g:form>
-                <h2 class="heading">Find forum topics</h2>
+                <h2 class="heading"><g:message code="forum.index.find_topics"/></h2>
 
                 <div id="tabControl" class="tabbable">
                     <ul class="nav nav-tabs">
                         <li class="${!params.selectedTab || params.selectedTab == '0' ? 'active' : ''}"><a
                                 href="#tabRecentTopics" class="forum-tab-title" data-toggle="tab"
-                                tabIndex="0">Featured and recent topics</a></li>
+                                tabIndex="0"><g:message code="forum.index.featured_and_recent_topics"/></a></li>
                         <li class="${params.selectedTab == '1' ? 'active' : ''}"><a href="#tabGeneralTopics"
                                                                                     class="forum-tab-title"
                                                                                     data-toggle="tab"
-                                                                                    tabIndex="1">Browse General Discussion Topics</a>
+                                                                                    tabIndex="1"><g:message code="forum.index.browse"/></a>
                         </li>
                         <li class="${params.selectedTab == '2' ? 'active' : ''}"><a href="#tabProjectForums"
                                                                                     class="forum-tab-title"
                                                                                     data-toggle="tab"
-                                                                                    tabIndex="2">Expedition Forums</a>
+                                                                                    tabIndex="2"><g:message code="forum.index.expedition_forums"/></a>
                         </li>
                         <li class="${params.selectedTab == '3' ? 'active' : ''}"><a href="#tabWatchedTopics"
                                                                                     class="forum-tab-title"
                                                                                     data-toggle="tab"
-                                                                                    tabIndex="3">Your watched topics</a>
+                                                                                    tabIndex="3"><g:message code="forum.index.your_watched_topics"/></a>
                         </li>
                     </ul>
                 </div>

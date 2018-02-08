@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import groovy.time.TimeCategory
 import org.elasticsearch.action.search.SearchType
-import org.grails.plugins.csv.CSVWriter
+import grails.plugins.csv.CSVWriter
 import org.hibernate.FlushMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat
 class AdminController {
 
     def taskService
-    def grailsApplication
     def grailsCacheAdminService
     def tutorialService
     def sessionFactory
@@ -23,11 +22,12 @@ class AdminController {
     def taskLoadService
     def eventSourceService
 
-    def index = {
+    def index() {
         checkAdmin()
+        return
     }
 
-    def mailingList = {
+    def mailingList() {
         if (checkAdmin()) {
             def userIds = User.withCriteria {
                 projections {
@@ -46,7 +46,7 @@ class AdminController {
             return true;
         }
 
-        flash.message = "You do not have permission to view this page"
+        flash.message = message(code: "admin.you_do_not_have_permission")
         redirect(uri:"/")
     }
 
@@ -62,16 +62,16 @@ class AdminController {
             if (f != null) {
                 def allowedMimeTypes = ['application/pdf']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
-                    flash.message = "The file must be one of: ${allowedMimeTypes}"
+                    flash.message = message(code: "admin.file_must_be_one_of", args: [allowedMimeTypes])
                     redirect(action:'tutorialManagement')
                     return;
                 }
 
                 try {
                     tutorialService.uploadTutorialFile(f)
-                    flash.message = "Tutorial uploaded successfully";
+                    flash.message = message(code: "admin.tutorial_uploaded_successfully");
                 } catch (Exception ex) {
-                    flash.message = "Failed to upload tutorial file: " + ex.message;
+                    flash.message = message(code: "admin.failed_to_upload_tutorial") + ex.message;
                 }
 
             }
@@ -85,9 +85,9 @@ class AdminController {
         if (filename) {
             try {
                 tutorialService.deleteTutorial(filename)
-                flash.message = "Tutorial deleted successfully"
+                flash.message = message(code: "admin.tutorial_deleted_successfully")
             } catch (Exception ex) {
-               flash.message ="Failed to delete tutorial file: " + ex.message
+               flash.message =message(code: "admin.failed_to_delete_tutorial") + ex.message
             }
         }
         redirect(action:'tutorialManagement')
@@ -101,7 +101,7 @@ class AdminController {
             try {
                 tutorialService.renameTutorial(filename, newName)
             } catch (Exception ex) {
-               flash.message ="Failed to rename tutorial file: " + ex.message
+               flash.message =message(code: "admin.failed_to_rename_tutorial") + ex.message
             }
         }
 
@@ -129,7 +129,7 @@ class AdminController {
 
         try {
             fields.each { field ->
-                // find the collector name
+                // find the collector i18nName
                 def collectorNameField = Field.findByTaskAndNameAndRecordIdxAndSuperceded(field.task, "recordedBy", field.recordIdx, false)
                 def collectorName = collectorNameField?.value
                 def newValue = ''
@@ -181,7 +181,7 @@ class AdminController {
             sessionFactory.currentSession.flushMode = FlushMode.AUTO
         }
 
-        def message = "${count} fields updated, $collectorsFound of which were set to a collector number."
+        def message = message(code: "admin.fields_updated_message", args: [count,collectorsFound])
         flash.message = message
         println message
 
@@ -215,7 +215,7 @@ class AdminController {
             count++
         }
 
-        flash.message ="${count} users checked."
+        flash.message = message(code: "admin.users_checked")
 
         redirect(action:'index')
     }
@@ -225,13 +225,19 @@ class AdminController {
 
     def userActivityInfo() {
         def activities = UserActivity.list([sort:'timeLastActivity', order:'desc'])
-        def emailToIdMap = User.withCriteria {
-            inList('email', activities*.userId)
-            projections {
-                property('email')
-                property('userId')
-            }
-        }.toMap()
+        def emailToIdMap
+        if (activities) {
+            emailToIdMap = User.withCriteria {
+                inList('email', activities*.userId)
+                projections {
+                    property('email')
+                    property('userId')
+                }
+            }.toMap()
+        } else {
+            emailToIdMap = [:]
+        }
+
         def actWithOpenEventSources = activities*.properties.collect { it + [ openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '') ] }
         respond([activities: actWithOpenEventSources])
     }
@@ -305,8 +311,8 @@ class AdminController {
 
             def writer = new CSVWriter((Writer) response.writer,  {
                 'Expedition Id' { it.project.id }
-                'Expedtion Name' { it.project.featuredLabel }
-                'Institution' { it.project.institution ? it.project.institution.name : it.project.featuredOwner }
+                'Expedtion Name' { it.project.i18nName }
+                'Institution' { it.project.institution ? it.project.institution.i18nName : it.project.featuredOwner }
                 'Institution Id' { it.project.institution?.id ?: "" }
                 'Inactive' { it.project.inactive ? "t" : "f" }
                 'Template' { it.project.template?.name }
@@ -382,7 +388,7 @@ class AdminController {
         }
         grailsCacheAdminService.clearTemplatesCache()
         grailsCacheAdminService.clearBlocksCache()
-        flash.message = "Template and blocks caches cleared"
+        flash.message = message(code: "admin.template_and_blocks_caches_cleared")
         redirect action: 'tools'
     }
 
@@ -392,7 +398,7 @@ class AdminController {
             return
         }
         grailsCacheAdminService.clearAllCaches()
-        flash.message = "All caches cleared"
+        flash.message = message(code: "admin.all_caches_cleared")
         redirect action: 'tools'
     }
 
@@ -415,7 +421,7 @@ class AdminController {
         }
 
         taskLoadService.cancelLoad()
-        flash.message = "Task Load Cancel message sent"
+        flash.message = message(code: "admin.task_load_cancel_message_sent")
 
         redirect action: 'stagingTasks'
     }
@@ -427,7 +433,7 @@ class AdminController {
         }
 
         def items = taskLoadService.clearQueue()
-        flash.message = "Task Load queue cleared, remaining items: ${items.join(', ')}"
+        flash.message = message(code: "admin.task_load_queue_cleared", args: [items.join(', ')])
 
 
         redirect action: 'stagingTasks'

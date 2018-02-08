@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <g:if test="${collectionEvents}">
     <div id="">
         <g:each in="${collectionEvents}" var="event" status="i">
@@ -37,7 +38,7 @@
     </div>
 </g:if>
 <g:else>
-    <span>There are no matching collection events.</span>
+    <span><g:message code="collectionEvent.search_result.no_results"/></span>
 </g:else>
 
 <script type="text/javascript">

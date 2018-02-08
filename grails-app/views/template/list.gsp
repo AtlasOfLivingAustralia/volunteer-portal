@@ -1,10 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Template" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
-    <r:require modules="jquery-ui, bootbox, bvp-js"/>
+    <asset:stylesheet src="jquery-ui"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
     <style type="text/css">
 
@@ -13,37 +14,6 @@
     }
 
     </style>
-    <r:script type="text/javascript">
-
-            $(function() {
-
-                $(".btnDeleteTemplate").click(function(e) {
-                    e.preventDefault();
-                    var templateId = $(this).parents("[templateId]").attr("templateId");
-                    var templateName = $(this).parents("[templateName]").attr("templateName");
-                    if (templateId && templateName) {
-                        bootbox.confirm("Are you sure you wish to delete template " + templateName + "?", function(result) {
-                          window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
-                        });
-                    }
-                });
-
-                $(".btnCloneTemplate").click(function(e) {
-                    e.preventDefault();
-                    var oldTemplateId = $(this).parents("[templateId]").attr("templateId");
-                    var oldTemplateName = $(this).parents("[templateName]").attr("templateName");
-
-                    if (oldTemplateId && oldTemplateName) {
-                        bvp.showModal({
-                            url:"${createLink(action: 'cloneTemplateFragment')}?sourceTemplateId=" + oldTemplateId,
-                            title:"Clone template '" + oldTemplateName + "'"
-                        });
-                    }
-                });
-
-            });
-
-    </r:script>
 </head>
 
 <body class="admin">
@@ -51,11 +21,11 @@
     <cl:headerContent title="${message(code: 'default.list.label', args: [entityName])}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')]
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-default"><g:message code="template.list.create_new_template" /></a>
         </div>
     </cl:headerContent>
 
@@ -84,12 +54,12 @@
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                                 <td>
-                                    <a class="btn btn-default btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>
+                                    <a class="btn btn-default btnCloneTemplate" href="#" style="margin-top: 6px"><g:message code="template.list.clone" /></a>
                                     <a class="btn btn-default" style="margin-top: 6px"
-                                       href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">Edit</a>
+                                       href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}"><g:message code="template.list.edit" /></a>
                                     <a class="btn btn-default" style="margin-top: 6px"
-                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">Preview</a>
-                                    <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>
+                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}"><g:message code="template.list.preview" /></a>
+                                    <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px"><g:message code="template.list.delete" /></a>
                                 </td>
                             </tr>
                         </g:each>
@@ -104,5 +74,38 @@
         </div>
     </div>
 </div>
+<asset:javascript src="jquery-ui" asset-defer=""/>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:script type="text/javascript">
+
+    $(function() {
+
+        $(".btnDeleteTemplate").click(function(e) {
+            e.preventDefault();
+            var templateId = $(this).parents("[templateId]").attr("templateId");
+            var templateName = $(this).parents("[templateName]").attr("templateName");
+            if (templateId && templateName) {
+                bootbox.confirm("${message(code: 'template.list.are_you_sure_to_delete')} " + templateName + "?", function(result) {
+                  window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
+                        });
+                    }
+                });
+
+                $(".btnCloneTemplate").click(function(e) {
+                    e.preventDefault();
+                    var oldTemplateId = $(this).parents("[templateId]").attr("templateId");
+                    var oldTemplateName = $(this).parents("[templateName]").attr("templateName");
+
+                    if (oldTemplateId && oldTemplateName) {
+                        bvp.showModal({
+                            url:"${createLink(action: 'cloneTemplateFragment')}?sourceTemplateId=" + oldTemplateId,
+                            title:"Clone template '" + oldTemplateName + "'"
+                        });
+                    }
+                });
+
+            });
+
+</asset:script>
 </body>
 </html>

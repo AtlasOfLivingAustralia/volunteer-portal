@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
@@ -5,11 +6,12 @@
     <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:require modules="labelAutocomplete"/>
+    <asset:stylesheet src="label-autocomplete"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>
-<content tag="pageTitle">Awards</content>
+<content tag="pageTitle">${message(code:"awards.awards")}</content>
 
 <content tag="adminButtonBar">
     <g:form class="form-inline" style="display: inline-block; padding-right: 10px;" action="awardAll"
@@ -31,11 +33,11 @@
     <table class="table table-striped table-hover">
         <thead>
         <tr>
-            <th>User</th>
-            <th>Awarded</th>
-            <th>Notified</th>
-            <th>Currently Eligible</th>
-            <th class="text-center">Actions</th>
+            <th><g:message code="achievementDescription.edit.user"/></th>
+            <th><g:message code="achievementDescription.edit.awarded"/></th>
+            <th><g:message code="achievementDescription.edit.notified"/></th>
+            <th><g:message code="achievementDescription.edit.currently_eligible"/></th>
+            <th class="text-center"><g:message code="achievementDescription.edit.actions"/></th>
         </tr>
         </thead>
         <tbody>
@@ -54,7 +56,7 @@
     </tabLe>
 
     <div class="well">
-        <h4>Grant achievement</h4>
+        <h4><g:message code="achievementDescription.edit.grant_achievement"/></h4>
         <g:form class="form-horizontal" action="award" id="${achievementDescriptionInstance?.id}" method="POST">
             <div class="form-group">
                 <label class="control-label col-md-3" for="user">
@@ -80,8 +82,8 @@
         </g:form>
     </div>
 </div>
-
-<r:script>
+<asset:javascript src="label-autocomplete" asset-defer=""/>
+<asset:script>
 $(function($) {
 
     var ids = <cl:json value="${achievementDescriptionInstance.awards*.user*.id}"/>;
@@ -116,7 +118,7 @@ $(function($) {
         }).done(function (data) {
             event.delegateTarget.remove();
         }).fail(function (e) {
-            alert("Couldn't remove award, please refresh the page and try again.");
+            alert("${message(code: 'achievementDescription.edit.error.could_not_remove')}");
         });
     });
 
@@ -128,6 +130,6 @@ $(function($) {
         return null;
     }, 'displayName');
 });
-</r:script>
+</asset:script>
 </body>
 </html>

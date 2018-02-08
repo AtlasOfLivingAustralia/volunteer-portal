@@ -3,7 +3,6 @@ package au.org.ala.volunteer
 class UpdateUsersJob {
 
     def userService
-    def grailsApplication
     def concurrent = false
 
     def description = "Update all users database details from the user details service"

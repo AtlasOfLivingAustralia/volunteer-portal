@@ -1,23 +1,26 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>
 
-<content tag="pageTitle">News items</content>
+<content tag="pageTitle"><g:message code="project.news_items.label"/></content>
 
 <content tag="adminButtonBar">
     <a class="btn btn-primary"
        href="${createLink(controller: 'newsItem', action: 'create', params: ['project.id': projectInstance.id])}"><i
-            class="icon-plus icon-white"></i> Add news item</a>
+            class="icon-plus icon-white"></i> <g:message code="project.news_items.add"/></a>
 </content>
 
 <div class="form-horizontal">
     <div class="control-group">
         <label for="enableNewItems">
-            News items are <g:checkBox name="enableNewsItems" checked="${!projectInstance.disableNewsItems}"/>
+            <g:message code="project.news_items.newe_items_are"/> <g:checkBox name="enableNewsItems" checked="${!projectInstance.disableNewsItems}"/>
         </label>
     </div>
 </div>
@@ -31,12 +34,12 @@
 
 </g:form>
 
-${newsItems?.size() ?: 0} news items
+${newsItems?.size() ?: 0} <g:message code="project.news_items.count"/>
 
 <table class="table table-striped table-hover">
     <thead>
-    <th>Date</th>
-    <th>Content</th>
+    <th><g:message code="project.news_items.date"/></th>
+    <th><g:message code="project.news_items.content"/></th>
     <th/>
     </thead>
     <tbody>
@@ -45,15 +48,15 @@ ${newsItems?.size() ?: 0} news items
             <td style="max-width: 40px"><g:formatDate date="${newsItem.created}" format="yyyy-MM-dd HH:mm:ss"/></td>
             <td>
                 <div>
-                    <strong>${newsItem.title}</strong>
+                    <strong>${newsItem.i18nTitle}</strong>
                 </div>
 
                 <div>
-                    <em>${newsItem.shortDescription}</em>
+                    <em>${newsItem.i18nShortDescription}</em>
                 </div>
 
                 <div>
-                    ${newsItem.body}
+                    ${raw(newsItem.i18nBody?.toString())}
                 </div>
             </td>
             <td style="max-width: 20px">
@@ -71,11 +74,13 @@ ${newsItems?.size() ?: 0} news items
     </tbody>
 </table>
 
-<script type='text/javascript'>
+<asset:script type='text/javascript'>
     $(function () {
 
         $('input:checkbox').bootstrapSwitch({
-            size: "small"
+            size: "small",
+            onText: "${message(code:'default.on')}",
+            offText: "${message(code:'default.off')}"
         });
 
         $('input:checkbox').on('switchChange.bootstrapSwitch', function (event, state) {
@@ -86,7 +91,7 @@ ${newsItems?.size() ?: 0} news items
         $('a.delete-button').on('click', function(e) {
             e.preventDefault();
             var self = this;
-            bootbox.confirm("Are you sure?", function (result) {
+            bootbox.confirm("${message(code: 'project.news_items.are_you_sure')}", function (result) {
                 _result = result;
                 if(result) {
                     window.location.href = $(self).attr('href');
@@ -94,6 +99,6 @@ ${newsItems?.size() ?: 0} news items
             });
         });
     });
-</script>
+</asset:script>
 </body>
 </html>

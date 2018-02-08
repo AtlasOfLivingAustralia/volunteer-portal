@@ -6,8 +6,8 @@ import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.json.JsonSlurper
 import org.apache.commons.lang.NotImplementedException
-import org.codehaus.groovy.grails.orm.hibernate.HibernateSession
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.orm.hibernate.HibernateSession
+import org.grails.web.json.JSONObject
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.action.search.SearchRequestBuilder
@@ -21,7 +21,6 @@ import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.index.query.FilterBuilder
 import org.elasticsearch.search.sort.SortOrder
-import org.grails.plugins.metrics.groovy.Timed
 import org.hibernate.Criteria
 import org.hibernate.FetchMode
 
@@ -49,6 +48,9 @@ class FullTextIndexService {
         log.info("ElasticSearch service starting...")
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
         settings.put("path.home", grailsApplication.config.elasticsearch.location);
+        //settings.put("script.groovy.sandbox.receiver_whitelist","org.springframework.beans.factory.annotation.Autowired")
+        settings.put("script.groovy.sandbox.class_whitelist","org.springframework.beans.factory.annotation.Autowired")
+
         node = nodeBuilder().local(true).settings(settings).node();
         client = node.client();
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
@@ -83,7 +85,6 @@ class FullTextIndexService {
         addMappings()
     }
 
-    @Timed
     def indexTask(Task task) {
 
         //def ct = new CodeTimer("Indexing task ${task.id}")
@@ -114,10 +115,10 @@ class FullTextIndexService {
                 fields              : [],
                 project             : [
                         projectType            : task.project.projectType.toString(),
-                        institution            : task.project.institution ? task.project?.institution?.name : task.project.featuredOwner,
+                        institution            : task.project.institution ? task.project?.institution?.i18nName.toString() : task.project.featuredOwner,
                         institutionCollectoryId: task.project.institution?.collectoryUid,
                         harvestableByAla       : task.project.harvestableByAla,
-                        name                   : task.project.featuredLabel,
+                        name                   : task.project.i18nName.toString(),
                         templateName           : task.project.template?.name,
                         templateViewName       : task.project.template?.viewName,
                         labels                 : task.project.labels?.collect {
@@ -152,7 +153,6 @@ class FullTextIndexService {
         return response
     }
 
-    @Timed
     List<DeleteResponse> deleteTasks(Collection<Long> taskIds) {
         taskIds.collect {
             def dr = deleteTask(it)
@@ -172,7 +172,6 @@ class FullTextIndexService {
         return search(qmap, offset, max, sortBy, sortOrder)
     }
 
-    @Timed
     public QueryResults<Task> search(Map query, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
         Map qmap = null
         Map fmap = null
@@ -211,7 +210,6 @@ class FullTextIndexService {
         rawSearch(json, searchType, null, null, max, null, null, resultClosure)
     }
 
-    @Timed
     public <V> V rawSearch(String json, SearchType searchType, String aggregation, Integer offset, Integer max, String sortBy, SortOrder sortOrder, Closure<V> resultClosure) {
         
         def queryMap = jsonStringToJSONObject(json)
@@ -373,8 +371,6 @@ class FullTextIndexService {
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet()
     }
 
-
-    @Timed
     private QueryResults<Task> executeFilterSearch(FilterBuilder filterBuilder, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
         def searchRequestBuilder = client.prepareSearch(INDEX_NAME).setSearchType(SearchType.QUERY_THEN_FETCH)
         searchRequestBuilder.setPostFilter(filterBuilder)
@@ -422,7 +418,6 @@ class FullTextIndexService {
         log.info("ElasticSearch Service is${node ? ' ' : ' NOT ' }alive.")
     }
 
-    @Timed
     @Transactional(readOnly = true)
     def indexTasks(Set<Long> ids, Closure cb = null) {
         if (ids) {

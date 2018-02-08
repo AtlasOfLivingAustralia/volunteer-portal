@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <style>
 
 .recentAcheivement img {
@@ -30,7 +31,7 @@
         <div class="span6">
             <div class="media">
                 <a class="pull-left" href="//en.gravatar.com/" class="external" target="_blank" id="gravitarLink"
-                   title="To customise this avatar, register your email address at gravatar.com...">
+                   title="${message(code: 'user.notebookMain.to_customise_this_avatar')}">
                     <img id="gravatar"
                          src="//www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=125"
                          class="img-polaroid media-object"/> %{-- style="width:150px;" class="avatar" --}%
@@ -46,7 +47,7 @@
                         <dt><g:message code="user.score.label" default="Volunteer score"/></dt>
                         <dd>${score}</dd>
                         <dt><g:message code="user.recordsTranscribedCount.label" default="Tasks transcribed"/></dt>
-                        <dd>${userInstance.transcribedCount} (${validatedCount} of which have been validated)</dd>
+                        <dd><g:message code="user.notebookMain.record_transcribed" args="${[transcribedCount,validatedCount ]}"/></dd>
                         <dt><g:message code="user.transcribedValidatedCount.label" default="Tasks validated"/></dt>
                         <dd>${userInstance.validatedCount}</dd>
                         <dt><g:message code="user.created.label" default="First contribution"/></dt>
@@ -67,15 +68,14 @@
                             <li class="span2">
                                 <a href="javascript:void(0)" class="thumbnail" data-switch-tab="badgesTab">
                                     <img src='<cl:achievementBadgeUrl achievement="${ach.achievement}"/>'
-                                         alt="${ach.achievement.name}" title="${ach.achievement.description}"/>
+                                         alt="${ach.achievement.i18nName}" title="${ach.achievement.i18nDescription}"/>
                                 </a>
                             </li>
                         </g:each>
                     </ul>
                 </g:if>
                 <g:else>
-                    <span>You haven't been awarded any <a href="javascript:void(0)"
-                                                          data-switch-tab="badgesTab">badges</a> yet.</span>
+                    <span><g:message code="user.notebookMain.you_havent_been_awarded"/></span>
                 </g:else>
             </section>
         </div>
@@ -84,28 +84,28 @@
 
 <div class="span5 pull-right">
     <section id="my-difference" class="well">
-        <h1>How you're making a difference!</h1>
+        <h1><g:message code="user.notebookMain.how_youre_making_a_difference"/></h1>
         <ul>
             <g:if test="${totalSpeciesCount > 0}">
                 <li>
-                    <span>You have added ${totalSpeciesCount} species to the ALA</span>
+                    <span><g:message code="user.notebookMain.you_have_added_species" args="${[totalSpeciesCount]}"/></span>
 
                     <div id="piechart"></div>
                 </li>
             </g:if>
             <g:if test="${fieldObservationCount > 0}">
                 <li>
-                    <span>You have contributed to ${fieldObservationCount} new field observations</span>
+                    <span><g:message code="user.notebookMain.you_have_contributed" args="${[fieldObservationCount]}"/></span>
                 </li>
             </g:if>
             <g:if test="${expeditionCount > 0}">
                 <li>
-                    <span>You have participated in ${expeditionCount} expeditions</span>
+                    <span><g:message code="user.notebookMain.you_have_participated_expeditions" args="${[expeditionCount]}"/></span>
                 </li>
             </g:if>
             <g:if test="${userPercent != '0.00'}">
                 <li>
-                    <span>You have transcribed ${userPercent}% of the total transcriptions on DigiVol</span>
+                    <span><g:message code="user.notebookMain.you_have_transcribed" args="${[userPercent]}"/></span>
                 </li>
             </g:if>
         </ul>

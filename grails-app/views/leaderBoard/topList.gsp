@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
 </head>
@@ -20,8 +22,8 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                            <th>Volunteer</th>
-                            <th>Tasks completed</th>
+                            <th><g:message code="leaderBoard.toplist.volunteer"/></th>
+                            <th><g:message code="leaderBoard.toplist.tasks_completed"/></th>
                         </tr>
                         </thead>
                         <g:each in="${results}" var="row" status="i">

@@ -1,10 +1,10 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
 import org.apache.commons.lang3.StringUtils
 
+@Transactional
 class FieldSyncService {
-
-    static transactional = true
 
     def logService
     def fullTextIndexService
@@ -37,7 +37,7 @@ class FieldSyncService {
         [Collection, Object[]].any { it.isAssignableFrom(object.getClass()) }
     }
 
-    /** Duplicate values are an indication that there are multiple form fields with the exact same name, and the values are being collated into and array
+    /** Duplicate values are an indication that there are multiple form fields with the exact same i18nName, and the values are being collated into and array
      * This is generally bad, but may happen because templates are user modifiable. In a lot of cases the values may well be the same, so
      * we can coalesce them back into a single string value, otherwise we comma separate them in order to preserve their values for manual fix up later
      *
@@ -187,8 +187,8 @@ class FieldSyncService {
                 task.fullyTranscribedBy = transcriberUserId
                 task.fullyTranscribedIpAddress = userIp
                 def user = User.findByUserId(transcriberUserId)
-                user.transcribedCount++
-                user.save(flush: true)
+                user?.transcribedCount++
+                user?.save(flush: true)
             }
             if (!task.dateFullyTranscribed) {
                 task.dateFullyTranscribed = now
@@ -203,8 +203,8 @@ class FieldSyncService {
             if (!task.fullyValidatedBy) {
                 task.fullyValidatedBy = transcriberUserId
                 def user = User.findByUserId(transcriberUserId)
-                user.validatedCount++
-                user.save(flush: true)
+                user?.validatedCount++
+                user?.save(flush: true)
             }
             if (!task.dateFullyValidated) {
                 task.dateFullyValidated = now
@@ -238,7 +238,7 @@ class FieldSyncService {
 //        def c = Field.createCriteria()
 //        c.get {
 //            eq('task', task)
-//            eq('name', fieldName)
+//            eq('i18nName', fieldName)
 //            eq('superceded', false)
 //            projections {
 //                max('recordIdx')

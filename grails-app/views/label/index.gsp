@@ -1,7 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="org.springframework.validation.FieldError; au.org.ala.volunteer.Label" %>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}">
     <g:set var="entityName" value="${message(code: 'label.label', default: 'Tag')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.UserService; au.org.ala.volunteer.ViewedTask; au.org.ala.volunteer.Task" %>
 
 <html>
@@ -5,9 +6,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
-    <title><cl:pageTitle title="Task saved"/></title>
-    <r:require module="amplify"/>
-    <r:script type="text/javascript">
+    <title><cl:pageTitle title="${message(code: 'transcribe.nextAction.task_saved')}"/></title>
+    <asset:javascript src="amplify" asset-defer=""/>
+    <asset:script type="text/javascript">
             $(document).ready(function () {
                 $("li#goBack button").click(function (e) {
                     e.preventDefault();
@@ -32,27 +33,25 @@
                 // clear the temporarily saved state, now that it is known that the task was saved
                 amplify.store("bvp_task_${taskInstance.id}", null);
             });
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">
 
-<cl:headerContent title="Transcription Saved" crumbLabel="What next?"/>
+<cl:headerContent title="${message(code:"transcribe.nextAction.transcription_saved")}" crumbLabel="${message(code:"transcribe.nextAction.what_next")}"/>
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <div class="lead">Thank you - your transcription was saved
-                        <span id="dateSaved">at <g:formatDate date="${taskInstance.dateLastUpdated}"
-                                                              format="h:mm:ss a z 'on' d MMMM yyyy"/>
+                    <div class="lead"><g:message code="transcribe.nextAction.thank_you" args="${[formatDate(date: taskInstance.dateLastUpdated, format: 'h:mm:ss MMMM yyyy')]}"/>
                     </div>
 
                     <ul>
-                        <li id="viewTask"><button class="btn btn-primary" role="button" autofocus tabindex="1">Transcribe another task</button></li>
-                        <li id="goBack"><button class="btn btn-link" tabindex="2">Return to the saved task</button></li>
-                        <li id="projectHome"><button class="btn btn-link" tabindex="3">Go to project landing page</button></li>
-                        <li id="viewStats"><button class="btn btn-link" tabindex="3">View My Stats</button></li>
+                        <li id="viewTask"><button class="btn btn-primary" role="button" autofocus tabindex="1"><g:message code="transcribe.nextAction.transcribe_another"/></button></li>
+                        <li id="goBack"><button class="btn btn-link" tabindex="2"><g:message code="transcribe.nextAction.return_to_the_saved_task"/></button></li>
+                        <li id="projectHome"><button class="btn btn-link" tabindex="3"><g:message code="transcribe.nextAction.go_to_landing_page"/></button></li>
+                        <li id="viewStats"><button class="btn btn-link" tabindex="3"><g:message code="transcribe.nextAction.view_stats"/></button></li>
                     </ul>
                 </div>
             </div>

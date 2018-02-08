@@ -1,40 +1,29 @@
 sudo: false
+dist: trusty
 language: groovy
 jdk:
-- oraclejdk7
-cache:
-  directories:
-  - $HOME/.m2
-  - $HOME/.ivy
-  - $HOME/.sdkman
+- oraclejdk8
 branches:
   only:
   - master
   - develop
-before_install:
-- rm -rf ~/.sdkman
-- curl -s get.sdkman.io > ~/install_sdkman.sh
-- chmod 775 ~/install_sdkman.sh
-- ~/install_sdkman.sh
-- echo "sdkman_auto_answer=true" > ~/.sdkman/etc/config
-- source ~/.sdkman/bin/sdkman-init.sh
-- GRAILS_VERSION=`grep '^app\.grails\.version=' ./application.properties | sed -e
-  's/^app\.grails\.version=//g'`
-- sdk install grails $GRAILS_VERSION || true
-- sdk use grails $GRAILS_VERSION
-before_script:
-- mkdir -p ~/.grails; wget -q -O ~/.grails/settings.groovy https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_settings_new.groovy
-- APP_VERSION=`grep '^app\.version=' ./application.properties | sed -e 's/^app\.version=//g'`
-- MAVEN_REPO="ala-repo-snapshot"; grep '^app\.version=' ./application.properties |
-  grep -q "\-SNAPSHOT"; if [ "$?" = "1" ]; then MAVEN_REPO="ala-repo-release"; fi;
-script:
-- grails clean && grails refresh-dependencies --non-interactive && grails prod war
-  --non-interactive
+  - grails2
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
 after_success:
-- '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry grails prod maven-deploy
-  --repository=$MAVEN_REPO --non-interactive'
-- '[ "${TRAVIS_BRANCH}" = "develop" ] && travis_retry curl -X POST --header "X-DEPLOY-KEY:
-  ${DEPLOY_KEY}" https://volunteer-dev.ala.org.au/deploy/${APP_VERSION}'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
+#- '[ "${TRAVIS_BRANCH}" = "develop" ] && travis_retry curl -X POST --header "X-DEPLOY-KEY:
+#  ${DEPLOY_KEY}" https://volunteer-dev.ala.org.au/deploy/${APP_VERSION}'
 env:
   global:
   - secure: 2MEDHHQ3nxNwf+YGgtC/GXx6kb0y4ixYA7Ia50pZHaN8xMHYdQ8EymKZJ8F9SXw0Feg9FsDc5I90lBJB8URYZZ4hPZN9+uj9crOvnOFMByvJpPikrQ6Yw8IdUjmYxHO/zv+kmOkqVnu6zCtS42olSM7ljeZs0PzW484Ci9w5eM4=

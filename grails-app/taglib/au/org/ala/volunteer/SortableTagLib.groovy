@@ -27,23 +27,23 @@ class SortableTagLib {
      * @emptyTag
      *
      * @attr tag - the type of tag
-     * @attr property - name of the property relating to the field
+     * @attr property - i18nName of the property relating to the field
      * @attr defaultOrder default order for the property; choose between asc (default if not provided) and desc
      * @attr title title caption for the column
      * @attr titleKey title key to use for the column, resolved against the message source
      * @attr params a map containing request parameters
-     * @attr action the name of the action to use in the link, if not specified the list action will be linked
+     * @attr action the i18nName of the action to use in the link, if not specified the list action will be linked
      * @attr params A map containing URL query parameters
-     * @attr class CSS class name
+     * @attr class CSS class i18nName
      */
     Closure sortableColumn = { attrs ->
         def writer = out
         if (!attrs.property) {
-            throwTagError("Tag [sortableColumn] is missing required attribute [property]")
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y", args: ["sortableColumn","property"]))
         }
 
         if (!attrs.title && !attrs.titleKey) {
-            throwTagError("Tag [sortableColumn] is missing required attribute [title] or [titleKey]")
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y_or_z", args: ["sortableColumn","i18nTitle", "titleKey"]))
         }
 
         def property = attrs.remove("property")
@@ -54,7 +54,7 @@ class SortableTagLib {
 
         def tag = attrs.remove("tag")
         if (!tag) {
-            throwTagError("Tag [sortableColumn] is missing required attribute [tag]")
+            throwTagError(message(code: "sortableTagLib.tag_x_missing_attribute_y", args: ["sortableColumn","tag"]))
         }
 
         // current sorting property and order

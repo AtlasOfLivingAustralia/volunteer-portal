@@ -1,8 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <html>
 <head>
+
     <title><cl:pageTitle title="An error has occured" /></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="google" value="notranslate">
     <style type="text/css">
     .message {
         border: 1px solid black;
@@ -33,7 +36,7 @@
     <div class="col-sm-12">
         <h1><g:message code="error.title" default="Oh no!  An error has occured" /></h1>
 
-        <h2>Error Details</h2>
+        <h2><g:message code="error.details"></g:message></h2>
 
         <div class="message">
             <strong>Error ${request.'javax.servlet.error.status_code'}:</strong> ${request.'javax.servlet.error.message'.encodeAsHTML()}<br/>

@@ -26,7 +26,7 @@ class ProjectToolsController {
             taskList.each { long taskId ->
                 DomainUpdateService.scheduleTaskIndex(taskId)
             }
-            flash.message = "${taskList.size()} tasks scheduled for indexing."
+            flash.message = message(code: 'projectTools.task_schedules_for_indexing', args: [taskList.size()])
         }
 
         redirect(controller: 'task', action: 'projectAdmin', id: projectInstance?.id)

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="expedition-tab">
         <div class="container">
@@ -11,12 +12,12 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="digivol-tab">
-                        <a href="${g.createLink(uri:"/")}" class="tab-brand">A <r:img dir="images/2.0/" file="logoDigivolInverted.png" /> <g:message code="suffix.expedition" /></a>
-                        <ul class="navbar-short">
+                            <g:link uri="/" class="tab-brand"><g:message code="condensedNav.a_digivol_expedition.a" /> <asset:image src="doedat/logoDoeDatInverted.png" /> <g:message code="condensedNav.a_digivol_expedition.expedition" /></g:link>
+                        <ul class="navbar-short navbar-right">
                         <!-- Logged In Starts -->
                             <cl:isNotLoggedIn>
                                 <li>
-                                    <a href="${grailsApplication.config.casServerName}/cas/login?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> <g:message code="action.login" /></a>
+                                    <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.serverURL}/&language=${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}"><i class="glyphicon glyphicon-user"></i> <g:message code="action.login" /></a>
                                 </li>
 
                                 <li><a href="#"><g:message code="action.register" /></a></li>
@@ -32,7 +33,15 @@
                                     <g:render template="/layouts/profileDropDown"/>
                                 </li>
                             </cl:isLoggedIn>
-                        </ul>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <span class="locale">${ org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}</span>
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </a>
+                                <g:render template="/layouts/languageDropdown"/>
+                            </li>
+
+                    </ul>
                     </div>
                 </div>
             </div>

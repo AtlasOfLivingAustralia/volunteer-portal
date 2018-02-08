@@ -1,9 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
     <table class="table table-bordered table-condensed table-striped">
         <thead style="background-color: #f0f0e8">
         <tr>
             <td colspan="2" style="vertical-align: middle">
-                <h3 style="margin: 0; display: inline-block">${institutionInstance ? institutionInstance.acronym + " " : ""}Honour Board</h3>
+                <h3 style="margin: 0; display: inline-block">${institutionInstance ? institutionInstance.i18nAcronym + " " : ""}<g:message code="index.leader_board.honour_board"/></h3>
             </td>
         </tr>
         </thead>
@@ -17,7 +18,7 @@
                 </th>
             </tr>
             <tr resultLink="${createLink(action: 'ajaxLeaderBoardCategoryWinner', params: [category: section.category, institutionId: institutionInstance?.id])}">
-                <td><img src="${resource(dir: 'images', file: 'spinner.gif')}"/></td>
+                <td><img src="${resource(file: '/spinner.gif')}"/></td>
                 <td></td>
             </tr>
         </g:each>
@@ -31,7 +32,7 @@
         var target = $(this);
         if (link) {
             $.ajax(link).done(function (data) {
-                var label = data.score == 0 ? 'No activity recorded' : data.name;
+                var label = data.score == 0 ? '${message(code: "leaderBoard.no_activity")}' : data.name;
                 var score = data.score == 0 ? '' : data.score;
                 var labelClass = data.score == 0 ? 'muted' : '';
 

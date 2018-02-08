@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
@@ -6,9 +7,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>My Field Notebook</title>
+    <title><g:message code="user.notebook.my_field_notebook"/></title>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
-    <script src="${resource(dir: 'js', file: 'markerclusterer.js')}" type="text/javascript"></script>
+    <script src="${resource(file: '/js/markerclusterer.js')}" type="text/javascript"></script>
 
     <style type="text/css">
 
@@ -50,14 +51,14 @@
         <div class="tabbable">
 
             <ul class="nav nav-tabs" style="margin-bottom: 0px">
-                <li class="active"><a href="#mainTab" data-toggle="tab">My Achievements</a></li>
-                <li><a href="#badgesTab" data-toggle="tab">Badges</a></li>
+                <li class="active"><a href="#mainTab" data-toggle="tab"><g:message code="user.notebook.my_achievements"/></a></li>
+                <li><a href="#badgesTab" data-toggle="tab"><g:message code="user.notebook.badges"/></a></li>
                 %{--<li><a href="#stats" data-toggle="tab">Stats</a></li>--}%
-                <li><a href="#mapTab" data-toggle="tab">Maps</a></li>
-                <li><a href="#socialTab" data-toggle="tab">Social</a></li>
-                <li><a href="#transcribedTab" data-toggle="tab">Tasks Transcribed</a></li>
-                <li><a href="#savedTab" data-toggle="tab">Saved Tasks</a></li>
-                <cl:ifValidator><li><a href="#validatedTab" data-toggle="tab">Tasks Validated</a></li></cl:ifValidator>
+                <li><a href="#mapTab" data-toggle="tab"><g:message code="user.notebook.maps"/></a></li>
+                <li><a href="#socialTab" data-toggle="tab"><g:message code="user.notebook.social"/></a></li>
+                <li><a href="#transcribedTab" data-toggle="tab"><g:message code="user.notebook.tasks_transcribed"/></a></li>
+                <li><a href="#savedTab" data-toggle="tab"><g:message code="user.notebook.saved_tasks"/></a></li>
+                <cl:ifValidator><li><a href="#validatedTab" data-toggle="tab"><g:message code="user.notebook.tasks_validated"/></a></li></cl:ifValidator>
             </ul>
 
             <div class="tab-content">
@@ -93,7 +94,7 @@
 </body>
 </html>
 
-<r:script>
+<asset:script>
 
     var map, infowindow;
     google.load("maps", "3.3", {other_params: "sensor=false"});
@@ -222,4 +223,4 @@
 
     }
 
-</r:script>
+</asset:script>

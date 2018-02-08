@@ -8,27 +8,27 @@ class TranscribeController {
     private static final String HEADER_EXPIRES = "Expires";
     private static final String HEADER_CACHE_CONTROL = "Cache-Control";
 
-    def grailsApplication
     def fieldSyncService
     def auditService
     def taskService
     def userService
     def logService
+    def multimediaService
 
     static allowedMethods = [saveTranscription: "POST"]
 
-    def index = {
+    def index() {
         if (params.id) {
             log.debug("index redirect to showNextFromProject: " + params.id)
             redirect(action: "showNextFromProject", id: params.id)
         } else {
-            flash.message = "Something unexpected happened. Try pressing the back button to return to the previous task and trying again."
+            flash.message = message(code: 'transcribe.something_unexpected_happened')
             redirect(uri:"/")
         }
 
     }
 
-    def task = {
+    def task() {
 
         def taskInstance = Task.get(params.int('id'))
         def currentUserId = userService.currentUserId
@@ -43,13 +43,13 @@ class TranscribeController {
                 def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
                 log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Another task will be allocated")
-                flash.message  = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. You have been allocated a new task"
+                flash.message  = "${message(code: 'transcribe.the_requested_task_is_being_edited',args: [taskInstance.id])}"
                 // redirect to another task
                 redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId])
                 return
             } else {
                 if (isLockedByOtherUser) {
-                    flash.message = "This task is currently locked by another user. Because you are an admin you are able to work on this task, but only do so if you are confident that no-one else is working on this task as well, as data will be lost if two people save the same task!"
+                    flash.message = "${message(code: 'transcribe.this_task_is_locked_by_another_user')}"
                 }
                 // go ahead with this task
                 auditService.auditTaskViewing(taskInstance, currentUserId)
@@ -79,13 +79,13 @@ class TranscribeController {
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
-            render(view: 'task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete])
+            render(view: 'templateViews/' + project.template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: project.template, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, complete: params.complete, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
     }
 
-    def showNextAction = {
+    def showNextAction() {
         log.debug("rendering view: nextAction")
         def taskInstance = Task.get(params.id)
         render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: userService.currentUserId])
@@ -96,7 +96,7 @@ class TranscribeController {
      */
     def updatePicklists(Task task) {
 
-        // Add the name of the picklist here if it is to be updated with user entered values
+        // Add the i18nName of the picklist here if it is to be updated with user entered values
         def updateablePicklists = ['recordedBy']
 
         // Find the template fields used by this tasks template
@@ -105,7 +105,7 @@ class TranscribeController {
         // Isolate the fields whose names coincide with a picklist, and for which this task has a value
         for (TemplateField tf : templateFields) {
             def f = task.fields.find { it.name == tf.fieldType.name() }
-            // The fieldname/picklist name must also be in the list of updateable picklists
+            // The fieldname/picklist i18nName must also be in the list of updateable picklists
             if (f && updateablePicklists.contains(f.name) && StringUtils.isNotEmpty(f.value)) {
                 log.debug("Checking picklist ${f.name} for value ${f.value}")
                 // Check that the picklist actually exists...
@@ -152,6 +152,10 @@ class TranscribeController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
+            def seconds = params.getInt('timeTaken', null)
+            if (seconds) {
+                taskInstance.timeToTranscribe = (taskInstance.timeToTranscribe ?: 0) + seconds
+            }
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
@@ -161,7 +165,7 @@ class TranscribeController {
                 else redirect(action: 'showNextAction', id: params.id)
             }
             else {
-                def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: " + taskInstance.hasErrors()
+                def msg = (markTranscribed ? message(code: 'transcribe.task_save_failed') : message(code: 'transcribe.task_save_partial_failed')) + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
                 redirect(action:'task', id: params.id)
@@ -175,7 +179,7 @@ class TranscribeController {
     /**
      * Show the next task for the supplied project.
      */
-    def showNextFromProject = {
+    def showNextFromProject() {
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
 

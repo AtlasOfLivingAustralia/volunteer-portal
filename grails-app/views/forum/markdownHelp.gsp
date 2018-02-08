@@ -2,21 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia - Forum formatting help</title>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'public.css')}"/>
-
-    %{--<script type="text/javascript" src="${resource(dir: 'js/jquery-ui-1.9.1.custom/js', file: 'jquery-1.8.2.js')}"></script>--}%
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.mousewheel.min.js')}"></script>
-
-    <style type="text/css">
-    </style>
-    <r:script type="text/javascript">
-        $(document).ready(function () {
-        });
-    </r:script>
+    <title><g:message code="default.application.name"/></title>
+    <asset:stylesheet src="forum.css"/>
 
 </head>
 
@@ -35,23 +24,20 @@
                 <div class="col-md-12">
                     <cl:messages/>
                     <p>
-                        The <g:message
-                                code="default.application.name"/> Forum makes use of a text markup technology called <strong>MarkDown</strong> that allows you to format your forum message posts to include font effects (such as <b>bolding</b> and <i>italics</i>), headings, lists and others.
+                        <g:message code="forum.markdown.description"/>
                     </p>
 
                     <p>
-                        This page demonstrates how to use some basic features of MarkDown. For a more comprehensive overview of MarkDown and its capabilities, please see the <a
-                            href="http://en.wikipedia.org/wiki/Markdown">MarkDown Wikipedia page</a> or the <a
-                            href="http://daringfireball.net/projects/markdown/">MarkDown website</a>.
+                        <g:message code="forum.markdown.feature_description"/>
                     </p>
 
-                    <h3>Markdown syntax</h3>
+                    <h3><g:message code="forum.markdown.markdown_syntax"/></h3>
 
                     <table style="width: 100%">
                         <thead>
                         <tr>
-                            <th>Effect</th>
-                            <th>Example syntax</th>
+                            <th><g:message code="forum.markdown.effect"/></th>
+                            <th><g:message code="forum.markdown.syntax"/></th>
                         </tr>
                         </thead>
                         <g:each in="${items}" var="item">
@@ -61,13 +47,13 @@
                                     <div>
                                         ${item.description}
                                     </div>
-                                    For example:
+                                    <g:message code="forum.markdown.example.for_example"/>
                                     <div style="border: 1px solid #d3d3d3; padding: 5px">
                                         <code>
                                             ${item.code.replace("\n", "<br/>")}
                                         </code>
                                     </div>
-                                    will produce:
+                                    <g:message code="forum.markdown.example.will_produce"/>
                                     <div style="border: 1px solid #d3d3d3; padding: 5px">
                                         <markdown:renderHtml text="${item.code.replace("&nbsp;", " ")}"/>
                                     </div>

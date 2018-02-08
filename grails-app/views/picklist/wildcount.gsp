@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="grails.converters.JSON; au.org.ala.volunteer.Project; au.org.ala.volunteer.Picklist" %>
 
 <html>
@@ -19,7 +20,6 @@
         outline: none;
     }
     </style>
-    <r:require modules="underscore, font-awesome"/>
 </head>
 
 <body>
@@ -36,9 +36,9 @@
 <div class="row">
     <div class="span12">
         <div class="well well-small">
-            <h1>Image Search</h1>
+            <h1><g:message code="picklist.wildcount.image_search"/></h1>
             <input type="text" id="q" name="q" class="input-block-level"><button type="button" class="btn btn-primary"
-                                                                                 id="search">Search</button>
+                                                                                 id="search"><g:message code="picklist.wildcount.search"/></button>
         </div>
     </div>
 </div>
@@ -46,7 +46,7 @@
 <div class="row">
     <div class="span12">
         <div class="well well-small">
-            <p><strong>Upload CSV</strong></p>
+            <p><strong><g:message code="picklist.wildcount.upload_csv"/></strong></p>
             <g:if test="${flash.message}">
                 <div class="alert">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -55,7 +55,7 @@
             </g:if>
             <div><input type="file" id="csv-input"></div>
 
-            <div id="upload-div"><button type="button" class="btn btn-primary" id="upload">Do it</button></div>
+            <div id="upload-div"><button type="button" class="btn btn-primary" id="upload"><g:message code="picklist.wildcount.do_it"/></button></div>
 
             <div id="progress-div" class="hidden">
                 <div class="progress progress-striped active">
@@ -69,35 +69,6 @@
         </div>
     </div>
 </div>
-
-<r:script>
-    jQuery(function ($) {
-
-        var reader = new FileReader();
-
-        reader.onprogress = function (e) {
-            var percentage = Math.round((e.loaded * 100) / e.total);
-            $('#progress-div .bar').css('width', percentage + '%');
-        };
-
-        reader.onload = function (e) {
-            var text = reader.result;
-            $('#progress-div .bar').css('width', '100%');
-            $('#csv').val(text);
-            $('#upload-form').submit();
-        };
-
-        $('#upload').click(function (e) {
-
-            $('#progress-div,#upload-div').toggleClass('hidden');
-
-            var files = $('#csv-input')[0].files;
-
-            reader.readAsText(files[0]);
-        });
-
-    });
-</r:script>
 </div>
 <div class="container-fluid">
     <div class="row-fluid">
@@ -105,13 +76,13 @@
             <table class="table table-condensed table-bordered">
                 <thead>
                 <tr>
-                    <th style="width: 300px;">Value</th>
-                    <th>Reference</th>
-                    <th style="width: 300px;">Black and White</th>
-                    <th style="width: 300px;">Colour</th>
-                    <th>Tags</th>
-                    <th>Similar Species</th>
-                    <th style="width: 50px;">Controls</th>
+                    <th style="width: 300px;"><g:message code="picklist.wildcount.value"/></th>
+                    <th><g:message code="picklist.wildcount.reference"/></th>
+                    <th style="width: 300px;"><g:message code="picklist.wildcount.black_and_white"/></th>
+                    <th style="width: 300px;"><g:message code="picklist.wildcount.colour"/></th>
+                    <th><g:message code="picklist.wildcount.tags"/></th>
+                    <th><g:message code="picklist.wildcount.similar_species"/></th>
+                    <th style="width: 50px;"><g:message code="picklist.wildcount.controls"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -154,5 +125,34 @@
             </table>
         </div>
     </div>
+    <asset:javascript src="underscore" asset-defer=""/>
+    <asset:script>
+        jQuery(function ($) {
 
+            var reader = new FileReader();
+
+            reader.onprogress = function (e) {
+                var percentage = Math.round((e.loaded * 100) / e.total);
+                $('#progress-div .bar').css('width', percentage + '%');
+            };
+
+            reader.onload = function (e) {
+                var text = reader.result;
+                $('#progress-div .bar').css('width', '100%');
+                $('#csv').val(text);
+                $('#upload-form').submit();
+            };
+
+            $('#upload').click(function (e) {
+
+                $('#progress-div,#upload-div').toggleClass('hidden');
+
+                var files = $('#csv-input')[0].files;
+
+                reader.readAsText(files[0]);
+            });
+
+        });
+    </asset:script>
 </body>
+</html>

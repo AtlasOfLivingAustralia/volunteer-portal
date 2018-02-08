@@ -1,22 +1,27 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --%>
     <cl:addApplicationMetaTags/>
-    <meta name="description" content="Atlas of Living Australia"/>
-    <meta name="author" content="Atlas of Living Australia"/>
-    <r:external dir="images/" file="favicon.ico"/>
+    <meta name="description" content="${message(code: "default.application.name")}"/>
+    <meta name="google" value="notranslate">
+    <meta name="author" content="${message(code: "default.application.name")}"/>
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
-    <title><g:layoutTitle default="DIGIVOL | Home"/></title>
+    <title><g:layoutTitle default="${message(code: "main.title")}"/></title>
 
-    <r:require module="digivol"/>
+    <asset:stylesheet href="digivol.css"/>
+    <asset:stylesheet href="doedat-custom.css"/>
     <g:layoutHead/>
-    <r:layoutResources/>
 
+    <g:render template="/layouts/tinyMce" />
     <g:render template="/layouts/commonCss" />
+    <g:render template="/layouts/jsUrls" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -32,13 +37,13 @@
 <g:layoutBody/>
 
 <g:render template="/layouts/associatedBrands" />
-<g:render template="/layouts/jsUrls" />
 <g:render template="/layouts/notifications" />
 
 <g:render template="/layouts/ga" />
 
+<asset:javascript src="digivol.js" />
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 
 </body>
 </html>

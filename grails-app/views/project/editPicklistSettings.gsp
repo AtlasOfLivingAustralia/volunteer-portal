@@ -1,12 +1,15 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>
 
-<content tag="pageTitle">Picklists</content>
+<content tag="pageTitle"><g:message code="project.piclists.label"/></content>
 
 <content tag="adminButtonBar">
 </content>
@@ -16,8 +19,7 @@
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
     <div class="alert alert-warning">
-        A picklist with a specific 'Collection Code' must be
-        <a href="${createLink(controller: 'picklist', action: 'manage')}">loaded</a> first
+        <g:message code="project.piclists.warning" args="${ [createLink(controller: 'picklist', action: 'manage')] }" />
     </div>
 
     <div class="form-group">
@@ -40,10 +42,5 @@
     </div>
 
 </g:form>
-
-<script type='text/javascript'>
-    $(document).ready(function () {
-    });
-</script>
 </body>
 </html>

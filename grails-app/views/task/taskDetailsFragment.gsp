@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.DateConstants" %>
 
 <div style="overflow: auto; height: 250px">
@@ -9,12 +10,12 @@
         <table>
             <g:if test="${catalogNumber}">
                 <tr>
-                    <td>Catalog No.</td>
+                    <td><g:message code="task.taskDetailsFragment.catalog_no"/></td>
                     <td style="text-align: left"><b>${catalogNumber}</b></td>
                 </tr>
             </g:if>
             <tr>
-                <td>Transcribed</td>
+                <td><g:message code="task.taskDetailsFragment.transcribed"/></td>
                 <td style="text-align: left"><b>${formatDate(date: dateTranscribed, format: DateConstants.DATE_TIME_FORMAT)}</b>
                 </td>
             </tr>

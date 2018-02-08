@@ -4,7 +4,6 @@ import groovy.time.TimeCategory
 
 class TaskListTagLib {
 
-    def grailsApplication
     def multimediaService
 
   def renderTaskList = { attrs, body ->
@@ -40,17 +39,17 @@ class TaskListTagLib {
         }
 
         out << """<p>"""
-        out << """Task ID: ${taskInstance.id} </br/>"""
+        out << """${message(code: 'taskListTagLib.task_id')} ${taskInstance.id} </br/>"""
         if(taskInstance.fullyTranscribedBy){
-          out << """Transcriber:&nbsp;${taskInstance.fullyTranscribedBy.replace("@", "...")} </br/>"""
+          out << """${message(code: 'taskListTagLib.transcriber')}&nbsp;${taskInstance.fullyTranscribedBy.replace("@", "...")} </br/>"""
         }
         if(lastUpdated!=null){
-          out << """Last viewed: ${prettytime.display (date: lastUpdated) } </br/>"""
+          out << """${message(code: 'taskListTagLib.last_viewed')} ${prettytime.display (date: lastUpdated) } </br/>"""
         }
         if(addLink){
-          out << """<a href="${createLink(uri: '/transcribe/task/'+taskInstance.id)}">Transcribe</a>"""
+          out << """<a href="${createLink(uri: '/transcribe/task/'+taskInstance.id)}">${message(code: 'taskListTagLib.transcribe')}</a>"""
         } else {
-          out << """<span>Status: complete</span>"""
+          out << """<span>${message(code: 'taskListTagLib.status_complete')}</span>"""
         }
 
 

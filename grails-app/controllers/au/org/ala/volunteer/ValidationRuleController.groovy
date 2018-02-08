@@ -15,9 +15,9 @@ class ValidationRuleController {
         def rule = ValidationRule.get(params.int("id"));
         if (rule) {
             rule.delete()
-            flash.message = "Rule '${rule.name}' deleted."
+            flash.message = message(code: 'validationRule.rule_x_deleted', args: [rule.name])
         } else {
-            flash.message = "No rule with id ${params.id} exists."
+            flash.message = message(code: 'validationRule.no_rule_exists', args: [params.id])
         }
         redirect(action:"list")
     }

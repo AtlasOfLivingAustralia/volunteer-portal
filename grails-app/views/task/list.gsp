@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <html>
 <head>
@@ -6,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
         $(document).ready(function () {
 
             $("#searchButton").click(function (e) {
@@ -27,19 +28,19 @@
             var query = $("#q").val()
             location.href = "?q=" + query;
         }
-    </r:script>
+    </asset:script>
 
 </head>
 
 <body>
 
-<cl:headerContent title="Task List - ${projectInstance ? projectInstance?.featuredLabel : ''}"
+<cl:headerContent title="Task List - ${projectInstance ? projectInstance?.i18nName : ''}"
                   selectedNavItem="expeditions">
     <%
         if (projectInstance) {
             pageScope.crumbs = [
                     [link: createLink(controller: 'project', action: 'list'), label: 'Expeditions'],
-                    [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.featuredLabel]
+                    [link: createLink(controller: 'project', action: 'index', id: projectInstance?.id), label: projectInstance?.i18nName]
             ]
         }
     %>
@@ -51,14 +52,14 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="alert alert-info">
-                        Total Tasks: ${taskInstanceTotal},
+                        <g:message code="task.list.total_tasks"/> ${taskInstanceTotal},
                         <g:if test="${projectInstance}">
-                            Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByNotIsNull(projectInstance)},
-                                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByNotIsNull(projectInstance)}
+                            <g:message code="task.list.transcribed_tasks"/> ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
+                            <g:message code="task.list.validated_tasks"/> ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
                         </g:if>
                         &nbsp;&nbsp;
                         <input style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="40"/>
-                        <button class="btn" id="searchButton">search</button>
+                        <button class="btn" id="searchButton"> <g:message code="task.list.search"/></button>
                     </div>
                 </div>
             </div>
@@ -86,7 +87,7 @@
                             <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}"
                                               params="${[q: params.q]}" style="text-align: center;"/>
 
-                            <th style="text-align: center;">Action</th>
+                            <th style="text-align: center;"> <g:message code="task.list.action"/></th>
                             %{--<th>debug</th>--}%
 
                         </tr>
@@ -107,25 +108,25 @@
                                 <td>
                                     <g:if test="${taskInstance.fullyTranscribedBy}">
                                         <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                                        <g:link controller="user" action="show" id="${thisUser.id}"><cl:userDetails
-                                                id="${thisUser.userId}" displayName="true"/></g:link>
+                                        <g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails
+                                                id="${taskInstance.fullyTranscribedBy}" displayName="true"/></g:link>
                                     </g:if>
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <g:if test="${taskInstance.isValid == true}">validated</g:if>
-                                    <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
-                                    <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
+                                    <g:if test="${taskInstance.isValid == true}"> <g:message code="task.list.validated"/></g:if>
+                                    <g:elseif test="${taskInstance.isValid == false}"> <g:message code="task.list.invalidated"/></g:elseif>
+                                    <g:elseif test="${taskInstance.fullyTranscribedBy}"> <g:message code="task.list.submitted"/></g:elseif>
                                 </td>
 
                                 <td style="text-align: center;">
                                     <g:if test="${taskInstance.fullyTranscribedBy}">
                                         <g:link class="btn btn-sm btn-info" controller="task" action="show"
-                                                id="${taskInstance.id}">view</g:link>
+                                                id="${taskInstance.id}"> <g:message code="task.list.view"/></g:link>
                                     </g:if>
                                     <g:else>
                                         <button class="btn btn-sm btn-default"
-                                                onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                                                onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'"> <g:message code="task.list.transcribe"/></button>
                                     </g:else>
                                 </td>
 

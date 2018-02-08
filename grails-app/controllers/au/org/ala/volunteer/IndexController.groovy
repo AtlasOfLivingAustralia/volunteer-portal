@@ -3,21 +3,19 @@ package au.org.ala.volunteer
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
 import grails.gorm.DetachedCriteria
-import org.grails.plugins.metrics.groovy.Timed
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class IndexController {
 
     def userService
-    def grailsApplication
     def projectService
     def leaderBoardService
     def multimediaService
     def institutionService
 
-    @Timed
     def index() {
+        log.debug("Index Controller, Index action")
         def frontPage = FrontPage.instance()
 
         // News item
@@ -25,7 +23,7 @@ class IndexController {
 
         // Removed from calculations until news items add to front page or removed altogether
 //        if (frontPage.useGlobalNewsItem) {
-//            newsItem = new NewsItem(shortDescription: frontPage.newsBody, title: frontPage.newsTitle, created: frontPage.newsCreated);
+//            newsItem = new NewsItem(i18nShortDescription: frontPage.newsBody, i18nTitle: frontPage.newsTitle, created: frontPage.newsCreated);
 //        } else {
 //            // We need to find the latest news item from all projects, but we only include news items from projects whose news items have not been disabled
 //            newsItem = NewsItem.find("""from NewsItem n where (n.project is not null and (n.project.disableNewsItems is null or project.disableNewsItems != true)) or (n.institution is not null and (n.institution.disableNewsItems is null or n.institution.disableNewsItems != true)) order by n.created desc""")
@@ -33,17 +31,21 @@ class IndexController {
 
         def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentTranscribed }
 
-        def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null).projectRenderList?.get(0)
-        //def featuredProjectSummaries = projectService.makeSummaryListFromProjectList(featuredProjects, params)
+        if(frontPage.projectOfTheDay) {
+            def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null).projectRenderList?.get(0)
+            //def featuredProjectSummaries = projectService.makeSummaryListFromProjectList(featuredProjects, params)
 
-        render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
+            render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
+        }else {
+            render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: {}] )
+        }
     }
 
-    def leaderBoardFragment = {
+    def leaderBoardFragment() {
         [:]
     }
 
-    def statsFragment = {
+    def statsFragment() {
         // Stats
         def totalTasks = Task.count()
         def completedTasks = Task.countByFullyTranscribedByIsNotNull()
@@ -71,7 +73,7 @@ class IndexController {
             transcriberCount = 0
         } else if (institution) {
             totalTasks = institutionService.countTasksForInstitution(institution)
-            completedTasks = institutionService.countValidatedTasksForInstitution(institution)
+            completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
             transcriberCount = institutionService.getTranscriberCount(institution)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
@@ -120,9 +122,14 @@ class IndexController {
             if (institution) {
                 project {
                     eq('institution', institution)
+                    ne('inactive', true)
                 }
             } else if (projectInstance) {
                 eq('project', projectInstance)
+            } else {
+                project {
+                    ne('inactive', true)
+                }
             }
             isNotNull('fullyTranscribedBy')
             projections {
@@ -180,16 +187,16 @@ class IndexController {
 
             if (topic instanceof ProjectForumTopic) {
                 def project = ((ProjectForumTopic) topic).project
-                forumName = project.name
+                forumName = project.i18nName.toString()
                 thumbnail = project.featuredImage
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task
-                forumName = task.project.name
+                forumName = task.project.i18nName.toString()
                 thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
                 forumUrl = createLink(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
             } else {
-                forumName = "General Discussion"
+                forumName = message(code: "indexController.general_discussion");//"General Discussion"
                 forumUrl = createLink(controller: 'forum', action: 'index', params: [selectedTab: 1])
             }
 
@@ -211,7 +218,7 @@ class IndexController {
             def thumbnails = tasks.collect { Task t ->
                 [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(t.multimedia?.first())]
             }
-            [type             : 'task', projectId: proj.id, projectName: proj.name, userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
+            [type             : 'task', projectId: proj.id, projectName: proj.i18nName?.toString(), userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
              transcribedThumbs: thumbnails, transcribedItems: tasks.totalCount, timestamp: it[2].time / 1000]
         }
 

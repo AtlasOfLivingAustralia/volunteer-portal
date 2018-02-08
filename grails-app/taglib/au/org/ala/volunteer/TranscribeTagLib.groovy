@@ -70,7 +70,7 @@ class TranscribeTagLib {
      * @attr recordIdx
      * @attr labelClass
      * @attr valueClass
-     * @attr field Optional, if the template already has the field object, no need to look up from it's name.
+     * @attr field Optional, if the template already has the field object, no need to look up from it's i18nName.
      * @attr helpTargetPosition Optional, the target position for the qtip help pop up
      * @attr helpTooltipPosition Optional, the tooltip position for the qtip help pop up
      */
@@ -167,7 +167,7 @@ class TranscribeTagLib {
     }
 
     /**
-     * Gets the id/name for a HTML widget as a String
+     * Gets the id/i18nName for a HTML widget as a String
      *
      * @attr field The field
      * @attr recordIdx The record index
@@ -199,7 +199,7 @@ class TranscribeTagLib {
         def cssClass = name
 
         if (field.mandatory) {
-            cssClass = cssClass + " validate[required]"
+            cssClass = cssClass + "  "
         }
 
         if (auxClass) {
@@ -284,7 +284,7 @@ class TranscribeTagLib {
                         name: widgetName,
                         from: options,
                         optionValue:'value',
-                        optionKey:'value',
+                        optionKey:'key',
                         value: existingValue ?: field?.defaultValue,
                         noSelection:['':''],
                         'class': "$cssClass form-control",
@@ -356,24 +356,24 @@ class TranscribeTagLib {
 
             if (!imageMetaData) {
 
-                def sampleFile = grailsApplication.mainContext.getResource("images/sample-task.jpg").file
+                def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg")
 
 
-                def sampleUrl = resource(dir:'/images', file:'sample-task.jpg')
+                def sampleUrl = resource(file:'/sample-task.jpg')
                 imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
                 mb.div(class:'alert alert-danger') {
                     button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
                         mkp.yieldUnescaped('&times;')
                     }
                     span() {
-                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                        mkp.yield(message(code: "transcribeTagLib.error_getting_meta_data", args: [multimedia.id]))
                     }
                 }
             }
 
             mb.div(id:'image-parent-container') {
                 mb.div(id:attrs.elementId ?: 'image-container', preserveWidthWhenPinned:attrs.preserveWidthWhenPinned) {
-                    mb.img(src:imageMetaData.url, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
+                    mb.img(src:imageMetaData.url, alt: attrs.altMessage ?: message(code: "transcribeTagLib.task_image"), 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
                     if (!attrs.hideControls) {
                         div(class:'imageviewer-controls') {
                             a(id:'panleft', href:"#", class:'left') {}
@@ -386,15 +386,15 @@ class TranscribeTagLib {
 
                         if (!attrs.hidePinImage) {
                             div(class:'pin-image-control') {
-                                a(id:'pinImage', href:'#', title:'Fix the image in place in the browser window', ('data-container'): 'body') {
-                                    mkp.yield('Pin image in place')
+                                a(id:'pinImage', href:'#', title:message(code: "transcribeTagLib.fix_the_image_in_place"), ('data-container'): 'body') {
+                                    mkp.yield(message(code: "transcribeTagLib.fix_the_image_in_place"))
                                 }
                             }
                         }
                         if (!attrs.hideShowInOtherWindow) {
                             div(class:'show-image-control') {
-                                a(id:'showImageWindow', href:'#', title:'Show image in a separate window', ('data-container'): 'body') {
-                                    mkp.yield('Show image in a separate window')
+                                a(id:'showImageWindow', href:'#', title:message(code: "transcribeTagLib.show_image_in_a_separate_window"), ('data-container'): 'body') {
+                                    mkp.yield(message(code: "transcribeTagLib.show_image_in_a_separate_window"))
                                 }
                             }
 
@@ -403,9 +403,10 @@ class TranscribeTagLib {
                 }
             }
             if (attrs.height) {
-                mb.script(type:"text/javascript") {
-                    mkp.yieldUnescaped("   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );")
-                }
+                asset.script([type: 'text/javascript', 'asset-defer': ''], "   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );" )
+//                mb.script(type:"text/javascript") {
+//                    mkp.yieldUnescaped("   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );")
+//                }
             }
         }
     }
@@ -446,7 +447,7 @@ class TranscribeTagLib {
 
             def fieldIndex = 0;
             while (fieldIndex < fields.size()) {
-                mb.div(class:'row') {
+                    mb.div(class:'row form-group') {
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
                         mb.div(class:'') {
                             mb.div(class:spanClass) {
@@ -501,7 +502,7 @@ class TranscribeTagLib {
 
         def bodyContent = body()
 
-        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
+        def nextSectionNumberClosure = this.&nextSectionNumber
 
         mb.div(class:'panel panel-default transcribeSection') {
             div(class: 'panel-body') {
@@ -526,7 +527,7 @@ class TranscribeTagLib {
                                 }
                             }
                             a(class: 'closeSectionLink', href: '#') {
-                                mkp.yield('Shrink');
+                                mkp.yield(message(code: "transcribeTagLib.shrink"));
                             }
                         }
 
@@ -569,8 +570,6 @@ class TranscribeTagLib {
         def mb = new MarkupBuilder(out)
 
         def bodyContent = body()
-
-        def nextSectionNumberClosure = pageScope.getProperty("nextSectionNumber")
 
         renderFieldsInColumns(1, mb, fields, task, "col-md-4", "col-md-8", recordValues, attrs)
 
@@ -616,7 +615,7 @@ class TranscribeTagLib {
         // fallback to default picklist if institution code given and no items found
         if (project?.picklistInstitutionCode && !items) items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(pl)
 
-        if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
+        if (!items) return [error: message(code: "transcribeTagLib.no_picklist_items_found", args: [pl.uiLabel, project?.picklistInstitutionCode])]
         def items2 = items.collectEntries {
             def key = it.key?.split(',')?.toList()?.collect { it?.trim() } ?: []
             [ (key) : it.value ]
@@ -627,15 +626,15 @@ class TranscribeTagLib {
             imageInfos = imageServiceService.getImageInfoForIds(imageIds)
         } catch (e) {
             log.error("Error calling image service for ${imageIds}", e)
-            return [error: "Error contacting image service: ${e.message}"]
+            return [error: message(code: "transcribeTagLib.error_contacting_image_service", args: [e.message])]
         }
 
         if (!imageInfos)
-            return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
+            return [error: message(code: "transcribeTagLib.could_not_find_images_for_keys", args: [imageIds.join(", ")])]
         else {
-            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            //def missing = imageIds.collect { [i18nName: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.i18nName }
             def missing = imageIds.findAll { imageInfos[it] == null }
-            if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
+            if (missing) warnings.add(message(code: "transcribeTagLib.the_following_image_ids_cannot_be_found", args: [missing.join(', ')]))
         }
 
         [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]
@@ -654,13 +653,13 @@ class TranscribeTagLib {
 
     def sequenceNumbers = { attrs, body ->
         def project = attrs.project
-        def number = attrs.number ?: 0
-        def count = attrs.count ?: 0
+        int number = attrs.number ?: 0
+        int count = attrs.count ?: 0
 
         def max = taskService.findMaxSequenceNumber(project)
         def results
         if (max) {
-            def previous = (Math.max(0, number - count))..<number
+            List<Integer> previous = (Math.max(0, number - count))..<number
             def next = number == max ? [] : (number+1)..(Math.min(max,number+count))
             results = [previous: previous, next: next]
         } else {
@@ -677,7 +676,7 @@ class TranscribeTagLib {
         } else if (task?.project) {
             out << task.project.featuredImage
         } else {
-            out << grailsLinkGenerator.resource( dir: 'images/2.0/', file: 'logoDigivolGrey.png' )
+            out << grailsLinkGenerator.resource( file: 'doedat/logoDoeDat.png' )
         }
     }
 
@@ -692,21 +691,35 @@ class TranscribeTagLib {
         def recordValues = attrs.recordValues
         def sequenceNumber = attrs.sequenceNumber
 
-        def maxSeqNo = sequenceNumber ? taskService.findMaxSequenceNumber(task.project) : -1
+        if(task.project && task.project.id) {
+            def maxSeqNo = sequenceNumber ? taskService.findMaxSequenceNumber(task.project) : -1
 
-        def cn = recordValues?.get(0)?.catalogNumber
-        def m
-        if (cn && sequenceNumber) {
-            m = message(code: 'transcribe.subheading.full', default: 'Catalog Number {0} <span>({1} of {2})</span>', args: [cn, sequenceNumber, maxSeqNo])
-        } else if (cn) {
-            m = message(code: 'transcribe.subheading.catalog', default: 'Catalog Number {0}', args: [cn])
-        } else if (sequenceNumber) {
-            m = message(code: 'transcribe.subheading.seqNo', default: '<span>{0} of {1}</span>', args: [sequenceNumber, maxSeqNo])
-        } else {
-            m = ''
+            def cn = recordValues?.get(0)?.catalogNumber
+
+            def m
+            if (cn && sequenceNumber) {
+                m = message(code: 'transcribe.subheading.full', default: 'Catalog Number {0} <span>({1} of {2})</span>', args: [cn, sequenceNumber, maxSeqNo])
+            } else if (cn) {
+                m = message(code: 'transcribe.subheading.catalog', default: 'Catalog Number {0}', args: [cn])
+            } else if (sequenceNumber) {
+                m = message(code: 'transcribe.subheading.seqNo', default: '<span>{0} of {1}</span>', args: [sequenceNumber, maxSeqNo])
+            } else {
+                m = ''
+            }
+
+            out << m
         }
+    }
 
-        out << m
+    private def nextSectionNumber() {
+        def sectionNumber = ++(request.getAttribute('sectionNumber') ?: 0)
+        request.setAttribute('sectionNumber', sectionNumber)
+        return sectionNumber
+    }
+
+    def sectionNumber = { attrs, body ->
+        def sectionNumber = nextSectionNumber()
+        out << sectionNumber
     }
 
 }

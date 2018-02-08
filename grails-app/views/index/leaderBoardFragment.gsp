@@ -1,12 +1,13 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 <div style="margin-top: 10px">
     <table class="table table-bordered table-condensed" style="background-color: white">
         <thead style="background-color: #f0f0e8">
         <tr>
             <td colspan="2" style="vertical-align: middle">
-                <h3 style="margin: 0; display: inline-block">Honour Board</h3>
+                <h3 style="margin: 0; display: inline-block"><g:message code="index.leader_board.honour_board"/></h3>
                 <a class="btn btn-small pull-right"
-                   href="${createLink(controller: 'user', action: 'list')}">View all</a>
+                   href="${createLink(controller: 'user', action: 'list')}"><g:message code="index.leader_board.view_all"/></a>
             </td>
         </tr>
         </thead>

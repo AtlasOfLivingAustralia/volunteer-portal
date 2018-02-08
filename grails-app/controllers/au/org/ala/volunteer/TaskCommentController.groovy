@@ -8,10 +8,10 @@ class TaskCommentController {
 
     def authService, userService
 
-    def index = {
+    def index() {
     }
 
-    def saveComment = {
+    def saveComment() {
 
         if (params.taskId && params.comment) {
             def username = AuthenticationCookieUtils.getUserName(request)
@@ -20,30 +20,30 @@ class TaskCommentController {
                 def task = Task.get(params.int("taskId"))
                 def taskComment = new TaskComment(user: user, task: task, date: new Date(), comment: params.comment)
                 taskComment.save(flush: true)
-                render([message: 'ok'] as JSON)
+                render([message: message(code: 'taskComment.ok')] as JSON)
                 return
             }
         }
 
-        render([message: 'failed! Missing a required parameter'] as JSON)
+        render([message: message(code: 'taskComment.missing_required_parameter')] as JSON)
     }
 
-    def deleteComment = {
+    def deleteComment() {
         if (params.commentId) {
             def commentId = params.int("commentId")
             def comment = TaskComment.get(commentId);
             if (comment) {
                 comment.delete(flush: true);
-                render([message: 'ok'] as JSON)
+                render([message: message(code: 'taskComment.ok')] as JSON)
             } else {
-                render([message: 'Failed to load comment!'] as JSON)
+                render([message: message(code: 'taskComment.failed_to_load_comment')] as JSON)
             }
         } else {
-            render([message: 'No task id specified!'] as JSON)
+            render([message: message(code: 'taskComment.no_task_id_specified')] as JSON)
         }
     }
 
-    def getCommentsAjax = {
+    def getCommentsAjax() {
         def w = new StringWriter()
 
         def task = Task.get(params.int("taskId"))
@@ -58,7 +58,7 @@ class TaskCommentController {
         mb.div {
 
             if (!comments) {
-                span("There are no comments for this task.") {
+                span(message(code: 'taskComment.there_are_no_comments')) {
 
                 }
             }
@@ -89,7 +89,7 @@ class TaskCommentController {
                     }
                     if (showDelete) {
                         div(class:"task-comment-delete") {
-                            button("Delete", class: "delete-task-button", onClick:"deleteTaskComment(event, ${comment.id})", title:"You have 15 minutes from when you made this comment to delete it.")
+                            button("Delete", class: "delete-task-button", onClick:"deleteTaskComment(event, ${comment.id})", title: message(code: 'taskComment.you_have_15_minutes'))
                         }
                     }
                 }

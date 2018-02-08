@@ -1,7 +1,8 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="form-horizontal">
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="fieldType">Field type</label>
+        <label class="control-label col-md-3" for="fieldType"><g:message code="task.editStagingFieldFragment.field_type"/></label>
 
         <div class="col-md-6">
             <g:select class="fieldType form-control" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"
@@ -10,13 +11,13 @@
         <div class="col-md-3">
             <cl:helpText tooltipPosition="topLeft" tipPosition="bottomRight" width="1000">
                 <ul>
-                    <li><code>NameRegex</code> extracts part of the filename out using a <em>regular expression</em> and a capturing group.
+                    <li><g:message code="task.editStagingFieldFragment.nameregex"/>
                     </li>
-                    <li><code>NamePattern</code> extracts part of the filename out using a wildcard surrounded by parentheses <code>(*)</code>
+                    <li><g:message code="task.editStagingFieldFragment.namepattern"/>
                     </li>
-                    <li><code>Literal</code> to assign the same static field value to every task</li>
-                    <li><code>Sequence</code> assigns a automatically incremented number to each task</li>
-                    <li><code>DataFileColumn</code> assigns a value from an uploaded csv file</li>
+                    <li><g:message code="task.editStagingFieldFragment.literal"/></li>
+                    <li><g:message code="task.editStagingFieldFragment.sequence"/></li>
+                    <li><g:message code="task.editStagingFieldFragment.datafilecolumn"/></li>
                 </ul>
             </cl:helpText>
         </div>
@@ -24,7 +25,7 @@
 
     <div id="formatBlock">
         <div class="form-group">
-            <label class="control-label col-md-3" for="definition" id="formatLabel">Definition/Value</label>
+            <label class="control-label col-md-3" for="definition" id="formatLabel"><g:message code="task.editStagingFieldFragment.definition"/></label>
 
             <div class="col-md-6">
                 <g:textField name="definition" value="${fieldDefinition?.format}" class="form-control"/>
@@ -37,7 +38,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="fieldName">Field name</label>
+        <label class="control-label col-md-3" for="fieldName"><g:message code="task.editStagingFieldFragment.field_name"/></label>
 
         <div class="col-md-6">
             <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"
@@ -46,7 +47,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="recordIndex">Index (optional)</label>
+        <label class="control-label col-md-3" for="recordIndex"><g:message code="task.editStagingFieldFragment.index"/></label>
 
         <div class="col-md-6">
             <g:textField name="recordIndex" value="${fieldDefinition?.recordIndex}" class="form-control"/>
@@ -56,8 +57,8 @@
     <div class="form-group">
 
         <div class="col-md-offset-3 col-md-9">
-            <button class="btn btn-default" id="btnCancelEditFieldDefinition">Cancel</button>
-            <button class="btn btn-primary" id="btnSaveFieldDefinition">Save</button>
+            <button class="btn btn-default" id="btnCancelEditFieldDefinition"><g:message code="default.cancel"/></button>
+            <button class="btn btn-primary" id="btnSaveFieldDefinition"><g:message code="default.button.save.label"/></button>
         </div>
     </div>
 
@@ -98,17 +99,17 @@
             } else {
                 $("#formatBlock").css('display', 'block');
                 if (fieldType == 'NameRegex') {
-                    $("#formatLabel").html("Expression")
+                    $("#formatLabel").html("${message(code: "task.editStagingFieldFragment.expression")}")
                 } else if (fieldType == 'NamePattern') {
-                    $("#formatLabel").html("Pattern")
+                    $("#formatLabel").html("${message(code: "task.editStagingFieldFragment.pattern")}")
                 } else if (fieldType == 'DataFileColumn') {
-                    $("#formatLabel").html("Column (leave blank to use field name)")
+                    $("#formatLabel").html("${message(code: "task.editStagingFieldFragment.column")}")
                     <g:if test="${hasDataFile && dataFileColumns}">
                     $("#definition").css("display", "none");
                     $("#dataFileColumn").css("display", "block");
                     </g:if>
                 } else {
-                    $("#formatLabel").html("Value")
+                    $("#formatLabel").html("${message(code: "task.editStagingFieldFragment.value")}")
                 }
             }
         }

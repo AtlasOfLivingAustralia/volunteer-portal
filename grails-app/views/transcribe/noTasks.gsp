@@ -4,9 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
-    <title>Thank you - we are done for now!</title>
-    <r:require module="amplify"/>
-    <r:script type="text/javascript">
+    <title><g:message code="validate.noTask.thank_you_were_done"/></title>
+    <asset:javascript src="amplify" asset-defer=""/>
+    <asset:script type="text/javascript">
             $(document).ready(function () {
                 // clear the temporarily saved state, now that it is known that the task was saved
                 amplify.store("bvp_task_${taskInstance?.id}", null);
@@ -14,13 +14,13 @@
             amplify.store("bvp_task_${complete}", null);
         </g:if>
         });
-    </r:script>
+    </asset:script>
 
 </head>
 
 <body class="admin  ">
 
-<cl:headerContent title="Thank you - we are done for now !" crumbLabel="Thanks - we're done!"/>
+<cl:headerContent title="${message(code: 'validate.noTask.thank_you_were_done')}" crumbLabel="${message(code: 'validate.noTask.thank_you_were_done')}"/>
 
 <div class="container">
     <div class="row">
@@ -28,9 +28,9 @@
             <div class="panel panel-default">
 
                 <div class="panel-body">
-                    <p style="text-align: center">There are currently no new tasks ready to transcribe.</p>
+                    <p style="text-align: center"><g:message code="transcribe.noTask.no_new_tasks_to_transcribe"/></p>
 
-                    <p style="text-align: center">Please check back later for more transcription tasks.</p>
+                    <p style="text-align: center"><g:message code="transcribe.noTask.please_check_back_later"/></p>
                 </div>
             </div>
 

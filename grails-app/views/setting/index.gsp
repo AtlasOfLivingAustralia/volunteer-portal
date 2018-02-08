@@ -1,11 +1,12 @@
-<%@ page import="org.codehaus.groovy.grails.web.json.JSONArray; au.org.ala.volunteer.Project" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="org.grails.web.json.JSONArray; au.org.ala.volunteer.Project" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
 
-    <r:script type='text/javascript'>
+    <asset:script type='text/javascript'>
 
             $(document).ready(function() {
                 $(".btnEditSetting").click(function(e) {
@@ -17,7 +18,7 @@
                 });
             });
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">
@@ -25,7 +26,7 @@
 <cl:headerContent title="${message(code: 'default.advancedSettings.label', default: 'Advanced Settings')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
+                [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')]
         ]
     %>
 </cl:headerContent>
@@ -38,10 +39,10 @@
                     <table class="table table-hover table-striped">
                         <thead>
                         <tr>
-                            <th>Key</th>
-                            <th>Default Value</th>
-                            <th>Value</th>
-                            <th>Description</th>
+                            <th><g:message code="setting.index.key"/></th>
+                            <th><g:message code="setting.index.default_value"/></th>
+                            <th><g:message code="setting.index.value"/></th>
+                            <th><g:message code="setting.index.description"/></th>
                             <th></th>
                         </tr>
                         </thead>
@@ -50,9 +51,9 @@
                             <tr settingKey="${setting.key}">
                                 <td>${setting.key}</td>
                                 <td>${setting.defaultValue}</td>
-                                <td><strong>${values[setting] instanceof org.codehaus.groovy.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
+                                <td><strong>${values[setting] instanceof org.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
                                 <td>${setting.description}</td>
-                                <td><button class="btn btn-default btnEditSetting">Change</button></td>
+                                <td><button class="btn btn-default btnEditSetting"><g:message code="setting.index.change"/></button></td>
                             </tr>
                         </g:each>
                         </tbody>
@@ -63,12 +64,12 @@
             <div class="row">
                 <div class="col-md-12">
                     <g:form action="sendTestEmail" class="form-horizontal">
-                        <label class="control-label col-md-1" for="to">To:</label>
+                        <label class="control-label col-md-1" for="to"><g:message code="setting.index.to"/></label>
                         <div class="col-md-5">
                             <g:textField class="form-control" name="to"/>
                         </div>
 
-                        <button class="btn btn-default" type="submit">Send test email</button>
+                        <button class="btn btn-default" type="submit"><g:message code="setting.index.send_test_email"/></button>
                     </g:form>
                 </div>
             </div>

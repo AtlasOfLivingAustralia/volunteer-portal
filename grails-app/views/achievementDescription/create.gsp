@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,7 +6,8 @@
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <r:require modules="bootstrap-file-input"/>
+    <asset:stylesheet src="codemirror/codemirror-monokai.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body class="admin">
@@ -19,6 +21,7 @@
     %>
 </cl:headerContent>
 
+<asset:javascript src="codemirror" asset-defer=""/>
 <div class="container" role="main">
     <div class="panel panel-default">
         <div class="panel-body">
@@ -30,7 +33,7 @@
                     </g:eachError>
                 </ul>
             </g:hasErrors>
-            <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal">
+            <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal" style="position:relative;">
                 <g:render template="form"/>
                 <div class="form-group">
                     <div class="col-md-offset-3 col-md-9">
@@ -42,11 +45,12 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:script>
     $(function() {
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
     });
-</r:script>
+</asset:script>
 </body>
 </html>

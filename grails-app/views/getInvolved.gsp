@@ -2,8 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="google" value="notranslate">
     <style>
 
     #transcribeButton {
@@ -81,7 +84,7 @@
 <div>
     An example specimen page:
     <div>
-        <img class="img-polaroid" src="${resource(dir: "images/getinvolved", file: "bvp_getinvolved_screen1.png")}"/>
+        <asset:image class="img-polaroid" src="bvp_getinvolved_screen1.png"/>
     </div>
 </div>
 </p>
@@ -90,7 +93,7 @@
 <div>
     An example journal:
     <div>
-        <img class="img-polaroid" src="${resource(dir: "images/getinvolved", file: "bvp_getinvolved_screen2.png")}"/>
+        <asset:image class="img-polaroid" src="bvp_getinvolved_screen2.png"/>
     </div>
 </div>
 </p>

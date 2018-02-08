@@ -1,23 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<r:require module="bvp-js" />
-
 <div class="tab-pane-header">
     <div class="row">
         <div class="col-sm-8 search-results-count">
             <g:if test="${taskListResultInstance.selectedTab > 0}">
-                <p><strong>${taskListResultInstance.totalMatchingTasks} Tasks Found</strong></p>
+                <p><strong><g:message code="user.taskList.x_tasks_found" args="${[taskListResultInstance.totalMatchingTasks]}" /></strong></p>
                  <g:if test="${taskListResultInstance.projectInstance}">
-                     for ${taskListResultInstance.projectInstance.featuredLabel}
+                     <g:message code="user.taskList.for" /> ${taskListResultInstance.projectInstance.i18nName}
                  </g:if>
             </g:if>
             <g:else>
                 <g:if test="${taskListResultInstance.recentValidatedTaskCount > 0}">
-                    <p><strong>You have tasks that have been recently reviewed.</strong></p>
-                    Click on View button for the task to see the recent changes or validator's comment
+                    <p><strong><g:message code="user.taskList.you_have_reviewed_tasks" /></strong></p>
+                    <g:message code="user.taskList.click_on_view_button" />
                 </g:if>
                 <g:else>
-                    <p><strong>You have no recently validated Tasks</strong></p>
+                    <p><strong><g:message code="user.taskList.you_have_no_reviewed_tasks" /></strong></p>
                 </g:else>
             </g:else>
         </div>
@@ -25,7 +23,7 @@
 
             <div class="custom-search-input body">
                 <div class="input-group">
-                    <input type="text" id="searchbox" value="${params.q}" name="searchbox" class="form-control input-lg" placeholder="Search by ..." />
+                    <input type="text" id="searchbox" value="${params.q}" name="searchbox" class="form-control input-lg" placeholder="${message(code:'user.taskList.search_by')}" />
                     <span class="input-group-btn">
                         <button class="btn btn-info btn-lg" type="button" onclick="doSearch();">
                             <i class="glyphicon glyphicon-search"></i>
@@ -35,7 +33,7 @@
             </div>
             <div class="pull-right search-help">
                 <button class="btn btn-info pull-right"
-                        data-tooltip="Enter search text here to show only tasks matching values in the ImageID, CatalogNumber, Expedition and Transcribed columns"><span
+                        data-tooltip="${message(code:'user.taskList.enter_a_search_text_here')}"><span
                         class="help-container"><i class="fa fa-question"></i></span>
                 </button>
             </div>
@@ -136,25 +134,25 @@
                     <g:if test="${(taskListResultInstance.selectedTab > 0)}">
                         <g:if test="${taskInstance.fullyTranscribedBy}">
                             <button class="btn btn-default btn-xs"
-                                    onclick="location.href = '${createLink(controller:'task', action:'show', id:taskInstance.id)}'">View</button>
+                                    onclick="location.href = '${createLink(controller:'task', action:'show', id:taskInstance.id)}'"><g:message code="user.taskList.view" /></button>
                             <cl:ifValidator project="${taskInstance.project}">
                                 <g:if test="${taskInstance.status?.equalsIgnoreCase('validated')}">
                                     <button class="btn btn-default btn-xs"
-                                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Review</button>
+                                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'"><g:message code="user.taskList.review" /></button>
                                 </g:if>
                                 <g:else>
                                     <button class="btn btn-default btn-xs"
-                                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'">Validate</button>
+                                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id)}'"><g:message code="user.taskList.validate" /></button>
                                 </g:else>
                             </cl:ifValidator>
                         </g:if>
                         <g:else>
                             <button class="btn btn-small"
-                                    onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
+                                    onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'"><g:message code="user.taskList.transcribe" /></button>
                         </g:else>
                     </g:if>
                     <g:else>
-                        <button class="btn btn-default btn-xs btnViewNotificationTask" taskId="${taskInstance.id}" externalIdentifier="${taskInstance.externalIdentifier}">View</button>
+                        <button class="btn btn-default btn-xs btnViewNotificationTask" taskId="${taskInstance.id}" externalIdentifier="${taskInstance.externalIdentifier}"><g:message code="user.taskList.view" /></button>
                     </g:else>
                 </span>
             </td>

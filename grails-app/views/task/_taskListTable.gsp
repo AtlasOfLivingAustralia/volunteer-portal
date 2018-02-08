@@ -1,3 +1,4 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
 <table class="table table-striped table-condensed table-bordered">
     <thead>
@@ -21,7 +22,7 @@
                           title="${message(code: 'task.isValid.label', default: 'Validation Status')}"
                           params="${[q: params.q]}" style="text-align: center;"/>
 
-        <th style="text-align: center;">Action</th>
+        <th style="text-align: center;"><g:message code="task.list.action"/></th>
 
     </tr>
     </thead>
@@ -47,7 +48,7 @@
             <td>
                 <g:if test="${taskInstance.fullyTranscribedBy}">
                     <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                    <g:link controller="user" action="show" id="${thisUser.id}"><cl:userDetails id="${thisUser.userId}"
+                    <g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails id="${taskInstance.fullyTranscribedBy}"
                                                                                                 displayName="true"/></g:link>
                 </g:if>
             </td>
@@ -55,7 +56,7 @@
             <td>
                 <g:if test="${taskInstance.fullyValidatedBy}">
                     <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyValidatedBy)}"/>
-                    <g:link controller="user" action="show" id="${thisUser.id}"><cl:userDetails id="${thisUser.userId}"
+                    <g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails id="${taskInstance.fullyValidatedBy}"
                                                                                                 displayName="true"/></g:link>
                 </g:if>
             </td>
@@ -68,19 +69,19 @@
 
             <td style="text-align: center;">
                 <g:if test="${taskInstance.fullyValidatedBy}">
-                    <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
+                    <g:link controller="validate" action="task" id="${taskInstance.id}"><g:message code="task.adminList.review" /></g:link>
                 %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
                 %{--</button>--}%
                 </g:if>
                 <g:elseif test="${taskInstance.fullyTranscribedBy}">
                     <button class="btn btn-small"
-                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
+                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'"><g:message code="task.taskListTable.validate"/></button>
                 %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
                 %{--</button>--}%
                 </g:elseif>
                 <g:else>
                     <button class="btn btn-small"
-                            onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'">transcribe</button>
+                            onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'"><g:message code="task.taskListTable.transcribe"/></button>
                 </g:else>
             </td>
 

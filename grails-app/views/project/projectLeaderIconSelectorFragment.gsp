@@ -1,7 +1,8 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="row-fluid">
     <div class="span12">
         <p class="lead">
-            As expedition leader you have the privilege of selecting the icon for the expedition leader of the project
+            <g:message code="project.project_leader_icon.description"/>
         </p>
     </div>
     <g:each in="${role.icons}" var="icon" status="imgIndex">
@@ -25,7 +26,7 @@
                     </div>
 
                     <div>
-                        <a href="${selectUrl}" class="btn">Select</a>
+                        <a href="${selectUrl}" class="btn"><g:message code="default.select.label"/></a>
                     </div>
                 </div>
             </div>

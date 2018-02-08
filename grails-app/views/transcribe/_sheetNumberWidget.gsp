@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="sheetNumberWidget" targetField="${field.fieldType}">
 
     <div class="form-group">
@@ -7,7 +8,7 @@
         </div>
 
         <div class="col-md-1">
-            of
+            <g:message code="transcribe.sheetNumber.of"/>
         </div>
 
         <div class="col-md-3">
@@ -16,7 +17,7 @@
         </div>
 
         <div class="col-md-3">
-            (if&nbsp;noted)
+            <g:message code="views.transcribe.if_noted"/>
         </div>
     </div>
     <g:hiddenField id="recordValues.0.${field.fieldType}" name="recordValues.0.${field.fieldType}" value="${value}"/>

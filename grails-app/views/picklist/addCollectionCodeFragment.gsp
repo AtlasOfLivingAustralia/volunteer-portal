@@ -1,9 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="alert alert-danger" id="dialogMessageDiv" style="display: none">
 </div>
 
 <div class="form-horizontal">
     <div class="form-group">
-        <label class="control-label col-md-3" for="newCollectionCode">Collection code:</label>
+        <label class="control-label col-md-3" for="newCollectionCode"><g:message code="collectionEvent.upload.collection_code"/></label>
 
         <div class="col-md-6">
             <g:textField name="newCollectionCode" class="form-control"/>
@@ -12,8 +13,8 @@
 
     <div class="form-group">
         <div class="col-md-offset-3 col-md-9">
-            <button type="button" class="btn btn-default" id="btnCancelCreateCollectionCode">Cancel</button>
-            <button type="button" class="btn btn-primary" id="btnCreateNewCollectionCode">Create</button>
+            <button type="button" class="btn btn-default" id="btnCancelCreateCollectionCode"><g:message code="default.cancel"/></button>
+            <button type="button" class="btn btn-primary" id="btnCreateNewCollectionCode"><g:message code="default.button.create.label"/></button>
         </div>
     </div>
 </div>

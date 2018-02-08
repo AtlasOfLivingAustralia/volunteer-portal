@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ProjectStatusFilterType; au.org.ala.volunteer.ProjectActiveFilterType" %>
 <style>
 
@@ -29,7 +30,7 @@
                                 <div class="custom-search-input body">
                                     <div class="input-group">
                                         <g:textField class="form-control input-lg" id="searchbox"
-                                                     value="${params.q}" name="searchbox" placeholder="Search expeditions…"/>
+                                                     value="${params.q}" name="searchbox" placeholder="${message(code: 'forum.ajaxProjectForumsList.search_placeholder')}"/>
                                         <span class="input-group-btn">
                                             <button id="btnSearch" class="btn btn-info btn-lg" type="button">
                                                 <i class="glyphicon glyphicon-search"></i>
@@ -50,12 +51,12 @@
 
                     <div class="col-sm-5">
                         <a href="?sort=name&order=${params.sort == 'name' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}"
-                           class="btn ${params.sort == 'name' ? 'current' : ''}">Name</a>
+                           class="btn ${params.sort == 'name' ? 'current' : ''}"><g:message code="forum.ajaxProjectForumsList.name"/></a>
                     </div>
 
                     <div class="col-sm-2 project-type">
                         <a href="?sort=type&order=${params.sort == 'type' && params.order != 'desc' ? 'desc' : 'asc'}&offset=0&q=${params.q}&selectedTab=${params.selectedTab}"
-                           class="btn ${params.sort == 'type' ? 'current' : ''}">Type</a>
+                           class="btn ${params.sort == 'type' ? 'current' : ''}"><g:message code="forum.ajaxProjectForumsList.type"/></a>
                     </div>
 
                     <div class="col-sm-3">
@@ -78,20 +79,20 @@
                         </div>
                         <%-- Name and progress bar --%>
                         <div class="col-sm-5">
-                            <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.featuredLabel}</a>
+                            <h3><a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">${projectSummary.project.i18nName}</a>
                             </h3>
-                            <g:render template="../project/projectSummaryProgressBar"
+                            <g:render template="/project/projectSummaryProgressBar"
                                       model="${[projectSummary: projectSummary]}"/>
                         </div>
                         <%-- Project type --%>
                         <div class="col-sm-2 project-type">
                             <img src="${projectSummary.iconImage}" width="40" height="36" alt="">
                             <br/>
-                            <span>${projectSummary.iconLabel}</span>
+                            <span>${message(code: projectSummary.iconLabel)}</span>
                         </div>
 
                         <div class="col-sm-3">
-                            <a href="${createLink(controller: "forum", action: "projectForum", params: [projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> Expedition Topics and <b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> Task Topics
+                            <a href="${createLink(controller: "forum", action: "projectForum", params: [projectId: projectSummary.project.id])}"><b>${forumStats[projectSummary.project].projectTopicCount}</b> <g:message code="forum.ajaxProjectForumsList.expedition_topics"/><b>${forumStats[projectSummary.project].taskTopicCount ?: '0'}</b> <g:message code="forum.ajaxProjectForumsList.task_topics"/>
                             </a>
                         </div>
                     </div>

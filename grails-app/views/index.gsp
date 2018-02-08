@@ -1,16 +1,21 @@
-<!doctype html>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="au.org.ala.volunteer.FrontPage" %>
+<!DOCTYPE html>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-main"/>
     <meta name="section" content="home"/>
+    <meta name="google" value="notranslate">
     <title><cl:pageTitle title="Home"/></title>
     <content tag="disableBreadcrumbs">true</content>
     <content tag="selectedNavItem">bvp</content>
-    <r:require modules="digivol-image-resize"/>
+    <asset:stylesheet src="digivol-image-resize.css" />
+    <g:set var="frontPage" value="${FrontPage.instance()}" />
 </head>
-
 <body>
-<div class="a-feature home">
+<div class="a-feature home" style="${frontPage.heroImage ? "background-image: url('${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/hero/${frontPage.heroImage}');" : ''}">
     <div class="container">
         <h1><g:message code="index.heading.line1" /><br/><g:message code="index.heading.line2"/><br/><g:message code="index.heading.line3"/></h1>
 
@@ -19,12 +24,12 @@
         <div class="cta-primary">
             <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="index.cta.getInvolved" /> <span
                     class="glyphicon glyphicon-arrow-down"></span></a>  <a class="btn btn-lg btn-hollow"
-                                                                           href="#learnMore"><g:message code="index.cta.learnMore" /></a>
+                                                                           href="/about/index"><g:message code="index.cta.learnMore" /></a>
         </div>
 
         <div class="row">
             <div class="col-sm-12 image-origin">
-                <p><g:message code="image.attribution.prefix" /> <g:message code="index.hero.attribution" /></p>
+                <p><g:message code="image.attribution.prefix" /> <g:if test="${frontPage.heroImageAttribution}">${frontPage.heroImageAttribution}</g:if><g:else><g:message code="index.hero.attribution" /></g:else></p>
             </div>
         </div>
     </div>
@@ -37,36 +42,36 @@
 
         <div class="row">
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconLabels.png" class="img-responsive"/>
+                <asset:image src="doedat/if_xxx035_2091691.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
                 <h3><g:message code="index.whatyoudo.specimens.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.specimens.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconNotes.png" class="img-responsive"/>
+                <asset:image src="doedat/if_flat_seo2-04_334155.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
                 <h3><g:message code="index.whatyoudo.fieldjournals.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.fieldjournals.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Field notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.field_notes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <r:img dir="images/2.0" file="iconWild.png" class="img-responsive"/>
+                <asset:image src="doedat/if_squirrel_icon_731910.png" class="img-responsive"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
                 <h3><g:message code="index.whatyoudo.cameratraps.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.cameratraps.body" /></p>
-                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:Camera traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
+                <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:bootstrap.camera_traps']"><g:message code="index.whatyoudo.cameratraps.linkLabel" /></g:link>
 
             </div>
 
@@ -82,22 +87,22 @@
         <div class="row">
             <div class="col-md-6">
                 <g:link controller="project" action="index" id="${frontPage.projectOfTheDay?.id}">
-                    <img src="" realsrc="${frontPage.projectOfTheDay?.featuredImage}" class="img-responsive cropme featured-exp-img" style="width:100%;height:312px;" data-error-url="${createLink(uri: '/images/banners/default-expedition-large.jpg')}" ></g:link>
+                    <img src="" realsrc="${frontPage.projectOfTheDay?.featuredImage}" class="img-responsive cropme featured-exp-img" style="width:100%;height:312px;" data-error-url="${resource(file: '/banners/default-expedition-large.jpg')}" ></g:link>
             </div>
 
             <div class="col-md-6">
                 <h3><g:link controller="project" action="index"
-                            id="${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.featuredLabel}</g:link>
+                            id="${frontPage.projectOfTheDay?.id}">${frontPage.projectOfTheDay?.i18nName}</g:link>
                 </h3>
                 <g:link controller="project" action="list" params="[mode: params.mode, q: 'tag:' + potdSummary.iconLabel]"
                         class="not-a-badge"><span
-                        class="glyphicon glyphicon-tag icon-flipped"></span>${potdSummary.iconLabel}</g:link><g:link
+                        class="glyphicon glyphicon-tag icon-flipped"></span>${message(code: potdSummary.iconLabel)}</g:link><g:link
                     controller="institution" action="index" id="${frontPage.projectOfTheDay?.institutionId}"
                     class="not-a-badge"><span
                         class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${frontPage.projectOfTheDay?.institutionName}</g:link>
 
                 <p>
-                    ${raw(frontPage.projectOfTheDay?.description)}
+                    ${raw(frontPage.projectOfTheDay?.i18nDescription?.toString())}
                 </p>
 
                 <g:render template="/project/projectSummaryProgressBar" model="[projectSummary: potdSummary]" />
@@ -137,5 +142,6 @@
     </div>
 </section>
 <a name="learnMore"></a>
+<asset:javascript src="digivol-image-resize.js" asset-defer="" />
 </body>
 </html>

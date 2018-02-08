@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
@@ -12,23 +11,23 @@ class TemplateController {
     def templateFieldService
     def templateService
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [templateInstanceList: Template.list(params), templateInstanceTotal: Template.count()]
     }
 
-    def create = {
+    def create() {
         def templateInstance = new Template()
         templateInstance.author = userService.currentUserId
         templateInstance.properties = params
         return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
-    def save = {
+    def save() {
         params.author = userService.currentUserId
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
@@ -40,7 +39,7 @@ class TemplateController {
         }
     }
 
-    def show = {
+    def show() {
         def templateInstance = Template.get(params.id)
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -51,7 +50,7 @@ class TemplateController {
         }
     }
 
-    def edit = {
+    def edit() {
         def templateInstance = Template.get(params.id)
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -63,7 +62,7 @@ class TemplateController {
         }
     }
 
-    def update = {
+    def update() {
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             if (params.version) {
@@ -99,7 +98,7 @@ class TemplateController {
         }
     }
 
-    def delete = {
+    def delete() {
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             try {
@@ -229,7 +228,7 @@ class TemplateController {
                 FieldType type = params.type ?: FieldType.text
                 def label = params.label ?: ""
                 def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
-                field.save(failOnError: true)
+                field.save(failOnError: true, flush: true)
             }
         }
 
@@ -252,7 +251,7 @@ class TemplateController {
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
         if (field && templateInstance) {
-            field.delete()
+            field.delete(flush: true)
         }
         redirect(action:'manageFields', id: templateInstance?.id)
     }
@@ -260,14 +259,14 @@ class TemplateController {
     def preview() {
         def templateInstance = Template.get(params.int("id"))
 
-        def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "${templateInstance.name} Preview (${templateInstance.viewName})")
+        def projectInstance = new Project(template: templateInstance, featuredOwner: "ALA", i18nName: "${templateInstance.name} Preview (${templateInstance.viewName})")
         def taskInstance = new Task(project: projectInstance)
         def multiMedia = new Multimedia(id: 0)
         taskInstance.addToMultimedia(multiMedia)
         def recordValues = [:]
         def imageMetaData = [0: [width: 2048, height: 1433]]
 
-        render(view: '/transcribe/task', model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData, isPreview: true])
+        render(view: '/transcribe/templateViews/' + templateInstance.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData, isPreview: true])
     }
 
     def exportFieldsAsCSV() {
@@ -285,14 +284,14 @@ class TemplateController {
         MultipartFile f = request.getFile('uploadFile')
 
         if (!f || f.isEmpty()) {
-            flash.message = "File missing or invalid. Make sure you select an upload file first!"
+            flash.message = message(code: 'template.file_missing_or_invalid')
         } else {
 
             def templateInstance = Template.get(params.int("id"))
             if (templateInstance) {
                 templateFieldService.importFieldsFromCSV(templateInstance, f)
             } else {
-                flash.message = "Missing/invalid template id specified in request!"
+                flash.message = message(code: 'template.missing_template_id')
             }
         }
 
@@ -306,7 +305,7 @@ class TemplateController {
         if (newName) {
             def existing = Template.findByName(newName)
             if (existing) {
-                flash.message = "Failed to clone template - a template with the name " + newName + " already exists!"
+                flash.message = message(code: 'template.failed_to_clone_template', args: [newName])
                 redirect(action:'list')
                 return
             }

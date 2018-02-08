@@ -1,27 +1,28 @@
-<r:require modules="digivol, digivol-stats, livestamp"/>
-<g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" contentType="text/html; charset=UTF-8" %>
+%{-- include CSS and JS assets in calling page --}%
+<g:set var="instName" value="${institutionName ?: institutionInstance?.i18nName ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
 <section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl" class="ng-cloak">
     <g:if test="${!disableStats}">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
-        <h2 class="heading">${instName} Stats<g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></h2>
+        <h2 class="heading"><g:message code="leaderBoard.stats.title" args="${[instName]}"/><g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></h2>
 
         <h3>
             <g:link controller="user" action="list">
                 <span data-ng-if="loading"><cl:spinner/></span>
                 <span data-ng-if="!loading">{{transcriberCount}}</span>
-                Volunteers
+                <g:message code="leaderboard.stats.volunteers" />
             </g:link>
         </h3>
 
         <p>
             <span data-ng-if="loading"><cl:spinner/></span>
             <span data-ng-if="!loading">{{completedTasks}}</span>
-            tasks of
+            <g:message code="leaderboard.stats.task_of" />
             <span data-ng-if="loading"><cl:spinner/></span>
             <span data-ng-if="!loading">{{totalTasks}}</span>
-            completed
+            <g:message code="leaderboard.stats.completed" />
         </p>
 
     </div><!-- Volunteer Stats Ends Here -->
@@ -148,12 +149,17 @@
                 <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
                 <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
 
-                <p><g:message code="transcribed.label" /> <span>{{contributor.transcribedItems}}</span> <g:message code="items.from.the" /> <a
-                        data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a></p>
+                <p>
+                    <g:message code="leaderboard.stats.transcribed.prefix" />
+                    <span>{{contributor.transcribedItems}}</span>
+                    <g:message code="leaderboard.stats.transcribed.items_from_the" />
+                    <a data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a>
+                    <g:message code="leaderboard.stats.transcribed.sufix" />
+                </p>
 
                 <div class="transcribed-thumbs">
                     <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}">
-                    <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
+                    <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span><g:message code="project.read_more" /></a>
                 </div>
                 <a class="btn btn-link btn-xs join" role="button"
                    data-ng-href="{{projectUrl(contributor)}}"><g:message code="join.expedition.label" /> »</a>
@@ -169,7 +175,7 @@
             <div class="media-body">
                 <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
                 <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
-                <p>Has posted in the forum: <a data-ng-href="{{contributor.forumUrl}}">{{contributor.forumName}}</a></p>
+                <p><g:message code="leaderboard.stats.has_posted_in_the_forum" />: <a data-ng-href="{{contributor.forumUrl}}">{{contributor.forumName}}</a></p>
                 <div class="transcribed-thumbs">
                     <img data-ng-src="{{contributor.thumbnailUrl}}">
                 </div>
@@ -179,9 +185,13 @@
     </ul>
     <g:link controller="user" action="list"><g:message code="view.all.contributors.label" /> »</g:link>
 </section>
-<r:script>
-digivolStats({
-statsUrl: "${createLink(controller: 'index', action: 'stats')}",
+<asset:javascript src="digivol-stats.js" asset-defer=""/>
+<asset:script>
+
+    moment.locale("${ LocaleContextHolder.getLocale().getLanguage()}");  // Set the default/global locale
+
+  digivolStats({
+  statsUrl: "${createLink(controller: 'index', action: 'stats')}",
 projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
 userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
 taskSummaryUrl: "${createLink(controller: 'task', action: 'summary', id: -1)}",
@@ -191,4 +201,4 @@ maxContributors: ${maxContributors ?: 5},
 disableStats: ${disableStats ? 'true' : 'false' },
 disableHonourBoard: ${disableHonourBoard ? 'true' : 'false' },
     });
-</r:script>
+</asset:script>

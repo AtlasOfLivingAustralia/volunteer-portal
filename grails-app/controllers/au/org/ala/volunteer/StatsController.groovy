@@ -2,22 +2,21 @@ package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
 import grails.converters.JSON
-import java.text.SimpleDateFormat
 
 class StatsController {
 
     static int defaultDayDiff = 7;
-    static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    static dateFormats = ['yyyy-MM-dd', "yyyy-MM-dd'T'hh:mm:ss.SSSXXX", "dd/MM/yyyy"]
 
     def statsService
     def settingsService
     def leaderBoardService
 
-    def index = {}
+    def index() {}
 
     def volunteerStats() {
-        def fromDate = (params?.startDate == null)? sdf.format(new Date() - defaultDayDiff) : params.startDate
-        def toDate = (params?.endDate == null)? sdf.format(new Date()) : params.endDate
+        def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
+        def toDate = params?.date('endDate', dateFormats) ?: new Date()
         def userList = statsService.getNewUser(fromDate, toDate)
         def result = [newVolunteers: userList[0][0], totalVolunteers: userList[0][1]]
         render result as JSON
@@ -65,13 +64,25 @@ class StatsController {
         render result as JSON
     }
 
+    def transcriptionsByInstitutionByMonth() {
+        def reportType = StatsType.transcriptionsByInstitutionByMonth
+        def result = prepareJsonData(reportType)
+        render result as JSON
+    }
+
     def validationsByInstitution() {
         def reportType =  StatsType.validationsByInstitution
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
-    def prepareJsonData (def reportType) {
+    def transcriptionTimeByProjectType() {
+        def reportType = StatsType.transcriptionTimeByProjectType
+        def result = prepareJsonData(reportType)
+        render result as JSON
+    }
+
+    private def prepareJsonData (StatsType reportType) {
         def statResult = getStatData(reportType)
         def header = statResult.get('header')
         def array = statResult.get('statsData')
@@ -80,18 +91,12 @@ class StatsController {
         return result
     }
 
-    def getStatData (def reportType) {
-        def fromDate = (params?.startDate == null || params?.startDate=="")? sdf.format(new Date() - defaultDayDiff) : params.startDate
-        def toDateStr = (params?.endDate == null || params?.endDate=="")? sdf.format(new Date()) : params.endDate
-
-        def nextDayDate = sdf.parse(toDateStr)
-
-        Calendar cal = Calendar.getInstance()
-        cal.setTime(nextDayDate)
-        cal.add(Calendar.DATE, 1)
-        nextDayDate = cal.getTime()
-
-        def toDate = sdf.format(nextDayDate)
+    private def getStatData (String reportType) {
+        return getStatData(StatsType.valueOf(reportType))
+    }
+    private def getStatData (StatsType reportType) {
+        def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
+        def toDate = (params?.date('endDate', dateFormats) ?: new Date()) + 1
 
         def header = []
         def statsData = []
@@ -99,41 +104,41 @@ class StatsController {
             case StatsType.activeTranscribers.name():
                 statsData = statsService.getActiveTasks(fromDate, toDate)
 
-                header = [[ id: "activetranscribers",   label: "Active Transcribers", type: "string" ],
-                          [ id: "transcriptioncount",   label: "Transcriptions", type: "number" ]]
+                header = [[ id: "activetranscribers",   label: message(code: 'stats.active_transcribers'), type: "string" ],
+                          [ id: "transcriptioncount",   label: message(code: 'stats.transcriptions'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
 
             case StatsType.transcriptionsByVolunteerAndProject.name():
                 statsData = statsService.getTasksGroupByVolunteerAndProject(fromDate, toDate)
 
-                header = [ [ id: "transcribers",   label: "Transcribers", type: "string" ],
-                                [ id: "project",   label: "Project", type: "string" ],
-                                [ id: "task_count",   label: "Transcriptions", type: "number" ]]
+                header = [ [ id: "transcribers",   label: message(code: 'stats.transcribers'), type: "string" ],
+                                [ id: "project",   label: message(code: 'stats.project'), type: "string" ],
+                                [ id: "task_count",   label: message(code: 'stats.transcriptions'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
 
             case StatsType.transcriptionsByDay.name():
                  statsData = statsService.getTranscriptionsByDay(fromDate, toDate)
 
-                header = [[ id: "date",   label: "Date", type: "string" ],
-                               [ id: "tasks_count",   label: "Number of Transcriptions", type: "number" ]]
+                header = [[ id: "date",   label: message(code: 'stats.date'), type: "string" ],
+                               [ id: "tasks_count",   label: message(code: 'stats.number_of_transcriptions'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
 
             case StatsType.validationsByDay.name():
                 statsData = statsService.getValidationsByDay(fromDate, toDate)
 
-                header = [[ id: "date",   label: "Date", type: "string" ],
-                               [ id: "tasks_count",   label: "Number of Validations", type: "number" ]]
+                header = [[ id: "date",   label: message(code: 'stats.date'), type: "string" ],
+                               [ id: "tasks_count",   label: message(code: 'stats.number_of_validations'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
 
             case StatsType.hourlyContributions.name():
                 statsData = statsService.getHourlyContributions(fromDate, toDate)
 
-                header = [[ id: "hour",   label: "Hour", type: "string" ],
-                               [ id: "contribution",   label: "Contributions", type: "number" ]]
+                header = [[ id: "hour",   label: message(code: 'stats.hour'), type: "string" ],
+                               [ id: "contribution",   label: message(code: 'stats.contributions'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
 
@@ -142,34 +147,44 @@ class StatsController {
 
                 def maxRows = 20
 
-                def scoreList = leaderBoardService.getTopNForPeriod(sdf.parse(fromDate), sdf.parse(toDate), maxRows, null, ineligibleUsers)
+                def scoreList = leaderBoardService.getTopNForPeriod(fromDate, toDate, maxRows, null, ineligibleUsers)
 
                 scoreList.each { kvp ->
                     statsData << [kvp.get("name"), kvp.get("score")]
                 }
 
-                header = [[ id: "name",   label: "Name", type: "string" ],
-                               [ id: "score",   label: "Score", type: "number" ]]
+                header = [[ id: "name",   label: message(code: 'stats.name'), type: "string" ],
+                               [ id: "score",   label: message(code: 'stats.score'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
 
             case StatsType.transcriptionsByInstitution.name():
                 statsData = statsService.getTranscriptionsByInstitution ();
 
-                header = [[ id: "institution",   label: "Institution", type: "string" ],
-                               [ id: "tasks_count",   label: "Number of Transcriptions", type: "number" ]]
+                header = [[ id: "institution",   label: message(code: 'stats.institution'), type: "string" ],
+                               [ id: "tasks_count",   label: message(code: 'stats.number_of_transcriptions'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
 
             case StatsType.validationsByInstitution.name():
                 statsData = statsService.getValidationsByInstitution ();
 
-                header = [[ id: "institution",   label: "Institution", type: "string" ],
-                               [ id: "tasks_count",   label: "Number of Validations", type: "number" ]]
+                header = [[ id: "institution",   label: message(code: 'stats.institution'), type: "string" ],
+                               [ id: "tasks_count",   label: message(code: 'stats.number_of_validations'), type: "number" ]]
 
                 return [header: header, statsData: statsData];
-
-            default: return [header: [], statsData: []];
+            case StatsType.transcriptionsByInstitutionByMonth.name():
+                return statsService.getTranscriptionsByInstitutionByMonth()
+            case StatsType.transcriptionTimeByProjectType:
+                statsData = statsService.getTranscriptionTimeByProjectType(fromDate, toDate)
+                header =  [
+                        [ id: 'label', label: message(code: 'stats.project_type'), type: 'string'],
+                        [ id: 'avg', label: message(code: 'stats.average_transcription_time'), type: 'number' ]
+                ]
+                return [header: header, statsData: statsData]
+            default:
+                log.warn("Unknown report type: $reportType")
+                return [header: [], statsData: []];
         }
 
     }

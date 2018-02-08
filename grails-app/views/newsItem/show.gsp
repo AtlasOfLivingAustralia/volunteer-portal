@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.NewsItem" %>
 <html>
 <head>
@@ -9,14 +10,14 @@
 
 <body>
 
-<cl:headerContent title="${newsItemInstance.title}">
+<cl:headerContent title="${newsItemInstance.i18nTitle}">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'newsItem', action: 'list', id: newsItemInstance?.project?.id), label: message(code: 'default.list.label', args: [entityName])],
         ]
 
         if (newsItemInstance.project) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'show', id: newsItemInstance?.project?.id), label: newsItemInstance.project?.featuredLabel]
+            pageScope.crumbs << [link: createLink(controller: 'project', action: 'show', id: newsItemInstance?.project?.id), label: newsItemInstance.project?.i18nName]
         }
     %>
 </cl:headerContent>
@@ -25,20 +26,20 @@
     <div class="span12">
 
         <legend>
-            ${fieldValue(bean: newsItemInstance, field: "shortDescription")}
+            ${fieldValue(bean: newsItemInstance, field: "i18nShortDescription")}
             <small class="pull-right"><g:formatDate date="${newsItemInstance.created}"
                                                     format="yyyy-MM-dd HH:mm"/> by <cl:userDisplayName
                     userId="${newsItemInstance.createdBy}"/></small>
         </legend
 
         <div>
-            ${newsItemInstance.body}
+            ${newsItemInstance.i18nBody}
         </div>
 
         <br/>
 
         <div>
-            <g:link class="btn btn-small" controller="newsItem" action="list">Read more news items...</g:link>
+            <g:link class="btn btn-small" controller="newsItem" action="list"><g:message code="newsItem.read_more_news_items"/></g:link>
         </div>
 
         <cl:ifAdmin>

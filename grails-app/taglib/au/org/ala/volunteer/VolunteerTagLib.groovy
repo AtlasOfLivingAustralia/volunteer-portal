@@ -1,15 +1,17 @@
 package au.org.ala.volunteer
 
+import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.gson.GsonBuilder
 import grails.converters.JSON
 import grails.util.Environment
 import grails.util.Metadata
 import groovy.time.TimeCategory
-import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
+import org.grails.web.mapping.CachingLinkGenerator
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.servlet.support.RequestDataValueProcessor
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 class VolunteerTagLib {
@@ -17,7 +19,6 @@ class VolunteerTagLib {
     static namespace = 'cl'
 
     def userService
-    def grailsApplication
     def settingsService
     def multimediaService
     def markdownService
@@ -64,6 +65,12 @@ class VolunteerTagLib {
      */
     def ifValidator = {attrs, body ->
         Project p = attrs.project as Project
+        if(p == null) {
+            Task t = attrs.task as Task
+            if(t!=null) {
+                p = t.project
+            }
+        }
         if (userService.isValidator(p)) {
             out << body()
         }
@@ -183,32 +190,13 @@ class VolunteerTagLib {
     }
 
     /**
-     * Show map of records based on UID
-     *
-     * - content is loaded by ajax calls
-     */
-    def recordsMap = {
-        out <<
-            "<div class='recordsMap'>" +
-            " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-            " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-            "</div>" +
-            "<div class='learnMaps'><span class='asterisk-container'><a href='${grailsApplication.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
-
-        /*out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-                "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
-                "</div>"*/
-    }
-
-
-    /**
      * Writes a para with date last updated.
      *
      * @param date
      */
     def lastUpdated = {attrs ->
         if (attrs.date) {
-            out << "<p class='lastUpdated'>last updated: ${attrs.date}</p>"
+            out << "<p class='lastUpdated'>${message(code: 'volunteerTagLib.last_updated')} ${attrs.date}</p>"
         }
     }
 
@@ -228,31 +216,31 @@ class VolunteerTagLib {
         def items = [:]
 
         items << [bvp:[link: createLink(uri: '/'), title: message(code:'default.application.name', default:'DigiVol')]]
-        items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
+        items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: message(code: 'volunteerTagLib.expeditions')]]
         def institutionsEnabled = settingsService.getSetting(SettingDefinition.InstitutionsEnabled)
 
         if (institutionsEnabled) {
-            items << [institutions:[link: createLink(controller: 'institution', action:'list'), title: 'Institutions']]
+            items << [institutions:[link: createLink(controller: 'institution', action:'list'), title: message(code: 'volunteerTagLib.institutions')]]
         }
 
-        items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
+        items << [tutorials: [link: createLink(controller: 'tutorials'), title: message(code: 'volunteerTagLib.tutorials')]]
         if (FrontPage.instance().enableForum) {
-            items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
+            items << [forum:[link: createLink(controller: 'forum'), title: message(code: 'volunteerTagLib.forum')]]
         }
 
         def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyNotebook)
         if (dashboardEnabled) {
             def isLoggedIn = AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)
             if (isLoggedIn || userService.currentUser) {
-                items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:"My Notebook"]]
+                items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:message(code: 'volunteerTagLib.my_notebook')]]
             }
         }
 
-        items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
-        items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:"How can I volunteer?"]]
+        items << [contact: [link: createLink(controller: 'contact'), title: message(code: 'volunteerTagLib.contact_us')]]
+        items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:message(code: 'volunteerTagLib.how_can_i_volunteer')]]
         items << [aboutbvp: [link: createLink(controller: 'about'), title: "About ${message(code:'default.application.name')}"]]
         if (isAdmin()) {
-            items << [bvpadmin: [link: createLink(controller: 'admin'), title: "Admin", icon:'icon-cog icon-white']]
+            items << [bvpadmin: [link: createLink(controller: 'admin'), title: message(code: 'volunteerTagLib.admin'), icon:'icon-cog icon-white']]
         }
 
         def mb = new MarkupBuilder(out)
@@ -312,7 +300,7 @@ class VolunteerTagLib {
             thead {
                 tr {
                     th {
-                        h3('Comments', style: "padding-bottom: 0px;min-height: 0px")
+                        h3(message(code: 'volunteerTagLib.comments'), style: "padding-bottom: 0px;min-height: 0px")
                     }
                 }
             }
@@ -327,7 +315,7 @@ class VolunteerTagLib {
                 if (userService.currentUserId) {
                     tr(class: 'prop', style: 'width: 100%; min-height: 0px') {
                         td(style: 'padding-bottom: 0px; padding-top: 0px;') {
-                            span('Add a new comment by typing in the box below, and clicking "Save comment"') {}
+                            span(message(code: 'volunteerTagLib.add_a_new_comment.description')) {}
                         }
                     }
                     tr(class:'prop',style: 'width: 100%') {
@@ -337,7 +325,7 @@ class VolunteerTagLib {
                     }
                     tr(class:'prop', style: 'width: 100%') {
                         td(class: 'name',style: "text-align: left; vertical-align: bottom; padding-top: 0px") {
-                            button(id: 'addCommentButton', 'Save comment')
+                            button(id: 'addCommentButton', message(code: 'volunteerTagLib.save_comment'))
                         }
                     }
                 }
@@ -403,7 +391,7 @@ class VolunteerTagLib {
 
             if (transcriber) {
                 mb.span(class:"label label-info") {
-                    mkp.yield("Transcribed by ${transcriber.displayName} on ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
+                    mkp.yield(message(code: 'volunteerTagLib.transcribed_by_x_on_y', args: [transcriber.displayName, taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")]))
                 }
             }
 
@@ -411,10 +399,10 @@ class VolunteerTagLib {
                 def status = "Not yet validated"
                 def badgeClass = "label"
                 if (taskInstance.isValid == false) {
-                    status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    status = message(code: 'volunteerTagLib.marked_as_invalid_by_x_on_y', args: [validator.displayName, taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")])
                     badgeClass = "label label-danger"
                 } else if (taskInstance.isValid) {
-                    status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    status = message(code: 'volunteerTagLib.marked_as_valid_by_x_on_y', args: [validator.displayName, taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")])
                     badgeClass = "label label-success"
                 }
                 mb.span(class:badgeClass) {
@@ -488,8 +476,10 @@ class VolunteerTagLib {
                                 span(class:'glyphicon glyphicon-menu-right') {
                                     mkp.yield(' ')
                                 }
-                                a(href: item.link) {
-                                    mkp.yield(item.label)
+                                if(item && item.link != null && item.label != null && item.label?.toString() != null) {
+                                    a(href: item.link) {
+                                        mkp.yield(item.label)
+                                    }
                                 }
                             }
                         }
@@ -557,10 +547,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -588,10 +578,10 @@ class VolunteerTagLib {
 
             if (!url) {
                 // sample
-                url = resource(dir:'/images', file:'sample-task-thumbnail.jpg')
+                url = resource(file:'/sample-task-thumbnail.jpg')
             }
             if (!fullUrl) {
-                fullUrl = resource(dir: '/images', file:'sample-task.jpg')
+                fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url) {
@@ -711,7 +701,7 @@ class VolunteerTagLib {
 
     /**
      * @attr email
-     * @atte name
+     * @atte i18nName
      */
     def contactLink = { attrs, body ->
         def name = attrs.name ?: attrs.email
@@ -736,9 +726,9 @@ class VolunteerTagLib {
     }
 
     /**
-     * Gets the display name for a user as an object instead of writing it directly to the outputstream
+     * Gets the display i18nName for a user as an object instead of writing it directly to the outputstream
      *
-     * @attr id REQUIRED The userId to get the display name address for
+     * @attr id REQUIRED The userId to get the display i18nName address for
      */
     def displayNameForUserId = { attrs, body ->
         propForUserId(attrs, 'displayName')
@@ -751,10 +741,10 @@ class VolunteerTagLib {
     }
 
     /**
-     * Output a users email or display name, fetched from userdetails.
+     * Output a users email or display i18nName, fetched from userdetails.
      *
      * @attr id REQUIRED The user id to get the user details for
-     * @attr displayName true to output the display name, defaults to false
+     * @attr displayName true to output the display i18nName, defaults to false
      * @attr email true to output the email address, defaults to false
      */
     def userDetails = { attrs, body ->
@@ -765,7 +755,7 @@ class VolunteerTagLib {
 
         if (displayName && email) {
             log.error("Both display name and email specified, select only one!")
-            throw new RuntimeException("Both display name and email specified, select only one!")
+            throw new RuntimeException(message(code: 'volunteerTagLib.both_display_name_and_email_specified'))
         }
 
         def user = userService.detailsForUserId(id)
@@ -777,7 +767,7 @@ class VolunteerTagLib {
     }
 
     /**
-     * Output a users display name and email, fetched from userdetails unless it's unavailable.  If the user can't
+     * Output a users display i18nName and email, fetched from userdetails unless it's unavailable.  If the user can't
      * be found a not found string is used instead.  The not found string can optionally be wrapped in a
      * &lt;span class="muted" /> if the muted attribute is set to true
      *
@@ -807,18 +797,35 @@ class VolunteerTagLib {
     /**
      * Output the meta tags (HTML head section) for the build meta data in application.properties
      * E.g.
-     * <meta name="svn.revision" content="${g.meta(name:'svn.revision')}"/>
+     * <meta i18nName="svn.revision" content="${g.meta(i18nName:'svn.revision')}"/>
      * etc.
      *
      * Updated to use properties provided by build-info plugin
      */
     def addApplicationMetaTags = { attrs ->
-        def metaList = ['app.version', 'app.grails.version', 'build.date', 'scm.version', 'environment.TRAVIS_JDK_VERSION', 'environment.TRAVIS_REPO_SLUG', 'environment.TRAVIS_BUILD_NUMBER', 'environment.TRAVIS_TAG', 'environment.TRAVIS_BRANCH', 'environment.TRAVIS_COMMIT']
+        def metaList = [
+                'app.version', 
+                'app.grailsVersion',
+                'build.ci',
+                'build.date', 
+                'build.jdk', 
+                'build.number', 
+                'git.branch', 
+                'git.commit',
+                'git.slug', 
+                'git.tag', 
+                'git.timestamp'
+        ]
         def mb = new MarkupBuilder(out)
 
         mb.meta(name:'grails.env', content: "${Environment.current}")
         metaList.each {
-            mb.meta(name:it, content: g.meta(name:it))
+            def content = g.meta(name: 'info.' + it)
+            if (content) {
+                mb.meta(name:it, content: content)
+            } else {
+                log.debug("info.$it not found in meta info")
+            }
         }
         mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
     }
@@ -842,11 +849,15 @@ class VolunteerTagLib {
     }
 
     def buildDate = { attrs ->
-        def bd = Metadata.current['build.date']
+        def bd = Metadata.current['info.build.date']
         log.debug("Build Date type is ${bd?.class?.name}")
         def df = new SimpleDateFormat('MMM d, yyyy')
         if (bd) {
-            df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
+            try {
+                df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
+            } catch (e) {
+                df.format(new Date())
+            }
         } else {
             df.format(new Date())
         }
@@ -906,4 +917,77 @@ class VolunteerTagLib {
         def size = attrs.remove('size')
         return FileUtils.byteCountToDisplaySize(size)
     }
+
+    /**
+     * Display text describing who created the project and the date it was created on.
+     * parameters
+     * project - required - project instance
+     */
+    def projectCreatedBy = { attrs, body ->
+        Project project = attrs.project
+        User user = project.createdBy
+
+        if(user){
+            String date = g.formatDate(date:project.dateCreated, format: "dd MMMM, yyyy")
+            out << ("<small>" + message(code:'project.project_settings.created_by', args: [(createLink(controller: 'user', action: 'show')+"/"+user?.id),user?.displayName])+" "+message(code:'project.project_settings.on')+" ${date}.</small>")
+        }
+    }
+
+    def insitutionLogos = { attrs, body ->
+        def logos = settingsService.getSetting(SettingDefinition.FrontPageLogos)
+        logos.each {
+            out << "<img src=\"${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/logos/$it\">"
+        }
+    }
+
+    @Value('${google.maps.key}')
+    String mapsApiKey
+
+    /**
+     * Insert a script tag for the google maps api using the google.maps.key property if one
+     * is set.
+     * @attr callback The callback function to use
+     */
+    def googleMapsScript = { attrs, body ->
+        if ( attrs.containsKey('if') && !attrs.remove('if') ) return
+        def url = "https://maps.googleapis.com/maps/api/js"
+        def opts = [:]
+        def callback = attrs.remove('callback')
+        if (callback) {
+            opts['callback'] = callback
+        }
+        if (mapsApiKey) {
+            opts['key'] = mapsApiKey
+        } else {
+            log.warn("No google.maps.key config settings was found.")
+        }
+        if(org.springframework.context.i18n.LocaleContextHolder.getLocale()) {
+            opts['language'] = org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage();
+        }
+
+        if (opts) {
+            url += "?" + opts.collect { "$it.key=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
+        }
+        asset.script(type: 'text/javascript', src: url, async: true, defer: true)
+        asset.script(type: 'text/javascript') {'''
+var gmapsReady = false;
+function onGmapsReady() {
+    gmapsReady = true;
+    notify();
+}
+function notify() {
+    if (typeof $ != 'undefined') {
+        $(window).trigger('digivol.gmapsReady');
+    } else {
+        window.setTimeout(notify);
+    }
+}
+'''
+        }
+    }
+
+    def googleChartsScript = { attrs, body ->
+        out << '<script type="text/javascript" src="https://www.google.com/jsapi"></script>'
+    }
+
 }

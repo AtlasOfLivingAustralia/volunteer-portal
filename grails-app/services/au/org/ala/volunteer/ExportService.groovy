@@ -1,15 +1,15 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVWriter
+import grails.transaction.Transactional
 
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 import org.springframework.context.i18n.LocaleContextHolder
 
+@Transactional
 class ExportService {
-
-    static transactional = true
 
     def grailsApplication
     def grailsLinkGenerator
@@ -113,7 +113,7 @@ class ExportService {
                 if (!(fieldIndexMap.containsKey(it) && fieldIndexMap[it])) columnNames << it
             }
             def maxIdx = fieldIndexMap.values().max()
-            for (int i = 0 ; i < maxIdx; ++i) {
+            for (int i = 0 ; i <= maxIdx; ++i) {
                 fieldNames.each {
                     if (fieldIndexMap.containsKey(it) && fieldIndexMap[it] && fieldIndexMap[it] >= i) columnNames << "${it}_$i"
                 }
@@ -194,8 +194,8 @@ class ExportService {
             }
         }
 
-        // Prepare the response for a zip file - use the project name as a basis of the filename
-        def filename = "Project-" + project.featuredLabel.replaceAll(" ","") + "-DwC"
+        // Prepare the response for a zip file - use the project i18nName as a basis of the filename
+        def filename = "Project-" + project.i18nName.toString().replaceAll(" ","") + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
         response.setContentType("application/zip");
 

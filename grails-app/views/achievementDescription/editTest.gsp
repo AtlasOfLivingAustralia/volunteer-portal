@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
@@ -5,11 +6,13 @@
     <meta name="layout" content="digivol-achievementSettings">
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <r:require modules="labelAutocomplete"/>
+    <asset:stylesheet src="label-autocomplete"/>
+    <%@ page contentType="text/html; charset=UTF-8" %>
+
 </head>
 
 <body>
-<content tag="pageTitle">Tester</content>
+<content tag="pageTitle"><g:message code="achievementDescription.edit.tester"/></content>
 
 <content tag="adminButtonBar">
     %{--This is just for formatting purposes--}%
@@ -23,8 +26,8 @@
     <table class="table">
         <thead>
         <tr>
-            <th>User</th>
-            <th>Achieved?</th>
+            <th><g:message code="achievementDescription.edit.user"/></th>
+            <th><g:message code="achievementDescription.edit.achieved"/></th>
         </tr>
         </thead>
         <tbody>
@@ -42,11 +45,11 @@
     </tabLe>
     <g:form class="form-horizontal" action="editTest" id="${achievementDescriptionInstance?.id}" method="GET">
         <div class="well">
-            <h4>Check User</h4>
+            <h4><g:message code="achievementDescription.edit.check_user"/></h4>
             <div class="form-group">
                 <label class="control-label col-md-3" for="user">
                     <g:message code="user.label" default="User"/>
-                    <r:img dir="images" file="spinner.gif" height="16px" width="16px" id="ajax-spinner"
+                    <asset:image src="spinner.gif" height="16px" width="16px" id="ajax-spinner"
                            class="hidden"/>
                 </label>
 
@@ -65,7 +68,8 @@
         </div>
     </g:form>
 </div>
-<r:script>
+<asset:javascript src="label-autocomplete" asset-defer=""/>
+<asset:script>
     $(function($) {
         var url = "${createLink(controller: 'leaderBoardAdmin', action: 'findEligibleUsers')}";
 
@@ -76,6 +80,6 @@
             return null;
         }, 'displayName');
     });
-</r:script>
+</asset:script>
 </body>
 </html>

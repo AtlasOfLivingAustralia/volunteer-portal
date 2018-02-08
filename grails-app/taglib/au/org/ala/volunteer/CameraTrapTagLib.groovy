@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
+import org.grails.web.converters.exceptions.ConverterException
 
 import static grails.async.Promises.*
 
@@ -21,7 +21,7 @@ class CameraTrapTagLib {
         def userId = userService.currentUserId
         def warnings = []
 
-        if (!picklist) return [error: "No valid picklist or field provided"]
+        if (!picklist) return [error: message(code: "cameraTrapTagLib.no_valid_picklist")]
 
         def valueCounts
         def myLast
@@ -38,7 +38,7 @@ class CameraTrapTagLib {
         // fallback to default picklist if institution code given and no items found
         if (project?.picklistInstitutionCode && !items) items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(picklist)
 
-        if (!items) return [error: "No picklist items found for picklist ${picklist.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
+        if (!items) return [error: message(code: "transcribeTagLib.no_picklist_items_found", args: [picklist.uiLabel, project?.picklistInstitutionCode])]
 
         def valueCountMap = valueCounts.get().collectEntries { [(it[0]): it[1]] }
 
@@ -56,41 +56,46 @@ class CameraTrapTagLib {
                     def tags = doc.tags
                     def dayImageIds = doc.dayImages
                     def nightImageIds = doc.nightImages
+                    def name = doc.name
                     def imageIds = (dayImageIds + nightImageIds).findAll { it?.trim() != null }.collect { it?.trim() }
                     def similarSpecies = doc.similarSpecies
                     def popularity = valueCountMap.get(it.value) ?: 0
                     def lastUsed = myLastList.size() - (myLastMap.get(it.value) ?: myLastList.size())
-                    results = [ (it.value): [imageIds: imageIds, value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), similarSpecies: similarSpecies.toList(), popularity: popularity, lastUsed: lastUsed ] ]
+                    results = [ (it.value): [name: name, imageIds: imageIds, value: it.value, tags: tags.toList(), dayImages: dayImageIds.toList(), nightImageIds: nightImageIds.toList(), similarSpecies: similarSpecies.toList(), popularity: popularity, lastUsed: lastUsed ] ]
                     allImageIds += imageIds
                 } else {
                     results = [:]
                 }
 
             } catch (ConverterException e) {
-                warnings.add("Couldn't parse entry for ${it.value}")
+                warnings.add(message(code: "cameraTrapTagLib.could_not_parse_entry_for", args: [it.value])+"")
                 results = [:]
             }
             results
         }
 
+        return [items: items2, infos: readImageInfo(allImageIds,warnings), warnings: warnings]
+    }
+
+    def readImageInfo(allImageIds,warnings) {
         //def imageIds = items2*.key.flatten()
         def imageInfos
         try {
             imageInfos = imageServiceService.getImageInfoForIds(allImageIds)
         } catch (e) {
             log.error("Error calling image service for ${allImageIds}", e)
-            return [error: "Error contacting image service: ${e.message}"]
+            return [error: message(code: "transcribeTagLib.error_contacting_image_service", args: [e.message])]
         }
 
         if (!imageInfos)
-            return [error: "Could not retrieve image infos for keys ${allImageIds.join(", ")}"]
+            return [error: message(code: "transcribeTagLib.could_not_find_images_for_keys", args: [imageIds.join(", ")])]
         else {
-            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            //def missing = imageIds.collect { [i18nName: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.i18nName }
             def missing = allImageIds.findAll { imageInfos[it] == null }
-            if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
+            if (missing) warnings.add(message(code: "transcribeTagLib.the_following_image_ids_cannot_be_found", args: [missing.join(', ')]))
         }
 
-        return [items: items2, infos: imageInfos, warnings: warnings]
+        return imageInfos;
     }
 
     def imageInfosByPopularity = { attrs, body ->
@@ -102,7 +107,7 @@ class CameraTrapTagLib {
 
         def valueCounts = Field.async.executeQuery("select value, count(id) from Field f JOIN Task t WHERE t.project = :project GROUP BY f.value", [project: project])
 
-        if (!picklists && !fields) return [error: "No valid picklists or fields provided"]
+        if (!picklists && !fields) return [error: message(code: "cameraTrapTagLib.no_valid_picklist")]
 
         if (!picklists) {
             picklists = templateFields.collect { field ->
@@ -118,13 +123,13 @@ class CameraTrapTagLib {
             }.findAll { it }
         }
 
-        if (!picklists) return [error: "No picklists found for ${templateFields.collect { "${it.fieldType.name()} (${it.fieldTypeClassifier})" } }"]
+        if (!picklists) return [error: message(code: "cameraTrapTagLib.no_picklists_found_for", args: [templateFields.collect { "${it.fieldType.name()} (${it.fieldTypeClassifier})" }])]
 
         def items = picklists.collect { pl ->
             def items = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project?.picklistInstitutionCode)
             // fallback to default picklist if institution code given and no items found
             if (project?.picklistInstitutionCode && !items) items = PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(pl)
-            if (!items) return [error: "No picklist items found for picklist ${pl.uiLabel} and picklist institution code ${project?.picklistInstitutionCode}"]
+            if (!items) return [error: message(code: "transcribeTagLib.no_picklist_items_found", args: [pl.uiLabel, project?.picklistInstitutionCode])]
             items
         }.findAll { it }.flatten()
 
@@ -144,15 +149,15 @@ class CameraTrapTagLib {
             imageInfos = imageServiceService.getImageInfoForIds(imageIds)
         } catch (e) {
             log.error("Error calling image service for ${imageIds}", e)
-            return [error: "Error contacting image service: ${e.message}"]
+            return [error: message(code: "transcribeTagLib.error_contacting_image_service", args: [e.message])]
         }
 
         if (!imageInfos)
-            return [error: "Could not retrieve image infos for keys ${imageIds.join(", ")}"]
+            return [error: message(code: "transcribeTagLib.could_not_find_images_for_keys", args: [imageIds.join(", ")])]
         else {
-            //def missing = imageIds.collect { [name: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.name }
+            //def missing = imageIds.collect { [i18nName: it, info:imageInfos[it]] }.findAll { it.info == null }.collect { it.i18nName }
             def missing = imageIds.findAll { imageInfos[it] == null }
-            if (missing) warnings.add("The following image ids can not be found: ${missing.join(', ')}")
+            if (missing) warnings.add(message(code: "transcribeTagLib.the_following_image_ids_cannot_be_found", args: [missing.join(', ')]))
         }
 
         [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]

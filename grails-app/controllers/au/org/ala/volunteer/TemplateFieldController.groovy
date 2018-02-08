@@ -4,11 +4,11 @@ class TemplateFieldController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         def templateFieldInstanceList
         def templateFieldInstanceTotal
@@ -25,13 +25,13 @@ class TemplateFieldController {
         [templateFieldInstanceList: templateFieldInstanceList, templateFieldInstanceTotal: templateFieldInstanceTotal]
     }
 
-    def create = {
+    def create() {
         def templateFieldInstance = new TemplateField()
         templateFieldInstance.properties = params
         return [templateFieldInstance: templateFieldInstance]
     }
 
-    def save = {
+    def save() {
         def templateFieldInstance = new TemplateField(params)
         if (templateFieldInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'templateField.label', default: 'TemplateField'), templateFieldInstance.id])}"
@@ -42,7 +42,7 @@ class TemplateFieldController {
         }
     }
 
-    def show = {
+    def show() {
         def templateFieldInstance = TemplateField.get(params.id)
         if (!templateFieldInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
@@ -53,7 +53,7 @@ class TemplateFieldController {
         }
     }
 
-    def edit = {
+    def edit() {
         def templateFieldInstance = TemplateField.get(params.id)
         if (!templateFieldInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
@@ -67,7 +67,7 @@ class TemplateFieldController {
         }
     }
 
-    def update = {
+    def update() {
         def templateFieldInstance = TemplateField.get(params.id)
         if (templateFieldInstance) {
             if (params.version) {
@@ -93,7 +93,7 @@ class TemplateFieldController {
         }
     }
 
-    def delete = {
+    def delete() {
         def templateFieldInstance = TemplateField.get(params.id)
         if (templateFieldInstance) {
             try {

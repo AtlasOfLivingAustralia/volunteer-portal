@@ -1,132 +1,12 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.FieldDefinitionType; au.org.ala.volunteer.Project" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <r:require modules="jquery-ui, bootbox, bootstrap-file-input, qtip, bvp-js"/>
-
-    <r:script>
-
-            $(document).ready(function() {
-
-                $(".btnMoveFieldUp").click(function(e) {
-                    e.preventDefault();
-                    var fieldId = $(this).parents("[fieldId]").attr('fieldId');
-                    if (fieldId) {
-                        window.location = "${createLink(controller: 'template', action: 'moveFieldUp')}?fieldId=" + fieldId;
-                    }
-                });
-
-                $(".btnMoveFieldDown").click(function(e) {
-                    e.preventDefault();
-                    var fieldId = $(this).parents("[fieldId]").attr('fieldId');
-                    if (fieldId) {
-                        window.location = "${createLink(controller: 'template', action: 'moveFieldDown')}?fieldId=" + fieldId;
-                    }
-                });
-
-                $(".btnMoveFieldAnywhere").click(function(e) {
-                    e.preventDefault();
-                    var fieldId = $(this).parents("[fieldId]").attr('fieldId');
-                    if (fieldId) {
-                        $("#oldPosition").val($(this).parents("[fieldOrder]").attr("fieldOrder"));
-                        $("#dialogFieldId").val(fieldId);
-                        $("#dialog").dialog( "open" );
-                    }
-                });
-
-                $("#btnCancelMove").click(function(e) {
-                    e.preventDefault();
-                    $("#dialog").dialog( "close" );
-                });
-
-                $("#btnApplyMove").click(function(e) {
-                    e.preventDefault();
-                    var fieldId = $("#dialogFieldId").val();
-                    var newPosition = $("#newPosition").val();
-                    window.location = "${createLink(controller: 'template', action: 'moveFieldToPosition', id: templateInstance.id)}?fieldId=" + fieldId + "&newOrder=" + newPosition
-                });
-
-                $( "#dialog" ).dialog({
-                    minHeight: 200,
-                    minWidth: 400,
-                    resizable: false,
-                    autoOpen: false
-                });
-
-                $("#btnCleanUpOrdering").click(function(e) {
-                    e.preventDefault();
-                    window.location = "${createLink(controller: 'template', action: 'cleanUpOrdering', id: templateInstance.id)}";
-                });
-
-                $("#btnAddField").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title:"Add field to template",
-                        url:"${createLink(action: 'addTemplateFieldFragment', id: templateInstance.id)}",
-                        onClose : function() { }
-                    };
-
-                    bvp.showModal(options);
-                });
-
-                $(".btnDeleteField").click(function(e) {
-                    e.preventDefault();
-                    var fieldId = $(this).parents("[fieldId]").attr("fieldId");
-                    if (fieldId) {
-                        if (confirm("Are you sure you wish to delete this field from the template?")) {
-                            window.location = "${createLink(controller: 'template', action: 'deleteField', id: templateInstance.id)}?fieldId=" + fieldId;
-                        }
-                    }
-                });
-
-                $(".btnEditField").click(function(e) {
-                    e.preventDefault();
-                    var fieldId = $(this).parents("[fieldId]").attr("fieldId");
-                    if (fieldId) {
-                        window.location = "${createLink(controller: 'templateField', action: 'edit')}/" + fieldId;
-                    }
-                });
-
-                $("#btnPreviewTemplate").click(function(e) {
-                    e.preventDefault();
-                    window.open("${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}", "TemplatePreview");
-                });
-
-                $("#btnExportAsCSV").click(function(e) {
-                    e.preventDefault();
-                    window.open("${createLink(controller: 'template', action: 'exportFieldsAsCSV', id: templateInstance.id)}", "CSVExport");
-                });
-
-                $("#btnImportFromCSV").click(function(e) {
-                    e.preventDefault();
-                    if (confirm("This will remove all existing fields, and replace them with the contents of the selected file. Are you sure?")) {
-                        $("form").submit();
-                    }
-                });
-
-                // Context sensitive help popups
-                $("a.fieldHelp").each(function() {
-                var self = this;
-                    $(self).qtip({
-                        content: $(self).attr('title'),
-                        position: {
-                            at: "top left",
-                            my: "bottom right"
-                        },
-                        style: {
-                            classes: 'qtip-bootstrap'
-                        }
-                    }).bind('click', function(e) { e.preventDefault(); return false; });
-                });
-
-                // Initialize input type file
-                $('input[type=file]').bootstrapFileInput();
-
-            });
-
-    </r:script>
+    <asset:stylesheet src="jquery-ui"/>
+    <asset:stylesheet src="qtip"/>
 </head>
 
 <body class="admin">
@@ -135,9 +15,9 @@
             title="${message(code: 'default.manageTemplateFields.label', default: 'Manage Template Fields')} - ${templateInstance.name}"  selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: ['Template'])],
-                    [link: createLink(controller: 'template', action: 'edit', id: templateInstance.id), label: message(code: 'default.edit.label', args: ['Template'])]
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [message(code: 'project.template.label')])],
+                    [link: createLink(controller: 'template', action: 'edit', id: templateInstance.id), label: message(code: 'default.edit.label', args: [message(code: 'project.template.label')])]
             ]
         %>
     </cl:headerContent>
@@ -149,15 +29,15 @@
                     <g:hiddenField name="id" value="${templateInstance.id}"/>
                     <div class="col-md-6">
                         <button class="btn btn-success" id="btnAddField">
-                            <i class="icon-plus icon-white"></i>&nbsp;Add field
+                            <i class="icon-plus icon-white"></i>&nbsp;<g:message code="template.manageFields.add_field" />
                         </button>
-                        <button class="btn btn-default" id="btnCleanUpOrdering">Clean up ordering</button>
-                        <button class="btn btn-default" id="btnPreviewTemplate">Preview Template</button>
-                        <button class="btn btn-default" id="btnExportAsCSV">Export as CSV</button>
+                        <button class="btn btn-default" id="btnCleanUpOrdering"><g:message code="template.manageFields.clean_up_ordering" /></button>
+                        <button class="btn btn-default" id="btnPreviewTemplate"><g:message code="template.manageFields.preview_template" /></button>
+                        <button class="btn btn-default" id="btnExportAsCSV"><g:message code="template.manageFields.export_as_csv" /></button>
                     </div>
                     <div class="col-md-6">
                         <input type="file" data-filename-placement="inside" name="uploadFile"/>
-                        <button class="btn btn-success" id="btnImportFromCSV">Import from CSV</button>
+                        <button class="btn btn-success" id="btnImportFromCSV"><g:message code="template.manageFields.import_from_csv" /></button>
                     </div>
                 </g:uploadForm>
             </div>
@@ -168,14 +48,14 @@
                     <table class="table table-striped table-hover template-fields">
                         <thead>
                         <tr>
-                            <th>Order</th>
-                            <th>DwC Field</th>
-                            <th>Form type</th>
-                            <th>Label</th>
-                            <th>Layout Class</th>
-                            <th>Validation</th>
-                            <th>Category</th>
-                            <th>Help text</th>
+                            <th><g:message code="template.manageFields.order" /></th>
+                            <th><g:message code="template.manageFields.dwc_field" /></th>
+                            <th><g:message code="template.manageFields.form_type" /></th>
+                            <th><g:message code="template.manageFields.label" /></th>
+                            <th><g:message code="template.manageFields.layout_class" /></th>
+                            <th><g:message code="template.manageFields.validation" /></th>
+                            <th><g:message code="template.manageFields.category" /></th>
+                            <th><g:message code="template.manageFields.help_text" /></th>
                             <th></th>
                         </tr>
                         </thead>
@@ -215,24 +95,149 @@
         </div>
     </div>
 
-    <div id="dialog" title="Move field to position" style="display: none">
+    <div id="dialog" title="${message(code: 'template.manageFields.move_field_to_position')}" style="display: none">
         <g:hiddenField name="dialogFieldId" id="dialogFieldId"/>
         <table style="width: 100%">
             <tr>
-                <td><strong>Old&nbsp;position:</strong></td>
+                <td><strong><g:message code="template.manageFields.old_position" /></strong></td>
                 <td><g:textField name="oldPosition" id="oldPosition" disabled="true" size="10"/></td>
             </tr>
             <tr>
-                <td><strong>New&nbsp;position (Order):</strong></td>
+                <td><strong><g:message code="template.manageFields.new_position" /></strong></td>
                 <td><g:textField name="newPosition" id="newPosition" size="10"/></td>
             </tr>
         </table>
 
         <div style="margin-top: 15px">
-            <button class="btn" id="btnCancelMove">Cancel</button>
-            <button class="btn" id="btnApplyMove">Move Field</button>
+            <button class="btn" id="btnCancelMove"><g:message code="default.cancel" /></button>
+            <button class="btn" id="btnApplyMove"><g:message code="template.manageFields.move_field" /></button>
         </div>
     </div>
 </div>
+<asset:javascript src="jquery-ui" asset-defer=""/>
+<asset:javascript src="bootbox" asset-defer=""/>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
+<asset:javascript src="qtip" asset-defer=""/>
+<asset:script type="text/javascript">
+
+    $(document).ready(function() {
+
+        $(".btnMoveFieldUp").click(function(e) {
+            e.preventDefault();
+            var fieldId = $(this).parents("[fieldId]").attr('fieldId');
+            if (fieldId) {
+                window.location.href = "${createLink(controller: 'template', action: 'moveFieldUp')}?fieldId=" + fieldId;
+                    }
+                });
+
+                $(".btnMoveFieldDown").click(function(e) {
+                    e.preventDefault();
+                    var fieldId = $(this).parents("[fieldId]").attr('fieldId');
+                    if (fieldId) {
+                        window.location.href = "${createLink(controller: 'template', action: 'moveFieldDown')}?fieldId=" + fieldId;
+                    }
+                });
+
+                $(".btnMoveFieldAnywhere").click(function(e) {
+                    e.preventDefault();
+                    var fieldId = $(this).parents("[fieldId]").attr('fieldId');
+                    if (fieldId) {
+                        $("#oldPosition").val($(this).parents("[fieldOrder]").attr("fieldOrder"));
+                        $("#dialogFieldId").val(fieldId);
+                        $("#dialog").dialog( "open" );
+                    }
+                });
+
+                $("#btnCancelMove").click(function(e) {
+                    e.preventDefault();
+                    $("#dialog").dialog( "close" );
+                });
+
+                $("#btnApplyMove").click(function(e) {
+                    e.preventDefault();
+                    var fieldId = $("#dialogFieldId").val();
+                    var newPosition = $("#newPosition").val();
+                    window.location.href = "${createLink(controller: 'template', action: 'moveFieldToPosition', id: templateInstance.id)}?fieldId=" + fieldId + "&newOrder=" + newPosition
+                });
+
+                $( "#dialog" ).dialog({
+                    minHeight: 200,
+                    minWidth: 400,
+                    resizable: false,
+                    autoOpen: false
+                });
+
+                $("#btnCleanUpOrdering").click(function(e) {
+                    e.preventDefault();
+                    window.location.href = "${createLink(controller: 'template', action: 'cleanUpOrdering', id: templateInstance.id)}";
+                });
+
+                $("#btnAddField").click(function(e) {
+                    e.preventDefault();
+                    var options = {
+                        title: "${message(code: "template.manageFields.add_field_to_template")}",
+                        url:"${createLink(action: 'addTemplateFieldFragment', id: templateInstance.id)}",
+                        onClose : function() { }
+                    };
+
+                    bvp.showModal(options);
+                });
+
+                $(".btnDeleteField").click(function(e) {
+                    e.preventDefault();
+                    var fieldId = $(this).parents("[fieldId]").attr("fieldId");
+                    if (fieldId) {
+                        if (confirm("${message(code: 'template.manageFields.are_you_sure_to_delete_this_field')}")) {
+                            window.location.href = "${createLink(controller: 'template', action: 'deleteField', id: templateInstance.id)}?fieldId=" + fieldId;
+                        }
+                    }
+                });
+
+                $(".btnEditField").click(function(e) {
+                    e.preventDefault();
+                    var fieldId = $(this).parents("[fieldId]").attr("fieldId");
+                    if (fieldId) {
+                        window.location.href = "${createLink(controller: 'templateField', action: 'edit')}/" + fieldId;
+                    }
+                });
+
+                $("#btnPreviewTemplate").click(function(e) {
+                    e.preventDefault();
+                    window.open("${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}", "TemplatePreview");
+                });
+
+                $("#btnExportAsCSV").click(function(e) {
+                    e.preventDefault();
+                    window.open("${createLink(controller: 'template', action: 'exportFieldsAsCSV', id: templateInstance.id)}", "CSVExport");
+                });
+
+                $("#btnImportFromCSV").click(function(e) {
+                    e.preventDefault();
+                    if (confirm("${message(code: 'template.manageFields.this_will_remove_existing_fields')}")) {
+                        $("form").submit();
+                    }
+                });
+
+                // Context sensitive help popups
+                $("a.fieldHelp").each(function() {
+                var self = this;
+                    $(self).qtip({
+                        content: $(self).attr('title'),
+                        position: {
+                            at: "top left",
+                            my: "bottom right"
+                        },
+                        style: {
+                            classes: 'qtip-bootstrap'
+                        }
+                    }).bind('click', function(e) { e.preventDefault(); return false; });
+                });
+
+                // Initialize input type file
+                $('input[type=file]').bootstrapFileInput();
+
+            });
+
+</asset:script>
 </body>
 </html>

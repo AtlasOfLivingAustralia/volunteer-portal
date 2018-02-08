@@ -34,7 +34,7 @@ class TemplateFieldService {
             field.validationRule = tokens[8]
             field.displayOrder = tokens[9] ? Integer.parseInt(tokens[9]) : null
             field.layoutClass = tokens[10]
-            field.save()
+            field.save(flush: true)
         }
 
     }

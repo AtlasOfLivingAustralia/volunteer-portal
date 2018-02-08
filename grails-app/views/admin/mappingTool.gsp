@@ -1,10 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><g:message code="admin.mappingtool.label" default="Administration - Mapping tool"/></title>
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady" async defer></script>
+    <cl:googleMapsScript callback="onGmapsReady"/>
 </head>
 
 <body class="admin">
@@ -22,7 +23,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <h4>Either drag the marker to a location, or search for a locality by name in the box below.</h4>
+                    <h4><g:message code="admin.mapping_tool.description" /></h4>
                     <hr/>
                 </div>
             </div>
@@ -30,18 +31,18 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="well well-small" id="mappingToolContent">
-                        <g:include controller="transcribe" action="geolocationToolFragment"/>
+                        <g:render template="/transcribe/geolocationTool" />
                     </div>
                 </div>
 
                 <div class="col-md-12 form-horizontal">
                     <table class="table">
                         <tr>
-                            <td>Locality</td>
-                            <td>State</td>
-                            <td>Country</td>
-                            <td>Latitude</td>
-                            <td>Longitude</td>
+                            <td><g:message code="admin.mapping_tool.locality" /></td>
+                            <td><g:message code="admin.mapping_tool.state" /></td>
+                            <td><g:message code="admin.mapping_tool.country" /></td>
+                            <td><g:message code="admin.mapping_tool.latitude" /></td>
+                            <td><g:message code="admin.mapping_tool.longitude" /></td>
                         </tr>
                         <tr>
                             <td>
@@ -63,7 +64,7 @@
                     </table>
                 </div>
             </div>
-            <button class="btn btn-default" id="btnToggleFullData">Toggle full geolocate data</button>
+            <button class="btn btn-default" id="btnToggleFullData"><g:message code="admin.mapping_tool.toggle_geolocate_data" /></button>
 
             <div class="row">
                 <div class="col-md-12 form-horizontal" style="display: none" id="allDataDiv">
@@ -77,13 +78,7 @@
 </div>
 
 
-<r:script type='text/javascript'>
-
-    var gmapsReady = false;
-    function onGmapsReady() {
-        gmapsReady = true;
-        $(window).trigger('digivol.gmapsReady');
-    }
+<asset:script type='text/javascript'>
 
     $(function() {
         $("#btnToggleFullData").click(function(e) {
@@ -127,6 +122,6 @@
 
     }
 
-</r:script>
+</asset:script>
 </body>
 </html>

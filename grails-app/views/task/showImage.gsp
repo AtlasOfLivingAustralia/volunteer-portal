@@ -2,13 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="Image Viewer"/></title>
-    <r:external dir="images/" file="favicon.ico"/>
+    <title><cl:pageTitle title="${message(code: 'task.showImage.image_viewer')}"/></title>
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
-    <r:require module="digivol" />
-    <r:require module="panZoom"/>
-    <r:require module="imageViewer"/>
-
+    <asset:stylesheet src="digivol" />
+    <asset:stylesheet src="image-viewer"/>
     <style type="text/css">
 
     button:disabled {
@@ -29,8 +27,7 @@
 
     </style>
 
-    <r:layoutResources/>
-
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 
 <body>
@@ -38,7 +35,7 @@
     <div id="imageViewerHeader">
         <div class="row">
             <div class="col-xs-12">
-                <h4>${taskInstance?.project?.featuredLabel} - ${taskInstance?.externalIdentifier}</h4>
+                <h4>${taskInstance?.project?.i18nName} - ${taskInstance?.externalIdentifier}</h4>
                 <cl:messages/>
             </div>
         </div>
@@ -47,24 +44,24 @@
 
             <div class="col-sm-9" id="journalPageButtons">
                 <button class="btn btn-default btn-small" id="showPreviousJournalPage"
-                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
-                    <img src="${resource(dir: 'images', file: 'left_arrow.png')}"> show previous
+                        title="${message(code: 'task.showImage.previous.description')}" ${prevTask ? '' : 'disabled="true"'}>
+                    <asset:image src="left_arrow.png"/> <g:message code="task.showImage.previous"/>
                 </button>
                 <button class="btn btn-default btn-small" id="showNextJournalPage"
-                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
-                    show next <img src="${resource(dir: 'images', file: 'right_arrow.png')}">
+                        title="${message(code: 'task.showImage.next.description')}" ${nextTask ? '' : 'disabled="true"'}>
+                    <g:message code="task.showImage.next"/> <asset:image src="right_arrow.png"/>
                 </button>
-                <button class="btn btn-default btn-small" id="rotateImage" title="Rotate the page 180 degrees">
-                    Rotate&nbsp;<img src="${resource(dir: 'images', file: 'rotate.png')}">
+                <button class="btn btn-default btn-small" id="rotateImage" title="${message(code: 'task.showImage.rotate.description')}">
+                    <g:message code="task.showImage.rotate"/>&nbsp;<asset:image src="rotate.png"/>
                 </button>
-                <button class="btn btn-default btn-small" id="closeWindow" title="Close this window">
-                    Close
+                <button class="btn btn-default btn-small" id="closeWindow" title="${message(code: 'task.showImage.close.description')}">
+                    <g:message code="task.showImage.close"/>
                 </button>
             </div>
 
             <div class="col-sm-3">
                 <g:if test="${sequenceNumber >= 0}">
-                    <span class="pull-right label label-info">Sequence number: ${sequenceNumber}</span>
+                    <span class="pull-right label label-info"><g:message code="task.showImage.sequence_number"/> ${sequenceNumber}</span>
                 </g:if>
             </div>
 
@@ -86,8 +83,10 @@
         </div>
     </div>
 </div>
+<asset:javascript src="digivol" />
+<asset:javascript src="image-viewer" asset-defer=""/>
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -153,10 +152,10 @@ function rotateImage() {
                 }
             }
 
-</r:script>
+</asset:script>
 
 <!-- JS resources-->
-<r:layoutResources/>
+<asset:deferredScripts/>
 
 </body>
 </html>

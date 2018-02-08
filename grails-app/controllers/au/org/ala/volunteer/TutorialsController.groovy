@@ -4,7 +4,7 @@ class TutorialsController {
 
     def tutorialService
 
-    def index = {
+    def index() {
         def tutorials = tutorialService.getTutorialGroups()
         [tutorials: tutorials]
     }

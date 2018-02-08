@@ -1,9 +1,21 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
             <label>
                 <g:checkBox name="hideDefaultButtons" value="${true}"/>
                 <g:message code="template.hideDefaultButtons.label" default="Hide Default Buttons"/>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-md-offset-3 col-md-6">
+        <div class="checkbox">
+            <label>
+                <g:checkBox name="hideNotesSection" value="${true}" />
+                <g:message code="template.hideNotesSection.label" default="Hide Notes Section" />
             </label>
         </div>
     </div>

@@ -18,6 +18,8 @@ class Task implements Serializable {
     Date dateLastUpdated
     Long lastViewed
     String lastViewedBy
+    Integer timeToTranscribe
+    Integer timeToValidate
 
     static belongsTo = [project: Project]
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
@@ -48,6 +50,8 @@ class Task implements Serializable {
         dateLastUpdated nullable: true
         lastViewed nullable: true
         lastViewedBy nullable: true
+        timeToTranscribe nullable: true
+        timeToValidate nullable: true
     }
 
     // These events use a static method rather than an injected service

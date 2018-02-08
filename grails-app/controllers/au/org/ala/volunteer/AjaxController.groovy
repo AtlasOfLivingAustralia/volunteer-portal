@@ -13,8 +13,8 @@ import java.text.SimpleDateFormat
 import groovy.sql.Sql
 import javax.sql.DataSource
 import java.sql.ResultSet
-import org.grails.plugins.csv.CSVWriter
-import org.grails.plugins.csv.CSVWriterColumnsBuilder
+import grails.plugins.csv.CSVWriter
+import grails.plugins.csv.CSVWriterColumnsBuilder
 
 import java.util.concurrent.TimeUnit
 
@@ -93,8 +93,8 @@ class AjaxController {
         setNoCache()
 
         if (!userService.isAdmin()) {
-            render "Must be logged in as an administrator to use this service!"
-            return;
+            render message(code: "ajax.must_be_logged_in_as_administrator")
+            return
         }
 
 
@@ -115,6 +115,8 @@ class AjaxController {
                 'last_activity' { it[6] ?: nodata }
                 'projects_count' { it[7] }
                 'volunteer_since' { it[8] }
+                'is_admin' { it[9] }
+                'is_validator' { it[10] }
             })
             writer.writeHeadings()
             response.flushBuffer()
@@ -158,7 +160,7 @@ class AjaxController {
 
         def sw3 = new Stopwatch().start()
         def asyncUserDetails = User.async.task {
-            def users = User.list()
+            def users = User.list(fetch:[userRoles:"eager", "userRoles.role": "eager"])
             def serviceResults = [:]
             try {
                 serviceResults = authService.getUserDetailsById(users*.userId, true)
@@ -185,6 +187,10 @@ class AjaxController {
 
         def report = []
 
+        final realAdminRole = 'ROLE_ADMIN'
+        final adminRole = CASRoles.ROLE_ADMIN
+        final validatorRole = CASRoles.ROLE_VALIDATOR
+
         def sw5 = new Stopwatch().start()
         for (User user: users) {
             def id = user.userId
@@ -195,7 +201,14 @@ class AjaxController {
 
             def serviceResult = serviceResults?.users?.get(id)
             def location = (serviceResult?.city && serviceResult?.state) ? "${serviceResult?.city}, ${serviceResult?.state}" : (serviceResult?.city ?: (serviceResult?.state ?: ''))
-            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created])
+
+            def userRoles = user.userRoles
+            def roleObjs = userRoles*.role
+            def roles = (roleObjs*.name + serviceResult?.roles).toSet()
+            def isAdmin = !roles.intersect([realAdminRole, adminRole]).isEmpty()
+            def isValidator = !roles.intersect([validatorRole]).isEmpty()
+
+            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created, isAdmin, isValidator])
         }
         sw5.stop()
         log.debug("UserReport generate report took ${sw5}")
@@ -231,7 +244,7 @@ class AjaxController {
 
         def writer = new CSVWriter(response.writer,  {
             'time' { sdf.format(it.time) }
-            'project' { it.taskDescriptor?.project?.name }
+            'project' { it.taskDescriptor?.project?.i18nName }
             'task_id' { it.taskDescriptor?.externalIdentifier }
             'succeeded' { it.succeeded }
             'error_message' { it.message }
@@ -255,8 +268,8 @@ class AjaxController {
         def results = []
         for (Project p : projects) {
             def project = [:]
-            project.name = p.name
-            project.description = p.description
+            project.name = p.i18nName
+            project.description = p.i18nDescription
             project.expeditionPageURL = createLink(controller: 'project', action: 'index', id: p.id, absolute: true)
             project.taskCount = Task.countByProject(p)
             project.transcribedCount = Task.countByProjectAndFullyTranscribedByNotIsNull(p)
@@ -312,7 +325,7 @@ class AjaxController {
                 response.writer.flush()
             }
         } else {
-            render([success: false, message:"Unable to retrieve project with id '${params.id}'"] as JSON)
+            render([success: false, message: message(code: "ajax.unable_to_retrieve_project_with_id", args: [params.id])] as JSON)
         }
     }
 
@@ -381,20 +394,39 @@ class AjaxController {
         harvesting()
     }
 
+    def i18nService
+
     def harvesting() {
-        final harvestables = Project.findAllByHarvestableByAla(true)
-        def results = harvestables.collect({
-            final link = createLink(absolute: true, controller: 'project', action: 'index', id: it.id)
-            final fullyTranscribedCount = it.tasks.count { t -> t.dateFullyTranscribed as boolean }
-            final fullyValidatedCount = it.tasks.count { t -> t.dateFullyValidated as boolean }
-            final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: it.id)
-            final topics = ProjectForumTopic.findAllByProject(it)
+//        final harvestables = Project.findAllByHarvestableByAla(true)
+        final c = Project.createCriteria()
+        final projects = c.scroll {
+            eq('harvestableByAla', true)
+        }
+
+        def results = []
+        while (projects.next()) {
+            Project project = (Project) projects.get()[0]
+            final link = createLink(absolute: true, controller: 'project', action: 'index', id: project.id)
+            final fullyTranscribedCount = project.tasks.count { t -> t.dateFullyTranscribed as boolean }
+            final fullyValidatedCount = project.tasks.count { t -> t.dateFullyValidated as boolean }
+            final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: project.id)
+
+            def citation = i18nService.message("harvest.citation", '{0} digitised at {1} ({2})', [project.i18nName, i18nService.message('default.application.name'), createLink(uri: '/', absolute: true)])
+            def licenseType = i18nService.message('harvest.license.type', 'Creative Commons Attribution Australia', [])
+            def licenseVersion = i18nService.message('harvest.license.version', '3.0', [])
+            results << [id: project.id, name: project.i18nName, description: project.i18nDescription, newsItemsCount: project.newsItems.size(), tasksCount: project.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl, citation: citation, licenseType: licenseType, licenseVersion: licenseVersion]
+        }
+
+        results.collect { result ->
+            final topics = ProjectForumTopic.withCriteria {
+                eq 'project.id', result.id
+            }
             def forumMessagesCount = 0
             if (topics) {
-                topics.each { topic -> forumMessagesCount += (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }
+                forumMessagesCount = topics.collect { topic -> (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }.sum()
             }
-            [id: it.id, name: it.name, description: it.description, forumMessagesCount: forumMessagesCount, newsItemsCount: it.newsItems.size(), tasksCount: it.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl]
-        })
+            result + [ forumMessagesCount: forumMessagesCount ]
+        }
 
         respond results
     }
@@ -479,7 +511,7 @@ class AjaxController {
         }.collect { task ->
             def id = task.id
             def projectId = task.project.id
-            def projectName = task.project.name
+            def projectName = task.project.i18nName
             def transcriber = task.fullyTranscribedBy
             def timestamp = task.dateFullyTranscribed
             def ipAddress = task.fullyTranscribedIpAddress
@@ -503,7 +535,7 @@ class AjaxController {
                     ipAddress: ipAddress
                 ],
                 transcriptionContent: [:],
-                discretionaryState: "Transcribed"
+                discretionaryState: message(code: "ajax.transcribed", args: [params.id])
             ]
         }
 
@@ -528,8 +560,8 @@ class AjaxController {
             mm = [:]
         }
 
-        final invalidState = 'N/A'
-        final defaultCountry = 'Australia' // we don't record country, so use this if we have a state, todo externalise
+        final invalidState = message(code: "ajax.invalid_state", args: [params.id])
+        final defaultCountry = message(code: "ajax.default_country", args: [params.id]) // we don't record country, so use this if we have a state, todo externalise
 
         items.each {
             def id = it.id

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
@@ -70,7 +71,7 @@
                                     ${projectInstance.project.id}
                                 </td>
                                 <td style="vertical-align: middle;">
-                                    <g:link action="edit" id="${projectInstance.project.id}">${fieldValue(bean: projectInstance.project, field: "name")}</g:link>
+                                    <g:link action="edit" id="${projectInstance.project.id}">${projectInstance?.project?.name?.toString()}</g:link>
                                 </td>
 
                                 <td style="vertical-align: middle;">${fieldValue(bean: projectInstance, field: "percentTranscribed")}</td>
@@ -99,13 +100,14 @@
         </div>
     </div>
 </div>
-<r:script>
+<asset:script>
 jQuery(function($) {
   $('.archive-project').click(function(e) {
     var $this = $(this);
     var href = $this.data('href');
     var name = $this.data('projectName');
-    bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
+
+    bootbox.confirm(${message(code: "project.archive.line1")}+"\"" + name + "\"?  ${message(code: "project.archive.line2")}", function(result) {
       if (result) {
         $.post(href).then(function() {
         window.location.reload();
@@ -121,6 +123,6 @@ jQuery(function($) {
     });
   })
 });
-</r:script>
+</asset:script>
 </body>
 </html>

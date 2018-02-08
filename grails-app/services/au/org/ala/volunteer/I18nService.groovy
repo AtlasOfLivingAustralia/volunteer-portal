@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
+import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
 
@@ -37,7 +37,7 @@ class I18nService {
         def msg = messageSource.getMessage(code, args?.toArray(), defaultMessage, locale)
 
         if (msg == null || msg == defaultMessage) {
-            log.info("No i18n messages specified for code: ${code}")
+            log.debug("No i18n messages specified for code: ${code}")
             msg = defaultMessage
         }
 

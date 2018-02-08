@@ -1,7 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Field; au.org.ala.volunteer.TemplateField" %>
-<r:require module="jquery"/>
-<r:require module="imageViewer"/>
-
 <div class="row">
 
     <div class="col-md-6">
@@ -21,15 +19,15 @@
             <table class="table table-condensed table-striped table-hover">
                 <thead>
                 <tr>
-                    <th>Field</th>
-                    <th>Name</th>
+                    <th><g:message code="forum.task_summary.field"/></th>
+                    <th><g:message code="forum.task_summary.name"/></th>
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${fields.sort { it.name }}" var="field">
                     <g:if test="${!field.superceded && field.value}">
                         <tr>
-                            <td>${templateFields[field.name]?.label ?: field.name}</td>
+                            <td>${templateFields[field.name]?.label ?: field.name.equals("catalogNumber")?message(code:"transcribe.templateViews.all.catalogue_no"):field.name}</td>
                             <td>${field.value}</td>
                         </tr>
                     </g:if>
@@ -40,13 +38,9 @@
     </div>
 
 </div>
-
-<r:script>
-
+<asset:javascript src="image-viewer" asset-defer=""/>
+<asset:script>
     $(document).ready(function () {
         setupPanZoom();
     });
-
-
-
-</r:script>
+</asset:script>

@@ -69,9 +69,15 @@ class SettingsService {
             } else {
                 setting.value = null
             }
+            if (!setting.save(failOnError: true, flush: true)) {
+                log.error("Coudln't save setting $setting because ${setting.errors}")
+            }
         } else {
             setting = new Setting(key: key, value: value)
-            setting.save()
+            setting.save(flush: true)
+            if (setting.hasErrors()) {
+                log.error("Couldn't save setting $setting because ${setting.errors}")
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
 <html>
 <head>
@@ -12,7 +13,7 @@
     <cl:headerContent title="${message(code: 'default.edit.label', args: [entityName])} - ${rule.name}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
                     [link: createLink(controller: 'validationRule', action: 'list'), label: message(code: 'default.list.label', args: ['ValidationRule'])],
             ]
         %>
@@ -77,7 +78,7 @@
                             <div class="col-md-offset-3 col-md-9">
                                 <g:actionSubmit class="btn save btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                <a href="${createLink(controller: 'validationRule', action: 'list')}" class="btn btn-default">Cancel</a>
+                                <a href="${createLink(controller: 'validationRule', action: 'list')}" class="btn btn-default"><g:message code="default.cancel" /></a>
                             </div>
                         </div>
                     </g:form>

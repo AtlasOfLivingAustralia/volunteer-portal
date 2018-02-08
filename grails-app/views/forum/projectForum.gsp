@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="${projectInstance.name} Forum"/></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><cl:pageTitle title="${projectInstance.i18nName} Forum"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+    <asset:stylesheet src="forum.css"/>
 
     <style type="text/css">
 
@@ -34,8 +35,8 @@
 
 <body class="forum">
 
-<r:require module="url"/>
-<r:script type="text/javascript">
+<asset:javascript src="uri" asset-defer=""/>
+<asset:script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -49,7 +50,7 @@
                     var topicId = $(this).parents("tr[topicId]").attr("topicId");
 
                     if (topicId) {
-                        if (confirm("Are you sure you want to delete this topic?")) {
+                        if (confirm("${message(code: 'forum.are_you_sure_to_delete')}")) {
                             window.location = "${createLink(controller: 'forum', action: 'deleteProjectTopic')}?topicId=" + topicId;
                         }
 
@@ -76,7 +77,7 @@
                 var url = "${createLink(controller: 'forum', action: 'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}";
 
                 function displayTaskTopicsSpinner() {
-                    $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${resource(dir: 'images', file: 'spinner.gif')}"/></div>');
+                    $("#tabTaskTopics").html('<div>${message(code: 'forum.searching_for_task_topics')} <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
                 }
 
                 function activateTaskTopics(jqElem, params) {
@@ -131,12 +132,12 @@
 
     });
 
-</r:script>
+</asset:script>
 
-<cl:headerContent title="Expedition Forum" selectedNavItem="forum">
+<cl:headerContent title="${message(code: 'forum.expedition_forum')}" selectedNavItem="forum">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName]
         ]
     %>
 </cl:headerContent>
@@ -149,7 +150,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="thumbnail">
-                                <img src="${projectInstance.featuredImage}" alt="${projectInstance.name}" title="${projectInstance.name}">
+                                <img src="${projectInstance.featuredImage}" alt="${projectInstance.i18nName}" title="${projectInstance.i18nName}">
                                 <g:if test="${projectInstance.featuredImageCopyright}">
                                     <div class="caption">
                                         <g:message code="image.attribution.prefix" /> ${projectInstance.featuredImageCopyright}
@@ -158,15 +159,15 @@
                             </div>
                         </div>
                         <div class="col-md-9">
-                            <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.featuredLabel}</a></h2>
+                            <h2><a href="${createLink(controller: 'project', action: 'index', id: projectInstance.id)}">${projectInstance.i18nName}</a></h2>
                             <h3>${projectInstance.featuredOwner}</h3>
-                            <p>${raw(projectInstance.description)}</p>
+                            <p>${raw(projectInstance.i18nDescription?.toString())}</p>
                         </div>
                     </div>
                     <div class="alert alert-success">
                         <div class="notifyMe">
                             <g:checkBox name="watchProject" id="watchProjectCheckbox"
-                                        checked="${isWatching}"/>&nbsp;Email me when messages are posted to this project
+                                        checked="${isWatching}"/>&nbsp;<g:message code="forum.email_me"/>
                             <span id="watchUpdateMessage"></span>
                         </div>
                     </div>
@@ -176,10 +177,10 @@
                         <ul class="nav nav-tabs">
                             <li class="${!params.selectedTab ? 'active' : ''}"><a id="tabProject" href="#tabProjectTopics"
                                                                                   class="forum-tab-title" data-toggle="tab"
-                                                                                  tabIndex="0">Expedition Topics</a></li>
+                                                                                  tabIndex="0"><g:message code="forum.expedition_topics"/></a></li>
                             <li class="${params.selectedTab == '1' ? 'active' : ''}"><a id="tabTasks" href="#tabTaskTopics"
                                                                                         class="forum-tab-title" data-toggle="tab"
-                                                                                        tabIndex="1">Task Topics</a></li>
+                                                                                        tabIndex="1"><g:message code="forum.task_topics"/></a></li>
                         </ul>
                     </div>
                     <div class="tab-content-bg">
@@ -188,7 +189,7 @@
                             <div id="tabProjectTopics" class="tabContent tab-pane ${!params.selectedTab ? 'active' : ''}">
                                 <div class="buttonBar">
                                     <button id="btnNewProjectTopic" class="btn btn-default">
-                                        Create a new topic&nbsp;<img src="${resource(dir: 'images', file: 'newTopic.png')}"/>
+                                        <g:message code="forum.create_new_topic"/>&nbsp;<asset:image src="newTopic.png"/>
                                     </button>
                                 </div>
 

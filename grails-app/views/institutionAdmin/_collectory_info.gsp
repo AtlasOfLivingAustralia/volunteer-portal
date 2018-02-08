@@ -1,43 +1,47 @@
-<r:style type="text/css">
-    dt, dd { display: inline; margin: 0; }
+<%@ page contentType="text/html; charset=UTF-8" %>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+        dt, dd { display: inline; margin: 0; }
 
-    dt:after {
-        content: ':';
-    }
-    dd:after {
-        content: '\A';
-        white-space: pre;
-    }
+        dt:after {
+            content: ':';
+        }
+        dd:after {
+            content: '\A';
+            white-space: pre;
+        }
 
-    @media (max-width: 767px) {
-        #pop-col-val {
-            margin-top: 10px;
-            margin-bottom: 10px;
+        @media (max-width: 767px) {
+            #pop-col-val {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            .icon-arrow-populate {
+                background-position: -289px -96px;
+            }
         }
-        .icon-arrow-populate {
-            background-position: -289px -96px;
+        @media (min-width: 768px) {
+            #pop-col-val {
+                margin-top: 7em;
+            }
+            .icon-arrow-populate {
+                background-position: -240px -96px;
+            }
         }
-    }
-    @media (min-width: 768px) {
-        #pop-col-val {
-            margin-top: 7em;
-        }
-        .icon-arrow-populate {
-            background-position: -240px -96px;
-        }
-    }
-</r:style>
+    </style>
+</head>
 <dl>
-    <dt>Name</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.name"/></dt>
     <dd id="collec-dt-name" class="collec-dt"></dd>
-    <dt>Description</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.description"/></dt>
     <dd id="collec-dt-desc" class="collec-dt"></dd>
-    <dt>Contact Email</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.email"/></dt>
     <dd id="collec-dt-email" class="collec-dt"></dd>
-    <dt>Contact Phone</dt>
+    <dt><g:message code="institutionAdmin.collectory_info.phone"/></dt>
     <dd id="collec-dt-phone" class="collec-dt"></dd>
 </dl>
-<r:script>
+<asset:script>
     jQuery(function($) {
         var apiPrefix = "${createLink(controller: 'ajax', action: 'collectoryObjectDetails')}";
         var model = {};
@@ -117,4 +121,4 @@
         function setEmail() { $('#contactEmail').val(modelVal(model, 'email')); };
         function setPhone() { $('#contactPhone').val(modelVal(model, 'phone')); };
     });
-</r:script>
+</asset:script>

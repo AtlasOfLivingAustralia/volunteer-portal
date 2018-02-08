@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><g:message code="default.application.name"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+    <asset:stylesheet src="forum.css"/>
 </head>
 
 <body class="forum">
@@ -54,14 +55,14 @@
                                 <div class="col-md-offset-3 col-md-9">
                                     <label for="featured">
                                         <g:checkBox name="featured" checked="${topic.featured}"/>
-                                        <g:message code="forum.featured.label" default="Featured topic"/> (<span>will be displayed on the Forum entry page if ticked</span>)
+                                        <g:message code="forum.featured.label" default="Featured topic"/> <g:message code="forum.edit_topic.featured.description"/>
                                     </label>
                                 </div>
                             </div>
                         </vpf:ifModerator>
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
-                                <button class="btn btn-primary" type="submit">Update</button>
+                                <button class="btn btn-primary" type="submit"><g:message code="default.button.update.label"/></button>
                             </div>
                         </div>
                     </g:form>

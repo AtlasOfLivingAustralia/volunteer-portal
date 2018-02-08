@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><g:message code="default.application.name"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'vp.css')}"/>--}%
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
+    <asset:stylesheet src="forum.css"/>
 
     <style type="text/css">
     </style>
@@ -14,12 +14,12 @@
 
 <body class="forum">
 
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
     $(document).ready(function () {
     });
 
-</r:script>
+</asset:script>
 
 <cl:headerContent title="Search results: '${query}'" selectedNavItem="forum">
     <%
@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <p>
-                        <strong>${results.totalCount} matching message${results.totalCount == 1 ? '' : 's'} found.</strong>
+                        <strong>${results.totalCount == 1 ? message(code: 'forum.search.matching_message_found', args: [results.totalCount]) : message(code: 'forum.search.matching_messages_found', args: [results.totalCount])}</strong>
                     </p>
                     <section id="searchResults">
                         <vpf:messagesTable messages="${results}"/>

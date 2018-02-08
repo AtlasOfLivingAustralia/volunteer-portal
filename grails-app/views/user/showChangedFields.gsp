@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Task; au.org.ala.volunteer.Field; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.Project; au.org.ala.volunteer.Template; au.org.ala.volunteer.DarwinCoreField;" %>
 
 <p><i>Last Modified By: ${recordValues?.entrySet()[0]?.getValue().lastModifiedBy}</i> </p>
@@ -6,9 +7,9 @@
     <table class="table table-striped table-hover">
         <thead>
             <tr>
-                <td style="color:#307991"><g:message code='What has changed?' /></td>
-                <td style="color:#307991"><g:message code="Previous Values"/></td>
-                <td style="color:#307991"><g:message code="Recent changes"/></td>
+                <td style="color:#307991"><g:message code='user.showChangedFields.whats_changed' /></td>
+                <td style="color:#307991"><g:message code="user.showChangedFields.previous_values"/></td>
+                <td style="color:#307991"><g:message code="user.showChangedFields.recent_changed"/></td>
             </tr>
             </thead>
         <tbody>

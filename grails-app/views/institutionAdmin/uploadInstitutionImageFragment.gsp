@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
 
     <g:uploadForm class="form-horizontal" action="uploadInstitutionImage">
@@ -11,7 +12,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-6">
                 <g:submitButton name="btnUploadInstitutionImage" class="btn btn-primary" value="Upload"/>
-                <button type="button" class="btn btn-default" id="btnCancelInstitutionImageUpload">Cancel</button>
+                <button type="button" class="btn btn-default" id="btnCancelInstitutionImageUpload"><g:message code="default.cancel"/></button>
             </div>
         </div>
     </g:uploadForm>

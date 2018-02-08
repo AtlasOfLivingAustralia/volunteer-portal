@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; chars  et=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -8,128 +9,403 @@
 <%@ page contentType="text/html; UTF-8" %>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-transcribe"/>
 
-    <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
-    <script type="text/javascript">
-        var gmapsReady = false;
-        function onGmapsReady() {
-            gmapsReady = true;
-            $(window).trigger('digivol.gmapsReady');
-        }
-    </script>
-    <script type="text/javascript" async defer src="http://maps.google.com/maps/api/js?v=3&callback=onGmapsReady"></script>
-    <r:require module="digivol-transcribe" />
-    <r:require module="bvp-js" />
-    <r:require module="panZoom"/>
-    <r:require module="jqZoom"/>
-    <r:require module="imageViewer"/>
-    <r:require module="transcribeWidgets"/>
-    <r:require module="amplify"/>
+    <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
 
-    <r:script>
+    <cl:googleMapsScript callback="onGmapsReady"/>
+    <asset:stylesheet src="image-viewer"/>
+    <asset:stylesheet src="transcribe-widgets"/>
 
-            // global Object
-            var VP_CONF = {
-                taskId: "${taskInstance?.id}",
+    <style type="text/css">
+
+    .ui-state-hover, .ui-widget-content .ui-state-hover {
+        border: none;
+    }
+
+    #image-container, #image-parent-container {
+        background-color: #a9a9a9;
+    }
+
+    #taskMetadata ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    #taskMetadata ul li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #taskMetadata .metaDataLabel {
+        font-weight: bold;
+    }
+
+
+    .transcribeSectionBody {
+        border-top: 1px solid #d3d3d3;
+        padding-top: 10px;
+    }
+
+    .transcribeSectionHeaderLabel {
+        font-weight: bold;
+    }
+
+
+    .closeSectionLink {
+        float: right;
+    }
+
+
+    /* Mapping tool (popup) */
+
+    #mapCanvas {
+        height: 500px;
+    }
+
+    #mapWidgets .searchHint {
+        font-size: 12px;
+        padding: 4px 0;
+        line-height: 1.2em;
+        color: #666;
+    }
+
+    </style>
+    <g:layoutHead/>
+
+</head>
+
+<body>
+
+<section id="transcription-template">
+    <div id="page-header" class="row branding-row">
+        <div class="col-sm-5">
+
+
+            <div class="transcription-branding">
+                <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
+                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.i18nName}</g:link> ${taskInstance?.externalIdentifier}</h1>
+                <h2><g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
+            </div>
+
+        </div>
+        <div class="col-sm-7 col-xs-12 transcription-controls">
+
+            <div class="btn-group" role="group" aria-label="Transcription controls">
+                <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
+                        title="Skip the to next image"><g:message code="default.skip"/></button>
+                <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
+                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank"><g:message code="transcribe.task.view_tutorial"/></g:link>
+            </div>
+
+        </div>
+
+    </div>
+    <g:hasErrors bean="${taskInstance}">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="errors">
+                    <g:message code="transcribe.task.problem_saving_your_edit"/> <g:renderErrors bean="${taskInstance}" as="list"/>
+                </div>
+            </div>
+        </div>
+    </g:hasErrors>
+
+    <div class="row">
+        <g:if test="${taskInstance}">
+            <g:form class="transcribeForm col-sm-12">
+
+                <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
+                <g:hiddenField name="redirect" value="${params.redirect}"/>
+                <g:hiddenField name="id" value="${taskInstance?.id}"/>
+
+                <g:set var="sectionNumber" value="${1}"/>
+
+                <g:set var="nextSectionNumber" value="${{ sectionNumber++ }}"/>
+
+                <g:render template="/transcribe/${template.viewName}"
+                          model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}"/>
+
+                <g:if test="${!template.viewParams.hideNotesSection}">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="panel panel-default transcribeSection">
+                                <div class="panel-body">
+                                    <div class="row transcribeSectionHeader">
+                                        <div class="col-sm-12">
+                                            <span class="transcribeSectionHeaderLabel"><g:if
+                                                    test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if><g:message code="transcribe.task.notes"/>
+                                            <a style="float:right" class="closeSectionLink" href="#"><g:message code="task.shrink"/>Shrink</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="transcribeSectionBody">
+                                        <div class="row">
+
+                                            <div class="col-sm-6">
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        ${(validator) ? message(code: "transcribe.task.transcriber_notes") : message(code: "transcribe.task.your_notes")}
+                                                    </div>
+
+                                                    <div class="col-sm-8">
+                                                        <g:textArea name="recordValues.0.transcriberNotes"
+                                                                    value="${recordValues?.get(0)?.transcriberNotes}"
+                                                                    id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6">
+                                                <g:if test="${validator}">
+                                                    <div class="row">
+                                                        <div class="col-sm-4">${message(code: "transcribe.task.validator_notes")}</div>
+
+                                                        <div class="col-sm-8">
+                                                            <g:textArea name="recordValues.0.validatorNotes"
+                                                                        value="${recordValues?.get(0)?.validatorNotes}"
+                                                                        id="recordValues.0.validatorNotes" rows="5" cols="40"
+                                                                        class="form-control"/>
+                                                        </div>
+                                                    </div>
+                                                </g:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </g:if>
+
+                <g:if test="${!isReadonly}">
+                    <g:set var="okCaption" value="${message(code: 'transcribe.task.submit_for_validation_anyway')}"/>
+                    <g:set var="cancelCaption" value="${message(code: 'transcribe.task.cancel_submission')}"/>
+                    <g:if test="${validator}">
+                        <g:set var="okCaption" value="${message(code: 'transcribe.task.mark_valid_anyway')}"/>
+                        <g:set var="cancelCaption" value="${message(code: 'transcribe.task.cancel_validation')}"/>
+                    </g:if>
+                    <div class="row" id="errorMessagesContainer" style="display: none">
+                        <div class="col-sm-12">
+                            <div class="alert alert-danger">
+                                <p class="lead">
+                                    <strong><g:message code="transcribe.task.warning"/></strong>
+                                    <g:message code="transcribe.task.warning.problems_with_the_fields_indicated"/>
+
+                                    <br/>
+                                    <button id="btnErrorCancelSubmission" class="btn btn-primary">${cancelCaption}</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="warningMessagesContainer" style="display: none">
+                        <div class="col-sm-12">
+                            <div class="alert alert-warning">
+                                <p class="lead">
+                                    <strong><g:message code="transcribe.task.warning"/></strong>
+                                    <g:message code="transcribe.task.warning.there_may_be_problems_with_the_fields_indicated"/>
+
+                                </p>
+
+                                <div>
+                                    <button id="btnValidateSubmitInvalid" class="btn btn-default bvp-submit-button">${okCaption}</button>
+                                    <button id="btnWarningCancelSubmission"
+                                            class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <g:if test="${!template.viewParams.hideDefaultButtons}">
+                        <div id="submitButtons" class="row">
+                            <div class="col-sm-12">
+                                <g:if test="${validator}">
+                                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i
+                                            class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
+                                    </button>
+                                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
+                                            class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
+                                    </button>
+                                    <button type="button" class="btn btn-default bvp-submit-button"
+                                            id="showNextFromProject"><g:message code="default.skip"/></button>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+                                    <g:if test="${validator}">
+                                        <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
+                                    </g:if>
+                                </g:if>
+                                <g:else>
+                                    <button type="button" id="btnSave"
+                                            class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
+                                    <button type="button" id="btnSavePartial"
+                                            class="btn btn-default bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                                    <button type="button" class="btn btn-default bvp-submit-button"
+                                            id="showNextFromProject"><g:message code="default.skip"/></button>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+                                </g:else>
+                            </div>
+                        </div>
+                    </g:if>
+                </g:if>
+
+                <div class="container-fluid">
+                    <div class="row" style="margin-top:10px">
+                        <div class="col-sm-12">
+                            <cl:validationStatus task="${taskInstance}"/>
+                        </div>
+                    </div>
+                </div>
+            </g:form>
+        </g:if>
+        <g:else>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="alert alert-warning">
+                        <g:message code="transcribe.task.no_tasks_loaded"/>
+                    </div>
+                </div>
+            </div>
+        </g:else>
+    </div>
+</section> %{-- transcription-template --}%
+
+
+<div id="submitConfirmModal" class="modal fade" tabindex="-1" role="dialog">
+    <!-- dialog contents -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="col-sm-12">
+                        <p><g:message code="transcribe.task.submit.confirm" default="Submit your selections?"/></p>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-1 col-sm-11">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> <g:message code="transcribe.task.warning.dont_ask_me_again"/>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
+                        data-dismiss="modal"><g:message code="default.cancel"/></button>
+                <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary"><g:message code="default.submit"/></button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<asset:javascript src="digivol-transcribe" asset-defer="" />
+<asset:script>
+
+    // global Object
+    var VP_CONF = {
+        taskId: "${taskInstance?.id}",
                 picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}",
                 updatePicklistUrl: "${createLink(controller: 'picklistItem', action: 'updateLocality')}",
                 nextTaskUrl: "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id)}",
                 isReadonly: "${isReadonly}",
                 isValid: ${(taskInstance?.isValid) ? "true" : "false"}
-        };
+    };
 
-        <g:if test="${complete}">
-            amplify.store("bvp_task_${complete}", null);
-        </g:if>
+    <g:if test="${complete}">
+        amplify.store("bvp_task_${complete}", null);
+    </g:if>
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            jQuery.fn.extend({
+        jQuery.fn.extend({
 
-                insertAtCaret: function(myValue) {
+            insertAtCaret: function(myValue) {
 
-                    return this.each(function(i) {
-                        if (document.selection) {
-                            //For browsers like Internet Explorer
-                            this.focus();
-                            var sel = document.selection.createRange();
-                            sel.text = myValue;
-                            this.focus();
-                        } else if (this.selectionStart || this.selectionStart == '0') {
-                            //For browsers like Firefox and Webkit based
-                            var startPos = this.selectionStart;
-                            var endPos = this.selectionEnd;
-                            var scrollTop = this.scrollTop;
-                            this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
-                            this.focus();
-                            this.selectionStart = startPos + myValue.length;
-                            this.selectionEnd = startPos + myValue.length;
-                            this.scrollTop = scrollTop;
-                        } else {
-                            this.value += myValue;
-                            this.focus();
-                        }
-                    });
-                }
-            });
+                return this.each(function(i) {
+                    if (document.selection) {
+                        //For browsers like Internet Explorer
+                        this.focus();
+                        var sel = document.selection.createRange();
+                        sel.text = myValue;
+                        this.focus();
+                    } else if (this.selectionStart || this.selectionStart == '0') {
+                        //For browsers like Firefox and Webkit based
+                        var startPos = this.selectionStart;
+                        var endPos = this.selectionEnd;
+                        var scrollTop = this.scrollTop;
+                        this.value = this.value.substring(0, startPos)+myValue+this.value.substring(endPos,this.value.length);
+                        this.focus();
+                        this.selectionStart = startPos + myValue.length;
+                        this.selectionEnd = startPos + myValue.length;
+                        this.scrollTop = scrollTop;
+                    } else {
+                        this.value += myValue;
+                        this.focus();
+                    }
+                });
+            }
+        });
 
-            $(".transcribeForm").submit(function(eventObj) {
-                if (!transcribeWidgets.evaluateBeforeSubmitHooks(eventObj)) {
-                  return false;
-                }
+        $(".transcribeForm").submit(function(eventObj) {
+            if (!transcribeWidgets.evaluateBeforeSubmitHooks(eventObj)) {
+              return false;
+            }
 
-                transcribeWidgets.prepareFieldWidgetsForSubmission();
+            transcribeWidgets.prepareFieldWidgetsForSubmission();
 
-                // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
-                saveFormState();
+            // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
+            saveFormState();
 
-                return true;
-            });
+            return true;
+        });
 
 
-            // display previous journal page in new window
-            $("#showPreviousJournalPage").click(function(e) {
-                e.preventDefault();
-        <g:if test="${prevTask}">
-            var uri = "${createLink(controller: 'task', action: 'showImage', id: prevTask.id)}"
+        // display previous journal page in new window
+        $("#showPreviousJournalPage").click(function(e) {
+            e.preventDefault();
+    <g:if test="${prevTask}">
+        var uri = "${createLink(controller: 'task', action: 'showImage', id: prevTask.id)}"
                         var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
                         if (window.focus) {
                             newwindow.focus()
                         }
-        </g:if>
-        });
+    </g:if>
+    });
 
-        // display next journal page in new window
-        $("#showNextJournalPage").click(function(e) {
-            e.preventDefault();
-        <g:if test="${nextTask}">
-            var uri = "${createLink(controller: 'task', action: 'showImage', id: nextTask.id)}"
+    // display next journal page in new window
+    $("#showNextJournalPage").click(function(e) {
+        e.preventDefault();
+    <g:if test="${nextTask}">
+        var uri = "${createLink(controller: 'task', action: 'showImage', id: nextTask.id)}"
                         var newwindow = window.open(uri,'journalWindow','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=1000');
                         if (window.focus) {
                             newwindow.focus()
                         }
-        </g:if>
-        });
+    </g:if>
+    });
 
-        $("#rotateImage").click(function(e) {
-            e.preventDefault();
-            rotateImage();
-        });
+    $("#rotateImage").click(function(e) {
+        e.preventDefault();
+        rotateImage();
+    });
 
-        $(".btnCopyFromPreviousTask").click(function(e) {
-            e.preventDefault();
-            showPreviousTaskBrowser();
-        });
+    $(".btnCopyFromPreviousTask").click(function(e) {
+        e.preventDefault();
+        showPreviousTaskBrowser();
+    });
 
-        $("#btnGeolocate").click(function(e) {
-            e.preventDefault();
-            showGeolocationTool();
-        });
+    $("#btnGeolocate").click(function(e) {
+        e.preventDefault();
+        showGeolocationTool();
+    });
 
-        $("#showImageWindow").click(function(e) {
-            e.preventDefault();
-            window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
+    $("#showImageWindow").click(function(e) {
+        e.preventDefault();
+        window.open("${createLink(controller: 'task', action: "showImage", id: taskInstance.id)}", "imageViewer", 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=600');
                 });
 
                 suppressReturnKey();
@@ -164,14 +440,14 @@
             }
 
             function applyReadOnlyIfRequired() {
-        <g:if test="${isReadonly}">
-            $(":input").not('.skip,.comment-control :input').hover(function(e){alert('You do not have permission to edit this task.')}).attr('disabled','disabled').attr('readonly','readonly');
-        </g:if>
-        }
+    <g:if test="${isReadonly}">
+        $(":input").not('.skip,.comment-control :input').hover(function(e){alert('${message(code: 'transcribe.task.no_permission')}')}).attr('disabled','disabled').attr('readonly','readonly');
+    </g:if>
+    }
 
-        function showGeolocationTool() {
-            bvp.showModal({
-                url: "${createLink(controller: 'transcribe', action: 'geolocationToolFragment')}",
+    function showGeolocationTool() {
+        bvp.showModal({
+            url: "${createLink(controller: 'transcribe', action: 'geolocationToolFragment')}",
                     size: 'large',
                     //height: 500,
                     //hideHeader: true,
@@ -362,295 +638,17 @@
                 }
             }
 
-    </r:script>
-
-    <style type="text/css">
-
-    .ui-state-hover, .ui-widget-content .ui-state-hover {
-        border: none;
-    }
-
-    #image-container, #image-parent-container {
-        background-color: #a9a9a9;
-    }
-
-    #taskMetadata ul {
-        margin: 0;
-        padding: 0;
-    }
-
-    #taskMetadata ul li {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    #taskMetadata .metaDataLabel {
-        font-weight: bold;
-    }
-
-
-    .transcribeSectionBody {
-        border-top: 1px solid #d3d3d3;
-        padding-top: 10px;
-    }
-
-    .transcribeSectionHeaderLabel {
-        font-weight: bold;
-    }
-
-
-    .closeSectionLink {
-        float: right;
-    }
-
-
-    /* Mapping tool (popup) */
-
-    #mapCanvas {
-        height: 500px;
-    }
-
-    #mapWidgets .searchHint {
-        font-size: 12px;
-        padding: 4px 0;
-        line-height: 1.2em;
-        color: #666;
-    }
-
-    </style>
-
-</head>
-
-<body>
-
-<section id="transcription-template">
-    <div id="page-header" class="row branding-row">
-        <div class="col-sm-5">
-
-
-            <div class="transcription-branding">
-                <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
-                <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
-                <h2><g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
-            </div>
-
-        </div>
-        <div class="col-sm-7 col-xs-12 transcription-controls">
-
-            <div class="btn-group" role="group" aria-label="Transcription controls">
-                <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
-                        title="Skip the to next image">Skip</button>
-                <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
-                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
-            </div>
-
-        </div>
-
-    </div>
-    <g:hasErrors bean="${taskInstance}">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="errors">
-                    There was a problem saving your edit: <g:renderErrors bean="${taskInstance}" as="list"/>
-                </div>
-            </div>
-        </div>
-    </g:hasErrors>
-
-    <div class="row">
-        <g:if test="${taskInstance}">
-            <g:form class="transcribeForm col-sm-12">
-
-                <g:hiddenField name="recordId" value="${taskInstance?.id}"/>
-                <g:hiddenField name="redirect" value="${params.redirect}"/>
-                <g:hiddenField name="id" value="${taskInstance?.id}"/>
-
-                <g:set var="sectionNumber" value="${1}"/>
-
-                <g:set var="nextSectionNumber" value="${{ sectionNumber++ }}"/>
-
-                <g:render template="/transcribe/${template.viewName}"
-                          model="${[taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, nextTask: nextTask, prevTask: prevTask, sequenceNumber: sequenceNumber, imageMetaData: imageMetaData]}"/>
-
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-default transcribeSection">
-                            <div class="panel-body">
-                                <div class="row transcribeSectionHeader">
-                                    <div class="col-sm-12">
-                                        <span class="transcribeSectionHeaderLabel"><g:if
-                                                test="${!template.viewParams.hideSectionNumbers}">${nextSectionNumber()}.</g:if>Notes</span> &nbsp; Record any comments here that may assist in validating this task
-                                        <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
-                                    </div>
-                                </div>
-
-                                <div class="transcribeSectionBody">
-                                    <div class="row">
-
-                                        <div class="col-sm-6">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    ${(validator) ? 'Transcriber' : 'Your'} Notes
-                                                </div>
-
-                                                <div class="col-sm-8">
-                                                    <g:textArea name="recordValues.0.transcriberNotes"
-                                                                value="${recordValues?.get(0)?.transcriberNotes}"
-                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-sm-6">
-                                            <g:if test="${validator}">
-                                                <div class="row">
-                                                    <div class="col-sm-4">Validator Notes</div>
-
-                                                    <div class="col-sm-8">
-                                                        <g:textArea name="recordValues.0.validatorNotes"
-                                                                    value="${recordValues?.get(0)?.validatorNotes}"
-                                                                    id="recordValues.0.validatorNotes" rows="5" cols="40"
-                                                                    class="form-control"/>
-                                                    </div>
-                                                </div>
-                                            </g:if>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <g:if test="${!isReadonly}">
-                    <g:set var="okCaption" value="It's ok, submit for validation anyway"/>
-                    <g:set var="cancelCaption" value="Cancel submission, and let me fix the marked fields"/>
-                    <g:if test="${validator}">
-                        <g:set var="okCaption" value="It's ok, mark as valid anyway"/>
-                        <g:set var="cancelCaption" value="Cancel validation, and let me fix the marked fields"/>
-                    </g:if>
-                    <div class="row" id="errorMessagesContainer" style="display: none">
-                        <div class="col-sm-12">
-                            <div class="alert alert-danger">
-                                <p class="lead">
-                                    <strong>Warning!</strong>
-                                    There are problems with the field(s) indicated.
-                                    Please correct the fields marked in red before proceeding.
-                                    <br/>
-                                    <button id="btnErrorCancelSubmission" class="btn btn-primary">${cancelCaption}</button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" id="warningMessagesContainer" style="display: none">
-                        <div class="col-sm-12">
-                            <div class="alert alert-warning">
-                                <p class="lead">
-                                    <strong>Warning!</strong> There may be some problems with the fields indicated.
-                                If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.
-                                </p>
-
-                                <div>
-                                    <button id="btnValidateSubmitInvalid" class="btn btn-default bvp-submit-button">${okCaption}</button>
-                                    <button id="btnWarningCancelSubmission"
-                                            class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <g:if test="${!template.viewParams.hideDefaultButtons}">
-                        <div id="submitButtons" class="row">
-                            <div class="col-sm-12">
-                                <g:if test="${validator}">
-                                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i
-                                            class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
-                                    </button>
-                                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
-                                            class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
-                                    </button>
-                                    <button type="button" class="btn btn-default bvp-submit-button"
-                                            id="showNextFromProject">Skip</button>
-                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
-                                    <g:if test="${validator}">
-                                        <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
-                                    </g:if>
-                                </g:if>
-                                <g:else>
-                                    <button type="button" id="btnSave"
-                                            class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
-                                    <button type="button" id="btnSavePartial"
-                                            class="btn btn-default bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
-                                    <button type="button" class="btn btn-default bvp-submit-button"
-                                            id="showNextFromProject">Skip</button>
-                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
-                                </g:else>
-                            </div>
-                        </div>
-                    </g:if>
-                </g:if>
-
-                <div class="container-fluid">
-                    <div class="row" style="margin-top:10px">
-                        <div class="col-sm-12">
-                            <cl:validationStatus task="${taskInstance}"/>
-                        </div>
-                    </div>
-                </div>
-            </g:form>
-        </g:if>
-        <g:else>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="alert alert-warning">
-                        No tasks loaded for this project !
-                    </div>
-                </div>
-            </div>
-        </g:else>
-    </div>
-</section> %{-- transcription-template --}%
-
-
-<div id="submitConfirmModal" class="modal fade" tabindex="-1" role="dialog">
-    <!-- dialog contents -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="form-horizontal">
-                    <div class="col-sm-12">
-                        <p><g:message code="transcribe.task.submit.confirm" default="Submit your selections?"/></p>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-1 col-sm-11">
-                            <div class="checkbox">
-                                <label>
-                                    <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal">Cancel</button>
-                <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
-</body>
-<r:script>
-
+</asset:script>
+<asset:script>
+    debugger;
     <g:each in="${ValidationRule.list()}" var="rule">
         transcribeValidation.rules.${rule.name} = {
             test: function(value, element) {
         <g:if test="${!rule.testEmptyValues}">
             if (value) {
         </g:if>
+        console.log("${rule.regularExpression}");
+
         var pattern = /${rule.regularExpression}/;
                     return pattern.test(value);
         <g:if test="${!rule.testEmptyValues}">
@@ -658,7 +656,7 @@
             return true;
         </g:if>
         },
-        message: "${rule.message}",
+        message: "${message(code: rule.message)}",
             type: "${rule.validationType ?: ValidationType.Warning}"
         };
     </g:each>
@@ -676,7 +674,7 @@
         function showTaskTimeoutMessage() {
             var options = {
                 url: "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}",
-                        title: 'Task lock will expire soon!',
+                        title: '${message(code: 'transcribe.task.task_lock_will_expire_soon')}',
                         backdrop: 'static',
                         keyboard: false
                     };
@@ -773,7 +771,7 @@
     function checkAndRecoverFromFailedSubmit() {
         var lastState = amplify.store("bvp_task_${taskInstance.id ?: 0}");
         if (lastState && lastState.fields) {
-            alert("It looks like your session was timed out or prematurely invalidated for some reason. Transcription data will be restored from your last attempt to save this task.");
+            alert("${message(code: 'transcribe.task.session_timed_out')}");
 
             // If the form uses the dynamicDataSet template (observation diaries etc), we need to render them correctly first.
 
@@ -897,5 +895,5 @@
         return !validationResults.hasWarnings && !validationResults.hasErrors;
     }
 
-</r:script>
+</asset:script>
 </html>

@@ -1,15 +1,16 @@
 package au.org.ala.volunteer
 
+import grails.transaction.Transactional
+
 import java.util.regex.Pattern
 import org.hibernate.FlushMode
 import org.springframework.web.multipart.MultipartFile
 
+@Transactional
 class CollectionEventService {
 
-    static transactional = true
     static Pattern normalisePattern = Pattern.compile('\\s|\\.|,|;|:|"|')
     def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def logService
 
     List<CollectionEvent> findCollectionEvents(String institutionCode, List<String> collectors, String eventDate, String locality, int maxRows) {
@@ -131,7 +132,6 @@ class CollectionEventService {
                         // Doing this significantly speeds up imports...
                         sessionFactory.currentSession.flush()
                         sessionFactory.currentSession.clear()
-                        propertyInstanceMap.get().clear()
                         log.info "${rowsProcessed} rows processed, ${count} rows imported..."
                     }
 

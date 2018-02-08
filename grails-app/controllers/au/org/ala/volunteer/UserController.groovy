@@ -2,17 +2,15 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import java.text.SimpleDateFormat
-import java.util.regex.Pattern
 
 class UserController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def grailsApplication
     def taskService
     def userService
     def logService
@@ -77,24 +75,24 @@ class UserController {
   }
 }'''
 
-    def index = {
+    def index() {
         redirect(action: "list", params: params)
     }
 
-    def logout = {
+    def logout() {
         log.info "Invalidating Session (UserController.logout): ${session.id}"
         session.invalidate()
         redirect(url:"${params.casUrl}?url=${params.appUrl}")
     }
 
-    def myStats = {
+    def myStats() {
       userService.registerCurrentUser()
       def currentUser = userService.currentUserId
       def userInstance = User.findByUserId(currentUser)
       redirect(action: "show", id: userInstance.id, params: params )
     }
 
-    def list = {
+    def list() {
 
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (!params.sort){
@@ -122,7 +120,7 @@ class UserController {
         [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
     }
 
-    def project = {
+    def project() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             params.max = Math.min(params.max ? params.int('max') : 10, 100)
@@ -153,13 +151,13 @@ class UserController {
         }
     }
 
-    def create = {
+    def create() {
         def userInstance = new User()
         userInstance.properties = params
         return [userInstance: userInstance]
     }
 
-    def save = {
+    def save() {
         def userInstance = new User(params)
         if (userInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])}"
@@ -223,7 +221,7 @@ class UserController {
         def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
 
         for (Task t : tasks) {
-            String validator = User.findByUserId(t.fullyValidatedBy).displayName
+            String validator = User.findByUserId(t.fullyValidatedBy)?.displayName
 
             def taskRow = [id: t.id,
                            externalIdentifier:t.externalIdentifier,
@@ -231,7 +229,7 @@ class UserController {
                            fullyValidatedBy: validator,
                            projectId: t.projectId,
                            project: t.project,
-                           projectName: t.project.name,
+                           projectName: t.project.i18nName,
                            dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated,
                            dateValidated: t.dateFullyValidated
             ]
@@ -243,13 +241,13 @@ class UserController {
 
             def status = ""
             if (t.isValid == true) {
-                status = "Validated"
+                status = message(code: 'user.validated')
             } else if (t.isValid == false) {
-                status = "Invalidated"
+                status = message(code: 'user.invalidated')
             } else if (t.fullyTranscribedBy?.length() > 0) {
-                status = "Transcribed"
+                status = message(code: 'user.transcribed')
             } else {
-                status = "Saved"
+                status = message(code: 'user.saved')
             }
 
             taskRow.status = status
@@ -261,7 +259,7 @@ class UserController {
             dateStr += ";" + (t.dateLastUpdated ? sdf.format(t.dateLastUpdated) : "")
 
             def sb = new StringBuilder(512)
-            sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
+            sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.i18nName).append(";")
             sb.append(t.externalIdentifier).append(";").append(dateStr).append(";").append(t.id).append(";").append(validator)
             taskRow.searchColumn = sb.toString().toLowerCase()
 
@@ -310,7 +308,7 @@ class UserController {
         def projectInstance = Project.get(params.int("projectId"))
         def userInstance = User.get(params.id)
 
-        def results = taskService.getTaskViewList(selectedTab, userInstance, projectInstance, params.query ?: '', params.int('offset', 0), params.int('max', 10), params.sort, params.order)
+        def results = taskService.getTaskViewList(selectedTab, userInstance, projectInstance, params.q ?: '', params.int('offset', 0), params.int('max', 10), params.sort, params.order)
 //        def recentValidatedTaskCount = 0
 
 //        if (userInstance.userId == userService.currentUserId) {
@@ -333,7 +331,7 @@ class UserController {
                 isValidator             : isValidator
         )
 
-        log.debug(result)
+        log.debug("$result")
         respond(result)
     }
 
@@ -349,7 +347,7 @@ class UserController {
         def currentUser = userService.currentUserId
 
         if (!userInstance) {
-            flash.message = "Missing user id, or user not found!"
+            flash.message = message(code: 'user.missing_user_id')
             redirect(action: 'list')
             return
         }
@@ -406,7 +404,7 @@ class UserController {
 
 
         if (!userService.isAdmin()) {
-            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
+            flash.message = message(code: 'user.no_permission_to_edit_user_page')
             redirect(action: "show", id: userInstance.id)
 
         }
@@ -416,7 +414,7 @@ class UserController {
         return [userInstance: userInstance, roles: roles, userDetails: authService.getUserForUserId(userInstance.getUserId())]
     }
 
-    def update = {
+    def update() {
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
         if (userInstance && currentUser && (userService.isAdmin() || currentUser == userInstance.userId)) {
@@ -444,7 +442,7 @@ class UserController {
         }
     }
 
-    def delete = {
+    def delete() {
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
         if (userInstance && currentUser && userService.isAdmin()) {
@@ -464,7 +462,7 @@ class UserController {
         }
     }
 
-    def editRoles = {
+    def editRoles() {
 
         def userInstance = User.get(params.id)
         def currentUser = userService.currentUserId
@@ -475,24 +473,24 @@ class UserController {
         }
 
         if (!userService.isAdmin()) {
-            flash.message = "You have insufficient priviliges to manage the roles for this user!"
+            flash.message = message(code: 'user.insufficient_privilleges_to_manage_roles')
             redirect(action: "show")
         }
 
         [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list(sort: 'name', order: 'asc')]
     }
 
-    def updateRoles = {
+    def updateRoles() {
         def userInstance = User.get(params.id)
 
         if (!userInstance) {
-            flash.message = "User not found!"
+            flash.message = message(code: 'user.user_not_found')
             redirect(action: "list")
             return
         }
 
         if (!userService.isAdmin()) {
-            flash.message = "You have insufficient priviliges to manage the roles for this user!"
+            flash.message = message(code: 'user.insufficient_privilleges_to_manage_roles')
             redirect(action: "show")
             return
         }
@@ -539,7 +537,7 @@ class UserController {
     }
 
     def notebook() {
-
+        userService.registerCurrentUser()
         def userInstance = userService.currentUser
         if (params.int("id")) {
             userInstance = User.get(params.int("id"))

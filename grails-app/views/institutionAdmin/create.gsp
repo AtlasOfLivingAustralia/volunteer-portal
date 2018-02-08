@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,6 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
+    <asset:stylesheet src="bootstrap-colorpicker"/>
 </head>
 
 <body class="admin">
@@ -44,5 +46,6 @@
         </div>
     </div>
 </div>
+<asset:javascript src="tinymce-simple" asset-defer="" />
 </body>
 </html>

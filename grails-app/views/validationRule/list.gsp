@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.TemplateField" %>
 <html>
 <head>
@@ -12,7 +13,7 @@
     <cl:headerContent title="${message(code: 'default.validationRuleList.label', default: 'Manage Validation Rules')}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                    [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
+                    [link: createLink(controller: 'admin', action: 'index'), label: message(code: 'default.admin.label')],
             ]
         %>
         <a href="${createLink(action: 'addRule')}" class="btn btn-primary"><i
@@ -47,7 +48,7 @@
                                 <td>${rule.message}</td>
                                 <td style="width: 90px;">
                                     <a href="${createLink(controller: 'validationRule', action: 'delete', id: rule.id)}"
-                                       class="btn btn-xs btn-danger delete-button" title="Delete rule '${rule.name}"><i
+                                       class="btn btn-xs btn-danger delete-button" title="${message(code: 'validationRule.list.delete_rule', args: [rule.name])}"><i
                                             class="fa fa-remove"></i></a>
                                     <a href="${createLink(controller: 'validationRule', action: 'edit', id: rule.id)}"
                                        class="btn btn-default btn-xs" title="Edit rule '${rule.name}"><i class="fa fa-edit"></i></a>
@@ -65,12 +66,12 @@
     </div>
 </div>
 
-<r:script>
+<asset:script>
     $(function() {
         $('a.delete-button').on('click', function(e) {
             e.preventDefault();
             var self = this;
-            bootbox.confirm("Are you sure?", function (result) {
+            bootbox.confirm("${message(code: 'default.are_you_sure')}", function (result) {
                 _result = result;
                 if(result) {
                     window.location.href = $(self).attr('href');
@@ -78,6 +79,6 @@
             });
         });
     });
-</r:script>
+</asset:script>
 </body>
 </html>

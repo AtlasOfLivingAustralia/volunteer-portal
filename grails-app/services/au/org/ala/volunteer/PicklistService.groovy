@@ -1,16 +1,18 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVReader
-import org.grails.plugins.csv.CSVReaderUtils
+import grails.plugins.csv.CSVReaderUtils
+import grails.transaction.Transactional
+
+//import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.FlushMode
 
+@Transactional
 class PicklistService {
 
-    static transactional = true
     def sessionFactory
     def settingsService
     def logService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
      * Loads a CSV of external identifiers and external URLs
@@ -69,7 +71,6 @@ class PicklistService {
                     // Doing this significantly speeds up imports...
                     sessionFactory.currentSession.flush()
                     sessionFactory.currentSession.clear()
-                    propertyInstanceMap.get().clear()
                     log.info "${rowsProcessed} picklist items imported (${picklist.name})"
                 }
             }
@@ -109,7 +110,7 @@ class PicklistService {
 
     public boolean addCollectionCode(String code) {
         List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes) as List<String>
-        if (codes && code) {
+        if (codes != null && code != null) {
             if (!codes.contains(code)) {
                 codes.add(code)
                 settingsService.setSetting(SettingDefinition.PicklistCollectionCodes.key, codes.sort())
@@ -141,6 +142,12 @@ class PicklistService {
                     results = PicklistItem.findAllByPicklistAndInstitutionCode(pl, project.picklistInstitutionCode)
                 } else {
                     results = PicklistItem.findAllByPicklistAndInstitutionCode(pl, null)
+                }
+                // Clone the values into the keys if there are none
+                for(PicklistItem item : results) {
+                    if(!item.key)  {
+                        item.key = item.value;
+                    }
                 }
             }
         }

@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
 @AlaSecured("ROLE_VP_ADMIN")
 class AchievementDescriptionController {
@@ -23,7 +22,11 @@ class AchievementDescriptionController {
     }
 
     def show(AchievementDescription achievementDescriptionInstance) {
-        redirect action: 'edit', id: achievementDescriptionInstance.id
+        if (!achievementDescriptionInstance) {
+            notFound()
+        } else {
+            redirect action: 'edit', id: achievementDescriptionInstance.id
+        }
     }
     
     def create() {
@@ -63,9 +66,9 @@ class AchievementDescriptionController {
         def userId = params.userId ?: userService.currentUserId
         def user = User.findByUserId(userId)
         def eval = achievementService.evaluateAchievement(achievementDescriptionInstance, userId)
-        def cheevMap = ["$user.displayName": eval]
+        def cheevMap = [(user.displayName): eval]
 
-        request.withFormat {
+        withFormat {
             form html {
                 render view: 'editTest', model: [achievementDescriptionInstance: achievementDescriptionInstance, cheevMap: cheevMap, displayName: user?.displayName, userId: userId]
             }
@@ -142,7 +145,7 @@ class AchievementDescriptionController {
             if (f != null && f.size > 0) {
                 def allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
-                    json.put("error", "Image must be one of: ${allowedMimeTypes}")
+                    json.put("error", message(code: "achievementDescription.image_must_be_one_of", args: [allowedMimeTypes]))
                     status = BAD_REQUEST
                 } else {
                     boolean result
@@ -156,16 +159,16 @@ class AchievementDescriptionController {
                             achievement.save(flush: true)
                         }
                     } else {
-                        json.put('error', "Failed to upload image. Unknown error!")
+                        json.put('error', message(code: "achievementDescription.failed_to_upload_image"))
                         status = INTERNAL_SERVER_ERROR
                     }
                 }
             } else {
-                json.put('error', "Please select a file!")
+                json.put('error', message(code: "achievementDescription.please_select_a_file"))
                 status = BAD_REQUEST
             }
         } else {
-            json.put('error', "Form must be multipart file!")
+            json.put('error', message(code: "achievementDescription.form_must_be_multipart_file"))
             status = BAD_REQUEST
         }
 
@@ -200,13 +203,14 @@ class AchievementDescriptionController {
                         .findAll { achievementService.evaluateAchievement(achievementDescriptionInstance, it) }
                         .collect { new AchievementAward(user: User.findByUserId(it), achievement: achievementDescriptionInstance, awarded: new Date()) }
 
-        AchievementAward.saveAll(awards)
+//        AchievementAward.saveAll(awards)
+        awards*.save(flush:true)
 
-        awards.each { event(AchievementService.ACHIEVEMENT_AWARDED, it) }
+        awards.each { notify(AchievementService.ACHIEVEMENT_AWARDED, it) }
 
         request.withFormat {
             form multipartForm {
-                flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, it.user.displayName]) }.join('<br/>')
+                flash.message = awards.collect { message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.i18nName, it.user.displayName]) }.join('<br/>')
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { respond awards, [status: OK] }
@@ -227,11 +231,11 @@ class AchievementDescriptionController {
         def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
         award.save flush: true
 
-        event(AchievementService.ACHIEVEMENT_AWARDED, award)
+        notify(AchievementService.ACHIEVEMENT_AWARDED, award)
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.name, user.displayName])
+                flash.message = message(code: 'achievement.awarded.message', args: [achievementDescriptionInstance.i18nName, user.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { respond award, [status: OK] }
@@ -242,11 +246,12 @@ class AchievementDescriptionController {
         def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
         log.info("Removing awarded achievements: ${awards.join('\n')}")
 
-        AchievementAward.deleteAll(awards)
+        awards.forEach({award -> award.delete(flush:true)});
+//        AchievementAward.deleteAll(awards)
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.i18nName, awards*.user*.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { render status: NO_CONTENT.value() }
@@ -258,11 +263,12 @@ class AchievementDescriptionController {
         def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
         log.info("Removing awarded achievements: ${awards.join('\n')}")
 
-        AchievementAward.deleteAll(awards)
+        //AchievementAward.deleteAll(awards)
+        awards.forEach({award -> award.delete(flush:true)});
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.name, awards*.user*.displayName])
+                flash.message = message(code: 'achievement.removed.message', args: [achievementDescriptionInstance.i18nName, awards*.user*.displayName])
                 redirect action: 'awards', id: achievementDescriptionInstance.id
             }
             '*' { render status: NO_CONTENT.value() }
@@ -330,7 +336,7 @@ class AchievementDescriptionController {
             if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
                 throw new RuntimeException("Failed to create institution directories: ${file.getParentFile().getAbsolutePath()}")
             }
-            mpfile.transferTo(file);
+            mpfile.transferTo(file.absoluteFile);
             return true
         } catch (Exception ex) {
             log.error("Failed to upload achievement badge", ex)

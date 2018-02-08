@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 
 <html>
@@ -5,39 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'record.label', default: 'Record')}"/>
-    <title>CSV Image Upload</title>
-    <r:require modules="qtip"/>
-    <r:script type="text/javascript">
-        $(document).ready(function () {
-            // tootltip on help icon
-            $("a.fieldHelp").qtip({
-                tip: true,
-                position: {
-                    corner: {
-                        target: 'topMiddle',
-                        tooltip: 'bottomLeft'
-                    }
-                },
-                style: {
-                    width: 400,
-                    padding: 8,
-                    background: 'white', //'#f0f0f0',
-                    color: 'black',
-                    textAlign: 'left',
-                    border: {
-                        width: 4,
-                        radius: 5,
-                        color: '#E66542'// '#E66542' '#DD3102'
-                    },
-                    tip: 'bottomLeft',
-                    name: 'light' // Inherit the rest of the attributes from the preset light style
-                }
-            }).bind('click', function (e) {
-                e.preventDefault();
-                return false;
-            });
-        });
-    </r:script>
+    <title><g:message code="task.load.csv"/></title>
+    <asset:stylesheet src="qtip"/>
 </head>
 
 <body class="two-column-right">
@@ -46,13 +16,13 @@
     </span>
     <g:if test="${params.id}">
         <span class="menuButton"><a class="home"
-                                    href="${createLink(controller: 'project', action: 'edit', id: params.id)}">Edit project</a>
+                                    href="${createLink(controller: 'project', action: 'edit', id: params.id)}"><g:message code="task.load.edit_project"/></a>
         </span>
     </g:if>
 </div>
 
 <div class="inner">
-    <h1>Load CSV</h1>
+    <h1><g:message code="task.load.load_csv"/></h1>
 
     <g:form method="post">
         <div class="dialog">
@@ -64,7 +34,7 @@
                     </td>
                     <td valign="top" class="value">
                         <g:select name="projectId" id="projectId" from="${projectList}" optionKey="id"
-                                  optionValue="name" value="${params.id}"/>
+                                  optionValue="i18nName" value="${params.id}"/>
                     </td>
                 </tr>
 
@@ -87,18 +57,49 @@
         </div>
 
         <div class="buttons">
-            Duplicate handling mode:
+            <g:message code="task.load.duplicate_handling_mode"/>
             <select name="duplicateMode">
-                <option value="skip">Skip duplicates</option>
-                <option value="replace">Replace duplicates</option>
+                <option value="skip"><g:message code="task.load.skip_duplicates"/></option>
+                <option value="replace"><g:message code="task.load.replace_duplicates"/></option>
             </select>
             <span class="button"><g:actionSubmit class="submit" action="loadCSVAsync"
-                                                 value="${message(code: 'default.button.submit.label', default: 'Submit')}"/></span>
+                                                 value="${message(code: 'default.submit', default: 'Submit')}"/></span>
             <span class="button"><g:actionSubmit class="cancel" action="list"
-                                                 value="${message(code: 'default.button.cancel.label', default: 'Cancel')}"/></span>
+                                                 value="${message(code: 'default.cancel', default: 'Cancel')}"/></span>
         </div>
     </g:form>
 </div>
-
+<asset:javascript src="qtip" asset-defer=""/>
+<asset:script type="text/javascript">
+    $(document).ready(function () {
+        // tootltip on help icon
+        $("a.fieldHelp").qtip({
+            tip: true,
+            position: {
+                corner: {
+                    target: 'topMiddle',
+                    tooltip: 'bottomLeft'
+                }
+            },
+            style: {
+                width: 400,
+                padding: 8,
+                background: 'white', //'#f0f0f0',
+                color: 'black',
+                textAlign: 'left',
+                border: {
+                    width: 4,
+                    radius: 5,
+                    color: '#E66542'// '#E66542' '#DD3102'
+                },
+                tip: 'bottomLeft',
+                name: 'light' // Inherit the rest of the attributes from the preset light style
+            }
+        }).bind('click', function (e) {
+            e.preventDefault();
+            return false;
+        });
+    });
+</asset:script>
 </body>
 </html>

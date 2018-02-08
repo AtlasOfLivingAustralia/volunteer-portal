@@ -1,14 +1,16 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <g:set var="picklistInfo" value="${g.imageInfos(field: field, project: taskInstance?.project)}"/>
 <g:if test="${picklistInfo.error}">
     <div class="alert alert-danger alert-block">
-        Could not load images for field ${field.fieldType} (${field.fieldTypeClassifier}) because ${picklistInfo.error}
+        <g:message code="transcribe.imageSelectWidget.could_not_load_images_for_field" args="${[field.fieldType, field.fieldTypeClassifier,picklistInfo.error ]}"/>
+
     </div>
 </g:if>
 <g:else>
     <g:if test="${picklistInfo.warnings}">
         <div class="alert alert-block">
             <a href="#" class="close" data-dismiss="alert">&times;</a>
-            Warnings:
+            <g:message code="transcribe.imageSelectWidget.warnings"/>
             <ul>
                 <g:each in="${picklistInfo.warnings}" var="w">
                     <li>${w}</li>

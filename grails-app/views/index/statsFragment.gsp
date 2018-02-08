@@ -1,15 +1,15 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <table style="width: 100%">
     <tr>
         <td>
-            <h3>Expedition stats</h3>
+            <h3><g:message code="index.expedition_stats.title"/></h3>
         </td>
         <td>
-            <img class="pull-right" src="${resource(dir: "images/vp", file: 'compassrose.png')}"/>
+            <img class="pull-right" src="${resource(file: "/images/vp/compassrose.png")}"/>
         </td>
     </tr>
 </table>
 
-<strong>${completedTasks}</strong> tasks of <strong>${totalTasks}</strong> completed
+<g:message code="index.expedition_stats.completed" args="${[completedTasks, totalTasks]}"/>
 <br/>
-<strong>${transcriberCount}</strong> volunteer <a
-        href="${createLink(controller: 'user', action: 'list')}">transcribers</a>.
+<g:message code="index.expedition_stats.transcribers" args="${[transcriberCount, createLink(controller: 'user', action: 'list')]}"/>

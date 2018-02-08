@@ -1,18 +1,17 @@
 package au.org.ala.volunteer
 
 import com.google.common.io.Closer
-import grails.events.Listener
 import grails.gorm.DetachedCriteria
+import grails.transaction.Transactional
 import groovy.time.TimeCategory
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
-import org.grails.plugins.metrics.groovy.Timed
-import org.hibernate.FetchMode
 import org.hibernate.transform.DistinctRootEntityResultTransformer
-import org.hibernate.transform.ResultTransformer
 import org.ocpsoft.prettytime.PrettyTime
+import reactor.spring.context.annotation.Consumer
+import reactor.spring.context.annotation.Selector
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -23,12 +22,12 @@ import java.nio.file.Paths
 
 import static org.hibernate.FetchMode.*
 
+@Consumer
+@Transactional
 class AchievementService {
 
-    public static final String ACHIEVEMENT_AWARDED = 'achievementAwarded'
-    public static final String ACHIEVEMENT_VIEWED = 'achievementViewed'
-
-    static transactional = true
+    public static final String ACHIEVEMENT_AWARDED = 'achievement.awarded'
+    public static final String ACHIEVEMENT_VIEWED = 'achievement.viewed'
 
     def taskService
     def grailsApplication
@@ -77,7 +76,6 @@ class AchievementService {
     /**
      * @param userId The user's user.userId attribute (not the user.id attribute)
      */
-    @Timed
     def evalAndRecordAchievementsForUser(String userId) {
         def alreadyAwarded = AchievementAward.withCriteria {
             user {
@@ -97,15 +95,14 @@ class AchievementService {
         if (newAchievements) {
             final user = User.findByUserId(userId)
             newAchievements.collect {
-                log.info("${user.id} (${user.displayName} ${user.email}) achieved ${it.name}")
+                log.info("${user?.id} (${user?.displayName} ${user?.email}) achieved ${it.i18nName}")
                 new AchievementAward(achievement: it, user: user, awarded: new Date())
             }*.save(true).each {
-                event(AchievementService.ACHIEVEMENT_AWARDED, it)
+                notify(AchievementService.ACHIEVEMENT_AWARDED, it)
             }
         }
     }
 
-    @Timed
     def evalAndRecordAchievements(Set<String> userIds) {
         userIds.collectEntries { user ->
             def cheevs = evalAndRecordAchievementsForUser(user)
@@ -113,7 +110,6 @@ class AchievementService {
         }
     }
 
-    @Timed
     def evaluateAchievement(AchievementDescription cheev, String userId) {
         switch (cheev.type) {
             case AchievementType.ELASTIC_SEARCH_QUERY:
@@ -125,7 +121,6 @@ class AchievementService {
         }
     }
 
-    @Timed
     def evaluateElasticSearchAggregationAchievement(AchievementDescription achievementDescription, String userId) {
         final template = achievementDescription.searchQuery
         final aggTemplate = achievementDescription.aggregationQuery
@@ -152,13 +147,11 @@ class AchievementService {
         fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, agg.toString(), closure)
     }
 
-    @Timed
     private def evaluateGroovyAchievement(AchievementDescription achievementDescription, String userId) {
         final code = achievementDescription.code
         return runScript(code, new Binding([applicationContext: grailsApplication.mainContext, userId: userId]))
     }
 
-    @Timed
     private def evaluateElasticSearchAchievement(AchievementDescription achievementDescription, String userId) {
         final template = achievementDescription.searchQuery
         final count = achievementDescription.count
@@ -203,7 +196,7 @@ class AchievementService {
         if (hasBadgeImage(achievementDescription)) {
             return "${prefix}${achievementDescription.badge}"
         } else {
-            return grailsLinkGenerator.resource([dir: '/images/achievements', file: 'blank.png'])
+            return grailsLinkGenerator.resource([file: '/images/achievements/blank.png'])
         }
     }
 
@@ -225,7 +218,6 @@ class AchievementService {
         }
     }
 
-    @Timed
     List<AchievementAward> newAchievementsForUser(User user) {
         AchievementAward.findAllByUserAndUserNotified(user, false)
     }
@@ -237,27 +229,27 @@ class AchievementService {
         }
         int total = criteria.updateAll(userNotified:true)
         if (total) {
-            ids.each { event(ACHIEVEMENT_VIEWED, [id: it, userId: user.userId]) }
+            ids.each { notify(ACHIEVEMENT_VIEWED, [id: it, userId: user.userId]) }
         }
         log.info("Marked ${total} achievements as seen for ${user.userId}")
     }
 
 
-    @Listener(topic=AchievementService.ACHIEVEMENT_AWARDED)
+    @Selector('achievement.awarded')
     void achievementAwarded(AchievementAward award) {
         try {
             log.debug("On Achievement Awarded")
-            eventSourceService.sendToUser(award.user.userId, createAwardMessage(award))
+            notify(EventSourceService.NEW_MESSAGE, createAwardMessage(award))
         } catch (e) {
             log.error("Caught exception in $ACHIEVEMENT_AWARDED event listener", e)
         }
     }
 
-    @Listener(topic=AchievementService.ACHIEVEMENT_VIEWED)
+    @Selector('achievement.viewed')
     void achievementViewed(Map args) {
         try {
             log.debug("On Achievement Viewed")
-            eventSourceService.sendToUser(args.userId, new EventSourceMessage(event: ACHIEVEMENT_VIEWED, data: [id: args.id]))
+            notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: args.userId, event: ACHIEVEMENT_VIEWED, data: [id: args.id]))
         } catch (e) {
             log.error("Caught exception in $ACHIEVEMENT_VIEWED event listener", e)
         }
@@ -267,9 +259,9 @@ class AchievementService {
         final message
         use (TimeCategory) {
             if ((new Date() - award.awarded) < 1.minute ) {
-                message = "You were just awarded the ${award.achievement.name} achievement!"
+                message = "You were just awarded the ${award.achievement.i18nName} achievement!"
             } else {
-                message = "You were awarded the ${award.achievement.name} achievement ${new PrettyTime().format(award.awarded)}!"
+                message = "You were awarded the ${award.achievement.i18nName} achievement ${new PrettyTime().format(award.awarded)}!"
             }
         }
 
@@ -277,7 +269,7 @@ class AchievementService {
                    title: 'Congratulations!', id: award.id,
                    message   : message.toString(),
                    profileUrl: grailsLinkGenerator.link(controller: 'user', action: 'notebook')]
-        def msg = new EventSourceMessage(event: ACHIEVEMENT_AWARDED, data: data)
+        def msg = new Message.EventSourceMessage(to: award.user.userId, event: ACHIEVEMENT_AWARDED, data: data)
         return msg
     }
 

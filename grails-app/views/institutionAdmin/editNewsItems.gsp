@@ -6,23 +6,22 @@
     <meta name="layout" content="digivol-institutionSettings"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <g:setProvider library="jquery"/>
 </head>
 
 <body>
 
-<content tag="pageTitle">News items</content>
+<content tag="pageTitle"><g:message code="institutionAdmin.news_items.label"/></content>
 
 <content tag="adminButtonBar">
     <a class="btn btn-primary"
        href="${createLink(controller: 'newsItem', action: 'create', params: ['institution.id': institutionInstance.id])}"><i
-            class="icon-plus icon-white"></i> Add news item</a>
+            class="icon-plus icon-white"></i> <g:message code="institutionAdmin.news_items.add"/></a>
 </content>
 
 <div class="form-horizontal">
     <div class="control-group">
         <label for="enableNewItems">
-            News items are <g:checkBox name="enableNewsItems" checked="${!institutionInstance.disableNewsItems}"/>
+            <g:message code="institutionAdmin.news_items.enabled_disabled"/> <g:checkBox name="enableNewsItems" checked="${!institutionInstance.disableNewsItems}"/>
         </label>
     </div>
 </div>
@@ -36,13 +35,13 @@
 
 </g:form>
 
-${newsItems?.size() ?: 0} news items
+<g:message code="institutionAdmin.news_items.news_item_count" args="${[newsItems?.size() ?: 0]}"/>
 
 <table class="table table-striped table-hover">
     <thead>
     <tr>
-        <th>Date</th>
-        <th>Content</th>
+        <th><g:message code="institutionAdmin.news_items.date"/></th>
+        <th><g:message code="institutionAdmin.news_items.content"/></th>
         <th/>
     </tr>
     </thead>
@@ -78,7 +77,7 @@ ${newsItems?.size() ?: 0} news items
     </tbody>
 </table>
 
-<r:script>
+<asset:script>
     jQuery(function ($) {
 
         $('input:checkbox').bootstrapSwitch({
@@ -90,7 +89,7 @@ ${newsItems?.size() ?: 0} news items
             $("#enableNewsItemsForm").submit();
         });
     });
-</r:script>
+</asset:script>
 
 </body>
 </html>

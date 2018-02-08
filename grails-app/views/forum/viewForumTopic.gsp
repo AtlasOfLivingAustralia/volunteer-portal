@@ -2,10 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title><cl:pageTitle title="${topic.title}"/></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>
-    <r:require module="panZoom"/>
+    <asset:stylesheet src="forum.css"/>
+    <asset:stylesheet src="image-viewer"/>
 
     <style type="text/css">
 
@@ -25,11 +26,14 @@
 <cl:headerContent title="${topic.title}" selectedNavItem="forum" hideTitle="${true}">
     <vpf:forumNavItems topic="${topic}"/>
     <div class="buttonBar">
-        <button class="btn btn-default" id="btnReturnToForum" class="button"><img
-                src="${resource(dir: 'images', file: 'left_arrow.png')}"/>&nbsp;Return to forum</button>
+        <button class="btn btn-default" id="btnReturnToForum" class="button"><asset:image
+                src="left_arrow.png"/>&nbsp;<g:message code="forum.return"/></button>
         <g:if test="${taskInstance}">
-            <button id="btnViewTask" class="btn btn-success">View Task</button>
+            <button id="btnViewTask" class="btn btn-success"><g:message code="forum.view_task"/></button>
         </g:if>
+        <cl:ifValidator task="${taskInstance}">
+            <button id="btnValidateTask" class="btn btn-success"><g:message code="action.validate.label"/></button>
+        </cl:ifValidator>
     </div>
 </cl:headerContent>
 
@@ -42,7 +46,7 @@
                         <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
                     </g:if>
                     <div class="alert alert-success">
-                        <g:checkBox id="chkWatchTopic" name="watchTopic" checked="${isWatched}"/>&nbsp; Watch this topic?
+                        <g:checkBox id="chkWatchTopic" name="watchTopic" checked="${isWatched}"/>&nbsp; <g:message code="forum.watch_this_topic"/>?
                     </div>
                     <vpf:topicMessagesTable topic="${topic}"/>
                 </div>
@@ -50,7 +54,7 @@
         </div>
     </div>
 </div>
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
 
     $(function () {
 
@@ -82,7 +86,7 @@
         $(".deleteMessageButton").click(function(e) {
             var messageId = $(this).parents("tr[messageId]").attr("messageId");
             if (messageId) {
-                if (confirm("Are you sure you wish to permanently delete this message?")) {
+                if (confirm("${message(code: 'forum.delete.confirmation')}")) {
                     window.location = "${createLink(action: 'deleteTopicMessage')}?messageId=" + messageId;
                 }
             }
@@ -94,11 +98,15 @@
             e.preventDefault();
             window.location = "${createLink(controller: 'task', action: 'show', id: taskInstance.id)}";
                 });
+        $("#btnValidateTask").click(function(e) {
+            e.preventDefault();
+            window.location = "${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}";
+                });
 
     </g:if>
 
     });
 
-</r:script>
+</asset:script>
 </body>
 </html>

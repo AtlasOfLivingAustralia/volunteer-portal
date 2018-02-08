@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="au.org.ala.volunteer.User" %>
 
 <html>
@@ -8,7 +9,7 @@
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
     <title>Volunteers</title>
 
-    <r:script type="text/javascript">
+    <asset:script type="text/javascript">
 
             doSearch = function () {
                 var searchTerm = $('#searchbox').val()
@@ -16,12 +17,12 @@
                 window.location.href = link;
             };
 
-    </r:script>
+    </asset:script>
 </head>
 
 <body class="admin">
 
-<cl:headerContent crumbLabel="Volunteers" title="Volunteer transcribers"  selectedNavItem="bvpadmin">
+<cl:headerContent crumbLabel="${message(code: 'user.list.volunteers')}" title="${message(code: 'user.list.volunteer_transcribers')}"  selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = []
     %>
@@ -36,11 +37,11 @@
                         <tr>
                             <th colspan="5" style="text-align: right">
                                 <cl:ifAdmin>
-                                    <g:link controller="admin" action="updateUsers" class="btn btn-default pull-left">Update Users</g:link>
+                                    <g:link controller="admin" action="updateUsers" class="btn btn-default pull-left"><g:message code="user.list.update_user"/></g:link>
                                 </cl:ifAdmin>
                                 <div class="custom-search-input body">
                                     <div class="input-group">
-                                        <g:textField id="searchbox" value="${params.q}" name="searchbox" class="form-control input-lg" placeholder="Search by name"/>
+                                        <g:textField id="searchbox" value="${params.q}" name="searchbox" class="form-control input-lg" placeholder="${message(code: 'user.list.search_by_name')}"/>
                                         <span class="input-group-btn">
                                             <button class="btn btn-info btn-lg" type="button" onclick="doSearch();">
                                                 <i class="glyphicon glyphicon-search"></i>
@@ -80,7 +81,7 @@
                                 <td style="width:300px;" class="text-left">
                                     <g:link controller="user" action="show" id="${userInstance.id}"><cl:displayNameForUserId
                                             id="${userInstance.userId}"/></g:link>
-                                    <g:if test="${userInstance.userId == currentUser}">(that's you!)</g:if>
+                                    <g:if test="${userInstance.userId == currentUser}"><g:message code="user.list.thats_you"/></g:if>
                                 </td>
                                 <td class="bold text-center">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
                                 <td class="bold text-center">
@@ -102,9 +103,9 @@
         </div>
     </div>
 </div>
-<r:script type="text/javascript">
+<asset:script type="text/javascript">
     $("th > a").addClass("btn")
     $("th.sorted > a").addClass("active")
-</r:script>
+</asset:script>
 </body>
 </html>

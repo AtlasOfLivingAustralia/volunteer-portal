@@ -29,7 +29,7 @@
 <div id="toolContentHeader">
     <div class="row-fluid">
         <div class="span2">
-            Locality
+            <g:message code="collectionEvent.search.locality"/>
         </div>
 
         <div class="span4">
@@ -38,13 +38,13 @@
 
         <div class="span1" style="vertical-align: middle">
             <a href="#" class="btn btn-default btn-xs fieldHelp"
-               title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality."><i
+               title="${message(code:'locality.search.description')}"><i
                     class="fa fa-question help-container"></i></a>
         </div>
 
         <div class="span5">
-            <button class="btnSearch btn">Search</button>
-            <button class="btnClose btn">Cancel</button>
+            <button class="btnSearch btn"><g:message code="default.search"/></button>
+            <button class="btnClose btn"><g:message code="default.cancel"/></button>
         </div>
     </div>
 </div>
@@ -59,11 +59,11 @@
 
     function doLocalitySearch() {
 
-        $('#localitySearchResults').html("<div>Searching...</div>")
+        $('#localitySearchResults').html("<div>${message(code:'locality.search.searching')}</div>")
 
         var searchTerm = $('#localitySearch').val();
         if (searchTerm == '') {
-            alert("You must enter some part of the locality to search for!");
+            alert("${message(code:'locality.search.error1')}");
             return;
         }
 
@@ -82,8 +82,8 @@
 
         localityMap = new GMaps({
             div: '#localityMap',
-            lat: -34.397,
-            lng: 150.644,
+            lat: ${grailsApplication.config.location.default.latitude},
+            lng: ${grailsApplication.config.location.default.longitude},
             zoom: 10
         });
 

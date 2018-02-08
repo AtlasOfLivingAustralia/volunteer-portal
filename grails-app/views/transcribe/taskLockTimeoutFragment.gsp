@@ -1,33 +1,32 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div>
     <div class="text-center">
-        The lock on this record is about to expire.
+        <g:message code="transcribe.taskLockTimeout.title"/>
     </div>
 
     <div class="text-center">
         <g:if test="${isValidator}">
-            In order to preserve unsaved work it is recommended that the task be marked has invalid.
-            <br/>
-            You can then return and review this task from the admin list.
+            <g:message code="transcribe.taskLockTimeout.in_order_to_preserve_unsaved_work"/>
         </g:if>
         <g:else>
-            Please save your changes to avoid losing work.
+            <g:message code="transcribe.taskLockTimeout.please_save_your_changes"/>
         </g:else>
     </div>
     <br/>
 
     <g:if test="${isValidator}">
         <div class="text-center">
-            Task identifier: <div class="label">${taskInstance.externalIdentifier}</div>
+            <g:message code="transcribe.taskLockTimeout.task_identifier"/> <div class="label">${taskInstance.externalIdentifier}</div>
             <br/>
             <small>
-                Copy and paste this into the search box to easily find the task in the admin list.
+                <g:message code="transcribe.taskLockTimeout.copy_and_paste_this_into_the_search_box"/>
             </small>
         </div>
         <br/>
     </g:if>
 
     <div class="text-center">
-        <g:set var="buttonCaption" value="${isValidator ? 'Mark task as invalid' : 'Save task'}"/>
+        <g:set var="buttonCaption" value="${isValidator ? message(code: 'transcribe.taskLockTimeout.mark_task_as_invalid') : message(code: 'transcribe.taskLockTimeout.save_task')}"/>
         <button type="button" id="btnDefaultSaveTask" class="btn btn-primary">${buttonCaption}</button>
     </div>
     <br/>
@@ -35,12 +34,10 @@
     <div class="text-center">
         <small>
             <g:if test="${isValidator}">
-                NOTE: The task will be automatically marked as invalid in <span
-                    id="reloadCounter">5</span> minutes if no action is taken.
+                <g:message code="transcribe.taskLockTimeout.note.task_will_be_marked_invalid"/>
             </g:if>
             <g:else>
-                NOTE: The task will be automatically saved in <span
-                    id="reloadCounter">5</span> minutes if no action is taken.
+                <g:message code="transcribe.taskLockTimeout.note.task_will_be_saved"/>
             </g:else>
         </small>
     </div>

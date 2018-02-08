@@ -19,7 +19,6 @@
         outline: none;
     }
     </style>
-    <r:require modules="underscore, font-awesome"/>
 </head>
 
 <body>
@@ -36,7 +35,7 @@
 <div class="row">
     <div class="span12">
         <div class="well well-small">
-            <h1>Image Search</h1>
+            <h1><g:message code="picklist.images.search"/></h1>
             <input type="text" id="q" name="q" class="input-block-level">
         </div>
     </div>
@@ -50,9 +49,9 @@
             <table class="table table-condensed table-bordered">
                 <thead>
                 <tr>
-                    <th style="width: 300px;">Value</th>
-                    <th>Images</th>
-                    <th style="width: 50px;">Controls</th>
+                    <th style="width: 300px;"><g:message code="picklist.images.value"/></th>
+                    <th><g:message code="picklist.images"/></th>
+                    <th style="width: 50px;"><g:message code="picklist.images.controls"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -76,5 +75,6 @@
             </table>
         </div>
     </div>
-
+    <asset:javascript src="underscore" asset-defer=""/>
 </body>
+</html>

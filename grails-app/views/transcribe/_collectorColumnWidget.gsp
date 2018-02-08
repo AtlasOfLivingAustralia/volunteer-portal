@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <div class="collectorColumnWidget form-group ${cssClass}" fieldType="${field.fieldType}">%{-- col-md-12 --}%
 
     <div class="row">
