@@ -8,6 +8,7 @@ import grails.util.Metadata
 import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
+import org.apache.http.client.utils.URIBuilder
 import org.grails.web.mapping.CachingLinkGenerator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.servlet.support.RequestDataValueProcessor
@@ -27,7 +28,7 @@ class VolunteerTagLib {
     def achievementService
     def taskService
 
-    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize']
+    static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
     /**
      * @attr title The page title
@@ -1024,4 +1025,19 @@ function notify() {
         out << '<script type="text/javascript" src="https://www.google.com/jsapi"></script>'
     }
 
+
+    def loginLink = { attrs, body ->
+        def mb = new MarkupBuilder(out)
+        mb.a([href: createLoginLink(attrs,body)] + attrs) {
+            mkp.yieldUnescaped(body())
+        }
+    }
+
+    /**
+     * @emptyTag
+     */
+    def createLoginLink = { attrs ->
+        def link = new URIBuilder(grailsApplication.config.security.cas.loginUrl).addParameter("service", g.createLink(uri: '/', absolute: true)).build().toString()
+        return link
+    }
 }
