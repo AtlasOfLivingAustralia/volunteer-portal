@@ -55,6 +55,10 @@ class TaskService {
       userTaskCounts.get(0)
     }
 
+    int countInactiveProjects() {
+        return Project.countByInactive(true)
+    }
+
     /**
      *
      * @return Map of project id -> count
@@ -66,24 +70,54 @@ class TaskService {
         projectTaskCounts.toMap()
     }
 
+    Map getProjectTaskCounts(List<Project> projects) {
+        def projectTaskCounts = Task.executeQuery(
+                """select t.project.id as projectId, count(t) as taskCount from Task t where t.project in (:projects)
+                   group by t.project.id""", [projects: projects])
+        projectTaskCounts.toMap()
+    }
+
     /**
      *
      * @return Map of project id -> count
      */
-    Map getProjectTaskTranscribedCounts() {
+    Map getProjectTaskTranscribedCounts(boolean activeOnly = false) {
         def projectTaskCounts = Task.executeQuery(
-            """select t.project.id as projectId, count(distinct t.id) as taskCount
-               from Task t inner join t.fields as fields group by t.project.id""")
+            """select t.project.id as projectId, count(t) as taskCount
+               from Task t 
+               where 
+                exists (from Field as f where f.task = t) 
+                ${activeOnly ? 'and t.project.inactive != true' : ''}
+               group by t.project.id""")
         projectTaskCounts.toMap()
     }
 
     /**
      * @return Map of project id -> count
      */
-    Map getProjectTaskFullyTranscribedCounts() {
+    Map getProjectTaskFullyTranscribedCounts(boolean activeOnly = false) {
         def projectTaskCounts = Task.executeQuery(
             """select t.project.id as projectId, count(t) as taskCount
-               from Task t where t.fullyTranscribedBy is not null group by t.project.id""")
+               from Task t 
+               where 
+                t.fullyTranscribedBy is not null
+                ${activeOnly ? 'and t.project.inactive != true' : ''} 
+               group by t.project.id""")
+        projectTaskCounts.toMap()
+    }
+
+    /**
+     * @return Map of project id -> count
+     */
+    Map getProjectTaskFullyTranscribedCounts(List<Project> projects, boolean activeOnly = false) {
+        def projectTaskCounts = Task.executeQuery(
+                """select t.project.id as projectId, count(t) as taskCount
+               from Task t 
+               where 
+                t.project IN (:projects)
+                AND t.fullyTranscribedBy IS NOT NULL
+                ${activeOnly ? 'AND t.project.inactive != true' : ''} 
+               group by t.project.id""", [projects: projects])
         projectTaskCounts.toMap()
     }
 
@@ -95,10 +129,28 @@ class TaskService {
         volunteerCounts.toMap()
     }
 
+    Map getProjectTranscriberCounts(List<Project> projects) {
+        def volunteerCounts = Task.executeQuery(
+                """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
+               from Task t where t.project IN (:projects) AND t.fullyTranscribedBy is not null group by t.project.id""",
+                [projects: projects]
+        )
+        volunteerCounts.toMap()
+    }
+
     Map getProjectValidatorCounts() {
         def volunteerCounts = Task.executeQuery(
                 """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount
                from Task t where t.fullyValidatedBy is not null group by t.project.id"""
+        )
+        volunteerCounts.toMap()
+    }
+
+    Map getProjectValidatorCounts(List<Project> projects) {
+        def volunteerCounts = Task.executeQuery(
+                """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount
+               from Task t where t.project IN (:projects) AND t.fullyValidatedBy is not null group by t.project.id""",
+                [projects: projects]
         )
         volunteerCounts.toMap()
     }
@@ -125,6 +177,14 @@ class TaskService {
         def projectTaskCounts = Task.executeQuery(
             """select t.project.id as projectId, count(t) as taskCount
                from Task t where t.fullyValidatedBy is not null group by t.project.id""")
+        projectTaskCounts.toMap()
+    }
+
+    Map getProjectTaskValidatedCounts(List<Project> projects) {
+        def projectTaskCounts = Task.executeQuery(
+                """select t.project.id as projectId, count(t) as taskCount
+               from Task t where t.project IN (:projects) AND t.fullyValidatedBy is not null group by t.project.id""",
+                [projects: projects])
         projectTaskCounts.toMap()
     }
 

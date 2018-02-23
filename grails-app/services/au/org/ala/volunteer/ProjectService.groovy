@@ -230,11 +230,11 @@ class ProjectService {
 
     ProjectSummaryList makeSummaryListFromProjectList(List<Project> projectList, String q, String sort, int offset, int max, String order, Closure<Boolean> filter = null) {
         //def projectIds = projectList*.id
-        def taskCounts = taskService.getProjectTaskCounts()
-        def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
-        def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
-        def transcriberCounts = taskService.getProjectTranscriberCounts()
-        def validatorCounts = taskService.getProjectValidatorCounts()
+        def taskCounts = taskService.getProjectTaskCounts(projectList)
+        def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts(projectList)
+        def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts(projectList)
+        def transcriberCounts = taskService.getProjectTranscriberCounts(projectList)
+        def validatorCounts = taskService.getProjectValidatorCounts(projectList)
 
 
         Map<Long, ProjectSummary> projects = [:]
@@ -259,9 +259,7 @@ class ProjectService {
 
         def summaryList = new ProjectSummaryList(numberOfIncompleteProjects: incompleteCount, totalProjectCount: projects.size())
 
-        List<ProjectSummary> renderList = []
-
-        renderList = projects.collect({ kvp -> kvp.value })
+        List<ProjectSummary> renderList = projects.collect({ kvp -> kvp.value })
 
         // first remove any filtered projects - This supports view filters such as 'active' or 'incomplete' only views
         if (filter) {
@@ -359,6 +357,8 @@ class ProjectService {
         def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
         def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
         def projectList
+
+
 
         if (userService.isAdmin()) {
             projectList = Project.list()

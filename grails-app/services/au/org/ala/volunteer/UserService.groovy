@@ -68,15 +68,19 @@ class UserService {
         }
     }
 
-    def getUserCounts(List<String> ineligibleUsers = []) {
-        def args = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
+    def getUserCounts(List<String> ineligibleUsers = [], Integer limit = null) {
+        def params = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
+        def args = [:]
+        if (limit) {
+            args['max'] = limit
+        }
         def users = User.executeQuery("""
             select new map(concat(firstName, ' ', lastName) as displayName, email as email, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
             from User
-            where (transcribedCount + validatedCount) > 0
+            where (transcribedCount > 0 or validatedCount > 0)
             ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
             order by (transcribedCount + validatedCount) desc
-        """, args)
+        """, params, args)
         def deets = authService.getUserDetailsById(users.collect { it['userId'] })
         if (deets) {
             users.each {
@@ -86,6 +90,10 @@ class UserService {
             }
         }
         return users;
+    }
+
+    int countActiveUsers() {
+        return User.countByTranscribedCountGreaterThanOrValidatedCountGreaterThan(0,0)
     }
 
     def getUserScore(User user) {

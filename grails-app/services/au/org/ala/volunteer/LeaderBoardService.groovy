@@ -59,7 +59,7 @@ class LeaderBoardService {
                         result = EMPTY_LEADERBOARD_WINNER
                     }
                 } else {
-                    def userScores = userService.getUserCounts(ineligibleUsers);
+                    def userScores = userService.getUserCounts(ineligibleUsers, 1)
                     if (userScores) {
                         result = [userId: userScores[0]['id'], name: userScores[0]['displayName'], email: userScores[0]['email'], score: userScores[0]['total']]
                     } else {
@@ -108,7 +108,7 @@ class LeaderBoardService {
                 if (institution) {
                     results = getTopNForInstitution(maxRows, institution, ineligibleUsers)
                 } else {
-                    def userScores = userService.getUserCounts(ineligibleUsers);
+                    def userScores = userService.getUserCounts(ineligibleUsers, 1)
                     heading = "${headingPrefix} All Time"
                     for (int i = 0; i < userScores.size(); ++i) {
                         if (i >= maxRows) {

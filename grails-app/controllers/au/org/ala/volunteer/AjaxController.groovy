@@ -3,6 +3,8 @@ package au.org.ala.volunteer
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
+import com.google.common.base.Suppliers
+import com.google.common.cache.CacheBuilder
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -43,9 +45,21 @@ class AjaxController {
         respond results
     }
 
-    def stats() {
+    private def statsCache = Suppliers.memoizeWithExpiration(this.&statsInternal, 1, TimeUnit.MINUTES)
 
+    def stats() {
         setNoCache()
+
+        log.error("stats")
+
+        def stats = statsCache.get()
+
+        respond stats
+    }
+
+    private Map<String, ?> statsInternal() {
+
+        log.error("statsInternal")
 
         def stats = [:]
 
@@ -55,38 +69,28 @@ class AjaxController {
             def projects = Project.findAllByProjectType(it)
             stats[it.description ?: it.name] = Task.countByProjectInList(projects)
         }
-        
-        def volunteerCounts = userService.userCounts
-        stats.volunteerCount = volunteerCounts?.size()
-        if (volunteerCounts?.size() >= 10) {
-            stats.topTenVolunteers = volunteerCounts[0..9]
-        }
 
-        def projects = Project.list();
-        stats.expeditionCount = projects.size()
-        def projectCounts = taskService.getProjectTaskTranscribedCounts()
-        def projectTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
+        stats.volunteerCount = userService.countActiveUsers()
+        def topVolunteers = userService.getUserCounts([], 10)
+        stats.topTenVolunteers = topVolunteers
 
-        int completedCount = 0
-        int incompleteCount = 0
-        int deactivated = 0
-        for (Project p : projects) {
-            if (p.inactive) {
-                deactivated++
-            } else {
-                if (projectCounts[p.id] == projectTranscribedCounts[p.id]) {
-                    completedCount++
-                } else {
-                    incompleteCount++
-                }
-            }
+//        def projects = Project.list();
+        stats.expeditionCount = Project.count()
+        def inactiveCount = taskService.countInactiveProjects()
+        def projectCounts = taskService.getProjectTaskTranscribedCounts(true)
+        def projectTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts(true)
+
+        def counts = projectCounts.keySet().countBy {
+            (projectCounts[it] ?: 0) == (projectTranscribedCounts[it] ?: 0)
         }
+        int completedCount = counts[true]
+        int incompleteCount = counts[false]
 
         stats.activeExpeditionsCount = incompleteCount
         stats.completedExpeditionsCount = completedCount
-        stats.deactivatedExpeditionsCount = deactivated
+        stats.deactivatedExpeditionsCount = inactiveCount
 
-        respond stats
+        return stats
     }
 
     def userReport() {
