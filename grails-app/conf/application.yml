@@ -179,6 +179,7 @@ leaderBoard:
     count: 5
 
 digivol:
+    trackJsErrors: false
     trackers:
         - 'UA-4355440-1'
         - 'UA-7855618-24'

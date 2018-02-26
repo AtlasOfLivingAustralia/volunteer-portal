@@ -220,8 +220,10 @@ class TranscribeTagLib {
 
         switch (field.type) {
             case FieldType.imageSelect:
+                w = render(template: '/transcribe/imageSelectWidget', model: widgetModel + [isMultiSelect: false])
+                break
             case FieldType.imageMultiSelect:
-                w = render(template: '/transcribe/imageSelectWidget', model: widgetModel)
+                w = render(template: '/transcribe/imageSelectWidget', model: widgetModel + [isMultiSelect: true])
                 break
             case FieldType.latLong:
                 w = render(template: '/transcribe/latLongWidget', model: widgetModel)

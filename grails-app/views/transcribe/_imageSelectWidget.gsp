@@ -16,11 +16,18 @@
             </ul>
         </div>
     </g:if>
-    <g:set var="values" value="${(value ?: '').split(',')}"/>
+    <g:if test="${isMultiSelect}">
+        <g:set var="values" value="${(value ?: '').split(',')}"/>
+    </g:if>
     <div class="imageSelectWidget ${cssClass} ${field.type.name()}" targetField="${widgetName}">
         <div class="itemgrid">
             <g:each in="${picklistInfo.items}" var="piItem">
-                <g:set var="aclass" value="${values.contains(piItem.value) ? 'selected' : ''}"/>
+                <g:if test="${isMultiSelect}">
+                    <g:set var="aclass" value="${values.contains(piItem.value) ? 'selected' : ''}"/>
+                </g:if>
+                <g:else>
+                    <g:set var="aclass" value="${(value == piItem.value) ? 'selected' : ''}"/>
+                </g:else>
                 <div class="griditem bvpBadge">
                     <a href="javascript:void(0)" class="thumbnail ${aclass}" data-image-select-value="${piItem.value}">
                         <img src="${picklistInfo.infos[piItem.key[0]]?.squareThumbUrl}" alt="${piItem.value}">
