@@ -106,7 +106,7 @@ generateVolunteerJooqSchemaSource.dependsOn flywayMigrate
 // override spring boot dependency management versions here
 ext {
 //    set "tomcat.version", "8.5.20" // use this to force a tomcat version
-    set "jooq.version", '3.9.5'
+    set "jooq.version", '3.10.5'
 }
 
 repositories {

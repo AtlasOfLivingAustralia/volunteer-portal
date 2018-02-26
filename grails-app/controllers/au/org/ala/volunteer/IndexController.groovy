@@ -29,10 +29,9 @@ class IndexController {
 //            newsItem = NewsItem.find("""from NewsItem n where (n.project is not null and (n.project.disableNewsItems is null or project.disableNewsItems != true)) or (n.institution is not null and (n.institution.disableNewsItems is null or n.institution.disableNewsItems != true)) order by n.created desc""")
 //        }
 
-        def featuredProjects = projectService.getFeaturedProjectList()?.sort { it.percentTranscribed }
+        def featuredProjects = projectService.getFeaturedProjectList()
 
-        def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null).projectRenderList?.get(0)
-        //def featuredProjectSummaries = projectService.makeSummaryListFromProjectList(featuredProjects, params)
+        def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null, null, null, null, null, null, null, null).projectRenderList?.get(0)
 
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }

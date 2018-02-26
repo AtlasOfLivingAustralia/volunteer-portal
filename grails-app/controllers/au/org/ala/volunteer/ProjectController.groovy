@@ -8,9 +8,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
-import javax.servlet.http.HttpServletResponse
-import java.util.concurrent.TimeUnit
-
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
@@ -59,8 +56,6 @@ class ProjectController {
             redirect(action: "list")
         } else {
             // project info
-            def taskCount = Task.countByProject(projectInstance)
-            def tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
             def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
             def expedition = grailsApplication.config.expedition
             def roles = [] //  List of Map
@@ -102,7 +97,17 @@ class ProjectController {
                 newsItem = newsItems?.first()
             }
 
-            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], params)?.projectRenderList?.get(0)
+            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null)?.projectRenderList?.get(0)
+
+            def taskCount
+            def tasksTranscribed
+            if (projectSummary) {
+                taskCount = projectSummary.taskCount
+                tasksTranscribed = projectSummary.transcribedCount
+            } else {
+                taskCount = Task.countByProject(projectInstance)
+                tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
+            }
 
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
             if (percentComplete > 99 && taskCount != tasksTranscribed) {
@@ -110,13 +115,10 @@ class ProjectController {
                 percentComplete = 99;
             }
 
-            def recentTasks = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:'dateLastUpdated', order:'desc'])
-
             render(view: "index", model: [
                     projectInstance: projectInstance,
                     taskCount: taskCount,
                     tasksTranscribed: tasksTranscribed,
-                    recentTasks: recentTasks,
                     roles:roles,
                     newsItem: newsItem,
                     currentUserId: currentUserId,

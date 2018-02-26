@@ -17,20 +17,20 @@ class InstitutionController {
         params.sort = params.sort ?: 'completed'
         params.order = params.order ?: 'asc'
 
-        def projects
-
-        if (userService.isInstitutionAdmin(institution)) {
-            projects = Project.findAllByInstitution(institution)
-        } else {
-            projects = Project.findAllByInstitutionAndInactiveNotEqual(institution, true)
-        }
+//        def projects
+//
+//        if (userService.isInstitutionAdmin(institution)) {
+//            projects = Project.findAllByInstitution(institution)
+//        } else {
+//            projects = Project.findAllByInstitutionAndInactiveNotEqual(institution, true)
+//        }
 
         def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter)
         def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter)
 
-        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
+//        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
 
-        def projectSummaries = projectService.makeSummaryListFromProjectList(projects, params, filter)
+        def projectSummaries = projectService.makeSummaryListForInstitution(institution, params.tag, params.q, params.sort, params.int('offset', 0), params.int('max'), params.order, statusFilterMode, activeFilterMode)
         def transcriberCount = institutionService.getTranscriberCount(institution)
 
         def taskCounts = institutionService.getTaskCounts(institution)
@@ -41,7 +41,7 @@ class InstitutionController {
         def newsItem = newsItems?.size() > 0 ? newsItems.get(0) : null
 
         [
-            institutionInstance: institution, projects: projectSummaries.projectRenderList, filteredProjectsCount: projectSummaries.matchingProjectCount, totalProjectCount: projectSummaries.totalProjectCount,
+            institutionInstance: institution, projects: projectSummaries.projectRenderList, filteredProjectsCount: projectSummaries.matchingProjectCount,
             transcriberCount: transcriberCount, completedProjects: completedProjects, underwayProjects: underwayProjects, taskCounts: taskCounts,
             statusFilterMode: statusFilterMode, activeFilterMode: activeFilterMode, newsItem: newsItem, newsItems: newsItems
         ]
