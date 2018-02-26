@@ -348,13 +348,13 @@ class ProjectService {
         def sortCondition
         switch (sort) {
             case 'completed':
-                sortCondition = when(taskCountClause.eq(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(taskCountClause)).otherwise(transcribedCountClause.div(taskCountClause))
+                sortCondition = when(taskCountClause.eq(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(taskCountClause.cast(Double))).otherwise(transcribedCountClause.div(taskCountClause.cast(Double)))
                 break
             case 'transcribed':
-                sortCondition = transcribedCountClause.div(taskCountClause)
+                sortCondition = transcribedCountClause.div(taskCountClause.cast(Double))
                 break
             case 'validated':
-                sortCondition = validatedCountClause.div(taskCountClause)
+                sortCondition = validatedCountClause.div(taskCountClause.cast(Double))
                 break
             case 'volunteers':
                 if (!countUsers) throw new IllegalStateException("Can't sort by volunteer count when counting users is disabled")

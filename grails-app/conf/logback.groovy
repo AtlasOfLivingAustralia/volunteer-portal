@@ -133,6 +133,7 @@ final debug = [
 //        'org.hibernate.SQL',
 //        'org.springframework.cache',
 //        'net.sf.ehcache',
+//        'org.jooq.tools.LoggerListener'
 ]
 
 final trace = [
