@@ -70,7 +70,7 @@
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
                     <li>
-                        <a href="${grailsApplication.config.security.cas.loginUrl}?service=${grailsApplication.config.grails.serverURL}/"><i class="glyphicon glyphicon-user"></i> Log in</a>
+                        <cl:loginLink><i class="glyphicon glyphicon-user"></i> Log in</cl:loginLink>
                     </li>
                 </cl:isNotLoggedIn>
                 <cl:isLoggedIn>

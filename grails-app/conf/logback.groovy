@@ -130,7 +130,10 @@ final debug = [
 //        'grails.plugin.cache'
 //        'org.apache.http.headers',
 //        'org.apache.http.wire',
-//        'org.hibernate.SQL'
+//        'org.hibernate.SQL',
+//        'org.springframework.cache',
+//        'net.sf.ehcache',
+//        'org.jooq.tools.LoggerListener'
 ]
 
 final trace = [

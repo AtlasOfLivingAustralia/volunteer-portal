@@ -2,22 +2,48 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
-import org.apache.commons.compress.archivers.zip.Zip64Mode
+import groovy.sql.Sql
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.jooq.Condition
+import org.jooq.SQLDialect
+import org.jooq.SortOrder
+import org.jooq.conf.Settings
+import org.jooq.impl.DSL
 
 import javax.imageio.ImageIO
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
+import javax.sql.DataSource
 
+import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
+import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
+import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
+import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
+import static org.jooq.impl.DSL.count
+import static org.jooq.impl.DSL.countDistinct
+import static org.jooq.impl.DSL.lower
+import static org.jooq.impl.DSL.name
+import static org.jooq.impl.DSL.nvl
+import static org.jooq.impl.DSL.or
+import static org.jooq.impl.DSL.sum
+import static org.jooq.impl.DSL.when
 
 @Transactional
 class ProjectService {
+
+    static final String TASK_COUNT_COLUMN = 'taskCount'
+    static final String TRANSCRIBED_COUNT_COLUMN = 'transcribedCount'
+    static final String VALIDATED_COUNT_COLUMN = 'validatedCount'
+    static final String TRANSCRIBER_COUNT_COLUMN = 'transcriberCount'
+    static final String VALIDATOR_COUNT_COLUMN = 'validatorCount'
+
+    // make a static factory function because I'm not sure whether
+    // these are thread safe
+    private static final Condition getACTIVE_ONLY() { PROJECT.INACTIVE.eq(false) | PROJECT.INACTIVE.isNull() }
 
     def userService
     def taskService
@@ -27,6 +53,7 @@ class ProjectService {
     def multimediaService
     def logService
     def grailsApplication
+    DataSource dataSource
 
     def deleteTasksForProject(Project projectInstance, boolean deleteImages = true) {
         if (projectInstance) {
@@ -135,42 +162,22 @@ class ProjectService {
     public List<ProjectSummary> getFeaturedProjectList() {
 
         Stopwatch sw = Stopwatch.createStarted()
+        def resultMaps = generateProjectSummariesQuery(dataSource, [], null, null, 'transcribed', null, null, null, ProjectStatusFilterType.showIncompleteOnly, ProjectActiveFilterType.showActiveOnly, false).fetchMaps()
 
-        log.debug("featured project list")
-        def projectList = Project.findAllByInactive(false)
-        //def projectIds = projectList*.id
-        log.debug("project list: ${sw.elapsed(MILLISECONDS)}ms")
-        sw.reset().start()
-        def taskCounts = taskService.getProjectTaskCounts()
-        log.debug("task counts: ${sw.elapsed(MILLISECONDS)}ms")
-        sw.reset().start()
-        def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
-        log.debug("fully transcribed counts: ${sw.elapsed(MILLISECONDS)}ms")
-        sw.reset().start()
-        def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
-        log.debug("fully validated counts: ${sw.elapsed(MILLISECONDS)}ms")
-        sw.reset().start()
-//        def volunteerCounts = taskService.getProjectTranscriberCounts(projectIds)
-//        log.debug("volunteer counts: ${sw.elapsed(MILLISECONDS)}ms")
-//        sw.reset().start()
-//        def validatorCounts = taskService.getProjectValidatorCounts(projectIds)
-//        log.debug("validator counts: ${sw.elapsed(MILLISECONDS)}ms")
-//        sw.reset().start()
+        if (resultMaps.size() == 0) return []
 
-        List results = []
-        for (Project project : projectList) {
-            //if (!project.inactive) {
+        def projectIds = resultMaps.collect { it['id'] }
+        def projects = Project.findAllByIdInList(projectIds)
+        def projectsMap = projects.collectEntries { [(it.id): it] }
 
-                def taskCount = (Long) taskCounts[project.id] ?: 0
-                long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
-                long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
-//                def volunteerCount = (Integer) volunteerCounts[project.id] ?: 0
-//                def validatorCount = (Integer) validatorCounts[project.id] ?: 0
-                if (transcribedCount < taskCount) {
-                    results << makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)//volunteerCount, validatorCount)
-                }
-            //}
+        def results = resultMaps.collect { result ->
+            def project = projectsMap[result['id']]
+            def taskCount = result[TASK_COUNT_COLUMN]
+            def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN]
+            def validatedCount = result[VALIDATED_COUNT_COLUMN]
+            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)
         }
+
         log.debug("make summary projects: ${sw.elapsed(MILLISECONDS)}ms")
         sw.reset().start()
 
@@ -190,7 +197,7 @@ class ProjectService {
         return ProjectType.findByName("specimens")
     }
 
-    private ProjectSummary makeProjectSummary(Project project, long taskCount, long transcribedCount, long fullyValidatedCount, int transcriberCount, int validatorCount) {
+    private ProjectSummary makeProjectSummary(Project project, Number taskCount, Number transcribedCount, Number fullyValidatedCount, Number transcriberCount, Number validatorCount) {
 
         if (!project.projectType) {
             def projectType = guessProjectType(project)
@@ -214,189 +221,212 @@ class ProjectService {
         def ps = new ProjectSummary(project: project)
         ps.iconImage = iconImage
         ps.iconLabel = iconLabel
-        ps.transcriberCount = transcriberCount
+        ps.transcriberCount = transcriberCount.toLong()
 
-        ps.taskCount = taskCount
-        ps.transcribedCount = transcribedCount
-        ps.validatorCount = validatorCount
-        ps.validatedCount = fullyValidatedCount
+        ps.taskCount = taskCount.toLong()
+        ps.transcribedCount = transcribedCount.toLong()
+        ps.validatorCount = validatorCount.toLong()
+        ps.validatedCount = fullyValidatedCount.toLong()
 
         return ps
     }
 
-    ProjectSummaryList makeSummaryListFromProjectList(List<Project> projectList, GrailsParameterMap params, Closure<Boolean> filter = null) {
-        makeSummaryListFromProjectList(projectList, params?.q, params?.sort, params?.int('offset') ?: 0, params?.int('max') ?: 0, params?.order, filter)
+    def makeSummaryListForInstitution(Institution institution, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
+        def conditions = [PROJECT.INSTITUTION_ID.eq(institution.id)]
+        if (!userService.isInstitutionAdmin(institution)) {
+            conditions += ACTIVE_ONLY
+        }
+        makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter)
     }
 
-    ProjectSummaryList makeSummaryListFromProjectList(List<Project> projectList, String q, String sort, int offset, int max, String order, Closure<Boolean> filter = null) {
-        //def projectIds = projectList*.id
-        def taskCounts = taskService.getProjectTaskCounts()
-        def fullyTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts()
-        def fullyValidatedCounts = taskService.getProjectTaskValidatedCounts()
-        def transcriberCounts = taskService.getProjectTranscriberCounts()
-        def validatorCounts = taskService.getProjectValidatorCounts()
+    private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
+        def results = generateProjectSummariesQuery(dataSource, conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
+        def projects = Project.findAllByIdInList(results.collect { it['id'] })
+        makeSummaryListFromResults(results, projects)
+    }
 
+    def makeSummaryListFromProjectList(List<Project> projects, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
+        def results = generateProjectSummariesQuery(dataSource, [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
+        makeSummaryListFromResults(results, projects)
+    }
 
-        Map<Long, ProjectSummary> projects = [:]
-
-        def incompleteCount = 0;
-
-        for (Project project : projectList) {
-
-            def taskCount = (Long) taskCounts[project.id] ?: 0
-            long transcribedCount = (Long) fullyTranscribedCounts[project.id] ?: 0
-            long validatedCount = (Long) fullyValidatedCounts[project.id] ?: 0
-            def transcriberCount = (Integer) transcriberCounts[project.id] ?: 0
-            def validatorCount = (Integer) validatorCounts[project.id] ?: 0
-
+    // TODO find usages of ProjectSummary.project and just project the required variables directly onto the summary
+    // to skip loading the projects in hibernate
+    private def makeSummaryListFromResults(List<Map<String, Object>> results, List<Project> projects) {
+        def projectMap = projects.collectEntries { [(it.id): it] }
+        def incompleteCount = 0
+        def totalCount = 0
+        def renderList = results.collect { result ->
+            def project = projectMap[result['id']]
+            def taskCount = result[TASK_COUNT_COLUMN]
+            def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN]
+            def validatedCount = result[VALIDATED_COUNT_COLUMN]
+            def transcriberCount = result[TRANSCRIBER_COUNT_COLUMN]
+            def validatorCount = result[VALIDATOR_COUNT_COLUMN]
+            totalCount = result['full_count']
             if (transcribedCount < taskCount && !project.inactive) {
-                incompleteCount++;
+                incompleteCount++
             }
+            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, transcriberCount, validatorCount)
+        }
+        new ProjectSummaryList(
+                projectRenderList: renderList,
+                numberOfIncompleteProjects: incompleteCount,
+                matchingProjectCount: totalCount
+        )
+    }
 
-            def ps = makeProjectSummary(project, taskCount, transcribedCount, validatedCount, transcriberCount, validatorCount)
-            projects[project.id] = ps
+    private static def generateProjectSummariesQuery(DataSource dataSource, Collection<? extends Condition> whereClauses, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
+        def postgres = SQLDialect.POSTGRES_9_5
+        def settings = new Settings().withRenderFormatted(false)
+        def context = DSL.using(dataSource, postgres, settings)
+
+        def taskCountAlias = name(TASK_COUNT_COLUMN)
+        def transcribedCountAlias = name(TRANSCRIBED_COUNT_COLUMN)
+        def validatedCountAlias = name(VALIDATED_COUNT_COLUMN)
+        def transcriberCountAlias = name(TRANSCRIBER_COUNT_COLUMN)
+        def validatorCountAlias = name(VALIDATOR_COUNT_COLUMN)
+
+        switch (activeFilter) {
+            case ProjectActiveFilterType.showActiveOnly:
+                whereClauses += ACTIVE_ONLY
+                break
+            case ProjectActiveFilterType.showInactiveOnly:
+                whereClauses += PROJECT.INACTIVE.eq(true)
+                break
         }
 
-        def summaryList = new ProjectSummaryList(numberOfIncompleteProjects: incompleteCount, totalProjectCount: projects.size())
+        def taskCountClause = count(TASK).'as'(taskCountAlias)
+        def transcribedCountClause = sum(when(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(transcribedCountAlias)
+        def validatedCountClause = sum(when(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(validatedCountAlias)
+        def validatorCountClause = countDistinct(TASK.FULLY_VALIDATED_BY).'as'(validatorCountAlias)
+        def transcriberCountClause = countDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(transcriberCountAlias)
 
-        List<ProjectSummary> renderList = []
-
-        renderList = projects.collect({ kvp -> kvp.value })
-
-        // first remove any filtered projects - This supports view filters such as 'active' or 'incomplete' only views
-        if (filter) {
-            renderList = renderList.findAll filter
+        switch (statusFilter) {
+            case ProjectStatusFilterType.showCompleteOnly:
+                whereClauses += taskCountClause.eq(transcribedCountClause)
+                break
+            case ProjectStatusFilterType.showIncompleteOnly:
+                whereClauses += taskCountClause.gt(transcribedCountClause)
+                break
         }
 
-        // Then apply the query paramter
+        def taskJoinTableColumns = [
+                TASK.PROJECT_ID,
+                taskCountClause,
+                transcribedCountClause,
+                validatedCountClause,
+        ]
+        if (countUsers) {
+            taskJoinTableColumns.add(transcriberCountClause)
+            taskJoinTableColumns.add(validatorCountClause)
+        }
+
+
+        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+
+        def fromClause = PROJECT.join(PROJECT_TYPE).onKey().leftOuterJoin(INSTITUTION).onKey().join(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
+
+        // apply the query paramter
+        if (tag) {
+            whereClauses += PROJECT_TYPE.LABEL.containsIgnoreCase(tag)
+        }
+
         if (q) {
-            String query = q.toLowerCase()
-            String tagPrefix = "tag:"
+            def queryClauses = []
+            queryClauses.add(PROJECT.FEATURED_LABEL.containsIgnoreCase(q))
+            queryClauses.add(INSTITUTION.NAME.containsIgnoreCase(q))
+            queryClauses.add(PROJECT.FEATURED_OWNER.containsIgnoreCase(q))
+            queryClauses.add(PROJECT.DESCRIPTION.containsIgnoreCase(q))
+            queryClauses.add(PROJECT.SHORT_DESCRIPTION.containsIgnoreCase(q))
 
-            renderList = renderList.findAll { projectSummary ->
-                def project = projectSummary.project
+            def queryWhereClause = or(queryClauses)
 
-                // special syntax for label (project type). NdR Oct 2015.
-                if (query.startsWith(tagPrefix) && projectSummary.iconLabel?.toLowerCase()?.contains(query.replaceFirst(tagPrefix,""))) {
-                    return true
-                }
-
-                if (project.featuredLabel?.toLowerCase()?.contains(query)) {
-                    return true
-                }
-
-                if (project.institution && project.institution.name?.toLowerCase()?.contains(query)) {
-                    return true
-                }
-
-                if (project.featuredOwner?.toLowerCase()?.contains(query)) {
-                    return true
-                }
-
-                if (project.description?.toLowerCase()?.contains(query)) {
-                    return true;
-                }
-
-                if (project.shortDescription?.toLowerCase()?.contains(query)) {
-                    return true;
-                }
-
-                return false;
-            }
+            whereClauses += queryWhereClause
         }
 
-        renderList = renderList.sort { projectSummary ->
-
-            if (sort == 'completed') {
-                return projectSummary.percentTranscribed < 100 ? projectSummary.percentTranscribed : projectSummary.percentValidated + projectSummary.percentTranscribed
-            }
-
-            if (sort == 'validated') {
-                return projectSummary.percentValidated
-            }
-
-            if (sort == 'volunteers') {
-                return projectSummary.transcriberCount;
-            }
-
-            if (sort == 'institution') {
-                return projectSummary.project.institution?.name ?: projectSummary.project.featuredOwner;
-            }
-
-            if (sort == 'type') {
-                return projectSummary.iconLabel;
-            }
-
-            projectSummary.project.featuredLabel?.toLowerCase()
+        def sortCondition
+        switch (sort) {
+            case 'completed':
+                sortCondition = when(taskCountClause.eq(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(taskCountClause.cast(Double))).otherwise(transcribedCountClause.div(taskCountClause.cast(Double)))
+                break
+            case 'transcribed':
+                sortCondition = transcribedCountClause.div(taskCountClause.cast(Double))
+                break
+            case 'validated':
+                sortCondition = validatedCountClause.div(taskCountClause.cast(Double))
+                break
+            case 'volunteers':
+                if (!countUsers) throw new IllegalStateException("Can't sort by volunteer count when counting users is disabled")
+                sortCondition = transcriberCountClause
+                break
+            case 'institution':
+                sortCondition = nvl(INSTITUTION.NAME, PROJECT.FEATURED_OWNER)
+                break
+            case 'type':
+                sortCondition = PROJECT_TYPE.LABEL
+                break
+            default:
+                sortCondition = lower(PROJECT.FEATURED_LABEL)
+                break
         }
 
-        Integer startIndex = offset
-        if (startIndex >= renderList.size()) {
-            startIndex = renderList.size() - max
-            if (startIndex < 0) {
-                startIndex = 0;
-            }
-        }
-
-        int endIndex = startIndex + max - 1
-        if (endIndex >= renderList.size()) {
-            endIndex = renderList.size() - 1;
-        }
-
-        if (order == 'desc') {
-            renderList = renderList.reverse()
-        }
-
-        summaryList.matchingProjectCount = renderList.size()
-        summaryList.projectRenderList = (renderList ? renderList[startIndex..endIndex] : [])
-
-        return summaryList
-
+        def query = context.
+                select(
+                    PROJECT.ID,
+                    PROJECT.NAME,
+                    PROJECT.DESCRIPTION,
+                    PROJECT.SHORT_DESCRIPTION,
+                    PROJECT.FEATURED_LABEL,
+                    PROJECT.FEATURED_OWNER,
+                    PROJECT_TYPE.LABEL,
+                    INSTITUTION.NAME.as('institution_name'),
+                    count().over().as('full_count')
+                ).select(taskJoinTable.fields()).
+                from(fromClause).
+                where(whereClauses).
+                orderBy(sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
+        if (offset && max) return query.offset(offset).limit(max)
+        else if (offset) return query.offset(offset)
+        else if (max) return query.limit(max)
+        else return query
     }
 
     ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
 
         def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
         def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
-        def projectList
 
+        def conditions
         if (userService.isAdmin()) {
-            projectList = Project.list()
+            conditions = []
         } else {
-            projectList = Project.findAllByInactiveOrInactive(false, null)
+            conditions = [ACTIVE_ONLY]
         }
 
-        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
+        //params?.q, params?.sort, params?.int('offset') ?: 0, params?.int('max') ?: 0, params?.order
+        def query = params?.q
+        def tag = params?.tag
+        def sort = params?.sort
+        def offset = params?.int('offset')
+        def max = params?.int('max')
+        def order = params?.order
 
-        return makeSummaryListFromProjectList(projectList, params, filter)
+        return makeSummaryListFromConditions(conditions, tag, query, sort, offset, max, order, statusFilterMode, activeFilterMode)
     }
 
     ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null) {
-        def projectList
-
-        if (userService.isAdmin()) {
-            if (projectType) {
-                projectList = Project.findAllByProjectType(projectType)
-            } else {
-                projectList = Project.list()
-            }
-        } else {
-            if (projectType) {
-                projectList = Project.withCriteria {
-                    eq 'projectType', projectType
-                    or {
-                        eq 'inactive', false
-                        isNull 'inactive'
-                    }
-                }
-            } else {
-                projectList = Project.findAllByInactiveOrInactive(false, null)
-            }
+        def conditions = []
+        if (projectType) {
+            conditions += PROJECT.PROJECT_TYPE_ID.eq(projectType.id)
+        }
+        if (!userService.isAdmin()) {
+            conditions += ACTIVE_ONLY
         }
 
-        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
+//        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
 
-        return makeSummaryListFromProjectList(projectList, q, sort, offset, max, order, filter)
+        return makeSummaryListFromConditions(conditions, null, q, sort, offset, max, order, statusFilter, activeFilter)
     }
 
     def checkAndResizeExpeditionImage(Project projectInstance) {

@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.util.Environment
+import grails.util.Holders
 import groovy.sql.Sql
 
 class NewUserDigestNotifierJob {
@@ -12,7 +13,7 @@ class NewUserDigestNotifierJob {
     def description = "Notify admin users about new users who have completed their first five transcriptions"
 
     static triggers = {
-        if (Environment.current == Environment.DEVELOPMENT) {
+        if (Environment.current == Environment.DEVELOPMENT && Holders.config.getProperty('digest.debug', Boolean,false)) {
             log.info("Enabling 30s trigger")
             cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // every 30s
         } else {

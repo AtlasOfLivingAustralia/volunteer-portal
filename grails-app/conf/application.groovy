@@ -95,7 +95,8 @@ grails {
     cache {
         enabled = true
         ehcache {
-            //ehcacheXmlLocation = 'classpath:ehcache.xml' // conf/ehcache.xml
+            cacheManagerName = 'digivol-cache-manager'
+            ehcacheXmlLocation = 'classpath:digivol-ehcache.xml' // conf/ehcache.xml
             reloadable = false
         }
 

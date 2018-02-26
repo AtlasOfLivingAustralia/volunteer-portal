@@ -124,12 +124,20 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <h2 class="heading">
-                            <g:if test="${params.q}">
+                            <g:if test="${params.q || params.tag}">
                                 Expeditions matching:
+                                <g:if test="${params.q}">
                                 <span class="tag currentFilter">
-                                    <span>${params.q.replaceAll('tag:','')}</span>
+                                    <span>${params.q}</span>
                                     <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
                                 </span>
+                                </g:if>
+                                <g:if test="${params.tag}">
+                                    <span class="tag currentFilter">
+                                        <span>${params.tag}</span>
+                                        <a href="?mode=${params.mode}&tag="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                    </span>
+                                </g:if>
                             </g:if>
                             <g:else>
                                 All Expeditions

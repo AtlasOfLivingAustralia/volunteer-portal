@@ -20,6 +20,7 @@ import org.elasticsearch.common.xcontent.ToXContent
 import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.index.query.FilterBuilder
+import org.elasticsearch.node.Node
 import org.elasticsearch.search.sort.SortOrder
 import org.hibernate.Criteria
 import org.hibernate.FetchMode
@@ -27,8 +28,8 @@ import org.hibernate.FetchMode
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
+import static au.org.ala.volunteer.BenchmarkUtils.benchmark
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder
-import org.elasticsearch.node.Node
 
 
 @Transactional(readOnly = true)
@@ -54,6 +55,7 @@ class FullTextIndexService {
         log.info("ElasticSearch service initialisation complete.")
     }
 
+    @NotTransactional
     @PreDestroy
     def destroy() {
         if (node) {
@@ -61,20 +63,12 @@ class FullTextIndexService {
         }
     }
 
-    def getIndexerQueueLength() {
-        return _backgroundQueue.size()
-    }
-
-    def processIndexTaskQueue(int maxTasks = 10000) {
-
-    }
-
-    public reinitialiseIndex() {
+    @NotTransactional
+    def reinitialiseIndex() {
         try {
-            def ct = new CodeTimer("Index deletion")
-            node.client().admin().indices().prepareDelete(INDEX_NAME).execute().get()
-            ct.stop(true)
-
+            benchmark(log, "Index deletion") {
+                node.client().admin().indices().prepareDelete(INDEX_NAME).execute().get()
+            }
         } catch (Exception ex) {
             log.warn("Failed to delete index - maybe because it didn't exist?", ex)
             // failed to delete index - maybe because it didn't exist?
@@ -150,6 +144,7 @@ class FullTextIndexService {
         return response
     }
 
+    @NotTransactional
     List<DeleteResponse> deleteTasks(Collection<Long> taskIds) {
         taskIds.collect {
             def dr = deleteTask(it)
@@ -159,17 +154,18 @@ class FullTextIndexService {
                 log.warn("${dr.id} not found in index")
         }
     }
-    
+
+    @NotTransactional
     DeleteResponse deleteTask(Long taskId) {
         client.prepareDelete(INDEX_NAME, TASK_TYPE, taskId.toString()).execute().actionGet();
     }
 
-    public QueryResults<Task> simpleTaskSearch(String query, Integer offset = null, Integer max = null, String sortBy = null, SortOrder sortOrder = null) {
+    QueryResults<Task> simpleTaskSearch(String query, Integer offset = null, Integer max = null, String sortBy = null, SortOrder sortOrder = null) {
         def qmap = [query: [filtered: [query:[query_string: [query: query?.toLowerCase()]]]]]
         return search(qmap, offset, max, sortBy, sortOrder)
     }
 
-    public QueryResults<Task> search(Map query, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
+    QueryResults<Task> search(Map query, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
         Map qmap = null
         Map fmap = null
         if (query.query) {
@@ -399,18 +395,15 @@ class FullTextIndexService {
     private static QueryResults<Task> executeSearch(SearchRequestBuilder searchRequestBuilder, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
 
         executeGenericSearch(searchRequestBuilder, offset, max, sortBy, sortOrder) { SearchResponse searchResponse ->
-            def ct = new CodeTimer("Object retrieval (${searchResponse.hits.hits.length} of ${searchResponse.hits.totalHits} hits)")
-            def taskList = []
-            if (searchResponse.hits) {
-                searchResponse.hits.each { hit ->
-                    taskList << Task.get(hit.id.toLong())
-                }
+            List<Task> taskList = benchmark("Object retrieval (${searchResponse?.hits?.hits?.length} of ${searchResponse?.hits?.totalHits} hits)") {
+                searchResponse.hits ? Task.findAllByIdInList(searchResponse.hits*.id*.toLong()) : []
             }
-            ct.stop(true)
+
             return new QueryResults<Task>(list: taskList, totalCount: searchResponse?.hits?.totalHits ?: 0)
         }
     }
 
+    @NotTransactional
     def ping() {
         log.info("ElasticSearch Service is${node ? ' ' : ' NOT ' }alive.")
     }
