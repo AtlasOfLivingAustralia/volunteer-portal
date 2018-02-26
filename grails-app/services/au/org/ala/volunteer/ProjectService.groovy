@@ -2,7 +2,6 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
-import groovy.sql.Sql
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
@@ -23,14 +22,13 @@ import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
-import static org.jooq.impl.DSL.count
-import static org.jooq.impl.DSL.countDistinct
-import static org.jooq.impl.DSL.lower
-import static org.jooq.impl.DSL.name
-import static org.jooq.impl.DSL.nvl
-import static org.jooq.impl.DSL.or
-import static org.jooq.impl.DSL.sum
-import static org.jooq.impl.DSL.when
+import static org.jooq.impl.DSL.count as jCount
+import static org.jooq.impl.DSL.countDistinct as jCountDistinct
+import static org.jooq.impl.DSL.lower as jLower
+import static org.jooq.impl.DSL.nvl as jNvl
+import static org.jooq.impl.DSL.or as jOr
+import static org.jooq.impl.DSL.sum as jSum
+import static org.jooq.impl.DSL.when as jWhen
 
 @Transactional
 class ProjectService {
@@ -296,11 +294,11 @@ class ProjectService {
                 break
         }
 
-        def taskCountClause = count(TASK).'as'(TASK_COUNT_COLUMN)
-        def transcribedCountClause = sum(when(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
-        def validatedCountClause = sum(when(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
-        def validatorCountClause = countDistinct(TASK.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
-        def transcriberCountClause = countDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
+        def taskCountClause = jCount(TASK).'as'(TASK_COUNT_COLUMN)
+        def transcribedCountClause = jSum(jWhen(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
+        def validatedCountClause = jSum(jWhen(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
+        def validatorCountClause = jCountDistinct(TASK.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
+        def transcriberCountClause = jCountDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
@@ -340,7 +338,7 @@ class ProjectService {
             queryClauses.add(PROJECT.DESCRIPTION.containsIgnoreCase(q))
             queryClauses.add(PROJECT.SHORT_DESCRIPTION.containsIgnoreCase(q))
 
-            def queryWhereClause = or(queryClauses)
+            def queryWhereClause = jOr(queryClauses)
 
             whereClauses += queryWhereClause
         }
@@ -348,7 +346,7 @@ class ProjectService {
         def sortCondition
         switch (sort) {
             case 'completed':
-                sortCondition = when(taskCountClause.eq(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(taskCountClause.cast(Double))).otherwise(transcribedCountClause.div(taskCountClause.cast(Double)))
+                sortCondition = jWhen(taskCountClause.eq(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(taskCountClause.cast(Double))).otherwise(transcribedCountClause.div(taskCountClause.cast(Double)))
                 break
             case 'transcribed':
                 sortCondition = transcribedCountClause.div(taskCountClause.cast(Double))
@@ -361,13 +359,13 @@ class ProjectService {
                 sortCondition = transcriberCountClause
                 break
             case 'institution':
-                sortCondition = nvl(INSTITUTION.NAME, PROJECT.FEATURED_OWNER)
+                sortCondition = jNvl(INSTITUTION.NAME, PROJECT.FEATURED_OWNER)
                 break
             case 'type':
                 sortCondition = PROJECT_TYPE.LABEL
                 break
             default:
-                sortCondition = lower(PROJECT.FEATURED_LABEL)
+                sortCondition = jLower(PROJECT.FEATURED_LABEL)
                 break
         }
 
@@ -381,7 +379,7 @@ class ProjectService {
                     PROJECT.FEATURED_OWNER,
                     PROJECT_TYPE.LABEL,
                     INSTITUTION.NAME.as('institution_name'),
-                    count().over().as('full_count')
+                    jCount().over().as('full_count')
                 ).select(taskJoinTable.fields()).
                 from(fromClause).
                 where(whereClauses).
