@@ -14,7 +14,7 @@
         }
     }
 </script>
-<g:if test="${grailsApplication.config.digivol.trackJsErrors}">
+<g:if test="${grailsApplication.config.getProperty('digivol.trackJsErrors', Boolean, false)}">
 <script>
     (function (window) {
         // Retain a reference to the previous global error handler, in case it has been set:
