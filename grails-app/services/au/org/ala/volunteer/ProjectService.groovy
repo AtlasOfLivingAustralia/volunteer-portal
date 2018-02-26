@@ -241,13 +241,19 @@ class ProjectService {
 
     private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
         def results = generateProjectSummariesQuery(dataSource, conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
+        if (!results) {
+            return makeSummaryListFromResults(results, [])
+        }
         def projects = Project.findAllByIdInList(results.collect { it['id'] })
-        makeSummaryListFromResults(results, projects)
+        return makeSummaryListFromResults(results, projects)
     }
 
     def makeSummaryListFromProjectList(List<Project> projects, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
+        if (!projects) {
+            return makeSummaryListFromResults([], [])
+        }
         def results = generateProjectSummariesQuery(dataSource, [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
-        makeSummaryListFromResults(results, projects)
+        return makeSummaryListFromResults(results, projects)
     }
 
     // TODO find usages of ProjectSummary.project and just project the required variables directly onto the summary
@@ -281,12 +287,6 @@ class ProjectService {
         def settings = new Settings().withRenderFormatted(false)
         def context = DSL.using(dataSource, postgres, settings)
 
-        def taskCountAlias = name(TASK_COUNT_COLUMN)
-        def transcribedCountAlias = name(TRANSCRIBED_COUNT_COLUMN)
-        def validatedCountAlias = name(VALIDATED_COUNT_COLUMN)
-        def transcriberCountAlias = name(TRANSCRIBER_COUNT_COLUMN)
-        def validatorCountAlias = name(VALIDATOR_COUNT_COLUMN)
-
         switch (activeFilter) {
             case ProjectActiveFilterType.showActiveOnly:
                 whereClauses += ACTIVE_ONLY
@@ -296,11 +296,11 @@ class ProjectService {
                 break
         }
 
-        def taskCountClause = count(TASK).'as'(taskCountAlias)
-        def transcribedCountClause = sum(when(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(transcribedCountAlias)
-        def validatedCountClause = sum(when(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(validatedCountAlias)
-        def validatorCountClause = countDistinct(TASK.FULLY_VALIDATED_BY).'as'(validatorCountAlias)
-        def transcriberCountClause = countDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(transcriberCountAlias)
+        def taskCountClause = count(TASK).'as'(TASK_COUNT_COLUMN)
+        def transcribedCountClause = sum(when(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
+        def validatedCountClause = sum(when(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
+        def validatorCountClause = countDistinct(TASK.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
+        def transcriberCountClause = countDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
