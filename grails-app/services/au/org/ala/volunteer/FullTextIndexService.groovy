@@ -149,9 +149,10 @@ class FullTextIndexService {
         taskIds.collect {
             def dr = deleteTask(it)
             if (dr.found)
-                log.info("${dr.id} deleted from index")
+                log.debug("${dr.id} deleted from index")
             else
-                log.warn("${dr.id} not found in index")
+                log.warn("${dr.id} not found in index while attempting to delete")
+            dr
         }
     }
 

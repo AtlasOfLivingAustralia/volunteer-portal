@@ -2,7 +2,8 @@ package au.org.ala.volunteer
 
 public class TaskDescriptor {
 
-    Project project
+    long projectId
+    String projectName
     String externalIdentifier
     String imageUrl
     ArrayList<Map> fields = new ArrayList<Map>()
@@ -11,7 +12,7 @@ public class TaskDescriptor {
 
     @Override
     String toString() {
-        "{ project.name:'$project.name', externalIdentifier:'$externalIdentifier', imageUrl:$imageUrl }"
+        "{ project.name:'$projectName', externalIdentifier:'$externalIdentifier', imageUrl:$imageUrl }"
     }
 }
 

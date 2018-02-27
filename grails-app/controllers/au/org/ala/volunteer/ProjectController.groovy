@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
+import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
@@ -304,7 +305,8 @@ class ProjectController {
     def deleteTasks() {
         def projectInstance = Project.get(params.id)
         projectService.deleteTasksForProject(projectInstance, true)
-        redirect(action: "edit", id: projectInstance?.id)
+        //redirect(action: "edit", id: projectInstance?.id)
+        render '', status: SC_ACCEPTED
     }
 
     def list() {

@@ -2,7 +2,7 @@
 //= require compile/eventsource/polyfill.js
 //= require compile/bootstrap-notify/3.1.3/bootstrap-notify.js
 //= require_self
-function digivolNotify(config) {
+function digivolNotify(config, self) {
   "use strict";
   var source = new EventSource(config.eventSourceUrl);
 
@@ -114,6 +114,15 @@ function digivolNotify(config) {
   function achievementViewed(data) {
     var n = achievementsNotifications[data.id];
     if (n) n.close();
+  }
+
+  self.digivolNotifications = {
+    addMessageListener: function(message, handler) {
+      source.addEventListener(message, handler);
+    },
+    removeMessageListener: function(message, handler) {
+      source.removeEventListener(message, handler);
+    }
   }
 }
 

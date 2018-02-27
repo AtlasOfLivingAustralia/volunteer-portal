@@ -275,8 +275,8 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: org.postgresql.Driver
-    username: root
-    password: password
+#    username: root
+#    password: password
     loggingSql: false
 
 environments:
@@ -285,11 +285,18 @@ environments:
             dbCreate: validate
             url: jdbc:postgresql://localhost/volunteers
             username: "postgres"
-            passowrd: "password"
+            password: "password"
             logSql: false
+            properties:
+                jdbcInterceptors: ConnectionState;StatementCache(max=200);SlowQueryReport(logFailed=true)
     test:
+        flyway:
+            baselineOnMigrate: false
         dataSource:
             dbCreate: validate
+            url: jdbc:postgresql://localhost/volunteerstest
+            username: "postgres"
+            password: "password"
     production:
         dataSource:
             dbCreate: validate
