@@ -2,9 +2,7 @@ package au.org.ala.volunteer
 
 class ForumTopicNotificationMessage {
 
-    User user
-    ForumTopic topic
-    ForumMessage message
+    static belongsTo = [user: User, topic: ForumTopic, message: ForumMessage]
 
     static constraints = {
         user nullable: false

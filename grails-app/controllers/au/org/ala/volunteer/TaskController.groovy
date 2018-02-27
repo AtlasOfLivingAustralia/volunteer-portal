@@ -573,6 +573,8 @@ class TaskController {
             }
 
             render results as JSON
+        } else {
+            render status: 404
         }
     }
 

@@ -6,6 +6,7 @@ import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import org.apache.commons.io.FileUtils
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
+import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.BlockingQueue
@@ -118,7 +119,7 @@ class TaskLoadService {
 
         imageData.each { imgData ->
 
-            def taskDesc = new TaskDescriptor(project: project, imageUrl: imgData.url, externalIdentifier: imgData.valueMap["externalIdentifier"] ?: imgData.valueMap["externalIdentifier_0"])
+            def taskDesc = new TaskDescriptor(projectId: project.id, projectName: project.name, imageUrl: imgData.url, externalIdentifier: imgData.valueMap["externalIdentifier"] ?: imgData.valueMap["externalIdentifier_0"])
             imgData.valueMap.each { kvp ->
                 def fieldName = kvp.key
                 def recordIndex = 0
@@ -151,8 +152,7 @@ class TaskLoadService {
                     }
                     imgData.file.delete()
                 } catch (Exception ex) {
-                    ex.printStackTrace()
-                    println "AfterLoad for task ${task.id} failed: ${ex.message}"
+                    log.error("afterLoad for task ${task.id} failed:", ex)
                 }
             }
 
@@ -188,7 +188,8 @@ class TaskLoadService {
 
     private TaskDescriptor createTaskDescriptorFromTokens(Project project, String[] tokens, Closure importClosure, int lineNumber) {
         def taskDesc = new TaskDescriptor()
-        taskDesc.project = project
+        taskDesc.projectId = project.id
+        taskDesc.projectName = project.name
 
         if (importClosure) {
             importClosure(taskDesc, tokens, lineNumber)
@@ -305,13 +306,13 @@ class TaskLoadService {
         return newValue
     }
 
-    private Task createTaskFromTaskDescriptor(TaskDescriptor taskDesc) {
+    private Task createTaskFromTaskDescriptor(Project project, TaskDescriptor taskDesc) {
         Task t = new Task()
-        t.project = taskDesc.project
+        t.project = project
         t.externalIdentifier = taskDesc.externalIdentifier
         t.save(flush: true)
         for (Map fd : taskDesc.fields) {
-            fd.task = t;
+            fd.task = t
 
             // Check value for special character replacements...
             fd.value = replaceSpecialCharacters(fd.value ?: "")
@@ -372,14 +373,16 @@ class TaskLoadService {
             synchronized (_report) {
                 _report.clear()
             }
-            _cancel = false;
+            _cancel = false
             runAsync {
+                Map<Long, Project> projects = [:].withDefault { Long id -> Project.get(id) }
                 try {
                     TaskDescriptor taskDesc
                     while ((taskDesc = _loadQueue.poll()) && !_cancel) {
                         _currentItemMessage = "${taskDesc.externalIdentifier}"
 
-                        def existing = Task.findAllByExternalIdentifierAndProject(taskDesc.externalIdentifier, taskDesc.project);
+                        def project = projects[taskDesc.projectId]
+                        def existing = Task.findAllByExternalIdentifierAndProject(taskDesc.externalIdentifier, project)
 
                         if (existing && existing.size() > 0) {
                             if (replaceDuplicates) {
@@ -392,30 +395,27 @@ class TaskLoadService {
                             }
                         }
 
-                        Task.withNewTransaction { status ->
+                        try {
+                            Task.withNewTransaction { status ->
 
-                            try {
-
-                                def t = createTaskFromTaskDescriptor(taskDesc)
+                                def t = createTaskFromTaskDescriptor(project, taskDesc)
 
                                 // Attempt to predict when the import will complete
-                                def now = Calendar.instance.time;
+                                def now = Calendar.instance.time
                                 def remainingMillis = _loadQueue.size() * ((now.time - _currentBatchStart.time) / (_currentBatchSize - _loadQueue.size()))
                                 def expectedEndTime = new Date((long) (now.time + remainingMillis))
                                 _timeRemaining = formatDuration(TimeCategory.minus(expectedEndTime, now))
                                 synchronized (_report) {
                                     _report.add(new TaskLoadStatus(succeeded: true, taskDescriptor: taskDesc, message: "", time: Calendar.instance.time))
                                 }
-
-                            } catch (Exception ex) {
-                                log.error("Exception while creating new task for $taskDesc", ex)
-                                synchronized (_report) {
-                                    _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: taskDesc, message: ex.toString(), time: Calendar.instance.time))
-                                }
+                            }
+                        } catch (Exception ex) {
+                            log.error("Exception while creating new task for $taskDesc", ex)
+                            synchronized (_report) {
+                                _report.add(new TaskLoadStatus(succeeded: false, taskDescriptor: taskDesc, message: ex.toString(), time: Calendar.instance.time))
                             }
                         }
                     }
-                    
                 } catch (Exception e) {
                     log.error("Exception running task loading async job", e)
                     def tl = []
@@ -426,8 +426,8 @@ class TaskLoadService {
                     }
                 } finally {
                     _currentItemMessage = ""
-                    _currentBatchSize = 0;
-                    _currentBatchStart = null;
+                    _currentBatchSize = 0
+                    _currentBatchStart = null
                     _currentBatchInstigator = ""
                     if (_cancel) _loadQueue.clear()
                 }
@@ -436,7 +436,7 @@ class TaskLoadService {
     }
 
     public def cancelLoad() {
-        _cancel = true;
+        _cancel = true
     }
 
     List<TaskDescriptor> clearQueue() {
@@ -452,7 +452,7 @@ class TaskLoadService {
     }
 
     def formatDuration(TimeDuration d) {
-        List buffer = new ArrayList();
+        List buffer = new ArrayList()
 
         if (d.years != 0) buffer.add(d.years + " years");
         if (d.months != 0) buffer.add(d.months + " months");

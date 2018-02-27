@@ -48,9 +48,6 @@ class Field implements Serializable {
     def taskId = this.task?.id
     if (taskId) GormEventDebouncer.debounceTask(taskId)
   }
-  // Executed after an object has been deleted
-  def afterDelete() {
-    def taskId = this.task?.id
-    if (taskId) GormEventDebouncer.debounceTask(taskId)
-  }
+  // Fields are only deleted when a task is deleted so there is no
+  // need to push an task update event on delete here
 }

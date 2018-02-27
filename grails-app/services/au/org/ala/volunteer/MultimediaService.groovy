@@ -11,6 +11,16 @@ class MultimediaService {
     def grailsApplication
     def grailsLinkGenerator
 
+    def deleteAllMultimediaForTask(Task task) {
+        def dir = new File(grailsApplication.config.images.home, "${task.projectId}${File.separatorChar}${task.id}")
+        if (dir.exists()) {
+            log.info("DeleteMultimedia: Preparing to remove multimedia directory ${dir.absolutePath}")
+            FileUtils.deleteDirectory(dir)
+        } else {
+            log.info("DeleteMultimedia: Task directory ${dir.absolutePath} does not exist!")
+        }
+    }
+
     def deleteMultimedia(Multimedia media) {
         def dir = new File(grailsApplication.config.images.home + '/' + media.task?.projectId + '/' + media.task?.id + "/" + media.id)
         if (dir.exists()) {

@@ -10,6 +10,6 @@
         alertType: 'danger',
         alertIconClass: "fa fa-exclamation-circle",
         achievementType: 'success'
-    });
+    }, window);
 </asset:script>
 </cl:isLoggedIn>

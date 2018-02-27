@@ -2,16 +2,20 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
+import groovy.transform.Immutable
+import groovyx.gpars.actor.Actors
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.Session
 import org.jooq.Condition
 import org.jooq.SQLDialect
 import org.jooq.SortOrder
 import org.jooq.conf.Settings
 import org.jooq.impl.DSL
 
+import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
 import javax.sql.DataSource
 
@@ -53,27 +57,68 @@ class ProjectService {
     def grailsApplication
     DataSource dataSource
 
-    def deleteTasksForProject(Project projectInstance, boolean deleteImages = true) {
-        if (projectInstance) {
-            def tasks = Task.findAllByProject(projectInstance)
-            for (Task t : tasks) {
+    def deleteTasksActor = Actors.actor {
+        loop {
+            react { DeleteTasksMessage msg ->
+
+                log.info("Deleting tasks {}", msg)
+
                 try {
-                    if (deleteImages) {
-                        t.multimedia.each { image ->
-                            try {
-                                multimediaService.deleteMultimedia(image)
-                            } catch (IOException ex) {
-                                log.error("Failed to delete multimedia: ", e)
+                    Task.withNewSession { Session session ->
+                        Project p = Project.get(msg.projectId)
+                        def count = 0
+                        def lastId = Long.MIN_VALUE
+                        def tasks = Task.findAllByProject(p, [sort: 'id', order: 'asc', max: 100])
+                        while (tasks) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Deleting tasks {}", tasks*.id)
                             }
+                            for (Task task : tasks) {
+                                lastId = task.id
+                                try {
+                                    if (msg.deleteImages) multimediaService.deleteAllMultimediaForTask(task)
+                                    task.delete()
+                                } catch (e) {
+                                    log.error("Exception while deleting task ${task.id}", e)
+                                    continue
+                                }
+                                count++
+                                if (count % 25 == 0) {
+                                    def msgData = [projectId: msg.projectId, count: count, complete: false]
+                                    log.debug("notifying message data {}", msgData)
+                                    notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: msgData))
+                                }
+                            }
+                            tasks = Task.findAllByProjectAndIdGreaterThan(p, lastId, [sort: 'id', order: 'asc', max: 100])
                         }
+                        log.info("Completed deleting all tasks for {}", msg.projectId)
+                        session.flush()
+                        notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
-                    t.delete()
-                } catch (Exception ex) {
-                    log.error("Failed to delete task ${t.id}: ", e)
+                } catch (e) {
+                    log.error("Error deleting tasks", e)
+                    notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: -1, error: e.message, complete: true]))
                 }
             }
         }
+    }
 
+    @PreDestroy
+    def shutdown() {
+        deleteTasksActor.stop()
+    }
+
+    @Immutable
+    final static class DeleteTasksMessage {
+        long projectId
+        String userId
+        boolean deleteImages
+    }
+
+    def deleteTasksForProject(Project projectInstance, boolean deleteImages = true) {
+        if (projectInstance) {
+            deleteTasksActor(new DeleteTasksMessage(projectInstance.id, userService.currentUserId, deleteImages))
+        }
     }
 
     def deleteProject(Project projectInstance) {
