@@ -108,7 +108,7 @@ class LeaderBoardService {
                 if (institution) {
                     results = getTopNForInstitution(maxRows, institution, ineligibleUsers)
                 } else {
-                    def userScores = userService.getUserCounts(ineligibleUsers, 1)
+                    def userScores = userService.getUserCounts(ineligibleUsers, maxRows)
                     heading = "${headingPrefix} All Time"
                     for (int i = 0; i < userScores.size(); ++i) {
                         if (i >= maxRows) {
