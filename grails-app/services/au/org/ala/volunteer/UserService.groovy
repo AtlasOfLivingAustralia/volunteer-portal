@@ -484,7 +484,7 @@ class UserService {
 
         if (results) {
             users.each {
-                def result = results.users[it.userId]
+                UserDetails result = results.users[it.userId]
                 if (result && (result.firstName != it.firstName || result.lastName != it.lastName || result.userName != it.email || result.organisation != it.organisation)) {
                     it.firstName = result.firstName
                     it.lastName = result.lastName
