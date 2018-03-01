@@ -112,16 +112,17 @@ class AjaxController {
 
             writer = new CSVHeadingsWriter((Writer) response.writer, {
                 'user_id' { it[0] }
-                'display_name' { it[1] }
-                'organisation' { it[2] }
-                'location' { it[3] }
-                'transcribed_count' { it[4] }
-                'validated_count' { it[5] }
-                'last_activity' { it[6] ?: nodata }
-                'projects_count' { it[7] }
-                'volunteer_since' { it[8] }
-                'is_admin' { it[9] }
-                'is_validator' { it[10] }
+                'email' { it[1] }
+                'display_name' { it[2] }
+                'organisation' { it[3] }
+                'location' { it[4] }
+                'transcribed_count' { it[5] }
+                'validated_count' { it[6] }
+                'last_activity' { it[7] ?: nodata }
+                'projects_count' { it[8] }
+                'volunteer_since' { it[9] }
+                'is_admin' { it[10] }
+                'is_validator' { it[11] }
             })
             writer.writeHeadings()
             response.flushBuffer()
@@ -129,7 +130,7 @@ class AjaxController {
 
 
         def asyncCounts = Task.async.withStatelessSession {
-            def sw1 = new Stopwatch().start()
+            def sw1 = Stopwatch.createStarted()
             def vs = (Task.withCriteria {
                 projections {
                     groupProperty('fullyValidatedBy')
@@ -148,7 +149,7 @@ class AjaxController {
         }
 
         def asyncLastActivities = ViewedTask.async.withStatelessSession {
-            def sw2 = new Stopwatch().start()
+            def sw2 = Stopwatch.createStarted()
             def lastActivities = ViewedTask.executeQuery("select vt.userId, to_timestamp(max(vt.lastView)/1000) from ViewedTask vt group by vt.userId").collectEntries { [(it[0]): it[1]] }
             sw2.stop()
             log.debug("UserReport viewedTasks took ${sw2.toString()}")
@@ -156,14 +157,14 @@ class AjaxController {
         }
 
         def asyncProjectCounts = Task.async.withStatelessSession {
-            def sw4 = new Stopwatch().start()
+            def sw4 = Stopwatch.createStarted()
             def projectCounts = Task.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Task t group by t.fullyTranscribedBy ").collectEntries { [(it[0]): it[1]] }
             sw4.stop()
             log.debug("UserReport projectCounts took ${sw4.toString()}")
             projectCounts
         }
 
-        def sw3 = new Stopwatch().start()
+        def sw3 = Stopwatch.createStarted()
         def asyncUserDetails = User.async.task {
             def users = User.list(fetch:[userRoles:"eager", "userRoles.role": "eager"])
             def serviceResults = [:]
@@ -196,7 +197,7 @@ class AjaxController {
         final adminRole = CASRoles.ROLE_ADMIN
         final validatorRole = CASRoles.ROLE_VALIDATOR
 
-        def sw5 = new Stopwatch().start()
+        def sw5 = Stopwatch.createStarted()
         for (User user: users) {
             def id = user.userId
             def transcribedCount = transcribeds[id] ?: 0
@@ -213,14 +214,14 @@ class AjaxController {
             def isAdmin = !roles.intersect([realAdminRole, adminRole]).isEmpty()
             def isValidator = !roles.intersect([validatorRole]).isEmpty()
 
-            report.add([serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created, isAdmin, isValidator])
+            report.add([serviceResult?.userId ?: id, serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created, isAdmin, isValidator])
         }
         sw5.stop()
         log.debug("UserReport generate report took ${sw5}")
 
         sw5.reset().start()
         // Sort by the transcribed count
-        report.sort({ row1, row2 -> row2[4] - row1[4]})
+        report.sort({ row1, row2 -> row2[5] - row1[5]})
         sw5.stop()
         log.debug("UserReport sort took ${sw5.toString()}")
 
