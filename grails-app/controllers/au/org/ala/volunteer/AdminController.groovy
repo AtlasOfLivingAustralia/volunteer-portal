@@ -279,19 +279,18 @@ class AdminController {
         if (checkAdmin()) {
             def projects = Project.list([sort:'id'])
 
-            def data = []
-
             def dates = taskService.getProjectDates()
 
             def projectSummaries = projectService.getProjectSummaryList(params)
 
-            projects.each { project ->
-                def summary = projectSummaries.projectRenderList.find { it.project.id == project.id }
-                data << [project: project, summary: summary, dates: dates[project.id]]
+            def summaryMap = projectSummaries.projectRenderList.collectEntries { [(it.project.id) : it ] }
 
+            def data = projects.collect { project ->
+                def summary = summaryMap[project.id]
+                [project: project, summary: summary, dates: dates[project.id]]
             }
 
-            response.setHeader("Content-Disposition", "attachment;filename=expedition-summary.csv");
+            response.setHeader("Content-Disposition", "attachment;filename=expedition-summary.csv")
             response.addHeader("Content-type", "text/plain")
             def sdf = new SimpleDateFormat("yyyy-MM-dd")
 
