@@ -215,9 +215,9 @@ class ProjectService {
 
         def results = resultMaps.collect { result ->
             def project = projectsMap[result['id']]
-            def taskCount = result[TASK_COUNT_COLUMN]
-            def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN]
-            def validatedCount = result[VALIDATED_COUNT_COLUMN]
+            def taskCount = result[TASK_COUNT_COLUMN] ?: 0
+            def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN] ?: 0
+            def validatedCount = result[VALIDATED_COUNT_COLUMN] ?: 0
             makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)
         }
 
@@ -307,11 +307,11 @@ class ProjectService {
         def totalCount = 0
         def renderList = results.collect { result ->
             def project = projectMap[result['id']]
-            def taskCount = result[TASK_COUNT_COLUMN]
-            def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN]
-            def validatedCount = result[VALIDATED_COUNT_COLUMN]
-            def transcriberCount = result[TRANSCRIBER_COUNT_COLUMN]
-            def validatorCount = result[VALIDATOR_COUNT_COLUMN]
+            def taskCount = result[TASK_COUNT_COLUMN] ?: 0
+            def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN] ?: 0
+            def validatedCount = result[VALIDATED_COUNT_COLUMN] ?: 0
+            def transcriberCount = result[TRANSCRIBER_COUNT_COLUMN] ?: 0
+            def validatorCount = result[VALIDATOR_COUNT_COLUMN] ?: 0
             totalCount = result['full_count']
             if (transcribedCount < taskCount && !project.inactive) {
                 incompleteCount++
@@ -368,7 +368,7 @@ class ProjectService {
 
         def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
 
-        def fromClause = PROJECT.join(PROJECT_TYPE).onKey().leftOuterJoin(INSTITUTION).onKey().join(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
+        def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey().leftOuterJoin(INSTITUTION).onKey().leftOuterJoin(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
 
         // apply the query paramter
         if (tag) {
