@@ -211,7 +211,6 @@ class InstitutionService {
     }
 
     def getProjectUnderwayCount(Institution institution) {
-        //select count(distinct p.id) from project p join task t on p.id = t.project_id where t.fully_transcribed_by is null and p.inactive = false and p.institution_id = 5590558;
         def c = Project.createCriteria()
         c.get {
             eq('institution', institution)

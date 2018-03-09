@@ -948,52 +948,22 @@ ORDER BY record_idx, name;
         return fileMap
     }
 
-    int countTranscribedByProjectType(String projectType) {
-        Task.executeQuery("""
-            select count(*) from Task t
-            WHERE t.fullyTranscribedBy IS NOT NULL and t.project.id in (
-              select id from Project p  where p.template.id  in (select id from Template where name = '${projectType}')
-            )
-        """)[0]
-    }
-
-    List<Map> transcribedDatesByUser(String userid) {
-        String select = """
-            SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-            FROM Project p, Task t
-            LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-            WHERE t.fully_transcribed_by = :userid and p.id = t.project_id
-            ORDER BY lastEdit ASC
-        """
-
-        def results = []
-
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select, [userid: userid]) { row ->
-            def taskRow = [id: row.id, lastEdit: row.lastEdit, isValid: row.isValid, project: row.project ]
-            results.add(taskRow)
-        }
-
-        return results;
-    }
-
-
     List<Map> transcribedDatesByUserAndProject(String userid, long projectId, String labelTextFilter) {
         def select = """
             SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-            FROM Project p, Task t
+            FROM Project p JOIN Task t on p.id = t.project_id
             LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-            WHERE t.fully_transcribed_by = :userid and p.id = t.project_id and p.id = :projectId
+            WHERE t.fully_transcribed_by = :userid and p.id = :projectId
             ORDER BY lastEdit ASC
         """
 
         if (labelTextFilter) {
             select = """
                 SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-                FROM Project p, Task t
+                FROM Project p JOIN Task t ON p.id = t.project_id
                 INNER JOIN (select f.task_id, f.value from Field f where f.name = 'occurrenceRemarks' and f.superceded = false and f.value ilike :labelTextFilter) as field on field.task_id = t.id
                 INNER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-                WHERE t.fully_transcribed_by = :userid and p.id = t.project_id and p.id = :projectId
+                WHERE t.fully_transcribed_by = :userid and p.id = :projectId
             """
         }
 
@@ -1010,12 +980,12 @@ ORDER BY record_idx, name;
 
 
 
-    public Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
+    Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
         def select ="""
             SELECT t.id as id
-            FROM Project p, Task t
+            FROM Project p JOIN Task t ON p.id = t.project_id
             LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f where f.name = 'sequenceNumber' group by f.task_id) as fields on fields.task_id = t.id
-            WHERE p.id = :projectId and p.id = t.project_id and fields.value = :fieldValue
+            WHERE p.id = :projectId and fields.value = :fieldValue
         """
 
         def sql = new Sql(dataSource: dataSource)
