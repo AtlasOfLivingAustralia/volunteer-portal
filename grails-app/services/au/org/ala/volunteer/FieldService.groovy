@@ -133,31 +133,6 @@ class FieldService {
         return null
     }
 
-    int getLastSequenceNumberForProject(Project project) {
-        def taskList = Task.findAllByProject(project)
-        def c = Field.createCriteria()
-
-        if (taskList) {
-            def fields = c {
-                and {
-                    inList("task", taskList)
-                    eq('name', 'sequenceNumber')
-                }
-                projections {
-                    max('value')
-                }
-            }
-            try{
-                return fields[0] as Integer ?: 0
-            } catch (NumberFormatException e) {
-                log.debug("Can not extract sequence number from ${fields[0]}")
-                // fall through to default value
-            }
-        }
-
-        return 0
-    }
-
     Field setFieldValueForTask(Task task, String fieldName, int recordIndex, String value, String userId = "system") {
         // Check if there is an existing (current) value for this field/index
         if (task == null || fieldName == null || value == null) {

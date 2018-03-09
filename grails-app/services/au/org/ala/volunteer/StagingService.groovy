@@ -14,6 +14,7 @@ class StagingService {
     def grailsApplication
     def fieldService
     def fieldSyncService
+    def taskService
 
     String getStagingDirectory(Project project) {
         return "${grailsApplication.config.images.home}/${project.id}/staging"
@@ -150,7 +151,7 @@ class StagingService {
         def stagedFiles = listStagedFiles(project)
         def profile = ProjectStagingProfile.findByProject(project)
 
-        int sequenceNo = fieldService.getLastSequenceNumberForProject(project)
+        int sequenceNo = taskService.findMaxSequenceNumber(project) ?: 0
 
         // The data file, if it exists
         def dataFile = new File(createDataFilePath(project))
