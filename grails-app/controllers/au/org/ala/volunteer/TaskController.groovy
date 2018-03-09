@@ -330,7 +330,18 @@ class TaskController {
 
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
-                render(view: '/transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, template: template, imageMetaData: imageMetaData])
+                def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
+                def model = [
+                        taskInstance: taskInstance,
+                        recordValues: recordValues,
+                        isReadonly: isReadonly,
+                        template: template,
+                        nextTask: adjacentTasks.next,
+                        prevTask: adjacentTasks.prev,
+                        sequenceNumber: adjacentTasks.sequenceNumber,
+                        thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)
+                ]
+                render(view: '/transcribe/templateViews/' + template.viewName, model: model)
             }
         }
     }
