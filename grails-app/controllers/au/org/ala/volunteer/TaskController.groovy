@@ -326,7 +326,7 @@ class TaskController {
                 def isValidator = userService.isValidator(project)
                 log.info currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
 
-                def imageMetaData = taskService.getImageMetaData(taskInstance)
+//                def imageMetaData = taskService.getImageMetaData(taskInstance)
 
                 //retrieve the existing values
                 Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
