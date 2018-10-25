@@ -347,14 +347,6 @@ class ProjectService {
         def validatorCountClause = jCountDistinct(TRANSCRIPTION.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
         def transcriberCountClause = jCountDistinct(TRANSCRIPTION.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
 
-
-/*
-        def transcribedCountClause = jSum(jWhen(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
-        def validatedCountClause = jSum(jWhen(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
-        def validatorCountClause = jCountDistinct(TASK.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
-        def transcriberCountClause = jCountDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
-*/
-
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
                 whereClauses += taskCountClause.eq(transcribedCountClause)
@@ -366,27 +358,21 @@ class ProjectService {
 
         def taskJoinTableColumns = [
                 TASK.PROJECT_ID,
-                taskCountClause
-        ]
-        def transcriptionJoinColumns = [
-                TRANSCRIPTION.TASK_ID,
+                taskCountClause,
                 transcribedCountClause,
-                validatedCountClause,
+                validatedCountClause
         ]
         if (countUsers) {
-            transcriptionJoinColumns.add(transcriberCountClause)
-            transcriptionJoinColumns.add(validatorCountClause)
+            taskJoinTableColumns.add(transcriberCountClause)
+            taskJoinTableColumns.add(validatorCountClause)
         }
 
 
-        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
-
-        def transcriptionJoinTable = context.select(transcriptionJoinColumns).from(TRANSCRIPTION).groupBy(TRANSCRIPTION.TASK_ID).asTable('transcriptionStats')
+        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK, TRANSCRIPTION).where(TASK.ID.eq(TRANSCRIPTION.TASK_ID)).groupBy(TASK.PROJECT_ID).asTable('taskStats')
 
         def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey()
                                 .leftOuterJoin(INSTITUTION).onKey()
                                 .leftOuterJoin(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
-                                .leftOuterJoin(transcriptionJoinTable).on(taskJoinTable.field(0, Long).eq(transcriptionJoinTable.field(0, Long)))
 
         // apply the query paramter
         if (tag) {
@@ -443,7 +429,7 @@ class ProjectService {
                     PROJECT_TYPE.LABEL,
                     INSTITUTION.NAME.as('institution_name'),
                     jCount().over().as('full_count')
-                ).select(taskJoinTable.fields()).select(transcriptionJoinTable.fields()).
+                ).select(taskJoinTable.fields()).
                 from(fromClause).
                 where(whereClauses).
                 orderBy(sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
