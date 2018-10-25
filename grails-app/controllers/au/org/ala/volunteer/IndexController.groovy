@@ -41,13 +41,13 @@ class IndexController {
         [:]
     }
 
-    def statsFragment() {
+   /* def statsFragment() {
         // Stats
         def totalTasks = Task.count()
         def completedTasks = Task.countByFullyTranscribedByIsNotNull()
         def transcriberCount = User.countByTranscribedCountGreaterThan(0)
         ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount]
-    }
+    } */
 
     def stats(long institutionId, long projectId, String tagName) {
         def maxContributors = (params.maxContributors as Integer) ?: 5
@@ -119,7 +119,8 @@ class IndexController {
     }
 
     private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
-        def latestTranscribers = Transcription.withCriteria {
+        def latestTranscribers = Task.withCriteria {
+            createAlias("transcriptions","tAlias")
             if (institution) {
                 project {
                     eq('institution', institution)
@@ -137,11 +138,11 @@ class IndexController {
                     ne('inactive', true)
                 }
             }
-            isNotNull('fullyTranscribedBy')
+            isNotNull('tAlias.fullyTranscribedBy')
             projections {
                 groupProperty('project')
-                groupProperty('fullyTranscribedBy')
-                max('dateFullyTranscribed', 'maxDate')
+                groupProperty('tAlias.fullyTranscribedBy')
+                max('tAlias.dateFullyTranscribed', 'maxDate')
             }
             order('maxDate', 'desc')
             maxResults(maxContributors)
@@ -218,19 +219,18 @@ class IndexController {
             def proj = it[0]
             def userId = it[1]
             def details = userService.detailsForUserId(userId)
-            def c = Task.createCriteria()
-            def tasks = c.list(max: 5) {
-                eq('project', proj)
-               // eq(transcriptions, )
-                //createAlias ("transcriptions", "t")
-              //  eq('t.fullyTranscribedBy', userId)
-              //  order('t.dateFullyTranscribed', 'desc')
-            }
+            def tasks = Task.withCriteria(max: 5) {
+                            eq('project', proj)
+                            transcriptions {
+                                eq('fullyTranscribedBy', userId)
+                                order('dateFullyTranscribed', 'desc')
+                            }
+                        }
             def thumbnails = tasks.collect { Task t ->
                 [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(t.multimedia?.first())]
             }
             [type             : 'task', projectId: proj.id, projectName: proj.name, userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
-             transcribedThumbs: thumbnails, transcribedItems: tasks.totalCount, timestamp: it[2].time / 1000]
+             transcribedThumbs: thumbnails, transcribedItems: tasks.size(), timestamp: it[2].time / 1000]
         }
 
         def contributors = (messages + transcribers).sort { -it.timestamp }.take(maxContributors)

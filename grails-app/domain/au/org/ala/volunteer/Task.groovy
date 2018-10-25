@@ -30,6 +30,7 @@ class Task implements Serializable {
         viewedTasks cascade: 'all,delete-orphan'
         fields cascade: 'all,delete-orphan'
         comments cascade: 'all,delete-orphan'
+        transcriptions cascade: 'all,delete-orphan'
         transcribedUUID type: 'pg-uuid'
         validatedUUID type: 'pg-uuid'
     }
