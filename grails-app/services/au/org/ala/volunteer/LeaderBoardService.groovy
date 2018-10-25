@@ -190,7 +190,7 @@ class LeaderBoardService {
     }
 
     Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds, ProjectType pt = null) {
-        def c = Task.createCriteria()
+        def c = Transcription.createCriteria()
 
         def results = c {
             ge("dateFully${activityType}", startDate)

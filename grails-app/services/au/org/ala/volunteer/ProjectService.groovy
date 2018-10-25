@@ -23,6 +23,7 @@ import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
 import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
 import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
+import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
@@ -340,10 +341,19 @@ class ProjectService {
         }
 
         def taskCountClause = jCount(TASK).'as'(TASK_COUNT_COLUMN)
+
+        def transcribedCountClause = jSum(jWhen(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
+        def validatedCountClause = jSum(jWhen(TRANSCRIPTION.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
+        def validatorCountClause = jCountDistinct(TRANSCRIPTION.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
+        def transcriberCountClause = jCountDistinct(TRANSCRIPTION.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
+
+
+/*
         def transcribedCountClause = jSum(jWhen(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
         def validatedCountClause = jSum(jWhen(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
         def validatorCountClause = jCountDistinct(TASK.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
         def transcriberCountClause = jCountDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
+*/
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
@@ -356,19 +366,27 @@ class ProjectService {
 
         def taskJoinTableColumns = [
                 TASK.PROJECT_ID,
-                taskCountClause,
+                taskCountClause
+        ]
+        def transcriptionJoinColumns = [
+                TRANSCRIPTION.TASK_ID,
                 transcribedCountClause,
                 validatedCountClause,
         ]
         if (countUsers) {
-            taskJoinTableColumns.add(transcriberCountClause)
-            taskJoinTableColumns.add(validatorCountClause)
+            transcriptionJoinColumns.add(transcriberCountClause)
+            transcriptionJoinColumns.add(validatorCountClause)
         }
 
 
         def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
 
-        def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey().leftOuterJoin(INSTITUTION).onKey().leftOuterJoin(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
+        def transcriptionJoinTable = context.select(transcriptionJoinColumns).from(TRANSCRIPTION).groupBy(TRANSCRIPTION.TASK_ID).asTable('transcriptionStats')
+
+        def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey()
+                                .leftOuterJoin(INSTITUTION).onKey()
+                                .leftOuterJoin(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
+                                .leftOuterJoin(transcriptionJoinTable).on(taskJoinTable.field(0, Long).eq(transcriptionJoinTable.field(0, Long)))
 
         // apply the query paramter
         if (tag) {
@@ -425,7 +443,7 @@ class ProjectService {
                     PROJECT_TYPE.LABEL,
                     INSTITUTION.NAME.as('institution_name'),
                     jCount().over().as('full_count')
-                ).select(taskJoinTable.fields()).
+                ).select(taskJoinTable.fields()).select(transcriptionJoinTable.fields()).
                 from(fromClause).
                 where(whereClauses).
                 orderBy(sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))

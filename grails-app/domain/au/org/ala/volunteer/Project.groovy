@@ -43,7 +43,7 @@ class Project implements Serializable {
     //def assetResourceLocator
 
     static belongsTo = [template: Template, projectType: ProjectType]
-    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label]
+    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label, transcriptions: Transcription]
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
 
     static mapping = {

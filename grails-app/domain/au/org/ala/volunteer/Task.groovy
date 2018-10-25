@@ -5,12 +5,12 @@ class Task implements Serializable {
     //Project project
     String externalIdentifier
     String externalUrl
-    String fullyTranscribedBy
-    Date dateFullyTranscribed
-    String fullyTranscribedIpAddress
-    UUID transcribedUUID // unique id for the transcription
-    String fullyValidatedBy
-    Date dateFullyValidated
+//    String fullyTranscribedBy
+//    Date dateFullyTranscribed
+//    String fullyTranscribedIpAddress
+ //   UUID transcribedUUID // unique id for the transcription
+//    String fullyValidatedBy
+//    Date dateFullyValidated
     UUID validatedUUID // unique id for the validation
     Boolean isValid
     Integer viewed = -1
@@ -22,7 +22,7 @@ class Task implements Serializable {
     Integer timeToValidate
 
     static belongsTo = [project: Project]
-    static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment]
+    static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment, transcriptions: Transcription]
 
     static mapping = {
         version false

@@ -30,9 +30,10 @@ class IndexController {
 //        }
 
         def featuredProjects = projectService.getFeaturedProjectList()
-
-        def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null, null, null, null, null, null, null, null).projectRenderList?.get(0)
-
+        def potdSummary = null
+        if (frontPage?.projectOfTheDay) {
+            potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null).projectRenderList?.get(0)
+        }
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }
 
@@ -77,7 +78,7 @@ class IndexController {
             transcriberCount = projectService.getTranscriberCountForTag(pt)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
-            completedTasks = Task.countByFullyTranscribedByIsNotNull()
+            completedTasks = Transcription.countByFullyTranscribedByIsNotNull()
             transcriberCount = User.countByTranscribedCountGreaterThan(0)
         }
 
@@ -118,7 +119,7 @@ class IndexController {
     }
 
     private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
-        def latestTranscribers = Task.withCriteria {
+        def latestTranscribers = Transcription.withCriteria {
             if (institution) {
                 project {
                     eq('institution', institution)
@@ -220,8 +221,10 @@ class IndexController {
             def c = Task.createCriteria()
             def tasks = c.list(max: 5) {
                 eq('project', proj)
-                eq('fullyTranscribedBy', userId)
-                order('dateFullyTranscribed', 'desc')
+               // eq(transcriptions, )
+                //createAlias ("transcriptions", "t")
+              //  eq('t.fullyTranscribedBy', userId)
+              //  order('t.dateFullyTranscribed', 'desc')
             }
             def thumbnails = tasks.collect { Task t ->
                 [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(t.multimedia?.first())]
