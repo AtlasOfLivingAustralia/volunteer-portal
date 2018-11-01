@@ -25,5 +25,9 @@ ALTER TABLE ONLY transcription
 ALTER TABLE ONLY transcription
     ADD CONSTRAINT transcription_task_id FOREIGN KEY (task_id) REFERENCES task(id);
 
+/*
+ * Do we add the required number of transcriptions when loading tasks or do we create them as they are transcribed?
+ * The below is implementing the former, the latter may be more desirable
+*/
 INSERT INTO transcription (id, version, task_id, project_id, date_created, last_updated, fully_transcribed_by, fully_transcribed_ip_address, transcribeduuid)
 SELECT id, 1, id, project_id, now(), now(), fully_transcribed_by, fully_transcribed_ip_address, transcribeduuid FROM task;
