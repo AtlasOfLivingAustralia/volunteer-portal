@@ -28,14 +28,27 @@ ALTER TABLE ONLY transcription
     ADD CONSTRAINT transcription_task_id FOREIGN KEY (task_id) REFERENCES task(id);
 
 ALTER TABLE ONLY transcription
-    ADD CONSTRAINT transcription_project_id FOREIGN KEY (project_id) REFERENCES project(id);    
+    ADD CONSTRAINT transcription_project_id FOREIGN KEY (project_id) REFERENCES project(id);
 
-INSERT INTO transcription (id, version, task_id, project_id, date_created, date_last_updated, 
-                           fully_transcribed_by, date_fully_transcribed, fully_validated_by, date_fully_validated, 
+INSERT INTO transcription (id, version, task_id, project_id, date_created, date_last_updated,
+                           fully_transcribed_by, date_fully_transcribed, fully_validated_by, date_fully_validated,
                            fully_transcribed_ip_address, transcribeduuid, time_to_transcribe, time_to_validate)
-SELECT id, 1, id, project_id, now(), date_last_updated, 
+SELECT id, 1, id, project_id, now(), date_last_updated,
        fully_transcribed_by, date_fully_transcribed, fully_validated_by, date_fully_validated,
-       fully_transcribed_ip_address, transcribeduuid, time_to_transcribe, time_to_validate 
+       fully_transcribed_ip_address, transcribeduuid, time_to_transcribe, time_to_validate
 FROM task
 WHERE fully_transcribed_by is not null;
 
+
+ALTER TABLE ONLY task
+  ADD COLUMN transcription_count integer NOT NULL default 0;
+
+ALTER TABLE ONLY field
+  ADD COLUMN transcription_id bigint;
+
+UPDATE field SET transcription_id = transcription.id FROM transcription WHERE transcription.task_id = field.task_id;
+
+ALTER TABLE ONLY field ALTER COLUMN transcription_id SET NOT NULL;
+
+ALTER TABLE ONLY field
+  ADD CONSTRAINT field_transcription_id FOREIGN KEY (transcription_id) REFERENCES transcription(id);

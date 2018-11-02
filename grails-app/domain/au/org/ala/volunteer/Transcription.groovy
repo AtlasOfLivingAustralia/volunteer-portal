@@ -27,6 +27,8 @@ class Transcription implements Serializable {
         validatedUUID nullable: true
         timeToTranscribe nullable: true
         timeToValidate nullable: true
+        dateFullyValidated nullable: true
+        fullyValidatedBy nullable: true
     }
 
     static mapping = {

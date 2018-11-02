@@ -11,7 +11,7 @@ class Field implements Serializable {
   Date created = new Date()
   Date updated = new Date()
 
-  static belongsTo = [task: Task]
+  static belongsTo = [task: Task, transcription: Transcription]
 
   static mapping = {
     version false
@@ -26,6 +26,7 @@ class Field implements Serializable {
 
   static constraints = {
     task nullable: true
+    transcription nullable: true
     name maxSize: 200
     value type:'text'
     recordIdx nullable: true
