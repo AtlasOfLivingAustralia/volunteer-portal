@@ -9,8 +9,8 @@ class Task implements Serializable {
 //    Date dateFullyTranscribed
 //    String fullyTranscribedIpAddress
  //   UUID transcribedUUID // unique id for the transcription
-//    String fullyValidatedBy
-//    Date dateFullyValidated
+    String fullyValidatedBy
+    Date dateFullyValidated
     UUID validatedUUID // unique id for the validation
     Boolean isValid
     Integer viewed = -1
@@ -20,6 +20,7 @@ class Task implements Serializable {
     String lastViewedBy
     Integer timeToTranscribe
     Integer timeToValidate
+    //Integer transcriptionCount = 0
 
     static belongsTo = [project: Project]
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment, transcriptions: Transcription]
@@ -31,17 +32,17 @@ class Task implements Serializable {
         fields cascade: 'all,delete-orphan'
         comments cascade: 'all,delete-orphan'
         transcriptions cascade: 'all,delete-orphan'
-        transcribedUUID type: 'pg-uuid'
+        //transcribedUUID type: 'pg-uuid'
         validatedUUID type: 'pg-uuid'
     }
 
     static constraints = {
         externalIdentifier nullable: true
         externalUrl nullable: true
-        fullyTranscribedBy nullable: true
-        dateFullyTranscribed nullable: true
-        fullyTranscribedIpAddress nullable: true
-        transcribedUUID nullable: true
+//        fullyTranscribedBy nullable: true
+//        dateFullyTranscribed nullable: true
+//        fullyTranscribedIpAddress nullable: true
+//        transcribedUUID nullable: true
         fullyValidatedBy nullable: true
         dateFullyValidated nullable: true
         validatedUUID nullable: true
@@ -53,6 +54,15 @@ class Task implements Serializable {
         lastViewedBy nullable: true
         timeToTranscribe nullable: true
         timeToValidate nullable: true
+    }
+
+    /**
+     * Returns true if all of the required number of Transcriptions have been completed for this Task.
+     * The default is one Transcription per Task, but this can be overridden in the project template.
+     */
+    boolean isFullyTranscribed() {
+        int requiredTranscriptionCount = project.requiredNumberOfTranscriptions
+        return transcriptions.count{it.fullyTranscribedBy >= requiredTranscriptionCount}
     }
 
     // These events use a static method rather than an injected service

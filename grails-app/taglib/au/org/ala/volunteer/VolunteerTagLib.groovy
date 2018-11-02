@@ -385,7 +385,7 @@ class VolunteerTagLib {
                 validator = userService.detailsForUserId(taskInstance?.fullyValidatedBy)
             }
 
-            if (taskInstance.fullyTranscribedBy) {
+            if (taskInstance.isFullyTranscribed()) {
                 transcriber = userService.detailsForUserId(taskInstance?.fullyTranscribedBy)
             }
             def mb = new MarkupBuilder(out)

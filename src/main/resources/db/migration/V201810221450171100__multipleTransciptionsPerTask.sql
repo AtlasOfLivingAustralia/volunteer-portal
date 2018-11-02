@@ -31,3 +31,16 @@ ALTER TABLE ONLY transcription
 */
 INSERT INTO transcription (id, version, task_id, project_id, date_created, last_updated, fully_transcribed_by, fully_transcribed_ip_address, transcribeduuid)
 SELECT id, 1, id, project_id, now(), now(), fully_transcribed_by, fully_transcribed_ip_address, transcribeduuid FROM task;
+
+ALTER TABLE ONLY task
+  ADD COLUMN transcription_count integer NOT NULL default 0;
+
+ALTER TABLE ONLY field
+  ADD COLUMN transcription_id bigint;
+
+UPDATE field SET transcription_id = transcription.id FROM transcription WHERE transcription.task_id = field.task_id;
+
+ALTER TABLE ONLY field ALTER COLUMN transcription_id SET NOT NULL;
+
+ALTER TABLE ONLY field
+  ADD CONSTRAINT field_transcription_id FOREIGN KEY (transcription_id) REFERENCES transcription(id);

@@ -44,7 +44,7 @@ class Project implements Serializable {
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label, transcriptions: Transcription]
-    static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
+    static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
 
     static mapping = {
         autoTimestamp true
@@ -86,6 +86,15 @@ class Project implements Serializable {
         mapInitLongitude nullable: true
         harvestableByAla nullable: true
         createdBy nullable: true
+    }
+
+    /**
+     * Reads the project template configuration to determine the number of times each Task must be transcribed.
+     * The default is 1
+     */
+    int getRequiredNumberOfTranscriptions() {
+        String transcriptionsPerTask = template?.viewParams?.transcriptionsPerTask ?: "1"
+        Integer.parseInt(transcriptionsPerTask)
     }
 
     public String toString() {

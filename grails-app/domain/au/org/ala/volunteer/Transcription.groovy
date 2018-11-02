@@ -17,6 +17,8 @@ class Transcription implements Serializable {
         dateFullyTranscribed nullable: true
         fullyTranscribedIpAddress nullable: true
         transcribedUUID nullable: true
+        dateFullyValidated nullable: true
+        fullyValidatedBy nullable: true
     }
 
     static mapping = {
