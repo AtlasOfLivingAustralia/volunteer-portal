@@ -40,13 +40,6 @@ class TaskServiceSpec extends HibernateSpec {
         task.viewedTasks = new HashSet()
         task.save(failOnError:true)
 
-        for (int i=0; i< transcriptionCount; i++) {
-            Transcription transcription = new Transcription(task:task, project:p)
-            task.transcriptions.add(transcription)
-            transcription.save(failOnError:true)
-            task.save(failOnError:true)
-        }
-
     }
 
     private void setupTasks(Project project, int numberOfTasks, int transcriptionCount) {
@@ -56,15 +49,23 @@ class TaskServiceSpec extends HibernateSpec {
     }
 
     private void transcribe(Task task, String userId) {
-        Transcription transcription = task.transcriptions.find{!it.fullyTranscribedBy}
-        if (transcription) {
-            println "Updating transcription with id="+transcription.id
-            transcription.fullyTranscribedBy = userId
-            transcription.dateFullyTranscribed = new Date()
-            transcription.save(failOnError:true, flush:true)
 
-            view(task, userId)
+        view(task, userId)
+
+        Transcription transcription = task.transcriptions.find{it.fullyTranscribedBy == userId}
+        if (!transcription) {
+            transcription = new Transcription(task:task, project:task.project)
+            task.transcriptions.add(transcription)
+            task.save(failOnError:true)
         }
+
+        println "Updating transcription with id="+transcription.id
+        transcription.fullyTranscribedBy = userId
+        transcription.dateFullyTranscribed = new Date()
+        transcription.save(failOnError:true, flush:true)
+
+
+
     }
 
     private void view(Task task, String userId, boolean recent = true) {
@@ -109,7 +110,7 @@ class TaskServiceSpec extends HibernateSpec {
         p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks, transcriptionsPerTask)
-        Task.all.each { Task task ->
+        Task.findAllByProject(p).each { Task task ->
             List users = ['u1', 'u2', 'u3', 'u4']
             users.each { String user ->
                 transcribe(task, user)
@@ -144,7 +145,7 @@ class TaskServiceSpec extends HibernateSpec {
         p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks, transcriptionsPerTask)
-        Task.all.each { Task task ->
+        Task.findAllByProject(p).each { Task task ->
             List users = ['u1', 'u2', 'u3', 'u4']
             users.each { String user ->
                 transcribe(task, user)
