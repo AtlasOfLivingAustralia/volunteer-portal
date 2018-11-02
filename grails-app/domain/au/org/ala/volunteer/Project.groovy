@@ -66,7 +66,6 @@ class Project implements Serializable {
         created nullable: true
         showMap nullable: true
         tutorialLinks nullable: true, maxSize: 2000, widget: 'textarea'
-        featuredImage nullable: true
         featuredLabel nullable: true
         featuredOwner nullable: true
         institution nullable: true
