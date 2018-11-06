@@ -119,8 +119,8 @@ class IndexController {
     }
 
     private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
-        def latestTranscribers = Task.withCriteria {
-            createAlias("transcriptions","tAlias")
+
+        def latestTranscribers = LatestTranscribers.withCriteria {
             if (institution) {
                 project {
                     eq('institution', institution)
@@ -137,12 +137,6 @@ class IndexController {
                 project {
                     ne('inactive', true)
                 }
-            }
-            isNotNull('tAlias.fullyTranscribedBy')
-            projections {
-                groupProperty('project')
-                groupProperty('tAlias.fullyTranscribedBy')
-                max('tAlias.dateFullyTranscribed', 'maxDate')
             }
             order('maxDate', 'desc')
             maxResults(maxContributors)
@@ -216,21 +210,30 @@ class IndexController {
         }
 
         def transcribers = latestTranscribers.collect {
-            def proj = it[0]
-            def userId = it[1]
+            def proj = it.project
+            def userId = it.fullyTranscribedBy
             def details = userService.detailsForUserId(userId)
-            def tasks = Task.withCriteria(max: 5) {
+            def tasks = LatestTranscribersTask.withCriteria() {
                             eq('project', proj)
-                            transcriptions {
-                                eq('fullyTranscribedBy', userId)
-                                order('dateFullyTranscribed', 'desc')
-                            }
+                            eq('fullyTranscribedBy', userId)
+                            order('dateFullyTranscribed', 'desc')
                         }
-            def thumbnails = tasks.collect { Task t ->
-                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(t.multimedia?.first())]
+
+            def thumbnailLists = (tasks && (tasks.size() > 0)) ? tasks.subList(0, (tasks.size() < 5)? tasks.size(): 5): []
+
+            def thumbnails = thumbnailLists.collect { LatestTranscribersTask t ->
+                def taskMultimedia = t.multimedia[0] //Latest.findByTaskId(t.taskId)
+                Multimedia multimedia = new Multimedia(
+                                        task: new Task(id: t.id, project: t.project),
+                                        id: taskMultimedia.id,
+                                        filePath: taskMultimedia.filePath,
+                                        filePathToThumbnail: taskMultimedia.filePathToThumbnail,
+                                        mimeType: taskMultimedia.mimeType)
+
+                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(multimedia)]
             }
             [type             : 'task', projectId: proj.id, projectName: proj.name, userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
-             transcribedThumbs: thumbnails, transcribedItems: tasks.size(), timestamp: it[2].time / 1000]
+             transcribedThumbs: thumbnails, transcribedItems: tasks.size(), timestamp: it.maxDate.time / 1000]
         }
 
         def contributors = (messages + transcribers).sort { -it.timestamp }.take(maxContributors)

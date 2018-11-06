@@ -349,6 +349,7 @@ class ProjectService {
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
+                //TODO: May need to change for how a task is considered completed
                 whereClauses += taskCountClause.eq(transcribedCountClause)
                 break
             case ProjectStatusFilterType.showIncompleteOnly:
@@ -368,7 +369,9 @@ class ProjectService {
         }
 
 
-        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK, TRANSCRIPTION).where(TASK.ID.eq(TRANSCRIPTION.TASK_ID)).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+        //def taskJoinTable = context.select(taskJoinTableColumns).from(TASK, TRANSCRIPTION).where(TASK.ID.eq(TRANSCRIPTION.TASK_ID)).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK.leftOuterJoin(TRANSCRIPTION).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+
 
         def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey()
                                 .leftOuterJoin(INSTITUTION).onKey()
@@ -524,18 +527,19 @@ class ProjectService {
     }
 
     def calculateCompletion(List<Project> projects) {
-        Task.withCriteria {
-            'in'('project', projects)
 
+   /*     Task.withCriteria {
+            'in'('project', projects)
+            createAlias('transcriptions', 'tAlias')
             projections {
                 groupProperty('project')
                 count('id', 'total')
-                count('fullyTranscribedBy', 'transcribed')
-                count('fullyValidatedBy', 'validated')
+                count('tAlias.fullyTranscribedBy', 'transcribed')
+                count('tAlias,.fullyValidatedBy', 'validated')
             }
         }.collectEntries { row ->
             [(row[0].id): [ total: row[1], transcribed: row[2], validated: row[3] ] ]
-        }
+        } */
     }
 
     def writeArchive(Project project, OutputStream outputStream) {

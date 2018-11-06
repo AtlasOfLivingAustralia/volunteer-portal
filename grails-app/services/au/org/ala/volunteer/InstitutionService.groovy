@@ -270,7 +270,7 @@ WHERE
     }
 
     Long getTranscriberCount(Institution institution) {
-        Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.institution = :institution", [institution: institution]).get(0)
+        Task.executeQuery("select count(distinct fullyTranscribedBy) from Transcription where project.institution = :institution", [institution: institution]).get(0)
     }
 
     Map countTasksForInstitutions(List<Institution> institutions, boolean includeDeactivated = false) {

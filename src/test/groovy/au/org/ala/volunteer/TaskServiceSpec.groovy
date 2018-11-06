@@ -160,4 +160,59 @@ class TaskServiceSpec extends HibernateSpec {
         then: "No Tasks can be allocated to our user"
         task == null
     }
+
+   def "when there multiple transcriptions for multiple tasks, latest contribution view should be able to be updated"() {
+        setup:
+
+        int transcriptionsPerTask = 2
+        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        int numberOfTasks = 4
+
+        setupTasks(p, numberOfTasks, transcriptionsPerTask)
+
+        when: "When volunteers transcribe tasks"
+            Task.findAllByProject(p).each { Task task ->
+                List users = ['u8', 'u7']
+                users.each { String user ->
+                   // Date randomTranscribedDate = randomDate(start..end)
+                    transcribe(task, user)
+                }
+            }
+
+        then: "Latest Transcribers view is updated as expected"
+            def latestTranscribers = Transcription.withCriteria {
+                    project {
+                        ne('inactive', true)
+                    }
+                    isNotNull('fullyTranscribedBy')
+                    projections {
+                        groupProperty('project')
+                        groupProperty('fullyTranscribedBy')
+                        max('dateFullyTranscribed', 'maxDate')
+                    }
+                    order('maxDate', 'desc')
+                    maxResults(10)
+            }
+            def latestTranscribersView = LatestTranscribers.withCriteria {
+                        project {
+                            ne('inactive', true)
+                        }
+                        order('maxDate', 'desc')
+                        maxResults(10)
+            }
+
+        latestTranscribers.size() == latestTranscribersView.size()
+
+        latestTranscribers.get(0)[0].name == latestTranscribersView.get(0).project.name
+        latestTranscribers.get(0)[1] == 'u7'
+        latestTranscribers.get(0)[1] == latestTranscribersView.get(0).fullyTranscribedBy
+        latestTranscribers.get(0)[2] == latestTranscribersView.get(0).maxDate
+
+        latestTranscribers.get(1)[0].name == latestTranscribersView.get(1).project.name
+        latestTranscribers.get(1)[1] == 'u8'
+        latestTranscribers.get(1)[1] == latestTranscribersView.get(1).fullyTranscribedBy
+        latestTranscribers.get(1)[2] == latestTranscribersView.get(1).maxDate
+
+   }
+
 }
