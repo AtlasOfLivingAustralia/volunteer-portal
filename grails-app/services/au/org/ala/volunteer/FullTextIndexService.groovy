@@ -94,8 +94,8 @@ class FullTextIndexService {
                 projectid           : task.project.id,
                 externalIdentifier  : task.externalIdentifier,
                 externalUrl         : task.externalUrl,
-                fullyTranscribedBy  : task.fullyTranscribedBy,
-                dateFullyTranscribed: task.dateFullyTranscribed,
+               // fullyTranscribedBy  : task.fullyTranscribedBy,
+               // dateFullyTranscribed: task.dateFullyTranscribed,
                 fullyValidatedBy    : task.fullyValidatedBy,
                 dateFullyValidated  : task.dateFullyValidated,
                 isValid             : task.isValid,
@@ -115,7 +115,8 @@ class FullTextIndexService {
                         labels                 : task.project.labels?.collect {
                             [category: it.category, value: it.value]
                         } ?: []
-                ]
+                ],
+                transcriptions       : []
         ]
 
         if (task.project.mapInitLatitude && task.project.mapInitLongitude) {
@@ -133,6 +134,16 @@ class FullTextIndexService {
                 data.fields << [fieldid: field.id, name: field.name, recordIdx: field.recordIdx, value: field.value, transcribedByUserId: field.transcribedByUserId, validatedByUserId: field.validatedByUserId, updated: field.updated, created: field.created]
             }
         }
+
+        def transcriptions = Transcription.findAllByTask(task)
+
+        transcriptions.each { transcription ->
+            if (transcription.id) {
+                data.transcriptions << [transcriptionid: transcription.id, fullyTranscribedBy: transcription.fullyTranscribedBy, dateFullyTranscribed: transcription.dateFullyTranscribed,
+                                       fullyValidatedBy: transcription.fullyValidatedBy, dateFullyValidated: transcription.dateFullyValidated]
+            }
+        }
+
         return data
     }
 
@@ -280,8 +291,6 @@ class FullTextIndexService {
         "projectId" : {"type" : "long"},
         "externalIdentifier" : {"type" : "string", "index": "not_analyzed" },
         "externalUrl" : {"type" : "string", "index": "not_analyzed"},
-        "fullyTranscribedBy" : {"type" : "string", "index": "not_analyzed"},
-        "dateFullyTranscribed" : {"type" : "date"},
         "fullyValidatedBy" : {"type" : "string", "index": "not_analyzed"},
         "dateFullyValidated" : {"type" : "date"},
         "isValid" : {"type" : "boolean"},
@@ -350,6 +359,17 @@ class FullTextIndexService {
                 "value"  : { "type": "string", "index": "not_analyzed" }
               }
             }
+          }
+        },
+        "transcriptions" : {
+          "type" : "nested",
+          "include_in_parent": true,
+          "properties": {
+            "transcriptionid" : {"type": "long" },
+            "fullyTranscribedBy": {"type": "string", "index": "not_analyzed" },
+            "dateFullyTranscribed" : {"type" : "date"},
+            "fullyValidatedBy": {"type": "string", "index": "not_analyzed" },
+            "dateFullyValidated" : {"type" : "date"}
           }
         }
       }
