@@ -65,6 +65,35 @@ class Task implements Serializable {
         return transcriptions.count{it.fullyTranscribedBy >= requiredTranscriptionCount}
     }
 
+    /**
+     * If a user has previously transcribed this Task, return the Transcription that was performed by that user.
+     * @param userId The user to check.
+     * @return the Transcription the user performed, or null if the user has never Transcribed this task.
+     */
+    Transcription findUserTranscription(String userId) {
+
+        // If there is already a Transcription completed by the user, return that.
+        Transcription userTranscription = transcriptions?.find{
+            it.fullyTranscribedBy == userId
+        }
+        // Otherwise, check if the user has saved any fields (a partial transcription) and return the
+        // Transcription associated with those Fields.
+        if (!userTranscription) {
+            Field field = fields?.find{it.transcribedByUserId == userId}
+            if (field) {
+                userTranscription = field.transcription
+            }
+        }
+        userTranscription
+    }
+
+    Transcription addTranscription() {
+        Transcription transcription = new Transcription(task:this, project:project)
+        transcriptions.add(transcription)
+
+        transcription
+    }
+
     // These events use a static method rather than an injected service
     // to prevent issues with serialisation in webflows
     

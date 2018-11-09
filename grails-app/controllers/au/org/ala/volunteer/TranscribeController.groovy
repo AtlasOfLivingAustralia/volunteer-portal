@@ -77,7 +77,7 @@ class TranscribeController {
             response.addHeader(HEADER_CACHE_CONTROL, "no-store");
 
             //retrieve the existing values
-            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance, currentUserId)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def model = [
                     taskInstance: taskInstance,
@@ -163,9 +163,18 @@ class TranscribeController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
+
+            Transcription transcription = taskInstance.findUserTranscription(currentUser)
+            if (!transcription) {
+                transcription = taskInstance.addTranscription()
+                taskInstance.save(flush:true) // A save is required here so the new Transcription id is available for insertion in the fields table?
+
+            }
+
             def seconds = params.getInt('timeTaken', null)
             if (seconds) {
                 taskInstance.timeToTranscribe = (taskInstance.timeToTranscribe ?: 0) + seconds
+                transcription.recordTranscriptionTime(seconds)
             }
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)

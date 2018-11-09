@@ -52,10 +52,9 @@ class TaskServiceSpec extends HibernateSpec {
 
         view(task, userId)
 
-        Transcription transcription = task.transcriptions.find{it.fullyTranscribedBy == userId}
+        Transcription transcription = task.findUserTranscription(userId)
         if (!transcription) {
-            transcription = new Transcription(task:task, project:task.project)
-            task.transcriptions.add(transcription)
+            transcription = task.addTranscription()
             task.save(failOnError:true)
         }
 
@@ -76,10 +75,9 @@ class TaskServiceSpec extends HibernateSpec {
         task.save(failOnError:true, flush:true)
     }
 
-    def "when are are multiple transcriptions per task, the same user shouldn't be assigned a task they've already transcribed"() {
+    def "regardless of the number of transcriptions per task, the same user shouldn't be assigned a task they've already transcribed"(int transcriptionsPerTask) {
         setup:
 
-        int transcriptionsPerTask = 5
         p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks, transcriptionsPerTask)
@@ -101,6 +99,10 @@ class TaskServiceSpec extends HibernateSpec {
         then: "no tasks remain in the project that can be transcribed by our user"
         task == null
 
+        where:
+        transcriptionsPerTask | _
+        1 | _
+        5 | _
     }
 
     def "when there are multiple transcriptions per task, we should still be able to assign them to our user if all of the transcriptions are not completed for the Task"() {

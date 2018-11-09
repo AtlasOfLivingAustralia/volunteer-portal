@@ -14,9 +14,12 @@ class Transcription implements Serializable {
     Integer timeToTranscribe
     Integer timeToValidate
 
-
+    void recordTranscriptionTime(int timeInSeconds) {
+        timeToTranscribe = (timeToTranscribe ?: 0) + timeInSeconds
+    }
 
     static belongsTo = [task:Task, project: Project]
+    static hasMany = [fields:Field]
 
     static constraints = {
         task nullable: false

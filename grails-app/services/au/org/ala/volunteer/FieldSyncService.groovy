@@ -9,9 +9,12 @@ class FieldSyncService {
     def logService
     def fullTextIndexService
 
-    Map retrieveFieldsForTask(Task taskInstance) {
+    Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {
         Map recordValues = new LinkedHashMap()
-        taskInstance?.fields?.each { field ->
+
+        Transcription transcription = taskInstance.findUserTranscription(currentUserId)
+
+        transcription?.fields?.each { field ->
             def recordMap = recordValues.get(field.recordIdx)
             if (recordMap == null) {
                 recordMap = new LinkedHashMap()
@@ -84,7 +87,7 @@ class FieldSyncService {
      * @param fieldValues
      * @return
      */
-    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = [], String userIp = null) {
+    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = [], String userIp = null, Transcription transcription = null) {
         //sync
         def idx = 0
         def hasMore = true
@@ -93,8 +96,16 @@ class FieldSyncService {
             if (fieldValuesForRecord) {
 
                 //get existing fields, and add to a map
-                def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false",
-                        [task: task, recordIdx: idx])
+                def oldFields = Field.createCriteria().list {
+                    eq('task', task)
+                    eq('recordIdx', idx)
+                    eq('superceded', false)
+                    if (transcription) {
+                        eq('transcription', transcription)
+                    }
+                }
+//                def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false",
+//                        [task: task, recordIdx: idx])
 
                 Map oldFieldValues = new LinkedHashMap()
                 oldFields.each { field -> oldFieldValues.put(field.name, field) }
@@ -119,6 +130,7 @@ class FieldSyncService {
                                 field.value = value
                                 field.transcribedByUserId = transcriberUserId
                                 field.task = task
+                                field.transcription = transcription
                                 field.recordIdx = idx
                                 field.updated = new Date()
                                 field.save(flush: true)
