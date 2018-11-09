@@ -166,7 +166,7 @@ class FieldSyncService {
 
                     } else {
                         //persist these values
-                        Field field = new Field(recordIdx: idx, name: keyValue.key, value: value,
+                        Field field = new Field(recordIdx: idx, name: keyValue.key, value: value, transcription: transcription,
                                 task: task, transcribedByUserId: transcriberUserId, superceded: false)
                         field.save(flush: true)
                         if (field.hasErrors()) {
@@ -194,19 +194,22 @@ class FieldSyncService {
 
         //set the transcribed by
         if (markAsFullyTranscribed) {
+            if (!transcription) {
+                throw new IllegalArgumentException("A Transcription is required if markAsFullyTranscribed is true")
+            }
             // Only set it if it hasn't already been set. The rules are the first person to save gets the transcription
-            if (!task.fullyTranscribedBy) {
-                task.fullyTranscribedBy = transcriberUserId
-                task.fullyTranscribedIpAddress = userIp
+            if (!transcription.fullyTranscribedBy) {
+                transcription.fullyTranscribedBy = transcriberUserId
+                transcription.fullyTranscribedIpAddress = userIp
                 def user = User.findByUserId(transcriberUserId)
                 user?.transcribedCount++
                 user?.save(flush: true)
             }
-            if (!task.dateFullyTranscribed) {
-                task.dateFullyTranscribed = now
+            if (!transcription.dateFullyTranscribed) {
+                transcription.dateFullyTranscribed = now
             }
-            if (!task.transcribedUUID) {
-                task.transcribedUUID = UUID.randomUUID()
+            if (!transcription.transcribedUUID) {
+                transcription.transcribedUUID = UUID.randomUUID()
             }
         }
 

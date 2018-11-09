@@ -167,8 +167,6 @@ class TranscribeController {
             Transcription transcription = taskInstance.findUserTranscription(currentUser)
             if (!transcription) {
                 transcription = taskInstance.addTranscription()
-                taskInstance.save(flush:true) // A save is required here so the new Transcription id is available for insertion in the fields table?
-
             }
 
             def seconds = params.getInt('timeTaken', null)
@@ -178,7 +176,7 @@ class TranscribeController {
             }
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
                 if (skipNextAction) redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])
