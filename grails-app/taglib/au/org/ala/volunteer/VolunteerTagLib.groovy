@@ -379,20 +379,24 @@ class VolunteerTagLib {
         def taskInstance = attrs.task as Task
 
         if (taskInstance) {
-            def validator = null;
-            def transcriber = null;
+            def validator = null
+            List transcribers = []
             if (taskInstance.fullyValidatedBy) {
                 validator = userService.detailsForUserId(taskInstance?.fullyValidatedBy)
             }
 
             if (taskInstance.isFullyTranscribed()) {
-                transcriber = userService.detailsForUserId(taskInstance?.fullyTranscribedBy)
+                taskInstance.transcriptions.each {
+                    if (it.dateFullyTranscribed) {
+                        transcribers << [user:userService.detailsForUserId(it.fullyTranscribedBy), dateFullyTranscribed: it.dateFullyTranscribed]
+                    }
+                }
             }
             def mb = new MarkupBuilder(out)
 
-            if (transcriber) {
+            transcribers.each { transcriber ->
                 mb.span(class:"label label-info") {
-                    mkp.yield("Transcribed by ${transcriber.displayName} on ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
+                    mkp.yield("Transcribed by ${transcriber.user?.displayName} on ${transcriber.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
                 }
             }
 
