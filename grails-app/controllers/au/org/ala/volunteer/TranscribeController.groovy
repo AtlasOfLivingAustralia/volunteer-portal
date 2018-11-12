@@ -60,7 +60,7 @@ class TranscribeController {
 
             def isValidator = userService.isValidator(project)
             log.info(currentUserId + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
-            if (taskInstance.isFullyTranscribed() && taskInstance.fullyTranscribedBy != currentUserId && !userService.isAdmin()) {
+            if (taskInstance.isFullyTranscribed() && !taskInstance.hasBeenTranscribedByUser(currentUserId) && !userService.isAdmin()) {
                 isReadonly = "readonly"
             }
 

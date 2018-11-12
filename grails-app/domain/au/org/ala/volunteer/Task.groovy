@@ -62,7 +62,15 @@ class Task implements Serializable {
      */
     boolean isFullyTranscribed() {
         int requiredTranscriptionCount = project.requiredNumberOfTranscriptions
-        return transcriptions.count{it.fullyTranscribedBy >= requiredTranscriptionCount}
+        int transcriptionCount = transcriptions?.count{it.fullyTranscribedBy} ?: 0
+        return transcriptionCount >= requiredTranscriptionCount
+    }
+
+    /**
+     * Returns true if the supplied user has transcribed (fully or partially) this Task.
+     */
+    boolean hasBeenTranscribedByUser(String userId) {
+        return findUserTranscription(userId) != null
     }
 
     /**
