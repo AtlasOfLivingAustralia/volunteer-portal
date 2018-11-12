@@ -36,11 +36,16 @@ class DomainUpdateService {
                     Task.withCriteria {
                         inList('id', taskSet.toList())
                         or {
-                            isNotNull('fullyTranscribedBy')
+                            transcriptions {
+                                isNotNull('fullyTranscribedBy')
+                            }
                             isNotNull('fullyValidatedBy')
                         }
                         projections {
-                            property('fullyTranscribedBy')
+                            transcriptions {
+                                property('fullyTranscribedBy')
+                            }
+
                             property('fullyValidatedBy')
                         }
                     }
