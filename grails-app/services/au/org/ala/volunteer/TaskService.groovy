@@ -246,27 +246,125 @@ class TaskService {
     // The results above select all Tasks have have less than the required number of transcriptions that the
     // user hasn't yet viewed.  We now have to check the views to see if there are any views of that Task
     // that didn't result in a Transcription and occurred before our timeout window (ie. 2 hours ago)
-    private Task processResults(List results, long timeoutWindow) {
-        results?.each { result ->
+    private Task processResults(List results, long timeoutWindow, String userId = null, int jump = 1) {
+        Task transcribableTask = null
+        int matches = 0
+        results?.find { result ->
             Task task = Task.get(result[0])
 
             List usersWhoCompletedTheirTranscriptions = task.transcriptions.findAll{it.fullyTranscribedBy}.collect{it.fullyTranscribedBy}
 
             // Only views made by users that have not completed their transcription are relevant.
             ViewedTask currentView = task.viewedTasks.find { view ->
-                return !(view.userId in usersWhoCompletedTheirTranscriptions) && view.lastView > timeoutWindow
+                return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId)
             }
 
             if (!currentView) {
                 // We can allocate this Task as all recent views have resulted in a completed transcription
                 // (i.e. views that didn't end up completing the transcription have timed out).
-                return task
+                transcribableTask = task
+                matches ++
+                if (matches >= jump) {
+                    return true
+                }
             }
         }
-        return null
-
+        transcribableTask
     }
 
+    /**
+     * Returns a Task that the user has never viewed where the number of distinct user views is < the total
+     * required number of transcriptions. Tasks with more distinct views will be returned first if jump is not
+     * required.
+     * @param userId The user to allocate a Task to
+     * @param project The Project the Task is for.
+     * @param transcriptionsPerTask the number of times each Task must be transcribed before it can be validated.
+     * @param lastId the last id the user viewed/transcribed.  This is used when tasks need to be skipped,
+     * predominently in camera trap projects where the user is shown images they aren't transcribing for context.
+     * The jump means they will be allocated a new image they haven't seen before.
+    */
+    private Task findUnviewedTask(String userId, Project project, Long transcriptionsPerTask = 1, Long lastId = -1, int jump = 1) {
+
+        Task task = null
+        Map queryParams = [userId: userId, project:project, transcriptionsPerTask:transcriptionsPerTask, max:jump]
+        if (jump > 1 && lastId >= 0) {
+            queryParams.lastId = lastId
+        }
+
+        String whereClause = "task.project = :project and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
+        String orderBy = "count(distinct views.userId) desc, task.id"
+        if (jump && lastId > 0) {
+            whereClause += "and task.id > :lastId "
+            orderBy = "task.id"
+        }
+        List results = Task.executeQuery(
+                "select task.id, count(distinct views.userId) from Task as task "+
+                        "left join task.viewedTasks as views " +
+                        "where " + whereClause +
+                        "group by task.id " +
+                        "having count(distinct views.userId) < :transcriptionsPerTask "+
+                        "order by "+orderBy,
+                queryParams
+        )
+
+        if (results) {
+            def taskResult = results.last()
+            task = Task.get(taskResult[0])
+            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+        }
+        task
+    }
+
+    /**
+     * Find tasks that have not been fully transcribed and have not been viewed by the supplied user.
+     * Views that have not resulted in a transcription and occurred within the timeout window will exclude a
+     * Task from being returned, as the Transcription is likely in progress.
+     * @param userId The user to allocate a Task to
+     * @param project The Project the Task is for.
+     * @param transcriptionsPerTask the number of times each Task must be transcribed before it can be validated.
+     * @param timeoutWindow the time (milliseconds since 1970) after which we consider a Transcription to still
+     * be in progress.
+     */
+    private Task findUnfinishedTaskNotViewedByUser(String userId, Project project, int transcriptionsPerTask, long timeoutWindow, long lastId = -1, int jump = 1) {
+
+        Map params = [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask]
+        String whereClause = "task.project = :project and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
+        if (jump > 1 && lastId >= 0) {
+            whereClause += "and task.id > :lastId "
+            params.lastId = lastId
+        }
+
+        List results = Task.executeQuery(
+                "select task.id, count(transcriptions) from Task as task "+
+                        "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                        "where " + whereClause +
+                        "group by task.id " +
+                        "having count(transcriptions) < :transcriptionsPerTask "+
+                        "order by count(transcriptions) desc, task.id",
+                    params
+                )
+
+        // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
+        // too large.
+        processResults(results, timeoutWindow,  userId, jump)
+    }
+
+    private Task findViewedButNotTranscribedTask(String userId, Project project, int transcriptionsPerTask, long timeoutWindow) {
+        // Finally, the only Tasks left are ones that the user has viewed but not transcribed
+        List results = Task.executeQuery(
+                "select task.id, count(transcriptions) from Task as task "+
+                        "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                        "where task.project = :project " +
+                        "and task.id not in (select t1.task from Transcription t1 where t1.fullyTranscribedBy = :userId)  " +
+                        "group by task.id " +
+                        "having count(transcriptions) < :transcriptionsPerTask "+
+                        "order by count(transcriptions) desc, task.id",
+                [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask])
+
+        // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
+        // too large.
+        processResults(results, timeoutWindow, userId)
+    }
 
     /**
      * Get the next task for this user
@@ -280,191 +378,46 @@ class TaskService {
             return null;
         }
 
-        def jump = project?.template?.viewParams?.jumpNTasks
-
+        Task task = null
+        int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
         int transcriptionsPerTask = (project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
 
         // This is the earliest last viewed time for a task to be unlocked
-        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+        long timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
 
-        def tasks
         def sw = new Stopwatch()
 
-        // If the template calls for jumping forward n at a time and we have a jumping off point...
-        if (jump && lastId > 0) {
-            sw.start()
-            tasks = Task.createCriteria().list(max:jump) {
-                eq("project", project)
-                gt('id', lastId)
-                isNull('fullyTranscribedBy')
-                sizeLe('viewedTasks', 0)
-                order('id','asc')
-            }
-            log.debug("Took ${sw.stop()} for 1st check")
-            if (tasks) {
-                def task = tasks.last()
-                log.info("getNextTask(project ${project.id}, lastId $lastId) found a task to jump to: ${task.id}")
-                return task
-            }
-
-            sw.start()
-            tasks = Task.createCriteria().list([max:jump]) {
-                eq("project", project)
-                gt('id', lastId)
-                isNull("fullyTranscribedBy")
-                and {
-                    ne("lastViewedBy", userId)
-                    le("lastViewed", timeoutWindow)
-                }
-                order('id','asc')
-            }
-            log.debug("Took ${sw.stop()} for 2nd check")
-            if (tasks) {
-                def task = tasks.last()
-                log.info("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
-                return task
-            }
-
-            sw.start()
-            tasks = Task.createCriteria().list([max:jump]) {
-                eq("project", project)
-                gt('id', lastId)
-                isNull("fullyTranscribedBy")
-                or {
-                    le("lastViewed", timeoutWindow)
-                    eq("lastViewedBy", userId)
-                }
-                order('id','asc')
-            }
-            log.debug("Took ${sw.stop()} for 3rd check")
-            if (tasks) {
-                def task = tasks.last()
-                log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
-                return task
-            }
-        }
-
-        sw.start()
-
-        println "start***************************************"
-
-        // First find a Task that the user has never viewed where the number of distinct user views is < the total
-        // required number of transcriptions and order by the number of distinct views.
-        // This is to bias us towards completing tasks once they are started.
-        List results = Task.executeQuery(
-                "select task.id, count(distinct views.userId) from Task as task "+
-                        "left join task.viewedTasks as views " +
-                        "where task.project = :project " +
-                        "and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId)  " +
-                        "group by task.id " +
-                                "having count(distinct views.userId) < :transcriptionsPerTask "+
-                        "order by count(distinct views.userId) desc, task.id",
-                [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask, max:1]
-        )
-        println "Tasks : "+results
-        println "fin*********************************************"
-        if (results) {
-            def taskResult = results.last()
-            def task = Task.get(taskResult[0])
+        // First find a task that hasn't been viewed by the user and has been viewed by fewer users than are
+        // required to transcribe the Task.
+        task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
+        if (task) {
             log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
-        // Ok, so we are now in a position where the only Tasks left have been either viewed by the user
+        // If there are no Tasks found above the only Tasks left have been either viewed by the user
         // or viewed by enough distinct users to have theoretically fully transcribed the Task if all views had
         // resulted in a transcription.
         // At this point, either the remaining transcriptions are in progress or some transcriptions have been abandoned.
-        results = Task.executeQuery(
-                "select task.id, count(transcriptions) from Task as task "+
-                        "left join task.transcriptions as transcriptions " +
-                        "where task.project = :project " +
-                        "and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId)  " +
-                        "and transcriptions.fullyTranscribedBy is not null "+
-                        "group by task.id " +
-                        "having count(transcriptions) < :transcriptionsPerTask "+
-                        "order by count(transcriptions) desc, task.id",
-                [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask])
-
-        // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
-        // too large.
-        Task task = processResults(results, timeoutWindow)
+        task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeoutWindow, lastId, jump)
         if (task) {
             log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
-        // Finally, the only Tasks left are ones that the user has viewed but not transcribed
-        results = Task.executeQuery(
-                "select task.id, count(transcriptions) from Task as task "+
-                        "left join task.transcriptions as transcriptions " +
-                        "where task.project = :project " +
-                        "and task.id not in (select t1.task from Transcription t1 where t1.fullyTranscribedBy = :userId)  " +
-                        "and transcriptions.fullyTranscribedBy is not null "+
-                        "group by task.id " +
-                        "having count(transcriptions) < :transcriptionsPerTask "+
-                        "order by count(transcriptions) desc, task.id",
-                [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask, max:1])
-
-        // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
-        // too large.
-        task = processResults(results, timeoutWindow)
+        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeoutWindow)
         if (task) {
             log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            //isNull("fullyTranscribedBy")
-            sizeLe("viewedTasks", 0)
-            order("id", "asc")
-        }
-        log.debug("Took ${sw.stop()} for 4th check")
-        if (tasks) {
-            task = tasks.last()
-            log.info("getNextTask(project ${project.id}) found a task with no views: ${task.id}")
-            return task
+        // If we have been unable to find a Task while jumping over Tasks, see if we can get any Task.
+        if (lastId >=0 && jump > 1) {
+            // Try it all again, but without the jump
+            task = getNextTask(userId, project)
         }
 
-        // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
-        sw.start()
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            //isNull("fullyTranscribedBy")
-            and {
-                ne("lastViewedBy", userId)
-                le("lastViewed", timeoutWindow)
-            }
-            order("lastViewed", "asc")
-        }
-        log.debug("Took ${sw.stop()} for 5th check")
-
-        if (tasks) {
-            task = tasks.last()
-            log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
-            return task
-        }
-
-        // Finally, we'll have to serve up a task that this user has seen before
-        sw.start()
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            //isNull("fullyTranscribedBy")
-            or {
-                le("lastViewed", timeoutWindow)
-                eq("lastViewedBy", userId)
-            }
-            order("lastViewed", "asc")
-        }
-        log.debug("Took ${sw.stop()}for 6th check")
-
-        if (tasks) {
-            task = tasks.last()
-            log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
-            return task
-        }
-
-        return null
+        return task
     }
 
     /**

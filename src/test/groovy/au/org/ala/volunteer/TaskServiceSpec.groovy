@@ -34,17 +34,17 @@ class TaskServiceSpec extends HibernateSpec {
         p.save(failOnError:true)
     }
 
-    private void addTask(Project project, int transcriptionCount) {
-        Task task = new Task(project: project)
+    private void addTask(Project project, int index) {
+        Task task = new Task(project: project, externalIdentifier: Integer.toString(index))
         task.transcriptions = []
         task.viewedTasks = new HashSet()
         task.save(failOnError:true)
 
     }
 
-    private void setupTasks(Project project, int numberOfTasks, int transcriptionCount) {
+    private void setupTasks(Project project, int numberOfTasks) {
         for (int i=0; i<numberOfTasks; i++) {
-            addTask(project, transcriptionCount)
+            addTask(project, i)
         }
     }
 
@@ -63,13 +63,15 @@ class TaskServiceSpec extends HibernateSpec {
         transcription.dateFullyTranscribed = new Date()
         transcription.save(failOnError:true, flush:true)
 
-
-
     }
 
     private void view(Task task, String userId, boolean recent = true) {
 
-        ViewedTask viewedTask = new ViewedTask(task:task, userId:userId, numberOfViews: 1)
+        long lastView = System.currentTimeMillis()
+        if (!recent) {
+            lastView  -= 1000*60*60*3 // 3 hours ago
+        }
+        ViewedTask viewedTask = new ViewedTask(task:task, userId:userId, numberOfViews: 1, lastView: lastView)
         task.viewedTasks.add(viewedTask)
         viewedTask.save(failOnError:true, flush:true)
         task.save(failOnError:true, flush:true)
@@ -80,7 +82,7 @@ class TaskServiceSpec extends HibernateSpec {
 
         p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
         int numberOfTasks = 10
-        setupTasks(p, numberOfTasks, transcriptionsPerTask)
+        setupTasks(p, numberOfTasks)
 
         Set transcribedTasks = new HashSet()
         for (int i=0; i<numberOfTasks; i++) {
@@ -111,7 +113,7 @@ class TaskServiceSpec extends HibernateSpec {
         int transcriptionsPerTask = 5
         p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
         int numberOfTasks = 10
-        setupTasks(p, numberOfTasks, transcriptionsPerTask)
+        setupTasks(p, numberOfTasks)
         Task.findAllByProject(p).each { Task task ->
             List users = ['u1', 'u2', 'u3', 'u4']
             users.each { String user ->
@@ -146,7 +148,7 @@ class TaskServiceSpec extends HibernateSpec {
         int transcriptionsPerTask = 5
         p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
         int numberOfTasks = 10
-        setupTasks(p, numberOfTasks, transcriptionsPerTask)
+        setupTasks(p, numberOfTasks)
         Task.findAllByProject(p).each { Task task ->
             List users = ['u1', 'u2', 'u3', 'u4']
             users.each { String user ->
@@ -163,6 +165,106 @@ class TaskServiceSpec extends HibernateSpec {
         task == null
     }
 
+
+    def "When all tasks have been viewed but not all transcribed, the user should be allocated a task only if one or more views that haven't resulted in a transcription were more than 2 hours ago"() {
+
+        setup:
+        int transcriptionsPerTask = 5
+        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        int numberOfTasks = 10
+        setupTasks(p, numberOfTasks)
+        Task.findAllByProject(p).each { Task task ->
+            List users = ['u1', 'u2', 'u3', 'u4']
+            users.each { String user ->
+                transcribe(task, user)
+            }
+
+            view(task, 'u5', false)
+        }
+
+        when: "Tasks have 4 transcriptions and 1 non recent view from a 5th user"
+        Task task = service.getNextTask(userId, p)
+
+        then: "The first Task can be allocated to our user"
+        task != null
+    }
+
+    def "When all tasks have been viewed but not all transcribed, the user should finally be allocated a task they have already viewed, but not transcribed"() {
+
+        setup:
+        int transcriptionsPerTask = 5
+        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        int numberOfTasks = 10
+        setupTasks(p, numberOfTasks)
+        Task.findAllByProject(p).each { Task task ->
+            List users = ['u1', 'u2', 'u3', 'u4']
+            users.each { String user ->
+                transcribe(task, user)
+            }
+
+            view(task, userId)
+        }
+
+        when: "Tasks have 4 transcriptions and 1 non recent view from a 5th user"
+        Task task = service.getNextTask(userId, p)
+
+        then: "The first Task can be allocated to our user"
+        task != null
+    }
+
+    def "A project can be configured to jump over tasks when allocating a new Task"() {
+        int jump = 3
+        p.template.viewParams = [jumpNTasks:Integer.toString(jump)]
+        int numberOfTasks = 21
+        setupTasks(p, numberOfTasks)
+
+        when:
+        Task task = service.getNextTask(userId, p)
+
+        then: "the first task will be 2 as the algorithm returns jump results and picks the last one"
+        int expectedTaskExternalId = 2
+        task.externalIdentifier == Integer.toString(expectedTaskExternalId)
+
+        while (task != null && expectedTaskExternalId < numberOfTasks-jump) {
+            expectedTaskExternalId = expectedTaskExternalId + jump
+
+            task = service.getNextTask(userId, p, task.id)
+
+            assert task.externalIdentifier == Integer.toString(expectedTaskExternalId)
+        }
+
+    }
+
+    def "The jump should still work when we are running out of Tasks to allocate"() {
+        // The allocation algorithm tries to allocate Tasks with less views
+        // than transcriptions first, then tries to find ones the user hasn't
+        // viewed, but the other user views have timed out.
+
+        int jump = 3
+        p.template.viewParams = [jumpNTasks:Integer.toString(jump)]
+        int numberOfTasks = 21
+        setupTasks(p, numberOfTasks)
+        Task.findAllByProject(p).each { Task task ->
+            view(task, 'u1', false)
+        }
+
+        when:
+        Task task = service.getNextTask(userId, p)
+
+        then: "the first task will be 2 as the algorithm returns jump results and picks the last one"
+        int expectedTaskExternalId = 2
+        task.externalIdentifier == Integer.toString(expectedTaskExternalId)
+
+        while (task != null && expectedTaskExternalId < numberOfTasks-jump) {
+            expectedTaskExternalId = expectedTaskExternalId + jump
+
+            task = service.getNextTask(userId, p, task.id)
+
+            assert task.externalIdentifier == Integer.toString(expectedTaskExternalId)
+        }
+
+    }
+
    def "when there multiple transcriptions for multiple tasks, latest contribution view should be able to be updated"() {
         setup:
 
@@ -170,7 +272,7 @@ class TaskServiceSpec extends HibernateSpec {
         p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
         int numberOfTasks = 4
 
-        setupTasks(p, numberOfTasks, transcriptionsPerTask)
+        setupTasks(p, numberOfTasks)
 
         when: "When volunteers transcribe tasks"
             Task.findAllByProject(p).each { Task task ->
