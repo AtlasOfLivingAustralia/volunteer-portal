@@ -252,18 +252,11 @@ class TaskService {
         results?.find { result ->
             Task task = Task.get(result[0])
 
-            List usersWhoCompletedTheirTranscriptions = task.transcriptions.findAll{it.fullyTranscribedBy}.collect{it.fullyTranscribedBy}
-
-            // Only views made by users that have not completed their transcription are relevant.
-            ViewedTask currentView = task.viewedTasks.find { view ->
-                return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId)
-            }
-
-            if (!currentView) {
+            if (!task.isLockedForUser(userId, timeoutWindow)) {
                 // We can allocate this Task as all recent views have resulted in a completed transcription
                 // (i.e. views that didn't end up completing the transcription have timed out).
                 transcribableTask = task
-                matches ++
+                matches++
                 if (matches >= jump) {
                     return true
                 }
@@ -382,8 +375,8 @@ class TaskService {
         int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
         int transcriptionsPerTask = (project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
 
-        // This is the earliest last viewed time for a task to be unlocked
-        long timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+        // This is the length of time for which a Task remains locked after a user views it
+        long timeout = grailsApplication.config.viewedTask.timeout as long
 
         def sw = new Stopwatch()
 
@@ -399,13 +392,13 @@ class TaskService {
         // or viewed by enough distinct users to have theoretically fully transcribed the Task if all views had
         // resulted in a transcription.
         // At this point, either the remaining transcriptions are in progress or some transcriptions have been abandoned.
-        task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeoutWindow, lastId, jump)
+        task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeout, lastId, jump)
         if (task) {
             log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
-        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeoutWindow)
+        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout)
         if (task) {
             log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task

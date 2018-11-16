@@ -6,8 +6,6 @@ import grails.transaction.Transactional
 class AuditService {
 
     def grailsApplication
-    def userService
-
 
     def getLastViewForTask(Task taskInstance) {
 
@@ -20,17 +18,9 @@ class AuditService {
         return viewedTasks ? viewedTasks[0] : null
     }
 
-    public boolean isTaskLockedForUser(Task taskInstance, String userId) {
-        def lastView = getLastViewForTask(taskInstance)
-        def currentUser = userService.currentUserId
-        if (lastView) {
-            log.debug "userId = " + currentUser + " || prevUserId = " + lastView.userId + " || prevLastView = " + lastView.lastView
-            def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView
-            if (lastView.userId != currentUser && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
-                return true
-            }
-        }
-        return false
+    boolean isTaskLockedForUser(Task taskInstance, String userId) {
+        long timeout = grailsApplication.config.viewedTask.timeout as long
+        return taskInstance.isLockedForUser(userId, timeout)
     }
 
     def auditTaskViewing(Task taskInstance, String userId) {

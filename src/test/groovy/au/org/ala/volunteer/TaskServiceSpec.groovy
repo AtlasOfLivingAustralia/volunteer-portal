@@ -4,6 +4,7 @@ import grails.test.hibernate.HibernateSpec
 import grails.test.mixin.TestFor
 import org.grails.orm.hibernate.cfg.Settings
 
+import static au.org.ala.volunteer.au.org.ala.volunteer.helper.TaskDataHelper.*
 
 @TestFor(TaskService)
 class TaskServiceSpec extends HibernateSpec {
@@ -20,61 +21,11 @@ class TaskServiceSpec extends HibernateSpec {
     String userId = '1234'
     Project p
     def setup() {
-       setupProject()
+       p = setupProject()
     }
 
     def teardown() {
         //p.delete(flush:true)
-    }
-
-    private void setupProject() {
-        p = new Project(name:"Test Project")
-        p.template = new Template(name:"Test template", viewParams:[param1:'value1'], viewParams2: [param1:'value1'])
-        p.template.save(failOnError:true)
-        p.save(failOnError:true)
-    }
-
-    private void addTask(Project project, int index) {
-        Task task = new Task(project: project, externalIdentifier: Integer.toString(index))
-        task.transcriptions = []
-        task.viewedTasks = new HashSet()
-        task.save(failOnError:true)
-
-    }
-
-    private void setupTasks(Project project, int numberOfTasks) {
-        for (int i=0; i<numberOfTasks; i++) {
-            addTask(project, i)
-        }
-    }
-
-    private void transcribe(Task task, String userId) {
-
-        view(task, userId)
-
-        Transcription transcription = task.findUserTranscription(userId)
-        if (!transcription) {
-            transcription = task.addTranscription()
-            task.save(failOnError:true)
-        }
-
-        println "Updating transcription with id="+transcription.id
-        transcription.fullyTranscribedBy = userId
-        transcription.dateFullyTranscribed = new Date()
-        transcription.save(failOnError:true, flush:true)
-
-    }
-
-    private void view(Task task, String userId, boolean recent = true) {
-
-        long lastView = System.currentTimeMillis()
-        if (!recent) {
-            lastView  -= 1000*60*60*3 // 3 hours ago
-        }
-        ViewedTask viewedTask = new ViewedTask(task:task, userId:userId, numberOfViews: 1, lastView: lastView)
-        task.viewedTasks.add(viewedTask)
-        viewedTask.save(failOnError:true, flush:true)
-        task.save(failOnError:true, flush:true)
     }
 
     def "regardless of the number of transcriptions per task, the same user shouldn't be assigned a task they've already transcribed"(int transcriptionsPerTask) {

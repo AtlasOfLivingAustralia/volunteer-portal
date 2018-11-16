@@ -97,9 +97,38 @@ class Task implements Serializable {
 
     Transcription addTranscription() {
         Transcription transcription = new Transcription(task:this, project:project)
+
+        // Copy any fields that were loaded with the Task originally into the new Transcription.
+        // Possibly this should be done when the transcription is loaded (so we aren't duplicating this
+        // data, just showing it on the page as required.
+        if (fields) {
+            fields.each { field ->
+                if (!field.transcription) {
+                    transcription.fields << new Field(transcription: transcription, name:field.name, value:field.value, recordIdx: field.recordIdx, superceded: false)
+                }
+            }
+        }
         transcriptions.add(transcription)
 
         transcription
+    }
+
+    boolean isLockedForUser(String userId, long timeoutInSeconds) {
+
+        long timeoutWindow = System.currentTimeMillis() - timeoutInSeconds
+        Set usersWhoCompletedTheirTranscriptions = transcriptions.findAll{it.fullyTranscribedBy}.collect{it.fullyTranscribedBy}.toSet()
+
+        boolean locked = false
+        if (!usersWhoCompletedTheirTranscriptions.contains(userId)) {
+            // Only views made by users that have not completed their transcription are relevant.
+            Set currentViews = viewedTasks.findAll { view ->
+                return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId)
+            }.collect{it.userId}.toSet()
+
+            locked = (usersWhoCompletedTheirTranscriptions.size() + currentViews.size()) >= project.getRequiredNumberOfTranscriptions()
+        }
+
+        return locked
     }
 
     // These events use a static method rather than an injected service
