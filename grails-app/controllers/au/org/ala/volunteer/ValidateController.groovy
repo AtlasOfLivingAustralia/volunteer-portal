@@ -52,7 +52,7 @@ class ValidateController {
                 }
             }
 
-            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+            Map recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
             render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])

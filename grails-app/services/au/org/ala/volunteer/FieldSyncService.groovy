@@ -10,9 +10,14 @@ class FieldSyncService {
     def fullTextIndexService
 
     Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {
-        Map recordValues = new LinkedHashMap()
 
         Transcription transcription = taskInstance.findUserTranscription(currentUserId)
+        retrieveFieldsForTranscription(transcription)
+
+    }
+
+    private Map retrieveFieldsForTranscription(Transcription transcription) {
+        Map recordValues = new LinkedHashMap()
 
         transcription?.fields?.each { field ->
             def recordMap = recordValues.get(field.recordIdx)
@@ -25,6 +30,12 @@ class FieldSyncService {
             }
         }
         recordValues
+    }
+
+    Map retrieveValidationFieldsForTask(Task taskInstance) {
+        if (taskInstance.isFullyTranscribed() && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+            return retrieveFieldsForTranscription(taskInstance.transcriptions[0])
+        }
     }
 
     boolean fieldValuesAreEqual(String a, String b) {
