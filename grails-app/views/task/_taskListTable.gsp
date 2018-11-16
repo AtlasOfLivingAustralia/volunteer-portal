@@ -45,11 +45,7 @@
             </g:each>
 
             <td>
-                <g:if test="${taskInstance.fullyTranscribedBy}">
-                    <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                    <g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails id="${taskInstance.fullyTranscribedBy}"
-                                                                                                displayName="true"/></g:link>
-                </g:if>
+                <cl:transcribers task="${taskInstance}"/>
             </td>
 
             <td>
@@ -72,7 +68,7 @@
                 %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
                 %{--</button>--}%
                 </g:if>
-                <g:elseif test="${taskInstance.fullyTranscribedBy}">
+                <g:elseif test="${taskInstance.isFullyTranscribed()}">
                     <button class="btn btn-small"
                             onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
                 %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%

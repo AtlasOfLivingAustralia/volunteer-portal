@@ -243,6 +243,18 @@ class TaskService {
         userIds
     }
 
+    int getNumberOfFullyTranscribedTasks(Project project) {
+        long transcriptionsPerTask = project.getRequiredNumberOfTranscriptions()
+        List results = Task.executeQuery("select count(task.id) from Task as task "+
+                "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                        "where task.project = :project " +
+                        "group by task.id " +
+                        "having count(transcriptions) >= :transcriptionsPerTask ",
+                [transcriptionsPerTask: transcriptionsPerTask, project: project])
+
+        return results[0]
+    }
+
     // The results above select all Tasks have have less than the required number of transcriptions that the
     // user hasn't yet viewed.  We now have to check the views to see if there are any views of that Task
     // that didn't result in a Transcription and occurred before our timeout window (ie. 2 hours ago)

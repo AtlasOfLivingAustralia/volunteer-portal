@@ -1044,4 +1044,38 @@ function notify() {
         def link = new URIBuilder(grailsApplication.config.security.cas.loginUrl).addParameter("service", g.createLink(uri: '/', absolute: true)).build().toString()
         return link
     }
+
+    /**
+     * Renders a list of the users who have transcribed a Task.  Each user is rendered as a link that goes to
+     * the user page.
+     *
+     * Used in the _taskListTable gsp.
+     */
+    def transcribers = { attrs ->
+
+        def taskInstance = attrs.task as Task
+
+        Set transcribers = new HashSet()
+        if (taskInstance) {
+
+            taskInstance.transcriptions.each {
+                if (it.dateFullyTranscribed) {
+                    transcribers << it.fullyTranscribedBy
+                }
+            }
+
+
+            def mb = new MarkupBuilder(out)
+            transcribers.each { transcriberUserId ->
+                mb.p {
+                    mkp.yieldUnescaped(g.link(controller:'user', action:'show', id:transcriberUserId) {
+                        cl.userDetails(id:transcriberUserId, displayName:true)
+                    })
+                }
+
+            }
+        }
+
+    }
+
 }

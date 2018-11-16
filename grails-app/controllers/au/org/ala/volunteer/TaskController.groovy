@@ -124,6 +124,9 @@ class TaskController {
                 taskInstanceTotal = Task.countByProject(projectInstance)
             }
 
+            int transcribedCount = taskService.getNumberOfFullyTranscribedTasks(projectInstance)
+            int validatedCount = Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)
+
             if (taskInstanceTotal) {
                 fieldNames.each {
                     extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
@@ -151,7 +154,8 @@ class TaskController {
             }
 
             // add some associated "field" values
-            render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
+            render(view: view, model:
+                    [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, validatedCount: validatedCount, transcribedCount: transcribedCount,
                     projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance, lockedMap: lockedMap])
         }
         else {
