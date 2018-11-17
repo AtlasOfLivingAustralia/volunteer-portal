@@ -418,6 +418,24 @@ class VolunteerTagLib {
         }
     }
 
+    def transcribers = { attrs ->
+        def taskInstance = attrs.task as Task
+
+        int transcribedCount = 0
+        taskInstance?.transcriptions.each { transcription ->
+            if (transcription.dateFullyTranscribed) {
+                out << "<p>"
+                out << "${transcription.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by "
+                out << "${cl.emailForUserId(id: transcription.fullyTranscribedBy) ?: '<span class=\"muted\">unknown</span>'}"
+                out << "</p>"
+                transcribedCount++
+            }
+        }
+        if (transcribedCount == 0) {
+            out << "<span class=\"muted\">Not transcribed</span>"
+        }
+    }
+
     /**
      * @attr userId User id
      */
@@ -1051,7 +1069,7 @@ function notify() {
      *
      * Used in the _taskListTable gsp.
      */
-    def transcribers = { attrs ->
+    def transcriberNames = { attrs ->
 
         def taskInstance = attrs.task as Task
 
