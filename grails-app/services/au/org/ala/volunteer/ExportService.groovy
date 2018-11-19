@@ -27,7 +27,7 @@ class ExportService {
         return usersMap[userId]?.displayName ?: userService.propertyForUserId(userId, 'displayName')
     }
 
-    private String getTaskField(Task task, String fieldName, Map<String, UserDetails> usersMap = [:]) {
+    private String getTaskField(Task task, Transcription transcription, String fieldName, Map<String, UserDetails> usersMap = [:]) {
         def sw = Stopwatch.createStarted()
 
         def result = ""
@@ -39,7 +39,7 @@ class ExportService {
                 result = grailsLinkGenerator.link(absolute: true, controller: 'validate', action: 'task', id: task.id)
                 break
             case "transcriberid":
-                result = getUserDisplayName(task.fullyTranscribedBy, usersMap)
+                result = getUserDisplayName(transcription.fullyTranscribedBy, usersMap)
                 break;
             case "validatorid":
                 result = getUserDisplayName(task.fullyValidatedBy, usersMap)
@@ -49,8 +49,8 @@ class ExportService {
                 break;
             case "exportcomment":
                 def sb = new StringBuilder()
-                if (task.fullyTranscribedBy) {
-                    sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy, usersMap)}. ")
+                if (transcription.fullyTranscribedBy) {
+                    sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
                 }
                 def date = new Date().format("dd-MMM-yyyy")
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
@@ -58,7 +58,7 @@ class ExportService {
                 result = sb.toString()
                 break;
             case "datetranscribed":
-                result = task.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
+                result = transcription.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
                 break;
             case "datevalidated":
                 result = task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
@@ -173,34 +173,37 @@ class ExportService {
         def sw2 = Stopwatch.createUnstarted()
         def sw3 = Stopwatch.createUnstarted()
         taskList.each { Task task ->
-            sw2.reset().start()
-            def fieldMap = taskMap[task.id]
-            def values = []
+            task.transcriptions?.each { transcription ->
+                sw2.reset().start()
+                def fieldMap = taskMap[task.id]
+                def values = []
 
-            columnNames.each { columnName ->
-                sw3.reset().start()
-                def fieldName = columnName
-                def recordIndex = 0
-                def matcher = columnIndexRegex.matcher(columnName)
-                if (matcher.matches()) {
-                    fieldName = matcher.group(1)
-                    recordIndex = matcher.group(2) as int
-                }
+                columnNames.each { columnName ->
+                    sw3.reset().start()
+                    def fieldName = columnName
+                    def recordIndex = 0
+                    def matcher = columnIndexRegex.matcher(columnName)
+                    if (matcher.matches()) {
+                        fieldName = matcher.group(1)
+                        recordIndex = matcher.group(2) as int
+                    }
 
-                String value
-                if (fieldIndexMap.containsKey(fieldName)) {
-                    def valueMap = fieldMap?.getAt(fieldName)
-                    value = valueMap?.getAt(recordIndex) ?: ""
-                } else {
-                    value = getTaskField(task, fieldName, usersMap)
+                    String value
+                    if (fieldIndexMap.containsKey(fieldName)) {
+                        def valueMap = fieldMap?.getAt(fieldName)
+                        value = valueMap?.getAt(recordIndex) ?: ""
+                    } else {
+                        value = getTaskField(task, transcription, fieldName, usersMap)
+                    }
+                    values << value
+                    def elapsed = sw3.elapsed(MILLISECONDS)
+                    if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
                 }
-                values << value
-                def elapsed = sw3.elapsed(MILLISECONDS)
-                if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
+                def elapsed = sw2.elapsed(MILLISECONDS)
+                if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
+                writer.writeNext(values as String[])
             }
-            def elapsed = sw2.elapsed(MILLISECONDS)
-            if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
-            writer.writeNext(values as String[])
+
         }
         log.debug("Wrote all tasks in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
@@ -257,8 +260,10 @@ class ExportService {
         writer.writeNext((String[]) fieldNames.toArray(new String[0]))
 
         taskList.each { task ->
-            String[] values = getFieldsForTask(task, fieldNames, valueMap, usersMap)
-            writer.writeNext(values)
+            task.transcriptions?.each { transcription ->
+                String[] values = getFieldsForTask(task, transcription, fieldNames, valueMap, usersMap)
+                writer.writeNext(values)
+            }
         }
         writer.flush();
         zipStream.closeEntry();
@@ -402,7 +407,7 @@ class ExportService {
         return value.toString().replaceAll("\r\n|\n\r|\n|\r", '\\\\n')
     }
 
-    private String[] getFieldsForTask(Task task, List fields, Map taskMap, Map<String, UserDetails> usersMap = [:]) {
+    private String[] getFieldsForTask(Task task, Transcription transcription, List fields, Map taskMap, Map<String, UserDetails> usersMap = [:]) {
         List fieldValues = []
         def taskId = task.id
 
@@ -416,7 +421,7 @@ class ExportService {
                         fieldValues.add(taskId.toString())
                         break;
                     case "transcriberid":
-                        fieldValues.add(getUserDisplayName(task.fullyTranscribedBy, usersMap))
+                        fieldValues.add(getUserDisplayName(transcription.fullyTranscribedBy, usersMap))
                         break;
                     case "validatorid":
                         fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
@@ -426,8 +431,8 @@ class ExportService {
                         break;
                     case "exportcomment":
                         def sb = new StringBuilder()
-                        if (task.fullyTranscribedBy) {
-                            sb.append("Fully transcribed by ${getUserDisplayName(task.fullyTranscribedBy, usersMap)}. ")
+                        if (transcription.fullyTranscribedBy) {
+                            sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
                         }
                         def date = new Date().format("dd-MMM-yyyy")
                         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
@@ -435,7 +440,7 @@ class ExportService {
                         fieldValues.add((String) sb.toString())
                         break;
                     case "datetranscribed":
-                        fieldValues.add(task.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        fieldValues.add(transcription.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
                         break;
                     case "datevalidated":
                         fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
@@ -460,7 +465,15 @@ class ExportService {
     }
 
     private Map<String, UserDetails> getUserMapFromTaskList(List<Task> tasks) {
-        def userIds = tasks.collectMany { [it.fullyTranscribedBy, it.fullyValidatedBy] }.unique()
+        List transcribers = Transcription.createCriteria().list {
+            inList('task', tasks)
+            projections {
+                property 'fullyTranscribedBy'
+            }
+        }.unique()
+
+        def userIds = (tasks.collect { it.fullyValidatedBy } + transcribers).unique()
+
         return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
     }
 
