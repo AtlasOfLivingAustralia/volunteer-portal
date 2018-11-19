@@ -9,9 +9,7 @@
         <g:each in="${extraFields}"
                 var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
 
-        <g:sortableColumn property="fullyTranscribedBy"
-                          title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}"
-                          params="${[q: params.q]}"/>
+        <th>${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
 
         <g:sortableColumn property="fullyValidatedBy"
                           title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}"
@@ -45,7 +43,7 @@
             </g:each>
 
             <td>
-                <cl:transcribers task="${taskInstance}"/>
+                <cl:transcriberNames task="${taskInstance}"/>
             </td>
 
             <td>
