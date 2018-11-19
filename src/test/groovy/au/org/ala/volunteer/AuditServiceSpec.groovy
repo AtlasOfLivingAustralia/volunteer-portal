@@ -19,7 +19,7 @@ class AuditServiceSpec extends HibernateSpec {
         Task task = addTask(project, 0)
 
         expect:
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
     }
 
     void "a Task with a non-recent view will not be locked for our user"() {
@@ -30,7 +30,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, 'u2', false)
 
         then:
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
     }
 
     void "a Task with a recent view will be locked for our user"() {
@@ -41,7 +41,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, 'u2')
 
         then:
-        service.isTaskLockedForUser(task, userId) == true
+        service.isTaskLockedForTranscription(task, userId) == true
     }
 
     void "a Task recently viewed by our user will not be locked for them"() {
@@ -52,7 +52,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, 'u2')
 
         then:
-        service.isTaskLockedForUser(task, userId) == true
+        service.isTaskLockedForTranscription(task, userId) == true
     }
 
     void "a Task should not be locked for a user if the number of views is less than the number of required transcriptions"() {
@@ -66,7 +66,7 @@ class AuditServiceSpec extends HibernateSpec {
         transcribe(task, 'u3')
 
         then: "the Task can be viewed by our user"
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
 
 
         when: "the Task has been viewed by 2 distinct users"
@@ -76,7 +76,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, 'u3')
 
         then: "the Task can be viewed by our user"
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
 
         when: "the Task has been viewed by 2 distinct users, but more than once"
         task = addTask(project, 2)
@@ -86,7 +86,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, 'u3')
 
         then: "the Task can be viewed by our user"
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
 
     }
 
@@ -101,7 +101,7 @@ class AuditServiceSpec extends HibernateSpec {
         transcribe(task, userId)
 
         then: "the Task can be viewed by our user"
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
     }
 
     void "a Task should be locked if it has a number of distinct, recent user views equal to the number of required transcriptions"() {
@@ -115,7 +115,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, 'u4')
 
         then: "the Task is locked to our user"
-        service.isTaskLockedForUser(task, userId) == true
+        service.isTaskLockedForTranscription(task, userId) == true
     }
 
     void "a Task should be locked if it has a number of distinct user views equal to the number of required transcriptions, unless the user is one of the recent viewers"() {
@@ -129,7 +129,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, userId)
 
         then: "the Task is not locked to our user"
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
     }
 
     void "a Task should not be locked if it has a number of distinct, user views equal to the number of required transcriptions but one or more views have timed out"() {
@@ -143,7 +143,7 @@ class AuditServiceSpec extends HibernateSpec {
         view(task, 'u4', false)
 
         then: "the Task is not locked to our user"
-        service.isTaskLockedForUser(task, userId) == false
+        service.isTaskLockedForTranscription(task, userId) == false
     }
 
 }

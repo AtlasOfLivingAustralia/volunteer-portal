@@ -100,22 +100,6 @@ class UserService {
         return (user.transcribedCount ?: 0) + (user.validatedCount ?: 0)
     }
 
-    long getValidatedCount(User user, Project project = null) {
-        def vc = Task.createCriteria();
-        return vc {
-            projections {
-                count('id')
-            }
-            and {
-                eq('fullyTranscribedBy', user.getUserId())
-                eq('isValid', true)
-                if (project) {
-                    eq("project", project)
-                }
-            }
-        }[0]
-    }
-
     public boolean isInstitutionAdmin(Institution institution) {
 
         def userId = currentUserId

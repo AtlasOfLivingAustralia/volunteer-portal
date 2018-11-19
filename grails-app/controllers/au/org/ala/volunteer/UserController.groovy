@@ -362,7 +362,7 @@ class UserController {
         int totalTranscribedTasks
 
         if (projectInstance) {
-            totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), projectInstance)
+            totalTranscribedTasks = taskService.countUserTranscriptionsForProject(userInstance.getUserId(), projectInstance)
         } else {
             totalTranscribedTasks = userInstance.transcribedCount
         }
@@ -383,7 +383,7 @@ class UserController {
                     project              : projectInstance,
                     totalTranscribedTasks: totalTranscribedTasks,
                     achievements         : achievements,
-                    validatedCount       : userService.getValidatedCount(userInstance, projectInstance),
+                    validatedCount       : taskService.countValidUserTranscriptionsForProject(userInstance.getUserId(), projectInstance),
                     score                : score,
                     selectedTab          : selectedTab,
                     isValidator          : userService.isValidator(projectInstance),

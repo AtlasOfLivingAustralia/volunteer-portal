@@ -113,7 +113,7 @@ class Task implements Serializable {
         transcription
     }
 
-    boolean isLockedForUser(String userId, long timeoutInSeconds) {
+    boolean isLockedForTranscription(String userId, long timeoutInSeconds) {
 
         long timeoutWindow = System.currentTimeMillis() - timeoutInSeconds
         Set usersWhoCompletedTheirTranscriptions = transcriptions.findAll{it.fullyTranscribedBy}.collect{it.fullyTranscribedBy}.toSet()
