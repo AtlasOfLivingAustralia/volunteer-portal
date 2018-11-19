@@ -15,6 +15,7 @@ class Multimedia implements Serializable {
 
   static mapping = {
     version false
+    task index: 'multimedia_task_idx'
   }
 
   static constraints = {

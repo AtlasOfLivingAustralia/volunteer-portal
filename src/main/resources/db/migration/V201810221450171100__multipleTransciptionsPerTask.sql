@@ -62,6 +62,7 @@ ALTER TABLE ONLY field DROP CONSTRAINT IF EXISTS field_transcription_id;
 ALTER TABLE ONLY field
   ADD CONSTRAINT field_transcription_id FOREIGN KEY (transcription_id) REFERENCES transcription(id);
 
+CREATE INDEX IF NOT EXISTS field_transcription_id ON field (transcription_id);
 
 CREATE INDEX IF NOT EXISTS forum_message_topic ON FORUM_MESSAGE (topic_id);
 CREATE INDEX IF NOT EXISTS forum_message_date ON FORUM_MESSAGE (date DESC);
@@ -139,3 +140,5 @@ CREATE OR REPLACE VIEW public.latest_transcribers_task AS
    FROM multimedia,
     latest_transcribers_task
   WHERE multimedia.task_id = latest_transcribers_task.task_id;
+
+CREATE INDEX IF NOT EXISTS multimedia_task_id ON multimedia(task_id);
