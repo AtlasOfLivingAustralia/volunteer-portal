@@ -56,8 +56,6 @@ FROM transcription
 WHERE transcription.task_id = field.task_id
 AND transcription_id IS NULL;
 
-ALTER TABLE ONLY field ALTER COLUMN transcription_id SET NOT NULL;
-
 ALTER TABLE ONLY field DROP CONSTRAINT IF EXISTS field_transcription_id;
 ALTER TABLE ONLY field
   ADD CONSTRAINT field_transcription_id FOREIGN KEY (transcription_id) REFERENCES transcription(id);
