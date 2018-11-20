@@ -40,4 +40,19 @@ class Transcription implements Serializable {
         validatedUUID type: 'pg-uuid'
     }
 
+    def afterInsert() {
+//        GormEventDebouncer.debounceDeleteTask(this.task.id)
+        GormEventDebouncer.debounceTask(this.task.id)
+    }
+    // Executed after an object has been updated
+    def afterUpdate() {
+        GormEventDebouncer.debounceDeleteTask(this.task.id)
+        GormEventDebouncer.debounceTask(this.task.id)
+    }
+
+    // Executed after an object has been deleted
+    def afterDelete() {
+        GormEventDebouncer.debounceDeleteTask(this.task.id)
+        GormEventDebouncer.debounceTask(this.task.id)
+    }
 }

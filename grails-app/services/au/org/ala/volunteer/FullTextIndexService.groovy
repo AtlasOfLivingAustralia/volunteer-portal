@@ -135,10 +135,10 @@ class FullTextIndexService {
             }
         }
 
-        def transcriptions = Transcription.findAllByTask(task)
+        def transcriptions = task.transcriptions //Transcription.findAllByTask(task)
 
         transcriptions.each { transcription ->
-            if (transcription.id) {
+            if (transcription.fullyTranscribedBy) {
                 data.transcriptions << [transcriptionid: transcription.id, fullyTranscribedBy: transcription.fullyTranscribedBy, dateFullyTranscribed: transcription.dateFullyTranscribed,
                                        fullyValidatedBy: transcription.fullyValidatedBy, dateFullyValidated: transcription.dateFullyValidated]
             }
