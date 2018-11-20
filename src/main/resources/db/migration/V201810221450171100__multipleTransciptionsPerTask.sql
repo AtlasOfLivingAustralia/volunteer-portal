@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS transcription (
      fully_transcribed_ip_address character varying(255),
      transcribeduuid uuid,
      validateduuid uuid,
-     time_to_transcribe bigint,
-     time_to_validate bigint
+     time_to_transcribe integer,
+     time_to_validate integer
 );
 
 ALTER TABLE ONLY transcription DROP CONSTRAINT IF EXISTS transcription_pkey;
