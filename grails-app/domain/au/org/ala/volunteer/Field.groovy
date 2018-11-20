@@ -19,6 +19,7 @@ class Field implements Serializable {
     recordIdx index: 'field_name_index_superceeded_task_idx'
     superceded index: 'field_name_index_superceeded_task_idx,field_task_superceded_idx,field_transcribed_by_user_id_superceded_idx'
     task index: 'field_name_index_superceeded_task_idx,field_task_superceded_idx'
+    transcription index: 'field_transcription_idx'
     name index: 'fieldnameidx'
     updated index: 'fieldupdatedidx'
     transcribedByUserId index: 'field_transcribed_by_user_id_superceded_idx'

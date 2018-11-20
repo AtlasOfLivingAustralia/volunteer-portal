@@ -216,7 +216,7 @@ class TaskServiceSpec extends HibernateSpec {
 
     }
 
-   def "when there multiple transcriptions for multiple tasks, latest contribution view should be able to be updated"() {
+   /*def "when there multiple transcriptions for multiple tasks, latest contribution view should be able to be updated"() {
         setup:
 
         int transcriptionsPerTask = 2
@@ -268,6 +268,6 @@ class TaskServiceSpec extends HibernateSpec {
         latestTranscribers.get(1)[1] == latestTranscribersView.get(1).fullyTranscribedBy
         latestTranscribers.get(1)[2] == latestTranscribersView.get(1).maxDate
 
-   }
+   }*/
 
 }

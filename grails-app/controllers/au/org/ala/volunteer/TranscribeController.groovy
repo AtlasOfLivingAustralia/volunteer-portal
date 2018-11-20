@@ -36,7 +36,7 @@ class TranscribeController {
 
         if (taskInstance) {
 
-            boolean isLockedByOtherUser = auditService.isTaskLockedForUser(taskInstance, currentUserId)
+            boolean isLockedByOtherUser = auditService.isTaskLockedForTranscription(taskInstance, currentUserId)
 
             def isAdmin = userService.isAdmin()
             if (isLockedByOtherUser && !isAdmin) {

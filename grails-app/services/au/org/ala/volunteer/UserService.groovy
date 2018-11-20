@@ -100,22 +100,6 @@ class UserService {
         return (user.transcribedCount ?: 0) + (user.validatedCount ?: 0)
     }
 
-    long getValidatedCount(User user, Project project = null) {
-        def vc = Task.createCriteria();
-        return vc {
-            projections {
-                count('id')
-            }
-            and {
-                eq('fullyTranscribedBy', user.getUserId())
-                eq('isValid', true)
-                if (project) {
-                    eq("project", project)
-                }
-            }
-        }[0]
-    }
-
     public boolean isInstitutionAdmin(Institution institution) {
 
         def userId = currentUserId
@@ -525,11 +509,14 @@ class UserService {
         log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
 
         sw.reset().start()
-        def c = Task.createCriteria()
+        def c = Transcription.createCriteria()
         def expeditions = c {
             eq("fullyTranscribedBy", model.userInstance.userId)
             projections {
-                countDistinct("project")
+                task {
+                    countDistinct("project")
+                }
+
             }
         }
         sw.stop()
@@ -542,7 +529,10 @@ class UserService {
 
         def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, fullTextIndexService.hitsCount)
         def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
-        def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
+        def userPercent = "0"
+        if (totalCount > 0) {
+            userPercent = String.format('%.2f', (userCount / totalCount) * 100)
+        }
 
         sw.stop()
         log.debug("notbookMainFragment.percentage ${sw.toString()}")

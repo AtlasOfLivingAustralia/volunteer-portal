@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS transcription (
      fully_transcribed_ip_address character varying(255),
      transcribeduuid uuid,
      validateduuid uuid,
-     time_to_transcribe bigint,
-     time_to_validate bigint
+     time_to_transcribe integer,
+     time_to_validate integer
 );
 
 ALTER TABLE ONLY transcription DROP CONSTRAINT IF EXISTS transcription_pkey;
@@ -56,12 +56,11 @@ FROM transcription
 WHERE transcription.task_id = field.task_id
 AND transcription_id IS NULL;
 
-ALTER TABLE ONLY field ALTER COLUMN transcription_id SET NOT NULL;
-
 ALTER TABLE ONLY field DROP CONSTRAINT IF EXISTS field_transcription_id;
 ALTER TABLE ONLY field
   ADD CONSTRAINT field_transcription_id FOREIGN KEY (transcription_id) REFERENCES transcription(id);
 
+CREATE INDEX IF NOT EXISTS field_transcription_id ON field (transcription_id);
 
 CREATE INDEX IF NOT EXISTS forum_message_topic ON FORUM_MESSAGE (topic_id);
 CREATE INDEX IF NOT EXISTS forum_message_date ON FORUM_MESSAGE (date DESC);
@@ -139,3 +138,5 @@ CREATE OR REPLACE VIEW public.latest_transcribers_task AS
    FROM multimedia,
     latest_transcribers_task
   WHERE multimedia.task_id = latest_transcribers_task.task_id;
+
+CREATE INDEX IF NOT EXISTS multimedia_task_id ON multimedia(task_id);

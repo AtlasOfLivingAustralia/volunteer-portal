@@ -61,6 +61,30 @@ class TaskService {
     }
 
     /**
+     * Returns the number of transcriptions a user has made for a project.
+     */
+    Integer countUserTranscriptionsForProject(String userId, Project project) {
+        List userTranscriptionCount = Task.executeQuery(
+                "select count(distinct t.id) from Task t join t.transcriptions trans with trans.fullyTranscribedBy = :userId where t.project = :project",
+                [userId:userId, project:project])
+        userTranscriptionCount.get(0)
+    }
+
+    /**
+     * Returns the number of validated transcriptions a user has made for a project.
+     */
+    Integer countValidUserTranscriptionsForProject(String userId, Project project) {
+        String hql = "select count(distinct t.id) from Task t join t.transcriptions trans with trans.fullyTranscribedBy = :userId where t.isValid = :valid"
+        Map params = [userId: userId, valid:true]
+        if (project) {
+            hql += " and t.project = :project"
+            params.project = project
+        }
+        List userTranscriptionCount = Task.executeQuery(hql, params)
+        userTranscriptionCount.get(0)
+    }
+
+    /**
      *
      * @return Map of project id -> count
      */
@@ -264,7 +288,7 @@ class TaskService {
         results?.find { result ->
             Task task = Task.get(result[0])
 
-            if (!task.isLockedForUser(userId, timeoutWindow)) {
+            if (!task.isLockedForTranscription(userId, timeoutWindow)) {
                 // We can allocate this Task as all recent views have resulted in a completed transcription
                 // (i.e. views that didn't end up completing the transcription have timed out).
                 transcribableTask = task
@@ -440,40 +464,36 @@ class TaskService {
 
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
-        def tasks
+        def results
+        long requiredTranscriptions =  (long)project.getRequiredNumberOfTranscriptions()
 
+        results = Task.executeQuery("select task.id, count(transcriptions) from Task as task "+
+                          "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                "where task.fullyValidatedBy is null and "+
+                      "task.lastViewedBy != :userId and "+
+                      "task.lastViewed <= :timeoutWindow "+
+                "group by task.id " +
+                "having count(transcriptions) >= :transcriptionsPerTask "+
+                "order by task.lastViewed", [max:1, userId:userId, timeoutWindow:timeoutWindow, transcriptionsPerTask:requiredTranscriptions])
 
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNotNull("fullyTranscribedBy")
-            isNull("fullyValidatedBy")
-            and {
-                ne("lastViewedBy", userId)
-                le("lastViewed", timeoutWindow)
-            }
-            order("lastViewed", "asc")
-        }
-
-        if (tasks) {
-            def task = tasks.last()
+        if (results) {
+            Task task = Task.get(results.last()[0])
             println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
             return task
         }
 
         // Finally, we'll have to serve up a task that this user has seen before
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNotNull("fullyTranscribedBy")
-            isNull("fullyValidatedBy")
-            or {
-                le("lastViewed", timeoutWindow)
-                eq("lastViewedBy", userId)
-            }
-            order("lastViewed", "asc")
-        }
+        results = Task.executeQuery("select task.id, count(transcriptions) from Task as task "+
+                "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                "where task.fullyValidatedBy is null and "+
+                "(task.lastViewedBy = :userId or "+
+                "task.lastViewed <= :timeoutWindow) "+
+                "group by task.id " +
+                "having count(transcriptions) >= :transcriptionsPerTask "+
+                "order by task.lastViewed", [max:1, userId:userId, timeoutWindow:timeoutWindow, transcriptionsPerTask: requiredTranscriptions])
 
-        if (tasks) {
-            def task = tasks.last()
+        if (results) {
+            Task task = Task.get(results.last()[0])
             println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
             return task
         }
@@ -979,7 +999,7 @@ ORDER BY record_idx, name;
         def select ="""
             SELECT t.id as id
             FROM Project p JOIN Task t ON p.id = t.project_id
-            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f where f.name = 'sequenceNumber' group by f.task_id) as fields on fields.task_id = t.id
+            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f inner join Task t2 on t2.id = f.task_id where t2.project_id = :projectId and f.name = 'sequenceNumber' group by f.task_id) as fields on fields.task_id = t.id
             WHERE p.id = :projectId and fields.value = :fieldValue
         """
 
