@@ -322,7 +322,7 @@ class TaskService {
 
         String whereClause = "task.project = :project and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
         String orderBy = "count(distinct views.userId) desc, task.id"
-        if (jump && lastId > 0) {
+        if (jump > 1 && lastId > 0) {
             whereClause += "and task.id > :lastId "
             orderBy = "task.id"
         }
