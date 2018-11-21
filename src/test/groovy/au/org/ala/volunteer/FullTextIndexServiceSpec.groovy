@@ -22,7 +22,7 @@ class FullTextIndexServiceSpec extends Specification {
     }
 
     def cleanup() {
-        service.deleteTask(123)
+       // service.deleteTask(123)
     }
 
     def setupTask() {
