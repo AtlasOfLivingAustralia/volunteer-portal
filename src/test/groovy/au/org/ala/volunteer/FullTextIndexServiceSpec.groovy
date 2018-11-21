@@ -1,6 +1,5 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.domain.DomainClassUnitTestMixin
 import org.elasticsearch.action.search.SearchType
 import spock.lang.Specification
 import grails.test.mixin.*
@@ -20,8 +19,6 @@ class FullTextIndexServiceSpec extends Specification {
     }
 
     def setup() {
-        setupTask()
-        service.initialize()
     }
 
     def cleanup() {
@@ -29,8 +26,6 @@ class FullTextIndexServiceSpec extends Specification {
     }
 
     def setupTask() {
-        //mockDomain(Project)
-        //mockDomain(Field)
         Project project1 = new Project(name: 'Test Project')
         project1.id = 1
 
@@ -62,31 +57,25 @@ class FullTextIndexServiceSpec extends Specification {
     }
   }
 }"""
-        Map<String, String> queryMap = [:]
-        queryMap['query'] = query
-
-        //service.esObjectFromTask (_) >> { Task task -> createData(task)}
+        setupTask()
+        service.initialize()
 
         when:
-         def response = service.indexTask(task1)
-
-        def result = service.rawSearch(query, SearchType.fromString("query_then_fetch"), "", service.elasticSearchToJsonString)
-     //   def result1 = service.search(queryMap)
+        def response = service.indexTask(task1)
 
         then:
-        response != null
-        response.id == "123"
-        response.type == "task"
+        assert response != null
+        assert response.id == "123"
+        assert response.type == "task"
 
+
+        def result = service.rawSearch(query, SearchType.fromString("query_then_fetch"), "", service.elasticSearchToJsonString)
         assert result != null
         Map jsonMap = new groovy.json.JsonSlurper().parseText(result)
 
         assert jsonMap?.hits?.total == 1
 
         assert jsonMap?.hits?.hits._source.transcriptions[0].size == 4
-
-        Map jsonMap1 = new groovy.json.JsonSlurper().parseText(result1)
-        assert jsonMap1 != null
 
     }
 
