@@ -89,7 +89,9 @@ CREATE OR REPLACE VIEW public.latest_transcribers AS
     max(transcription.date_fully_transcribed) AS max_date
    FROM transcription,
     project
-  WHERE transcription.project_id = project.id AND project.inactive = false
+  WHERE transcription.project_id = project.id
+    AND transcription.fully_transcribed_by is not null
+    AND project.inactive = false
   GROUP BY transcription.project_id, transcription.fully_transcribed_by
   ORDER BY (max(transcription.date_fully_transcribed)) DESC;
 
