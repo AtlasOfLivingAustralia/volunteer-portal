@@ -4,9 +4,7 @@
     <tr>
         <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'External Id')}"
                           params="${[q: params.q, mode: params.mode]}"/>
-        <g:sortableColumn property="fullyTranscribedBy"
-                          title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}"
-                          params="${[q: params.q, mode: params.mode]}"/>
+        <th>${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
         <g:sortableColumn property="fullyValidatedBy"
                           title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}"
                           params="${[q: params.q, mode: params.mode]}"/>
@@ -31,7 +29,7 @@
                     </div>
 
                     <div style="text-align: center">
-                        <g:if test="${taskInstance.fullyTranscribedBy}">
+                        <g:if test="${taskInstance.isFullyTranscribed()}">
                             <g:if test="${taskInstance.isValid == true}">
                                 <div class="label label-success">
                                     <g:link controller="validate" action="task" id="${taskInstance.id}">&#10003;</g:link>
