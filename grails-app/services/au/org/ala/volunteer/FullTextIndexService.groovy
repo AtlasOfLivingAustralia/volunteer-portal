@@ -385,6 +385,10 @@ class FullTextIndexService {
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet()
     }
 
+    def flush () {
+        client.admin().indices().prepareFlush().execute().actionGet();
+    }
+
     private QueryResults<Task> executeFilterSearch(FilterBuilder filterBuilder, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
         def searchRequestBuilder = client.prepareSearch(INDEX_NAME).setSearchType(SearchType.QUERY_THEN_FETCH)
         searchRequestBuilder.setPostFilter(filterBuilder)

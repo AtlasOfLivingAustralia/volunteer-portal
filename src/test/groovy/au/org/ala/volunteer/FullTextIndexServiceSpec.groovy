@@ -8,21 +8,21 @@ import spock.lang.Shared
 
 @TestFor(FullTextIndexService)
 @TestMixin(ControllerUnitTestMixin)
+@Mock([Field, Transcription])
 class FullTextIndexServiceSpec extends Specification {
 
     @Shared
     Task task1
 
     void setupSpec() {
-        mockDomain(Field)
-        mockDomain(Transcription)
+      //  mockDomain(Field)
+      //  mockDomain(Transcription)
     }
 
     def setup() {
     }
 
     def cleanup() {
-       // service.deleteTask(123)
     }
 
     def setupTask() {
@@ -57,25 +57,40 @@ class FullTextIndexServiceSpec extends Specification {
     }
   }
 }"""
+
         setupTask()
         service.initialize()
 
         when:
         def response = service.indexTask(task1)
+        def flushResponse = service.flush()
 
         then:
         assert response != null
         assert response.id == "123"
         assert response.type == "task"
+        assert flushResponse != null
 
 
+        when:
         def result = service.rawSearch(query, SearchType.fromString("query_then_fetch"), "", service.elasticSearchToJsonString)
+
+        then:
         assert result != null
+
+        when:
         Map jsonMap = new groovy.json.JsonSlurper().parseText(result)
 
+        then:
         assert jsonMap?.hits?.total == 1
 
         assert jsonMap?.hits?.hits._source.transcriptions[0].size == 4
+
+        when:
+        def deleteResponse = service.deleteTask(123)
+
+        then:
+        assert deleteResponse != null
 
     }
 
