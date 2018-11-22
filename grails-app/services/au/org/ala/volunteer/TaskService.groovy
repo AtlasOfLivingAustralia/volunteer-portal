@@ -220,9 +220,12 @@ class TaskService {
      */
     List getUserIdsForProject(Project project) {
         def userIds = Task.executeQuery(
-            """select distinct t.fullyTranscribedBy
-               from Task t where t.fullyTranscribedBy is not null and
-               t.project = :project order by t.fullyTranscribedBy""", [project: project])
+            """select distinct tn.fullyTranscribedBy
+               from Transcription tn
+               join tn.task t 
+               where tn.fullyTranscribedBy is not null and
+               t.project = :project 
+               order by tn.fullyTranscribedBy""", [project: project])
         userIds.toList()
     }
 
