@@ -589,9 +589,11 @@ class ProjectService {
     def calculateNumberOfTranscribers(Project project) {
         Task.createCriteria().get {
             eq('project', project)
-            isNotNull('fullyTranscribedBy')
-            projections {
-                countDistinct('fullyTranscribedBy')
+            transcriptions {
+                isNotNull('fullyTranscribedBy')
+                projections {
+                    countDistinct('fullyTranscribedBy')
+                }
             }
         }
     }
@@ -599,9 +601,11 @@ class ProjectService {
     def calculateStartAndEndTranscriptionDates(Project project) {
         def result = Task.createCriteria().list {
             eq('project', project)
-            projections {
-                max('dateFullyTranscribed')
-                min('dateFullyTranscribed')
+            transcriptions {
+                projections {
+                    max('dateFullyTranscribed')
+                    min('dateFullyTranscribed')
+                }
             }
         }
         return result ? [start: result[0][1], end: result[0][0]] : null
@@ -621,7 +625,9 @@ class ProjectService {
             project {
                 eq('projectType', pt)
             }
-            isNotNull('fullyTranscribedBy')
+            transcriptions {
+                isNotNull('fullyTranscribedBy')
+            }
         }
     }
 
@@ -630,9 +636,13 @@ class ProjectService {
             project {
                 eq('projectType', pt)
             }
-            isNotNull('fullyTranscribedBy')
+            transcriptions {
+                isNotNull('fullyTranscribedBy')
+            }
             projections {
-                countDistinct 'fullyTranscribedBy'
+                transcriptions {
+                    countDistinct 'fullyTranscribedBy'
+                }
             }
         }
 

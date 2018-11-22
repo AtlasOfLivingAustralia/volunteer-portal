@@ -298,7 +298,7 @@ WHERE
     }
 
     int countTranscribedTasksForInstitution(Institution institution) {
-        Task.executeQuery("select count(*) from Task where fullyTranscribedBy is not null and project.institution = :institution", [institution: institution])?.get(0)
+        Transcription.executeQuery("select count(*) from Transcription where fullyTranscribedBy is not null and project.institution = :institution", [institution: institution])?.get(0)
     }
 
     int countValidatedTasksForInstitution(Institution institution) {
