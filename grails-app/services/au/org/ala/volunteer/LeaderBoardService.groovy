@@ -190,19 +190,30 @@ class LeaderBoardService {
     }
 
     Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds, ProjectType pt = null) {
-        def c = Transcription.createCriteria()
+        def c = Task.createCriteria()
 
-        def results = c {
+        def activityClosure = {
             ge("dateFully${activityType}", startDate)
             lt("dateFully${activityType}", endDate + 1)
-            if (institution) {
-                project {
-                    eq("institution", institution)
-                }
-            }
+
             if (ineligibleUserIds) {
                 not {
                     inList "fully${activityType}By", ineligibleUserIds
+                }
+            }
+            projections {
+                groupProperty("fully${activityType}By")
+                count("fully${activityType}By", 'count')
+            }
+        }
+
+        def transcriptionsClosure = { transcriptions { activityClosure}}
+
+        def results = c {
+
+            if (institution) {
+                project {
+                    eq("institution", institution)
                 }
             }
 
@@ -212,11 +223,13 @@ class LeaderBoardService {
                 }
             }
 
-            projections {
-                groupProperty("fully${activityType}By")
-                count("fully${activityType}By", 'count')
+            if (ActivityType.Transcribed == activityType) {
+                transcriptionsClosure
+            } else {
+                activityClosure
             }
-        }
+
+        } //<< (activityType == ActivityType.Transcribed)? transcriptionsClosure : activityClosure
 
         def map = [:]
         results.each { row ->
@@ -229,13 +242,7 @@ class LeaderBoardService {
     private getUserCountsForInstitution(Institution institution, ActivityType activityType, List<String> exceptUsers = []) {
         def c = Task.createCriteria()
 
-        def results = c {
-            if (institution) {
-                project {
-                    eq("institution", institution)
-                }
-            }
-
+        def activityClosure = {
             if (exceptUsers) {
                 not {
                     inList("fully${activityType}By", exceptUsers)
@@ -245,6 +252,26 @@ class LeaderBoardService {
             projections {
                 groupProperty("fully${activityType}By")
                 count("fully${activityType}By", 'count')
+            }
+        }
+
+        def transcriptionsClosure = {
+            transcriptions {
+                activityClosure
+            }
+        }
+
+        def results = c {
+            if (institution) {
+                project {
+                    eq("institution", institution)
+                }
+            }
+
+            if (ActivityType.Transcribed == activityType) {
+                transcriptionsClosure
+            } else {
+                activityClosure
             }
         }
 
@@ -259,13 +286,7 @@ class LeaderBoardService {
     private getUserCountsForProjectType(ProjectType projectType, ActivityType activityType, List<String> exceptUsers = []) {
         def c = Task.createCriteria()
 
-        def results = c {
-            if (projectType) {
-                project {
-                    eq("projectType", projectType)
-                }
-            }
-
+        def activityClosure = {
             if (exceptUsers) {
                 not {
                     inList("fully${activityType}By", exceptUsers)
@@ -277,6 +298,26 @@ class LeaderBoardService {
                 count("fully${activityType}By", 'count')
             }
         }
+
+        def transcriptionsClosure = {
+            transcriptions {
+                activityClosure
+            }
+        }
+
+        def results = c {
+            if (projectType) {
+                project {
+                    eq("projectType", projectType)
+                }
+            }
+
+            if (ActivityType.Transcribed == activityType) {
+                transcriptionsClosure
+            } else {
+                activityClosure
+            }
+        } //<< (activityType == ActivityType.Transcribed)? transcriptionsClosure: activityClosure
 
         def map = [:]
         results.each { row ->
