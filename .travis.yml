@@ -22,6 +22,7 @@ cache:
   - $HOME/.gradle/wrapper/
 before_install:
   - psql -c 'create database volunteerstest;' -U postgres
+  - mkdir -p '/data/volunteer-portal/elasticsearch'
   - cp travis/travis.properties local.properties
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
 after_success:
