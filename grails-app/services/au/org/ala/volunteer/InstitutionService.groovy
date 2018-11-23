@@ -11,6 +11,7 @@ class InstitutionService {
     def collectoryClient
     def grailsLinkGenerator
     def sessionFactory
+    def taskService
 
     private boolean uploadtoLocalPathFromUrl(String url, String localPath) {
         if (url && localPath) {
@@ -219,7 +220,7 @@ class InstitutionService {
                 isNull('inactive')
             }
             tasks {
-                isNull('fullyTranscribedBy')
+                isNull('fullyValidatedBy')
             }
             projections {
                 countDistinct('id')
@@ -298,7 +299,16 @@ WHERE
     }
 
     int countTranscribedTasksForInstitution(Institution institution) {
-        Transcription.executeQuery("select count(*) from Transcription where fullyTranscribedBy is not null and project.institution = :institution", [institution: institution])?.get(0)
+
+        // TODO this isn't great, we should probably use either the search index or denormalise a bit and add
+        // a fullyTranscribed flag into the Task table.
+        int transcribedCount = 0
+        List projects = Project.findAllByInstitution(institution)
+        projects.each { project ->
+            transcribedCount += taskService.getNumberOfFullyTranscribedTasks(project)
+
+        }
+        transcribedCount
     }
 
     int countValidatedTasksForInstitution(Institution institution) {
