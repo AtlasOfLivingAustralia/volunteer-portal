@@ -326,4 +326,17 @@
             logging="true"
     >
     </cache>
+    <cache
+            name="MainVolunteerContribution"
+            eternal="false"
+            timeToLiveSeconds="72000"
+            maxElementsInMemory="1000"
+            maxElementsOnDisk="2000"
+            memoryStoreEvictionPolicy="LRU"
+            overflowToDisk="true"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            logging="true"
+    >
+    </cache>
 </ehcache>

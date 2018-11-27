@@ -13,6 +13,7 @@ class IndexController {
     def leaderBoardService
     def multimediaService
     def institutionService
+    def volunteerContributionService
 
     def index() {
         log.debug("Index Controller, Index action")
@@ -108,7 +109,8 @@ class IndexController {
 
         sw.start()
 
-        List<LinkedHashMap<String, Serializable>> contributors = generateContributors(institution, projectInstance, pt, maxContributors)
+        List<LinkedHashMap<String, Serializable>> contributors = volunteerContributionService.generateContributors(institution, projectInstance, pt, maxContributors)
+        //generateContributors(institution, projectInstance, pt, maxContributors)
 
         log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate contributors section")
 
@@ -118,7 +120,7 @@ class IndexController {
         render result as JSON
     }
 
-    private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
+ /*   private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
 
         def latestTranscribers = LatestTranscribers.withCriteria {
             if (institution) {
@@ -238,5 +240,5 @@ class IndexController {
 
         def contributors = (messages + transcribers).sort { -it.timestamp }.take(maxContributors)
         return contributors
-    }
+    } */
 }

@@ -268,6 +268,7 @@ class ProjectService {
         ps.transcriberCount = transcriberCount.toLong()
 
         ps.taskCount = taskCount.toLong()
+        ps.requiredTranscriptionCount = project.requiredNumberOfTranscriptions? taskCount.toLong() * project.requiredNumberOfTranscriptions : taskCount.toLong()
         ps.transcribedCount = transcribedCount.toLong()
         ps.validatorCount = validatorCount.toLong()
         ps.validatedCount = fullyValidatedCount.toLong()
