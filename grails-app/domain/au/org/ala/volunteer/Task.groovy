@@ -97,17 +97,6 @@ class Task implements Serializable {
 
     Transcription addTranscription() {
         Transcription transcription = new Transcription(task:this, project:project)
-
-        // Copy any fields that were loaded with the Task originally into the new Transcription.
-        // Possibly this should be done when the transcription is loaded (so we aren't duplicating this
-        // data, just showing it on the page as required.
-        if (fields) {
-            fields.each { field ->
-                if (!field.transcription) {
-                    transcription.fields << new Field(transcription: transcription, name:field.name, value:field.value, recordIdx: field.recordIdx, superceded: false)
-                }
-            }
-        }
         transcriptions.add(transcription)
 
         transcription
