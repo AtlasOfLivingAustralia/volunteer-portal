@@ -243,7 +243,7 @@ class LeaderBoardService {
 
                 if (exceptUsers) {
                     not {
-                        inList "fully${activityType}By", ineligibleUserIds
+                        inList "fully${activityType}By", exceptUsers
                     }
                 }
                 projections {

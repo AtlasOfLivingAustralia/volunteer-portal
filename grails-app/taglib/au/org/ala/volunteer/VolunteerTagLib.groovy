@@ -1085,8 +1085,9 @@ function notify() {
 
             def mb = new MarkupBuilder(out)
             transcribers.each { transcriberUserId ->
+                User user = User.findByUserId(transcriberUserId)
                 mb.p {
-                    mkp.yieldUnescaped(g.link(controller:'user', action:'show', id:transcriberUserId) {
+                    mkp.yieldUnescaped(g.link(controller:'user', action:'show', id:user?.id) {
                         cl.userDetails(id:transcriberUserId, displayName:true)
                     })
                 }
