@@ -16,10 +16,9 @@ class VolunteerContributionService {
     @PostConstruct
     def initialise() {
         g = applicationContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
-        log.info('test')
     }
 
-    @Cacheable(value = 'MainVolunteerContribution')
+    @Cacheable(value = 'MainVolunteerContribution', key = "#institution?.key?:'' + #projectInstance?.key?:'' + #pt?.key?:''")
     def generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
 
         def latestTranscribers = LatestTranscribers.withCriteria {
