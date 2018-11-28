@@ -18,4 +18,8 @@ class ProjectType implements Serializable {
         return name
     }
 
+    public String getKey() {
+        return name ?: ''
+    }
+
 }

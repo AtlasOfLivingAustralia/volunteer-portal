@@ -4,6 +4,7 @@ import au.org.ala.volunteer.sanitizer.SanitizedHtml
 
 class Project implements Serializable {
 
+    //Long id
     String name
     @SanitizedHtml
     String description
@@ -175,4 +176,9 @@ class Project implements Serializable {
     def afterUpdate() {
         GormEventDebouncer.debounceProject(this.id)
     }
+
+    public String getKey() {
+        name ?: ''
+    }
+
 }
