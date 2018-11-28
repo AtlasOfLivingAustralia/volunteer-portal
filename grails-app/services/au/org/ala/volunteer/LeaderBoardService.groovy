@@ -241,7 +241,7 @@ class LeaderBoardService {
                     }
                 }
 
-                if (ineligibleUserIds) {
+                if (exceptUsers) {
                     not {
                         inList "fully${activityType}By", ineligibleUserIds
                     }
