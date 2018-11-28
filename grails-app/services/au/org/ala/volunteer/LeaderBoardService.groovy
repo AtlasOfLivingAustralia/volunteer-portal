@@ -241,9 +241,9 @@ class LeaderBoardService {
                     }
                 }
 
-                if (ineligibleUserIds) {
+                if (exceptUsers) {
                     not {
-                        inList "fully${activityType}By", ineligibleUserIds
+                        inList "fully${activityType}By", exceptUsers
                     }
                 }
                 projections {
