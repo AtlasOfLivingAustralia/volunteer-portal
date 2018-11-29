@@ -16,7 +16,7 @@ class StatsService {
         String query = """
             select distinct tmp.transcribeDate as month, count(tmp.transcribeDate) as taskCount from (
                 select to_char(date_fully_transcribed, 'YYYY/MM') as transcribeDate
-                from task
+                from transcription
                 where date_fully_transcribed is not null
             ) as tmp
             group by transcribeDate
@@ -113,7 +113,7 @@ class StatsService {
         String select ="""
             WITH task_count AS (
               SELECT fully_transcribed_by as user_id, count(*) as count
-              FROM task
+              FROM transcription
               WHERE
                 date_fully_transcribed BETWEEN :startDate AND :endDate
                GROUP BY fully_transcribed_by
@@ -139,7 +139,7 @@ class StatsService {
         String select ="""
             WITH task_count AS (
               SELECT t.fully_transcribed_by as user_id, p.id as project_id, count(*) as count
-              FROM task t JOIN project p on t.project_id = p.id
+              FROM transcription t JOIN project p on t.project_id = p.id
               WHERE
                 t.date_fully_transcribed BETWEEN :startDate AND :endDate
                GROUP BY t.fully_transcribed_by, p.id
@@ -170,10 +170,10 @@ class StatsService {
             FROM ( SELECT to_char(date_fully_transcribed, 'DD') as transcribeDay,
                           to_char(date_fully_transcribed, 'MM') as transcribeMonth,
                           to_char(date_fully_transcribed, 'DD/MM') as transcribeDate
-                   FROM task
+                   FROM transcription
                    WHERE date_fully_transcribed is not null
                    AND  date_fully_transcribed >= :startDate
-                   AND  task.date_fully_transcribed <= :endDate ) as tmp
+                   AND  transcription.date_fully_transcribed <= :endDate ) as tmp
             group by transcribeDate
             ORDER BY MAX(transcribeMonth), MAX(transcribeDay)
         """
@@ -221,9 +221,9 @@ class StatsService {
     def getTranscriptionsByInstitution() {
 
         String select ="""
-            SELECT project.featured_owner featured_owner, count(task.id) as task_count
-            FROM task JOIN project ON task.project_id = project.id
-            WHERE task.fully_transcribed_by is NOT null
+            SELECT project.featured_owner featured_owner, count(transcription.id) as task_count
+            FROM transcription JOIN project ON transcription.project_id = project.id
+            WHERE transcription.fully_transcribed_by is NOT null
             GROUP BY project.featured_owner
             ORDER BY task_count DESC;
         """
@@ -245,7 +245,7 @@ class StatsService {
                 p.featured_owner featured_owner,
                 extract(year from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') || '-' || extract(month from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') as month,
                 count(t.id) as task_count
-            FROM task t JOIN project p on t.project_id = p.id
+            FROM transcription t JOIN project p on t.project_id = p.id
             WHERE t.fully_transcribed_by is NOT NULL
             GROUP BY month, p.featured_owner
             ORDER BY 1, 2
@@ -328,7 +328,7 @@ SELECT
     p.project_type_id,
     AVG(t.time_to_transcribe)
 FROM
-    task t
+    transcription t
     JOIN project p on t.project_id = p.id
 WHERE
   t.time_to_transcribe IS NOT null
