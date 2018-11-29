@@ -156,9 +156,9 @@ class AjaxController {
             lastActivities
         }
 
-        def asyncProjectCounts = Task.async.withStatelessSession {
+        def asyncProjectCounts = Transcription.async.withStatelessSession {
             def sw4 = Stopwatch.createStarted()
-            def projectCounts = Task.executeQuery("select trans.fullyTranscribedBy, count(distinct t.project) from Task t join Transcription trans with trans.fullyTranscribedBy is not null group by trans.fullyTranscribedBy ").collectEntries { [(it[0]): it[1]] }
+            def projectCounts = Transcription.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Transcription t where t.fullyTranscribedBy is not null group by t.fullyTranscribedBy").collectEntries { [(it[0]): it[1]] }
             sw4.stop()
             log.debug("UserReport projectCounts took ${sw4.toString()}")
             projectCounts
