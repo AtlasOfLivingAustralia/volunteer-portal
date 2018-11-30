@@ -138,7 +138,7 @@ class StagingService {
 
                 def taskValueMap = ["0": fieldValueMap[externalId] ]
 
-                fieldSyncService.syncFields(task, taskValueMap, "system", null, null, null)
+                fieldSyncService.syncFields(task, taskValueMap, UserService.SYSTEM_USER, null, null, null)
                 taskCount++
             }
             totalRows++

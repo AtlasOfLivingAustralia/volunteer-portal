@@ -30,6 +30,9 @@ class UserService {
     def freemarkerService
     def fullTextIndexService
 
+    /** Recorded as the user id when changes are made automatically */
+    public static final String SYSTEM_USER = "system"
+
     private static Queue<UserActivity> _userActivityQueue = new ConcurrentLinkedQueue<UserActivity>()
 
     /**

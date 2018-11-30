@@ -81,9 +81,9 @@ class ProjectToolsService {
                                 println "Saving value for task ${task.id} (${lookupField}=${field.value}) field=${keyField}[${field.recordIdx}] value=${keyValue}"
                                 if (targetField) {
                                     targetField.value = keyValue
-                                    targetField.transcribedByUserId = "system"
+                                    targetField.transcribedByUserId = UserService.SYSTEM_USER
                                 } else {
-                                    targetField = new Field(task: task, recordIdx: field.recordIdx, name: keyField, value: keyValue, superceded: false, transcribedByUserId: "system", validatedByUserId: field.validatedByUserId)
+                                    targetField = new Field(task: task, recordIdx: field.recordIdx, name: keyField, value: keyValue, superceded: false, transcribedByUserId: UserService.SYSTEM_USER, validatedByUserId: field.validatedByUserId)
                                     targetField.save()
                                 }
                                 fieldsUpdated++
