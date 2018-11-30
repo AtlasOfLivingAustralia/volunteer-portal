@@ -7,19 +7,20 @@ import org.apache.commons.lang3.StringUtils
 class FieldSyncService {
 
     def logService
-    def fullTextIndexService
 
     Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {
 
         Transcription transcription = taskInstance.findUserTranscription(currentUserId)
-        retrieveFieldsForTranscription(transcription)
-
+        retrieveFieldsForTranscription(taskInstance, transcription)
     }
 
-    private Map retrieveFieldsForTranscription(Transcription transcription) {
+    private Map retrieveFieldsForTranscription(Task task, Transcription transcription) {
         Map recordValues = new LinkedHashMap()
 
-        transcription?.fields?.each { field ->
+        // If the transcription already exists, use any fields attached to the transcription.  Otherwise,
+        // use any fields loaded from the Task.
+        Set fields = transcription ? transcription.fields : task.fields
+        fields?.each { field ->
             def recordMap = recordValues.get(field.recordIdx)
             if (recordMap == null) {
                 recordMap = new LinkedHashMap()
@@ -34,7 +35,10 @@ class FieldSyncService {
 
     Map retrieveValidationFieldsForTask(Task taskInstance) {
         if (taskInstance.isFullyTranscribed() && taskInstance.project.requiredNumberOfTranscriptions == 1) {
-            return retrieveFieldsForTranscription(taskInstance.transcriptions[0])
+            return retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
+        }
+        else {
+            return retrieveFieldsForTranscription(taskInstance, null) // Use the task fields.
         }
     }
 
@@ -226,18 +230,13 @@ class FieldSyncService {
 
         if (markAsFullyValidated) {
             // Again, only update the validated user and date if it hasn't already been set.
+
             if (!task.fullyValidatedBy) {
-                task.fullyValidatedBy = transcriberUserId
                 def user = User.findByUserId(transcriberUserId)
                 user?.validatedCount++
                 user?.save(flush: true)
             }
-            if (!task.dateFullyValidated) {
-                task.dateFullyValidated = now
-            }
-            if (!task.validatedUUID) {
-                task.validatedUUID = UUID.randomUUID()
-            }
+            task.validate(transcriberUserId, isValid, now)
         }
 
         if (isValid != null) {

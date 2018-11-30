@@ -120,6 +120,27 @@ class Task implements Serializable {
         return locked
     }
 
+    /**
+     * Updates the properties of this Task that marks it as validated.
+     * @param userId the user who validated the task.
+     * @param isValid true if the Task is considered valid.
+     * @param validationDate the Date the task was validated (defaults to now)
+     */
+    void validate(String userId, boolean isValid, Date validationDate = new Date()) {
+        if (!fullyValidatedBy) {
+            fullyValidatedBy = userId
+        }
+        if (!dateFullyValidated) {
+            dateFullyValidated = validationDate
+        }
+        if (!validatedUUID) {
+            validatedUUID = UUID.randomUUID()
+        }
+        if (isValid) {
+            this.isValid = true
+        }
+    }
+
     // These events use a static method rather than an injected service
     // to prevent issues with serialisation in webflows
     
