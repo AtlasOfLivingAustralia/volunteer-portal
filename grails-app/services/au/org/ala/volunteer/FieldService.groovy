@@ -133,7 +133,7 @@ class FieldService {
         return null
     }
 
-    Field setFieldValueForTask(Task task, String fieldName, int recordIndex, String value, String userId = "system") {
+    Field setFieldValueForTask(Task task, String fieldName, int recordIndex, String value, String userId = UserService.SYSTEM_USER) {
         // Check if there is an existing (current) value for this field/index
         if (task == null || fieldName == null || value == null) {
             return null

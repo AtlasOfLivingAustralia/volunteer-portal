@@ -16,6 +16,7 @@ class DomainUpdateService {
     def achievementService
     def settingsService
     def userService
+    def validationService
 
     private static ConcurrentLinkedQueue<QueueTask> _backgroundQueue = new ConcurrentLinkedQueue<QueueTask>()
     // Used to show the currently processing size, which is the size of the background queue + the number of
@@ -87,6 +88,10 @@ class DomainUpdateService {
         _backgroundQueue.add(new DeleteTaskTask(taskId: taskId))
     }
 
+    static def scheduleTaskValidation(long taskId) {
+        _backgroundQueue.add(new ValidateTaskTask(taskId: taskId))
+    }
+
 
     def getQueueLength() {
         return _backgroundQueue.size() + currentlyProcessing.get()
@@ -132,6 +137,9 @@ class DomainUpdateService {
                         taskCount+= tasks.size()
                         currentlyProcessing.set(indexes.size())
                         break
+                    case ValidateTaskTask:
+                        validationService.autoValidate(Task.get(jobDescriptor.taskId))
+                        break
                     default:
                         log.warn("Unrecognised object ${jobDescriptor} on queue")
                 }
@@ -165,3 +173,6 @@ public class UpdateTaskTask extends QueueTaskTask{ }
 
 @ToString
 public class IndexTaskTask extends QueueTaskTask { }
+
+@ToString
+public class ValidateTaskTask extends QueueTaskTask {}
