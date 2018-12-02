@@ -2,18 +2,13 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
-import grails.gorm.DetachedCriteria
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class IndexController {
 
-    def userService
     def projectService
-    def leaderBoardService
-    def multimediaService
-    def institutionService
-    def volunteerContributionService
+    def volunteerStatsService
 
     def index() {
         log.debug("Index Controller, Index action")
@@ -42,81 +37,11 @@ class IndexController {
         [:]
     }
 
-   /* def statsFragment() {
-        // Stats
-        def totalTasks = Task.count()
-        def completedTasks = Task.countByFullyTranscribedByIsNotNull()
-        def transcriberCount = User.countByTranscribedCountGreaterThan(0)
-        ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount]
-    } */
-
     def stats(long institutionId, long projectId, String tagName) {
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
-        Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
-        Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
-        ProjectType pt = tagName ? ProjectType.findByName(tagName) : null
-
-        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, tagName: $tagName")
-
-        def sw = Stopwatch.createStarted()
-
-        def totalTasks
-        def completedTasks
-        def transcriberCount
-        if (disableStats) {
-            totalTasks = 0
-            completedTasks = 0
-            transcriberCount = 0
-        } else if (institution) {
-            totalTasks = institutionService.countTasksForInstitution(institution)
-            completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
-            transcriberCount = institutionService.getTranscriberCount(institution)
-        } else if (tagName) {
-            totalTasks = projectService.countTasksForTag(pt)
-            completedTasks = projectService.countTranscribedTasksForTag(pt)
-            transcriberCount = projectService.getTranscriberCountForTag(pt)
-        } else { // TODO Project stats, not needed for v2.3
-            totalTasks = Task.count()
-            completedTasks = Transcription.countByFullyTranscribedByIsNotNull()
-            transcriberCount = User.countByTranscribedCountGreaterThan(0)
-        }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate volunteer-stats section")
-
-        sw.start()
-
-        def daily
-        def weekly
-        def monthly
-        def alltime
-
-        if (disableHonourBoard) {
-            daily = weekly = monthly = alltime = LeaderBoardService.EMPTY_LEADERBOARD_WINNER
-        } else { // TODO Project honour board, not needed for v2.3
-            daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution, pt)
-            weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution, pt)
-            monthly = leaderBoardService.winner(LeaderBoardCategory.monthly, institution, pt)
-            alltime = leaderBoardService.winner(LeaderBoardCategory.alltime, institution, pt)
-        }
-
-        // Encode the email addresses for gravatar before sending to the client to prevent
-        // the client having access to the user's email address info
-        [daily, weekly, monthly, alltime].each { it.email = it.email?.toLowerCase()?.encodeAsMD5() }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate honour board section")
-
-        sw.start()
-
-        List<LinkedHashMap<String, Serializable>> contributors = volunteerContributionService.generateContributors(institution, projectInstance, pt, maxContributors)
-        //generateContributors(institution, projectInstance, pt, maxContributors)
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate contributors section")
-
-        def result = ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount,
-                      daily: daily, weekly: weekly, monthly: monthly, alltime: alltime, contributors: contributors]
-
+        def result = volunteerStatsService.generateStats(institutionId, projectId, tagName, maxContributors, disableStats, disableHonourBoard)
         render result as JSON
     }
 
