@@ -19,7 +19,7 @@ class FieldSyncService {
 
         // If the transcription already exists, use any fields attached to the transcription.  Otherwise,
         // use any fields loaded from the Task.
-        Set fields = transcription ? transcription.fields : task.fields
+        Set fields = transcription ? transcription.fields : task.getTaskFields()
         fields?.each { field ->
             def recordMap = recordValues.get(field.recordIdx)
             if (recordMap == null) {

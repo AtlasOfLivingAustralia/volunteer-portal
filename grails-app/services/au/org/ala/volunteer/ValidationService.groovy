@@ -11,24 +11,34 @@ class ValidationService {
 
     FieldSyncService fieldSyncService
 
-    void autoValidate(Task task) {
+    void autoValidate(Set<Long> taskIds) {
 
-        if (shouldAutoValidate(task)) {
+        taskIds.each { taskId ->
 
-            int numberOfMatchingTranscriptionsConsideredValid = 3 // Get from Project.
-            int numberOfTranscriptions = task.transcriptions.size()
+            Task task = Task.get(taskId)
+            if (shouldAutoValidate(task)) {
 
-            Set distinctTranscriptions = task.transcriptions.unique{ Transcription t1, Transcription t2 ->
-                fieldsMatch(t1, t2) ? 0 : -1
+                log.info("Auto-validating Task ${task.id}")
+
+                int numberOfMatchingTranscriptionsConsideredValid = 3 // Get from Project.
+                int numberOfTranscriptions = task.transcriptions.size()
+
+                Set distinctTranscriptions = task.transcriptions.unique(false) { Transcription t1, Transcription t2 ->
+                    fieldsMatch(t1, t2) ? 0 : -1
+                }
+
+                int matchingTranscriptions = numberOfTranscriptions - distinctTranscriptions.size() + 1
+
+                if (matchingTranscriptions >= numberOfMatchingTranscriptionsConsideredValid) {
+                    log.info("Task has ${matchingTranscriptions} matching transcriptions -> auto-validating!")
+                    Set matching = task.transcriptions.minus(distinctTranscriptions)
+                    markAsValid(task, matching.first())
+                }
+                else {
+                    log.info("Task has ${matchingTranscriptions} matching transcriptions - not auto-validating")
+                }
+
             }
-
-            boolean matchingTranscriptions = numberOfTranscriptions - distinctTranscriptions
-
-            if (matchingTranscriptions > numberOfMatchingTranscriptionsConsideredValid) {
-                Set matching = task.transcriptions.minus(distinctTranscriptions)
-                markAsValid(task, matching.first())
-            }
-
         }
 
     }
@@ -43,8 +53,8 @@ class ValidationService {
      * @return true if all of the fields in this Transcription have the same values as the other Transcription
      */
     private boolean fieldsMatch(Transcription t1, Transcription t2) {
-        Set t1Fields = (t1.fields ?: new HashSet()).collect{it.superceded == false}
-        Set t2Fields = (t2.fields ?: new HashSet()).collect{it.superceded == false}
+        Set t1Fields = (t1.fields ?: new HashSet()).findAll{it.superceded == false}
+        Set t2Fields = (t2.fields ?: new HashSet()).findAll{it.superceded == false}
 
         if (t1Fields?.size() != t2Fields.size()) {
             return false
@@ -67,12 +77,14 @@ class ValidationService {
         // Copy this transcription to the Task and mark the Task as validated.
         task.validate(UserService.SYSTEM_USER, true)
 
+
+        Map fieldsByRecordIndex = [:].withDefault{[:]}
         // Copy the "validated" transcription data into the Task fields as required.
         Set fields = validatedTranscription.fields
-        Map values = fields.collectEntries{ Field field ->
-            [(field.recordIdx):field]
+        fields.each{ Field field ->
+            fieldsByRecordIndex[Integer.toString(field.recordIdx)][field.name] = field.value
         }
-        fieldSyncService.syncFields(task, values, UserService.SYSTEM_USER, false, true, true)
+        fieldSyncService.syncFields(task, fieldsByRecordIndex, UserService.SYSTEM_USER, false, true, true)
     }
 
 }

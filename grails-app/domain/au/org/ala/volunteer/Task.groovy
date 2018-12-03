@@ -102,6 +102,21 @@ class Task implements Serializable {
         transcription
     }
 
+    /**
+     * Returns the Fields that are not assigned to a Transcription.  For an unvalidated Task, these will be
+     * the Fields that were loaded when the Task was loaded.  For a validated Task, these will be the Set of
+     * valid fields that have been approved (or transcribed) by a validator.
+     */
+    Set<Field> getTaskFields() {
+
+        Set taskFields = fields.findAll{it.transcription == null}
+
+        println taskFields
+        taskFields
+
+
+    }
+
     boolean isLockedForTranscription(String userId, long timeoutInSeconds) {
 
         long timeoutWindow = System.currentTimeMillis() - timeoutInSeconds

@@ -1,5 +1,6 @@
 package au.org.ala.volunteer.au.org.ala.volunteer.helper
 
+import au.org.ala.volunteer.Field
 import au.org.ala.volunteer.Project
 import au.org.ala.volunteer.Task
 import au.org.ala.volunteer.Template
@@ -25,6 +26,7 @@ class TaskDataHelper {
         Task task = new Task(project: project, externalIdentifier: Integer.toString(index))
         task.transcriptions = []
         task.viewedTasks = new HashSet()
+        task.fields = new HashSet()
         task.save(failOnError:true)
         task
     }
@@ -35,7 +37,7 @@ class TaskDataHelper {
         }
     }
 
-    static void transcribe(Task task, String userId) {
+    static void transcribe(Task task, String userId, Map<String, String> fields = null) {
 
         view(task, userId)
 
@@ -48,7 +50,17 @@ class TaskDataHelper {
         println "Updating transcription with id="+transcription.id
         transcription.fullyTranscribedBy = userId
         transcription.dateFullyTranscribed = new Date()
+
+        if (fields) {
+            fields.each { k, v ->
+                Field field = new Field(name:k, value:v, transcribedByUserId: userId, task:task, transcription: transcription, recordIdx: 0)
+                transcription.addToFields(field)
+            }
+        }
+
         transcription.save(failOnError:true, flush:true)
+
+
 
     }
 

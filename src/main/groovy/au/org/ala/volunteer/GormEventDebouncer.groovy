@@ -20,7 +20,6 @@ class GormEventDebouncer {
         } else {
              //otherwise drop it on the task queue
             DomainUpdateService.scheduleTaskUpdate(id)
-            DomainUpdateService.scheduleTaskValidation(id)
         }
 
     }
