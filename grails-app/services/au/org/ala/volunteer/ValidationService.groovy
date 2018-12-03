@@ -9,6 +9,8 @@ import grails.transaction.Transactional
  */
 class ValidationService {
 
+    private static final Set EXCLUDED_FIELDS = new HashSet([DarwinCoreField.transcriberNotes.name()])
+
     FieldSyncService fieldSyncService
 
     void autoValidate(Set<Long> taskIds) {
@@ -21,27 +23,42 @@ class ValidationService {
                 log.info("Auto-validating Task ${task.id}")
 
                 int numberOfMatchingTranscriptionsConsideredValid = 3 // Get from Project.
-                int numberOfTranscriptions = task.transcriptions.size()
 
-                Set distinctTranscriptions = task.transcriptions.unique(false) { Transcription t1, Transcription t2 ->
-                    fieldsMatch(t1, t2) ? 0 : -1
-                }
+                Map matchCounts = matchTranscriptions(task)
+                def bestMatch = matchCounts.max{it.value}
+                int numberOfMatchingTranscriptions = bestMatch.value
 
-                int matchingTranscriptions = numberOfTranscriptions - distinctTranscriptions.size() + 1
-
-                if (matchingTranscriptions >= numberOfMatchingTranscriptionsConsideredValid) {
-                    log.info("Task has ${matchingTranscriptions} matching transcriptions -> auto-validating!")
-                    Set matching = task.transcriptions.minus(distinctTranscriptions)
-                    markAsValid(task, matching.first())
+                if (numberOfMatchingTranscriptions >= numberOfMatchingTranscriptionsConsideredValid) {
+                    log.info("Task has ${numberOfMatchingTranscriptions} matching transcriptions -> auto-validating!")
+                    markAsValid(task, task.transcriptions.find{it.id == bestMatch.key})
                 }
                 else {
-                    log.info("Task has ${matchingTranscriptions} matching transcriptions - not auto-validating")
+                    log.info("Task has ${numberOfMatchingTranscriptions} matching transcriptions - not auto-validating")
                 }
+                task.setNumberOfMatchingTranscriptions(numberOfMatchingTranscriptions)
+                task.save()
 
             }
         }
 
     }
+
+    private Map matchTranscriptions(Task task) {
+
+        Map matchCounts = [:].withDefault{1}
+        for (int i=0; i<task.transcriptions.size(); i++) {
+            Transcription t1 = task.transcriptions[i]
+            for (int j=i+1; j<task.transcriptions.size(); j++) {
+                Transcription t2 = task.transcriptions[j]
+                if (fieldsMatch(t1, t2)) {
+                    matchCounts[t1.id]++
+                    matchCounts[t2.id]++
+                }
+            }
+        }
+        matchCounts
+    }
+
 
     private boolean shouldAutoValidate(Task task) {
         return task.project.requiredNumberOfTranscriptions > 1 && task.isFullyTranscribed() && task.fullyValidatedBy == null
@@ -52,7 +69,7 @@ class ValidationService {
      * @param otherTranscription the Transcription to compare to this one.
      * @return true if all of the fields in this Transcription have the same values as the other Transcription
      */
-    private boolean fieldsMatch(Transcription t1, Transcription t2) {
+    private boolean fieldsMatch(Transcription t1, Transcription t2, Set excludedFields = EXCLUDED_FIELDS) {
         Set t1Fields = (t1.fields ?: new HashSet()).findAll{it.superceded == false}
         Set t2Fields = (t2.fields ?: new HashSet()).findAll{it.superceded == false}
 
@@ -61,11 +78,14 @@ class ValidationService {
         }
 
         for (Field t1Field : t1Fields) {
-            Field t2Field = t2Fields.find{it.name == t1Field.name}
+            if (!excludedFields.contains(t1Field.name)) {
+                Field t2Field = t2Fields.find{it.name == t1Field.name}
 
-            if (!t2Field || t1Field.value != t2Field.value) {
-                return false
+                if (!t2Field || t1Field.value != t2Field.value) {
+                    return false
+                }
             }
+
         }
 
         return true

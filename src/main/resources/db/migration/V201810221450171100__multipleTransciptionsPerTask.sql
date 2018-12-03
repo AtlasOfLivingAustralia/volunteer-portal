@@ -47,6 +47,8 @@ DO NOTHING;
 
 ALTER TABLE ONLY task
   ADD COLUMN IF NOT EXISTS transcription_count integer NOT NULL default 0;
+ALTER TABLE ONLY task
+  ADD COLUMN IF NOT EXISTS number_of_matching_transcriptions integer;
 
 ALTER TABLE ONLY field
   ADD COLUMN IF NOT EXISTS transcription_id bigint;

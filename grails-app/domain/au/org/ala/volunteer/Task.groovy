@@ -21,6 +21,7 @@ class Task implements Serializable {
     String lastViewedBy
     Integer timeToTranscribe
     Integer timeToValidate
+    Integer numberOfMatchingTranscriptions
 
     static belongsTo = [project: Project]
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment, transcriptions: Transcription]
@@ -54,6 +55,7 @@ class Task implements Serializable {
         lastViewedBy nullable: true
         timeToTranscribe nullable: true
         timeToValidate nullable: true
+        numberOfMatchingTranscriptions nullable: true
     }
 
     /**
