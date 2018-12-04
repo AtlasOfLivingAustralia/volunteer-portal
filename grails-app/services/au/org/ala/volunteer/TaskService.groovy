@@ -150,6 +150,18 @@ class TaskService {
         return results ? results[0] : 0
     }
 
+    List getFullyTranscribedTasks(Project project, Map params) {
+        long transcriptionsPerTask = project.getRequiredNumberOfTranscriptions()
+        List results = Task.executeQuery("select task, count(transcriptions) from Task as task "+
+                "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                "where task.project = :project " +
+                "group by task " +
+                "having count(transcriptions) >= :transcriptionsPerTask ",
+                [transcriptionsPerTask: transcriptionsPerTask, project: project], params)
+        results.collect{it[0]}
+
+    }
+
     // The results above select all Tasks have have less than the required number of transcriptions that the
     // user hasn't yet viewed.  We now have to check the views to see if there are any views of that Task
     // that didn't result in a Transcription and occurred before our timeout window (ie. 2 hours ago)
@@ -470,58 +482,8 @@ class TaskService {
         }
     }
 
-  /**
-   * Get tasks saved by this user. Includes partial edits.
-   *
-   * @param userId
-   * @return list of tasks
-   */
-    List<Task> getRecentlySavedTasks(String userId, Map params) {
-      Task.executeQuery("""select distinct t from Task t
-        inner join t.fields fields
-        where t.fullyTranscribedBy is null and
-        fields.transcribedByUserId = :userId
-        and fields.superceded = false""", [userId: userId], params)
-    }
 
-    /**
-   * Get tasks saved by this user. Includes partial edits.
-   *
-   * @param userId
-   * @return list of tasks
-   */
-    List<Task> getRecentlySavedTasksByProject(String userId, Project project, Map params) {
-      Task.executeQuery("""select distinct t from Task t
-        inner join t.fields fields
-        where t.fullyTranscribedBy is null and
-        t.project = :project and
-        fields.transcribedByUserId = :userId
-        and fields.superceded = false""", [userId: userId, project:project], params)
-    }
 
-    List<Task> getTranscribedTasksByUserAndProjectQuery(String userId, Project project, Map params) {
-
-        String query = "%" + (params.q?:"") + "%";
-        query= query.toLowerCase()
-
-        def tasks = Task.executeQuery("""select t from Task t
-                                         where t.fullyTranscribedBy = :userId and t.project = :project and
-                                         (lower(t.project.name) like :query or lower(t.externalIdentifier) like :query)""",
-                                        [userId: userId, project: project, query: query], params)
-        return tasks.toList()
-    }
-
-    List<Task> getTranscribedTasksByUserQuery(String userId, Map params) {
-
-        String query = "%" + (params.q?:"") + "%";
-        query= query.toLowerCase()
-
-        def tasks = Task.executeQuery("""select t from Task t
-                                         where t.fullyTranscribedBy = :userId and
-                                         (lower(t.project.name) like :query or lower(t.externalIdentifier) like :query)""",
-                                        [userId: userId, query: query], params)
-        return tasks.toList()
-    }
 
     private final static List<String> getNotificationWithClauses(projectQuery, boolean unseenOnly = true) { [
 """transcribed_and_validated_tasks AS (

@@ -142,7 +142,7 @@ class ProjectController {
 
         if (projectInstance) {
             long startQ  = System.currentTimeMillis();
-            def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:999])
+            def taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:999])
 
             if (taskList.size() > 0) {
                 def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
@@ -809,6 +809,7 @@ class ProjectController {
                 projectInstance.mapInitLongitude = longitude
             }
             flash.message = "Map settings updated"
+            projectInstance.save(flush:true, failOnError:true)
         }
         redirect(action:'editMapSettings', id:projectInstance?.id)
     }
