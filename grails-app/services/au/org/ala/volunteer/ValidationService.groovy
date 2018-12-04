@@ -18,6 +18,10 @@ class ValidationService {
         taskIds.each { taskId ->
 
             Task task = Task.get(taskId)
+            if (!task) {
+                log.warn("Missing Task with id: ${taskId}")
+                return
+            }
             if (shouldAutoValidate(task)) {
 
                 log.info("Auto-validating Task ${task.id}")

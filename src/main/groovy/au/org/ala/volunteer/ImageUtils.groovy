@@ -1,5 +1,10 @@
 package au.org.ala.volunteer
 
+import com.drew.imaging.ImageMetadataReader
+import com.drew.lang.GeoLocation
+import com.drew.metadata.Directory
+import com.drew.metadata.Metadata
+import com.drew.metadata.Tag
 
 import java.awt.Image
 import java.awt.Rectangle
@@ -9,6 +14,7 @@ import java.awt.image.BufferedImage
 import java.text.DecimalFormat
 import javax.imageio.ImageIO
 import org.imgscalr.Scalr
+
 
 import static java.lang.Math.round
 
@@ -143,6 +149,27 @@ public class ImageUtils {
             case 'gif': return 'image/gif'
         }
         return 'application/octet-stream'
+    }
+
+    static Map getExifMetadata(File file) {
+        Map exif = [:]
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(file)
+
+            for (Directory directory : metadata.getDirectories()) {
+                for (Tag tag : directory.getTags()) {
+                    String description = tag.getDescription()
+                    if (description == null)
+                        description = directory.getString(tag.getTagType()) + " (unable to formulate description)"
+                    exif.put("[" + directory.getName() + "] " + tag.getTagName(),description)
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e)
+        }
+
+        return exif
     }
 
 }
