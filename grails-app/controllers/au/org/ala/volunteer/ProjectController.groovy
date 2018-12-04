@@ -261,7 +261,7 @@ class ProjectController {
             def sw = Stopwatch.createStarted()
             def taskList
             if (transcribedOnly) {
-                taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
+                taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:9999])
             } else if (validatedOnly) {
                 taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
             } else {
