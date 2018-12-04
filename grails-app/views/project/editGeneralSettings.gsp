@@ -84,6 +84,25 @@
         </div>
     </div>
 
+    %{--<g:if test="${projectInstance.template?.supportMultipleTranscriptions}">--}%
+        <div class="multipleTranscriptionsSupport">
+            <div class="form-group">
+                <label class="control-label col-md-3" for="transcriptionsPerTask">Number of Transcriptions</label>
+
+                <div class="col-md-6">
+                    <g:textField class="form-control" name="transcriptionsPerTask" value="${projectInstance.transcriptionsPerTask}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-3" for="thresholdMatchingTranscriptions">Threshold Of Matching Transcriptions (Auto Validation)</label>
+
+                <div class="col-md-6">
+                    <g:textField class="form-control" name="thresholdMatchingTranscriptions" value="${projectInstance.thresholdMatchingTranscriptions}"/>
+                </div>
+            </div>
+        </div>
+    %{--</g:if>--}%
+
     <div class="form-group">
         <label class="control-label col-md-3" for="label">Tags</label>
 
@@ -143,6 +162,25 @@
 <asset:javascript src="institution-dropdown" asset-defer=""/>
 <asset:javascript src="label-autocomplete" asset-defer=""/>
 <asset:script type="text/javascript">
+
+    function setProjectDefaults() {
+       var checkSupportMultipleTransUrl = "${createLink(controller: 'project', action: 'checkTemplateSupportMultiTranscriptions')}";
+
+       var templateId = $('#template').val();
+       $.ajax(checkSupportMultipleTransUrl, {type: 'POST', data: {templateId: templateId}}).done(function(data) {
+           if (data && data.supportMultipleTranscriptions == 'true') {
+               $('.multipleTranscriptionsSupport').show();
+           } else {
+               $('.multipleTranscriptionsSupport').hide();
+           }
+       });
+    }
+
+    setProjectDefaults();
+    $('#template').change(function (e) {
+        setProjectDefaults();
+    });
+
     jQuery(function($) {
         var institutions = <cl:json value="${institutions}"/>;
         var nameToId = <cl:json value="${institutionsMap}"/>;

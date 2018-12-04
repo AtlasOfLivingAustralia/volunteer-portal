@@ -51,6 +51,13 @@ ALTER TABLE ONLY task
   ADD COLUMN IF NOT EXISTS transcription_count integer NOT NULL default 0;
 ALTER TABLE ONLY task
   ADD COLUMN IF NOT EXISTS number_of_matching_transcriptions integer;
+ALTER TABLE ONLY template
+  ADD COLUMN IF NOT EXISTS support_multiple_transcriptions boolean NOT NULL DEFAULT FALSE;
+
+ALTER TABLE ONLY project
+  ADD COLUMN IF NOT EXISTS threshold_matching_transcriptions integer;
+ALTER TABLE ONLY project
+  ADD COLUMN IF NOT EXISTS transcriptions_per_task integer;
 
 ALTER TABLE ONLY field
   ADD COLUMN IF NOT EXISTS transcription_id bigint;

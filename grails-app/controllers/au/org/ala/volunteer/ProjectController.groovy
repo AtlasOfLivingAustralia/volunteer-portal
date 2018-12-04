@@ -455,6 +455,14 @@ class ProjectController {
         }
     }
 
+    def checkTemplateSupportMultiTranscriptions() {
+        def template = Template.findById(params.int("templateId"))
+        if (template) {
+            render (["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
+        }
+        render (["supportMultipleTranscriptions": "false"] as JSON)
+    }
+
     def editTutorialLinksSettings() {
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
@@ -625,7 +633,13 @@ class ProjectController {
                     return false
                 }
             }
+
             projectInstance.properties = params
+
+            if (!projectInstance.template.supportMultipleTranscriptions) {
+                projectInstance.transcriptionsPerTask = 1
+                projectInstance.thresholdMatchingTranscriptions = 2
+            }
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "Expedition updated"

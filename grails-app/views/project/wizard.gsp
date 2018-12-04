@@ -317,6 +317,23 @@
             </div>
         </div>
 
+        %{--<g:if test="${project.template?.supportMultipleTranscriptions}">--}%
+        <div class="form-group" data-ng-if="projectTemplate.supportMultipleTranscriptions">
+            <label class="control-label col-md-3" for="numberOfTranscriptions">Number of Transcriptions</label>
+
+            <div class="col-md-6">
+                <g:textField class="form-control" name="numberOfTranscriptions" data-ng-model="project.transcriptionsPerTask"/>
+            </div>
+        </div>
+        <div class="form-group" data-ng-if="projectTemplate.supportMultipleTranscriptions">
+            <label class="control-label col-md-3" for="thresholdMatchingTranscriptions">Threshold Of Matching Transcriptions (Auto Validation)</label>
+
+            <div class="col-md-6">
+                <g:textField class="form-control" name="thresholdMatchingTranscriptions" data-ng-model="project.thresholdMatchingTranscriptions"/>
+            </div>
+        </div>
+        %{--</g:if>--}%
+
         <div class="form-group">
             <div class="col-sm-12">
                 <div class="row">

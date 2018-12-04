@@ -421,6 +421,10 @@ function createProjectModule(config) {
         minLength: 2
       };
 
+      $scope.projectTemplate = _.find(config.templates, function(t) {
+          return t.id == project.templateId
+      });
+
       $scope.data = {
         displayKey: function(label) {
           return label.value + " (" + label.category + ")";

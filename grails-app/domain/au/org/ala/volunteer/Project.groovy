@@ -33,6 +33,8 @@ class Project implements Serializable {
     Boolean archived = false
     /** If true, the EXIF data from uploaded images will be attempted to be extracted and stored in Task Fields */
     Boolean extractImageExifData = false
+    Integer transcriptionsPerTask = 1
+    Integer thresholdMatchingTranscriptions = 2
 
     Date dateCreated
     Date lastUpdated
@@ -60,6 +62,8 @@ class Project implements Serializable {
         version defaultValue: '0'
         imageSharingEnabled defaultValue: 'false'
         archived defaultValue: 'false'
+        transcriptionsPerTask defaultValue: 1
+        thresholdMatchingTranscriptions defaultValue: 2
     }
 
     static constraints = {
@@ -96,8 +100,9 @@ class Project implements Serializable {
      * The default is 1
      */
     int getRequiredNumberOfTranscriptions() {
-        String transcriptionsPerTask = template?.viewParams?.transcriptionsPerTask ?: "1"
-        Integer.parseInt(transcriptionsPerTask)
+        //String transcriptionsPerTask = template?.viewParams?.transcriptionsPerTask ?: "1"
+        //Integer.parseInt(transcriptionsPerTask)
+        return transcriptionsPerTask?: 1
     }
 
     public String toString() {

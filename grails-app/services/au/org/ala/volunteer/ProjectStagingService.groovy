@@ -27,6 +27,14 @@ class ProjectStagingService {
         project.featuredImageCopyright = projectDescriptor.imageCopyright
         project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
         project.tutorialLinks = projectDescriptor.tutorialLinks
+        if (project.template.supportMultipleTranscriptions) {
+            project.thresholdMatchingTranscriptions = projectDescriptor.thresholdMatchingTranscriptions?: 2
+            project.transcriptionsPerTask = projectDescriptor.transcriptionsPerTask?: 1
+        } else {
+            project.thresholdMatchingTranscriptions = 2
+            project.transcriptionsPerTask = 1
+        }
+
         project.inactive = true
         project.createdBy = User.findByUserId(Long.parseLong(projectDescriptor.createdBy?.toString()))
 

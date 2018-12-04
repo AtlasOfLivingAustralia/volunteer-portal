@@ -24,6 +24,8 @@ class NewProjectDescriptor implements Serializable {
     String picklistId
     List<Long> labelIds = []
     String tutorialLinks
+    Integer transcriptionsPerTask
+    Integer thresholdMatchingTranscriptions
 
     String createdBy
 
