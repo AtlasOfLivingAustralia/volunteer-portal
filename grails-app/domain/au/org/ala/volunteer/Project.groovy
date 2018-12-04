@@ -31,6 +31,8 @@ class Project implements Serializable {
     Boolean harvestableByAla = true
     Boolean imageSharingEnabled = false
     Boolean archived = false
+    /** If true, the EXIF data from uploaded images will be attempted to be extracted and stored in Task Fields */
+    Boolean extractImageExifData = false
 
     Date dateCreated
     Date lastUpdated
@@ -86,6 +88,7 @@ class Project implements Serializable {
         mapInitLongitude nullable: true
         harvestableByAla nullable: true
         createdBy nullable: true
+        extractImageExifData nullable: true
     }
 
     /**
