@@ -11,6 +11,12 @@
 
         <th>${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
 
+        <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+            <g:sortableColumn property="numberOfMatchingTranscriptions"
+                              title="${message(code: 'task.numberOfMatchingTranscriptions.label', default: 'Matching')}"
+                              params="${[q: params.q]}"/>
+        </g:if>
+
         <g:sortableColumn property="fullyValidatedBy"
                           title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}"
                           params="${[q: params.q]}"/>
@@ -45,6 +51,17 @@
             <td>
                 <cl:transcriberNames task="${taskInstance}"/>
             </td>
+
+            <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+                <td>
+                    <g:if test="${taskInstance.isFullyTranscribed()}">
+                        ${taskInstance.numberOfMatchingTranscriptions}
+                    </g:if>
+                    <g:else>
+                        -
+                    </g:else>
+                </td>
+            </g:if>
 
             <td>
                 <g:if test="${taskInstance.fullyValidatedBy}">

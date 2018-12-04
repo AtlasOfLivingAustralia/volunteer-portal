@@ -5,6 +5,11 @@
         <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'External Id')}"
                           params="${[q: params.q, mode: params.mode]}"/>
         <th>${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
+        <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+            <g:sortableColumn property="numberOfMatchingTranscriptions"
+                              title="${message(code: 'task.numberOfMatchingTranscriptions.label', default: 'Matching')}"
+                              params="${[q: params.q]}"/>
+        </g:if>
         <g:sortableColumn property="fullyValidatedBy"
                           title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}"
                           params="${[q: params.q, mode: params.mode]}"/>
@@ -42,7 +47,15 @@
                             </g:elseif>
                             <g:else>
                                 <div class="label label-info">
-                                    <g:link controller="validate" action="task" id="${taskInstance.id}">?</g:link>
+                                    <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+                                        <g:link controller="validate" action="task" id="${taskInstance.id}">
+                                            ${taskInstance.numberOfMatchingTranscriptions} / ${projectInstance.requiredNumberOfTranscriptions}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link controller="validate" action="task" id="${taskInstance.id}">?</g:link>
+                                    </g:else>
+
                                 </div>
                             </g:else>
                         </g:if>
