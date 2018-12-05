@@ -139,15 +139,7 @@ class TaskService {
 
 
     int getNumberOfFullyTranscribedTasks(Project project) {
-        long transcriptionsPerTask = project.getRequiredNumberOfTranscriptions()
-        List results = Task.executeQuery("select count(task.id) from Task as task "+
-                "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
-                        "where task.project = :project " +
-                        "group by task.id " +
-                        "having count(transcriptions) >= :transcriptionsPerTask ",
-                [transcriptionsPerTask: transcriptionsPerTask, project: project])
-
-        return results ? results[0] : 0
+        getFullyTranscribedTasks(project, [:]).size()
     }
 
     List getFullyTranscribedTasks(Project project, Map params) {
