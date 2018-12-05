@@ -10,7 +10,7 @@ class Template implements Serializable {
     String author
     Map<String, String> viewParams
     Map viewParams2 // Like view params but can store hierarchical data
-    Boolean supportMultipleTranscriptions
+    Boolean supportMultipleTranscriptions = false
 
     static hasMany = [project: Project]
 

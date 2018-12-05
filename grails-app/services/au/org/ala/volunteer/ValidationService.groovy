@@ -26,7 +26,7 @@ class ValidationService {
 
                 log.info("Auto-validating Task ${task.id}")
 
-                int numberOfMatchingTranscriptionsConsideredValid = 3 // Get from Project.
+                int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions //3 // Get from Project.
 
                 Map matchCounts = matchTranscriptions(task)
                 def bestMatch = matchCounts.max{it.value}

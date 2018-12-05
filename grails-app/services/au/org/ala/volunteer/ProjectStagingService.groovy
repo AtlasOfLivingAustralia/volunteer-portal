@@ -28,11 +28,11 @@ class ProjectStagingService {
         project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
         project.tutorialLinks = projectDescriptor.tutorialLinks
         if (project.template.supportMultipleTranscriptions) {
-            project.thresholdMatchingTranscriptions = projectDescriptor.thresholdMatchingTranscriptions?: 2
-            project.transcriptionsPerTask = projectDescriptor.transcriptionsPerTask?: 1
+            project.thresholdMatchingTranscriptions = projectDescriptor.thresholdMatchingTranscriptions?: Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+            project.transcriptionsPerTask = projectDescriptor.transcriptionsPerTask?: Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
         } else {
-            project.thresholdMatchingTranscriptions = 2
-            project.transcriptionsPerTask = 1
+            project.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+            project.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
         }
 
         project.inactive = true

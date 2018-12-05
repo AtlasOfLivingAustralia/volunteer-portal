@@ -31,7 +31,8 @@ class TaskServiceSpec extends HibernateSpec {
     def "regardless of the number of transcriptions per task, the same user shouldn't be assigned a task they've already transcribed"(int transcriptionsPerTask) {
         setup:
 
-        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+       // p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        p.transcriptionsPerTask = transcriptionsPerTask
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks)
 
@@ -62,7 +63,8 @@ class TaskServiceSpec extends HibernateSpec {
         setup:
 
         int transcriptionsPerTask = 5
-        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+       // p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        p.transcriptionsPerTask = transcriptionsPerTask
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks)
         Task.findAllByProject(p).each { Task task ->
@@ -97,7 +99,8 @@ class TaskServiceSpec extends HibernateSpec {
 
         setup:
         int transcriptionsPerTask = 5
-        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+       // p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        p.transcriptionsPerTask = transcriptionsPerTask
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks)
         Task.findAllByProject(p).each { Task task ->
@@ -121,7 +124,8 @@ class TaskServiceSpec extends HibernateSpec {
 
         setup:
         int transcriptionsPerTask = 5
-        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+       // p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        p.transcriptionsPerTask = transcriptionsPerTask
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks)
         Task.findAllByProject(p).each { Task task ->
@@ -144,7 +148,8 @@ class TaskServiceSpec extends HibernateSpec {
 
         setup:
         int transcriptionsPerTask = 5
-        p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+       // p.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        p.transcriptionsPerTask = transcriptionsPerTask
         int numberOfTasks = 10
         setupTasks(p, numberOfTasks)
         Task.findAllByProject(p).each { Task task ->
@@ -216,7 +221,7 @@ class TaskServiceSpec extends HibernateSpec {
 
     }
 
-   /*def "when there multiple transcriptions for multiple tasks, latest contribution view should be able to be updated"() {
+ /*  def "when there multiple transcriptions for multiple tasks, latest contribution view should be able to be updated"() {
         setup:
 
         int transcriptionsPerTask = 2
@@ -268,6 +273,6 @@ class TaskServiceSpec extends HibernateSpec {
         latestTranscribers.get(1)[1] == latestTranscribersView.get(1).fullyTranscribedBy
         latestTranscribers.get(1)[2] == latestTranscribersView.get(1).maxDate
 
-   }*/
-
+   }
+*/
 }

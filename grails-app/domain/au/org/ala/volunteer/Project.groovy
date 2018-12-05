@@ -33,8 +33,8 @@ class Project implements Serializable {
     Boolean archived = false
     /** If true, the EXIF data from uploaded images will be attempted to be extracted and stored in Task Fields */
     Boolean extractImageExifData = false
-    Integer transcriptionsPerTask = 1
-    Integer thresholdMatchingTranscriptions = 2
+    Integer transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+    Integer thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
 
     Date dateCreated
     Date lastUpdated
@@ -46,6 +46,9 @@ class Project implements Serializable {
     def grailsApplication
     def grailsLinkGenerator
     //def assetResourceLocator
+
+    static final Integer DEFAULT_TRANSCRIPTIONS_PER_TASK = 1
+    static final Integer DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS = 0
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label, transcriptions: Transcription]
@@ -62,8 +65,8 @@ class Project implements Serializable {
         version defaultValue: '0'
         imageSharingEnabled defaultValue: 'false'
         archived defaultValue: 'false'
-        transcriptionsPerTask defaultValue: 1
-        thresholdMatchingTranscriptions defaultValue: 2
+        transcriptionsPerTask defaultValue: Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+        thresholdMatchingTranscriptions defaultValue: Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
     }
 
     static constraints = {
@@ -102,7 +105,7 @@ class Project implements Serializable {
     int getRequiredNumberOfTranscriptions() {
         //String transcriptionsPerTask = template?.viewParams?.transcriptionsPerTask ?: "1"
         //Integer.parseInt(transcriptionsPerTask)
-        return transcriptionsPerTask?: 1
+        return transcriptionsPerTask?: DEFAULT_TRANSCRIPTIONS_PER_TASK
     }
 
     public String toString() {

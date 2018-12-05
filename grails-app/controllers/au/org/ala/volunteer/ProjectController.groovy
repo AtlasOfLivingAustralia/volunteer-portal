@@ -637,8 +637,8 @@ class ProjectController {
             projectInstance.properties = params
 
             if (!projectInstance.template.supportMultipleTranscriptions) {
-                projectInstance.transcriptionsPerTask = 1
-                projectInstance.thresholdMatchingTranscriptions = 2
+                projectInstance.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+                projectInstance.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
             }
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {

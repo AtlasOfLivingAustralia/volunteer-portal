@@ -22,7 +22,9 @@ class ValidationServiceSpec extends Specification {
 
         Project project = setupProject()
         task = addTask(project, 1)
-        task.project.template.viewParams.transcriptionsPerTask = "3"
+       // task.project.template.viewParams.transcriptionsPerTask = "3"
+        task.project.transcriptionsPerTask = 3
+        task.project.thresholdMatchingTranscriptions = 3
         task.save()
 
         taskSet = new HashSet()
