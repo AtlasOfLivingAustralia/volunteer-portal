@@ -284,7 +284,7 @@ class TaskService {
 
         Task task = null
         int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
-        int transcriptionsPerTask = (project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
+        int transcriptionsPerTask = project.transcriptionsPerTask ?: 1 //(project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
 
         // This is the length of time for which a Task remains locked after a user views it
         long timeout = grailsApplication.config.viewedTask.timeout as long
