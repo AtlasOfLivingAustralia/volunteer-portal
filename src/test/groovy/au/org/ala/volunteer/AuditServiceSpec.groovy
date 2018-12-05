@@ -58,7 +58,8 @@ class AuditServiceSpec extends HibernateSpec {
     void "a Task should not be locked for a user if the number of views is less than the number of required transcriptions"() {
         setup:
         int transcriptionsPerTask = 3
-        project.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        //project.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        project.transcriptionsPerTask = transcriptionsPerTask
         Task task = addTask(project, 0)
 
         when: "the Task has been viewed and transcribed twice"
@@ -120,7 +121,8 @@ class AuditServiceSpec extends HibernateSpec {
 
     void "a Task should be locked if it has a number of distinct user views equal to the number of required transcriptions, unless the user is one of the recent viewers"() {
         int transcriptionsPerTask = 3
-        project.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        //project.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        project.transcriptionsPerTask = transcriptionsPerTask
         Task task = addTask(project, 0)
 
         when: "the Task has been viewed 3 times recently, but our user is one of the viewers"
@@ -134,7 +136,8 @@ class AuditServiceSpec extends HibernateSpec {
 
     void "a Task should not be locked if it has a number of distinct, user views equal to the number of required transcriptions but one or more views have timed out"() {
         int transcriptionsPerTask = 3
-        project.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        //project.template.viewParams = [transcriptionsPerTask:transcriptionsPerTask as String]
+        project.transcriptionsPerTask = 3
         Task task = addTask(project, 0)
 
         when: "the Task has been viewed recently twice, and once more than the locking period ago"
