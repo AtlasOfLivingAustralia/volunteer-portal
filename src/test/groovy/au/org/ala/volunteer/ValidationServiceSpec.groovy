@@ -100,6 +100,25 @@ class ValidationServiceSpec extends Specification {
 
     }
 
+    void "The transcriberNotes and validatorNotes fields should be excluded from transcription comparisons"() {
+        setup: "3 Tasks are transcribed with the same fields except for the transcriberNotes and validatorNotes"
+
+        Map fields = fields()
+        for (int i=0; i<3; i++) {
+            fields.put("transcriberNotes", "Transcriber $i")
+            fields.put("validatorNotes", "Validator $i")
+            transcribe(task, Integer.toString(i), fields)
+        }
+
+        when:
+        service.autoValidate(taskSet)
+
+        then:
+        Task task = Task.get(task.id)
+        task.isValid == true
+        task.fullyValidatedBy == "system"
+    }
+
 
 
 }
