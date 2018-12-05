@@ -18,7 +18,7 @@ class TaskDataHelper {
         Project p = new Project(name:"Test Project")
         p.template = new Template(name:"Test template", viewParams:[param1:'value1'], viewParams2: [param1:'value1'])
         p.template.save(failOnError:true)
-        p.save(failOnError:true)
+        p.save(failOnError:true, flush:true)
         p
     }
 
