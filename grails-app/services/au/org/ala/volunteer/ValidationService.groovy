@@ -9,7 +9,7 @@ import grails.transaction.Transactional
  */
 class ValidationService {
 
-    private static final Set EXCLUDED_FIELDS = new HashSet([DarwinCoreField.transcriberNotes.name()])
+    private static final Set EXCLUDED_FIELDS = new HashSet([DarwinCoreField.transcriberNotes.name(), DarwinCoreField.validatorNotes.name()])
 
     FieldSyncService fieldSyncService
 
@@ -26,7 +26,7 @@ class ValidationService {
 
                 log.info("Auto-validating Task ${task.id}")
 
-                int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions //3 // Get from Project.
+                int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions
 
                 Map matchCounts = matchTranscriptions(task)
                 def bestMatch = matchCounts.max{it.value}
