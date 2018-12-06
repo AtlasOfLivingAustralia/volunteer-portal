@@ -488,6 +488,20 @@ function createProjectModule(config) {
 
       $scope.loading = false;
       $scope.create = function() {
+        if ($scope.projectTemplate.supportMultipleTranscriptions) {
+            var transcriptionsPerTask = parseInt ($scope.project.transcriptionsPerTask);
+            var thresholdMatchingTranscriptions = parseInt ($scope.project.thresholdMatchingTranscriptions);
+            if ((!transcriptionsPerTask) || (!thresholdMatchingTranscriptions) ||
+                ((transcriptionsPerTask < 0) || (thresholdMatchingTranscriptions < 0))) {
+                bootbox.alert("Expedition is not created.<br>A template which supports multiple transcriptions is currently being set for this expedition.<br>" +
+                    "Please enter the number of transcriptions per task (1 or more) and set threshold of matching transcriptions to more than 0 and less than number of transcriptions.");
+                return;
+            } else if (transcriptionsPerTask < thresholdMatchingTranscriptions) {
+                bootbox.alert("You must set threshold of matching transcriptions to more than 0 and less than number of transcriptions per task.");
+                return;
+            }
+        }
+
         $scope.loading = true;
         $http.post(config.createUrl, project).then(
           function(resp) {

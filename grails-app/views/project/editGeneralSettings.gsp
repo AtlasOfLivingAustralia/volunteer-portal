@@ -21,7 +21,7 @@
     </div>
 </g:hasErrors>
 
-<g:form method="post" class="form-horizontal" action="updateGeneralSettings">
+<g:form name="updateGeneralSettings" method="post" class="form-horizontal" action="updateGeneralSettings">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
@@ -169,6 +169,14 @@
        var templateId = $('#template').val();
        $.ajax(checkSupportMultipleTransUrl, {type: 'POST', data: {templateId: templateId}}).done(function(data) {
            if (data && data.supportMultipleTranscriptions == 'true') {
+               if (!$('#transcriptionsPerTask').val()) {
+                   $('#transcriptionsPerTask').val('1');
+               }
+
+               if (!$('#thresholdMatchingTranscriptions').val()) {
+                    $('#thresholdMatchingTranscriptions').val('0');
+               }
+
                $('.multipleTranscriptionsSupport').show();
            } else {
                $('.multipleTranscriptionsSupport').hide();
@@ -179,6 +187,22 @@
     setProjectDefaults();
     $('#template').change(function (e) {
         setProjectDefaults();
+    });
+
+    $('#updateGeneralSettings').submit(function(e) {
+        if ($('.multipleTranscriptionsSupport').is(":visible")) {
+            var transcriptionsPerTask = parseInt($('#transcriptionsPerTask').val());
+            var thresholdMatchingTranscriptions = parseInt($('#thresholdMatchingTranscriptions').val());
+            if ((!transcriptionsPerTask) || (!thresholdMatchingTranscriptions) ||
+                (transcriptionsPerTask < 0) || (thresholdMatchingTranscriptions < 0)) {
+                bootbox.alert("The template supports multiple transcriptions.<br><br> " +
+                                "You must enter the number of transcriptions per task (1 or more) and set threshold of matching transcriptions to more than 0 and less than number of transcriptions.");
+                e.preventDefault();
+            } else if (thresholdMatchingTranscriptions > transcriptionsPerTask) {
+                bootbox.alert("You must set threshold to more than 0 and less than number of transcriptions per task.");
+                e.preventDefault();
+            }
+        }
     });
 
     jQuery(function($) {

@@ -409,6 +409,14 @@
                 <td class="prop-value">{{::projectTemplate.name}}</td>
             </tr>
             <tr>
+                <td class="prop-name">Number of Transcriptions Per Task</td>
+                <td class="prop-value">{{::project.transcriptionsPerTask}}</td>
+            </tr>
+            <tr>
+                <td class="prop-name">Threshold of Matching Transcriptions (Autovalidation)</td>
+                <td class="prop-value">{{::project.thresholdMatchingTranscriptions}}</td>
+            </tr>
+            <tr>
                 <td class="prop-name">Expedition type</td>
                 <td class="prop-value">
 
