@@ -88,6 +88,10 @@ class ValidateController {
             }
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
+
+            if (taskInstance.hasErrors()) {
+                log.warn("Validation of task ${taskInstance.id} produced errors: "+errors)
+            }
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')
