@@ -94,7 +94,7 @@ class FullTextIndexService {
                 projectid           : task.project.id,
                 externalIdentifier  : task.externalIdentifier,
                 externalUrl         : task.externalUrl,
-                isFullyTranscribed  : task.isFullyTranscribed(),
+                isFullyTranscribed  : task.isFullyTranscribed,
                 fullyValidatedBy    : task.fullyValidatedBy,
                 dateFullyValidated  : task.dateFullyValidated,
                 timeToTranscribe    : task.timeToTranscribe,
