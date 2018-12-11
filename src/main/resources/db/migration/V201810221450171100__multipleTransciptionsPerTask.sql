@@ -44,13 +44,17 @@ INSERT INTO transcription (id, version, task_id, project_id, date_created, date_
 ON CONFLICT ON CONSTRAINT transcription_pkey
 DO NOTHING;
 
+
 ALTER TABLE ONLY project
   ADD COLUMN extract_image_exif_data boolean;
 
 ALTER TABLE ONLY task
-  ADD COLUMN IF NOT EXISTS transcription_count integer NOT NULL default 0;
+  ADD COLUMN IF NOT EXISTS is_fully_transcribed boolean NOT NULL DEFAULT FALSE;
 ALTER TABLE ONLY task
   ADD COLUMN IF NOT EXISTS number_of_matching_transcriptions integer;
+
+UPDATE task SET is_fully_transcribed = true WHERE fully_transcribed_by IS NOT NULL;
+
 ALTER TABLE ONLY template
   ADD COLUMN IF NOT EXISTS support_multiple_transcriptions boolean NOT NULL DEFAULT FALSE;
 

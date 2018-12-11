@@ -65,7 +65,7 @@ class ValidationService {
 
 
     private boolean shouldAutoValidate(Task task) {
-        return task.project.requiredNumberOfTranscriptions > 1 && task.isFullyTranscribed() && task.fullyValidatedBy == null
+        return task.project.requiredNumberOfTranscriptions > 1 && task.isFullyTranscribed && task.fullyValidatedBy == null
     }
 
     /**

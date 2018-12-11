@@ -385,7 +385,7 @@ class VolunteerTagLib {
                 validator = userService.detailsForUserId(taskInstance?.fullyValidatedBy)
             }
 
-            if (taskInstance.isFullyTranscribed()) {
+            if (taskInstance.isFullyTranscribed) {
                 taskInstance.transcriptions.each {
                     if (it.dateFullyTranscribed) {
                         transcribers << [user:userService.detailsForUserId(it.fullyTranscribedBy), dateFullyTranscribed: it.dateFullyTranscribed]

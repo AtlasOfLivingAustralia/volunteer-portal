@@ -42,7 +42,7 @@ class ValidateController {
             def isValidator = userService.isValidator(project)
             log.info(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
 
-            if (taskInstance.isFullyTranscribed() && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(userService.isAdmin() || isValidator)) {
+            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(userService.isAdmin() || isValidator)) {
                 isReadonly = "readonly"
             } else {
                 // check that the validator is not the transcriber...Admins can, though!

@@ -34,7 +34,7 @@
                     </div>
 
                     <div style="text-align: center">
-                        <g:if test="${taskInstance.isFullyTranscribed()}">
+                        <g:if test="${taskInstance.isFullyTranscribed}">
                             <g:if test="${taskInstance.isValid == true}">
                                 <div class="label label-success">
                                     <g:link controller="validate" action="task" id="${taskInstance.id}">&#10003;</g:link>

@@ -34,7 +34,7 @@ class FieldSyncService {
     }
 
     Map retrieveValidationFieldsForTask(Task taskInstance) {
-        if (taskInstance.isFullyTranscribed() && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+        if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
             return retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
         }
         else {
@@ -225,6 +225,10 @@ class FieldSyncService {
             }
             if (!transcription.transcribedUUID) {
                 transcription.transcribedUUID = UUID.randomUUID()
+            }
+
+            if (task.allTranscriptionsComplete()) {
+                task.isFullyTranscribed = true
             }
         }
 

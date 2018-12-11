@@ -54,7 +54,7 @@
 
             <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
                 <td>
-                    <g:if test="${taskInstance.isFullyTranscribed()}">
+                    <g:if test="${taskInstance.isFullyTranscribed}">
                         ${taskInstance.numberOfMatchingTranscriptions}
                     </g:if>
                     <g:else>
@@ -83,7 +83,7 @@
                 %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
                 %{--</button>--}%
                 </g:if>
-                <g:elseif test="${taskInstance.isFullyTranscribed()}">
+                <g:elseif test="${taskInstance.isFullyTranscribed}">
                     <button class="btn btn-small"
                             onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
                 %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%

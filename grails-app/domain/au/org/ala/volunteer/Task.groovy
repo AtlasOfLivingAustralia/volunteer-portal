@@ -22,6 +22,7 @@ class Task implements Serializable {
     Integer timeToTranscribe
     Integer timeToValidate
     Integer numberOfMatchingTranscriptions
+    Boolean isFullyTranscribed = false
 
     static belongsTo = [project: Project]
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment, transcriptions: Transcription]
@@ -56,13 +57,17 @@ class Task implements Serializable {
         timeToTranscribe nullable: true
         timeToValidate nullable: true
         numberOfMatchingTranscriptions nullable: true
+        isFullyTranscribed nullable: true
     }
 
     /**
      * Returns true if all of the required number of Transcriptions have been completed for this Task.
      * The default is one Transcription per Task, but this can be overridden in the project template.
      */
-    boolean isFullyTranscribed() {
+    boolean allTranscriptionsComplete() {
+        if (isFullyTranscribed) {
+            return true
+        }
         int requiredTranscriptionCount = project.requiredNumberOfTranscriptions
         int transcriptionCount = transcriptions?.count{it.fullyTranscribedBy} ?: 0
         return transcriptionCount >= requiredTranscriptionCount
