@@ -42,6 +42,25 @@ class FieldSyncService {
         }
     }
 
+    List retrieveTranscribersFieldsForTask(Task taskInstance) {
+        if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+            return new ArrayList<Map> (retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0]))
+        }
+        else if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) {
+            def list = new ArrayList<Map> ()
+            for (tr in taskInstance.transcriptions) {
+                Map fieldValues = retrieveFieldsForTranscription(taskInstance, tr)
+                if (fieldValues && fieldValues.size() > 0) {
+                    list.add(fieldValues)
+                }
+            }
+            return list
+        }
+        else {
+            return new ArrayList<Map> (retrieveFieldsForTranscription(taskInstance, null)) // Use the task fields.
+        }
+    }
+
     boolean fieldValuesAreEqual(String a, String b) {
         String value1 = a ?: ""  // Normalize null to empty strings for the sake of comparison
         String value2 = b ?: ""

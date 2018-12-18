@@ -249,9 +249,36 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div id="ct-full-image-container" class="ct-item clearfix"></div>
+                                Transcribers answers
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-striped confirmation-table">
+                                            <tr>
+                                                <td>Animal Visible</td>
+                                                <td>Selected Animal</td>
+                                                <td>Certainty</td>
+                                            </tr>
+                                            <tbody id="tbody-answer-summary">
+                                                <g:each in="${transcribersAnswers}" var="answers" status="st">
+                                                    <g:set var="answer" value="${answers.values()[0]}"/>
+
+                                                    <tr>
+                                                        <td>${answer.get('animalsVisible')}</td>
+                                                        %{--<td>${animalInfos.items.get(answer.get('vernacularName')).imageIds}</td>--}%
+                                                        <td>${answer.get('vernacularName')}</td>
+                                                        <td>${answer.get('certainty')}</td>
+                                                    </tr>
+                                                </g:each>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+
+                                <div id="ct-full-image-container" class="ct-item clearfix"></div>
+                            </div>
                         </div>
                     </div>
 

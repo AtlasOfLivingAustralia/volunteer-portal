@@ -63,7 +63,11 @@ class ValidateController {
             println sw.elapsed(TimeUnit.SECONDS)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
-            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
+            def transcribersAnswers = fieldSyncService.retrieveTranscribersFieldsForTask(taskInstance)
+            if (!recordValues) {
+                recordValues = transcribersAnswers[0]
+            }
+            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, transcribersAnswers: transcribersAnswers, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
