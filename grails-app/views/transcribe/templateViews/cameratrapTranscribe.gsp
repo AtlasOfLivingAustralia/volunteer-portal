@@ -250,35 +250,47 @@
                                     </div>
                                 </div>
 
-                                Transcribers answers
+                                <g:if test="${validator && transcribersAnswers && transcribersAnswers.size() > 0}">
+                                    Transcribers answers
 
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <table class="table table-striped confirmation-table">
-                                            <tr>
-                                                <td>Animal Visible</td>
-                                                <td>Selected Animal</td>
-                                                <td>Certainty</td>
-                                            </tr>
-                                            <tbody id="tbody-answer-summary">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table class="table table-striped confirmation-table">
+                                                <tr>
+                                                    <td>Transcriber</td>
+                                                    <td>Animal Visible</td>
+                                                    <td>Selected Animal</td>
+                                                    <td>Certainty</td>
+                                                </tr>
+                                                <tbody id="tbody-answer-summary">
                                                 <g:each in="${transcribersAnswers}" var="answers" status="st">
-                                                    <g:set var="answer" value="${answers.values()[0]}"/>
+                                                    <g:set var="answer" value="${answers}"/>
 
                                                     <tr>
-                                                        <td>${answer.get('animalsVisible')}</td>
-                                                        %{--<td>${animalInfos.items.get(answer.get('vernacularName')).imageIds}</td>--}%
-                                                        <td>${answer.get('vernacularName')}</td>
-                                                        <td>${answer.get('certainty')}</td>
+                                                        <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
+                                                        <td>${answer.get('fields')[0].get('animalsVisible')}</td>
+                                                        <g:if test="${answer.get('fields')[0].get('animalsVisible') == 'yes'}">
+                                                            <td><div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div></td>
+                                                            %{--<td></td>--}%
+                                                            <td>${answer.get('fields')[0].get('certainty')}</td>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <td>None Selected</td>
+                                                            <td>n/a</td>
+                                                        </g:else>
                                                     </tr>
+
                                                 </g:each>
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
 
+                                        </div>
                                     </div>
-                                </div>
+                                </g:if>
 
-                                <div id="ct-full-image-container" class="ct-item clearfix"></div>
                             </div>
+
+                            <div id="ct-full-image-container" class="ct-item clearfix"></div>
                         </div>
                     </div>
 
@@ -377,7 +389,8 @@
             var items = <cl:json value="${animalInfos.items}"/>;
             var recordValues = <cl:json value="${recordValues}"/>;
             var placeholders = <cl:json value="${placeholders}"/>;
-            cameratrap(imageInfos, items, recordValues, placeholders);
+            var transcribersAnswers = <cl:json value="${transcribersAnswers}"/>;
+            cameratrap(imageInfos, items, recordValues, placeholders, transcribersAnswers);
         </asset:script>
     </content>
 </g:applyLayout>

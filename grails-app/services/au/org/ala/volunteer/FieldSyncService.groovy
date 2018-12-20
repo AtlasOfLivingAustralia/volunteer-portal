@@ -34,7 +34,8 @@ class FieldSyncService {
     }
 
     Map retrieveValidationFieldsForTask(Task taskInstance) {
-        if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+       // if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+        if (taskInstance.isFullyTranscribed) {
             return retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
         }
         else {
@@ -43,22 +44,26 @@ class FieldSyncService {
     }
 
     List retrieveTranscribersFieldsForTask(Task taskInstance) {
-        if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
-            return new ArrayList<Map> (retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0]))
+       /* if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+            def map = retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
+            return new ArrayList<Map>().add(map)
         }
-        else if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) {
-            def list = new ArrayList<Map> ()
+        else if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) { */
+
+        def list = new ArrayList<Map> ()
+
+        if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) {
             for (tr in taskInstance.transcriptions) {
                 Map fieldValues = retrieveFieldsForTranscription(taskInstance, tr)
                 if (fieldValues && fieldValues.size() > 0) {
-                    list.add(fieldValues)
+                    Map rec = new HashMap()
+                    rec.put('fields', fieldValues)
+                    rec.put('fullyTranscribedBy', tr.fullyTranscribedBy)
+                    list.add(rec)
                 }
             }
-            return list
         }
-        else {
-            return new ArrayList<Map> (retrieveFieldsForTranscription(taskInstance, null)) // Use the task fields.
-        }
+        return list
     }
 
     boolean fieldValuesAreEqual(String a, String b) {

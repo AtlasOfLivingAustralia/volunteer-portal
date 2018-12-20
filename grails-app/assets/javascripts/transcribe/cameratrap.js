@@ -16,6 +16,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
 
     var selections = {};
 
+    var transcribersSelections = {};
+
     // setup initial selection state from recordValues
     for (var index in recordValues) {
       if (recordValues.hasOwnProperty(index)) {
@@ -24,6 +26,23 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
         if (vn && itemValueMap[vn]) {
           selections[vn] = {certainty: certainty, key: itemValueMap[vn].imageIds}
         }
+      }
+    }
+
+    for (var index in transcribersAnswers) {
+      if (transcribersAnswers.hasOwnProperty(index)) {
+          var fullyTranscribedBy = transcribersAnswers[index].fullyTranscribedBy;
+          var vn = transcribersAnswers[index].fields[0].vernacularName;
+          if (transcribersAnswers[index].fields[0].animalsVisible == 'yes' && vn) {
+              var certainty = transcribersAnswers[index].fields[0].certainty || 1;
+              if (vn && itemValueMap[vn]) {
+                  transcribersSelections[fullyTranscribedBy] = {
+                      certainty: certainty,
+                      key: itemValueMap[vn].imageIds,
+                      vernacularName: vn
+                  }
+              }
+          }
       }
     }
 
@@ -219,6 +238,33 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       };
       mu.appendTemplate(selElem, 'selected-item-template', opts);
       $('.ct-caption').dotdotdot();
+    }
+
+    function addTranscribersSelectionToContainer(sel, selElem) {
+      var certainty = transcribersSelections[sel].certainty;
+      var imageKey = transcribersSelections[sel].key;
+      var firstKey = keyToArray(imageKey)[0];
+      var imageInfo = firstInfoWithKey(firstKey);
+      var imageUrl = imageInfo ? imageInfo.squareThumbUrl : null;
+      var selected = (certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
+      var opts = {
+          squareThumbUrl: imageUrl,
+          value: transcribersSelections[sel].vernacularName,
+          key: imageKey,
+          selected: selected
+      };
+      mu.appendTemplate(selElem, 'selected-item-template', opts);
+      $('.ct-caption').dotdotdot();
+    }
+
+    function syncTranscribersSelection() {
+      var selElem = $('.ct-selection-transcribers');
+      // var selections = transcribersSelections;
+
+      for (var i=0; i < selElem.length; ++i) {
+          var elem = selElem[i];
+          addTranscribersSelectionToContainer(elem.getAttribute('transcribedBy'), elem);
+      };
     }
 
     function syncSelectionState() {
@@ -529,6 +575,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     // force intial sync of saved values
     syncSelectionState();
     syncUnlistedTray();
+    syncTranscribersSelection();
 
     // enable tooltips
     $('[title]').tooltip();
