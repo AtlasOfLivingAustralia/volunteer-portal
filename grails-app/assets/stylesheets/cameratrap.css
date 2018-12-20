@@ -489,7 +489,8 @@
 }
 
 .film-cell.default.active {
-    border-color: black;
+    //border-color: black;
+    border-color: #df4a21;
 }
 .film-cell.active {
     border-color: #df4a21;
