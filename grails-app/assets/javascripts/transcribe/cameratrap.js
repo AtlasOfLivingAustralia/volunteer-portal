@@ -202,11 +202,23 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       })
       .on('click', '.ct-badge-uncertain', function (e) {
         ctBadgeClick(e, 0.5);
+      })
+      .on('click', '.transcriber-selection', function (e) {
+          var t = $(e.currentTarget);
+          var imageKey = t.data('transcriber-image-key');
+          var value = t.data('transcriber-image-value');
+          var certainty = t.data('transcriber-image-certainty');
+          if (selections.hasOwnProperty(value) && selections[value].certainty == selectionCertainty) {
+              delete selections[value];
+          } else {
+              selections[value] = {certainty: certainty, key: imageKey};
+          }
+          syncSelectionState();
       });
 
-    function ctBadgeClick(e, selectionCertainty) {
+      function ctBadgeClick(e, selectionCertainty) {
       var t = $(e.target);
-      var badge = t.closest('.badge');
+     // var badge = t.closest('.badge');
 
       var selectedThumbnail = t.closest('[data-image-select-value]');//.closest('.thumbnail');
       var value = selectedThumbnail.data('image-select-value');
@@ -251,9 +263,10 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
           squareThumbUrl: imageUrl,
           value: transcribersSelections[sel].vernacularName,
           key: imageKey,
-          selected: selected
+          selected: selected,
+          certainty: certainty
       };
-      mu.appendTemplate(selElem, 'selected-item-template', opts);
+      mu.appendTemplate(selElem, 'selected-item-transcriber-template', opts);
       $('.ct-caption').dotdotdot();
     }
 

@@ -334,6 +334,19 @@
         </div>
         </script>
 
+        <script id="selected-item-transcriber-template" type="x-tmpl-mustache">
+        <div class="griditem">
+            <div class="thumbnail ct-thumbnail {{selected}} transcriber-selection" data-transcriber-image-key="{{key}}" data-transcriber-image-value="{{value}}" data-transcriber-image-certainty="{{certainty}}">
+                <img src="{{squareThumbUrl}}" alt="{{value}}">
+                <div class="ct-caption-table">
+                    <div class="ct-caption-cell">
+                        <div class="ct-caption dotdotdot" title="{{value}}">{{value}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </script>
+
         <script id="new-unlisted-template" type="x-tmpl-mustache">
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="recordValues.{{index}}.unlisted">Species name</label>
