@@ -60,6 +60,11 @@ class ValidationService {
                 }
             }
         }
+        if (matchCounts.size() == 0) {
+            task.transcriptions.each { transcription ->
+                matchCounts[transcription.id] = 0
+            }
+        }
         matchCounts
     }
 

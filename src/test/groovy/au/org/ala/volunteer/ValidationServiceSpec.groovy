@@ -97,6 +97,26 @@ class ValidationServiceSpec extends Specification {
         Task task = Task.get(task.id)
         !task.isValid == true
         task.fullyValidatedBy == null
+        task.numberOfMatchingTranscriptions == 2
+
+    }
+
+    void "Fully transcribed Tasks with no matching transcriptions should not be auto-validated"() {
+        setup: "No tasks are transcribed with the same fields"
+        for (int i=0; i<3; i++) {
+            Map fields = fields()
+            fields.name = "name $i"
+            transcribe(task, Integer.toString(i), fields)
+        }
+
+        when:
+        service.autoValidate(taskSet)
+
+        then:
+        Task task = Task.get(task.id)
+        !task.isValid == true
+        task.fullyValidatedBy == null
+        task.numberOfMatchingTranscriptions == 0
 
     }
 
