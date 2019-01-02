@@ -35,7 +35,7 @@ class FieldSyncService {
 
     Map retrieveValidationFieldsForTask(Task taskInstance) {
        // if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
-        if (taskInstance.isFullyTranscribed) {
+        if (taskInstance.isFullyTranscribed && !taskInstance.fullyValidatedBy) {
             return retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
         }
         else {
@@ -132,22 +132,33 @@ class FieldSyncService {
         def hasMore = true
         while (hasMore) {
             def fieldValuesForRecord = fieldValues.get(idx.toString())
+            Map oldFieldValues
+
             if (fieldValuesForRecord) {
 
-                //get existing fields, and add to a map
-                def oldFields = Field.createCriteria().list {
-                    eq('task', task)
-                    eq('recordIdx', idx)
-                    eq('superceded', false)
-                    if (transcription) {
-                        eq('transcription', transcription)
+                if (task.project.getRequiredNumberOfTranscriptions() <= 1 || task.fullyValidatedBy) {
+                    //get existing fields, and add to a map
+                    def oldFields = Field.createCriteria().list {
+                        eq('task', task)
+                        eq('recordIdx', idx)
+                        eq('superceded', false)
+                        if (transcription) {
+                            eq('transcription', transcription)
+                        } else if ((task.project.getRequiredNumberOfTranscriptions() > 1) && task.fullyValidatedBy) {
+                            isNull('transcription')
+                        }
                     }
-                }
+
+                    if ((task.project.getRequiredNumberOfTranscriptions() > 1) && task.fullyValidatedBy) {
+                        oldFields*.delete()
+                    } else {
 //                def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false",
 //                        [task: task, recordIdx: idx])
 
-                Map oldFieldValues = new LinkedHashMap()
-                oldFields.each { field -> oldFieldValues.put(field.name, field) }
+                        oldFieldValues = new LinkedHashMap()
+                        oldFields.each { field -> oldFieldValues.put(field.name, field) }
+                    }
+                }
 
                 fieldValuesForRecord.each { keyValue ->
 
@@ -157,12 +168,14 @@ class FieldSyncService {
                         value = handleDuplicateFormFields(task, keyValue.key, value)
                     }
 
-                    Field oldFieldValue = oldFieldValues.get(keyValue.key)
+                    Field oldFieldValue = oldFieldValues?.get(keyValue.key)?: null
                     if (oldFieldValue != null) {
 
                         if (!fieldValuesAreEqual(oldFieldValue.value, value)) {
                             //if different users
-                            if (oldFieldValue.transcribedByUserId != transcriberUserId) {
+                            // 1st condition was old behaviour
+                            // 2nd condition if validator get t
+                            if (oldFieldValue.transcribedByUserId != transcriberUserId)  {
                                 //just save it
                                 Field field = new Field()
                                 field.name = keyValue.key
@@ -221,12 +234,16 @@ class FieldSyncService {
             }
         }
 
-        // Slightly dodgy hack, as camera trap records can be removed on re-save or validation
-        // and the record index is shared between selected images and unlisted write ins
-        def sortedIndexes = fieldValues.keySet().findAll { StringUtils.isNumeric(it) }.collect { Integer.parseInt(it) }.sort().reverse()
-        truncateFields.each { fieldName ->
-            def truncIdx = maxIndexFor(fieldName, fieldValues, sortedIndexes)
-            markSuperceded(task, truncIdx, fieldName)
+        if (!task.fullyValidatedBy || task.project.getRequiredNumberOfTranscriptions() <= 1) {
+            // Slightly dodgy hack, as camera trap records can be removed on re-save or validation
+            // and the record index is shared between selected images and unlisted write ins
+            def sortedIndexes = fieldValues.keySet().findAll { StringUtils.isNumeric(it) }.collect {
+                Integer.parseInt(it)
+            }.sort().reverse()
+            truncateFields.each { fieldName ->
+                def truncIdx = maxIndexFor(fieldName, fieldValues, sortedIndexes)
+                markSuperceded(task, truncIdx, fieldName)
+            }
         }
 
         def now = Calendar.instance.time;
