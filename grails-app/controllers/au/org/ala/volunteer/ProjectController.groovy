@@ -107,7 +107,7 @@ class ProjectController {
                 tasksTranscribed = projectSummary.transcribedCount
             } else {
                 taskCount = Task.countByProject(projectInstance)
-                tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
+                tasksTranscribed = Task.countByProjectAndIsFullyTranscribed(projectInstance, true)
             }
 
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
