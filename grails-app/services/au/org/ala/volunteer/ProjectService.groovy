@@ -355,8 +355,7 @@ class ProjectService {
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
-                //TODO: May need to change for how a task is considered completed
-                whereClauses += requiredTranscriptionsCountClause.eq(transcribedCountClause)
+                whereClauses += requiredTranscriptionsCountClause.le(transcribedCountClause)
                 break
             case ProjectStatusFilterType.showIncompleteOnly:
                 whereClauses += requiredTranscriptionsCountClause.gt(transcribedCountClause)
@@ -403,7 +402,7 @@ class ProjectService {
         def sortCondition
         switch (sort) {
             case 'completed':
-                sortCondition = jWhen(requiredTranscriptionsCountClause.eq(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(requiredTranscriptionsCountClause.cast(Double))).otherwise(transcribedCountClause.div(requiredTranscriptionsCountClause.cast(Double)))
+                sortCondition = jWhen(requiredTranscriptionsCountClause.le(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(requiredTranscriptionsCountClause.cast(Double))).otherwise(transcribedCountClause.div(requiredTranscriptionsCountClause.cast(Double)))
                 break
             case 'transcribed':
                 sortCondition = transcribedCountClause.div(requiredTranscriptionsCountClause.cast(Double))
@@ -533,19 +532,17 @@ class ProjectService {
     }
 
     def calculateCompletion(List<Project> projects) {
-
-   /*     Task.withCriteria {
+        Task.withCriteria{
             'in'('project', projects)
-            createAlias('transcriptions', 'tAlias')
             projections {
                 groupProperty('project')
                 count('id', 'total')
-                count('tAlias.fullyTranscribedBy', 'transcribed')
-                count('tAlias,.fullyValidatedBy', 'validated')
+                sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
+                count('fullyValidatedBy', 'validated')
             }
         }.collectEntries { row ->
             [(row[0].id): [ total: row[1], transcribed: row[2], validated: row[3] ] ]
-        } */
+        }
     }
 
     def writeArchive(Project project, OutputStream outputStream) {
