@@ -80,6 +80,8 @@
 
                         <div id="ct-item-container" class="ct-item-container">
                             <div id="ct-landing" class="ct-item ${validator ? '' : 'active'}">
+                                <span style="display: none;" id="cameratrap_doYouWishAsAnswer"><g:message code="cameratrap.doYouWishAsAnswer"/></span>
+
 
                                 <div class="row">
                                     <div class="col-sm-12">

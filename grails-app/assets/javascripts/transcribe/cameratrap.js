@@ -69,14 +69,19 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
 
     var yes = $('#btn-animals-present').attr('value');
     $('#ct-animals-question input').change(function(e) {
+
+
+
+      var doYouWishAsAnswer = $("#cameratrap_doYouWishAsAnswer").text();
       var $this = $(this);
-      var answer = $this.val();
+      var answer = $this.attr("label");
+      doYouWishAsAnswer = doYouWishAsAnswer.replace("{0}", answer);
       var $btnSave = $('#btnSave');
       if (answer != yes && $btnSave) {
         // check if we're don't confirm and confirm
         var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
         if (dontConfirm) {
-          bootbox.confirm('Do you wish to record "' + answer + '" as your answer?', function(confirm) {
+          bootbox.confirm(doYouWishAsAnswer, function(confirm) {
             if (confirm) {
               $btnSave.click();
             }
@@ -87,6 +92,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
       } else {
         switchCtPage('#ct-animals-present');
       }
+
     });
 
     // switch back to regular camera trap transcribing when clicking any button:
