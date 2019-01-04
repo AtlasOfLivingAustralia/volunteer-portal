@@ -187,7 +187,7 @@ class TaskService {
             queryParams.lastId = lastId
         }
 
-        String whereClause = "task.project = :project and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
+        String whereClause = "task.project = :project and task.isFullyTranscribed = false and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
         String orderBy = "count(distinct views.userId) desc, task.id"
         if (jump > 1 && lastId > 0) {
             whereClause += "and task.id > :lastId "
@@ -224,7 +224,7 @@ class TaskService {
     private Task findUnfinishedTaskNotViewedByUser(String userId, Project project, int transcriptionsPerTask, long timeoutWindow, long lastId = -1, int jump = 1) {
 
         Map params = [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask]
-        String whereClause = "task.project = :project and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
+        String whereClause = "task.project = :project and task.isFullyTranscribed = false and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
         if (jump > 1 && lastId >= 0) {
             whereClause += "and task.id > :lastId "
             params.lastId = lastId
@@ -251,7 +251,7 @@ class TaskService {
                 "select task.id, count(transcriptions) from Task as task "+
                         "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
                         "where task.project = :project " +
-                        "and task.id not in (select t1.task from Transcription t1 where t1.fullyTranscribedBy = :userId)  " +
+                        "and task.isFullyTranscribed = false and task.id not in (select t1.task from Transcription t1 where t1.fullyTranscribedBy = :userId)  " +
                         "group by task.id " +
                         "having count(transcriptions) < :transcriptionsPerTask "+
                         "order by count(transcriptions) desc, task.id",
