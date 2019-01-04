@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils
 class FieldSyncService {
 
     def logService
+    ValidationService validationService
 
     Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {
 
@@ -33,24 +34,41 @@ class FieldSyncService {
         recordValues
     }
 
+    /**
+     * Retrieves the Fields to use to populate the Task template for a validator.
+     *
+     * If the the Task has not yet been validated, select the most appropriate Transcription to use: in the case
+     * of single Transcription Tasks, this will be the only Transcription.  In the case of multiple Transcription Tasks
+     * the Transcription with the most matching Fields will be selected.  (e.g. if there are 5 transcriptions and
+     * 3 of them have the same field values, one of the 3 matching transcriptions will be used).
+     *
+     * If the Task has already been validated, the fields supplied during the validation operation are returned.
+     *
+     */
     Map retrieveValidationFieldsForTask(Task taskInstance) {
-       // if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+
+        Transcription transcriptionToUse = null
+
         if (taskInstance.isFullyTranscribed && !taskInstance.fullyValidatedBy) {
-            return retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
+            if (taskInstance.transcriptions.size() > 1) {
+                Map result = validationService.findBestMatchingTranscription(taskInstance)
+                transcriptionToUse = result.bestTranscription
+            }
+            else if (taskInstance.transcriptions.size() > 0) {
+                transcriptionToUse = taskInstance.transcriptions[0]
+            }
         }
-        else {
-            return retrieveFieldsForTranscription(taskInstance, null) // Use the task fields.
-        }
+        return retrieveFieldsForTranscription(taskInstance, transcriptionToUse)
     }
 
     List retrieveTranscribersFieldsForTask(Task taskInstance) {
-       /* if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
-            def map = retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
-            return new ArrayList<Map>().add(map)
-        }
-        else if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) { */
+        /* if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+             def map = retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
+             return new ArrayList<Map>().add(map)
+         }
+         else if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) { */
 
-        def list = new ArrayList<Map> ()
+        def list = new ArrayList<Map>()
 
         if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) {
             for (tr in taskInstance.transcriptions) {
@@ -98,7 +116,7 @@ class FieldSyncService {
         if (distinctValues.size() == 0) {
             return ""
         }
-        if (distinctValues.size() ==  1) {
+        if (distinctValues.size() == 1) {
             return distinctValues[0]
         }
 
@@ -127,16 +145,6 @@ class FieldSyncService {
      * @return
      */
     void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = [], String userIp = null, Transcription transcription = null) {
-
-        // Delete existing validator's transcriptions only if it's multiple transcriptions support and for validation
-        if (task.project.getRequiredNumberOfTranscriptions() > 1 && markAsFullyValidated) {
-            //get existing validator fields
-            def oldValidatorFields = Field.createCriteria().list {
-                eq('task', task)
-                isNull('transcription')
-            }
-            oldValidatorFields*.delete()
-        }
         //sync
         def idx = 0
         def hasMore = true
@@ -146,23 +154,23 @@ class FieldSyncService {
 
             if (fieldValuesForRecord) {
 
-                if (!(task.project.getRequiredNumberOfTranscriptions() > 1 && markAsFullyValidated)) {
-                    //get existing fields, and add to a map
-                    def oldFields = Field.createCriteria().list {
-                        eq('task', task)
-                        eq('recordIdx', idx)
-                        eq('superceded', false)
-                        if (transcription) {
-                            eq('transcription', transcription)
-                        }
+                //get existing fields, and add to a map
+                def oldFields = Field.createCriteria().list {
+                    eq('task', task)
+                    eq('recordIdx', idx)
+                    eq('superceded', false)
+                    if (transcription) {
+                        eq('transcription', transcription)
+                    } else {
+                        isNull('transcription')
                     }
-
+                }
 //                def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false",
 //                        [task: task, recordIdx: idx])
 
-                    oldFieldValues = new LinkedHashMap()
-                    oldFields.each { field -> oldFieldValues.put(field.name, field) }
-                }
+                oldFieldValues = new LinkedHashMap()
+                oldFields.each { field -> oldFieldValues.put(field.name, field) }
+
 
                 fieldValuesForRecord.each { keyValue ->
 
@@ -172,12 +180,12 @@ class FieldSyncService {
                         value = handleDuplicateFormFields(task, keyValue.key, value)
                     }
 
-                    Field oldFieldValue = oldFieldValues?.get(keyValue.key)?: null
+                    Field oldFieldValue = oldFieldValues?.get(keyValue.key) ?: null
                     if (oldFieldValue != null) {
 
                         if (!fieldValuesAreEqual(oldFieldValue.value, value)) {
                             //if different users
-                            if (oldFieldValue.transcribedByUserId != transcriberUserId)  {
+                            if (oldFieldValue.transcribedByUserId != transcriberUserId) {
                                 //just save it
                                 Field field = new Field()
                                 field.name = keyValue.key
