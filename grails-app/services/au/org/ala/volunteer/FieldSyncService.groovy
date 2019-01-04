@@ -244,16 +244,14 @@ class FieldSyncService {
             }
         }
 
-        if (!(markAsFullyValidated && task.project.getRequiredNumberOfTranscriptions() > 1)) {
-            // Slightly dodgy hack, as camera trap records can be removed on re-save or validation
-            // and the record index is shared between selected images and unlisted write ins
-            def sortedIndexes = fieldValues.keySet().findAll { StringUtils.isNumeric(it) }.collect {
-                Integer.parseInt(it)
-            }.sort().reverse()
-            truncateFields.each { fieldName ->
-                def truncIdx = maxIndexFor(fieldName, fieldValues, sortedIndexes)
-                markSuperceded(task, truncIdx, fieldName)
-            }
+        // Slightly dodgy hack, as camera trap records can be removed on re-save or validation
+        // and the record index is shared between selected images and unlisted write ins
+        def sortedIndexes = fieldValues.keySet().findAll { StringUtils.isNumeric(it) }.collect {
+            Integer.parseInt(it)
+        }.sort().reverse()
+        truncateFields.each { fieldName ->
+            def truncIdx = maxIndexFor(fieldName, fieldValues, sortedIndexes)
+            markSuperceded(task, truncIdx, fieldName)
         }
 
         def now = Calendar.instance.time;
