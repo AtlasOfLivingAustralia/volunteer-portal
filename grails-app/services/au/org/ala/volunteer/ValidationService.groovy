@@ -28,13 +28,13 @@ class ValidationService {
 
                 int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions
 
-                Map matchCounts = matchTranscriptions(task)
-                def bestMatch = matchCounts.max{it.value}
-                int numberOfMatchingTranscriptions = bestMatch.value
+                Map bestTranscription = findBestMatchingTranscription(task)
+
+                int numberOfMatchingTranscriptions = bestTranscription.matchCount
 
                 if (numberOfMatchingTranscriptions >= numberOfMatchingTranscriptionsConsideredValid) {
                     log.info("Task has ${numberOfMatchingTranscriptions} matching transcriptions -> auto-validating!")
-                    markAsValid(task, task.transcriptions.find{it.id == bestMatch.key})
+                    markAsValid(task, bestTranscription.bestTranscription)
                 }
                 else {
                     log.info("Task has ${numberOfMatchingTranscriptions} matching transcriptions - not auto-validating")
@@ -45,6 +45,23 @@ class ValidationService {
             }
         }
 
+    }
+    /**
+     * Returns a Map containing:
+     * Key: bestTranscription, value: The Transcription that matches the most other transcriptions (selected
+     * randomly from the pool of matching transcriptions)
+     * Key: matchCount, value: the number of transcriptions with the same field values as the one returned as the
+     * value of the "bestTranscription" key.
+     * In the case no Transcriptions match, one of the Transcriptions will be returned with a match count of zero.
+     *
+     * @param task The Task to match Transcriptions for.
+     */
+    Map findBestMatchingTranscription(Task task) {
+        Map matchCounts = matchTranscriptions(task)
+        def bestMatch = matchCounts.max{it.value}
+        Transcription bestMatchingTranscription = task.transcriptions.find{it.id == bestMatch.key}
+
+        [bestTranscription:bestMatchingTranscription, matchCount:bestMatch.value]
     }
 
     private Map matchTranscriptions(Task task) {
