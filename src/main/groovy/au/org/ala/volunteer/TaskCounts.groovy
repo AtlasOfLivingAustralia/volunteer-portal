@@ -8,7 +8,6 @@ package au.org.ala.volunteer
 class TaskCounts {
 
     long taskCount
-    long requiredTranscriptionCount
     long transcribedCount
     long validatedCount
 
@@ -17,7 +16,7 @@ class TaskCounts {
      * @return The percent transcribed
      */
     public int getPercentTranscribed() {
-        return calcPercent(transcribedCount, requiredTranscriptionCount)
+        return calcPercent(transcribedCount, taskCount)
     }
 
     /**

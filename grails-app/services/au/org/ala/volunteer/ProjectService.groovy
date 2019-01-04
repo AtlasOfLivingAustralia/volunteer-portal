@@ -39,10 +39,8 @@ import static org.jooq.impl.DSL.when as jWhen
 class ProjectService {
 
     static final String TASK_COUNT_COLUMN = 'taskCount'
-    static final String REQUIRED_TRANSCRIPTIONS_FOR_PROJECT = 'required_transcriptions_for_project'
     static final String TRANSCRIBED_COUNT_COLUMN = 'transcribedCount'
     static final String VALIDATED_COUNT_COLUMN = 'validatedCount'
-    static final String TRANSCRIBER_COUNT_COLUMN = 'transcriberCount'
     static final String VALIDATOR_COUNT_COLUMN = 'validatorCount'
 
     // make a static factory function because I'm not sure whether
@@ -218,10 +216,9 @@ class ProjectService {
         def results = resultMaps.collect { result ->
             def project = projectsMap[result['id']]
             def taskCount = result[TASK_COUNT_COLUMN] ?: 0
-            def requiredTranscriptionsPerProjectCount = result[REQUIRED_TRANSCRIPTIONS_FOR_PROJECT] ?: taskCount
             def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN] ?: 0
             def validatedCount = result[VALIDATED_COUNT_COLUMN] ?: 0
-            makeProjectSummary(project, taskCount, requiredTranscriptionsPerProjectCount, transcribedCount, validatedCount, 0, 0)
+            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0)
         }
 
         log.debug("make summary projects: ${sw.elapsed(MILLISECONDS)}ms")
@@ -243,7 +240,7 @@ class ProjectService {
         return ProjectType.findByName("specimens")
     }
 
-    private ProjectSummary makeProjectSummary(Project project, Number taskCount, Number requiredTranscriptionCount,  Number transcribedCount, Number fullyValidatedCount, Number transcriberCount, Number validatorCount) {
+    private ProjectSummary makeProjectSummary(Project project, Number taskCount, Number transcribedCount, Number fullyValidatedCount, Number validatorCount) {
 
         if (!project.projectType) {
             def projectType = guessProjectType(project)
@@ -267,10 +264,8 @@ class ProjectService {
         def ps = new ProjectSummary(project: project)
         ps.iconImage = iconImage
         ps.iconLabel = iconLabel
-        ps.transcriberCount = transcriberCount.toLong()
 
         ps.taskCount = taskCount.toLong()
-        ps.requiredTranscriptionCount = requiredTranscriptionCount.toLong() //project.requiredNumberOfTranscriptions? taskCount.toLong() * project.requiredNumberOfTranscriptions : taskCount.toLong()
         ps.transcribedCount = transcribedCount.toLong()
         ps.validatorCount = validatorCount.toLong()
         ps.validatedCount = fullyValidatedCount.toLong()
@@ -312,16 +307,14 @@ class ProjectService {
         def renderList = results.collect { result ->
             def project = projectMap[result['id']]
             def taskCount = result[TASK_COUNT_COLUMN] ?: 0
-            def requiredTranscriptionsPerProjectCount = result[REQUIRED_TRANSCRIPTIONS_FOR_PROJECT] ?: taskCount
             def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN] ?: 0
             def validatedCount = result[VALIDATED_COUNT_COLUMN] ?: 0
-            def transcriberCount = result[TRANSCRIBER_COUNT_COLUMN] ?: 0
             def validatorCount = result[VALIDATOR_COUNT_COLUMN] ?: 0
             totalCount = result['full_count']
             if (transcribedCount < taskCount && !project.inactive) {
                 incompleteCount++
             }
-            makeProjectSummary(project, taskCount, requiredTranscriptionsPerProjectCount, transcribedCount, validatedCount, transcriberCount, validatorCount)
+            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, validatorCount)
         }
         new ProjectSummaryList(
                 projectRenderList: renderList,
@@ -346,36 +339,31 @@ class ProjectService {
 
         def taskCountClause = jCount(TASK).'as'(TASK_COUNT_COLUMN)
 
-        def requiredTranscriptionsCountClause = taskCountClause.multiply(jWhen(PROJECT.TRANSCRIPTIONS_PER_TASK.isNull(), 1).otherwise(PROJECT.TRANSCRIPTIONS_PER_TASK))
-
-        def transcribedCountClause = jSum(jWhen(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
+        def fullyTranscribedTaskCountClause = jCount(TASK.IS_FULLY_TRANSCRIBED).filterWhere(TASK.IS_FULLY_TRANSCRIBED.eq(true)).'as'(TRANSCRIBED_COUNT_COLUMN)
         def validatedCountClause = jSum(jWhen(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
         def validatorCountClause = jCountDistinct(TASK.FULLY_VALIDATED_BY).'as'(VALIDATOR_COUNT_COLUMN)
-        def transcriberCountClause = jCountDistinct(TRANSCRIPTION.FULLY_TRANSCRIBED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
-                whereClauses += requiredTranscriptionsCountClause.le(transcribedCountClause)
+                whereClauses += taskCountClause.eq(fullyTranscribedTaskCountClause)
                 break
             case ProjectStatusFilterType.showIncompleteOnly:
-                whereClauses += requiredTranscriptionsCountClause.gt(transcribedCountClause)
+                whereClauses += taskCountClause.gt(fullyTranscribedTaskCountClause)
                 break
         }
 
         def taskJoinTableColumns = [
                 TASK.PROJECT_ID,
                 taskCountClause,
-                transcribedCountClause,
+                fullyTranscribedTaskCountClause,
                 validatedCountClause
         ]
+
         if (countUsers) {
-            taskJoinTableColumns.add(transcriberCountClause)
             taskJoinTableColumns.add(validatorCountClause)
         }
 
-
-        //def taskJoinTable = context.select(taskJoinTableColumns).from(TASK, TRANSCRIPTION).where(TASK.ID.eq(TRANSCRIPTION.TASK_ID)).groupBy(TASK.PROJECT_ID).asTable('taskStats')
-        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK.leftOuterJoin(TRANSCRIPTION).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
 
         def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey()
                                 .leftOuterJoin(INSTITUTION).onKey()
@@ -402,17 +390,13 @@ class ProjectService {
         def sortCondition
         switch (sort) {
             case 'completed':
-                sortCondition = jWhen(requiredTranscriptionsCountClause.le(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(requiredTranscriptionsCountClause.cast(Double))).otherwise(transcribedCountClause.div(requiredTranscriptionsCountClause.cast(Double)))
-                break
+                sortCondition = jWhen(taskCountClause.eq(fullyTranscribedTaskCountClause), fullyTranscribedTaskCountClause.add(validatedCountClause).div(taskCountClause.cast(Double))).otherwise(fullyTranscribedTaskCountClause.div(taskCountClause.cast(Double)))
+               break
             case 'transcribed':
-                sortCondition = transcribedCountClause.div(requiredTranscriptionsCountClause.cast(Double))
+                sortCondition = fullyTranscribedTaskCountClause.div(taskCountClause.cast(Double))
                 break
             case 'validated':
                 sortCondition = validatedCountClause.div(taskCountClause.cast(Double))
-                break
-            case 'volunteers':
-                if (!countUsers) throw new IllegalStateException("Can't sort by volunteer count when counting users is disabled")
-                sortCondition = transcriberCountClause
                 break
             case 'institution':
                 sortCondition = jNvl(INSTITUTION.NAME, PROJECT.FEATURED_OWNER)
@@ -435,8 +419,7 @@ class ProjectService {
                     PROJECT.FEATURED_OWNER,
                     PROJECT_TYPE.LABEL,
                     INSTITUTION.NAME.as('institution_name'),
-                    jCount().over().as('full_count'),
-                    requiredTranscriptionsCountClause.as(REQUIRED_TRANSCRIPTIONS_FOR_PROJECT)
+                    jCount().over().as('full_count')
                 ).select(taskJoinTable.fields()).
                 from(fromClause).
                 where(whereClauses).
