@@ -51,7 +51,7 @@ class VolunteerStatsService {
             transcriberCount = projectService.getTranscriberCountForTag(pt)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
-            completedTasks = Transcription.countByFullyTranscribedByIsNotNull()
+            completedTasks = Task.countByIsFullyTranscribed(true) //Transcription.countByFullyTranscribedByIsNotNull()
             transcriberCount = User.countByTranscribedCountGreaterThan(0)
         }
 

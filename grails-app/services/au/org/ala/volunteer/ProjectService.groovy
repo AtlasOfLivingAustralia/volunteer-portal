@@ -607,14 +607,18 @@ class ProjectService {
     }
 
     def countTranscribedTasksForTag(ProjectType pt) {
-        Task.createCriteria().count {
+        def result = Task.createCriteria().list {
             project {
                 eq('projectType', pt)
             }
-            transcriptions {
-                isNotNull('fullyTranscribedBy')
+            projections {
+                sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
             }
+            /*transcriptions {
+                isNotNull('fullyTranscribedBy')
+            }*/
         }
+        return result[0]
     }
 
     def getTranscriberCountForTag(ProjectType pt) {
