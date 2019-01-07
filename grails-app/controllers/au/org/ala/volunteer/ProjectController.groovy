@@ -215,41 +215,6 @@ class ProjectController {
     }
 
     /**
-     * Utility to convert list of Fields to a Map of Maps with task.id as key
-     *
-     * @param fieldList
-     * @return
-     */
-    private static Map fieldListToMultiMap(List fieldList) {
-        Map taskMap = [:]
-
-        fieldList.each {
-            if (it.value) {
-                Map fm = null;
-
-                if (taskMap.containsKey(it.task.id)) {
-                    fm = taskMap.get(it.task.id)
-                } else {
-                    fm = [:]
-                    taskMap[it.task.id] = fm
-                }
-
-                Map valueMap = null;
-                if (fm.containsKey(it.name)) {
-                   valueMap = fm[it.name]
-                } else {
-                    valueMap = [:]
-                    fm[it.name] = valueMap
-                }
-
-                valueMap[it.recordIdx] = it.value
-            }
-        }
-
-        return taskMap
-    }
-
-    /**
      * Produce an export file
      */
     def exportCSV() {
@@ -269,7 +234,7 @@ class ProjectController {
             }
             log.debug("Got task list in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
-            def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+
             log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
@@ -290,7 +255,7 @@ class ProjectController {
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-                export_func(projectInstance, taskList, taskMap, fieldNames, response)
+                export_func(projectInstance, taskList, fieldNames, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")
