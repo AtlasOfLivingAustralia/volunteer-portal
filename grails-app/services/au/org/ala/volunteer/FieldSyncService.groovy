@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.apache.commons.lang3.StringUtils
 
@@ -251,7 +252,7 @@ class FieldSyncService {
         }.sort().reverse()
         truncateFields.each { fieldName ->
             def truncIdx = maxIndexFor(fieldName, fieldValues, sortedIndexes)
-            markSuperceded(task, truncIdx, fieldName)
+            markSuperceded(task, truncIdx, fieldName, transcription)
         }
 
         def now = Calendar.instance.time;
@@ -324,9 +325,18 @@ class FieldSyncService {
 //        }
     }
 
-    void markSuperceded(Task theTask, int truncIdx, String fieldName) {
-        Field.where {
-            task == theTask && superceded == false && recordIdx > truncIdx && name == fieldName
+    void markSuperceded(Task theTask, int truncIdx, String fieldName, Transcription transcriptionToUpdate) {
+
+        new DetachedCriteria(Field).build {
+            eq('task', theTask)
+            eq('name', fieldName)
+            eq('superceded', false)
+            gt('recordIdx', truncIdx)
+            if (transcriptionToUpdate) {
+                eq('transcription', transcriptionToUpdate)
+            } else {
+                isNull("transcription")
+            }
         }.updateAll(superceded: true)
     }
 
