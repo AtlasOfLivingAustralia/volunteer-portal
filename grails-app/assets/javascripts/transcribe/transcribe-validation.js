@@ -87,8 +87,6 @@ var transcribeValidation = {};
             }
         });
 
-        console.log(errorList);
-
         return { hasWarnings : hasWarnings, hasErrors: hasErrors, errorList: errorList }
     };
 

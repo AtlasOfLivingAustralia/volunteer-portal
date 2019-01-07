@@ -81,6 +81,10 @@
                         <div id="ct-item-container" class="ct-item-container">
                             <div id="ct-landing" class="ct-item ${validator ? '' : 'active'}">
                                 <span style="display: none;" id="cameratrap_doYouWishAsAnswer"><g:message code="cameratrap.doYouWishAsAnswer"/></span>
+                                <span style="display: none;" id="cameratrap_YouMustSelectOneAnimal"><g:message code="transcribe.templateViews.YouMustSelectOneAnimal"/></span>
+                                <span style="display: none;" id="cameratrap_InvalidChoices"><g:message code="transcribe.templateViews.InvalidChoices"/></span>
+                                <span style="display: none;" id="default_cancel"><g:message code="default.cancel"/></span>
+                                <span style="display: none;" id="default_ok"><g:message code="default.ok"/></span>
 
 
                                 <div class="row">

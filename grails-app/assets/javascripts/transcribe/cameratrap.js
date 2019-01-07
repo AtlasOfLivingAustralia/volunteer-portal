@@ -68,10 +68,11 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
     });
 
     var yes = $('#btn-animals-present').attr('value');
-    $('#ct-animals-question input').change(function(e) {
+    $('#ct-animals-question input').change(function(e){
 
 
-
+      var cancelButtonText = $("#default_cancel").text();
+      var okButtonText = $("#default_ok").text();
       var doYouWishAsAnswer = $("#cameratrap_doYouWishAsAnswer").text();
       var $this = $(this);
       var answer = $this.attr("label");
@@ -81,17 +82,32 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
         // check if we're don't confirm and confirm
         var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
         if (dontConfirm) {
-          bootbox.confirm(doYouWishAsAnswer, function(confirm) {
-            if (confirm) {
-              $btnSave.click();
+          bootbox.confirm({
+            message: doYouWishAsAnswer,
+            buttons: {
+              confirm: {
+                label: okButtonText,
+                className: 'btn-primary'
+              },
+              cancel: {
+                label: cancelButtonText,
+                className: 'btn-default'
+              }
+            },
+            callback: function (confirm) {
+              if (confirm) {
+                $btnSave.click();
+              }
             }
           });
+
         } else {
           $btnSave.click();
         }
       } else {
         switchCtPage('#ct-animals-present');
       }
+
 
     });
 
@@ -525,7 +541,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
         count += $unlisted.find('input[name=recordValues\\.0\\.unknown]').is(':checked') == true ? 1 : 0;
 
         if (count < 1) {
-          errorList.push({element: null, message: "You must select at least one animal", type: "Error" });
+          var message = $("#cameratrap_YouMustSelectOneAnimal").text();
+          errorList.push({element: null, message: message, type: "Error" });
         }
       }
     });
@@ -536,6 +553,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
 
     submitRequiresConfirmation = true;
     postValidationFunction = function(validationResults) {
+      //var alert_message = $("#cameratrap_InvalidChoices").text();
       if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid choices</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
     };
 

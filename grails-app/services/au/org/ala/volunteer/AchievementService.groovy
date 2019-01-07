@@ -10,6 +10,8 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.hibernate.transform.DistinctRootEntityResultTransformer
 import org.ocpsoft.prettytime.PrettyTime
+import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.context.support.ResourceBundleMessageSource
 import reactor.spring.context.annotation.Consumer
 import reactor.spring.context.annotation.Selector
 
@@ -39,6 +41,8 @@ class AchievementService {
     def scriptPool
 
     def eventSourceStartMessage
+
+    def messageSource
 
     @PostConstruct
     void init() {
@@ -259,14 +263,18 @@ class AchievementService {
         final message
         use (TimeCategory) {
             if ((new Date() - award.awarded) < 1.minute ) {
-                message = "You were just awarded the ${award.achievement.i18nName} achievement!"
+                message = messageSource.getMessage("project.project_settings.message.YouWereJustAwarded", [award.achievement.i18nName] as Object[], "DigiVol", LocaleContextHolder.locale)
             } else {
-                message = "You were awarded the ${award.achievement.i18nName} achievement ${new PrettyTime().format(award.awarded)}!"
+                message = messageSource.getMessage("project.project_settings.message.YouWereAwarded", [award.achievement.i18nName, new PrettyTime().format(award.awarded)] as Object[], "DigiVol", LocaleContextHolder.locale)
+
+
             }
         }
 
+        def title = messageSource.getMessage("project.project_settings.message.Congratulation",null, "DigiVol", LocaleContextHolder.locale)
+
         def data = [class     : 'achievement.award', badgeUrl: getBadgeImageUrl(award.achievement),
-                   title: 'Congratulations!', id: award.id,
+                   title: title , id: award.id,
                    message   : message.toString(),
                    profileUrl: grailsLinkGenerator.link(controller: 'user', action: 'notebook')]
         def msg = new Message.EventSourceMessage(to: award.user.userId, event: ACHIEVEMENT_AWARDED, data: data)
