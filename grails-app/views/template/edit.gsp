@@ -75,23 +75,12 @@
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'has-error')}">
                             <label class="col-md-3 control-label" for="supportMultipleTranscriptions"><g:message code="template.multipletanscriptions.label"
                                                                                                   default="Support multiple transcriptions per task?"/></label>
-
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
                                 <g:checkBox name="supportMultipleTranscriptions"
                                             checked="${templateInstance.supportMultipleTranscriptions}"/>
                                 </div>
                             </div>
-
-                           %{-- <div class="col-md-offset-3 col-md-6">
-                                <div class="checkbox">
-                                    <label for="supportMultipleTranscriptions" >
-                                        <g:checkBox name="supportMultipleTranscriptions"
-                                                    checked="${templateInstance.supportMultipleTranscriptions}"/>Support Multiple Transcriptions
-                                    </label>
-                                </div>
-                            </div>--}%
-
                         </div>
 
                         <div id="row-view-params-json" class="form-group">

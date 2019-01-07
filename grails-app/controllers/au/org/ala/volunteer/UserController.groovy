@@ -563,9 +563,9 @@ class UserController {
         log.debug("ajaxGetPoints| User.get(): ${sw.toString()}")
         sw.reset().start()
 
-        Long taskCount = Task.countByFullyTranscribedBy(userInstance.userId)
+        Long taskCount = Transcription.countByFullyTranscribedBy(userInstance.userId)
         sw.stop()
-        log.debug("ajaxGetPoints| Task.countByFullyTranscribedBy(): ${sw.toString()}")
+        log.debug("ajaxGetPoints| Transcription.countByFullyTranscribedBy(): ${sw.toString()}")
         sw.reset().start()
 
         final query = """{
@@ -623,7 +623,7 @@ class UserController {
         def userInstance = User.get(params.int("id"))
         //def simpleTemplateEngine = new SimpleTemplateEngine()
         Stopwatch sw = Stopwatch.createStarted()
-        def c = Task.createCriteria()
+        def c = Transcription.createCriteria()
         def expeditions = c {
             eq("fullyTranscribedBy", userInstance.userId)
             projections {

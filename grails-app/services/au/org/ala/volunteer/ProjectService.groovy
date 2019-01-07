@@ -614,9 +614,6 @@ class ProjectService {
             projections {
                 sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
             }
-            /*transcriptions {
-                isNotNull('fullyTranscribedBy')
-            }*/
         }
         return result[0]
     }
