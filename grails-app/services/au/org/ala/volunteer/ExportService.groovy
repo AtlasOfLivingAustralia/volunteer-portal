@@ -136,10 +136,11 @@ class ExportService {
 
         def filename = "Project-" + project.id + "-DwC"
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".csv");
-        response.setContentType("text/plain");
+        response.setContentType("text/plain;");
+
         OutputStream fout = response.getOutputStream();
         OutputStream bos = new BufferedOutputStream(fout);
-        OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+        OutputStreamWriter outputwriter = new OutputStreamWriter(bos, "UTF-8");
 
         CSVWriter writer = new CSVWriter(outputwriter);
         // write header line (field names)
@@ -202,7 +203,7 @@ class ExportService {
         // First up write out the main tasks file -all the remaining fields are single value only
         def zipStream = new ZipOutputStream(response.getOutputStream())
         OutputStream bos = new BufferedOutputStream(zipStream);
-        OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+        OutputStreamWriter outputwriter = new OutputStreamWriter(bos, "UTF-8");
 
         CSVWriter writer = new CSVWriter(outputwriter);
 
