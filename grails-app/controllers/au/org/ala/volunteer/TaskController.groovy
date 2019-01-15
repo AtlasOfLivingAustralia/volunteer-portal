@@ -614,6 +614,22 @@ class TaskController {
         [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
     }
 
+    def stagedImages() {
+        def projectInstance = Project.get(params.int("projectId"))
+        def profile = ProjectStagingProfile.findByProject(projectInstance)
+        if (!profile) {
+            profile = new ProjectStagingProfile(project: projectInstance)
+            profile.save(flush: true, failOnError: true)
+        }
+
+        if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
+            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
+        }
+
+        def images = stagingService.buildTaskMetaDataList(projectInstance)
+        render template:'stagedImages', model: [images: images, profile:profile]
+    }
+
     def selectImagesForStagingFragment() {
         def projectInstance = Project.get(params.int("projectId"))
         [projectInstance: projectInstance]
@@ -705,6 +721,8 @@ class TaskController {
     }
 
     def stageImage() {
+
+        int count = 0
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             if(request instanceof MultipartHttpServletRequest) {
@@ -718,6 +736,7 @@ class TaskController {
 
                         try {
                             stagingService.stageImage(projectInstance, f)
+                            count ++
                         } catch (Exception ex) {
                             flash.message = "Failed to upload image file: " + ex.message;
                         }
@@ -727,7 +746,10 @@ class TaskController {
             }
 
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+
+        def processed = [:]
+        processed.put("processed", count)
+        render processed as JSON
     }
 
     def unstageImage() {
