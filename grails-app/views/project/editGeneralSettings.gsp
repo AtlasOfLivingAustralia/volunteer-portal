@@ -144,7 +144,7 @@
 
     <div class="form-group">
         <div class="col-md-9 col-md-offset-3">
-            <label for="harvestableByAla" class="checkbox">
+            <label for="extractImageExifData" class="checkbox">
                 <g:checkBox name="extractImageExifData"
                             checked="${projectInstance.extractImageExifData}"/>&nbsp;EXIF data from staged images should be included in project exports
             </label>

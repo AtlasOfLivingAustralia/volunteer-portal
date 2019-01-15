@@ -317,7 +317,6 @@
             </div>
         </div>
 
-        %{--<g:if test="${project.template?.supportMultipleTranscriptions}">--}%
         <div class="form-group" data-ng-if="projectTemplate.supportMultipleTranscriptions">
             <label class="control-label col-md-3" for="numberOfTranscriptions">Number of Transcriptions</label>
 
@@ -329,10 +328,16 @@
             <label class="control-label col-md-3" for="thresholdMatchingTranscriptions">Threshold Of Matching Transcriptions (Auto Validation)</label>
 
             <div class="col-md-6">
-                <g:textField class="form-control" name="thresholdMatchingTranscriptions" data-ng-model="project.thresholdMatchingTranscriptions"/>
+                <g:textField class="form-control" name="thresholdMatchingTranscriptions" data-ng-model="project.thresholdMatchingTranscriptions"  style="margin-top: 10px"/>
             </div>
         </div>
-        %{--</g:if>--}%
+        <div class="form-group">
+            <label class="control-label col-md-3" for="extractImageExifData">EXIF data from staged images should be included in project exports</label>
+            
+            <div class="col-md-6">
+                    <input type="checkbox" name="extractImageExifData" data-ng-model="project.extractImageExifData" style="margin-top: 20px"/>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-sm-12">
@@ -415,6 +420,10 @@
             <tr>
                 <td class="prop-name">Threshold of Matching Transcriptions (Autovalidation)</td>
                 <td class="prop-value">{{::project.thresholdMatchingTranscriptions}}</td>
+            </tr>
+            <tr>
+                <td class="prop-name">EXIF data from staged images should be included in project exports</td>
+                <td class="prop-value">{{::project.extractImageExifData ? "Yes" : "No"}}</td>
             </tr>
             <tr>
                 <td class="prop-name">Expedition type</td>
