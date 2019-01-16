@@ -490,15 +490,18 @@
 }
 
 .film-cell.default.active {
-    //border-color: black;
+    /*border-color: black; */
     border-color: #df4a21;
     opacity: 1.0;
 }
 .film-cell.active {
-    border-color: #df4a21;
+    /*border-color: #df4a21; */
+    border-color: black;
 }
 .film-cell.default {
-    border-color: black;
+    border-color: #df4a21;
+    opacity: 1.0;
+   /* border-color: black;*/
 }
 
 .film-cell img {
