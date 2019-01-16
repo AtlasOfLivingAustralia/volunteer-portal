@@ -139,6 +139,44 @@ class ValidationServiceSpec extends Specification {
         task.fullyValidatedBy == "system"
     }
 
+    void "A Task should be auto-validated if the matching transcription threshold is met, even if the required number of transcriptions has not yet been reached"() {
+        setup: "Require two matching transcriptions and transcribe the task twice"
+        task.project.thresholdMatchingTranscriptions = 2
+        for (int i=0; i<2; i++) {
+            transcribe(task, Integer.toString(i), fields())
+        }
+        when:
+        service.autoValidate(taskSet)
 
+        then:
+        Task task = Task.get(task.id)
+        task.isFullyTranscribed == true
+        task.isValid == true
+        task.numberOfMatchingTranscriptions == 2
+        task.fullyValidatedBy == "system"
+    }
+
+    void "A Task should be auto-validatable after the number of matching transcription threshold is met"() {
+        setup: "Require two matching transcriptions and transcribe the task twice, but differently"
+        task.project.thresholdMatchingTranscriptions = 2
+        for (int i=0; i<2; i++) {
+            Map fields = fields()
+            fields.name = "name $i"
+            transcribe(task, Integer.toString(i), fields)
+        }
+
+        expect: "The task should be eligible for auto-validation"
+        service.shouldAutoValidate(task) == true
+
+        when:
+        service.autoValidate(taskSet)
+
+        then: "But it should not be validated"
+        Task task = Task.get(task.id)
+        task.isFullyTranscribed == false
+        !task.isValid
+        !task.numberOfMatchingTranscriptions
+        !task.fullyValidatedBy
+    }
 
 }
