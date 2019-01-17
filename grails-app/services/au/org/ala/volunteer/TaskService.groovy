@@ -1180,7 +1180,7 @@ OR ($statusSnippet) = :query
 
         def withClause = "WITH \n${withClauses.join(',\n')}"
         def selectClause = """
-SELECT DISTINCT ON (t.id)
+SELECT
 t.id,
 t.created,
 t.external_identifier,
@@ -1213,7 +1213,7 @@ tr.time_to_transcribe,
         def queryClause = """
 FROM task t
     JOIN project p ON t.project_id = p.id
-    JOIN transcription tr ON t.id = tr.task_id
+    LEFT OUTER JOIN (select DISTINCT ON (tr.task_id) * from transcription tr where tr.fully_transcribed_by = :userId ORDER BY tr.task_id) as tr on (t.id = tr.task_id)
     LEFT OUTER JOIN catalog_numbers c on c.task_id = t.id
     LEFT OUTER JOIN vp_user tu ON tr.fully_transcribed_by = tu.user_id
     LEFT OUTER JOIN vp_user vu on t.fully_validated_by = vu.user_id
@@ -1223,7 +1223,7 @@ $filter
 $querySnippet
 """
         def pagingClause = """
-ORDER BY t.id, $sortColumn $order;
+ORDER BY $sortColumn $order;
 """
         def results = [:]
 
