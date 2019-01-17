@@ -323,16 +323,16 @@
 
                 <td style="text-align: center; width: 120px;">
                     <span ng-show="$ctrl.tabIndex > 0"> <!-- notebook.tasklist.tableAction.label -->
-                        <a ng-show="taskInstance.fullyTranscribedBy" class="btn btn-default btn-xs"
+                        <a ng-show="taskInstance.isFullyTranscribed" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller: 'task', action:'show')}/{{taskInstance.id}}">
                             <g:message code="action.view.label" />
                         </a>
-                        <a ng-show="taskInstance.fullyTranscribedBy && taskInstance.isValidator" class="btn btn-default btn-xs"
+                        <a ng-show="taskInstance.isFullyTranscribed && taskInstance.isValidator" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller: 'validate', action:'task')}/{{taskInstance.id}}">
                             <span ng-show="taskInstance.status == 'Validated'"><g:message code="action.review.label" /></span>
                             <span ng-hide="taskInstance.status == 'Validated'"><g:message code="action.validate.label" /></span>
                         </a>
-                        <a ng-hide="taskInstance.fullyTranscribedBy" class="btn btn-default btn-small"
+                        <a ng-hide="taskInstance.isFullyTranscribed" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller:'transcribe', action:'task')}/{{taskInstance.id}}">
                             <g:message code="action.transcribe.label" />
                         </a>

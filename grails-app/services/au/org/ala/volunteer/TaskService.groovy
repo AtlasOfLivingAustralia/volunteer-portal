@@ -1093,7 +1093,7 @@ ORDER BY record_idx, name;
         final projectFilter = ' AND project_id = :project '
         String filter
         String additionalJoins = ''
-        String dateTranscribed = 't.date_fully_transcribed'
+        String dateTranscribed = 'tr.date_fully_transcribed'
         List<String> withClauses = [
                 """catalog_numbers AS (
                       SELECT f.task_id, ARRAY_AGG(f.value) as catalog_number
@@ -1111,7 +1111,7 @@ ORDER BY record_idx, name;
                 filter = 'TRUE' // filter occurs by joining with the updated and validator notes task ids.
                 break
             case 1:
-                filter = 't.fully_transcribed_by = :userId'
+                filter = 'tr.fully_transcribed_by = :userId'
                 break
             case 2:
                 withClauses += """saved_tasks AS (
@@ -1121,12 +1121,12 @@ ORDER BY record_idx, name;
                                       AND f.transcribed_by_user_id = :userId
                                       GROUP BY f.task_id
                                     )""".stripIndent()
-                filter = 't.fully_transcribed_by is null'
+                filter = 't.is_fully_transcribed = false'
                 additionalJoins = 'JOIN saved_tasks s ON s.task_id = t.id'
                 dateTranscribed = "COALESCE($dateTranscribed, s.date_last_updated)"
                 break
             case 3:
-                filter = 'fully_validated_by = :userId'
+                filter = 't.fully_validated_by = :userId'
                 break
             default:
                 throw new IllegalArgumentException("selectedTab must be between 0 and 3")
@@ -1157,7 +1157,7 @@ ORDER BY record_idx, name;
         final statusSnippet = """
             CASE WHEN t.is_valid = true THEN '$validatedStatus'
                  WHEN t.is_valid = false THEN '$invalidatedStatus'
-                WHEN t.fully_transcribed_by IS NOT NULL THEN '$transcribedStatus'
+                WHEN t.is_fully_transcribed = true THEN '$transcribedStatus'
                 ELSE '$savedStatus'
             END""".stripIndent()
 
@@ -1180,8 +1180,29 @@ OR ($statusSnippet) = :query
 
         def withClause = "WITH \n${withClauses.join(',\n')}"
         def selectClause = """
-SELECT
-t.*,
+SELECT DISTINCT ON (t.id)
+t.id,
+t.created,
+t.external_identifier,
+t.external_url,
+t.fully_validated_by,
+t.project_id,
+t.viewed,
+t.is_valid,
+t.date_fully_validated,
+t.date_last_updated,
+t.last_viewed,
+t.last_viewed_by,
+t.interesting,
+t.validateduuid,
+t.time_to_validate,
+t.number_of_matching_transcriptions,
+t.is_fully_transcribed,
+tr.fully_transcribed_by,
+tr.date_fully_transcribed,
+tr.fully_transcribed_ip_address,
+tr.transcribeduuid,
+tr.time_to_transcribe,
     (tu.first_name || ' ' || tu.last_name) AS "transcriber_display_name",
     (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
     c.catalog_number[1] AS "catalog_number",
@@ -1189,12 +1210,13 @@ t.*,
     $statusSnippet AS "status",
     $dateTranscribed AS "date_transcribed"
 """
-        def countClause = "SELECT count(t.id)"
+        def countClause = "SELECT count(DISTINCT t.id)"
         def queryClause = """
 FROM task t
     JOIN project p ON t.project_id = p.id
+    JOIN transcription tr ON t.id = tr.task_id
     LEFT OUTER JOIN catalog_numbers c on c.task_id = t.id
-    LEFT OUTER JOIN vp_user tu ON t.fully_transcribed_by = tu.user_id
+    LEFT OUTER JOIN vp_user tu ON tr.fully_transcribed_by = tu.user_id
     LEFT OUTER JOIN vp_user vu on t.fully_validated_by = vu.user_id
     $additionalJoins
 WHERE
@@ -1202,7 +1224,7 @@ $filter
 $querySnippet
 """
         def pagingClause = """
-ORDER BY $sortColumn $order;
+ORDER BY t.id, $sortColumn $order;
 """
         def results = [:]
 
@@ -1239,7 +1261,7 @@ $pagingClause
             results.viewList = sql.rows(rowsQuery, params, (offset ?: 0) + 1, max).collect { row ->
                 [ id: row.id,
                   externalIdentifier: row.external_identifier,
-                  fullyTranscribedBy: row.fully_transcribed_by,
+                  isFullyTranscribed: row.is_fully_transcribed,
                   fullyValidatedBy: row.validator_display_name,
                   projectId: row.project_id,
                   projectName: row.project_name,
@@ -1259,6 +1281,7 @@ $pagingClause
                 results.viewList.each { it.unread = unreadIds.contains(it.id) }
             }
         }
+
         return results
     }
 
