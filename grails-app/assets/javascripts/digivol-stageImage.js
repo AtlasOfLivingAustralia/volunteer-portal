@@ -153,11 +153,7 @@ function digivolStageFiles (config, self) {
             },
             error: function (data) {
                 console.log(data);
-            },
-            complete: function () {
-                // close();
             }
-
         });
     }
 }

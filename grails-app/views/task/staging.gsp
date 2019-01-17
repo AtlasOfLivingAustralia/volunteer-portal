@@ -143,7 +143,8 @@
 
             <input type="hidden" id="totalUploaded" value="0">
             <div id="stagedImages">
-                <g:render template="/task/stagedImages" model="[images: images]" />
+                %{--<g:render template="/task/stagedImages" model="[images: images]" />--}%
+                <g:include controller="task" action="stagedImages" />
             </div>
 
 

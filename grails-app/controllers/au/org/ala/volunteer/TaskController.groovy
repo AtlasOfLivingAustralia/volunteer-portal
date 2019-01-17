@@ -599,7 +599,8 @@ class TaskController {
             redirect(controller: 'index')
             return
         }
-        def profile = ProjectStagingProfile.findByProject(projectInstance)
+        [projectInstance: projectInstance, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+    /*    def profile = ProjectStagingProfile.findByProject(projectInstance)
         if (!profile) {
             profile = new ProjectStagingProfile(project: projectInstance)
             profile.save(flush: true, failOnError: true)
@@ -609,9 +610,12 @@ class TaskController {
             profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
         }
 
+        cache false
+
         def images = stagingService.buildTaskMetaDataList(projectInstance)
 
         [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+        */
     }
 
     def stagedImages() {
@@ -626,6 +630,7 @@ class TaskController {
             profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
         }
 
+        cache false
         def images = stagingService.buildTaskMetaDataList(projectInstance)
         render template:'stagedImages', model: [images: images, profile:profile]
     }
