@@ -13,6 +13,12 @@ class ValidationService {
 
     FieldSyncService fieldSyncService
 
+    /**
+     * This method is called when a Transcription or Task is changed, we check to see if any of the
+     * new Tasks need to be auto-validated and if so, we auto-validate.
+     *
+     * @param taskIds the tasks to check.
+     */
     void autoValidate(Set<Long> taskIds) {
 
         taskIds.each { taskId ->
@@ -39,7 +45,10 @@ class ValidationService {
                 else {
                     log.info("Task has ${numberOfMatchingTranscriptions} matching transcriptions - not auto-validating")
                 }
-                task.setNumberOfMatchingTranscriptions(numberOfMatchingTranscriptions)
+                if (task.isFullyTranscribed) {
+                    task.setNumberOfMatchingTranscriptions(numberOfMatchingTranscriptions)
+                }
+
                 task.save()
 
             }
@@ -67,10 +76,11 @@ class ValidationService {
     private Map matchTranscriptions(Task task) {
 
         Map matchCounts = [:].withDefault{1}
-        for (int i=0; i<task.transcriptions.size(); i++) {
-            Transcription t1 = task.transcriptions[i]
-            for (int j=i+1; j<task.transcriptions.size(); j++) {
-                Transcription t2 = task.transcriptions[j]
+        List completeTranscriptions = new ArrayList(task.transcriptions.findAll{it.fullyTranscribedBy != null})
+        for (int i=0; i<completeTranscriptions.size(); i++) {
+            Transcription t1 = completeTranscriptions[i]
+            for (int j=i+1; j<completeTranscriptions.size(); j++) {
+                Transcription t2 = completeTranscriptions[j]
                 if (fieldsMatch(t1, t2)) {
                     matchCounts[t1.id]++
                     matchCounts[t2.id]++
@@ -78,7 +88,7 @@ class ValidationService {
             }
         }
         if (matchCounts.size() == 0) {
-            task.transcriptions.each { transcription ->
+            completeTranscriptions.each { transcription ->
                 matchCounts[transcription.id] = 0
             }
         }
@@ -87,7 +97,16 @@ class ValidationService {
 
 
     private boolean shouldAutoValidate(Task task) {
-        return task.project.requiredNumberOfTranscriptions > 1 && task.isFullyTranscribed && task.fullyValidatedBy == null
+        if (task.fullyValidatedBy) {  // Check this first as it doesn't require a query.
+            return false
+        }
+
+        int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions
+        if (numberOfMatchingTranscriptionsConsideredValid < 2) { // Avoid querying transcriptions if this task can't be auto-validated
+            return false
+        }
+        int numberOfCompleteTranscriptions = task.transcriptions.findAll{it.fullyTranscribedBy != null}.size()
+        return numberOfCompleteTranscriptions >= numberOfMatchingTranscriptionsConsideredValid
     }
 
     /**
@@ -120,6 +139,9 @@ class ValidationService {
 
     private void markAsValid(Task task, Transcription validatedTranscription) {
 
+        if (!task.isFullyTranscribed) {
+            task.setIsFullyTranscribed(true)
+        }
         // Copy this transcription to the Task and mark the Task as validated.
         task.validate(UserService.SYSTEM_USER, true)
 
