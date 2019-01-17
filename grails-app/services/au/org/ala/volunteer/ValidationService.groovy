@@ -101,7 +101,7 @@ class ValidationService {
             return false
         }
 
-        int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions
+        int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions ?: 0
         if (numberOfMatchingTranscriptionsConsideredValid < 2) { // Avoid querying transcriptions if this task can't be auto-validated
             return false
         }
