@@ -16,7 +16,7 @@ class FieldSyncService {
         retrieveFieldsForTranscription(taskInstance, transcription)
     }
 
-    private Map retrieveFieldsForTranscription(Task task, Transcription transcription) {
+    Map retrieveFieldsForTranscription(Task task, Transcription transcription) {
         Map recordValues = new LinkedHashMap()
 
         // If the transcription already exists, use any fields attached to the transcription.  Otherwise,
