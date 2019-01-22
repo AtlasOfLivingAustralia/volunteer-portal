@@ -332,8 +332,17 @@ class TaskController {
 
 //                def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-                //retrieve the existing values
-                Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+                //retrieve the existing values - if this is a multiple transcription task, we have to pick
+                // which transcription to show.
+                Transcription transcription = null //
+                if (!taskInstance.fullyValidatedBy) { // If the task is not validated, pick a transcription.
+                    String userId = params.userId || currentUser
+                    transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == userId}
+                    if (!transcription) {
+                        transcription = taskInstance.transcriptions.first()
+                    }
+                }
+                Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance, transcription)
                 def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
                 def model = [
                         taskInstance: taskInstance,
