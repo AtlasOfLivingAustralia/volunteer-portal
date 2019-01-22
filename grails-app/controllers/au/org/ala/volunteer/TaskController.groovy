@@ -336,13 +336,19 @@ class TaskController {
                 // which transcription to show.
                 Transcription transcription = null //
                 if (!taskInstance.fullyValidatedBy) { // If the task is not validated, pick a transcription.
-                    String userId = params.userId || currentUser
+                    // If the user has transcribed the Task, use the user's transcription.
+                    String userId = currentUser
                     transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == userId}
+
+                    // Otherwise use the transcription from the user notebook, if supplied.
+                    if (params.userId) {
+                        transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == params.userId}
+                    }
                     if (!transcription) {
                         transcription = taskInstance.transcriptions.first()
                     }
                 }
-                Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance, transcription)
+                Map recordValues = fieldSyncService.retrieveFieldsForTranscription(taskInstance, transcription)
                 def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
                 def model = [
                         taskInstance: taskInstance,
