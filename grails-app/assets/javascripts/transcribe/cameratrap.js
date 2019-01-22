@@ -409,10 +409,16 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     var $clicked = $defaultImg;
 
     function loadImage($src) {
-      $imgSeq.find('.active').removeClass('active');
-      $imgViewer.prop('src', $src.find('img').data('full-src'));
-      $imgViewer.panZoom('loadImage');
-      $src.addClass('active');
+      // This is a workaround for #328 - there is a difficult to reproduce issue where this function is
+      // called before the panZoom plugin is initalised.
+      // We just check if it is before loading a new image.
+      var panZoom = $imgViewer.data('panZoom');
+      if (panZoom) {
+        $imgSeq.find('.active').removeClass('active');
+        $imgViewer.prop('src', $src.find('img').data('full-src'));
+        $imgViewer.panZoom('loadImage');
+        $src.addClass('active');
+      }
     }
 
     $imgSeq.on('click', '.film-cell', function(e) {
