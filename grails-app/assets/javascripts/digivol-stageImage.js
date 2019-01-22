@@ -28,14 +28,6 @@ function digivolStageFiles (config, self) {
                 window.location = config.unStageImageUrl + imageName;
             }
         });
-        $(".btnAddFieldDefinition").click(function(e) {
-            e.preventDefault();
-            var options = {
-                title: "Add field definition",
-                url: config.addFieldUrl
-            };
-            bvp.showModal(options);
-        });
         $("#btnClearStagingArea").click(function(e) {
             e.preventDefault();
             bootbox.confirm('Are you sure you wish to delete all images from the staging area?', function(result) {
