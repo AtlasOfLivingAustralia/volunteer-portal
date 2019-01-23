@@ -5,5 +5,11 @@ enum FieldDefinitionType {
     Literal,
     Sequence,
     NamePattern,
-    DataFileColumn
+    DataFileColumn,
+    SequenceGroupId
+
+    @Override
+    String toString() {
+        return super.toString()
+    }
 }

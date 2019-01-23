@@ -4,6 +4,7 @@ import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.Directory
 import com.drew.metadata.Metadata
 import com.drew.metadata.Tag
+import com.drew.metadata.exif.ExifSubIFDDirectory
 import org.imgscalr.Scalr
 
 import javax.imageio.ImageIO
@@ -165,6 +166,13 @@ public class ImageUtils {
         }
 
         return exif
+    }
+
+    static Date getDateTaken(File file) {
+        Metadata metadata = ImageMetadataReader.readMetadata(file)
+        ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class)
+
+        directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
     }
 
 }

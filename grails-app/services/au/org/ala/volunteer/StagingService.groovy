@@ -16,6 +16,9 @@ class StagingService {
     def fieldSyncService
     def taskService
 
+    /** If images were taken 3 more than 3 seconds apart they are assigned to separate burst event groups */
+    static long DEFAULT_BURST_THRESHOLD = 3*1000
+
     String getStagingDirectory(Project project) {
         return "${grailsApplication.config.images.home}/${project.id}/staging"
     }
@@ -35,7 +38,15 @@ class StagingService {
         file.transferTo(newFile);
     }
 
-    def listStagedFiles(Project project) {
+    /**
+     * Reads the files in the project staging directory and returns information about them.  The dateTaken will be
+     * added to the returned file information if sortByDateTaken is true.
+     * @param project the project to get staging data for.
+     * @param sortByDateTaken if true, EXIF data will be read from the file to find the original_date_time field use it to sort.
+     *
+     * @return List<Map> containing file, name and url for each staging file.
+     */
+    List listStagedFiles(Project project, boolean sortByDateTaken = false) {
         def dir = new File(getStagingDirectory(project))
         if (!dir.exists()) {
             dir.mkdirs();
@@ -46,11 +57,17 @@ class StagingService {
         files.each {
             if (!it.isDirectory()) {
                 def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(it.name, "UTF-8").replaceAll("\\+", "%20")
-                images << [file: it, name: it.name, url: url]
+                Map image = [file: it, name: it.name, url: url]
+                if (sortByDateTaken) {
+                    Date dateTaken = ImageUtils.getDateTaken(it)
+                    image.dateTaken = dateTaken ? dateTaken.getTime() : 0
+                }
+                images << image
             }
         }
+        def sort = sortByDateTaken ? {it.dateTaken} : {it.name}
 
-        return images.sort { it.name }
+        images.sort(sort)
     }
 
     def unstageImage(Project project, String imageName) {
@@ -147,9 +164,26 @@ class StagingService {
         return [success: true, message:"Total rows processed: ${totalRows}, tasks modified: ${taskCount}"]
     }
 
+    private long getBurstGapThreshold(Project project) {
+        long burstGapThreshold = DEFAULT_BURST_THRESHOLD
+        String burstGapThresholdConfig = project.template?.viewParams?.burstGapThreshold
+        if (burstGapThresholdConfig) {
+            try {
+                burstGapThreshold = Long.valueOf(burstGapThresholdConfig)
+            }
+            catch (NumberFormatException e) {
+                log.warn("Invalid burst gap threshold configured for Project ${project.id} : ${burstGapThresholdConfig}")
+            }
+
+        }
+        burstGapThreshold
+    }
+
     def buildTaskMetaDataList(Project project) {
-        def stagedFiles = listStagedFiles(project)
         def profile = ProjectStagingProfile.findByProject(project)
+        boolean hasBurstEvent = (profile.fieldDefinitions.find{it.fieldDefinitionType == FieldDefinitionType.SequenceGroupId})
+
+        List stagedFiles = listStagedFiles(project, hasBurstEvent)
 
         int sequenceNo = taskService.findMaxSequenceNumber(project) ?: 0
 
@@ -219,6 +253,13 @@ class StagingService {
 
         def shadowFilePattern = Pattern.compile('^(.+?)__([A-Za-z]+)(?:__(\\d+))?[.]txt$')
 
+
+        // These are used to assign a burst sequence number if one has been selected as(a field type.
+        // The images will have already been sorted by date taken at this point.
+        long previousDateTaken = stagedFiles ? (stagedFiles[0].dateTaken ?: 0) : 0
+        int burstSequenceGroup = 0
+        long burstGapThreshold = getBurstGapThreshold(project)
+
         // First pass - computed defined field values (either literals, name captures etc...)
         stagedFiles.each { stagedFile ->
 
@@ -262,6 +303,14 @@ class StagingService {
                     case FieldDefinitionType.Sequence:
                         value = "${sequenceNo}"
                         break;
+                    case FieldDefinitionType.SequenceGroupId:
+                        long dateTaken = stagedFile.dateTaken ?: 0
+                        if (dateTaken - previousDateTaken > burstGapThreshold) {
+                            burstSequenceGroup++
+                        }
+                        value = burstSequenceGroup
+                        previousDateTaken = dateTaken
+                        break
                     case FieldDefinitionType.DataFileColumn:
                         def values = dataFileMap[stagedFile.name]
                         if (values) {
