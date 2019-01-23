@@ -308,7 +308,7 @@ class StagingService {
                         if (dateTaken - previousDateTaken > burstGapThreshold) {
                             burstSequenceGroup++
                         }
-                        value = burstSequenceGroup
+                        value = Long.toString(burstSequenceGroup)
                         previousDateTaken = dateTaken
                         break
                     case FieldDefinitionType.DataFileColumn:
