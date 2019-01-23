@@ -144,6 +144,57 @@
 
                             </div>
 
+                            <g:if test="${validator && transcribersAnswers && transcribersAnswers.size() > 0}">
+                                Transcribers answers
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-striped confirmation-table">
+                                            <tr>
+                                                <td>Transcriber</td>
+                                                <td>Problem With Image</td>
+                                                <td>Animals Visible?</td>
+                                                <td>Selected Animal</td>
+                                                <td>Individual Count</td>
+                                                <td>Comment</td>
+                                            </tr>
+                                            <tbody id="tbody-answer-summary">
+                                            <g:each in="${transcribersAnswers}" var="answers" status="st">
+                                                <g:set var="answer" value="${answers}"/>
+
+                                                <tr>
+                                                    <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
+
+                                                    <td>${answer.get('fields')[0].get('problemWithImage') ?: 'No'}</td>
+                                                    <g:if test="${answer.get('fields')[0].get('noAnimalsVisible') || answer.get('fields')[0].get('noAnimalsVisible') == 'yes'}">
+                                                        <td>No</td>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <td>Yes</td>
+                                                        <td>
+                                                            <g:set var="ans" value="${answer.get('fields')[0]}" />
+                                                            <g:set var="selectedAnimalInfos"
+                                                                   value="${[wsParams.animals.find{t -> return (t.vernacularName == ans.get('vernacularName') || t.scientificName == ans.get('scientificName'))}]}"/>
+                                                            <g:render template="/transcribe/wildlifeSpotterWidget"
+                                                                      model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
+
+                                                        </td>
+                                                       %{-- <td><div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div></td>--}%
+                                                        %{--<td>${answer.get('fields')[0].get('vernacularName')} <i>(${(answer.get('fields')[0].get('scientificName'))})</i></td>--}%
+                                                        <td>${answer.get('fields')[0].get('individualCount')}</td>
+                                                        <td>${answer.get('fields')[0].get('comment')}</td>
+                                                    </g:else>
+                                                </tr>
+
+                                            </g:each>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </g:if>
+
+
                             <div id="ws-dynamic-container" class="ct-item clearfix"></div>
                         </div>
                     </div>
@@ -228,6 +279,7 @@
                 <a role="button" tabindex="-1" class="text clearall">Clear all</a>
             </div>
         </script>
+
         <asset:javascript src="transcribe/wildlifespotter" asset-defer=""/>
         <asset:script type="text/javascript">
             var imgPrefix = "<cl:imageUrlPrefix type="wildlifespotter" />";

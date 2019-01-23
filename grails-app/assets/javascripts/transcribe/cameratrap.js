@@ -6,7 +6,7 @@
 //= require dotdotdot
 //= require transitionend
 //= require_self
-function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
+function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcribersAnswers) {
   jQuery(function ($) {
     var values = _.pluck([].concat(_.values(smItems)), 'value');
 

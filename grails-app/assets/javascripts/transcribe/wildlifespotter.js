@@ -313,6 +313,20 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
     function generateFormFields() {
       var $ctFields = $('#ct-fields');
       $ctFields.empty();
+      if (_.keys(selectedIndicies).length > 0) {
+        $('input[name=recordValues\\.0\\.noAnimalsVisible]').removeAttr('checked');
+        $('input[name=recordValues\\.0\\.problemWithImage]').removeAttr('checked');
+        if (recordValues && recordValues[0]) {
+            delete recordValues[0].noAnimalsVisible;
+            delete recordValues[0].problemWithImage;
+        }
+      } else {
+        if (recordValues && recordValues[0]) {
+            delete recordValues[0].vernacularName;
+            delete recordValues[0].scientificName;
+            delete recordValues[0].individualCount;
+        }
+      }
       var i = 0;
       _.each(selectedIndicies, function (value, key, list) {
         mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.' + i + '.vernacularName', value: wsParams.animals[key].vernacularName});
