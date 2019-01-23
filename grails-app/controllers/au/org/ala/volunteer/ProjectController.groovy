@@ -98,7 +98,7 @@ class ProjectController {
                 newsItem = newsItems?.first()
             }
 
-            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null)?.projectRenderList?.get(0)
+            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null, false)?.projectRenderList?.get(0)
 
             def taskCount
             def tasksTranscribed
@@ -279,7 +279,7 @@ class ProjectController {
 
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
 
-        def projectSummaryList = projectService.getProjectSummaryList(params)
+        def projectSummaryList = projectService.getProjectSummaryList(params, false)
 
         def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
 
@@ -303,7 +303,7 @@ class ProjectController {
         def q = params.q ?: null
         ProjectType pt = ProjectType.findByName('cameratraps')
 
-        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt)
+        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, false)
 
         def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
 

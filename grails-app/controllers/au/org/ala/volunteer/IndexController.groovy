@@ -28,7 +28,7 @@ class IndexController {
         def featuredProjects = projectService.getFeaturedProjectList()
         def potdSummary = null
         if (frontPage?.projectOfTheDay) {
-            potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null).projectRenderList?.get(0)
+            potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
         }
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }

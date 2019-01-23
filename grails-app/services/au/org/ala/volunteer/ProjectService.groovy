@@ -41,6 +41,7 @@ class ProjectService {
     static final String TASK_COUNT_COLUMN = 'taskCount'
     static final String TRANSCRIBED_COUNT_COLUMN = 'transcribedCount'
     static final String VALIDATED_COUNT_COLUMN = 'validatedCount'
+    static final String TRANSCRIBER_COUNT_COLUMN = 'transcriberCount'
     static final String VALIDATOR_COUNT_COLUMN = 'validatorCount'
 
     // make a static factory function because I'm not sure whether
@@ -218,7 +219,7 @@ class ProjectService {
             def taskCount = result[TASK_COUNT_COLUMN] ?: 0
             def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN] ?: 0
             def validatedCount = result[VALIDATED_COUNT_COLUMN] ?: 0
-            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0)
+            makeProjectSummary(project, taskCount, transcribedCount, validatedCount,0, 0)
         }
 
         log.debug("make summary projects: ${sw.elapsed(MILLISECONDS)}ms")
@@ -240,7 +241,7 @@ class ProjectService {
         return ProjectType.findByName("specimens")
     }
 
-    private ProjectSummary makeProjectSummary(Project project, Number taskCount, Number transcribedCount, Number fullyValidatedCount, Number validatorCount) {
+    private ProjectSummary makeProjectSummary(Project project, Number taskCount, Number transcribedCount, Number fullyValidatedCount, Number transcriberCount, Number validatorCount) {
 
         if (!project.projectType) {
             def projectType = guessProjectType(project)
@@ -268,6 +269,7 @@ class ProjectService {
         ps.taskCount = taskCount.toLong()
         ps.transcribedCount = transcribedCount.toLong()
         ps.validatorCount = validatorCount.toLong()
+        ps.transcriberCount = transcriberCount.toLong()
         ps.validatedCount = fullyValidatedCount.toLong()
 
         return ps
@@ -278,11 +280,11 @@ class ProjectService {
         if (!userService.isInstitutionAdmin(institution)) {
             conditions += ACTIVE_ONLY
         }
-        makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter)
+        makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, false)
     }
 
-    private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
-        def results = generateProjectSummariesQuery(dataSource, conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
+    private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUser) {
+        def results = generateProjectSummariesQuery(dataSource, conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
         if (!results) {
             return makeSummaryListFromResults(results, [])
         }
@@ -290,11 +292,11 @@ class ProjectService {
         return makeSummaryListFromResults(results, projects)
     }
 
-    def makeSummaryListFromProjectList(List<Project> projects, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
+    def makeSummaryListFromProjectList(List<Project> projects, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUser) {
         if (!projects) {
             return makeSummaryListFromResults([], [])
         }
-        def results = generateProjectSummariesQuery(dataSource, [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
+        def results = generateProjectSummariesQuery(dataSource, [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
         return makeSummaryListFromResults(results, projects)
     }
 
@@ -309,12 +311,13 @@ class ProjectService {
             def taskCount = result[TASK_COUNT_COLUMN] ?: 0
             def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN] ?: 0
             def validatedCount = result[VALIDATED_COUNT_COLUMN] ?: 0
+            def transcriberCount = result[TRANSCRIBER_COUNT_COLUMN] ?: 0
             def validatorCount = result[VALIDATOR_COUNT_COLUMN] ?: 0
             totalCount = result['full_count']
             if (transcribedCount < taskCount && !project.inactive) {
                 incompleteCount++
             }
-            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, validatorCount)
+            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, transcriberCount, validatorCount)
         }
         new ProjectSummaryList(
                 projectRenderList: renderList,
@@ -342,6 +345,7 @@ class ProjectService {
         def fullyTranscribedTaskCountClause = jCount(TASK.IS_FULLY_TRANSCRIBED).filterWhere(TASK.IS_FULLY_TRANSCRIBED.eq(true)).'as'(TRANSCRIBED_COUNT_COLUMN)
         def validatedCountClause = jSum(jWhen(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
         def validatorCountClause = jCountDistinct(TASK.FULLY_VALIDATED_BY).'as'(VALIDATOR_COUNT_COLUMN)
+        def transcriberCountClause = jCountDistinct(TRANSCRIPTION.FULLY_TRANSCRIBED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
@@ -358,12 +362,16 @@ class ProjectService {
                 fullyTranscribedTaskCountClause,
                 validatedCountClause
         ]
-
+        def taskJoinTable
         if (countUsers) {
+            taskJoinTableColumns.add(transcriberCountClause)
             taskJoinTableColumns.add(validatorCountClause)
+            taskJoinTable = context.select(taskJoinTableColumns).from(TASK.leftOuterJoin(TRANSCRIPTION).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+        } else {
+            taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
         }
 
-        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+       // def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
 
         def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey()
                                 .leftOuterJoin(INSTITUTION).onKey()
@@ -398,6 +406,10 @@ class ProjectService {
             case 'validated':
                 sortCondition = validatedCountClause.div(taskCountClause.cast(Double))
                 break
+            case 'volunteers':
+                if (!countUsers) throw new IllegalStateException("Can't sort by volunteer count when counting users is disabled")
+                sortCondition = transcriberCountClause
+                break
             case 'institution':
                 sortCondition = jNvl(INSTITUTION.NAME, PROJECT.FEATURED_OWNER)
                 break
@@ -430,7 +442,7 @@ class ProjectService {
         else return query
     }
 
-    ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
+    ProjectSummaryList getProjectSummaryList(GrailsParameterMap params, boolean countUser) {
 
         def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
         def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
@@ -450,7 +462,7 @@ class ProjectService {
         def max = params?.int('max')
         def order = params?.order
 
-        return makeSummaryListFromConditions(conditions, tag, query, sort, offset, max, order, statusFilterMode, activeFilterMode)
+        return makeSummaryListFromConditions(conditions, tag, query, sort, offset, max, order, statusFilterMode, activeFilterMode, countUser)
     }
 
     ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null) {
