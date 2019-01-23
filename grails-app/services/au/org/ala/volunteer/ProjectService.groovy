@@ -465,7 +465,7 @@ class ProjectService {
         return makeSummaryListFromConditions(conditions, tag, query, sort, offset, max, order, statusFilterMode, activeFilterMode, countUser)
     }
 
-    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null) {
+    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null, boolean countUser = false) {
         def conditions = []
         if (projectType) {
             conditions += PROJECT.PROJECT_TYPE_ID.eq(projectType.id)
@@ -476,7 +476,7 @@ class ProjectService {
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
 
-        return makeSummaryListFromConditions(conditions, null, q, sort, offset, max, order, statusFilter, activeFilter)
+        return makeSummaryListFromConditions(conditions, null, q, sort, offset, max, order, statusFilter, activeFilter, countUser)
     }
 
     def checkAndResizeExpeditionImage(Project projectInstance) {
