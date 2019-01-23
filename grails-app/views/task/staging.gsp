@@ -158,6 +158,7 @@
 
     digivolStageFiles({
         unStageImageUrl: "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=",
+        addFieldUrl: "${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}",
         clearStagingUrl: "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}",
         exportCSVUrl: "${createLink(controller: "task", action: 'exportStagedTasksCSV', params: [projectId: projectInstance.id])}",
         editFieldUrl: "${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}&fieldDefinitionId=",

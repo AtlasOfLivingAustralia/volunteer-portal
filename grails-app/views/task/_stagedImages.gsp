@@ -10,7 +10,7 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="#" class="btnAddFieldDefinition"><i
+                        <a href="#" class="btnStageAddFieldDefinition"><i
                                 class="fa fa-plus"></i>&nbsp;Add a column</a>
                     </li>
                     <li class="divider"></li>
