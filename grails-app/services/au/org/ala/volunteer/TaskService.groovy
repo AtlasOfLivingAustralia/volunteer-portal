@@ -1067,7 +1067,7 @@ ORDER BY record_idx, name;
                 throw new IllegalArgumentException("selectedTab must be between 0 and 3")
         }
         if (project) {
-            filter += ' AND project_id = :project '
+            filter += ' AND t.project_id = :project '
         }
 
         // SORTING
