@@ -8,8 +8,6 @@
     <content tag="templateView">
         <div id="ct-container" >
 
-            <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}"/>
-
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
                     <div id="ct-image-well" class="panel panel-default">
@@ -29,23 +27,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="ct-image-sequence" class="film-strip">
-                                <g:each in="${sequences.previous}" var="p">
-                                    <div class="film-cell" data-seq-no="${p}">
-                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
-                                    </div>
-                                </g:each>
-                                <div class="film-cell active default" data-seq-no="${sequenceNumber}">
-                                    <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
-                                </div>
-                                <g:each in="${sequences.next}" var="n">
-                                    <div class="film-cell" data-seq-no="${n}">
-                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${n}"/>
-                                    </div>
-                                </g:each>
-                            </div>
-
+                            <g:render template="cameraTrapImageSequence"/>
                             <div>
                                 <p style="margin-top:10px"
                                    class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
