@@ -157,4 +157,9 @@ class CameraTrapTagLib {
 
         [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]
     }
+
+    def showUnlist = {attrs ->
+        out << attrs.recs.collect { it.value?.unlisted?:'' }.join(', ').replaceAll(/(^(\s*?\,+)+\s?)|(^\s+)|(\s+$)|((\s*?\,+)+\s?$)/, '')
+    }
+
 }

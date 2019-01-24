@@ -255,25 +255,30 @@
 
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <table class="table table-striped confirmation-table">
-                                                <tr>
-                                                    <td>Transcriber</td>
-                                                    <td>Animal Visible</td>
-                                                    <td>Selected Animal</td>
-                                                    <td>Certainty</td>
-                                                </tr>
+                                            <table class="table table-striped confirmation-table transcribers-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col-transcriber">Transcriber</th>
+                                                        <th class="col-animal">Animal Visible</th>
+                                                        <th class="col-selection">Selected Animal</th>
+                                                        <th class="col-remark">Remark</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody id="tbody-answer-summary">
                                                 <g:each in="${transcribersAnswers}" var="answers" status="st">
                                                     <g:set var="answer" value="${answers}"/>
-
+                                                    <g:set var="ans1" value="${answer.get('fields')[0]}" />
                                                     <tr>
                                                         <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
-                                                        <td>${answer.get('fields')[0].get('animalsVisible')}</td>
-                                                        <g:if test="${answer.get('fields')[0].get('animalsVisible') == 'yes'}">
+                                                        <td>${ans1.get('animalsVisible')}</td>
+                                                        <g:if test="${ans1.get('animalsVisible') == 'yes' && ans1.get('vernacularName')}">
                                                             <td><div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div></td>
-                                                            %{--<td></td>--}%
-                                                            <td>${answer.get('fields')[0].get('certainty')}</td>
+                                                            <td>Certainty: ${answer.get('fields')[0].get('certainty')}</td>
                                                         </g:if>
+                                                        <g:elseif test="${ans1.get('animalsVisible') == 'yes' && ans1.get('unlisted')}">
+                                                            <td><b>Other:</b> <ct:showUnlist recs="${answer.get('fields')}"></ct:showUnlist></td>
+                                                            <td>${ans1.get('unknown')? 'Unknown animal in the image':'n/a'}</td>
+                                                        </g:elseif>
                                                         <g:else>
                                                             <td>None Selected</td>
                                                             <td>n/a</td>

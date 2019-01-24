@@ -33,8 +33,9 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
       if (transcribersAnswers.hasOwnProperty(index)) {
           var fullyTranscribedBy = transcribersAnswers[index].fullyTranscribedBy;
           var vn = transcribersAnswers[index].fields[0].vernacularName;
-          if (transcribersAnswers[index].fields[0].animalsVisible == 'yes' && vn) {
-              var certainty = transcribersAnswers[index].fields[0].certainty || 1;
+          var certainty = transcribersAnswers[index].fields[0].certainty;
+          if (transcribersAnswers[index].fields[0].animalsVisible == 'yes') {
+              var certainty = certainty || 1;
               if (vn && itemValueMap[vn]) {
                   transcribersSelections[fullyTranscribedBy] = {
                       certainty: certainty,
@@ -253,21 +254,23 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
     }
 
     function addTranscribersSelectionToContainer(sel, selElem) {
-      var certainty = transcribersSelections[sel].certainty;
-      var imageKey = transcribersSelections[sel].key;
-      var firstKey = keyToArray(imageKey)[0];
-      var imageInfo = firstInfoWithKey(firstKey);
-      var imageUrl = imageInfo ? imageInfo.squareThumbUrl : null;
-      var selected = (certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
-      var opts = {
-          squareThumbUrl: imageUrl,
-          value: transcribersSelections[sel].vernacularName,
-          key: imageKey,
-          selected: selected,
-          certainty: certainty
-      };
-      mu.appendTemplate(selElem, 'selected-item-transcriber-template', opts);
-      $('.ct-caption').dotdotdot();
+        if (transcribersSelections[sel]) {
+            var certainty = transcribersSelections[sel].certainty;
+            var imageKey = transcribersSelections[sel].key;
+            var firstKey = keyToArray(imageKey)[0];
+            var imageInfo = firstInfoWithKey(firstKey);
+            var imageUrl = imageInfo ? imageInfo.squareThumbUrl : null;
+            var selected = (certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
+            var opts = {
+                squareThumbUrl: imageUrl,
+                value: transcribersSelections[sel].vernacularName,
+                key: imageKey,
+                selected: selected,
+                certainty: certainty
+            };
+            mu.appendTemplate(selElem, 'selected-item-transcriber-template', opts);
+            $('.ct-caption').dotdotdot();
+        }
     }
 
     function syncTranscribersSelection() {

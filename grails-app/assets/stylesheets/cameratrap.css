@@ -509,6 +509,28 @@
     height: auto;
 }
 
+.transcribers-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.col-transcriber {
+    width: 15%;
+}
+
+.col-animal {
+    width: 10%;
+}
+
+.col-selection {
+    width: 50%;
+}
+
+.col-remark {
+    width: 20%;
+}
+
+
 /*.well hr {*/
     /*border-top-color: #e9eae0;*/
     /*border-bottom-color: #d9dad0;*/
