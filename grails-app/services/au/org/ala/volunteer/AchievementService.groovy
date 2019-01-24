@@ -261,6 +261,8 @@ class AchievementService {
 
     private createAwardMessage(AchievementAward award) {
         final message
+        message = messageSource.getMessage("project.project_settings.message.YouWereJustAwarded", [award.achievement.i18nName] as Object[], "DigiVol", LocaleContextHolder.locale)
+        /*
         use (TimeCategory) {
             if ((new Date() - award.awarded) < 1.minute ) {
                 message = messageSource.getMessage("project.project_settings.message.YouWereJustAwarded", [award.achievement.i18nName] as Object[], "DigiVol", LocaleContextHolder.locale)
@@ -270,11 +272,12 @@ class AchievementService {
 
             }
         }
+        */
 
-        def title = messageSource.getMessage("project.project_settings.message.Congratulation",null, "DigiVol", LocaleContextHolder.locale)
+        //def title = messageSource.getMessage("project.project_settings.message.Congratulation",null, "DigiVol", LocaleContextHolder.locale)
 
         def data = [class     : 'achievement.award', badgeUrl: getBadgeImageUrl(award.achievement),
-                   title: title , id: award.id,
+                   id: award.id,
                    message   : message.toString(),
                    profileUrl: grailsLinkGenerator.link(controller: 'user', action: 'notebook')]
         def msg = new Message.EventSourceMessage(to: award.user.userId, event: ACHIEVEMENT_AWARDED, data: data)

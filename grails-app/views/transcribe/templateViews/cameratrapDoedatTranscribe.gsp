@@ -84,7 +84,7 @@
                                 <span style="display: none;" id="cameratrap_YouMustSelectOneAnimal"><g:message code="transcribe.templateViews.YouMustSelectOneAnimal"/></span>
                                 <span style="display: none;" id="cameratrap_InvalidChoices"><g:message code="transcribe.templateViews.InvalidChoices"/></span>
                                 <span style="display: none;" id="default_cancel"><g:message code="default.cancel"/></span>
-                                <span style="display: none;" id="default_ok"><g:message code="default.ok"/></span>
+                                <span style="display: none;" id="cameratrap_YesProcess"><g:message code="cameratrap.YesProcess"/></span>
 
 
                                 <div class="row">
