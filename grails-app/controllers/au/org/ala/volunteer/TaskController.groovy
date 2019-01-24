@@ -926,15 +926,6 @@ class TaskController {
         redirect(action:'loadTaskData', params:[projectId: projectInstance?.id])
     }
 
-    // One of task to help transition to explicit date recording against tasks
-    def calculateDates() {
-
-        taskService.calculateTaskDates()
-
-        redirect(controller:'admin', action:'index')
-
-    }
-
     def exportOptionsFragment() {
         [exportCriteria: params.exportCriteria, projectId: params.projectId]
     }
