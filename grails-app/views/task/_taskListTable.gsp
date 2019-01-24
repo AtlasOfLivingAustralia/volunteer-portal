@@ -45,7 +45,15 @@
             </td>
 
             <g:each in="${extraFields}" var="field">
-                <td>${field?.value[taskInstance.id]?.value?.getAt(0)}</td>
+                <td>
+                    %{-- Use validator fields for validated tasks, otherwise just pick a field --}%
+                    <g:if test="${taskInstance.fullyValidatedBy}">
+                        ${field?.value[taskInstance.id]?.find{!it.transcription}?.value}
+                    </g:if>
+                    <g:else>
+                        ${field?.value[taskInstance.id]?.value?.getAt(0)}
+                    </g:else>
+                </td>
             </g:each>
 
             <td>

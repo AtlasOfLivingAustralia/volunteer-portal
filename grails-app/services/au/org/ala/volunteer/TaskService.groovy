@@ -783,19 +783,23 @@ ORDER BY record_idx, name;
     List<Map> transcribedDatesByUserAndProject(String userid, long projectId, String labelTextFilter) {
         def select = """
             SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-            FROM Project p JOIN Task t on p.id = t.project_id
+            FROM Project p 
+            JOIN Task t on p.id = t.project_id
+            JOIN Transcription trans on trans.task_id = t.id
             LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-            WHERE t.fully_transcribed_by = :userid and p.id = :projectId
+            WHERE trans.fully_transcribed_by = :userid and p.id = :projectId
             ORDER BY lastEdit ASC
         """
 
         if (labelTextFilter) {
             select = """
                 SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-                FROM Project p JOIN Task t ON p.id = t.project_id
+                FROM Project p 
+                JOIN Task t ON p.id = t.project_id
+                JOIN Transcription trans on trans.task_id = t.id
                 INNER JOIN (select f.task_id, f.value from Field f where f.name = 'occurrenceRemarks' and f.superceded = false and f.value ilike :labelTextFilter) as field on field.task_id = t.id
                 INNER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-                WHERE t.fully_transcribed_by = :userid and p.id = :projectId
+                WHERE trans.fully_transcribed_by = :userid and p.id = :projectId
             """
         }
 
