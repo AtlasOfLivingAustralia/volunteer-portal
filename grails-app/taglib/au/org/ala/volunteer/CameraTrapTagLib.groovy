@@ -3,12 +3,13 @@ package au.org.ala.volunteer
 import grails.converters.JSON
 import org.grails.web.converters.exceptions.ConverterException
 
+
 import static grails.async.Promises.*
 
 class CameraTrapTagLib {
     static namespace = "ct"
 
-    static defaultEncodeAs = [taglib: 'html']
+    static defaultEncodeAs = [taglib: 'text']
     static encodeAsForTags = [cameraTrapImageInfos: [taglib:'none']]
     static returnObjectForTags = ['cameraTrapImageInfos']
 
@@ -158,7 +159,7 @@ class CameraTrapTagLib {
         [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]
     }
 
-    def showUnlist = {attrs ->
+    def showUnlist = {attrs, body ->
         def unlistStr = ''
         attrs.recs.each {
             if (it.value?.unlisted && it.value?.unlisted?.trim() != '')  {
@@ -168,7 +169,12 @@ class CameraTrapTagLib {
                 unlistStr = unlistStr + it.value.unlisted
             }
         }
-        out << unlistStr
+        if (unlistStr != '') {
+            out << "<b>Other: </b>" + unlistStr
+        } else {
+            out << ''
+        }
+
         //out << attrs.recs.collect { it.value?.unlisted?:'' }.join(', ').replaceAll(/(^(\s*?\,+)+\s?)|(^\s+)|(\s+$)|((\s*?\,+)+\s?$)/, '')
     }
 

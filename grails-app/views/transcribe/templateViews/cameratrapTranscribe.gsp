@@ -253,18 +253,15 @@
                                                     <tr>
                                                         <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
                                                         <td>${ans1.get('animalsVisible')}</td>
-                                                        <g:if test="${ans1.get('animalsVisible') == 'yes' && ans1.get('vernacularName')}">
+                                                        <g:if test="${ans1.get('animalsVisible') == 'yes'}">
                                                             <td>
                                                                 <div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div>
-                                                                <b>Other:</b> <ct:showUnlist recs="${answer.get('fields')}"></ct:showUnlist>
+                                                                <ct:showUnlist recs="${answer.get('fields')}"></ct:showUnlist>
                                                             </td>
                                                             <td>
-                                                                ${ans1.get('unknown')? 'Unknown animal in the image':'n/a'}
+                                                                ${ans1.get('unknown') == "true"? 'Unknown animal in the image':'n/a'}
                                                             </td>
                                                         </g:if>
-                                                        <g:elseif test="${ans1.get('animalsVisible') == 'yes' && ans1.get('unlisted')}">
-
-                                                        </g:elseif>
                                                         <g:else>
                                                             <td>None Selected</td>
                                                             <td>n/a</td>
