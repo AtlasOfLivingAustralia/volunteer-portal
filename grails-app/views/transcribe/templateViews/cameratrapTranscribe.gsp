@@ -27,7 +27,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <g:render template="cameraTrapImageSequence"/>
+                            <g:render template="/transcribe/cameraTrapImageSequence"/>
                             <div>
                                 <p style="margin-top:10px"
                                    class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
