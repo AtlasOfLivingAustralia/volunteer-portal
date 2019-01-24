@@ -159,7 +159,17 @@ class CameraTrapTagLib {
     }
 
     def showUnlist = {attrs ->
-        out << attrs.recs.collect { it.value?.unlisted?:'' }.join(', ').replaceAll(/(^(\s*?\,+)+\s?)|(^\s+)|(\s+$)|((\s*?\,+)+\s?$)/, '')
+        def unlistStr = ''
+        attrs.recs.each {
+            if (it.value?.unlisted && it.value?.unlisted?.trim() != '')  {
+                if (unlistStr != '') {
+                    unlistStr = unlistStr + ', '
+                }
+                unlistStr = unlistStr + it.value.unlisted
+            }
+        }
+        out << unlistStr
+        //out << attrs.recs.collect { it.value?.unlisted?:'' }.join(', ').replaceAll(/(^(\s*?\,+)+\s?)|(^\s+)|(\s+$)|((\s*?\,+)+\s?$)/, '')
     }
 
 }
