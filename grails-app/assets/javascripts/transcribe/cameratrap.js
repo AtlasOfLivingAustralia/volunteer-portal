@@ -29,24 +29,6 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
       }
     }
 
-    for (var index in transcribersAnswers) {
-      if (transcribersAnswers.hasOwnProperty(index)) {
-          var fullyTranscribedBy = transcribersAnswers[index].fullyTranscribedBy;
-          var vn = transcribersAnswers[index].fields[0].vernacularName;
-          var certainty = transcribersAnswers[index].fields[0].certainty;
-          if (transcribersAnswers[index].fields[0].animalsVisible == 'yes') {
-              var certainty = certainty || 1;
-              if (vn && itemValueMap[vn]) {
-                  transcribersSelections[fullyTranscribedBy] = {
-                      certainty: certainty,
-                      key: itemValueMap[vn].imageIds,
-                      vernacularName: vn
-                  }
-              }
-          }
-      }
-    }
-
     $('#ct-questions-nav').find('[data-toggle="nav"]').click(function(e) {
       e.preventDefault();
       var $this = $(this);
@@ -254,21 +236,26 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
     }
 
     function addTranscribersSelectionToContainer(sel, selElem) {
-        if (transcribersSelections[sel]) {
-            var certainty = transcribersSelections[sel].certainty;
-            var imageKey = transcribersSelections[sel].key;
-            var firstKey = keyToArray(imageKey)[0];
-            var imageInfo = firstInfoWithKey(firstKey);
-            var imageUrl = imageInfo ? imageInfo.squareThumbUrl : null;
-            var selected = (certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
-            var opts = {
-                squareThumbUrl: imageUrl,
-                value: transcribersSelections[sel].vernacularName,
-                key: imageKey,
-                selected: selected,
-                certainty: certainty
-            };
-            mu.appendTemplate(selElem, 'selected-item-transcriber-template', opts);
+        var answerFields = transcribersAnswers.find (function (t) { return t.fullyTranscribedBy == sel }).fields
+        if (answerFields) {
+            _.values(answerFields).forEach (function (e) {
+                var imageKey = itemValueMap[e.vernacularName].imageIds;
+                var firstKey = keyToArray(imageKey)[0];
+                var imageInfo = firstInfoWithKey(firstKey);
+                var imageUrl = imageInfo ? imageInfo.squareThumbUrl : null;
+                var selected = (e.certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
+                if (e.vernacularName && e.certainty) {
+                    var opts = {
+                        squareThumbUrl: imageUrl,
+                        value: e.vernacularName,
+                        key: imageKey,
+                        selected: selected,
+                        certainty: certainty
+                    };
+                    mu.appendTemplate(selElem, 'selected-item-transcriber-template', opts);
+                }
+
+            });
             $('.ct-caption').dotdotdot();
         }
     }
