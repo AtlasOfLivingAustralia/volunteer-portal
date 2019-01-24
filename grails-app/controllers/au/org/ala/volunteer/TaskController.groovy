@@ -170,11 +170,27 @@ class TaskController {
         def id = params.int('id')
         def sid = params.id
         def taskInstance = Task.get(params.int('id'))
-        Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+        Map recordValues = [:]
+        if (taskInstance.fullyValidatedBy) {
+            recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
+        }
+        else {
+            if (taskInstance.transcriptions) {
+                recordValues = fieldSyncService.retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions.first())
+            }
+        }
+
         def jsonObj = [:]
         jsonObj.put("cat", recordValues?.get(0)?.catalogNumber)
         jsonObj.put("name", recordValues?.get(0)?.scientificName)
-        jsonObj.put("transcriber", userService.detailsForUserId(taskInstance.fullyTranscribedBy).displayName)
+
+        List transcribers = []
+        taskInstance.transcriptions.each {
+            if (it.dateFullyTranscribed) {
+                transcribers << userService.detailsForUserId(it.fullyTranscribedBy).displayName
+            }
+        }
+        jsonObj.put("transcriber", transcribers.join(", "))
         render jsonObj as JSON
     }
 
