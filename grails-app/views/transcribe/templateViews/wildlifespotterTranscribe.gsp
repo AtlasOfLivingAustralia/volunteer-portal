@@ -18,7 +18,7 @@
                                     <g:imageViewer multimedia="${multimedia}"/>
                                 </g:if>
                             </g:each>
-                            <g:render template="cameraTrapImageSequence"/>
+                            <g:render template="/transcribe/cameraTrapImageSequence"/>
 
                             <div style="margin-top:10px" class="text-center">
                                 <markdown:renderHtml><g:message code="wildlifespotter.sequenceImages.helpText" /></markdown:renderHtml>
