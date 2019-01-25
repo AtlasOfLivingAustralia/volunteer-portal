@@ -824,13 +824,13 @@ ORDER BY record_idx, name;
         def select ="""
             SELECT t.id as id
             FROM Project p JOIN Task t ON p.id = t.project_id
-            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f inner join Task t2 on t2.id = f.task_id where t2.project_id = :projectId and f.name = 'sequenceNumber' group by f.task_id) as fields on fields.task_id = t.id
+            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f inner join Task t2 on t2.id = f.task_id where t2.project_id = :projectId and f.name = :fieldName group by f.task_id) as fields on fields.task_id = t.id
             WHERE p.id = :projectId and fields.value = :fieldValue
         """
 
         def sql = new Sql(dataSource: dataSource)
         int taskId = -1;
-        def row = sql.firstRow(select, [projectId: project.id, fieldValue: fieldValue])
+        def row = sql.firstRow(select, [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue])
         if (row) {
             taskId = row[0]
         }

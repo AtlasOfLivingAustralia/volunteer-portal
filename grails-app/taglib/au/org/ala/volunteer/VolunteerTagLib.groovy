@@ -9,9 +9,8 @@ import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 import org.apache.http.client.utils.URIBuilder
-import org.grails.web.mapping.CachingLinkGenerator
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.web.servlet.support.RequestDataValueProcessor
+
 
 import java.text.SimpleDateFormat
 
@@ -559,25 +558,30 @@ class VolunteerTagLib {
         def seq = attrs.seqNo as String
         def task = taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)
         if (task) {
-            def url, fullUrl = ''
-            def mm = task.multimedia?.first()
-            if (mm) {
-                url = multimediaService.getImageThumbnailUrl(mm)
-                fullUrl = multimediaService.getImageUrl(mm)
-            }
+            attrs.task = task
+            out << multimediaThumbnail(attrs, body)
+        }
+    }
 
-            if (!url) {
-                // sample
-                url = resource(file:'/sample-task-thumbnail.jpg')
-            }
-            if (!fullUrl) {
-                fullUrl = resource(file: '/sample-task.jpg')
-            }
+    def multimediaThumbnail = { attrs, body ->
+        def url, fullUrl = ''
+        def mm = attrs.task.multimedia?.first()
+        if (mm) {
+            url = multimediaService.getImageThumbnailUrl(mm)
+            fullUrl = multimediaService.getImageUrl(mm)
+        }
 
-            if (url) {
-                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
-                out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
-            }
+        if (!url) {
+            // sample
+            url = resource(file:'/sample-task-thumbnail.jpg')
+        }
+        if (!fullUrl) {
+            fullUrl = resource(file: '/sample-task.jpg')
+        }
+
+        if (url) {
+            out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
+            out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
         }
     }
 

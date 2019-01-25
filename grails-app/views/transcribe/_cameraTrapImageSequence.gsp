@@ -1,16 +1,16 @@
 <div id="ct-image-sequence" class="film-strip">
-    <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}"/>
-    <g:each in="${sequences.previous}" var="p">
-        <div class="film-cell" data-seq-no="${p}">
-            <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
+    <g:set var="tasks" value="${taskSequence(number: sequenceNumber, count: 3, task:taskInstance)}"/>
+    <g:each in="${tasks.previous}" var="task">
+        <div class="film-cell" data-seq-no="${task.sequenceNumber}">
+            <cl:multimediaThumbnail task="${task.task}" seqNo="${task.sequenceNumber}"/>
         </div>
     </g:each>
     <div class="film-cell active default" data-seq-no="${sequenceNumber}">
         <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
     </div>
-    <g:each in="${sequences.next}" var="n">
-        <div class="film-cell" data-seq-no="${n}">
-            <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${n}"/>
+    <g:each in="${tasks.next}" var="task">
+        <div class="film-cell" data-seq-no="${task.sequenceNumber}">
+            <cl:multimediaThumbnail task="${task.task}" seqNo="${task.sequenceNumber}"/>
         </div>
     </g:each>
 </div>
