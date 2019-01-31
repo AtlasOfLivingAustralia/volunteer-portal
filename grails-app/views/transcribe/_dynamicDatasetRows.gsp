@@ -2,7 +2,7 @@
 <%@ page import="groovy.json.StringEscapeUtils" %>
 <g:if test="${!entriesField}">
     <div class="alert alert-danger">
-        <g:message code="transcribe.dynamicDatasetRows.no_entriesField defined" />
+        <g:message code="transcribe.dynamicDatasetRows.no_entriesField_defined" />
     </div>
 </g:if>
 

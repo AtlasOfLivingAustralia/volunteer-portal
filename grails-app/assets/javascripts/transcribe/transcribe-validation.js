@@ -174,40 +174,53 @@ var transcribeValidation = {};
         var yearVal = yearElement.val();
         var monthVal = monthElement.val();
         var dayVal = dayElement.val();
+        var message_ = "";
 
         if (!yearVal && !monthVal && !dayVal) {
             return true;
         }
 
         if (!vlib.validateIsInteger(yearElement) || !vlib.validateIsInteger(dayElement)) {
-            messages.push({element: yearElement, message: "Date components must be integers"});
+            message_ = $("#transcribe_templateViews_DateMustIntegers").text();
+            messages.push({element: yearElement, message: message_});
+            //messages.push({element: yearElement, message: "Date components must be integers"});
             return false;
         }
 
         if (!yearVal) {
-            messages.push({element: yearElement, message: "You must supply a year value"});
+            message_ = $("#transcribe_templateViews_YouMustSupplyYear").text();
+            messages.push({element: yearElement, message: message_});
+            //messages.push({element: yearElement, message: "You must supply a year value"});
             return false;
         }
 
         if (!monthVal && dayVal) {
-            messages.push({element: yearElement, message: "You must also supply a month if a day is supplied"});
+            message_ = $("#transcribe_templateViews_YouMustSupplyMonth").text();
+            messages.push({element: yearElement, message: message_});
+            //messages.push({element: yearElement, message: "You must also supply a month if a day is supplied"});
             return false;
         }
 
         if (monthVal && vlib.isInt(monthVal)) {
             if (!vlib.validateInNumberRange(monthElement, 1, 12)) {
-                messages.push({element: monthElement, message: "Month values must be between 1 and 12"});
+                message_ = $("#transcribe_templateViews_MonthBetween1to12").text();
+                messages.push({element: yearElement, message: message_});
+                //messages.push({element: monthElement, message: "Month values must be between 1 and 12"});
                 return false;
             }
         }
 
         if (dayVal && !vlib.validateInNumberRange(dayElement, 1, 31)) {
-            messages.push({element: dayElement, message: "Day values must be between 1 and 31"});
+            message_ = $("#transcribe_templateViews_DayBetween1to31").text();
+            messages.push({element: yearElement, message: message_});
+            //messages.push({element: dayElement, message: "Day values must be between 1 and 31"});
             return false;
         }
 
         if (yearVal && !vlib.validateInNumberRange(yearElement, 1000, 3000)) {
-            messages.push({element: dayElement, message: "Year values must be between 1000 and 3000"});
+            message_ = $("#transcribe_templateViews_YearBetween1000to3000").text();
+            messages.push({element: yearElement, message: message_});
+            //messages.push({element: dayElement, message: "Year values must be between 1000 and 3000"});
             return false;
         }
 
@@ -246,40 +259,55 @@ var transcribeValidation = {};
             var minutesElement = $(element).find(":input.minutes");
             var secondsElement = $(element).find(":input.seconds");
             var directionElement = $(element).find(":input.direction");
+            var message_ = "";
 
             if (!degreesElement.val() && !minutesElement.val() && !secondsElement.val() && !directionElement.val()) {
                 return;
             }
 
             if (!degreesElement.val() && (minutesElement.val() || secondsElement.val() || directionElement.val())) {
-                messages.push({element:degreesElement, message: "Degrees must be supplied if minutes, seconds or a direction are specified", type:'Error'});
+                message_ = $("#transcribe_templateViews_DegreesInMinutes").text();
+                messages.push({element:degreesElement, message: message_, type:'Error'});
+                //messages.push({element:degreesElement, message: "Degrees must be supplied if minutes, seconds or a direction are specified", type:'Error'});
                 return;
             }
 
             if (!degreesElement.val() && !minutesElement.val() && secondsElement.val()) {
-                messages.push({element:degreesElement, message: "Degrees and minutes must be supplied if seconds are specified", type:'Error'});
+                message_ = $("#transcribe_templateViews_DegreesAndMinutesMustSupply").text();
+                messages.push({element:degreesElement, message: message_, type:'Error'});
+                //messages.push({element:degreesElement, message: "Degrees and minutes must be supplied if seconds are specified", type:'Error'});
                 return;
             }
 
             if (!vlib.validateIsInteger(degreesElement) || !vlib.validateIsNumeric(minutesElement) || !vlib.validateIsInteger(secondsElement)) {
-                messages.push({element:degreesElement, message: "Degrees, Minutes and Seconds values must be numeric", type:'Warning'});
+                message_ = $("#transcribe_templateViews_DegreesMinutesSecondMustNumeric").text();
+                messages.push({element:degreesElement, message: message_, type:'Warning'});
+                //messages.push({element:degreesElement, message: "Degrees, Minutes and Seconds values must be numeric", type:'Warning'});
                 return;
             }
 
-            var typeLabel = "longitude";
+            //var typeLabel = "longitude";
+            var typeLabel = $("#transcribe_templateViews_Longitude").text();
             var maxMin = 180;
             if (isLatitude) {
                 maxMin = 90;
-                typeLabel = "latitude";
+                //typeLabel = "latitude";
+                typeLabel = $("#transcribe_templateViews_Latitude").text();
             }
 
             if (!vlib.validateInNumberRange(degreesElement, -maxMin, maxMin)) {
-                messages.push({element:degreesElement, message: typeLabel + " degrees should be between " + -maxMin.toString() + " and " + maxMin.toString(), type:'Warning'});
+                var transcribe_templateViews_DegreeShouldBeBetweenAnd = $("#transcribe_templateViews_DegreeShouldBeBetweenAnd").text();
+                transcribe_templateViews_DegreeShouldBeBetweenAnd.replace("{0}", -maxMin.toString()).replace("{1}", maxMin.toString());
+                message_ = typeLabel + " " + transcribe_templateViews_DegreeShouldBeBetweenAnd;
+                messages.push({element:degreesElement, message: message_, type:'Warning'});
+                //messages.push({element:degreesElement, message: typeLabel + " degrees should be between " + -maxMin.toString() + " and " + maxMin.toString(), type:'Warning'});
                 return;
             }
 
             if (!vlib.validateInNumberRange(minutesElement, 0, 60) || !vlib.validateInNumberRange(secondsElement, 0, 60)) {
-                messages.push({element:minutesElement, message: "Invalid value. Seconds and Minutes must be between 0 and 60", type:'Warning'});
+                message_ = $("#transcribe_templateViews_SecondBetween0to60").text();
+                messages.push({element:minutesElement, message: message_, type:'Warning'});
+                //messages.push({element:minutesElement, message: "Invalid value. Seconds and Minutes must be between 0 and 60", type:'Warning'});
                 return;
             }
 
@@ -343,6 +371,7 @@ var transcribeValidation = {};
         }
         var buf = '<div class="row">';
         buf += '<div class="col-sm-12 alert ' + vlib.options.validationMessageClass + ' ' + alertClass + '">' + message + '</div></div>';
+        //buf += "${g.message(transcribe.templateViews.all.catalogue_no)}</div>";
         return buf;
     };
 
