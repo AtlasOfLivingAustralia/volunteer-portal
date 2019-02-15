@@ -322,7 +322,7 @@ class AjaxController {
 
                 def fieldNames = new CSVWriterColumnsBuilder(columns).columns.collect { it.key }
                 def writer = new CSVWriter(response.writer, columns)
-                def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
+                def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.transcription is null and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
 
                 for (Task t : fields.keySet()) {
                     writer << [task: t, fieldValues: fields[t]]
