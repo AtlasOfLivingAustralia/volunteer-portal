@@ -90,7 +90,7 @@
                                                             <li>
                                                                 <a role="button" tabindex="-1" data-cat-idx="${i}" data-entry-idx="${j}">
                                                                     <g:if test="${entry.hash}">
-                                                                        <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}_category.png")}" title="${entry.name}">
+                                                                        <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}.png")}" title="${entry.name}">
                                                                     </g:if>
                                                                     <g:else>
                                                                         ${entry.name}
