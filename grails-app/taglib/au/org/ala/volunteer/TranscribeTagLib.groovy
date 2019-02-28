@@ -674,8 +674,15 @@ class TranscribeTagLib {
 
     def taskSequence = { attrs, body ->
         Task task = attrs.task
-        Field field = fieldService.getFieldForTask(task, "sequenceGroupId")
         Project project = task.project
+
+        Field field = null
+
+        // The query for the field will throw an Exception if the task hasn't been saved to the database, as is the case
+        // when a template is being previewed. (see TemplateController.preview)
+        if (task.id) {
+            field = fieldService.getFieldForTask(task, "sequenceGroupId")
+        }
 
         Map tasks = [previous:[], current: task, next:[]]
         if (!field) {
