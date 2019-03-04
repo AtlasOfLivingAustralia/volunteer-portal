@@ -147,15 +147,14 @@
                                                 <g:set var="answer" value="${answers}"/>
                                                 <tr>
                                                     <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
-
-                                                    <td>${answer.get('fields')[0].get('problemWithImage') ?: 'No'}</td>
-                                                    <g:if test="${answer.get('fields')[0].get('noAnimalsVisible') || answer.get('fields')[0].get('noAnimalsVisible') == 'yes'}">
+                                                    <g:set var="ans" value="${answer.get('fields')[0]}" />
+                                                    <td>${ans.get('problemWithImage') ?: 'No'}</td>
+                                                    <g:if test="${ans.get('noAnimalsVisible') || ans.get('noAnimalsVisible') == 'yes'}">
                                                         <td>No</td>
                                                     </g:if>
-                                                    <g:else>
+                                                    <g:elseif test="${ans.get('vernacularName') || ans.get('scientificName')}">
                                                         <td>Yes</td>
                                                         <td>
-                                                            <g:set var="ans" value="${answer.get('fields')[0]}" />
                                                             <g:set var="selectedAnimalInfos"
                                                                    value="${[wsParams.animals.find{t -> return ((ans.get('vernacularName') && t.vernacularName == ans.get('vernacularName')) || (ans.get('scientificName') && t.scientificName == ans.get('scientificName')))}]}"/>
                                                             <g:render template="/transcribe/wildlifeSpotterWidget"
@@ -163,9 +162,9 @@
                                                         </td>
                                                        %{-- <td><div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div></td>--}%
                                                         %{--<td>${answer.get('fields')[0].get('vernacularName')} <i>(${(answer.get('fields')[0].get('scientificName'))})</i></td>--}%
-                                                        <td>${answer.get('fields')[0].get('individualCount')}</td>
-                                                        <td>${answer.get('fields')[0].get('comment')}</td>
-                                                    </g:else>
+                                                        <td>${ans.get('individualCount')}</td>
+                                                        <td>${ans.get('comment')}</td>
+                                                    </g:elseif>
                                                 </tr>
 
                                             </g:each>
