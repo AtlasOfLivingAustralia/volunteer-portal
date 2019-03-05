@@ -126,6 +126,7 @@
                                     </div>
                                 </div>
 
+                                <g:hiddenField name="skipNextAction" value="true"/>
                             </div>
 
                             <g:if test="${validator && transcribersAnswers && transcribersAnswers.size() > 0}">
