@@ -288,7 +288,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
 
       var summary = to == '#ct-animals-summary';
       $('#btnNext').toggleClass('hidden', summary);
-      $('.bvp-submit-button').toggleClass('hidden', !summary);
+    //  $('.bvp-submit-button').toggleClass('hidden', !summary);
     }
 
     // Cycling Thumbnails
