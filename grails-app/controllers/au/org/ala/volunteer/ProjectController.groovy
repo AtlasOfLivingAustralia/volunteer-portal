@@ -238,7 +238,7 @@ class ProjectController {
             log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
-            fieldNames.addAll(fieldService.getAllFieldNames(taskList))
+            fieldNames.addAll(fieldService.getAllFieldNames(taskList, validatedOnly))
             log.debug("Got all field names in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
 
@@ -255,7 +255,7 @@ class ProjectController {
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-                export_func(projectInstance, taskList, fieldNames, response)
+                export_func(projectInstance, taskList, fieldNames, validatedOnly, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")

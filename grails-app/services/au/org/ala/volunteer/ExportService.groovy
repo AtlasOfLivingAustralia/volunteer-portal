@@ -75,7 +75,7 @@ class ExportService {
         return result
     }
 
-    def export_zipFile = { Project project, taskList, fieldNames, response ->
+    def export_zipFile = { Project project, taskList, fieldNames, validatedOnly, response ->
         def sw = Stopwatch.createStarted()
         def c = Field.createCriteria()
         def databaseFieldNames = c {
@@ -103,12 +103,12 @@ class ExportService {
         log.debug("Generated repeating fields in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        zipExport(project, taskList, fieldNames, response, ["dataset"], repeatingFields)
+        zipExport(project, taskList, fieldNames, response, ["dataset"], repeatingFields, validatedOnly)
     }
 
-    def export_default = { Project project, taskList, fieldNames, response ->
+    def export_default = { Project project, taskList, fieldNames, validatedOnly, response ->
 
-        def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+        def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList, validatedOnly))
         def sw = Stopwatch.createStarted()
         def c = Field.createCriteria()
 
@@ -185,34 +185,36 @@ class ExportService {
             transcriptions << null // Validator fields & fields loaded at staging time have a null transcription
             transcriptions.each { transcription ->
                 int transcriptionId = transcription?.id ?: -1
-                sw2.reset().start()
-                def fieldMap = taskMap[task.id][transcriptionId]
-                def values = []
+                if (!validatedOnly || transcriptionId == -1) {
+                    sw2.reset().start()
+                    def fieldMap = taskMap[task.id][transcriptionId]
+                    def values = []
 
-                columnNames.each { columnName ->
-                    sw3.reset().start()
-                    def fieldName = columnName
-                    def recordIndex = 0
-                    def matcher = columnIndexRegex.matcher(columnName)
-                    if (matcher.matches()) {
-                        fieldName = matcher.group(1)
-                        recordIndex = matcher.group(2) as int
-                    }
+                    columnNames.each { columnName ->
+                        sw3.reset().start()
+                        def fieldName = columnName
+                        def recordIndex = 0
+                        def matcher = columnIndexRegex.matcher(columnName)
+                        if (matcher.matches()) {
+                            fieldName = matcher.group(1)
+                            recordIndex = matcher.group(2) as int
+                        }
 
-                    String value
-                    if (fieldIndexMap.containsKey(fieldName)) {
-                        def valueMap = fieldMap?.getAt(fieldName)
-                        value = valueMap?.getAt(recordIndex) ?: ""
-                    } else {
-                        value = getTaskField(task, transcription, fieldName, usersMap)
+                        String value
+                        if (fieldIndexMap.containsKey(fieldName)) {
+                            def valueMap = fieldMap?.getAt(fieldName)
+                            value = valueMap?.getAt(recordIndex) ?: ""
+                        } else {
+                            value = getTaskField(task, transcription, fieldName, usersMap)
+                        }
+                        values << value
+                        def elapsed = sw3.elapsed(MILLISECONDS)
+                        if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
                     }
-                    values << value
-                    def elapsed = sw3.elapsed(MILLISECONDS)
-                    if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
+                    def elapsed = sw2.elapsed(MILLISECONDS)
+                    if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
+                    writer.writeNext(values as String[])
                 }
-                def elapsed = sw2.elapsed(MILLISECONDS)
-                if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
-                writer.writeNext(values as String[])
             }
 
         }
@@ -222,8 +224,8 @@ class ExportService {
         writer.close()
     }
 
-    private void zipExport(Project project, taskList, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
-        def valueMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+    private void zipExport(Project project, taskList, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields, boolean validatedOnly) {
+        def valueMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList, validatedOnly))
         def sw = Stopwatch.createStarted()
         def datasetCategoryFields = [:]
         if (datasetCategories) {
@@ -275,8 +277,10 @@ class ExportService {
             List transcriptions = task.transcriptions?.collect{it}
             transcriptions << null // Validator fields & fields loaded at staging time have a null transcription
             transcriptions.each { transcription ->
-                String[] values = getFieldsForTask(task, transcription, fieldNames, valueMap, usersMap)
-                writer.writeNext(values)
+                String[] values = getFieldsForTask(task, transcription, fieldNames, valueMap, usersMap, validatedOnly)
+                if (values.length > 0) {
+                    writer.writeNext(values)
+                }
             }
         }
         writer.flush();
@@ -421,61 +425,63 @@ class ExportService {
         return value.toString().replaceAll("\r\n|\n\r|\n|\r", '\\\\n')
     }
 
-    private String[] getFieldsForTask(Task task, Transcription transcription, List fields, Map taskMap, Map<String, UserDetails> usersMap = [:]) {
+    private String[] getFieldsForTask(Task task, Transcription transcription, List fields, Map taskMap, Map<String, UserDetails> usersMap = [:], Boolean validatedOnly) {
         List fieldValues = []
         def taskId = task.id
 
         if (taskMap.containsKey(taskId)) {
-            int transcriptionId = transcription?.id ?: -1 // No transcription will use Task fields which contain staging and validator data.
-            Map fieldMap = taskMap[taskId][transcriptionId]
-            def sw = Stopwatch.createUnstarted()
-            fields.eachWithIndex { String fieldName, fieldIndex ->
-                sw.reset().start()
-                switch (fieldName.toLowerCase()) {
-                    case "taskid":
-                        fieldValues.add(taskId.toString())
-                        break;
-                    case "transcriberid":
-                        fieldValues.add(getUserDisplayName(transcription?transcription.fullyTranscribedBy:task.fullyValidatedBy, usersMap))
-                        break;
-                    case "validatorid":
-                        fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
-                        break;
-                    case "externalidentifier":
-                        fieldValues.add(task.externalIdentifier)
-                        break;
-                    case "exportcomment":
-                        def sb = new StringBuilder()
-                        if (transcription?.fullyTranscribedBy) {
-                            sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
-                        }
-                        else if (task.fullyValidatedBy) {
-                            sb.append("Validated by ${getUserDisplayName(task.fullyValidatedBy, usersMap)}. ")
-                        }
-                        def date = new Date().format("dd-MMM-yyyy")
-                        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
-                        sb.append("Exported on ${date} from ${appName} (http://volunteer.ala.org.au)")
-                        fieldValues.add((String) sb.toString())
-                        break;
-                    case "datetranscribed":
-                        fieldValues.add(transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
-                        break;
-                    case "datevalidated":
-                        fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
-                        break;
-                    case "validationstatus":
-                        fieldValues.add(taskValidationStatus(task))
-                        break;
-                    default:
-                        if (fieldMap.containsKey(fieldName)) {
-                            fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
-                        } else {
-                            fieldValues.add("") // need to leave blank
-                        }
-                        break;
+            int transcriptionId = transcription?.id ?: -1
+            // No transcription will use Task fields which contain staging and validator data.
+            if (!validatedOnly || transcriptionId == -1) {
+                Map fieldMap = taskMap[taskId][transcriptionId]
+                def sw = Stopwatch.createUnstarted()
+                fields.eachWithIndex { String fieldName, fieldIndex ->
+                    sw.reset().start()
+                    switch (fieldName.toLowerCase()) {
+                        case "taskid":
+                            fieldValues.add(taskId.toString())
+                            break;
+                        case "transcriberid":
+                            fieldValues.add(getUserDisplayName(transcription ? transcription.fullyTranscribedBy : task.fullyValidatedBy, usersMap))
+                            break;
+                        case "validatorid":
+                            fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
+                            break;
+                        case "externalidentifier":
+                            fieldValues.add(task.externalIdentifier)
+                            break;
+                        case "exportcomment":
+                            def sb = new StringBuilder()
+                            if (transcription?.fullyTranscribedBy) {
+                                sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
+                            } else if (task.fullyValidatedBy) {
+                                sb.append("Validated by ${getUserDisplayName(task.fullyValidatedBy, usersMap)}. ")
+                            }
+                            def date = new Date().format("dd-MMM-yyyy")
+                            def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+                            sb.append("Exported on ${date} from ${appName} (http://volunteer.ala.org.au)")
+                            fieldValues.add((String) sb.toString())
+                            break;
+                        case "datetranscribed":
+                            fieldValues.add(transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                            break;
+                        case "datevalidated":
+                            fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                            break;
+                        case "validationstatus":
+                            fieldValues.add(taskValidationStatus(task))
+                            break;
+                        default:
+                            if (fieldMap.containsKey(fieldName)) {
+                                fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
+                            } else {
+                                fieldValues.add("") // need to leave blank
+                            }
+                            break;
+                    }
+                    def elapsed = sw.elapsed(MILLISECONDS)
+                    if (elapsed > 50) log.debug("Got {} value in {}ms", fieldName, elapsed)
                 }
-                def elapsed = sw.elapsed(MILLISECONDS)
-                if (elapsed > 50) log.debug("Got {} value in {}ms", fieldName, elapsed)
             }
         }
 
