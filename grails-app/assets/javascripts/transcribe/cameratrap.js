@@ -79,7 +79,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
       doYouWishAsAnswer = doYouWishAsAnswer.replace("{0}", answer);
       var $btnSave = $('#btnSave');
 
-      if (answer != yes && $btnSave) {
+      if (answer.toLowerCase() != yes.toLowerCase() && $btnSave) {
+
         // check if we're don't confirm and confirm
         var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
         if (dontConfirm) {
@@ -106,6 +107,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, language,
           $btnSave.click();
         }
       } else {
+
         switchCtPage('#ct-animals-present');
       }
 

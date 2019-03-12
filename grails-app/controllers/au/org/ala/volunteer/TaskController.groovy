@@ -280,7 +280,7 @@ class TaskController {
 
             if (taskInstance) {
 
-                // first check is user is logged in...
+                // first check is user is logged in...ct-animals-question
                 if (!currentUser) {
                     readonly = true
                     msg = message(code: 'taskController.you_are_not_logged_in')

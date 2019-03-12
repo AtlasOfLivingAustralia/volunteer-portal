@@ -96,18 +96,18 @@
                                         <div id="ct-animals-question">
                                             <label class="radio-inline">
                                                 <input type="radio" id="btn-animals-present" name="recordValues.0.animalsVisible"
-                                                       value="yes" ${'yes' == step1 ? 'checked' : ''}
+                                                       value="<g:message code="default.yes"/>" ${'yes' == step1 ? 'checked' : ''}
                                                        label="${message(code:'default.yes')}"><g:message code="default.yes"/>
                                             </label>
                                             <label class="radio-inline">
                                                 <input type="radio" name="recordValues.0.animalsVisible"
                                                        label="${message(code:'default.no')}"
-                                                       value="no" ${'no' == step1 ? 'checked' : ''}><g:message code="default.no"/>
+                                                       value="<g:message code="default.no"/>" ${'no' == step1 ? 'checked' : ''}><g:message code="default.no"/>
                                             </label>
                                             <label class="radio-inline">
                                                 <input type="radio" name="recordValues.0.animalsVisible"
                                                        label="${message(code:'transcribe.templateViews.cameratrapTranscribe.unsure')}"
-                                                       value="unsure" ${'unsure' == step1 ? 'checked' : ''}><g:message code="transcribe.templateViews.cameratrapTranscribe.unsure"/>
+                                                       value="<g:message code="transcribe.templateViews.cameratrapTranscribe.unsure"/>" ${'unsure' == step1 ? 'checked' : ''}><g:message code="transcribe.templateViews.cameratrapTranscribe.unsure"/>
                                             </label>
                                         </div>
                                     </div>
