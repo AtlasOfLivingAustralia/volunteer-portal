@@ -734,6 +734,7 @@ ORDER BY record_idx, name;
         if (!filename.trim()) {
             filename = "image_" + taskId;
         }
+        filename = URLDecoder.decode(filename, "utf-8")
         def conn = url.openConnection()
         def fileMap = [:]
 
@@ -859,7 +860,8 @@ ORDER BY record_idx, name;
 
             String urlPrefix = grailsApplication.config.images.urlPrefix
             String imagesHome = grailsApplication.config.images.home
-            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+            path = imagesHome + '/' + path.substring(urlPrefix?.length())
+            //path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
 
             return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
