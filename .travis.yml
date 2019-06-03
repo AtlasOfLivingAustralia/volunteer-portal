@@ -7,7 +7,6 @@ branches:
   only:
   - master
   - develop
-  - feature/malleefowl
 services:
   - postgresql
 addons:
